@@ -1,0 +1,54 @@
+{
+  "all_members_selected": false,
+  "all_members_verified": false,
+  "canonical_manifest_sha256": "b073f1ed36823d8f613c5656711b0ef245e51806734bc2b31379cd05d80d06c1",
+  "compressed_bytes_verified": 180,
+  "cost_scope": "Internal recovery clocks after imports; includes archive verification and selected writes, before final receipt serialization",
+  "cpu_seconds": 0.0011710500000000068,
+  "declared_member_bytes": 2,
+  "declared_member_files": 2,
+  "destination": "/tmp/hcsn-selective-synthetic-p8jlva1i/restored_unselected_wrong_member_hash",
+  "error": {
+    "message": "Archive member payload hash/length mismatch: unselected.txt",
+    "type": "ValueError"
+  },
+  "existing_identical_bytes": 0,
+  "existing_identical_files": 0,
+  "expected_index_sha256": "049ec611aa57cfabd9e730bb83af85689260ca5dde7a6bf79a609f65c04cabdc",
+  "full_restoration_claim": false,
+  "index": "/tmp/hcsn-selective-synthetic-p8jlva1i/unselected_wrong_member_hash/INDEX.json",
+  "member_bytes_verified": 1,
+  "member_files_verified": 1,
+  "part_files_verified": 1,
+  "passed": false,
+  "publication_root": "/tmp/hcsn-selective-synthetic-p8jlva1i/unselected_wrong_member_hash",
+  "restored_bytes": 0,
+  "restored_files": 0,
+  "schema": "hcsn-selective-archive-restore.v1",
+  "scope": "Complete archive/member verification with explicit selective restoration; not a full extraction",
+  "selected_bytes_verified": 1,
+  "selected_declared_bytes": 1,
+  "selected_files": 1,
+  "selection_shards": [
+    {
+      "bytes": 166,
+      "members": 1,
+      "path": "unselected_wrong_member_hash_selection_0000.json",
+      "sha256": "1f84a17b8fb539dcc63bd8add0588aed364dca0fdf4d6e1d29f676e5c6ae1ce3"
+    }
+  ],
+  "selectors": {
+    "paths": [
+      "a.txt"
+    ],
+    "patterns": [],
+    "semantics": "Union; fnmatchcase matches entire relative POSIX paths and * can match slash"
+  },
+  "source_sha256": {
+    "frozen_archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "selective_restore.py": "6ae01542723562a3ebd0e36bec73ad50f156e44c4971921ff07ccfd9c8deb198"
+  },
+  "staged_payload_bytes": 1,
+  "verified_archive_sha256": "b6195108c11ce4df5fff13851784ec76fd01e49e7e223c03d0205b649fcbd52d",
+  "wall_seconds": 0.0016827729996293783
+}

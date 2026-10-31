@@ -1,0 +1,887 @@
+{
+  "changes_made_by_this_audit": {
+    "git_refs_modified": false,
+    "repository_files_added": [
+      "experiments/hcsn_conservative_acceleration_v1/reports/HOSTED_MATH_AUDIT.json"
+    ],
+    "scientific_or_hosted_code_modified": false
+  },
+  "checks": [
+    {
+      "name": "Evidence commit has exactly the execution seal as parent",
+      "passed": true
+    },
+    {
+      "name": "Execution seal descends directly from the reviewed original launch",
+      "passed": true
+    },
+    {
+      "name": "All 185 public Git blobs independently matched the execution-seal tree",
+      "passed": true
+    },
+    {
+      "name": "Fetched bytes match Git blob and SHA256: HOSTED_PROTOCOL.json",
+      "passed": true
+    },
+    {
+      "name": "Fetched bytes match Git blob and SHA256: extra/DATA_BOOTSTRAP.json",
+      "passed": true
+    },
+    {
+      "name": "Fetched bytes match Git blob and SHA256: extra/RUNNER_PREPARE_RESULT.json",
+      "passed": true
+    },
+    {
+      "name": "Fetched bytes match Git blob and SHA256: extra/kernel_validation_EXECUTION.json",
+      "passed": true
+    },
+    {
+      "name": "Fetched bytes match Git blob and SHA256: extra/workflow.yml",
+      "passed": true
+    },
+    {
+      "name": "Fetched bytes match Git blob and SHA256: results/comparison002_hosted/REGISTRATION.json",
+      "passed": true
+    },
+    {
+      "name": "Fetched bytes match Git blob and SHA256: results/hosted_preflight001/PREFLIGHT.json",
+      "passed": true
+    },
+    {
+      "name": "Fetched bytes match Git blob and SHA256: results/hosted_prepare001/PREPARED.json",
+      "passed": true
+    },
+    {
+      "name": "Fetched bytes match Git blob and SHA256: results/hosted_prepare001/PUBLIC_IDENTITY.json",
+      "passed": true
+    },
+    {
+      "name": "Fetched bytes match Git blob and SHA256: results/hosted_validation001/REGISTRATION.json",
+      "passed": true
+    },
+    {
+      "name": "Fetched bytes match Git blob and SHA256: results/hosted_validation001/RESULTS.json",
+      "passed": true
+    },
+    {
+      "name": "Original baseline is the 162-file published parent snapshot",
+      "passed": true
+    },
+    {
+      "name": "All 162 baseline local byte identities and public tree entries agree",
+      "passed": true
+    },
+    {
+      "name": "Exact 124 scientific source hashes match throughout all receipt domains",
+      "passed": true
+    },
+    {
+      "name": "Every frozen source byte and its public Git identity match",
+      "passed": true
+    },
+    {
+      "name": "All seven extra bootstrap identities match published bytes",
+      "passed": true
+    },
+    {
+      "name": "Published plan identity equals the reviewed plan",
+      "passed": true
+    },
+    {
+      "name": "Validation result and preregistration share exactly the frozen five-file domain",
+      "passed": true
+    },
+    {
+      "name": "Validation configuration and all tolerances unchanged from original local proof",
+      "passed": true
+    },
+    {
+      "name": "Protocol pins the exact new kernel proof, registration and preflight bytes",
+      "passed": true
+    },
+    {
+      "name": "Prepared receipt and cohort registration bind the exact hosted protocol",
+      "passed": true
+    },
+    {
+      "name": "All 70 original jobs and their order are preserved; no prior rows reused",
+      "passed": true
+    },
+    {
+      "name": "Every frozen scientific design key remains unchanged",
+      "passed": true
+    },
+    {
+      "name": "Train-only preflight was bound to the hosted draft before registration",
+      "passed": true
+    },
+    {
+      "name": "Kernel validation exited successfully with no failures or changed sources",
+      "passed": true
+    },
+    {
+      "name": "All six declared mathematical sections present",
+      "passed": true
+    },
+    {
+      "name": "17 declared forward cases cover both dtypes and the long segment",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float32 dt=0.0",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float32 dt=0.11999999731779099",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float32 dt=0.36000001430511475",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float32 dt=0.36000099778175354",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float32 dt=0.495755136013031",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float32 dt=0.7200000286102295",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float32 dt=3.200000047683716",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float32 dt=7.309999942779541",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float64 dt=0.0",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float64 dt=0.12",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float64 dt=0.36",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float64 dt=0.360001",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float64 dt=0.495755147934",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float64 dt=0.72",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float64 dt=3.2",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float64 dt=7.31",
+      "passed": true
+    },
+    {
+      "name": "Forward tolerances: float64 dt=1474.56",
+      "passed": true
+    },
+    {
+      "name": "Nine named physical gradient directions present",
+      "passed": true
+    },
+    {
+      "name": "Independently recomputed gradient error: mu",
+      "passed": true
+    },
+    {
+      "name": "Independently recomputed gradient error: sigma",
+      "passed": true
+    },
+    {
+      "name": "Independently recomputed gradient error: boundary",
+      "passed": true
+    },
+    {
+      "name": "Independently recomputed gradient error: reset",
+      "passed": true
+    },
+    {
+      "name": "Independently recomputed gradient error: tau",
+      "passed": true
+    },
+    {
+      "name": "Independently recomputed gradient error: duration",
+      "passed": true
+    },
+    {
+      "name": "Independently recomputed gradient error: old_boundary",
+      "passed": true
+    },
+    {
+      "name": "Independently recomputed gradient error: rho",
+      "passed": true
+    },
+    {
+      "name": "Independently recomputed gradient error: cost",
+      "passed": true
+    },
+    {
+      "name": "Batch separation and scalar equivalence remain within original tolerance",
+      "passed": true
+    },
+    {
+      "name": "All eight declared invalid-input guards reject",
+      "passed": true
+    },
+    {
+      "name": "Zero-stage and three-stage refractory semantics meet dense reference tolerance",
+      "passed": true
+    },
+    {
+      "name": "4096-step float32 flow and accumulated event count satisfy declared limits",
+      "passed": true
+    },
+    {
+      "name": "Recomputed long-stream reward error matches the receipt",
+      "passed": true
+    },
+    {
+      "name": "Nine train-only paired updates and 15 model/task parameter-count records present",
+      "passed": true
+    },
+    {
+      "name": "Recorded maximum absolute tensor differences fit even the absolute tolerance: selective_copy step 1",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: reference selective_copy step 1",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: accelerated selective_copy step 1",
+      "passed": true
+    },
+    {
+      "name": "Recorded maximum absolute tensor differences fit even the absolute tolerance: selective_copy step 2",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: reference selective_copy step 2",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: accelerated selective_copy step 2",
+      "passed": true
+    },
+    {
+      "name": "Recorded maximum absolute tensor differences fit even the absolute tolerance: selective_copy step 3",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: reference selective_copy step 3",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: accelerated selective_copy step 3",
+      "passed": true
+    },
+    {
+      "name": "Recorded maximum absolute tensor differences fit even the absolute tolerance: mqar step 1",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: reference mqar step 1",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: accelerated mqar step 1",
+      "passed": true
+    },
+    {
+      "name": "Recorded maximum absolute tensor differences fit even the absolute tolerance: mqar step 2",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: reference mqar step 2",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: accelerated mqar step 2",
+      "passed": true
+    },
+    {
+      "name": "Recorded maximum absolute tensor differences fit even the absolute tolerance: mqar step 3",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: reference mqar step 3",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: accelerated mqar step 3",
+      "passed": true
+    },
+    {
+      "name": "Recorded maximum absolute tensor differences fit even the absolute tolerance: irregular step 1",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: reference irregular step 1",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: accelerated irregular step 1",
+      "passed": true
+    },
+    {
+      "name": "Recorded maximum absolute tensor differences fit even the absolute tolerance: irregular step 2",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: reference irregular step 2",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: accelerated irregular step 2",
+      "passed": true
+    },
+    {
+      "name": "Recorded maximum absolute tensor differences fit even the absolute tolerance: irregular step 3",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: reference irregular step 3",
+      "passed": true
+    },
+    {
+      "name": "All five finite nonzero gradient groups: accelerated irregular step 3",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: hcsn_reference selective_copy",
+      "passed": true
+    },
+    {
+      "name": "Every physical/content group updates: hcsn_reference selective_copy",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: hcsn_accelerated selective_copy",
+      "passed": true
+    },
+    {
+      "name": "Every physical/content group updates: hcsn_accelerated selective_copy",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: two_gates selective_copy",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: transformer selective_copy",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: lif_snn selective_copy",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: hcsn_reference mqar",
+      "passed": true
+    },
+    {
+      "name": "Every physical/content group updates: hcsn_reference mqar",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: hcsn_accelerated mqar",
+      "passed": true
+    },
+    {
+      "name": "Every physical/content group updates: hcsn_accelerated mqar",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: two_gates mqar",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: transformer mqar",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: lif_snn mqar",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: hcsn_reference irregular",
+      "passed": true
+    },
+    {
+      "name": "Every physical/content group updates: hcsn_reference irregular",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: hcsn_accelerated irregular",
+      "passed": true
+    },
+    {
+      "name": "Every physical/content group updates: hcsn_accelerated irregular",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: two_gates irregular",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: transformer irregular",
+      "passed": true
+    },
+    {
+      "name": "Backbone parameter match: lif_snn irregular",
+      "passed": true
+    },
+    {
+      "name": "Actual recorded hosted environment matches the version/resource contract",
+      "passed": true
+    },
+    {
+      "name": "Real bootstrap restored the original dataset identity without decoding heldout arrays",
+      "passed": true
+    },
+    {
+      "name": "Whole preparation receipt has all successful child exits and consistent disjoint CPU sum",
+      "passed": true
+    },
+    {
+      "name": "Candidate autograd and float32 accumulated outputs reproduce the original local proof",
+      "passed": true
+    }
+  ],
+  "comparison_with_original_local_proof": {
+    "all_candidate_autograd_values_identical": true,
+    "float32_event_count_reward_and_correction_identical": true,
+    "interpretation": "The tiny differences are in independently computed dense-reference quantities and associated error summaries. This receipt comparison makes no cross-machine performance claim.",
+    "registration_except_absolute_source_prefix_identical": true,
+    "reset_knot_and_batch_records_identical": true
+  },
+  "conclusion": "The hosted run reproduces the declared finite-grid kernel acceptance and train-only paired preflight under unchanged scientific sources, thresholds and jobs. It is numerical implementation fidelity evidence, not Brownian spatial exactness, global optimization, neural mechanism superiority or large-model scaling evidence.",
+  "data_bootstrap": {
+    "baseline_sources": 162,
+    "dataset_manifest_sha256": "858890284600dba4897f1eab7bb8668706185d9bf567199e6ea902f10dd02cbc",
+    "files": [
+      {
+        "bytes": 3596130,
+        "git_blob_sha": "0331c700ad03ab460e984e548866f8d553952fbb",
+        "path": "experiments/hcsn_real_av_v1/data/test.npz",
+        "sha256": "5d041d12b134ab31586d9dc768b8e6d3dec391ab373f6b1c88d11d25739d86d7",
+        "split": "test"
+      },
+      {
+        "bytes": 14384278,
+        "git_blob_sha": "bb07a571c35e45564e61c9ea8203e418c2d4552f",
+        "path": "experiments/hcsn_real_av_v1/data/train.npz",
+        "sha256": "f4074f14b5d46702cb8ae293a7d6c974b9576f651377e85836566f154eac4a33",
+        "split": "train"
+      },
+      {
+        "bytes": 3600317,
+        "git_blob_sha": "cbe0529de905ce48e6d88d2c700cfef56144ffd6",
+        "path": "experiments/hcsn_real_av_v1/data/validation.npz",
+        "sha256": "1c2206425d32e4166d4cd44a2b5d3199e4a5da50c1258e405a62ad84e31be906",
+        "split": "validation"
+      }
+    ],
+    "heldout_arrays_decoded": false,
+    "logical_files": 4,
+    "media_downloaded": false,
+    "transport_parts": 60
+  },
+  "environment": {
+    "architecture": "x86_64",
+    "cpu_quota": "200000 100000",
+    "host_visible_cpu_count": 4,
+    "image": "python:3.12.14@sha256:6dc02694c53fde08b0e39de9273a708d2f2a612f77dc173a64835c3f7a40ee35",
+    "image_digest_independently_attested": false,
+    "memory_limit_bytes": 8589934592,
+    "observation_scope": "Actual published prepare-time process/environment observations; preparation OOM=0 is not an independent audit of the entire later training lifetime.",
+    "os_release": "PRETTY_NAME=\"Debian GNU/Linux 13 (trixie)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"13\"\nVERSION=\"13 (trixie)\"\nVERSION_CODENAME=trixie\nDEBIAN_VERSION_FULL=13.7\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n",
+    "packages": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "torch": "2.8.0+cpu"
+    },
+    "prepare_memory_events": {
+      "high": "0",
+      "low": "0",
+      "max": "0",
+      "oom": "0",
+      "oom_group_kill": "0",
+      "oom_kill": "0",
+      "sock_throttled": "0"
+    },
+    "proc_self_cgroup": "0::/\n",
+    "python": "3.12.14",
+    "swap_limit_bytes": 0
+  },
+  "evidence_commit": "a0de582931981b3742433475ecf5565409854a5c",
+  "execution_seal": "78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5",
+  "github_actions_run_id": "41059620366",
+  "hosted_metrics": {
+    "float32_max_dense_transition_row_l1": 1.5143305039447275e-06,
+    "float64_max_dense_transition_row_l1": 2.7495141580180515e-12,
+    "long_event_count": 223.4468558199574,
+    "long_event_scaled_error": 2.6568302581946075e-07,
+    "long_post_projection_mass_defect": 3.3527612686157227e-08,
+    "long_reference_event_count": 223.4467964539364,
+    "long_state_l1": 3.11971421265711e-07,
+    "max_dense_gradient_scaled_error": 5.70241071887837e-10,
+    "max_original_autograd_scaled_error": 1.1819349021923596e-15
+  },
+  "limitations": [
+    "The proof concerns the frozen finite-grid regenerative Markov operator and its accelerated polynomial evaluation, not an exact spatial discretization of continuous Brownian dynamics.",
+    "The earlier scalar free-boundary versus finite-grid policy-optimality gap is unchanged; no new Bellman/QVI optimality certificate is supplied here.",
+    "Gradients are checked at declared points away from switching surfaces. At the exact reset interpolation knot there is no unique ordinary derivative; the recorded 0.21516286534912255 autodiff convention is preserved, rather than promoted to a global differentiability claim.",
+    "The stable long-stream profile explicitly applies bounded regenerative unit-mass roundoff correction; the correction and its accumulated magnitude are reported. Event totals accumulate float32 per-step counts in Python binary64.",
+    "Positive physical-group gradients and parameter changes establish local trainability in these probes, not causal accuracy or efficiency contributions.",
+    "Preflight timings include correctness audit and are descriptive only. No speed claim is based on comparison with the earlier local machine.",
+    "Heldout exposure was repeated by the full hosted engineering replication; this is not fresh-test confirmation.",
+    "No GPU, energy, neuromorphic hardware, multimodal foundation-model or universal architecture advantage is established by this audit."
+  ],
+  "local_comparison_sources": [
+    {
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/validation001/RESULTS.json",
+      "sha256": "ae174e46a343e31ad294aecbd80a25ee7594694fb8531204ea6e3889b8def0da"
+    },
+    {
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/validation001/REGISTRATION.json",
+      "sha256": "4b768300c6735c5528e9e2f8faf74b73fe6a6e6901f76c11a2a7a20f93db2c2a"
+    }
+  ],
+  "long_stream": {
+    "count_accumulation": "Python binary64 over float32 per-step expected counts",
+    "cumulative_actual_l1_roundoff_correction": 0.00019192323088645935,
+    "event_count": 223.4468558199574,
+    "event_scaled_error": 2.6568302581946075e-07,
+    "final_state_l1_error": 3.11971421265711e-07,
+    "maximum_post_projection_mass_defect": 3.3527612686157227e-08,
+    "observations": 4096,
+    "physical_time": 1050.373275756836,
+    "profile": "tagged regenerative bounded unit-mass correction",
+    "reference_event_count": 223.4467964539364,
+    "reference_reward": 96.10447246091526,
+    "reward": 96.1045013439421,
+    "reward_absolute_error": 2.8883026843118387e-05
+  },
+  "math_configuration": {
+    "forward_cases": 17,
+    "gradient_directions": 9,
+    "gradient_parameters": [
+      0.237,
+      0.513,
+      0.8431,
+      -0.173,
+      0.417,
+      0.495755147934,
+      1.217,
+      0.437,
+      0.413
+    ],
+    "grid": {
+      "cells": 8,
+      "fixed_rate": 8.1,
+      "fixed_terms": 21,
+      "lower": -2.0,
+      "max_duration": 0.36,
+      "max_independent_chunks": 1048576,
+      "max_poisson_mean": 12.0,
+      "max_terms": 160,
+      "per_token_chunks": true,
+      "refractory_stages": 2,
+      "tolerance": 1e-10,
+      "validate": true
+    },
+    "independent_reference": "scalar physical jump assembly, SciPy augmented expm and dense value solve",
+    "invalid_input_guards": 8,
+    "limits": {
+      "batch_float64_absolute": 3e-12,
+      "finite_difference_step": 1e-05,
+      "float32_functional_scaled": 3e-05,
+      "float32_transition_l1": 2e-05,
+      "float64_functional_scaled": 2e-10,
+      "float64_transition_l1": 8e-10,
+      "gradient_absolute_floor": 1e-05,
+      "gradient_dense_scaled": 2e-05,
+      "gradient_original_scaled": 2e-09,
+      "long_event_scaled": 5e-05,
+      "long_float32_state_l1": 2e-05,
+      "original_float32_scaled": 2e-05,
+      "original_float64_scaled": 8e-10
+    },
+    "long_stream_observations": 4096,
+    "parameter_names": [
+      "mu",
+      "sigma",
+      "boundary",
+      "reset",
+      "tau",
+      "duration",
+      "old_boundary",
+      "rho",
+      "cost"
+    ]
+  },
+  "measured_preparation_cost": {
+    "kernel_body_cpu_seconds": 1.363703766,
+    "kernel_whole_subprocess_cpu_seconds": 3.5796449999999997,
+    "prepare_coordinator_self_cpu_seconds": 0.11139221199999999,
+    "prepare_direct_child_cpu_seconds": 19.365982,
+    "scope": "The kernel-body clock is contained in the kernel wait4 clock, which is contained in the preparation child total; these are not additive. Checkout, dependency installation, full training and this later audit are outside this subtotal."
+  },
+  "original_local_metrics": {
+    "float32_max_dense_transition_row_l1": 1.5143305026645015e-06,
+    "float64_max_dense_transition_row_l1": 2.749991206973945e-12,
+    "long_event_count": 223.4468558199574,
+    "long_event_scaled_error": 2.6568288742934477e-07,
+    "long_post_projection_mass_defect": 3.3527612686157227e-08,
+    "long_reference_event_count": 223.44679645396732,
+    "long_state_l1": 3.1197138404201463e-07,
+    "max_dense_gradient_scaled_error": 5.588974493003141e-10,
+    "max_original_autograd_scaled_error": 1.1819349021923596e-15
+  },
+  "passed": true,
+  "preflight": {
+    "all_five_groups_updated_both_backends_all_three_tasks": true,
+    "all_groups_finite_nonzero_and_present_both_backends": true,
+    "gradient_groups": [
+      "boundary",
+      "content",
+      "dynamics",
+      "refractory",
+      "reset"
+    ],
+    "maximum_absolute_errors": {
+      "gradients": 8.940696716308594e-08,
+      "logits": 2.384185791015625e-07,
+      "parameters": 2.4959444999694824e-06
+    },
+    "maximum_loss_difference": 5.960464477539063e-08,
+    "maximum_relative_backbone_parameter_gap": 0.025423728813559324,
+    "paired_update_records": 9,
+    "parameter_gap_limit": 0.03,
+    "performance_scope": "Three small paired train-only steps per task; descriptive, includes correctness audit; not formal throughput evidence",
+    "tasks": [
+      "selective_copy",
+      "mqar",
+      "irregular"
+    ],
+    "train_only": true,
+    "updates_per_task": 3
+  },
+  "public_tree_verification": {
+    "baseline_files_verified": 162,
+    "expected_blobs": 185,
+    "frozen_scientific_source_files_verified": 124,
+    "independently_fetched_trees": 19,
+    "mismatches": [],
+    "observed_blobs": 185,
+    "trees": [
+      {
+        "prefix": "",
+        "sha": "9662177f919d405533b809c6243ec4d9c7b97efe"
+      },
+      {
+        "prefix": ".github/",
+        "sha": "476ab6af511e8d34b4a86d056b49bee319496bb2"
+      },
+      {
+        "prefix": "experiments/",
+        "sha": "12a9a7d502a1c2e6cc7287a73b1614344bb6c7db"
+      },
+      {
+        "prefix": ".github/workflows/",
+        "sha": "ed493c17b598904a4606346f7f2bc9ecfa1e2eff"
+      },
+      {
+        "prefix": "experiments/continuous_spiking_network/",
+        "sha": "4b864bccabf0fa0b987a6f6f68902f4460ac6255"
+      },
+      {
+        "prefix": "experiments/hcsn_conservative_acceleration_v1/",
+        "sha": "3c4eef09c5c42951e13c55e14b9b8ff21caae7b4"
+      },
+      {
+        "prefix": "experiments/hcsn_cost_scaling_v1/",
+        "sha": "272dda307cb9fb7b86f8bdb5894b809bf71feb74"
+      },
+      {
+        "prefix": "experiments/hcsn_distributional_v2/",
+        "sha": "9e12f11a826350d9c0258c84ec8ca623886927cb"
+      },
+      {
+        "prefix": "experiments/hcsn_free_boundary_v1/",
+        "sha": "026019de2f71c5aa243cdcf4520d0c3a6948e1c8"
+      },
+      {
+        "prefix": "experiments/hcsn_real_av_v1/",
+        "sha": "fab002c0273e63ae92fd7595e82b39061951eaac"
+      },
+      {
+        "prefix": "experiments/continuous_spiking_network/reference/",
+        "sha": "9451f43e3d6c0c9670c8dbb81ec40d6493ee31a2"
+      },
+      {
+        "prefix": "experiments/continuous_spiking_network/tests/",
+        "sha": "48908d349919a741e2fc72593627a54447148d4e"
+      },
+      {
+        "prefix": "experiments/hcsn_conservative_acceleration_v1/hosted/",
+        "sha": "083ba8ba43df47dbc69c6dee8d8b5888a227ed10"
+      },
+      {
+        "prefix": "experiments/hcsn_conservative_acceleration_v1/results/",
+        "sha": "dda7809c483dc6a1bc222d5321c55418d8b18986"
+      },
+      {
+        "prefix": "experiments/hcsn_free_boundary_v1/figures/",
+        "sha": "b7c0950b023295252a437b77b276b5828e7500f0"
+      },
+      {
+        "prefix": "experiments/hcsn_free_boundary_v1/native_vendor/",
+        "sha": "a2cfa97d56031007d8cf5a2a3d0b91b46adfaca2"
+      },
+      {
+        "prefix": "experiments/hcsn_free_boundary_v1/vendor/",
+        "sha": "3087a16c6760594c5ddbca00bf474187b612b58b"
+      },
+      {
+        "prefix": "experiments/hcsn_real_av_v1/time_normalized_v2/",
+        "sha": "25bd92c407e02570a2ed36bcd361d79adba9b8bc"
+      },
+      {
+        "prefix": "experiments/hcsn_conservative_acceleration_v1/results/comparison001/",
+        "sha": "f84b4718a7c9af63a7b7a70905009cbd9c6c31b3"
+      }
+    ]
+  },
+  "recorded_utc": "2026-10-30T13:20:30.162135+00:00",
+  "registration_binding": {
+    "exact_original_jobs_and_order": true,
+    "full_cohort_quality_and_speed_review": "Separate audit; not inferred from PREPARED or this proof.",
+    "jobs": 70,
+    "original_protocol_sha256": "38dc6de2b9279b88be653275e1be30a972b9aa0899b6fbc12be5fad776f29114",
+    "preflight_and_new_math_bytes_pinned": true,
+    "prior_rows_reused": false,
+    "protocol_sha256": "e3b17755e4c2cd8bf11457f2d39732e1bb10868f2c7a4ac0e703bcc1027c8dbb"
+  },
+  "reviewer_role": "operator_math independent collaborator",
+  "schema": "hcsn-hosted-independent-math-audit.v1",
+  "scope": "Independent re-audit of published hosted mathematical and preparation receipts; no new training and no new kernel execution during this audit.",
+  "sources": [
+    {
+      "bytes": 39732,
+      "commit": "a0de582931981b3742433475ecf5565409854a5c",
+      "git_blob": "862d65d7f8dfc9c48217e6f57557a41784f2475e",
+      "path": "experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+      "sha256": "e3b17755e4c2cd8bf11457f2d39732e1bb10868f2c7a4ac0e703bcc1027c8dbb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json"
+    },
+    {
+      "bytes": 2993,
+      "commit": "a0de582931981b3742433475ecf5565409854a5c",
+      "git_blob": "fe70d6a2656e66f1bff18ac4ce8e6909af28cafb",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/DATA_BOOTSTRAP.json",
+      "sha256": "bf882eadd9f23a6d4735f7b425ae8863bf84581c9ffb35a86e0c5f13127619ad",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/DATA_BOOTSTRAP.json"
+    },
+    {
+      "bytes": 37923,
+      "commit": "a0de582931981b3742433475ecf5565409854a5c",
+      "git_blob": "f05d608f16bdb4d5ce6658ca2162d8a43c9c1784",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/RUNNER_PREPARE_RESULT.json",
+      "sha256": "4b107f08b7fb698ecbdf6329a8b8bbb352d40e0104a69d0e17382018ec68d413",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/RUNNER_PREPARE_RESULT.json"
+    },
+    {
+      "bytes": 898,
+      "commit": "a0de582931981b3742433475ecf5565409854a5c",
+      "git_blob": "a71a150bd791b8ba6f6089c15e32d9c19a1ab9b5",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/kernel_validation_EXECUTION.json",
+      "sha256": "8ae6af2f60d544218d427d9a300b7dda8c0c05458fcab87774a74cff430a023c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/kernel_validation_EXECUTION.json"
+    },
+    {
+      "bytes": 8173,
+      "commit": "78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5",
+      "git_blob": "9b58382ad1154431c0734d843f94114f67af9931",
+      "path": ".github/workflows/hcsn-conservative-hosted.yml",
+      "sha256": "19e76b8c7686f49be485dd32b646b9fd8ca34803d01f5bb900965c6cbe1293e7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5/.github/workflows/hcsn-conservative-hosted.yml"
+    },
+    {
+      "bytes": 345,
+      "commit": "a0de582931981b3742433475ecf5565409854a5c",
+      "git_blob": "0e76a52c5d0a501ea4524de1383b9ebd5c6dd5a0",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/REGISTRATION.json",
+      "sha256": "7c4419e042ca15871e2350bf25f2d6b394e52d0a1018c565eff92a16005f091a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/REGISTRATION.json"
+    },
+    {
+      "bytes": 55582,
+      "commit": "a0de582931981b3742433475ecf5565409854a5c",
+      "git_blob": "017abc3dffe0bfbb6d7a2e87e286b7de31b2f13d",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/hosted_preflight001/PREFLIGHT.json",
+      "sha256": "f699641b4cf5871733e22c8e8de8e65cd21f1cbef13dd794744be1bad5149a07",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/hosted_preflight001/PREFLIGHT.json"
+    },
+    {
+      "bytes": 17623,
+      "commit": "a0de582931981b3742433475ecf5565409854a5c",
+      "git_blob": "18c4b4833fc9191c708dd3585522ce6fea396f8f",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/PREPARED.json",
+      "sha256": "46721362447a8d128cc5f386493253b9ff58d5e7a8cf80cc48e6b6359b087812",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/PREPARED.json"
+    },
+    {
+      "bytes": 43977,
+      "commit": "a0de582931981b3742433475ecf5565409854a5c",
+      "git_blob": "e7324dd201344a768b9268a7fdf919811417a6b4",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/PUBLIC_IDENTITY.json",
+      "sha256": "44d02983cebc2d4eec088ac5af76f12d6f8798def5f642d9dcc74d7654b640c7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/PUBLIC_IDENTITY.json"
+    },
+    {
+      "bytes": 2346,
+      "commit": "a0de582931981b3742433475ecf5565409854a5c",
+      "git_blob": "6383f78a5f74294e92ddfd6dc1d3d1ac6823419f",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/hosted_validation001/REGISTRATION.json",
+      "sha256": "3551695df0a797b125a663fa9b5ce37dd3669c861c19dcd95a484996e1153ee6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/hosted_validation001/REGISTRATION.json"
+    },
+    {
+      "bytes": 24725,
+      "commit": "a0de582931981b3742433475ecf5565409854a5c",
+      "git_blob": "b71d1005dc521c38c3d735aae942f77fd97e86e5",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/hosted_validation001/RESULTS.json",
+      "sha256": "4994555aa39e693e83c869604320f751cb502f6fabd9a687a25342b6bb8d2b5c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/hosted_validation001/RESULTS.json"
+    }
+  ],
+  "workflow_change_since_static_review": {
+    "execution_workflow_sha256": "19e76b8c7686f49be485dd32b646b9fd8ca34803d01f5bb900965c6cbe1293e7",
+    "observed_exact_workspace_trust_line": "git config --global --add safe.directory \"$GITHUB_WORKSPACE\"",
+    "original_static_review_sha256": "99f79f45062c42dc7c5e213ad616f42ad1f3b5560d0db1d116c4a1c89a89a3bd",
+    "prior_failed_launch_evidence_scope": "The parent reports that the failed launch logs are preserved. This audit verifies the subsequent execution seal and scientific source identities; it does not independently re-audit the earlier failed job logs.",
+    "scientific_source_hashes_unchanged": true
+  }
+}

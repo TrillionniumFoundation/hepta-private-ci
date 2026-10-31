@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn-av-bootstrap-failure.v1",
+  "execution_seal": "913a18c752326f2f101327a53e08fb2454755b2a",
+  "run_id": 41155791247,
+  "job_id": 124402173988,
+  "job_started_utc": "2026-10-31T01:37:21Z",
+  "job_completed_utc": "2026-10-31T01:37:33Z",
+  "job_wall_seconds": 12,
+  "reason": "Pinned NumPy/SciPy installed; the next command -v ffmpeg failed because ffmpeg was absent on this runner image.",
+  "media_acquired": 0,
+  "model_training_jobs": 0,
+  "scientific_outcomes_read": false,
+  "cpu_seconds": null,
+  "repair": "Install ffmpeg explicitly in the data-only hosted bootstrap; preserve the cohort and scientific design."
+}

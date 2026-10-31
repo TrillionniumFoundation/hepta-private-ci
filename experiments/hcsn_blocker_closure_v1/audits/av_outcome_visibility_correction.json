@@ -1,0 +1,24 @@
+{
+  "schema": "hcsn-av-outcome-visibility-correction.v1",
+  "recorded_utc": "2026-10-31T02:05:58.801Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_id": 1320694176,
+  "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+  "method": "Independent read-only GitHub REST repository metadata fetch via connector",
+  "observed_fields": {
+    "private": false,
+    "visibility": "public",
+    "archived": false,
+    "disabled": false,
+    "clone_url": "https://github.com/TrillionniumFoundation/hepta-private-ci.git"
+  },
+  "original_finding": "The AV job's persist-credentials:false checkout was flagged as a probable blocker for fetching a private data-evidence commit.",
+  "correction": "The premise was incorrect: repository metadata reports private=false and visibility=public. The repository name and description do not establish access control. Anonymous read-only Git fetch is appropriate for this public repository; retaining checkout credentials is unnecessary for that operation.",
+  "resolution": "Retract the private-fetch blocker; leave the launched workflow and frozen study source unchanged.",
+  "launch_commit": "6469cc94a72aed214c5c9d2ff2fba14cdb146626",
+  "launch_run_id": 41158089224,
+  "frozen_av_source_modified": false,
+  "av_delivery_modified": false,
+  "model_outcomes_read": false,
+  "scope": "Repository access metadata only; no claim about the current workflow outcome or future repository visibility."
+}

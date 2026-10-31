@@ -1,0 +1,154 @@
+{
+  "analysis": {
+    "cpu_primary": "Updates completed in the same30CPU-second budget and paired selected heldout CE/accuracy; show whole-worker costs, including all setup/validation/I/O.",
+    "engineering_speed_gate": "All six primary fixed-update pairs pass the registered trajectory tolerances, each training CPU speedup exceeds1, and their geometric mean is at least1.10.",
+    "fixed_primary": "Paired initial-state/minibatch equality, every training loss, final parameter tensors, training CPU and whole-worker CPU. Validation-selected quality is separately reported.",
+    "metric": "Compute CE once from saved float32 logits cast to float64 using stable log-sum-exp; independently recompute in analyzer with absolute tolerance1e-10. Do not relax any older sealed audit.",
+    "quality_conditioned_comparison": "An external-control timing comparison qualifies at a target only when both selected test accuracies reach that target and are within2percentage points for every one of the three paired seeds; otherwise mark unavailable.",
+    "quality_pair_tolerance": 0.02,
+    "quality_targets": [
+      0.5,
+      0.75,
+      0.9
+    ],
+    "statistics": "Primary task means and sample SD; paired differences with descriptive Student-t95% interval for3seeds. No confirmatory significance or equivalence claim. Single-seed supplementary panels are descriptive."
+  },
+  "data": {
+    "cremad": {
+      "input_dim": 128,
+      "output_dim": 6,
+      "splits": {
+        "test": {
+          "examples": 8,
+          "path": "experiments/hcsn_conservative_acceleration_v1/results/runner_train_fixture003/cremad_source_train.npz",
+          "sha256": "197d9abf31f3171536c0f2b96a65f3012175476d8d9109a056afc3368a3d68c9"
+        },
+        "train": {
+          "examples": 8,
+          "path": "experiments/hcsn_conservative_acceleration_v1/results/runner_train_fixture003/cremad_source_train.npz",
+          "sha256": "197d9abf31f3171536c0f2b96a65f3012175476d8d9109a056afc3368a3d68c9"
+        },
+        "val": {
+          "examples": 8,
+          "path": "experiments/hcsn_conservative_acceleration_v1/results/runner_train_fixture003/cremad_source_train.npz",
+          "sha256": "197d9abf31f3171536c0f2b96a65f3012175476d8d9109a056afc3368a3d68c9"
+        }
+      }
+    }
+  },
+  "data_design": {
+    "cremad": "Reuse all cached train480/validation120/test120 actor-disjoint clips; dt=1; fixed full-clip features; old heldout has already been observed in earlier studies. No download or new split claim.",
+    "development_seed": 2026103018,
+    "generator": "experiments.hcsn_free_boundary_v1.datasets.synthetic",
+    "length": 32,
+    "seed": 2026103017,
+    "sizes": {
+      "test": 256,
+      "train": 1024,
+      "val": 128
+    },
+    "split_randomness": "Original SeedSequence([seed, split_id, task_id]); each split is a separate NPZ and only requested split arrays are loaded."
+  },
+  "development_only": true,
+  "execution": {
+    "expected_jobs": 70,
+    "heartbeat_seconds": 30.0,
+    "memory_wait_limit_seconds": 120.0,
+    "nominal_cpu_family_training_seconds": 900.0,
+    "order_seed": 2026103019,
+    "shared_reserve_bytes": 1073741824,
+    "stop_policy": "Stop new dispatch on worker failure, STOP_REQUESTED, new cgroup OOM event or exceeded worker memory forecast; drain active jobs and preserve every receipt. No replacement seeds or retries.",
+    "threads_per_worker": 1,
+    "worker_memory_reservation_bytes": 2684354560,
+    "workers": 2
+  },
+  "fidelity": {
+    "preflight_atol": 5e-05,
+    "preflight_batch": 4,
+    "preflight_rtol": 0.0005,
+    "preflight_updates": 3,
+    "scope": "Finite tested float32 output/gradient/Adam trajectories, not bitwise equivalence or a theorem for every input. The independent kernel proof must also pass before registration.",
+    "trajectory_loss_atol": 0.0001,
+    "trajectory_loss_rtol": 0.0001,
+    "trajectory_parameter_atol": 0.0005,
+    "trajectory_parameter_rtol": 0.005
+  },
+  "interpretation": "Recovered-source train-only unit fixture. All train/val/test roles use the first8 source training examples. Not a registered cohort, heldout quality estimate, or throughput benchmark.",
+  "jobs": [
+    {
+      "family": "fixed",
+      "model": "hcsn_accelerated",
+      "seed": 98051,
+      "supplementary": true,
+      "task": "cremad"
+    }
+  ],
+  "models": [
+    "hcsn_reference",
+    "hcsn_accelerated",
+    "two_gates",
+    "transformer",
+    "lif_snn"
+  ],
+  "optimization": {
+    "av_batch_size": 4,
+    "av_loss": "Original fused CE +0.25(audio CE+video CE)+0.5 symmetric same-recording InfoNCE, temperature0.1; shared linear head and arithmetic late fusion unchanged.",
+    "av_temperature": 0.1,
+    "backbone_relative_parameter_tolerance": 0.03,
+    "batch_size": 32,
+    "clip_l2": 2.0,
+    "cpu_seconds": 30.0,
+    "cpu_validation_seconds": [
+      15.0,
+      30.0
+    ],
+    "depth": 1,
+    "fixed_training_cpu_cap_seconds": 240.0,
+    "fixed_updates": 32,
+    "fixed_validation_updates": [
+      16,
+      32
+    ],
+    "heldout": "Persist selection.json and selected checkpoint hash before opening the test split; evaluate only the selected checkpoint.",
+    "learning_rate": 0.003,
+    "matching": "Reuse v2 matched_configuration with effective parameter counts; no padding. Identical frontend/readout initialization across all models; entire HCSN reference/accelerated state_dict identical.",
+    "max_updates": 65536,
+    "minibatches": "Torch generator seed=model_seed+200003; synthetic sampling with replacement; CREMA-D shuffled passes without replacement, discarding an incomplete final batch.",
+    "model_profile": "Both HCSN backends use distribution_free_dual with profile=stable; only the numerical backend differs. Raw profiles are separate train-only mathematical diagnostics.",
+    "optimizer": "Adam with PyTorch defaults, no weight decay",
+    "selection": "Minimum float64 validation CE among exactly the registered two milestones; earlier update breaks ties. One common fixed LR, no per-model tuning or extra selection opportunities.",
+    "supplementary_updates": 2,
+    "supplementary_validation_updates": [
+      1,
+      2
+    ],
+    "synthetic_loss": "Masked supervised token cross entropy only; modeled activity/cost are diagnostics and do not enter this objective.",
+    "width": 32
+  },
+  "primary_seeds": [
+    98031,
+    98032,
+    98033
+  ],
+  "primary_tasks": [
+    "selective_copy",
+    "mqar"
+  ],
+  "schema": "hcsn-conservative-acceleration-protocol.v1",
+  "status": "draft_not_registered",
+  "supplementary_seed": 98041,
+  "supplementary_tasks": [
+    "irregular",
+    "cremad"
+  ],
+  "timing": {
+    "energy_measured": false,
+    "gpu_measured": false,
+    "inference_batch": 16,
+    "inference_scope": "Complete selected model from in-memory features, including boundary/value/density computation; no media decoding or accelerator transfer.",
+    "repetitions": 3,
+    "training_cpu_scope": "Minibatch sampling, forward/backward, finite/probability/gradient audit, clipping and optimizer. Complete final update and its overrun are charged; validation/checkpoint serialization outside this clock are included in whole-worker cost.",
+    "warmups": 1,
+    "whole_worker": "Isolated child wait4 user+system CPU and whole-process maximum RSS; failures and unselected validation checkpoints included."
+  }
+}

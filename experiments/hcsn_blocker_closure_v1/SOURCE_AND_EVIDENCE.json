@@ -1,0 +1,173 @@
+{
+  "schema": "hcsn-source-and-evidence.v1",
+  "scientific_decision": "NO_GO",
+  "all_six_user_requirements_satisfied": false,
+  "source_state": "Completed registered studies and independent summary/raw metric audits; permanent core and AV evidence cryptographically verified. Final delivery head and its CI receipts are recorded separately to avoid changing the checked commit.",
+  "source_seals": {
+    "core_training": "c9063043d088b6b469e740b9b6f341f3faea3928",
+    "av_training": "6469cc94a72aed214c5c9d2ff2fba14cdb146626",
+    "av_data": "dca9febc8143c682077fe27d40dbeaa1137bcaa4",
+    "independent_postprocessing": "656d3fc218754717302672d7dd3790a1ac290834",
+    "completed_av_binding_cpu_evidence": "3aeb7c6ea6f07ed841edf9ea96e597e495e54fa4"
+  },
+  "evidence": {
+    "core": {
+      "commit": "65c7554c89d35023112e607f45c96e0f23551a06",
+      "run_id": 41156755829,
+      "source_seal": "c9063043d088b6b469e740b9b6f341f3faea3928",
+      "artifact_id": 13028610459,
+      "publication_path": "experiments/hcsn_blocker_closure_v1/artifacts/closure001/PUBLICATION.json",
+      "publication_sha256": "83856bb2ba45fe799a539769ea64b236bd151cf1d9b1a1fe0639419b7ec17bc6",
+      "index_path": "experiments/hcsn_blocker_closure_v1/artifacts/closure001/INDEX.json",
+      "index_sha256": "8002a5ed5d6f3c0b30486097123432d570f67056790f72a93d707add9153ca1d",
+      "archive_sha256": "2da69e90f9fcf9c5558f26b10b64067c033184b70a8fe51ec40c6dd566e7aec5",
+      "compressed_bytes": 100907140,
+      "raw_file_bytes": 213086990,
+      "raw_members": 8567,
+      "published_files": 336
+    },
+    "av": {
+      "commit": "7cf647fbcb99014bb85e9fa251d84d2b7afac35e",
+      "run_id": 41158089224,
+      "source_seal": "6469cc94a72aed214c5c9d2ff2fba14cdb146626",
+      "artifact_id": 13027170140,
+      "publication_path": "experiments/hcsn_blocker_closure_v1/av/artifacts/closure001/PUBLICATION.json",
+      "publication_sha256": "9b9a5bf0fab1b2af6f978130af33c7775aadf4cd687277d8af0a8d10b4cfa4bd",
+      "index_path": "experiments/hcsn_blocker_closure_v1/av/artifacts/closure001/INDEX.json",
+      "index_sha256": "2b9cad3a8dfc85b7b20a5be8e8486d9fe0a378dedb45ef6c45ca328aa6b7ca85",
+      "archive_sha256": "4114013bedd0207ffd0409c76a6f67ad4ea6b9d0220e3459588fd3fa2505b68a",
+      "compressed_bytes": 76444092,
+      "raw_file_bytes": 169470040,
+      "raw_members": 1140,
+      "published_files": 266
+    }
+  },
+  "core_registration_protocol_sha256": "911067f668c94a68ca41af710e1977005806dad202fbf18f32bda580b077a27b",
+  "preselected_native_binding": {
+    "worker": "fixed/selective_copy__value_jg__seed881101",
+    "checkpoint_sha256": "d7b1b428bf1a19cd28efb2a678b1a7e60248d301f674dba3f99d0cd1e8f8b686",
+    "native_binary_sha256": "1dc702aea6a448ad84407aeb71dc8f23066205fab79fe7c6859fc02c55e6f7a5",
+    "formal_test_outcomes_accessed": false
+  },
+  "records": {
+    "math": {
+      "path": "oracle/results/local003/RESULTS.json",
+      "bytes": 260380,
+      "sha256": "440e4296477d5275822dc8d7a7067f6938375f8a217260c7fc2a41d7385d0fc5"
+    },
+    "math_gradients": {
+      "path": "oracle/results/torch001/RESULTS.json",
+      "bytes": 2294,
+      "sha256": "d93f800e759aaed0b21d06f5932b6cb92e56986a67f7c41f25b6d0cf59e0935d"
+    },
+    "av_audit": {
+      "path": "audits/av_outcome_001.json",
+      "bytes": 68107,
+      "sha256": "e1f8ed5bb788fc2b85510751581e303215c33139ddaae7d55adeecf6f85fc991"
+    },
+    "av_cost": {
+      "path": "audits/av_outcome_cost001.json",
+      "bytes": 4190,
+      "sha256": "7f86f8b7c22b0c0eb71b1c5f3a232f420429fed6d4cae22b2b68fe824d9d5157"
+    },
+    "av_numeric": {
+      "path": "audits/av_outcome_numeric001.json",
+      "bytes": 1750,
+      "sha256": "3d2983276fdc400aeac4f517f4a6e35f183e35a84c615fa01b1d301df5aa5cce"
+    },
+    "native_binding": {
+      "path": "execution_binding/results/attempt001/RESULT.json",
+      "bytes": 95117,
+      "sha256": "6d42c2675f30dfdea8884eca2931f4e15129dc29ca1c3251982b14902ffdb732"
+    },
+    "native_binding_cost": {
+      "path": "execution_binding/results/attempt001/WHOLE_WORKER_COST.json",
+      "bytes": 1503,
+      "sha256": "e424b0dea500cfad28ae78c1d67d085bdd242c9a78d7a920d28622b8a5df0bb8"
+    },
+    "cpu_reference": {
+      "path": "hardware/results/attempt001/RESULTS.json",
+      "bytes": 129405,
+      "sha256": "6fd812bdd9665d40a78ce1fd4fb6ee4b7199300b90cfccd8849cf72bc1af1354"
+    },
+    "cpu_reference_protocol": {
+      "path": "hardware/results/attempt001/PROTOCOL.json",
+      "bytes": 15600,
+      "sha256": "d901a039a22e1506e35ed87f8e9bfcfd1a0bee85b4b88a76d1beb9386f9f9171"
+    },
+    "cpu_reference_cost": {
+      "path": "hardware/results/execution001/RUNNER_HARDWARE_RESULT.json",
+      "bytes": 3583,
+      "sha256": "e584bda67d3f8e003e05aebd4509b6bd2ef2d49141a6cc46e66b8838a89ab6c2"
+    },
+    "core_archive_recovery": {
+      "path": "audits/CORE_SELECTIVE_RESTORE001.json",
+      "bytes": 7087,
+      "sha256": "1b0ecedc695953699a24489e7656e30ce459b98c1d4ff5c24fddead51e705a4a"
+    },
+    "core_summary_audit": {
+      "path": "audits/content_outcome_001.json",
+      "bytes": 102635,
+      "sha256": "5b41aed5af3ed711d58480e39fd276379006985533ea381fbacc065bb71d3625"
+    },
+    "core_raw_metric_audit": {
+      "path": "audits/content_raw_metric001.json",
+      "bytes": 11511,
+      "sha256": "2344d20bb2b7c4d73b00b8ba13f887e5d4d33881338a2a017ac1ff2644feabb1"
+    },
+    "core_raw_metric_cost": {
+      "path": "audits/content_raw_metric_execution001/RUNNER_CONTENT_RAW_METRIC_RESULT.json",
+      "bytes": 2546,
+      "sha256": "0c13e101b7259479307d399403fbc7e45dc48ffa9e1b4e117a74972a672d77be"
+    },
+    "core_completed_cost": {
+      "path": "audits/core_cost002.json",
+      "bytes": 15479,
+      "sha256": "a701b68ea70289208c92bb8369063645bcc6bc7d26b283c1198f4df0d82152b8"
+    },
+    "core_run_receipt": {
+      "path": "audits/core_completed_run.json",
+      "bytes": 15012,
+      "sha256": "12e85ff79cd02458e373ca9449d0c12e63d51924c49ec3a358f58418ee43a5ef"
+    },
+    "core_jobs_receipt": {
+      "path": "audits/core_completed_jobs.json",
+      "bytes": 5665,
+      "sha256": "2e928e699b23244962de8182dd14cdf6c8ee39954367006fdef12af7a9a414c6"
+    },
+    "core_permanent_verification": {
+      "path": "audits/CORE_PERMANENT_PUBLICATION_VERIFIED.json",
+      "bytes": 98000,
+      "sha256": "3bfd709541a2674ef39807b3554beed2b3e76af6135368f16b7c2f599ba3c661"
+    },
+    "figure_provenance": {
+      "path": "figures_final/PLOT_PROVENANCE.json",
+      "bytes": 1463,
+      "sha256": "bb7833058bd97a049fede236b0514858a0f08a2922aab56904d5bf51908717b3"
+    },
+    "core_summary_audit_cost": {
+      "path": "audits/content_outcome_execution001/RUNNER_CONTENT_OUTCOME_RESULT.json",
+      "bytes": 2117,
+      "sha256": "9e9048a76ac381c93febc8945657becc59fda9175d4b7b58f4d0ac572a42d02f"
+    }
+  },
+  "source_packages": [
+    "experiments/hcsn_blocker_closure_v1",
+    "experiments/hcsn_conservative_acceleration_v1",
+    "experiments/hcsn_distributional_v2",
+    "experiments/hcsn_free_boundary_v1",
+    "experiments/continuous_spiking_network",
+    "experiments/hcsn_real_av_v1"
+  ],
+  "delivery_policy": {
+    "pull_request": 4362,
+    "draft": true,
+    "merge_authorized": false,
+    "execution_scope": "SHADOW_ONLY",
+    "native_policy": "DENY_ALL",
+    "gpu_measured": false,
+    "actual_joules_measured": false,
+    "final_ci_evidence_branch": "research/hcsn-final-checks-20261031",
+    "final_ci_refers_to_exact_scientific_delivery_head": true
+  }
+}

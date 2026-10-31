@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "unittest",
+    "experiments.hcsn_conservative_acceleration_v1.model_tests",
+    "experiments.hcsn_conservative_acceleration_v1.runtime_tests",
+    "-v"
+  ],
+  "complete_child_cpu_seconds": 9.219834,
+  "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+  "ended_utc": "2026-10-30T13:01:10.459860+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_conservative_acceleration_v1/results/hosted_prepare001/model_runtime_tests.log",
+  "name": "model_runtime_tests",
+  "peak_rss_bytes": 331214848,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-30T13:01:01.237438+00:00",
+  "system_cpu_seconds": 0.805901,
+  "user_cpu_seconds": 8.413933,
+  "wall_seconds": 9.222418288999961
+}

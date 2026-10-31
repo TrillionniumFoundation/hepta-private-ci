@@ -1,0 +1,129 @@
+{
+  "commands": {
+    "analyze": "python -m experiments.hcsn_blocker_closure_v1.av.study analyze --output <output>",
+    "development": "python -m experiments.hcsn_blocker_closure_v1.av.study run --output <output> --stage development --workers 4",
+    "equal_cpu": "python -m experiments.hcsn_blocker_closure_v1.av.study run --output <output> --stage equal_cpu --workers 4",
+    "fixed": "python -m experiments.hcsn_blocker_closure_v1.av.study run --output <output> --stage fixed --workers 4",
+    "lock": "python -m experiments.hcsn_blocker_closure_v1.av.study lock --output <output>",
+    "preflight": "python -m experiments.hcsn_blocker_closure_v1.av.study preflight --output <new proof path>",
+    "register": "python -m experiments.hcsn_blocker_closure_v1.av.study register --output <new output directory> --dataset <restored DATASET.json> --data-commit dca9febc8143c682077fe27d40dbeaa1137bcaa4 --data-transport-path experiments/hcsn_blocker_closure_v1/av/transport_41156412198/TRANSPORT.json --preflight <source-identical proof path>"
+  },
+  "contract_checks": 17,
+  "data_binding": {
+    "acquisition_execution_seal": "4ac7583aca2c06187c691ce8e43c5902dd46717d",
+    "commit": "dca9febc8143c682077fe27d40dbeaa1137bcaa4",
+    "dataset_sha256": "2096f8a3da7c5540062506c9a38aa6251ad0a0b103968cc120ba508c8309e051",
+    "rule": "Registration reads the exact transport blob from git show commit:path, verifies its Git blob and every restored file, then retains this proof. No model outcome selected this data evidence.",
+    "transport_git_blob_sha1": "e760433f55b8488e78a0ff5b97bc34b0d74cfffc",
+    "transport_path": "experiments/hcsn_blocker_closure_v1/av/transport_41156412198/TRANSPORT.json"
+  },
+  "expected_jobs": 90,
+  "files": [
+    {
+      "bytes": 10906,
+      "path": "experiments/hcsn_blocker_closure_v1/av/AV_DESIGN.json",
+      "sha256": "c722f33475adacb8711e4044cbd988f4a529303d06f2d2d7ec20f1aca7c0ae35"
+    },
+    {
+      "bytes": 33020,
+      "path": "experiments/hcsn_blocker_closure_v1/av/study.py",
+      "sha256": "6b290db97e42176678ddb69080bf8b44812887504d0edca064051bf3a7951b4a"
+    },
+    {
+      "bytes": 23067,
+      "path": "experiments/hcsn_blocker_closure_v1/av/analysis.py",
+      "sha256": "840eb12209d6c69e16773646306f24c993ce703b0c275fa85347353364e32268"
+    },
+    {
+      "bytes": 4335,
+      "path": "experiments/hcsn_blocker_closure_v1/av/model.py",
+      "sha256": "b726779b3ab4fc1e96151987f7a7560ac7776afe23f98492149cc23593be2e3d"
+    },
+    {
+      "bytes": 4611,
+      "path": "experiments/hcsn_blocker_closure_v1/av/metrics.py",
+      "sha256": "54a291d3d7ddd1d4e47bf349e0649001112332e0580be5a55aca3ae28566d0d6"
+    },
+    {
+      "bytes": 6314,
+      "path": "experiments/hcsn_blocker_closure_v1/av/STUDY_ZH.md",
+      "sha256": "39ea2c3bbbedcd39fec5a35b8a4267f7fc4af7d01c538febaca36710073c2616"
+    },
+    {
+      "bytes": 6425,
+      "path": "experiments/hcsn_blocker_closure_v1/av/validation/check_contracts.py",
+      "sha256": "08a5c85747cdfa3f6dfea1622ec211db2c7c14e3bd20b03cd33a054227c0b71e"
+    },
+    {
+      "bytes": 19994,
+      "path": "experiments/hcsn_blocker_closure_v1/av/results/preflight001.json",
+      "sha256": "67e3d92e812d7c83a00ab28c7228adc944d5c2ca0ea5d570f8d8fa5b1f008758"
+    },
+    {
+      "bytes": 19989,
+      "path": "experiments/hcsn_blocker_closure_v1/av/results/preflight002.json",
+      "sha256": "c2a4bba07401156fd7c84a0d556d0f48d7de6a9206bfd1b6e65de3e69b6be824"
+    },
+    {
+      "bytes": 4753,
+      "path": "experiments/hcsn_blocker_closure_v1/av/results/contract_checks002.json",
+      "sha256": "82577f7800185e6dd63466052dc58d70e361c8991ccb7ab8d775facfaae1c274"
+    },
+    {
+      "bytes": 10145,
+      "path": "experiments/hcsn_blocker_closure_v1/av/results/preflight001.log",
+      "sha256": "7a925e7dc319b4c9d8cbbfc4a162b7ed9d12fa1d9ba036e95f7d2df203a1b7f5"
+    },
+    {
+      "bytes": 10139,
+      "path": "experiments/hcsn_blocker_closure_v1/av/results/preflight002.log",
+      "sha256": "c8261bd6b0c23c45538c374c7c80b3973b774387b877baf7db531dee8bbdffeb"
+    },
+    {
+      "bytes": 58,
+      "path": "experiments/hcsn_blocker_closure_v1/av/results/contract002.log",
+      "sha256": "371e449bfada27971b055fb7872cb765f2726ead86d7829e64cd409df4d03566"
+    }
+  ],
+  "independent_review_files": [
+    "experiments/hcsn_blocker_closure_v1/audits/AV_SOURCE_REVIEW.json",
+    "experiments/hcsn_blocker_closure_v1/audits/AV_MATH_METRICS_REVIEW.json"
+  ],
+  "limitations": [
+    "No true training result yet",
+    "No hardware energy or GPU comparison",
+    "Inherited J/G surrogate does not solve the learned content Bellman problem",
+    "Additive fusion and only eight external test actors",
+    "Do not forecast performance from cold synthetic timings in the memory-constrained shared workspace"
+  ],
+  "preflight_checks": 19,
+  "preflight_source_sha256": {
+    "experiments/continuous_spiking_network/baseline.py": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+    "experiments/hcsn_blocker_closure_v1/av/AV_DESIGN.json": "c722f33475adacb8711e4044cbd988f4a529303d06f2d2d7ec20f1aca7c0ae35",
+    "experiments/hcsn_blocker_closure_v1/av/COHORT_PLAN.json": "180d7a90e0a7f8615dcd97c4bf91e5795cbaab1cf7a0f9bfa2fb64fb9d7c510f",
+    "experiments/hcsn_blocker_closure_v1/av/analysis.py": "840eb12209d6c69e16773646306f24c993ce703b0c275fa85347353364e32268",
+    "experiments/hcsn_blocker_closure_v1/av/bootstrap.py": "321d0ae85861f76adf0c4367690e5dc088755e148dc13fc7d689df30e48d57cd",
+    "experiments/hcsn_blocker_closure_v1/av/metrics.py": "54a291d3d7ddd1d4e47bf349e0649001112332e0580be5a55aca3ae28566d0d6",
+    "experiments/hcsn_blocker_closure_v1/av/model.py": "b726779b3ab4fc1e96151987f7a7560ac7776afe23f98492149cc23593be2e3d",
+    "experiments/hcsn_blocker_closure_v1/av/study.py": "6b290db97e42176678ddb69080bf8b44812887504d0edca064051bf3a7951b4a",
+    "experiments/hcsn_blocker_closure_v1/content/DESIGN.json": "c38b579da45bc200825419f48b0321586dcdbe26eeec8f45323f56d668ca148f",
+    "experiments/hcsn_blocker_closure_v1/content/__init__.py": "b19567b2db5b6961b63c4d2f8359a4f56a2b1664ea31c45e794339066e12e96c",
+    "experiments/hcsn_blocker_closure_v1/content/analysis.py": "aed2dd5bee0561fbea6030b9902f3eef65b513d6ea5aa4ad19409f65c3b46564",
+    "experiments/hcsn_blocker_closure_v1/content/data.py": "89cec4f5d5926d4971880b4103e8b964f702986d7ad0f884fa95b52c32e876ee",
+    "experiments/hcsn_blocker_closure_v1/content/models.py": "f08878c2760bcec859e5e11c7b906b71647029073f782987c3431a4ca0ea71fe",
+    "experiments/hcsn_blocker_closure_v1/content/preflight.py": "edbba48e2d8b2f464fb714611a6c87aa16f8d495aa0b6db7ed1c269bddd59911",
+    "experiments/hcsn_blocker_closure_v1/content/study.py": "1e7039a7d2cbf3e4be1f009c0aeab92b31c5098b606ee55f89d6f74105d7b3d0",
+    "experiments/hcsn_conservative_acceleration_v1/kernel.py": "d528d140b83e11e80b835853d94677e1a2293d6b7c16ec4b27e2fac5d2ffcf68",
+    "experiments/hcsn_conservative_acceleration_v1/model.py": "1326e49d6c5add4eb0ef20524aa5a0c0edd80fc3284da8db4b6266993073118b",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_distributional_v2/model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+    "experiments/hcsn_distributional_v2/stable_probability.py": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770",
+    "experiments/hcsn_free_boundary_v1/model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a",
+    "experiments/hcsn_real_av_v1/data.py": "02fc21d1f3f1b98320659421f6ed03450fbe042eed25d91ae2bc93e50bde485f"
+  },
+  "real_data_arrays_loaded_by_study_author": false,
+  "real_model_outcomes_accessed": false,
+  "schema": "hcsn-blocker-av-delivery.v1",
+  "status": "source_frozen_and_synthetic_preflight_passed_real_training_pending"
+}

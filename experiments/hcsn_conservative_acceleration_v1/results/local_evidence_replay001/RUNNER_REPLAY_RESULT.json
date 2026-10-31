@@ -1,0 +1,80 @@
+{
+  "accounting": "Direct child receipts are disjoint within this stage. Do not add study worker, optimizer, analysis-body, native or resume subtotals again. Coordinator self CPU excludes children and starts at RunBook creation.",
+  "all_child_costs_known": true,
+  "coordinator_self_cpu_seconds": 0.011401481000000005,
+  "direct_child_cpu_seconds": 5.036364,
+  "disk": {
+    "free": 2055290880,
+    "total": 33770192896,
+    "used": 29980139520
+  },
+  "mode": "replay",
+  "result": {
+    "all70_raw_tensor_audits_passed": true,
+    "analysis_identical_except_own_cpu_wall": true,
+    "archive_members_restored_or_identical": 1289,
+    "archive_parts_verified": 145,
+    "claim_scope": "Independent local byte restoration and replay of the frozen analyzer, not a separate analyzer implementation. Separate independent arithmetic/math/runtime reviews are retained.",
+    "new_training": false,
+    "original_analysis_sha256": "82c773d6d289477fbb723969d5169cc507d193aa3c3413f06266ddab927931ad",
+    "original_evidence_commit": "a0de582931981b3742433475ecf5565409854a5c",
+    "passed": true,
+    "replay_analysis_sha256": "4c627e0f1afc77a96f7699e15c76b208914710863af97f2098ea53ae735a87a8"
+  },
+  "schema": "hcsn-hosted-runner-stage.v1",
+  "stage_wall_seconds": 5.2482500029982475,
+  "subprocesses": [
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_free_boundary_v1.archive",
+        "restore",
+        "--manifest",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/artifacts/hosted002/hosted_attempt.json",
+        "--destination",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results"
+      ],
+      "complete_child_cpu_seconds": 1.6224109999999998,
+      "cwd": "/workspace/scratch/af4384a0a49b/hepta-hcsn",
+      "ended_utc": "2026-10-30T13:29:13.800593+00:00",
+      "exit_code": 0,
+      "log": "experiments/hcsn_conservative_acceleration_v1/results/local_evidence_replay001/restore_archive.log",
+      "name": "restore_archive",
+      "peak_rss_bytes": 31318016,
+      "process_created": true,
+      "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+      "started_utc": "2026-10-30T13:29:12.103260+00:00",
+      "system_cpu_seconds": 0.36724399999999996,
+      "user_cpu_seconds": 1.255167,
+      "wall_seconds": 1.6973476840030344
+    },
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.analyze",
+        "--protocol",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+        "--study",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted",
+        "--output",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results/local_analysis_replay001"
+      ],
+      "complete_child_cpu_seconds": 3.413953,
+      "cwd": "/workspace/scratch/af4384a0a49b/hepta-hcsn",
+      "ended_utc": "2026-10-30T13:29:17.342040+00:00",
+      "exit_code": 0,
+      "log": "experiments/hcsn_conservative_acceleration_v1/results/local_evidence_replay001/analyze.log",
+      "name": "analyze",
+      "peak_rss_bytes": 345026560,
+      "process_created": true,
+      "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+      "started_utc": "2026-10-30T13:29:13.801046+00:00",
+      "system_cpu_seconds": 0.322421,
+      "user_cpu_seconds": 3.091532,
+      "wall_seconds": 3.5410207050008466
+    }
+  ],
+  "utc": "2026-10-30T13:29:17.351026+00:00"
+}

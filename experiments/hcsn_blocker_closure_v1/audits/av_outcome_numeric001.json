@@ -1,0 +1,43 @@
+{
+  "audit_sha256": "e1f8ed5bb788fc2b85510751581e303215c33139ddaae7d55adeecf6f85fc991",
+  "completed_run_receipt_sha256": "079a70c400d16b49a37a261d57197eb761e291cdb3c642fa096ba87812e49bce",
+  "confidence_bin_disagreements": 0,
+  "diagnostic_complete": true,
+  "files": 260,
+  "files_shards": [
+    {
+      "bytes": 78528,
+      "file": "av_outcome_numeric001_files_000.json",
+      "rows": 80,
+      "sha256": "44913bd82ad67d89987a250b8c6ccb32206c5836b7a087cae9c6277ecefab897"
+    },
+    {
+      "bytes": 78423,
+      "file": "av_outcome_numeric001_files_001.json",
+      "rows": 80,
+      "sha256": "f4135fa9d17390aab50b0c22ffc947ea401a59d6fb6cfa1ca2cb478ccda65189"
+    },
+    {
+      "bytes": 78152,
+      "file": "av_outcome_numeric001_files_002.json",
+      "rows": 80,
+      "sha256": "bf9a55c0bd025b9f3fcffe803dce1567e0d5f894f71a615fc2a8e4be718efc7e"
+    },
+    {
+      "bytes": 19552,
+      "file": "av_outcome_numeric001_files_003.json",
+      "rows": 20,
+      "sha256": "af31fc09fc3b2f111747cdb430d3e2e17495dfd9883f4875549dad1bb0b0d644"
+    }
+  ],
+  "identity_confirmed": true,
+  "labels_or_quality_metrics_computed": false,
+  "numpy": "2.3.5",
+  "predictions_per_channel": 41280,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "raw_logit_vs_probability_argmax_disagreements": 0,
+  "schema": "hcsn-av-floating-point-equivalence.v1",
+  "scientific_gate_or_metric_changed": false,
+  "scope": "Numerical method equivalence on already-audited logits only. Frozen classification uses probability argmax; frozen actor matrices use raw-logit argmax. Preserve and explain any discrepancy; do not silently relabel scientific outcomes.",
+  "source_sha256": "b6133704024e3fbf31e2cf5d99572a1579a96e6079ae13e84ade2d1fe441b026"
+}

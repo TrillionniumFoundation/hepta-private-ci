@@ -1,0 +1,267 @@
+{
+  "archive_verification": {
+    "archive_sha256": "0a320b3d74ecb2db9081d6bba22e37a9f858a35e12d5cb39b72b9017a935cd49",
+    "compressed_bytes": 47241400,
+    "member_bytes": 92562087,
+    "member_errors": [],
+    "members": 1289,
+    "part_count": 145,
+    "part_errors": [],
+    "scientific_sources_verified": 124
+  },
+  "checks": [
+    {
+      "name": "original_analysis_matches_immutable_fetched_sha",
+      "passed": true
+    },
+    {
+      "name": "receipt_original_sha_matches",
+      "passed": true
+    },
+    {
+      "name": "receipt_replay_sha_matches",
+      "passed": true
+    },
+    {
+      "name": "receipt_immutable_commit_matches",
+      "passed": true
+    },
+    {
+      "name": "no_training",
+      "passed": true
+    },
+    {
+      "name": "replay_receipt_passed",
+      "passed": true
+    },
+    {
+      "detail": [
+        {
+          "original": 3.032535611,
+          "path": "/separate_costs/analysis_cpu_seconds",
+          "replay": 2.7211405269999998
+        },
+        {
+          "original": 3.0331562579999627,
+          "path": "/separate_costs/analysis_wall_seconds",
+          "replay": 2.8362964040024963
+        }
+      ],
+      "name": "exactly_allowed_two_paths_changed",
+      "passed": true
+    },
+    {
+      "name": "all_other_fields_exactly_equal",
+      "passed": true
+    },
+    {
+      "name": "protocol_sha_bound",
+      "passed": true
+    },
+    {
+      "name": "all70_raw_audits_passed",
+      "passed": true
+    },
+    {
+      "name": "complete70_and_no_errors",
+      "passed": true
+    },
+    {
+      "name": "fixed_fidelity_and_engineering_gates_unchanged",
+      "passed": true
+    },
+    {
+      "name": "report_markdown_byte_identical",
+      "passed": true
+    },
+    {
+      "detail": {
+        "errors": [],
+        "parts": 145
+      },
+      "name": "all145_archive_parts_verified",
+      "passed": true
+    },
+    {
+      "name": "concatenated_archive_sha_and_size_match",
+      "passed": true
+    },
+    {
+      "detail": {
+        "errors": [],
+        "members": 1289
+      },
+      "name": "all1289_restored_members_verified",
+      "passed": true
+    },
+    {
+      "name": "uncompressed_member_byte_count_matches",
+      "passed": true
+    },
+    {
+      "name": "receipt_restore_counts_match",
+      "passed": true
+    },
+    {
+      "detail": {
+        "errors": []
+      },
+      "name": "all124_frozen_scientific_sources_match",
+      "passed": true
+    },
+    {
+      "name": "only_restore_and_frozen_analyzer_children",
+      "passed": true
+    },
+    {
+      "name": "both_children_successfully_waited",
+      "passed": true
+    },
+    {
+      "name": "replay_child_cost_sum_exact",
+      "passed": true
+    },
+    {
+      "name": "replay_cost_receipts_self_consistent",
+      "passed": true
+    },
+    {
+      "name": "analyzer_command_is_frozen_module",
+      "passed": true
+    },
+    {
+      "name": "previous_independent_arithmetic_audit_passed",
+      "passed": true
+    }
+  ],
+  "claim_review": [
+    {
+      "avoid": "Do not call the frozen-analyzer replay a second independently implemented tensor analyzer or a new training replication. The independent arithmetic audit is a separate piece of evidence.",
+      "topic": "What was reproduced",
+      "valid": "145 archived parts and 1289 restored members were independently byte-checked; a local rerun of the same frozen analyzer reproduces every scientific field exactly."
+    },
+    {
+      "avoid": "Do not call the larger figure end-to-end inference, hardware energy, GPU, Transformer-relative or universal SNN speedup. Training-clock scope also includes registered gradient/probability checks.",
+      "topic": "Engineering speed ratio",
+      "valid": "Six fixed-update HCSN pairs show geometric training-clock speedup 1.9875431205 and whole-worker speedup 1.7430324100 on this CPU environment, with registered trajectory fidelity."
+    },
+    {
+      "avoid": "Do not imply exactly equal whole-worker CPU. Validation, serialization, imports and setup are outside this training clock and separately measured; maximum training overrun is 0.383314056 seconds.",
+      "topic": "Meaning of equal CPU",
+      "valid": "The 30-second clock covers minibatch sampling, forward/backward, finite/probability/gradient auditing, clipping and optimizer; final whole-update overrun is charged."
+    },
+    {
+      "avoid": "Do not treat tokens, 70 jobs, six task-seed pairs, or observed checkpoints as 70 independent replicates. No confirmatory significance or statistical equivalence claim; shared test examples and three seeds limit generalization.",
+      "topic": "Seed sample size and uncertainty",
+      "valid": "Primary means, sample SD and paired Student-t intervals describe three initialization/minibatch seeds conditional on the registered data split."
+    },
+    {
+      "avoid": "Do not describe these as newly unseen test examples or fresh confirmatory holdout. README fresh-seed language refers to the initial registered seed choice, not new test independence in the hosted rerun.",
+      "topic": "Test reuse",
+      "valid": "All 70 hosted jobs were rerun, with no old-row substitution. This is an engineering replication after seven earlier local jobs already evaluated heldout data; CREMA-D heldout was observed earlier too."
+    },
+    {
+      "avoid": "Do not conflate best validation checkpoint with the final 32-update tensor or claim bitwise equality where the registered test is numerical tolerance.",
+      "topic": "Fixed-update versus selected quality",
+      "valid": "Full 32-update parameter and loss paths are the fidelity comparison. Validation-selected checkpoint test quality is a separate outcome."
+    },
+    {
+      "avoid": "Do not report a matched-quality external speed advantage, or conclude universal architecture inferiority. The common learning rate, small models, length32 tasks and short budget do not optimize each architecture.",
+      "topic": "External baselines and quality gates",
+      "valid": "Zero of 18 prespecified external quality-conditioned comparisons qualifies. At equal training CPU, accelerated HCSN remains behind the strongest registered control on both primary tasks."
+    },
+    {
+      "avoid": "Do not mislabel percentage-point gains as relative percentages or independent new-model quality gains. Both backends have identical trainable parameterization; extra completed updates are the engineering mechanism.",
+      "topic": "Accuracy increments",
+      "valid": "Copy and MQAR paired mean gains over HCSN reference are 13.73697917 and 16.89453125 percentage points at the fixed training-CPU budget."
+    },
+    {
+      "avoid": "Do not infer general multimodal representation superiority, media decoding throughput, full-modality foundation-model ability or confidence intervals from these single-seed panels.",
+      "topic": "Supplementary panels",
+      "valid": "Irregular timing and CREMA-D are one-seed,16-update descriptive panels. CREMA-D uses fixed offline features, an already observed actor split and arithmetic late fusion."
+    },
+    {
+      "avoid": "Do not add nested worker CPU, training clocks, analyzer-body clocks or native subprocess subtotals again. Unknown installation, publication-network and development costs stay unknown, not zero.",
+      "topic": "Nonoverlapping cost accounting",
+      "valid": "Choose the outer wait4 stage level plus that stage coordinator. Preserve earlier failed jobs and new replay costs separately. Replay is 5.047765481 CPU seconds; original hosted three-stage cost is unchanged."
+    },
+    {
+      "avoid": "Do not turn classification gradients or native KEEP/STOP behavior into proof that the free boundary solves the task-optimal classification QVI.",
+      "topic": "Causal/mechanistic scope",
+      "valid": "The audit establishes reproducible computation and measured implementation acceleration. The affine regenerative stopping reward remains the registered local surrogate."
+    }
+  ],
+  "comparison": {
+    "all_differences": [
+      {
+        "original": 3.032535611,
+        "path": "/separate_costs/analysis_cpu_seconds",
+        "replay": 2.7211405269999998
+      },
+      {
+        "original": 3.0331562579999627,
+        "path": "/separate_costs/analysis_wall_seconds",
+        "replay": 2.8362964040024963
+      }
+    ],
+    "excluded_paths_only": [
+      "/separate_costs/analysis_cpu_seconds",
+      "/separate_costs/analysis_wall_seconds"
+    ],
+    "no_tolerance_used_for_nonexcluded_fields": true,
+    "original_sha256": "82c773d6d289477fbb723969d5169cc507d193aa3c3413f06266ddab927931ad",
+    "other_fields_equal": true,
+    "replay_sha256": "4c627e0f1afc77a96f7699e15c76b208914710863af97f2098ea53ae735a87a8"
+  },
+  "costs": {
+    "all_development_environment_installation_publication_network_cpu_seconds": null,
+    "frozen_analysis_whole_child_cpu_seconds": 3.413953,
+    "original_hosted_stages_cpu_seconds_unchanged": 1450.629779925,
+    "original_hosted_stages_plus_packaging_cpu_seconds_unchanged": 1484.0044697570002,
+    "prior_failed_cohort_cpu_seconds_retained_separately": 128.032042,
+    "replay_coordinator_self_cpu_seconds": 0.011401481000000005,
+    "replay_internal_analysis_body_cpu_seconds_not_additive": 2.7211405269999998,
+    "replay_nonoverlapping_stage_cpu_seconds": 5.047765481,
+    "replay_wall_seconds": 5.2482500029982475,
+    "restore_archive_whole_child_cpu_seconds": 1.6224109999999998
+  },
+  "evidence_commit": "a0de582931981b3742433475ecf5565409854a5c",
+  "method": "Stdlib independent recursive JSON comparison and byte hashing. The replay itself invokes the unchanged original analyzer; this review does not import it, train, select a new checkpoint, adjust a gate or alter scientific files.",
+  "passed": true,
+  "schema": "hcsn-final-statistical-replay-independent-audit.v1",
+  "source_files": [
+    {
+      "bytes": 111302,
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted_analysis/ANALYSIS.json",
+      "sha256": "82c773d6d289477fbb723969d5169cc507d193aa3c3413f06266ddab927931ad"
+    },
+    {
+      "bytes": 111309,
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/local_analysis_replay001/ANALYSIS.json",
+      "sha256": "4c627e0f1afc77a96f7699e15c76b208914710863af97f2098ea53ae735a87a8"
+    },
+    {
+      "bytes": 3874,
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/local_evidence_replay001/RUNNER_REPLAY_RESULT.json",
+      "sha256": "86841c04d39b4e546b22307db47135191953e34b4d217210b189e08940a04483"
+    },
+    {
+      "bytes": 302340,
+      "path": "experiments/hcsn_conservative_acceleration_v1/artifacts/hosted002/hosted_attempt.json",
+      "sha256": "c6bd3b6ec41d8849b5ba2cc3f7990f85516fc12dfed4e3d09cf0e09f1ff4f8c2"
+    },
+    {
+      "bytes": 39732,
+      "path": "experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+      "sha256": "e3b17755e4c2cd8bf11457f2d39732e1bb10868f2c7a4ac0e703bcc1027c8dbb"
+    },
+    {
+      "bytes": 195087,
+      "path": "experiments/hcsn_conservative_acceleration_v1/reports/HOSTED_COMPARISON_AUDIT.json",
+      "sha256": "998dce440f9fc4c632fd69e9e17cfb089ea1e6aa522844b413f29ad71e2d9b11"
+    }
+  ],
+  "statistical_and_cost_verdict": "Reproducible engineering acceleration supported. No external quality-qualified speed win, fresh-holdout confirmation, multimodal foundation-model advantage, energy claim or task-optimal-boundary claim.",
+  "this_readonly_audit_process_cpu_seconds": 0.42375356599999997,
+  "utc": "2026-10-30T13:35:36.752010+00:00"
+}

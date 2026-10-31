@@ -1,0 +1,171 @@
+{
+  "conclusion": "This bounded discovery found a pre-existing GPU-named self-hosted desktop configuration, but did not establish an available or already authorized GPU/energy execution path for the current research branch. Inventory and current device/energy capability remain unknown, not absent.",
+  "configuration_evidence": [
+    {
+      "bytes": 3346,
+      "exact_git_blob_verified": true,
+      "git_blob_sha1": "09d77076acd3a231a3b0245bc946349d7cff2188",
+      "repository_path": ".github/workflows/self-hosted-fleet-availability.yml",
+      "retained_file": "hardware_source/self-hosted-fleet-availability.yml",
+      "retained_sha256": "25de5bf36e21d196a6ea222a2a84d91cd225be53635ee5ed72bf48b8f9ddd084",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e98e55c3b7ec561b7c5f30541f4491eeedc3e73/.github/workflows/self-hosted-fleet-availability.yml"
+    },
+    {
+      "bytes": 1686,
+      "exact_git_blob_verified": true,
+      "git_blob_sha1": "54fef7f63726fd870974223b2205b73664995f24",
+      "repository_path": ".github/workflows/self-hosted-desktop-availability.yml",
+      "retained_file": "hardware_source/self-hosted-desktop-availability.yml",
+      "retained_sha256": "228d2c0cf5c87ff7ae791a6b22a93e8dfbe7849caa5d9a0c10efcb7b2cde8606",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e98e55c3b7ec561b7c5f30541f4491eeedc3e73/.github/workflows/self-hosted-desktop-availability.yml"
+    },
+    {
+      "bytes": 5914,
+      "exact_git_blob_verified": true,
+      "git_blob_sha1": "9785aee37cd1f7ad1316873df2cf3fddcd0791ac",
+      "repository_path": ".github/workflows/hcsn-blocker-av-training.yml",
+      "retained_file": "hardware_source/hcsn-blocker-av-training.yml",
+      "retained_sha256": "0101143adae21eaa9e097cd0240ba3e20e4983f1cd72380004243aaaab2b6a57",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e98e55c3b7ec561b7c5f30541f4491eeedc3e73/.github/workflows/hcsn-blocker-av-training.yml"
+    },
+    {
+      "bytes": 5853,
+      "exact_git_blob_verified": true,
+      "git_blob_sha1": "6cfa0966debf84c4ec1375f27e94adafd4a50378",
+      "repository_path": ".github/workflows/hcsn-blocker-hosted.yml",
+      "retained_file": "hardware_source/hcsn-blocker-hosted.yml",
+      "retained_sha256": "55a64c064009762c8433373aa93d9f7b0a4c2076ce3b88446dd6362e2c02dce5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e98e55c3b7ec561b7c5f30541f4491eeedc3e73/.github/workflows/hcsn-blocker-hosted.yml"
+    },
+    {
+      "bytes": 10196,
+      "exact_git_blob_verified": true,
+      "git_blob_sha1": "612b8821d7ff64fb547017845dbed540f838f868",
+      "repository_path": ".github/workflows/hepta-converged-learning.yml",
+      "retained_file": "hardware_source/hepta-converged-learning.yml",
+      "retained_sha256": "036a29631f8ed4a508085deed537ebd105ce6f2487b429760efd1ccce2c9c88f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e98e55c3b7ec561b7c5f30541f4491eeedc3e73/.github/workflows/hepta-converged-learning.yml"
+    }
+  ],
+  "current_research_lanes": {
+    "energy_measurement_configured": false,
+    "gpu_execution_configured": false,
+    "hcsn_av_training": {
+      "cpu_quota": 4,
+      "memory_gib": 8,
+      "runner": "ubuntu-24.04",
+      "torch": "2.8.0 CPU wheel"
+    },
+    "hcsn_blocker_hosted": {
+      "cpu_quota": 4,
+      "memory_gib": 8,
+      "runner": "ubuntu-24.04",
+      "torch": "2.8.0 CPU wheel"
+    }
+  },
+  "energy": {
+    "current_remote_counter_availability": null,
+    "measured_remote_joules": null,
+    "readable_hardware_energy_counter_established": false,
+    "reason": "None of the inspected workflow configurations measures a hardware energy counter. A GPU-named group or conditional GPU-name command does not prove Joule telemetry or permission to read it."
+  },
+  "gpu_candidate": {
+    "actual_gpu_device": null,
+    "configuration_exists": true,
+    "current_group_access": null,
+    "current_online_status": null,
+    "expected_runner_name": "desktop",
+    "guarded_ref": "refs/heads/main",
+    "interpretation": "A configured GPU-named desktop lane exists, but the conditional probe does not establish a GPU device or current availability. Its visible guards restrict this probe to manual main-branch execution; no research-branch GPU training lane has been established.",
+    "labels": [
+      "self-hosted",
+      "linux",
+      "x64"
+    ],
+    "probe": "Conditional nvidia-smi --query-gpu=name --format=csv,noheader",
+    "research_branch_execution_proven": false,
+    "runner_group": "trillionnium-android-gpu",
+    "trigger": "workflow_dispatch",
+    "workflow": ".github/workflows/self-hosted-desktop-availability.yml"
+  },
+  "method": "Bounded read-only GitHub metadata plus five exact-head workflow configurations; no remote execution",
+  "mutations": {
+    "configuration_changed": false,
+    "paid_hardware_started": false,
+    "provisioned": false,
+    "runner_labels_changed": false,
+    "workflow_dispatched": false
+  },
+  "observed_utc": "2026-10-31 02:18:30 UTC",
+  "organization_runner_inventory": {
+    "attempted": false,
+    "reason": "No runner-inventory tool is exposed; the connector documents organization endpoint families as unsupported. No alternative credentials or endpoint bypass was attempted.",
+    "status": "unknown_not_supported_by_available_connector"
+  },
+  "other_visible_self_hosted_candidates": [
+    {
+      "guarded_ref": "refs/heads/main",
+      "labels": [
+        "self-hosted",
+        "linux",
+        "x64",
+        "rog"
+      ],
+      "name": "rog"
+    },
+    {
+      "guarded_ref": "refs/heads/main",
+      "labels": [
+        "self-hosted",
+        "linux",
+        "x64",
+        "pocket4"
+      ],
+      "name": "pocket4"
+    },
+    {
+      "guarded_ref": "refs/heads/main",
+      "labels": [
+        "self-hosted",
+        "macOS",
+        "ARM64",
+        "macbook"
+      ],
+      "name": "macbook-pro"
+    }
+  ],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_runner_inventory": {
+    "error": {
+      "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "error_interpretation": "The connector rejected the endpoint with HTTP400 INVALID_ARGUMENT before returning a runner inventory. This is not a zero-runner result and not a verified GitHub server permission denial.",
+    "request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runners?per_page=100",
+    "status": "unknown_endpoint_unsupported"
+  },
+  "repository_visibility": "public",
+  "schema": "hcsn-research-hardware-availability.v1",
+  "scope_limit": "Only the requested repository, its exact-head workflow directory, five selected configurations, and two targeted probe-history URLs were inspected. No broad organization/repository scan, waits, hardware provisioning, or training-output access occurred.",
+  "source_head": "1e98e55c3b7ec561b7c5f30541f4491eeedc3e73",
+  "status_timestamp_scope": "Recorded at the end of one bounded metadata/configuration read pass; queued and pending statuses are observations, not guarantees of later state.",
+  "targeted_completed_probe_history": {
+    "requests": [
+      {
+        "error": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/self-hosted-desktop-availability.yml/runs?status=completed&per_page=1"
+      },
+      {
+        "error": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/self-hosted-fleet-availability.yml/runs?status=completed&per_page=1"
+      }
+    ],
+    "status": "unknown_endpoint_unsupported"
+  }
+}

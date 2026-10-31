@@ -1,0 +1,146 @@
+{
+  "schema": "hcsn-aborted-shared-data-identity.v1",
+  "passed": true,
+  "files": 22,
+  "total_bytes": 22729860,
+  "original_local_files_read": true,
+  "hosted_raw_arrays_downloaded_by_this_audit": false,
+  "scope": "Independently hash all22 original local files and compare with each member identity in the published hosted archive manifest. The hosted packaging code generated and verified source/member hashes, and its publisher verified every compressed archive part before committing. This audit itself has not independently decompressed the new hosted archive.",
+  "evidence_commit": "a0de582931981b3742433475ecf5565409854a5c",
+  "hosted_archive_manifest_sha256": "c6bd3b6ec41d8849b5ba2cc3f7990f85516fc12dfed4e3d09cf0e09f1ff4f8c2",
+  "hosted_archive_sha256": "0a320b3d74ecb2db9081d6bba22e37a9f858a35e12d5cb39b72b9017a935cd49",
+  "members": [
+    {
+      "original_path": "data/cremad/SOURCE_DATASET.json",
+      "published_hosted_member": "comparison002_hosted/data/cremad/SOURCE_DATASET.json",
+      "bytes": 1886,
+      "sha256": "858890284600dba4897f1eab7bb8668706185d9bf567199e6ea902f10dd02cbc"
+    },
+    {
+      "original_path": "data/cremad/test.npz",
+      "published_hosted_member": "comparison002_hosted/data/cremad/test.npz",
+      "bytes": 3596130,
+      "sha256": "5d041d12b134ab31586d9dc768b8e6d3dec391ab373f6b1c88d11d25739d86d7"
+    },
+    {
+      "original_path": "data/cremad/train.npz",
+      "published_hosted_member": "comparison002_hosted/data/cremad/train.npz",
+      "bytes": 14384278,
+      "sha256": "f4074f14b5d46702cb8ae293a7d6c974b9576f651377e85836566f154eac4a33"
+    },
+    {
+      "original_path": "data/cremad/val.npz",
+      "published_hosted_member": "comparison002_hosted/data/cremad/val.npz",
+      "bytes": 3600317,
+      "sha256": "1c2206425d32e4166d4cd44a2b5d3199e4a5da50c1258e405a62ad84e31be906"
+    },
+    {
+      "original_path": "data/irregular/test.json",
+      "published_hosted_member": "comparison002_hosted/data/irregular/test.json",
+      "bytes": 9512,
+      "sha256": "9fe8a666d5ce95e2d6fd563b84f8d777d22acf066af777d481ada5ee76ad0768"
+    },
+    {
+      "original_path": "data/irregular/test.npz",
+      "published_hosted_member": "comparison002_hosted/data/irregular/test.npz",
+      "bytes": 74654,
+      "sha256": "ef7f2e7bf205220410ba54313e49736a2324d0fa8283893483da8544fb71db40"
+    },
+    {
+      "original_path": "data/irregular/train.json",
+      "published_hosted_member": "comparison002_hosted/data/irregular/train.json",
+      "bytes": 38977,
+      "sha256": "1e4fa0ea59aee40f4541fadbfb5e4d762f188cb2b7d249d890571f7779e3f604"
+    },
+    {
+      "original_path": "data/irregular/train.npz",
+      "published_hosted_member": "comparison002_hosted/data/irregular/train.npz",
+      "bytes": 296796,
+      "sha256": "ad86e3e146a9611bba2a5c14822c926f9a2ec273226fe0d9eef688f997685172"
+    },
+    {
+      "original_path": "data/irregular/val.json",
+      "published_hosted_member": "comparison002_hosted/data/irregular/val.json",
+      "bytes": 4648,
+      "sha256": "a1afd15cd58f7a078b02d1ea4994437f900710e0b7b3a652c9f9549bc7f8e576"
+    },
+    {
+      "original_path": "data/irregular/val.npz",
+      "published_hosted_member": "comparison002_hosted/data/irregular/val.npz",
+      "bytes": 37689,
+      "sha256": "152907f51df008198539af3d5cf17e4260ce4ce1af6ccb77d4cf5b4147817e93"
+    },
+    {
+      "original_path": "data/mqar/test.json",
+      "published_hosted_member": "comparison002_hosted/data/mqar/test.json",
+      "bytes": 8228,
+      "sha256": "5d3287f939a101e6f258bee5dc93222ae1030f879dff1f5f748a6994b6015b29"
+    },
+    {
+      "original_path": "data/mqar/test.npz",
+      "published_hosted_member": "comparison002_hosted/data/mqar/test.npz",
+      "bytes": 55688,
+      "sha256": "02b75e8e0dd07a5d34921b8ddd853ac9652afdeb2b1d03cc4087e8a3c8dfd816"
+    },
+    {
+      "original_path": "data/mqar/train.json",
+      "published_hosted_member": "comparison002_hosted/data/mqar/train.json",
+      "bytes": 33852,
+      "sha256": "06c24934db6ff2e6f6a8198b937c79af0fbbfe8d770735e8d7636a7247fdf0d5"
+    },
+    {
+      "original_path": "data/mqar/train.npz",
+      "published_hosted_member": "comparison002_hosted/data/mqar/train.npz",
+      "bytes": 219971,
+      "sha256": "649154e7d641b5f66d5a41abf4024dd96c5967530aeee69995844913da85efe4"
+    },
+    {
+      "original_path": "data/mqar/val.json",
+      "published_hosted_member": "comparison002_hosted/data/mqar/val.json",
+      "bytes": 4003,
+      "sha256": "c86914ba6c245c84142120327e17cccc83e5850c6cfe3be67e42e5d9643421e8"
+    },
+    {
+      "original_path": "data/mqar/val.npz",
+      "published_hosted_member": "comparison002_hosted/data/mqar/val.npz",
+      "bytes": 28191,
+      "sha256": "365f0705828bfcfc1684ad69629f69dfa64f05fd1409d728f5057005030ac535"
+    },
+    {
+      "original_path": "data/selective_copy/test.json",
+      "published_hosted_member": "comparison002_hosted/data/selective_copy/test.json",
+      "bytes": 10794,
+      "sha256": "7ef3518f676f52bf6230be7ee5215fdf9f14cac36779a68e257fb91bafa6bbaf"
+    },
+    {
+      "original_path": "data/selective_copy/test.npz",
+      "published_hosted_member": "comparison002_hosted/data/selective_copy/test.npz",
+      "bytes": 50295,
+      "sha256": "d73b67d1eae16b19e2cdcdfd1f341d34d70a97d29f370c3f02caa7361a3e59dc"
+    },
+    {
+      "original_path": "data/selective_copy/train.json",
+      "published_hosted_member": "comparison002_hosted/data/selective_copy/train.json",
+      "bytes": 44098,
+      "sha256": "bbf38564fa6bb2e7948a39991793e189a5ba5b832c566ff4fc6c1ff14b9edbbb"
+    },
+    {
+      "original_path": "data/selective_copy/train.npz",
+      "published_hosted_member": "comparison002_hosted/data/selective_copy/train.npz",
+      "bytes": 198953,
+      "sha256": "97677bc1ae129e07a4ab34f32170c50a42527435f64e1fce4224b89b88f6f113"
+    },
+    {
+      "original_path": "data/selective_copy/val.json",
+      "published_hosted_member": "comparison002_hosted/data/selective_copy/val.json",
+      "bytes": 5289,
+      "sha256": "d258e6f980cad1c1c0a04a35340759a2db7a377de1761d9a0c4e70f564ee2264"
+    },
+    {
+      "original_path": "data/selective_copy/val.npz",
+      "published_hosted_member": "comparison002_hosted/data/selective_copy/val.npz",
+      "bytes": 25611,
+      "sha256": "cd63a301dd1b061464c4def32f1b1b5619cb5f296f8c67d6ce8de568bfa6c976"
+    }
+  ]
+}

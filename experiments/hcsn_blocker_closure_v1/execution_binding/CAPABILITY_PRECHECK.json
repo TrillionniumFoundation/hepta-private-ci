@@ -1,0 +1,26 @@
+{
+  "affinity_cpus": 9,
+  "cgroup_limits": {
+    "cpu.max": "800000 100000",
+    "memory.current": "8539209728",
+    "memory.max": "8589934592"
+  },
+  "direct_energy_counter_available": false,
+  "energy_counters": [],
+  "energy_scope": "A readable package counter alone would not isolate this process's energy.",
+  "gpu_experiment_executed": false,
+  "joules_measured": null,
+  "logical_cpus_visible": 9,
+  "machine": "x86_64",
+  "nvidia_devices": [],
+  "nvidia_smi": null,
+  "observed_utc": "2026-10-31T01:55:25.272461+00:00",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "schema": "hcsn-trained-binding-capability-precheck.v1",
+  "scope": "Read-only current local host precheck before trained checkpoint restoration; actual execution records its own HARDWARE.json",
+  "torch_cuda_available": false,
+  "torch_cuda_build": null,
+  "torch_cuda_device_count": 0,
+  "torch_version": "2.8.0+cpu"
+}

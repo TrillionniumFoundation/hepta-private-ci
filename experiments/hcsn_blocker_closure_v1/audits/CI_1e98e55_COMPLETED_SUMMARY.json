@@ -1,0 +1,75 @@
+{
+  "architecture": {
+    "base_merge_lane": "cancelled",
+    "conclusion": "cancelled",
+    "required_aggregate": "failure",
+    "run": 41158990802,
+    "source_head_lane": "cancelled"
+  },
+  "blocking": {
+    "blob_policy": "success",
+    "codespell": "failure",
+    "conclusion": "cancelled",
+    "native_scoped": "cancelled",
+    "prose_scoped": "cancelled",
+    "required_aggregate": "failure",
+    "run": 41158990686,
+    "scope": "cancelled"
+  },
+  "current_head_ci_green_proven": false,
+  "current_head_reported_by_root": "d8b94bd750b4c52bd253b81285acc6c4a2dbeacf",
+  "exact_source_failure": {
+    "additional_spelling_errors": 0,
+    "disposition": "Already corrected in current local source and root checkpoint d8b94bd; original source bytes retained in AUDIT_EDITORIAL_ERRATUM, failed CHECK001 and passing actual Codespell2.4.3 CHECK002. No new edit or rerun by this observer.",
+    "file": "experiments/hcsn_blocker_closure_v1/audits/CONTENT_SOURCE_REVIEW.json",
+    "job": 124412860475,
+    "line": 136,
+    "observed_token_base64": "cGVyc2VlZA==",
+    "replacement": "per seed"
+  },
+  "gate_weakening": false,
+  "head_sha": "1e98e55c3b7ec561b7c5f30541f4491eeedc3e73",
+  "inherited_rust_failures_repaired": false,
+  "observed_by_utc": "2026-10-31T03:04:52+00:00",
+  "raw_log": {
+    "decoded_bytes": 28145,
+    "decoded_sha256": "41f5fe32b2647d1ceb6499e0004aeabbc9c17a10ecbe0687381a0a958cce34a8",
+    "encoded_sha256": "4b9ec7acde03cf2686292cb052b57c04cb0ad98d66a54470ceaaeb604ec3b895",
+    "file": "experiments/hcsn_blocker_closure_v1/audits/CI_1e98e55_CODESPELL_RAW_LOG.base64",
+    "storage": "base64 of exact decoded UTF-8 job log"
+  },
+  "raw_metadata": [
+    {
+      "bytes": 15032,
+      "file": "experiments/hcsn_blocker_closure_v1/audits/CI_1e98e55_COMPLETED_ARCHITECTURE.json",
+      "sha256": "465c5e4b431e01c4180a2bc1d20f43d19c8c4ce7820ac6f15cde207919409c70"
+    },
+    {
+      "bytes": 14988,
+      "file": "experiments/hcsn_blocker_closure_v1/audits/CI_1e98e55_COMPLETED_V8.json",
+      "sha256": "1465aa27360f78938e218083ce37e975720ff2696dd2dfe3e549bc026e45f878"
+    },
+    {
+      "bytes": 16617,
+      "file": "experiments/hcsn_blocker_closure_v1/audits/CI_1e98e55_COMPLETED_BLOCKING.json",
+      "sha256": "daa9adf2ec839bc0a2099270b3751a7a87ed43749bcbb03ee1621a1f04da5412"
+    },
+    {
+      "bytes": 3577,
+      "file": "experiments/hcsn_blocker_closure_v1/audits/CI_1e98e55_COMPLETED_ARCHITECTURE_JOBS.json",
+      "sha256": "d8b9cb77bf78cf852e709bbf5d570353f46fe0ccbb4c853e8006f464bdb4f507"
+    },
+    {
+      "bytes": 15663,
+      "file": "experiments/hcsn_blocker_closure_v1/audits/CI_1e98e55_COMPLETED_BLOCKING_JOBS.json",
+      "sha256": "6ca7e48d36bea15ce5376a68404a0fbe201c30a99052f5df5d302452db75417c"
+    }
+  ],
+  "recorded_utc": "2026-10-31T03:06:38.425440+00:00",
+  "schema": "hcsn-exact-research-head-ci-followup.v1",
+  "scope": "Bounded follow-up of the three previously observed exact-head runs; this older head is not current and was not retried.",
+  "v8": {
+    "conclusion": "success",
+    "run": 41158990673
+  }
+}

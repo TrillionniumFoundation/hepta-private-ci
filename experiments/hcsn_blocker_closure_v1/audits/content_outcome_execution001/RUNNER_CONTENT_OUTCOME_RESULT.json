@@ -1,0 +1,56 @@
+{
+  "accounting": "Direct child receipts are disjoint within this stage. Do not add study worker, optimizer, analysis-body, native or resume subtotals again. Coordinator self CPU excludes children and starts at RunBook creation.",
+  "all_child_costs_known": true,
+  "coordinator_self_cpu_seconds": 0.002334487000000003,
+  "direct_child_cpu_seconds": 0.8700239999999999,
+  "disk": {
+    "free": 985702400,
+    "total": 33770192896,
+    "used": 31049728000
+  },
+  "mode": "content_outcome",
+  "result": {
+    "checks": 5568,
+    "complete": true,
+    "failed_checks": 0,
+    "gate_counts": {
+      "external": 2,
+      "mechanism": 1
+    },
+    "raw_prediction_replay_executed": false,
+    "worker_counts": {
+      "development": 76,
+      "equal_cpu": 64,
+      "fixed": 304
+    }
+  },
+  "schema": "hcsn-hosted-runner-stage.v1",
+  "stage_wall_seconds": 0.9976253049972001,
+  "subprocesses": [
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_blocker_closure_v1.audits.content_outcome_audit",
+        "--root",
+        "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/content/results/hosted001",
+        "--output",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/content_outcome_001.json"
+      ],
+      "complete_child_cpu_seconds": 0.8700239999999999,
+      "cwd": "/workspace/scratch/af4384a0a49b/hepta-hcsn",
+      "ended_utc": "2026-10-31T04:09:32.870904+00:00",
+      "exit_code": 0,
+      "log": "experiments/hcsn_blocker_closure_v1/audits/content_outcome_execution001/audit.log",
+      "name": "audit",
+      "peak_rss_bytes": 96968704,
+      "process_created": true,
+      "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+      "started_utc": "2026-10-31T04:09:31.874981+00:00",
+      "system_cpu_seconds": 0.10298099999999999,
+      "user_cpu_seconds": 0.7670429999999999,
+      "wall_seconds": 0.9959207689971663
+    }
+  ],
+  "utc": "2026-10-31T04:09:32.872176+00:00"
+}

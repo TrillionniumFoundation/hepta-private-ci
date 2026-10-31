@@ -1,0 +1,161 @@
+{
+  "schema": "hcsn-blocker-real-av-design.v1",
+  "status": "design-before-model-outcomes",
+  "models": [
+    "value_jg",
+    "two_gates",
+    "transformer",
+    "lif_snn",
+    "mamba1"
+  ],
+  "input_dimension_per_modality": 128,
+  "embedding_dimension": 32,
+  "classes": 6,
+  "width": 32,
+  "depth": 1,
+  "sequence_length": 32,
+  "batch_size": 16,
+  "development_seed": 882001,
+  "formal_seeds": [
+    882101,
+    882102,
+    882103,
+    882104,
+    882105,
+    882106,
+    882107,
+    882108
+  ],
+  "learning_rates": [
+    0.001,
+    0.003
+  ],
+  "development_updates": 96,
+  "formal_updates": 256,
+  "equal_cpu_seconds": 60.0,
+  "equal_cpu_enabled": true,
+  "expected_jobs": {
+    "development": 10,
+    "fixed": 40,
+    "equal_cpu": 40
+  },
+  "optimizer": {
+    "name": "Adam",
+    "gradient_clip_norm": 2.0,
+    "weight_decay": 0.0
+  },
+  "objective": {
+    "formula": "CE((head(audio_embedding)+head(video_embedding))/2,y) + .25*(CE(audio_logits,y)+CE(video_logits,y)) + .5*symmetric_InfoNCE",
+    "temperature": 0.1,
+    "symmetric_InfoNCE": "Mean of row-wise and column-wise in-batch cross-entropy on cosine similarities, with the paired recording on the diagonal",
+    "classification_embeddings": "Unnormalized final-token 32-dimensional outputs; a single learned Linear(32,6) head is shared across modalities",
+    "contrastive_embeddings": "L2-normalized with eps=1e-12",
+    "batch_sampling": "Same seeded with-replacement clip indices across models; repeated clips can create contrastive false negatives, identically for every model"
+  },
+  "initialization": {
+    "audio_seed_offset": 710003,
+    "video_seed_offset": 720003,
+    "head_seed_offset": 730003,
+    "batch_seed_offset": 270003,
+    "shared_components": "Both modality frontends, both modality output projections and the shared classification head have identical initial tensors across model families for each paired seed",
+    "parameter_matching": "Both backbones together must have max-minus-min parameter gap no larger than 3% of maximum. All parameters are active; no padding. Resident and trainable totals, each modality and head are reported separately. Same data, dt, optimizer, tuning count, contrastive negatives and evaluation suite."
+  },
+  "cohort": {
+    "plan": "COHORT_PLAN.json",
+    "examples": {
+      "train": 384,
+      "validation": 144,
+      "test": 192
+    },
+    "actors": {
+      "train": 16,
+      "validation": 6,
+      "test": 8
+    },
+    "all_actors_unseen_in_previous_cohort": true,
+    "classes_per_actor": 6,
+    "clips_per_class_per_actor": 4,
+    "normalization": "Training actors only; frozen low-level decoder and separate modality moments",
+    "timing": "Use stored dt unchanged: dt=10*elapsed_seconds per segment; HCSN physical scale0.1 restores seconds. No dt=1 override.",
+    "causality": "Full-clip resampling is offline preprocessing. This experiment is not causal media streaming."
+  },
+  "selection": {
+    "development": "For each model, train both learning rates on training actors only; evaluate validation actors at update48 and96. Select minimum FP64 fused validation cross-entropy, tie by earlier checkpoint then lower learning rate.",
+    "formal_checkpoint": "Train from a fresh paired seed with development-selected LR. Fixed-budget validation at update128 and256; equal-CPU validation at the first complete update crossing30 and60 training CPU seconds. Select minimum FP64 fused validation CE, tie earlier update.",
+    "heldout_guard": "Atomically write and fsync selected checkpoint identity and selection.json before opening test arrays. No test logits, retrieval ranks, calibration or shuffled-pair metrics enter LR/checkpoint selection.",
+    "validation_reuse": "The six validation actors are reused for LR and checkpoint selection; external evaluation remains on eight disjoint test actors. No claim that validation is an independent confirmation set.",
+    "no_reselection": "Freeze all model-specific LR choices before any formal worker accesses test. No seed filtering, test-driven architecture selection, or silent job rerun."
+  },
+  "evaluations": {
+    "classification": [
+      "audio",
+      "video",
+      "fused",
+      "fused_global_derangement",
+      "fused_same_actor_derangement"
+    ],
+    "calibration": [
+      "FP64_cross_entropy",
+      "accuracy",
+      "multiclass_Brier_sum",
+      "10_equal_width_bin_ECE"
+    ],
+    "retrieval": [
+      "audio_to_video_whole_cohort",
+      "video_to_audio_whole_cohort",
+      "audio_to_video_same_actor",
+      "video_to_audio_same_actor"
+    ],
+    "retrieval_metrics": [
+      "recall_at1",
+      "recall_at5",
+      "mean_reciprocal_rank",
+      "median_rank"
+    ],
+    "retrieval_ties": "Higher cosine first; exact ties broken by original frozen row index",
+    "shuffle_rule": "Outcome-independent derangements generated with a fixed seed882901+split_index: permute indices then cyclically rotate. A second derangement rotates independently within each actor. Store exact mappings. Audio labels remain unchanged.",
+    "raw_evidence": "Every validation checkpoint and formal test stores raw modality embeddings, all classification logits, labels, clip and actor identities, global/same-actor retrieval ranks and both derangements. Store selected and final weights, optimizer-free tensor hashes, complete per-update losses/gradients, physical diagnostics and update groups.",
+    "shuffle_interpretation": "Independent encoders and a shared linear mean head are an additive fusion probe. A loss under mispaired modalities measures mispairing sensitivity; it is not by itself evidence of cross-modal synergy or general content understanding."
+  },
+  "primary_statistics": {
+    "endpoint": "Paired difference in actor-balanced test fused accuracy: value_jg minus each of the four controls, separately for fixed updates and equal training CPU",
+    "contrasts": 8,
+    "independent_population_units": "Eight test actors. The 192 clips are not treated as 192 independent people.",
+    "bootstrap": "Crossed resampling: draw eight paired model seeds and eight test actors independently with replacement; compute the paired difference over the crossed seed-by-actor matrix. Keep all clips within a selected actor together.",
+    "bootstrap_replicates": 20000,
+    "bootstrap_seed": 883901,
+    "intervals": "Report ordinary2.5%-97.5% percentile intervals and a one-sided Bonferroni lower percentile at0.05/8 for the predeclared eight positive-benefit contrasts. These are approximate intervals with only eight actors, not exact finite-sample guarantees.",
+    "positive_gate": "All90jobs valid; each model's same-information/parameter contract passes. A contrast needs mean fused-accuracy gain>=.02 and multiplicity-adjusted lower bound>0; mean Brier may not worsen by>.01 and ECE by>.02. A general external-net-benefit claim requires all eight contrasts to pass. Equal-training-CPU evidence alone is not a complete-worker/hardware energy advantage.",
+    "retrieval_and_shuffle": "Secondary descriptive diagnostics. Actor resampling of per-query ranks conditions on the fixed retrieval candidate pool; it does not resample the candidate population. No architecture superiority gate is selected from these outcomes.",
+    "seed_pairing": "Same initialization seeds and batch-index streams across arms for fixed updates. Equal-CPU arms share the same prefix but usually take different numbers of updates."
+  },
+  "costs": {
+    "training_clock": "Complete forward, multi-task objective, backward, finite-gradient/probability audits, gradient clipping and Adam; excludes validation, model construction and checkpoint serialization, which are included in whole-worker cost.",
+    "full_worker": "Exact child PID wait4 CPU and launch-to-exit wall time, including Python imports, data loading, model initialization, train/validation/test, retrieval, checkpoint and evidence writes. Do not add contained training/evaluation clocks again.",
+    "shared_costs": "Acquisition, decoding, normalization, transport restore, registration, hyperparameter search, analysis and packaging remain separate receipts. All failed attempts count; media decoder CPU must not be added twice from nested stage receipts.",
+    "inference": "Selected model, both modalities plus shared head, in-memoryB16T32, one warmup and five repetitions; CPU and wall distributions reported separately from complete request cost.",
+    "energy_joules": null,
+    "gpu_evidence": false
+  },
+  "preflight": "Synthetic audio/video tensors and positive nonconstant dt only; no real cohort array or previous test split is loaded. Verify all five models, finite losses/gradients, actual updates, shared initialization, full-count match, retrieval/tie/derangement contracts and actual elapsed-time propagation before sealing.",
+  "limitations": [
+    "Acted CREMA-D emotion and same-recording alignment on30newactors; not general multimodal language modeling",
+    "Fixed low-level audio/video features and small32-dimensional encoders; no foundation-model scale",
+    "Inherited affine J/G remain a surrogate for the content objective; finite task oracle is a separate result",
+    "Two learning rates and96development updates provide an equal tuning budget, not exhaustive baseline optimization",
+    "Pinned Mamba-1 is a serial CPU reference; no fused CUDA speed or energy comparison",
+    "Eight heldout actors limit population inference even with eight initialization seeds"
+  ],
+  "data_binding": {
+    "commit": "dca9febc8143c682077fe27d40dbeaa1137bcaa4",
+    "transport_path": "experiments/hcsn_blocker_closure_v1/av/transport_41156412198/TRANSPORT.json",
+    "transport_git_blob_sha1": "e760433f55b8488e78a0ff5b97bc34b0d74cfffc",
+    "acquisition_execution_seal": "4ac7583aca2c06187c691ce8e43c5902dd46717d",
+    "dataset_sha256": "2096f8a3da7c5540062506c9a38aa6251ad0a0b103968cc120ba508c8309e051",
+    "rule": "Registration reads the exact transport blob from git show commit:path, verifies its Git blob and every restored file, then retains this proof. No model outcome selected this data evidence."
+  },
+  "integrity_analysis": "Reconstruct every unique stage/model/seed/LR job from this design and the development argmin. Verify every update1..N, finite losses/gradients/probabilities, first complete crossing of the CPU budget, exact midpoint/final validation, selected/final tensor hashes, global LR-lock identity/timestamp, raw logits/ranks/derangements, and actor/clip identity. Loss-component sums use2e-6 relative/absolute tolerance only for float32 arithmetic; FP64 evaluation summaries use2e-10.",
+  "preseal_amendments": [
+    "Independent review added exact committed transport binding, full90job matrix reconstruction, complete-trajectory budget validation and global selection-lock chronology before any real cohort prediction. Synthetic preflight001 remains preserved; source-bound preflight002 follows these repairs."
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "actions_taken": {
+    "logs_fetched": 0,
+    "retries_requested": 0,
+    "source_edits": 0,
+    "workflow_edits": 0
+  },
+  "assessment": "All three current-head workflows were pending or queued in this snapshot. Source-scope, Codespell, and blob-size jobs were queued; none had completed, so there is no current-head pass or failure to attribute. Empty legacy commit-status contexts do not imply green Actions checks.",
+  "bounded_discovery": true,
+  "completed_current_head_jobs": [],
+  "current_head_failure_attributable_to_new_python_or_docs": null,
+  "inherited_failures": {
+    "disposition": "Preserve the earlier Rust/Windows/macOS/cargo-deny diagnosis; do not reclassify it as a failure of these uncompleted current-head Python/docs checks.",
+    "prior_attempt": 2,
+    "prior_blocking_run_id": 41067512322,
+    "prior_diagnosis": "experiments/hcsn_blocker_closure_v1/runtime/CI_DIAGNOSIS.json",
+    "prior_diagnosis_sha256": "f198a77915200078c6f6952aa9a23345270bd6bada3d4443b79bb06b3829c43b"
+  },
+  "legacy_commit_status_contexts": [],
+  "observed_utc": "2026-10-31 02:18:30 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "runs": [
+    {
+      "conclusion": null,
+      "created_at": "2026-10-31T02:13:18Z",
+      "event": "pull_request",
+      "head_sha": "1e98e55c3b7ec561b7c5f30541f4491eeedc3e73",
+      "id": 41158990802,
+      "jobs": [],
+      "name": "Hepta architecture convergence",
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "run_attempt": 1,
+      "status": "pending",
+      "updated_at": "2026-10-31T02:13:19Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41158990802"
+    },
+    {
+      "conclusion": null,
+      "created_at": "2026-10-31T02:13:18Z",
+      "event": "pull_request",
+      "head_sha": "1e98e55c3b7ec561b7c5f30541f4491eeedc3e73",
+      "id": 41158990673,
+      "jobs": [
+        {
+          "conclusion": null,
+          "id": 124412117854,
+          "logs_url": null,
+          "name": "metadata",
+          "run_id": 41158990673,
+          "status": "queued",
+          "steps": null
+        }
+      ],
+      "name": "v8-canary",
+      "path": ".github/workflows/v8-canary.yml",
+      "run_attempt": 1,
+      "status": "pending",
+      "updated_at": "2026-10-31T02:13:19Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41158990673"
+    },
+    {
+      "conclusion": null,
+      "created_at": "2026-10-31T02:13:18Z",
+      "event": "pull_request",
+      "head_sha": "1e98e55c3b7ec561b7c5f30541f4491eeedc3e73",
+      "id": 41158990686,
+      "jobs": [
+        {
+          "conclusion": null,
+          "id": 124412860306,
+          "logs_url": null,
+          "name": "Select blocking CI scope",
+          "run_id": 41158990686,
+          "status": "queued",
+          "steps": null
+        },
+        {
+          "conclusion": null,
+          "id": 124412860475,
+          "logs_url": null,
+          "name": "Codespell / Check for spelling errors",
+          "run_id": 41158990686,
+          "status": "queued",
+          "steps": null
+        },
+        {
+          "conclusion": null,
+          "id": 124412860525,
+          "logs_url": null,
+          "name": "Blob size policy / Blob size policy",
+          "run_id": 41158990686,
+          "status": "queued",
+          "steps": null
+        }
+      ],
+      "name": "blocking-ci",
+      "path": ".github/workflows/blocking-ci.yml",
+      "run_attempt": 1,
+      "status": "queued",
+      "updated_at": "2026-10-31T02:16:27Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41158990686"
+    }
+  ],
+  "schema": "hcsn-current-research-ci-snapshot.v1",
+  "source_head": "1e98e55c3b7ec561b7c5f30541f4491eeedc3e73",
+  "status_timestamp_scope": "Recorded at the end of one bounded metadata/configuration read pass; queued and pending statuses are observations, not guarantees of later state.",
+  "waited_for_completion": false,
+  "workflow_runs_query": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=1e98e55c3b7ec561b7c5f30541f4491eeedc3e73&per_page=100"
+}

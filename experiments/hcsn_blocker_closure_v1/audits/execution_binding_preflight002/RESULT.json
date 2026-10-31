@@ -1,0 +1,111 @@
+{
+  "checks": [
+    {
+      "details": null,
+      "name": "driver_import_without_training_dependencies",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "numeric_state_identical_function_ast",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "read_state_identical_function_ast",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "numeric_state_roundtrip_exact",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "numeric_state_complete",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "serializer_copies_elapsed",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "resumed_synthetic_logits_bitwise_equal",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "resumed_synthetic_full_state_bitwise_equal",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "incomplete_probability_state_rejected",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "synthetic_valid_source_contract_accepted",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "wrong_training_commit_rejected",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "wrong_protocol_sha_rejected",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "changed_complete_design_rejected",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "omitted_source_rejected",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "changed_source_hash_rejected",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "changed_preflight_rejected",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "wrong_selected_weights_pin_rejected_before_execution",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "wrong_fixed_worker_id_rejected_before_execution",
+      "passed": true
+    }
+  ],
+  "cpu_seconds_after_imports": 0.142017842,
+  "does_not_establish": [
+    "trained checkpoint binding",
+    "native resume",
+    "real hardware scaling",
+    "task utility"
+  ],
+  "passed": true,
+  "schema": "hcsn-execution-binding-synthetic-preflight.v1",
+  "scope": "Synthetic initialized model/tensors and synthetic protocol header only; no trained weights, study validation, formal test or OOD data accessed",
+  "source_sha256": {
+    "experiments/hcsn_blocker_closure_v1/audits/execution_binding_preflight.py": "1f3cbe46c9cfeb5fe6de4c143372c95bfd3148a0d90ac734f647a970fccb22b6",
+    "experiments/hcsn_blocker_closure_v1/execution_binding/PROTOCOL.json": "fc5f299ebf43bf97ade4fde9120990a3500a702623e2c6741db354ab1c84a73d",
+    "experiments/hcsn_blocker_closure_v1/execution_binding/driver.py": "35a8eb630b0c8ce1042076c50242ba0617486512deba601a2e94e01aee50944f",
+    "experiments/hcsn_blocker_closure_v1/execution_binding/measure.py": "3b2908d71fcd9a6cfb2abef6cf2095510de7eb41b94874f5fd608dc87d30d3bb",
+    "experiments/hcsn_blocker_closure_v1/execution_binding/state_io.py": "8b4e953b4568ba0c795322d7ac2a6934a05e0f63dfa7928cbfb5f99f02a909e2"
+  }
+}

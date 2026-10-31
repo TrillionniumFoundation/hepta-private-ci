@@ -1,0 +1,31 @@
+{
+  "schema": "hcsn-immutable-evidence-spelling-scope.v1",
+  "failed_commit": "d0ffe51a8d39e7fe5b6657812412e557b26857b5",
+  "failed_run_id": 41066239180,
+  "failed_job_id": 124098266850,
+  "codespell_version": "2.4.3",
+  "total_annotations": 3564,
+  "archive_annotations": 3563,
+  "quoted_upstream_annotations": 1,
+  "annotated_files": 665,
+  "new_code_or_report_annotations": 0,
+  "all_observed_annotations_covered": true,
+  "text_and_source_negative_controls": [
+    "./experiments/hcsn_conservative_acceleration_v1/model.py",
+    "./experiments/hcsn_conservative_acceleration_v1/FINAL_REPORT_ZH.md",
+    "./experiments/hcsn_conservative_acceleration_v1/artifacts/hosted002/hosted_attempt.json",
+    "./experiments/hcsn_conservative_acceleration_v1/artifacts/comparison001_aborted_text/restore.py",
+    "./experiments/hcsn_sixstage_v1/README.md",
+    "./experiments/hcsn_free_boundary_v1/data/README.md"
+  ],
+  "new_patterns": [
+    "./experiments/hcsn_*/artifacts/*.tar.xz.part[0-9][0-9][0-9][0-9]",
+    "./experiments/hcsn_sixstage_v1/transport_objects/*.b64",
+    "./experiments/hcsn_conservative_acceleration_v1/artifacts/comparison001_aborted_text/*.b64",
+    "./experiments/hcsn_free_boundary_v1/data/FSDD_UPSTREAM_README.md"
+  ],
+  "word_ignore_list_unchanged": true,
+  "frozen_source_or_evidence_modified": false,
+  "upstream_original_blob": "46bd0964467843ca17917f63eb0bedd7bfe6a18b",
+  "scope": "Exclude immutable binary/base64 transport and one exact verbatim upstream README from prose spelling. No source, manifest, report, or entire experiment directory excluded. Full hosted spelling rerun is required; this receipt tests path scope using the same fnmatch behavior as codespell v2.4.3 GlobMatch."
+}

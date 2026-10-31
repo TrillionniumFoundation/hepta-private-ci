@@ -1,0 +1,268 @@
+{
+  "case_receipts": [
+    {
+      "path": "partial_union.json",
+      "sha256": "bd69dcc8cd0c19ae9b52551233af2b58eabbb91757910d47031b90a2b35bed9a"
+    },
+    {
+      "path": "identical_reuse.json",
+      "sha256": "c5707b8e9b5a71f62dc6291a0a236f328372dc088ab980a52182d7677d76c7ab"
+    },
+    {
+      "path": "wrong_external_pin.json",
+      "sha256": "2688dcdedd5963c4db4998b49f137d5292b992fb9bf7be0e83344b241fb2fd56"
+    },
+    {
+      "path": "unmatched_pattern.json",
+      "sha256": "cb7081cfe6b3fb0ec61f44c5aee03be00f27fc6b999951c713816aec0ce47b68"
+    },
+    {
+      "path": "different_existing.json",
+      "sha256": "5b60c651b5b07342fb47b497948725e2d276bfb3ab9c313e137ee792123215fb"
+    },
+    {
+      "path": "shard_corruption.json",
+      "sha256": "af5afaa608bee1dc9e5deb88d3c2e42c4de9f931c2a99a0fa674c7e3317caf2e"
+    },
+    {
+      "path": "part_corruption.json",
+      "sha256": "6c71a99b5a9ca87856c00b92e8f7de612b4da9b746366ab68b7611a551427192"
+    },
+    {
+      "path": "unselected_wrong_member_hash.json",
+      "sha256": "950191607a21914a75f4bdcc4ac7b9ea4c2d1f6aeaced28e69725d7bb8874334"
+    },
+    {
+      "path": "duplicate_member.json",
+      "sha256": "f64b16e08cd1ffdf11493e4f2ea172083529979344566efc73c8d347eab523da"
+    },
+    {
+      "path": "unexpected_member.json",
+      "sha256": "8cb724ccd10fbaf3da7bcd409273205157e03cb341dc2a1aba2c7859cdb71ddd"
+    },
+    {
+      "path": "path_traversal.json",
+      "sha256": "4340ef1d13eb037144f8445e92e6ca6b51eb5e80b64ec80db8dfd0a358ee499b"
+    },
+    {
+      "path": "symlink.json",
+      "sha256": "28bd090c920d13fa3228da56d88bea792f587997ffbafb24cf341be7a5efb06d"
+    },
+    {
+      "path": "hardlink.json",
+      "sha256": "bdff5d6ff7e4f9541be50ad193519f0d8ba0f4104613ca51bbfdda99c87c6635"
+    },
+    {
+      "path": "directory.json",
+      "sha256": "afd3f5c9eabf255c0e8f2b047e619ad5ccbda00954dd12fbfe8e7105d9f82302"
+    },
+    {
+      "path": "truncated_tar_payload.json",
+      "sha256": "e4ef3050685a83079aa70d51807f2a2796816a8bb402fd74202b36ffc9376be0"
+    },
+    {
+      "path": "missing_tar_end_markers.json",
+      "sha256": "1ae9920c8cb268b8f0a0a1e11a82be4bd8d60d2ecc73169ab30f7532c1b9448f"
+    },
+    {
+      "path": "truncated_xz_footer.json",
+      "sha256": "4e3dbbd2bd5ae9c9d7213c2080ce94f0ef5a4866b233738b723b58572fde833b"
+    },
+    {
+      "path": "trailing_tar_garbage.json",
+      "sha256": "24c9bea812a76cc7fabb8633c6e4ad5d23eb2d89caae9bff623e29dd6054883f"
+    },
+    {
+      "path": "trailing_compressed_garbage.json",
+      "sha256": "50c8944d21034a5bb96f7657f302cd24efa813886bfb9b2d4e521e727c62548b"
+    },
+    {
+      "path": "symlink_destination.json",
+      "sha256": "aa2a952f168df167a013a084a7361268e388e1775f1768cd9f44733bd3ac3221"
+    },
+    {
+      "path": "parent_traversal_destination.json",
+      "sha256": "19c59fca8251071a3cd755772a922ba0bc2e0f4fdb4c5dec4be0023c1d0574fa"
+    },
+    {
+      "path": "unsafe_declared_member.json",
+      "sha256": "1f263098e8685925458144154d79a42a45681bf67324b4b9e9b1b736d4c69cc8"
+    }
+  ],
+  "checks": [
+    {
+      "details": null,
+      "name": "partial union restores exact requested files",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "all selected and unselected members verified",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "selective status and exact restored byte count",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "selection manifest records actual committed hashes",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "existing identical selection reused without payload copies",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "wrong external INDEX pin rejected",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "unmatched explicit selection rejected",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "different existing file refused and preserved",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "shard_corruption rejected before any restored payload",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "part_corruption rejected before any restored payload",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "Archive member payload hash/length mismatch: unselected.txt",
+        "type": "ValueError"
+      },
+      "name": "unselected_wrong_member_hash rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "Unexpected or duplicate archive member",
+        "type": "ValueError"
+      },
+      "name": "duplicate_member rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "Unexpected or duplicate archive member",
+        "type": "ValueError"
+      },
+      "name": "unexpected_member rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "Noncanonical or escaping member name: ../escape",
+        "type": "ValueError"
+      },
+      "name": "path_traversal rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "Nonregular archive member",
+        "type": "ValueError"
+      },
+      "name": "symlink rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "Nonregular archive member",
+        "type": "ValueError"
+      },
+      "name": "hardlink rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "Nonregular archive member",
+        "type": "ValueError"
+      },
+      "name": "directory rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "unexpected end of data",
+        "type": "ReadError"
+      },
+      "name": "truncated_tar_payload rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "Truncated tar end markers or padding",
+        "type": "ValueError"
+      },
+      "name": "missing_tar_end_markers rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "Truncated XZ stream",
+        "type": "EOFError"
+      },
+      "name": "truncated_xz_footer rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "Invalid tar end marker or nonzero trailing member data",
+        "type": "ValueError"
+      },
+      "name": "trailing_tar_garbage rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": {
+        "message": "Unexpected bytes after the single XZ stream",
+        "type": "ValueError"
+      },
+      "name": "trailing_compressed_garbage rejected with no final-path writes",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "symlinked destination ancestor rejected",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "parent traversal cannot bypass immutable publication exclusion",
+      "passed": true
+    },
+    {
+      "details": null,
+      "name": "unsafe declared member rejected before decompression",
+      "passed": true
+    }
+  ],
+  "checks_passed": 25,
+  "checks_total": 25,
+  "cpu_seconds": 0.106371307,
+  "invocation": "PYTHONDONTWRITEBYTECODE=1 python3 -m experiments.hcsn_blocker_closure_v1.audits.selective_restore_preflight --output /workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/selective_restore_preflight002",
+  "passed": true,
+  "schema": "hcsn-selective-restore-synthetic-preflight.v1",
+  "science_data_opened": false,
+  "source_sha256": {
+    "frozen_archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "selective_restore.py": "403c009571122a3e2538d916404f24cd13012fd0c061e69785d2e814b8557f6d",
+    "selective_restore_preflight.py": "fd7d72d7d81baeeded949164793d6b5a642507119adad5452a6db5fa82c2e835"
+  },
+  "wall_seconds": 0.12505093099025544
+}

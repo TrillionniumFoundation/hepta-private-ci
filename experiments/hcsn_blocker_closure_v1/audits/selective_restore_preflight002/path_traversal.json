@@ -1,0 +1,55 @@
+{
+  "all_members_selected": false,
+  "all_members_verified": false,
+  "canonical_manifest_sha256": "907cfb52b05c5e64cc08e077673eba5caed119ad12c0f67e6730176892e53909",
+  "commit_semantics": "Sequential non-overwriting links after complete verification; a commit-time I/O error can leave an already-verified subset, not an atomic multi-file transaction",
+  "compressed_bytes_verified": 200,
+  "cost_scope": "Internal recovery clocks after imports; includes archive verification and selected writes, before final receipt serialization",
+  "cpu_seconds": 0.0010033090000000078,
+  "declared_member_bytes": 2,
+  "declared_member_files": 2,
+  "destination": "/tmp/hcsn-selective-synthetic-415t_5hg/restored_path_traversal",
+  "error": {
+    "message": "Noncanonical or escaping member name: ../escape",
+    "type": "ValueError"
+  },
+  "existing_identical_bytes": 0,
+  "existing_identical_files": 0,
+  "expected_index_sha256": "4b21ebb67bb5079c7341d269f7b0538530e0bcfe9293f9f554ef9fb2b01c2880",
+  "full_restoration_claim": false,
+  "index": "/tmp/hcsn-selective-synthetic-415t_5hg/path_traversal/INDEX.json",
+  "member_bytes_verified": 2,
+  "member_files_verified": 2,
+  "part_files_verified": 1,
+  "passed": false,
+  "publication_root": "/tmp/hcsn-selective-synthetic-415t_5hg/path_traversal",
+  "restored_bytes": 0,
+  "restored_files": 0,
+  "schema": "hcsn-selective-archive-restore.v1",
+  "scope": "Complete archive/member verification with explicit selective restoration; not a full extraction",
+  "selected_bytes_verified": 1,
+  "selected_declared_bytes": 1,
+  "selected_files": 1,
+  "selection_shards": [
+    {
+      "bytes": 166,
+      "members": 1,
+      "path": "path_traversal_selection_0000.json",
+      "sha256": "1f84a17b8fb539dcc63bd8add0588aed364dca0fdf4d6e1d29f676e5c6ae1ce3"
+    }
+  ],
+  "selectors": {
+    "paths": [
+      "a.txt"
+    ],
+    "patterns": [],
+    "semantics": "Union; fnmatchcase matches entire relative POSIX paths and * can match slash"
+  },
+  "source_sha256": {
+    "frozen_archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "selective_restore.py": "403c009571122a3e2538d916404f24cd13012fd0c061e69785d2e814b8557f6d"
+  },
+  "staged_payload_bytes": 1,
+  "verified_archive_sha256": "63f79ae26de9eec0d44c580a623ea5f550a02b87e74240bb8656dd31216cd525",
+  "wall_seconds": 0.0016894040018087253
+}

@@ -1,0 +1,145 @@
+{
+  "additional_required_repository_files": [
+    "Every file in registered PROTOCOL.json source_sha256",
+    "The registered preflight at PROTOCOL.json preflight.file, expected hosted path experiments/hcsn_blocker_closure_v1/content/results/hosted_preflight001.json",
+    "Native owner matching unchanged vendor MANIFEST binary_sha256"
+  ],
+  "external_expected_pins": [
+    "--expected-study-commit",
+    "--expected-study-protocol-sha256",
+    "--expected-checkpoint-sha256"
+  ],
+  "external_pin_origin": "Independently verified publication/member metadata for hosted run41156755829; never infer authenticity by hashing arbitrary supplied files",
+  "files_required_under_study": [
+    "PROTOCOL.json",
+    "data/selective_copy_train.npz",
+    "fixed/selective_copy__value_jg__seed881101/job.json",
+    "fixed/selective_copy__value_jg__seed881101/selection.json",
+    "fixed/selective_copy__value_jg__seed881101/selected_state.npz",
+    "fixed/selective_copy__value_jg__seed881101/validation_000048.npz",
+    "fixed/selective_copy__value_jg__seed881101/validation_000096.npz"
+  ],
+  "findings": [
+    {
+      "evidence": "experiments/hcsn_blocker_closure_v1/audits/execution_binding_preflight001/FAILURE.json",
+      "finding": "Old runtime_eval serializer import dragged in an absent unrelated training benchmark dependency. New state_io preserves identical numeric function AST with no such imports.",
+      "id": "binding_import_001",
+      "severity": "launch_blocker",
+      "status": "repaired"
+    },
+    {
+      "finding": "Input protocol identity was previously recorded without external trusted pins and only partial design/job checks. New guards require external commit/protocol/weight pins and exact design/source/preflight/job/schedule checks.",
+      "id": "binding_provenance_002",
+      "severity": "provenance_gap",
+      "status": "repaired"
+    },
+    {
+      "finding": "wait4 RSS is not aggregate simultaneously resident process-tree memory; inner timings must not be added to the outer total.",
+      "id": "binding_cost_003",
+      "severity": "scope_limitation",
+      "status": "explicitly_recorded"
+    }
+  ],
+  "gpu_or_energy_blocker_closed": false,
+  "manual_source_checks": [
+    {
+      "basis": "Fixed selective_copy/value_jg/seed881101, exact job id and 96 updates; FP64 validation argmin over 48/96 with earlier-step tie. No RESULT/test/OOD arrays used.",
+      "name": "preselected_worker_and_validation_rule",
+      "passed": true
+    },
+    {
+      "basis": "Mandatory externally supplied training commit, registered protocol SHA256 and selected-state archive SHA256. Source map, full design and preflight equality are verified. External values must originate from verified hosted publication.",
+      "name": "external_training_identity",
+      "passed": true
+    },
+    {
+      "basis": "Original selected-state NPZ copied exactly; selected archive SHA and state tensor hash are checked after strict state_dict load.",
+      "name": "checkpoint_numeric_identity",
+      "passed": true
+    },
+    {
+      "basis": "Entire registered train NPZ SHA verified; only first episode x/dt decompressed. Repeated durations unchanged; elapsed remains in retained streaming state.",
+      "name": "input_identity_and_time",
+      "passed": true
+    },
+    {
+      "basis": "AST-equivalent helpers, full active/refractory probability, content, boundary and elapsed retained. Synthetic roundtrip and subsequent transition pass.",
+      "name": "serializer_field_and_copy_contract",
+      "passed": true
+    },
+    {
+      "basis": "Actual planned child process independently reloads weights/state; final numeric state and suffix logits must match bitwise. This is a source gate, not an executed trained resume result.",
+      "name": "fresh_interpreter_resume_gate",
+      "passed": true
+    },
+    {
+      "basis": "Two original owner roots with same profile/case/seed; one fresh-interpreter Resume after prefix. Exact message/context/logits/state and native checkpoint/action/readout/activation/eligibility fields; physical timing excluded.",
+      "name": "native_resume_semantic_contract",
+      "passed": true
+    },
+    {
+      "basis": "The same read entry point checks terminal before model.step; actual post-STOP probe must increment zero neural calls. Owner retry and terminal rejection are independently exercised at runtime.",
+      "name": "stop_precedes_neural_read",
+      "passed": true
+    },
+    {
+      "basis": "Four low/high actual trained-value message swaps; same prefix/nonvalue fields, quantization gap >=16. Calibration uses training x/dt only. Explicitly not classification-optimal stopping or utility evidence.",
+      "name": "engineering_message_intervention_scope",
+      "passed": true
+    },
+    {
+      "basis": "Outer exact worker PID wait4 includes normally reaped resume/scale/native descendants. Child waits and native closes reap exact PIDs. All inner clocks declared nested; no sums across nesting.",
+      "name": "nested_cost_accounting",
+      "passed": true
+    },
+    {
+      "basis": "Fixed persistent state excludes weights, inputs, output buffers, journals and BPTT. wait4 ru_maxrss is a maximum individual process RSS observation, not simultaneous aggregate process-tree memory.",
+      "name": "memory_statistic_scope",
+      "passed": true
+    },
+    {
+      "basis": "Fresh process per length32/128/512, B1, batch warmup1/repeats3, stream1. CUDA/energy unavailable are explicit null/false, not imputed.",
+      "name": "scaling_scope",
+      "passed": true
+    },
+    {
+      "basis": "Original failed import and driver retained; fresh output required; whole-cost receipt persists on worker failure; no frozen science source edited.",
+      "name": "failure_preservation_and_source_immutability",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "remaining_execution_gates": [
+    "Restore pinned trained evidence",
+    "Run actual streaming and fresh-process resume",
+    "Run seven actual native processes and four causal interventions",
+    "Run 32/128/512 fresh-worker scaling and whole-process cost receipt"
+  ],
+  "reviewed_source_sha256": {
+    "experiments/hcsn_blocker_closure_v1/content/DESIGN.json": "c38b579da45bc200825419f48b0321586dcdbe26eeec8f45323f56d668ca148f",
+    "experiments/hcsn_blocker_closure_v1/content/models.py": "f08878c2760bcec859e5e11c7b906b71647029073f782987c3431a4ca0ea71fe",
+    "experiments/hcsn_blocker_closure_v1/content/study.py": "1e7039a7d2cbf3e4be1f009c0aeab92b31c5098b606ee55f89d6f74105d7b3d0",
+    "experiments/hcsn_blocker_closure_v1/execution_binding/PREPARED.json": "508c7e2903a87e341177b19d4cefee63fbcebb00e9b3a692195cc63e3ee9d87a",
+    "experiments/hcsn_blocker_closure_v1/execution_binding/PROTOCOL.json": "fc5f299ebf43bf97ade4fde9120990a3500a702623e2c6741db354ab1c84a73d",
+    "experiments/hcsn_blocker_closure_v1/execution_binding/README.md": "937a823389786fb7d11b448d1e560f70f5bb26f7b22d8ff0c80c24d7afe2f9bd",
+    "experiments/hcsn_blocker_closure_v1/execution_binding/driver.py": "35a8eb630b0c8ce1042076c50242ba0617486512deba601a2e94e01aee50944f",
+    "experiments/hcsn_blocker_closure_v1/execution_binding/measure.py": "3b2908d71fcd9a6cfb2abef6cf2095510de7eb41b94874f5fd608dc87d30d3bb",
+    "experiments/hcsn_blocker_closure_v1/execution_binding/state_io.py": "8b4e953b4568ba0c795322d7ac2a6934a05e0f63dfa7928cbfb5f99f02a909e2",
+    "experiments/hcsn_blocker_closure_v1/runtime/hardware.py": "3009e7190d28cca7d83ac06c965794f8ef848f8f4a1e218b50c7e8e54394a8b8",
+    "experiments/hcsn_distributional_v2/model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+    "experiments/hcsn_free_boundary_v1/native_bridge.py": "77d752f013cbde2cc4e1424f5e2038352e5cda9b4b241222027c2ddeae9957fd",
+    "experiments/hcsn_free_boundary_v1/native_vendor/MANIFEST.json": "1dabd4bf896255ac0100b5fdc011b1505fbd3b04f6afb4b2569862b4a8705ee8",
+    "experiments/hcsn_free_boundary_v1/native_vendor/adapter.py": "2a7be4914211a5166fc8ef7fbbf6a2de8632b2e7651c7175d6e3888ddbb1ec0c"
+  },
+  "schema": "hcsn-trained-binding-independent-source-review.v1",
+  "scientific_source_changes": false,
+  "scope": "Source/provenance/cost/resume review and narrowly targeted synthetic repair preflight; no trained checkpoint, formal test/OOD or content outcome accessed",
+  "status": "source_blockers_repaired_awaiting_restored_trained_checkpoint",
+  "synthetic_preflight": {
+    "checks": 18,
+    "passed": true,
+    "path": "experiments/hcsn_blocker_closure_v1/audits/execution_binding_preflight002/RESULT.json",
+    "scope": "Synthetic initialized model/tensors and synthetic protocol header only; no trained weights, study validation, formal test or OOD data accessed",
+    "sha256": "b20c363535214156fb9b535e50519a49c7a71c91d8e7abca8e40e56c6a676c03"
+  }
+}

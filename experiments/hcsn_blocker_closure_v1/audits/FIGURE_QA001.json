@@ -1,0 +1,102 @@
+{
+  "schema": "hcsn-scientific-figure-visual-qa.v1",
+  "utc": "2026-10-31T04:13:02.501921+00:00",
+  "first_provenance": {
+    "av_analysis_sha256": "26cba0a56815e63f6ab5bf975f25a614ea1c2a1c1a912b771d4485d853da24a7",
+    "content_analysis_sha256": "5ac69c5b2019d505c4edec0b1d3e606cd06be21f6904cc47ecea9e424d22d8c1",
+    "files": [
+      {
+        "bytes": 123815,
+        "path": "audiovisual_contrasts.png",
+        "sha256": "3664dd310a4cd346fe603473c97ab90919c4ad000f8a735e7521c06493e5b420"
+      },
+      {
+        "bytes": 92986,
+        "path": "audiovisual_contrasts.svg",
+        "sha256": "bd60ab9a0cfa38cab084d7ce4d230dead6887a16dc9ddfca44360f4a9fd19cad"
+      },
+      {
+        "bytes": 225443,
+        "path": "content_contrasts.png",
+        "sha256": "b44c60d85c98c373c7dcdafdafd5c595a324e34d8e1f6cf10be45d1e80ad7927"
+      },
+      {
+        "bytes": 159290,
+        "path": "content_contrasts.svg",
+        "sha256": "139fe06cc54099de42e804e4d20cc41d7a01c236d46d1e44c37d0796f7e07a23"
+      },
+      {
+        "bytes": 193691,
+        "path": "content_quality_cost.png",
+        "sha256": "00952fa1147aa7d09e013e9a1bf9763e46635ae5091f54d089b2420443fce694"
+      },
+      {
+        "bytes": 144963,
+        "path": "content_quality_cost.svg",
+        "sha256": "8b17e882766ebefde098f6ccb496c7d168cd2eb130f1c6ec5052e7957ee566b1"
+      }
+    ],
+    "render_cpu_seconds": 2.0284401930000002,
+    "schema": "hcsn-scientific-figure-provenance.v1",
+    "scope": "Visualization of verified reported quantities; not additional experiments or statistical tests.",
+    "source_sha256": "946bb2698a1246fff9255d73405d4222552bbf2132a803c3050168a3d8d21800"
+  },
+  "initial_review": {
+    "content_contrasts": "Readable; actual selected arms are explicitly labeled.",
+    "audiovisual_contrasts": "Readable, all eight contrasts and corrected lower bounds visible.",
+    "content_quality_cost": "Fixed-budget baseline labels overlap, and automatic accuracy-axis margins expose ticks above100percent. These presentation defects are corrected."
+  },
+  "source_before_sha256": "946bb2698a1246fff9255d73405d4222552bbf2132a803c3050168a3d8d21800",
+  "source_after_sha256": "f8b6bd5ef0761b010a42b39f0d844b9c866a55ad349ee0b675abc1e6c286ea9e",
+  "changed": "Only deterministic text offsets, leader lines and common0to108percent plot limits with ticks0,25,50,75,100. No values, cases, intervals, gates or arm selection changed.",
+  "final_output": "figures_final",
+  "final_visual_review": {
+    "passed": true,
+    "utc": "2026-10-31T04:14:24.456831+00:00",
+    "review": "All labels are legible, clustered baselines use leader lines, accuracy tick labels stay within0to100, both independent contrast charts are byte-identical PNGs to the reviewed first render.",
+    "unchanged_pngs": {
+      "content_contrasts.png": true,
+      "audiovisual_contrasts.png": true
+    },
+    "final_provenance": {
+      "av_analysis_sha256": "26cba0a56815e63f6ab5bf975f25a614ea1c2a1c1a912b771d4485d853da24a7",
+      "content_analysis_sha256": "5ac69c5b2019d505c4edec0b1d3e606cd06be21f6904cc47ecea9e424d22d8c1",
+      "files": [
+        {
+          "bytes": 123815,
+          "path": "audiovisual_contrasts.png",
+          "sha256": "3664dd310a4cd346fe603473c97ab90919c4ad000f8a735e7521c06493e5b420"
+        },
+        {
+          "bytes": 92986,
+          "path": "audiovisual_contrasts.svg",
+          "sha256": "f88dfe96964f188794ccea42426b611606a37e4a9019c20ef795fa7edc62cf62"
+        },
+        {
+          "bytes": 225443,
+          "path": "content_contrasts.png",
+          "sha256": "b44c60d85c98c373c7dcdafdafd5c595a324e34d8e1f6cf10be45d1e80ad7927"
+        },
+        {
+          "bytes": 159290,
+          "path": "content_contrasts.svg",
+          "sha256": "6e9601d2c1737724ecf3cfdab2a2c59e9389a8d686cbbc8114e91f1e9115ab02"
+        },
+        {
+          "bytes": 191395,
+          "path": "content_quality_cost.png",
+          "sha256": "baeb9e9897bfb95c15f0061575a341cea1523c8e0d03363c367b61cf4e8f7866"
+        },
+        {
+          "bytes": 144841,
+          "path": "content_quality_cost.svg",
+          "sha256": "fdc4e9d99f8c8d9ab3d539f1e485eff71beac509e95d0baf8aa312849d1bc420"
+        }
+      ],
+      "render_cpu_seconds": 1.6861091669999997,
+      "schema": "hcsn-scientific-figure-provenance.v1",
+      "scope": "Visualization of verified reported quantities; not additional experiments or statistical tests.",
+      "source_sha256": "f8b6bd5ef0761b010a42b39f0d844b9c866a55ad349ee0b675abc1e6c286ea9e"
+    }
+  }
+}

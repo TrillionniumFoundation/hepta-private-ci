@@ -1,0 +1,38 @@
+{
+  "blocking_findings_remaining": [],
+  "checks": [
+    "External INDEX hash, shard byte counts/hashes, canonical manifest hash and exact unique member/part inventories bind the transport.",
+    "Safe member names and regular-file-only extraction exclude traversal, symbolic links and hard links.",
+    "Compressed parts are verified before and during full sequential streaming; every selected and unselected member is hashed.",
+    "Strict XZ reader requires exactly one complete stream and rejects truncated footer, unused bytes and trailing streams.",
+    "Tar EOF verification requires two zero end markers, aligned zero padding and full stream exhaustion.",
+    "Selected files are staged before full archive verification completes; existing different destination files are never overwritten.",
+    "Final no_symlink_path rejects parent-traversal components before absolute-path containment checks; the one new regression covers the reviewed bypass."
+  ],
+  "limitations": [
+    "Final publication of selected files uses sequential non-overwriting links, not a multi-file transaction. Verification failure publishes no payload; a later commit-time failure can leave an already verified subset, whose dispositions are recorded.",
+    "Synthetic proof tests the declared corruption/path cases; it is not a proof against concurrent adversarial filesystem mutation."
+  ],
+  "passed": true,
+  "resolved_findings": [
+    {
+      "finding": "Lexical parent traversal could bypass immutable publication containment checks",
+      "prior_source_sha256": "6ae01542723562a3ebd0e36bec73ad50f156e44c4971921ff07ccfd9c8deb198",
+      "regression": "parent traversal cannot bypass immutable publication exclusion",
+      "repair": "Reject parent components in all caller paths before containment checks"
+    }
+  ],
+  "reviewed_utc": "2026-10-31T03:06:38.425440+00:00",
+  "schema": "hcsn-selective-restore-source-review.v1",
+  "scope": "Independent read-only review of the helper, frozen part reader and concrete final path guard repair. No helper code edited or synthetic suite rerun by this reviewer; no scientific payloads read during this review.",
+  "source": {
+    "file": "experiments/hcsn_blocker_closure_v1/audits/selective_restore.py",
+    "sha256": "403c009571122a3e2538d916404f24cd13012fd0c061e69785d2e814b8557f6d"
+  },
+  "synthetic_proof": {
+    "checks_passed": 25,
+    "checks_total": 25,
+    "file": "experiments/hcsn_blocker_closure_v1/audits/selective_restore_preflight002/RESULT.json",
+    "sha256": "5dbd073814066807c66480720dfc2be9d969e5eb7ba5cfd4e0730703009201ff"
+  }
+}

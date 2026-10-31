@@ -1,0 +1,211 @@
+{
+  "checks": [
+    {
+      "detail": null,
+      "name": "random/audio_to_video/whole",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "random/audio_to_video/same_actor",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "random/video_to_audio/whole",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "random/video_to_audio/same_actor",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "random/same_actor_candidate_counts",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "all_ties/audio_to_video/whole",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "all_ties/audio_to_video/same_actor",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "all_ties/video_to_audio/whole",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "all_ties/video_to_audio/same_actor",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "all_ties/same_actor_candidate_counts",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "derangement/882901/whole",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "derangement/882901/same_actor",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "derangement/882902/whole",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "derangement/882902/same_actor",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "derangement/882903/whole",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "derangement/882903/same_actor",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "derangement/882904/whole",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "derangement/882904/same_actor",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "derangement/882905/whole",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "derangement/882905/same_actor",
+      "passed": true
+    },
+    {
+      "detail": 8.881784197001252e-16,
+      "name": "global/embedding_and_shared_linear_head_intervention",
+      "passed": true
+    },
+    {
+      "detail": 8.881784197001252e-16,
+      "name": "same_actor/embedding_and_shared_linear_head_intervention",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "audio/independent_FP64_classification_calibration",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "video/independent_FP64_classification_calibration",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "fused/independent_FP64_classification_calibration",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "fused_global_derangement/independent_FP64_classification_calibration",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "fused_same_actor_derangement/independent_FP64_classification_calibration",
+      "passed": true
+    },
+    {
+      "detail": {
+        "absolute_errors": [
+          0.0,
+          0.0,
+          0.0012500000000000011
+        ],
+        "exact_quantiles": [
+          -0.065,
+          0.065,
+          -0.08125
+        ],
+        "grid_step": 0.00125,
+        "interpretation": "Monte Carlo approximation test for this known empirical resampling distribution, not a coverage theorem for real actors",
+        "monte_carlo_quantiles": [
+          -0.065,
+          0.065,
+          -0.08
+        ],
+        "permitted_grid_steps": 3,
+        "repetitions": 20000
+      },
+      "name": "crossed_bootstrap_against_exact_finite_convolution",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "constant_seed_actor_effect",
+      "passed": true
+    }
+  ],
+  "cpu_seconds": 0.028915269999999993,
+  "details": {
+    "exact_crossed_additive_case": {
+      "absolute_errors": [
+        0.0,
+        0.0,
+        0.0012500000000000011
+      ],
+      "exact_quantiles": [
+        -0.065,
+        0.065,
+        -0.08125
+      ],
+      "grid_step": 0.00125,
+      "interpretation": "Monte Carlo approximation test for this known empirical resampling distribution, not a coverage theorem for real actors",
+      "monte_carlo_quantiles": [
+        -0.065,
+        0.065,
+        -0.08
+      ],
+      "permitted_grid_steps": 3,
+      "repetitions": 20000
+    }
+  },
+  "limitations": [
+    "Only synthetic evaluation and bootstrap mathematics checked here",
+    "Pair-shuffle degradation alone does not prove complementary cross-modal reasoning",
+    "The model has additive late fusion; no cross-attention or joint content interaction is introduced",
+    "Crossed bootstrap coverage remains approximate with only eight heldout actors"
+  ],
+  "model_training": false,
+  "passed": true,
+  "real_data_loaded": false,
+  "schema": "hcsn-independent-av-math-metrics-review.v1",
+  "source_sha256": {
+    "audits/av_math_metrics_review.py": "266db65669869ab5071f384019f4cea4d742a12bddf94eec7bea481cb92d74a0",
+    "av/AV_DESIGN.json": "c722f33475adacb8711e4044cbd988f4a529303d06f2d2d7ec20f1aca7c0ae35",
+    "av/analysis.py": "840eb12209d6c69e16773646306f24c993ce703b0c275fa85347353364e32268",
+    "av/metrics.py": "54a291d3d7ddd1d4e47bf349e0649001112332e0580be5a55aca3ae28566d0d6",
+    "av/model.py": "b726779b3ab4fc1e96151987f7a7560ac7776afe23f98492149cc23593be2e3d",
+    "av/study.py": "6b290db97e42176678ddb69080bf8b44812887504d0edca064051bf3a7951b4a"
+  }
+}

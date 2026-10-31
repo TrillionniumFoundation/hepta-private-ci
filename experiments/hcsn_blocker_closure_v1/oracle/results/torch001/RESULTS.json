@@ -1,0 +1,84 @@
+{
+  "schema": "hcsn-task-oracle-autograd.v1",
+  "passed": true,
+  "checks": {
+    "gradcheck": true,
+    "broadcast_gradcheck": true,
+    "all_six_parameter_columns_nonzero": true,
+    "all_six_parameter_columns_updated": true,
+    "posterior_gradient_nonzero": true,
+    "posterior_updated": true,
+    "descent": true
+  },
+  "parameters": [
+    "evidence",
+    "rho",
+    "cost",
+    "fire_cost",
+    "reset",
+    "tau"
+  ],
+  "channels": [
+    "total_value",
+    "continue_value",
+    "fire_class0",
+    "fire_class1"
+  ],
+  "gradient": [
+    [
+      0.08191108391240082,
+      -1.7485618834447398,
+      -0.03949565472041597,
+      -0.7217434939916957,
+      -0.08467308180523497,
+      -0.6206733218431246
+    ],
+    [
+      0.04242245817152313,
+      -0.5637987026808824,
+      -0.031150444641160832,
+      -0.3202472644715577,
+      0.02380520635787775,
+      -0.12372859617150488
+    ]
+  ],
+  "state_gradient": [
+    0.03262170101292412,
+    0.04348827988510902
+  ],
+  "update": [
+    [
+      8.191108391564228e-07,
+      1.7485618834439665e-05,
+      3.9495654720334006e-07,
+      7.217434939921219e-06,
+      8.467308180715172e-07,
+      6.206733218383498e-06
+    ],
+    [
+      4.2422458168545063e-07,
+      5.637987026796409e-06,
+      3.1150444641109276e-07,
+      3.2024726447088536e-06,
+      2.3805206361693365e-07,
+      1.237285961686041e-06
+    ]
+  ],
+  "state_update": [
+    3.2621701012702786e-07,
+    4.348827988831516e-07
+  ],
+  "objective_before": 0.530183452051227,
+  "objective_after": 0.5301392448504493,
+  "source_sha256": {
+    "audit.py": "732488b3f11fb882e1b3a7d1279e2268497533ddb76870f26bdb0962578be4fc",
+    "torch_bridge_tests.py": "2545de3da70aa79e3cfec5a74ba6193e1931cd6a3c095bb2d6567b53053ef3fb",
+    "finite_qvi.py": "602f7fca63d19876508e123a507d93fa338defe60bfce8d92080810beb9a0d7e",
+    "torch_bridge.py": "2befd81de504f60ce08f80bb7408ad9677c24c93085a1e5212e25f3d5e815546",
+    "task_model.py": "fcc53d3fb31a1d159a3b1bb200cea1c74b83a8ac4d86c5d23263f5d5e5ca6c27",
+    "reference_solvers.py": "6a1e38a413a802c0f4717393d397b57926d6cca862cade86df4af6d68c2cb1b5"
+  },
+  "torch_version": "2.8.0+cpu",
+  "cpu_seconds": 1.1481439700000002,
+  "scope": "First derivatives on these stable active sets; CPU solver; no content-quality or architecture benefit claim"
+}

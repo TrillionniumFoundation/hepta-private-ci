@@ -1,0 +1,341 @@
+{
+  "capabilities": {
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "cgroup": {
+      "cpu.max": "800000 100000\n",
+      "cpu.stat": "usage_usec 75889517044\nuser_usec 58575858340\nsystem_usec 17313658703\nnice_usec 0\nnr_periods 415667\nnr_throttled 17888\nthrottled_usec 1648182214\nnr_bursts 0\nburst_usec 0\n",
+      "memory.current": "8589905920\n",
+      "memory.max": "8589934592\n"
+    },
+    "cuda": {
+      "available": false,
+      "build_version": null,
+      "devices": []
+    },
+    "host_cpu_count": 9,
+    "numpy": "2.3.5",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "torch": "2.8.0+cpu"
+  },
+  "checks": [
+    {
+      "name": "value_jg: full sequence creates fresh state after unrelated call",
+      "passed": true
+    },
+    {
+      "name": "value_jg/resident: exact output and complete positive timing",
+      "passed": true
+    },
+    {
+      "name": "value_jg/host_end_to_end: exact output and complete positive timing",
+      "passed": true
+    },
+    {
+      "name": "two_gates: full sequence creates fresh state after unrelated call",
+      "passed": true
+    },
+    {
+      "name": "two_gates/resident: exact output and complete positive timing",
+      "passed": true
+    },
+    {
+      "name": "two_gates/host_end_to_end: exact output and complete positive timing",
+      "passed": true
+    },
+    {
+      "name": "transformer: full sequence creates fresh state after unrelated call",
+      "passed": true
+    },
+    {
+      "name": "transformer/resident: exact output and complete positive timing",
+      "passed": true
+    },
+    {
+      "name": "transformer/host_end_to_end: exact output and complete positive timing",
+      "passed": true
+    },
+    {
+      "name": "lif_snn: full sequence creates fresh state after unrelated call",
+      "passed": true
+    },
+    {
+      "name": "lif_snn/resident: exact output and complete positive timing",
+      "passed": true
+    },
+    {
+      "name": "lif_snn/host_end_to_end: exact output and complete positive timing",
+      "passed": true
+    },
+    {
+      "name": "mamba1: full sequence creates fresh state after unrelated call",
+      "passed": true
+    },
+    {
+      "name": "mamba1/resident: exact output and complete positive timing",
+      "passed": true
+    },
+    {
+      "name": "mamba1/host_end_to_end: exact output and complete positive timing",
+      "passed": true
+    },
+    {
+      "name": "millijoules to joules",
+      "passed": true
+    },
+    {
+      "name": "counter regression",
+      "passed": true
+    },
+    {
+      "name": "unresolved zero increment",
+      "passed": true
+    },
+    {
+      "name": "short window",
+      "passed": true
+    },
+    {
+      "name": "nonfinite duration",
+      "passed": true
+    },
+    {
+      "name": "unmatched or MIG UUID rejects energy None",
+      "passed": true
+    },
+    {
+      "name": "unmatched or MIG UUID rejects energy MIG-aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "passed": true
+    },
+    {
+      "name": "selected source/checkpoint/validation binding",
+      "passed": true
+    },
+    {
+      "name": "changed checkpoint bytes rejected",
+      "passed": true
+    },
+    {
+      "name": "wrong study execution seal rejected",
+      "passed": true
+    }
+  ],
+  "cpu_seconds": 0.5406109550000002,
+  "details": {
+    "lif_snn/host_end_to_end": {
+      "cuda_event_seconds": null,
+      "examples_per_second": 1922.4142376559616,
+      "host_cpu_seconds": [
+        0.0008311729999999073,
+        0.0008346889999999441
+      ],
+      "input_steps_per_second": 15379.313901247693,
+      "wall_quantiles_seconds": {
+        "p05": 0.0009071517531992867,
+        "p50": 0.0010403585038147867,
+        "p95": 0.0011735652544302866
+      },
+      "wall_seconds": [
+        0.0011883660044986755,
+        0.0008923510031308979
+      ]
+    },
+    "lif_snn/resident": {
+      "cuda_event_seconds": null,
+      "examples_per_second": 1964.008547274806,
+      "host_cpu_seconds": [
+        0.0007546610000002119,
+        0.0008403679999999802
+      ],
+      "input_steps_per_second": 15712.068378198448,
+      "wall_quantiles_seconds": {
+        "p05": 0.0008370947602088563,
+        "p50": 0.0010183255071751773,
+        "p95": 0.0011995562541414983
+      },
+      "wall_seconds": [
+        0.0008169580105459318,
+        0.001219693003804423
+      ]
+    },
+    "mamba1/host_end_to_end": {
+      "cuda_event_seconds": null,
+      "examples_per_second": 3212.665588079536,
+      "host_cpu_seconds": [
+        0.0006315479999998708,
+        0.0006142320000002144
+      ],
+      "input_steps_per_second": 25701.32470463629,
+      "wall_quantiles_seconds": {
+        "p05": 0.0006140364079328719,
+        "p50": 0.000622536004811991,
+        "p95": 0.0006310356016911101
+      },
+      "wall_seconds": [
+        0.0006319800013443455,
+        0.0006130920082796365
+      ]
+    },
+    "mamba1/resident": {
+      "cuda_event_seconds": null,
+      "examples_per_second": 1752.270942673804,
+      "host_cpu_seconds": [
+        0.0008902930000003195,
+        0.0006096150000001188
+      ],
+      "input_steps_per_second": 14018.167541390432,
+      "wall_quantiles_seconds": {
+        "p05": 0.0006617291022848803,
+        "p50": 0.001141376000305172,
+        "p95": 0.0016210228983254637
+      },
+      "wall_seconds": [
+        0.0016743169981054962,
+        0.0006084350025048479
+      ]
+    },
+    "transformer/host_end_to_end": {
+      "cuda_event_seconds": null,
+      "examples_per_second": 1346.6585163550076,
+      "host_cpu_seconds": [
+        0.0009390319999997843,
+        0.0008666569999999929
+      ],
+      "input_steps_per_second": 10773.26813084006,
+      "wall_quantiles_seconds": {
+        "p05": 0.001398037056060275,
+        "p50": 0.0014851575033389963,
+        "p95": 0.0015722779506177175
+      },
+      "wall_seconds": [
+        0.0015819580003153533,
+        0.0013883570063626394
+      ]
+    },
+    "transformer/resident": {
+      "cuda_event_seconds": null,
+      "examples_per_second": 1181.541132284028,
+      "host_cpu_seconds": [
+        0.0009421989999998104,
+        0.0009903000000002216
+      ],
+      "input_steps_per_second": 9452.329058272224,
+      "wall_quantiles_seconds": {
+        "p05": 0.0016015142595279031,
+        "p50": 0.001692704507149756,
+        "p95": 0.0017838947547716088
+      },
+      "wall_seconds": [
+        0.0017940270045073703,
+        0.0015913820097921416
+      ]
+    },
+    "two_gates/host_end_to_end": {
+      "cuda_event_seconds": null,
+      "examples_per_second": 1909.5001924658584,
+      "host_cpu_seconds": [
+        0.000665198000000089,
+        0.0008150500000003724
+      ],
+      "input_steps_per_second": 15276.001539726867,
+      "wall_quantiles_seconds": {
+        "p05": 0.0009604045553714968,
+        "p50": 0.0010473945003468543,
+        "p95": 0.0011343844453222118
+      },
+      "wall_seconds": [
+        0.0009507390059297904,
+        0.0011440499947639182
+      ]
+    },
+    "two_gates/resident": {
+      "cuda_event_seconds": null,
+      "examples_per_second": 2988.683373658613,
+      "host_cpu_seconds": [
+        0.0007293240000003642,
+        0.0005489860000000846
+      ],
+      "input_steps_per_second": 23909.466989268905,
+      "wall_quantiles_seconds": {
+        "p05": 0.0005601046897936613,
+        "p50": 0.000669190994813107,
+        "p95": 0.0007782772998325526
+      },
+      "wall_seconds": [
+        0.0007903980003902689,
+        0.000547983989235945
+      ]
+    },
+    "value_jg/host_end_to_end": {
+      "cuda_event_seconds": null,
+      "examples_per_second": 108.20561605177632,
+      "host_cpu_seconds": [
+        0.012684636999999999,
+        0.009355744000000055
+      ],
+      "input_steps_per_second": 865.6449284142105,
+      "wall_quantiles_seconds": {
+        "p05": 0.013571011990279658,
+        "p50": 0.01848332898953231,
+        "p95": 0.023395645988784963
+      },
+      "wall_seconds": [
+        0.023941458988701925,
+        0.013025198990362696
+      ]
+    },
+    "value_jg/resident": {
+      "cuda_event_seconds": null,
+      "examples_per_second": 91.59035663568554,
+      "host_cpu_seconds": [
+        0.012026727999999931,
+        0.013752903999999955
+      ],
+      "input_steps_per_second": 732.7228530854843,
+      "wall_quantiles_seconds": {
+        "p05": 0.02004660739330575,
+        "p50": 0.021836359999724664,
+        "p95": 0.023626112606143577
+      },
+      "wall_seconds": [
+        0.02382497400685679,
+        0.019847745992592536
+      ]
+    }
+  },
+  "passed": true,
+  "schema": "hcsn-blocker-hardware-preflight.v1",
+  "scope": "Synthetic CPU inputs and untrained synthetic checkpoint fixture only. No formal checkpoint, validation/test arrays, CUDA timing or real energy counter is claimed.",
+  "source_sha256": {
+    "experiments/continuous_spiking_network/baseline.py": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+    "experiments/hcsn_blocker_closure_v1/content/DESIGN.json": "c38b579da45bc200825419f48b0321586dcdbe26eeec8f45323f56d668ca148f",
+    "experiments/hcsn_blocker_closure_v1/content/__init__.py": "b19567b2db5b6961b63c4d2f8359a4f56a2b1664ea31c45e794339066e12e96c",
+    "experiments/hcsn_blocker_closure_v1/content/analysis.py": "aed2dd5bee0561fbea6030b9902f3eef65b513d6ea5aa4ad19409f65c3b46564",
+    "experiments/hcsn_blocker_closure_v1/content/data.py": "89cec4f5d5926d4971880b4103e8b964f702986d7ad0f884fa95b52c32e876ee",
+    "experiments/hcsn_blocker_closure_v1/content/models.py": "f08878c2760bcec859e5e11c7b906b71647029073f782987c3431a4ca0ea71fe",
+    "experiments/hcsn_blocker_closure_v1/content/preflight.py": "edbba48e2d8b2f464fb714611a6c87aa16f8d495aa0b6db7ed1c269bddd59911",
+    "experiments/hcsn_blocker_closure_v1/content/study.py": "1e7039a7d2cbf3e4be1f009c0aeab92b31c5098b606ee55f89d6f74105d7b3d0",
+    "experiments/hcsn_blocker_closure_v1/hardware/HARDWARE_DESIGN.json": "94d64711013470eee999cc2e227901e5b1ac0a42e1f8d9de2192aaf1e382057e",
+    "experiments/hcsn_blocker_closure_v1/hardware/__init__.py": "c0d24d25d01960bf97444982f3997b056d9b19d90c4e1bb064f715d0747531da",
+    "experiments/hcsn_blocker_closure_v1/hardware/energy.py": "3c79241c0a3bac9f59a7633c88a3903b6f18588321958ece1c0622a6d2c4e269",
+    "experiments/hcsn_blocker_closure_v1/hardware/measure.py": "9e254bb69f1dcf79685ce8b1bac7cab3c5afa78b13a7bd2f5ea499b332171663",
+    "experiments/hcsn_blocker_closure_v1/hardware/preflight.py": "5a7016bd1f2e90983c0e828653eee73ad8114e4e416ec0c734f7d7e34344acce",
+    "experiments/hcsn_conservative_acceleration_v1/kernel.py": "d528d140b83e11e80b835853d94677e1a2293d6b7c16ec4b27e2fac5d2ffcf68",
+    "experiments/hcsn_conservative_acceleration_v1/model.py": "1326e49d6c5add4eb0ef20524aa5a0c0edd80fc3284da8db4b6266993073118b",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_distributional_v2/model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+    "experiments/hcsn_distributional_v2/stable_probability.py": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770",
+    "experiments/hcsn_free_boundary_v1/model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a"
+  },
+  "wall_seconds": 0.9684777570073493
+}

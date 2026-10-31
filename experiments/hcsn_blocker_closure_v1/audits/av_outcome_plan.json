@@ -1,0 +1,47 @@
+{
+  "auditor": {
+    "file": "experiments/hcsn_blocker_closure_v1/audits/av_outcome_audit.py",
+    "sha256": "026e1e40a7d50c86145aaafb39c9ae1bb432c07462d9efc87f0abf70d91b8f41"
+  },
+  "av_delivery_modified": false,
+  "bounded_output": "Every check, input fingerprint and error is retained in numbered SHA256-bound shards, with each file below480000bytes; headline preserves all cost rows, actor/seed matrices and contrasts. No existing attempt is overwritten.",
+  "command": "python -m experiments.hcsn_blocker_closure_v1.audits.av_outcome_audit audit --study <restored av/results/hosted001> --driver <restored av/results/hosted_driver001> --run-receipt <completed raw REST run JSON> --jobs-receipt <completed raw REST jobs JSON> --output experiments/hcsn_blocker_closure_v1/audits/av_outcome_001.json",
+  "current_test_outputs_read": false,
+  "frozen_av_source_modified": false,
+  "independence": "Separate reader and arithmetic implementation importing only NumPy/stdlib, written by the study author; another agent independently reviewed the bootstrap, metrics and cost arithmetic. This is computational cross-checking, not an external third-party validation.",
+  "launch_commit": "6469cc94a72aed214c5c9d2ff2fba14cdb146626",
+  "launch_run_id": 41158089224,
+  "numerical_boundary_rule": "Preserve the frozen published strict >0 gate. Independently recompute its value and show the frequency-weight result. A sign disagreement with both bootstrap lower bounds within 2e-12 of zero is explicitly ambiguous and cannot independently confirm a positive claim.",
+  "outside_scope": [
+    "A new training experiment or changes to the frozen statistical gate",
+    "A full second proof of every kernel/checkpoint/retrieval rank",
+    "Foundation-model scale, GPU acceleration or energy superiority"
+  ],
+  "prepared_utc": "2026-10-31T02:15:06.519554+00:00",
+  "required_inputs": {
+    "completed_jobs_receipt": "Raw GET https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41158089224/jobs?per_page=100 with both experiments and publish completed",
+    "completed_run_receipt": "Raw GET https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41158089224 after status completed",
+    "driver": "Restored av/results/hosted_driver001 directory",
+    "source_root": "The frozen source/dependency tree; AV_DELIVERY and source-map hashes are independently checked",
+    "study": "Restored complete av/results/hosted001 directory"
+  },
+  "schema": "hcsn-av-independent-outcome-audit-plan.v1",
+  "scope": [
+    "Exact immutable data transport and frozen source map",
+    "Exact unique 10+40+40 model/seed/LR job matrix and every attempted worker",
+    "Raw audio/video/fused classification and calibration; validation-only LR argmin",
+    "Exact eight test actors, 24 clips and six balanced classes per actor; paired eight formal seeds",
+    "Eight crossed actor-by-seed bootstrap contrasts via a distinct multinomial-frequency implementation with the registered RNG stream",
+    "Full per-worker CPU/wall/RSS, in-memory inference medians and raw complete-update training clocks",
+    "Disjoint driver/acquisition CPU lower bound, explicit nested details and unmetered platform CPU/energy",
+    "GitHub server-reported complete job wall time, execution span and creation-to-final-completion latency"
+  ],
+  "status": "prepared_before_any_current_test_output_access",
+  "synthetic_selfcheck": {
+    "checks": 8,
+    "file": "experiments/hcsn_blocker_closure_v1/audits/av_outcome_selfcheck003.json",
+    "passed": true,
+    "real_data_arrays_loaded": false,
+    "sha256": "a56ca0df87e4e9138f32cb18e9d54ed11f9e5af038e7a2b20d6a6f81c836e93b"
+  }
+}

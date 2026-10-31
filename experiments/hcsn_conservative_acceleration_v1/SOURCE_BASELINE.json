@@ -1,0 +1,816 @@
+{
+  "remote_parent": "63fd568b177c0456ddd8b590e3ac77d35307c0c4",
+  "local_source_commit": "ec4b8a927a50a253fcda722371d91d57ae2d81e2",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/BASELINES.md",
+      "sha256": "3c32544dabde264f2347913f23685aa6a0c53651cd51f80010bcb78edc3a659b",
+      "git_blob": "614a37ccf940b6324f07bfd35ab98bb58beed73a"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/BOUNDARY.md",
+      "sha256": "f19ece7be92345266df8aa384048b49d9d0d07c9073b3cc70509badcdbc5a0c8",
+      "git_blob": "bae08512cc4e15941c32314e5c4bda92863c858a"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/DATA.md",
+      "sha256": "bc049820e57389a28881745105d66f55cebc61678e85331741449d89dc73041a",
+      "git_blob": "46a78d8a5210a8c492c80214899a77b1b0d164cc"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/PROTOCOL.json",
+      "sha256": "1423a6563075fe271f9d1b2afa57cedde6d416c0a012fa0018bfca1d14e6e1a9",
+      "git_blob": "efe423e4f4440e424b1f7cdfb3c0e5567919eef7"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/README.md",
+      "sha256": "1a147b0d8cd3da8838f40d37d379c30a466a3d6604d248b02ab5d9450fc777c7",
+      "git_blob": "83644377cef128d518990cdf1df68aa13dd03018"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/REPORT.md",
+      "sha256": "ed312f62003168ccb6ce1465288bfaf511c22de5e723f1057a18d7311df6b4b0",
+      "git_blob": "67811d55fcda9f89e0ba1d36cec6c1f4c8643fa0"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/SOURCE_SEAL.json",
+      "sha256": "018eaab3ced7f3a428a3afb2469900ed0cc6c67c38d363062383f42899587e12",
+      "git_blob": "896323b53c8df6241c95ee0f2103d9d49805127e"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/__init__.py",
+      "sha256": "192d1f289893035488c967e19332d164c1b2687c127c627ae88ad24ac9db07bc",
+      "git_blob": "064118989d68694406192b5c70937d0423c8d9a6"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/audit.py",
+      "sha256": "1b0d26a202ab457087b4d510dc46bb82c972efd4209fb8507615fd80e05fe24e",
+      "git_blob": "e3ee856d1ae51301ae3229abafd6a861c1a5da6c"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/audit_checks.py",
+      "sha256": "2c67d2f1970819b186ecac979d65d2309a34377474f22e4b00a10576620d6f84",
+      "git_blob": "ac6e287bd47bb65882c5e26c2e5cba537df725f0"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/baseline.py",
+      "sha256": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+      "git_blob": "fbf371ad57b361804b7e447c3d8cad7e29d7ad4a"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/boundary.py",
+      "sha256": "f17f39003e9a7a8f043bb862042a9a2b9b2ceec932e7fb9286da4bacf7522303",
+      "git_blob": "a4532325ecd86a525cf21b0deb4d2d12d405551c"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/boundary_study.py",
+      "sha256": "635254c518fcfd45de098c3f44be60e651152aedd74f99138f0b44782a3f7f65",
+      "git_blob": "7d03b36d769c8f61379daaf15590772bbd7ec363"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/cell.py",
+      "sha256": "486b9f86ad7cdbae2f3e8a151cb500a219b87cd67a438e9a4e10c038a43ac311",
+      "git_blob": "23521afecbb4e69f40a7d930d2802a479ae7d426"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/data.py",
+      "sha256": "b8a84e49451001ee3448dd3e22bbdc0f9e153a6864056c77069052c7d048829b",
+      "git_blob": "7c5997eec610ffd06051d992c81bf83cecc54784"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/kernels.py",
+      "sha256": "188334725b39b7e3bfdf5b17dd04cef2d3383ab6eb02c17eedad912dea21ae30",
+      "git_blob": "f9222deb2443af064346ff67a16b1cd8bec05b8d"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/measure_study.py",
+      "sha256": "18ea0ae64beac35d4756ac638258dc969a9a61053f41547b322cababbf982ff1",
+      "git_blob": "3a145df3347e118775d4dada8e25a5b2f889725b"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/models.py",
+      "sha256": "5207b97fe7e3667d723c641c61132e4c96984e19c2ada07868f0074b2e4bdbaf",
+      "git_blob": "ec6a0bdb962b24fb6f9f1d3880f4f5607da7f03a"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/performance.py",
+      "sha256": "d2915914ad3426ec8830ff00d6eacdae1370d0d7692746d99b09e1e126f96263",
+      "git_blob": "2127b29ab226b7cbbf0b6b036bd95ac2f2fe1f83"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/prepare_data.py",
+      "sha256": "d77bbd97f4c4e7ec174b0e9b5bb15668bbd4f81dc98b963da6c0fcdd1e643bc5",
+      "git_blob": "67b4062337a515c578a3938c05e8aafdec88035b"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/records.py",
+      "sha256": "dfea24dacbb5d56e53759ea0f0a4887d81cabd9678f3afccd1b96dbafd73e5be",
+      "git_blob": "88f1a2b9570cc2ab63ae8619cdfe04533b7e44ca"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/reference/SOURCE.json",
+      "sha256": "bcc7adaeec00f58a0e94c1dfcf59b3a120d20f8522163c57c6d1244e7db7e939",
+      "git_blob": "996f0f3086f212ce5ebda3e9e64354f563f0d363"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/reference/__init__.py",
+      "sha256": "79b3a6e5b5880f4944b3bf1613f43b1ef92000b02f05e98acb7a33315eb144d2",
+      "git_blob": "8c10a8ba8bee52cb6c439475f47f7f1297da3501"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/reference/hitting.py",
+      "sha256": "07ddc2f69d4ff47c5ab0ecc06bb82a62e14ea32930fdc1bbc674e419b16d4df3",
+      "git_blob": "b4b041277814acdc5efdb25d0597b423b6ef4013"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/reference/one_shot.py",
+      "sha256": "474f4f514ac026d50fcf298e145b16be6abe221cd0e476ebb276672ca7edfb87",
+      "git_blob": "49949899aa0aad1413852752b8de2d472820a001"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/reference/renewal.py",
+      "sha256": "e1bf10c3b196cfc268395bc1732b3060a98eb0a9324123d62b11975d4d964141",
+      "git_blob": "7940fc506c5fd7f0feca65195022381f4c3b878c"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/reference/roots.py",
+      "sha256": "e82a9d0abf79fe6978694ccc9710d600d1811e1be8fe9ecad0532d2570472e8f",
+      "git_blob": "89e48485b30a3397cba8ae0bcc7c8689713de669"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/requirements.txt",
+      "sha256": "eb10d2acacb874898c619a2c7f9c7ab29b2f45658b2b3dc89482c0b50b1b3d17",
+      "git_blob": "5365d6ab0719f157b00761f3da46865121033e5f"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/run_study.py",
+      "sha256": "99c82d276a5ea292659183e6951254d724f0030f994e2ebec50f627f2b913a3c",
+      "git_blob": "c4ad381166419ac750bcb8a21b05de73dcb8c5cc"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_audit.py",
+      "sha256": "a958b0bb88487f82b6cf43d30b770912c2d814ec4e57042e4a4b32926ee98923",
+      "git_blob": "8f6e2aa33946da45b6e2f9a9b65b2f09aeb83619"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_baselines.py",
+      "sha256": "4b8889d9f56e1a0d472285a115edea5b72a313bb7d42ebb99dfd6fed4d03c1af",
+      "git_blob": "ec1cf44c29286e4b63671b2ac8b185441a86e960"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_boundary_study.py",
+      "sha256": "7eddfc306152965e3f38317889d1f77ff265a89d32bde80eb76478e545a5aa80",
+      "git_blob": "8ebc26003db813ac02e4dc828f5dd01dd4703a88"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_cell.py",
+      "sha256": "18ffc29788589242eb885529d5758e6e8423e558408e046031724cec53fc4453",
+      "git_blob": "da03c7513ef859a2682a9e838a88ba7a9a032567"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_data.py",
+      "sha256": "b707aa7004c2fc8702bea094eef65946a618c59d3f4ec72b51c38362bc39a2a5",
+      "git_blob": "138cb2498562738ddbbf5f4aaf16cc872842d20a"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_kernels.py",
+      "sha256": "34ab2e67ccd600641415cba4f43a3aa90b4a54f6901ecc040275e0d372a0f6fe",
+      "git_blob": "1eecc13283c855288c50d16e2d83c07c1244f92a"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_performance.py",
+      "sha256": "fe4e998eb1731f2b425a24b11283a262c5f506de884cc737e3bb26c702302f30",
+      "git_blob": "d8fc3e60a291525e329fe1c6acd786d8dfe77cd6"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/tests/test_training.py",
+      "sha256": "d8532e69f3a7d10f4a71136409926a469dbba45454c7c103f5fad0a529b6644c",
+      "git_blob": "742eaf76180f53d445f0a3216c7052e398f57695"
+    },
+    {
+      "path": "experiments/continuous_spiking_network/train.py",
+      "sha256": "d244efb72584fb3ad304d290a291bb112c9f9b301bf041e4755cdc9cc235c51c",
+      "git_blob": "68478b45880dd599bc632e1283f9a414321dd262"
+    },
+    {
+      "path": "experiments/hcsn_cost_scaling_v1/PROTOCOL.json",
+      "sha256": "3363c138e099ff1acf0276842ed12101de259047911bdc8f5689b46a2eb32a5b",
+      "git_blob": "b261ecd53b8eeac90259096276cda5cc73219866"
+    },
+    {
+      "path": "experiments/hcsn_cost_scaling_v1/README.md",
+      "sha256": "9b2b73c3f3bac9648705f56f07cfe839886c4a748dd95d90cccd472cc2640d19",
+      "git_blob": "45afc960c03b780fdfec19dbe493f4732b7ddda8"
+    },
+    {
+      "path": "experiments/hcsn_cost_scaling_v1/__init__.py",
+      "sha256": "c5432924a64d173a01c1535c305bb226878899f310a385b6a083040732149967",
+      "git_blob": "9d88c362e40b3ad3aadcf39cbc972ae90ec9357b"
+    },
+    {
+      "path": "experiments/hcsn_cost_scaling_v1/analyze.py",
+      "sha256": "252b2ca5b3a9d49398acbfc28b68b99b7677dc154b1d0b58d1bb0de40b2cd940",
+      "git_blob": "b60fd28257279f3797d5a8fae57758f51e6e7210"
+    },
+    {
+      "path": "experiments/hcsn_cost_scaling_v1/study.py",
+      "sha256": "e57ce1b814ea17640ac553d8578e4917aa48d444f62296498ae4bd2c0455b572",
+      "git_blob": "48af674ede3e17855e02a23ccabb4b79e7368cac"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/CONTENT.md",
+      "sha256": "6f4f3f5fd3bafe66bee628990b16081e53e62c85445da43bea28e887953b6d9d",
+      "git_blob": "1aed9ce9e7c4f2a7005da781031c0c50b10dd010"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/CONTENT002_PROTOCOL.json",
+      "sha256": "03070eb0d3fc264ace436f25a06c989bb898f3c33caba83936f5040c660e6b9c",
+      "git_blob": "8ff5c16e073ae8e9b209db00bdd44b6e8d96a9a0"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/CONTENT_PROTOCOL.json",
+      "sha256": "928056eb2784676f73d92013f624c4a1f14422042153437da33c7088c2a5365b",
+      "git_blob": "61b8df4f90cb5aedba90d3503bfbfd45add08713"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/ENVIRONMENT.json",
+      "sha256": "c00d5df9ecf3499d849d5b37abdf8884ca90502629b428ce3dad508af0dc85a8",
+      "git_blob": "27f7348a006107c3915d9c1f7557d7270e3653d8"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/LIF_SUPPLEMENT001_PROTOCOL.json",
+      "sha256": "68a55b63c7c91d413c507766463cf07cf8b0163ddf092fdeaf810bbded7278cc",
+      "git_blob": "c0a179d81be79641afa1edded9e6b2dde0c36af4"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/MATH.md",
+      "sha256": "3899a158c856f72ba52c59de8d1f9d46f3967a9f2b8a1de2fa5e0bad97fb3a96",
+      "git_blob": "943e9b29cd716548cc7c73c50c30820fcce2bdc2"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/SOURCE_BASELINE.json",
+      "sha256": "a8ad935c3973c13d8bc807d1ad4790a95bd800dcf8a80be15c07072faf5fb31e",
+      "git_blob": "26c67fba049e90904cbca54c7ff49aafaa0958e3"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/content_analysis.py",
+      "sha256": "f2763843250e99d92542104d527b24d1fcd8ed541f8d199fa4f3fd62fac42809",
+      "git_blob": "435ade1120761c1b10376c15eeff2c0d1f969566"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/content_domain_preflight.py",
+      "sha256": "6a9e7bc6db42f8eee6c7a3b5c5109da71d78344ec0acf5ea18edc3897d776c76",
+      "git_blob": "d1b24f536eba8ea732e207cfda6353d1cd5eba5a"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/content_study.py",
+      "sha256": "51000ff027d91cb61c70469e20012524a7eaef5b17abad120d5dc78527e39df5",
+      "git_blob": "8a302e65991e76801e923c779deda065fda346bc"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/content_tests.py",
+      "sha256": "56baa60d970548dba57f3f885facab390aaec2d42e6202a595837e22e3a59a24",
+      "git_blob": "860eb595e673a6d11102e2192757ab1527fea6db"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/content_training.py",
+      "sha256": "dcf2a195092469e8258374c7a78217930f9f2d56e6b584178162d1de3025ed0e",
+      "git_blob": "355a61a7666912d97043316a73f5d6bee0c3341c"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/distribution_kernel.py",
+      "sha256": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+      "git_blob": "be25116b29278978b4a34c91a1f1b19c0c541c58"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/dynamics_comparison.py",
+      "sha256": "fe0e6479088fadfbd8f2bcaeb779232996d8c94e9bd0e471617c66589e7f2fb4",
+      "git_blob": "39cd032d28357ada6a9bf26e1d9e88d9470e0749"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/kernel_tests.py",
+      "sha256": "e8c9cd018a7d707ebb8f118fd2f1e297057a5c59e2dcd06c53025cf19f045add",
+      "git_blob": "228f948bf5ce4bbce7b2648e0b54ad13b2472e6a"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/lif_supplement.py",
+      "sha256": "9de5c2b823f6da9bd3fe0efcea64cd6f08202cd8d7f43e104b503349ce158896",
+      "git_blob": "25a95b553fb3b61f84b3f45576d207a68aa38d2d"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/lif_supplement_analysis.py",
+      "sha256": "08336eeaf202b6ebaa0c7c83be9669af01498a984806487b49b6f8871be6c435",
+      "git_blob": "6e44dc1df7c5377c0fa44fd684551de54f39b32b"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/long_horizon_audit.py",
+      "sha256": "2b14006708869f8f1f12935299ff941f8cf205b25ee4143f037e7badcb967c6e",
+      "git_blob": "4a1e7f008fd9907cbdef3b177ec4be9575ca4af6"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/math_completion_map.py",
+      "sha256": "5c159132a15cfcd2c6f541edf2e58f20e8c0b2766b9f0604af799ac8e8e1fe92",
+      "git_blob": "c9aabfaa5391e1a58eb963b1d89662187cb1828a"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/model.py",
+      "sha256": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+      "git_blob": "ca1d3d8206a67d31bc732a3aca29613bf48819e4"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/model_tests.py",
+      "sha256": "a199e6989dc1aab19f74b83667355b107e550ffee8bc1546437f2c4851daf61b",
+      "git_blob": "e9e8fe2d0c68e3229015288f3c662b5cdd0dc0fa"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/network_long_stream_audit.py",
+      "sha256": "1aec804ba034b9a16fc6e926ec51d36432c48582539865bb440212535f9b552f",
+      "git_blob": "528a47d14e11f4747fa83ce36d650852ffb24104"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/plot_sixstage_math.py",
+      "sha256": "be0a9c0cff94723f904fec28ea8c1d1add90dabe31d165e04457ef86743eea26",
+      "git_blob": "66df03422aba0f33ba24cb4e1cd07977496208f8"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/policy_gap_audit.py",
+      "sha256": "e78534f5bbd160e2917c52d5956b418b03de72eab30e8f5266e623e4ba43e0cf",
+      "git_blob": "f7648da9145743739c0882a46c3c9656d7edf6cc"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/risk_independent_audit.py",
+      "sha256": "e230ab62a514fe7a1cda49691a85ec4edd8f4e323416a7e9442f5c81fd0d72a7",
+      "git_blob": "98f1faa5e588da80b803809b27de41da118bcd07"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/runtime_eval.py",
+      "sha256": "9b3db4a17ba149f8dcd163e76ffcd1f1fd88a5ad9303ec81064b3981399b7291",
+      "git_blob": "ae1dd3f0348174f2e89473c9ae6e9a442f959568"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/sixstage_evidence_audit.py",
+      "sha256": "380c03c2711ffe9fc968f61fef4c7e04e2e3309858358a7d62b9dfd4b1132474",
+      "git_blob": "22b4373e2aea92b25460e8f8ded1a53826aa5959"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/stable_probability.py",
+      "sha256": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770",
+      "git_blob": "2f325119da3a3830ed32f4a45ddeecce4b7fbeb9"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/stable_probability_tests.py",
+      "sha256": "9ddaab7745632cd88ec9a66e70d6fcb2c58f05e77450c5e674561e7a7dbc70c2",
+      "git_blob": "51528c01c7652c28f7d3027a490b18ecbd3b9a8a"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/CLOSURE.md",
+      "sha256": "104eb5c6b90256241351956a4c85d66636f9a33d03e9de24efcc3aa809ea17f8",
+      "git_blob": "53c54b6eba14c9eb8e0889d3a93dc6348d5e96c4"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/CONDITIONAL_PROTOCOL.json",
+      "sha256": "0462f1bf58f7c409b215098a440eb8d4ab30af41188af6591403a741864aa191",
+      "git_blob": "d83f55bb210b1c9591bffa4ed699ec7bf453f710"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/CONTRACT.md",
+      "sha256": "4da331cf20ab5b164f9e935fe9ee4d9db698ff2a9eac53dbefa5e009f0169a0a",
+      "git_blob": "da2aaa191a150cb455f02d9a34fbc1c982f4b4f3"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/ENVIRONMENT.json",
+      "sha256": "2667b942d6f3379406e0a825f595c8fe24f92a5d8a2204eb78268282e7ffb573",
+      "git_blob": "cf2516fda653e42d2da5374d7da95dcebfc6ad37"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/EQUAL_UPDATES_CORE002_PROTOCOL.json",
+      "sha256": "373132facf5b491c271ef8da115855cfa0e636542aa5d6118ba87be6f69cb62a",
+      "git_blob": "1d8f801268ec8e7ac751f2a8b3fb442b44cd502c"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/FAST_SOLVER.md",
+      "sha256": "0f6a0fc6be67d8f8d17bfa4cf79406ec9497e5583134b293bd185ee5d56c2740",
+      "git_blob": "ddc827d8bf87e71783cf55c16b2c03af3d77c498"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/FLOW_REPAIR.md",
+      "sha256": "7cbf1ea121517f12be61d7f1ddf74a5c76ae263f4e5e2eee116c1e65e390edcd",
+      "git_blob": "7ea9a23b9483bc7310896b096cd40d3f0eeedc4e"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/FREEZE.json",
+      "sha256": "3d7cf80c948967fba5ef53f91f070eadd0fc055c17634dc97673687144f4aef7",
+      "git_blob": "f810d4acc403d1a0cbb5a583382d468db5a38f5a"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/MATH.md",
+      "sha256": "fd7e0c3c635083b3d2cc1b31e29e70e600280c0e39e8a8c77e58005bd919d9de",
+      "git_blob": "98f078983076094e5031b6d64863d770b6767f2e"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/MOVING_FLOW.md",
+      "sha256": "ca4b7da20ca247cecdf7b7cbfea5963caff966864a632a1f9467c84668c397d9",
+      "git_blob": "9fbb7adc59c0ef770e96829df58294b97ab54047"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/NATIVE.md",
+      "sha256": "94ff690a04d695197b75c84a448f2298ab357267d2e8d31026288a84664e2e83",
+      "git_blob": "12dd9d2e248ded222180d73abc553462347a8f34"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/NATIVE003_PROTOCOL.json",
+      "sha256": "4c7fdccfe1d4adee9628de10e71741368e8ecdd1b2e6524084c8799aec7d0560",
+      "git_blob": "80f9ef8ec981fea72a60be90f7c004963cc4704c"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/PROTOCOL.json",
+      "sha256": "0b684b1f3030ff9bcdb4f673ae26eb653c1ead868ed6edf8a8803ba735af4ff2",
+      "git_blob": "c877e65ed5939899c3bf1eba794a9d04b58d6a4b"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/README.md",
+      "sha256": "5838f8b22f9b2b9c437e323acb3cf2d7d0d68f64baec8559dbf859682c1960f2",
+      "git_blob": "6b04b9c91a342454fa36bd0b0c639561e0e77350"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/RESULTS.md",
+      "sha256": "5b42b5a5dccf244deaa2135264367badc549604287b234aff02797a39266dbc0",
+      "git_blob": "2977279c1142563b46a8d13a5c8cce15d7263b32"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/SCALING.md",
+      "sha256": "2d99789b18368925bf7a2227bf7cc363c434c302c73c29a136e87ea1f770cec4",
+      "git_blob": "cfaae815ac88feda217f0acecbfe08a4657086d4"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/analysis.py",
+      "sha256": "ed50b8d88e797038b4102283b2e6c7c4e6c12add80889de75af278f7318d63ff",
+      "git_blob": "51c73cb11f425b800a3d30dfb4d4a5daac85df39"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/analysis_report.py",
+      "sha256": "6e46cb5dcfe760c05a35c83ab7bccd8a12373bb9421d849363aefb25f7ff5d68",
+      "git_blob": "be29ad869c38ba485fb52b5c02d4745fd48afe6b"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/analysis_secondary.py",
+      "sha256": "a74038ecbe6bb4753129eeee8c005be6a4257c2b56305e76ca54b0a48951238f",
+      "git_blob": "6e451c86abb65bef7aad3ad68916a78a00f47019"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/analysis_tests.py",
+      "sha256": "beb977a6a79940ff77ef2f763034ee1e7135b105e740f468fa502edf010cc316",
+      "git_blob": "ebddea42b5226452812cb12289fb67a99626a304"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/archive.py",
+      "sha256": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+      "git_blob": "d7ebc0873c8fca94daa1ac48fce360d6033e56ca"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/archive_tests.py",
+      "sha256": "f7cb0d0f9ac6528fc0c45c5b023a56e42b852dc6831874c1198058e018fa3700",
+      "git_blob": "9f521b13ee5e686e346db1c62e7d5f32c0dfe57e"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/benchmark_models.py",
+      "sha256": "171cee706eeba6d3e7baa725998cf88778f53b92571187e0564c96d7255b8606",
+      "git_blob": "031cc6ad8c11604deb7da43fc6dc5fd124854a5d"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/closure_audit.py",
+      "sha256": "199d78f7e099eac32af184118d310e87368d97c03c9edef721ece86454fa8178",
+      "git_blob": "dc671ff123b192bc6ffe4c1347bbd7ca7f13847e"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/conditional_analysis.py",
+      "sha256": "522f3448b4012b631a62cf51f1d7596727ad66895842530a23c31d3507ebaeac",
+      "git_blob": "18f9f01a9f1f607492648db37ca8efa4716dcb6d"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/conditional_analysis_tests.py",
+      "sha256": "0c892cd6da68ef7438aa92dd55c19e37b89547172da111caca8bf71919ed3b3c",
+      "git_blob": "133d5b3c0ca35299feea5eb0c2c30b4272d7f2ca"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/conditional_control.py",
+      "sha256": "17af2aa5d1778519674f2d8ba1a0269b3a3fe65b0a6a0aa3cf8e7f3946b7f2c4",
+      "git_blob": "b848bbf404b5bb7b6fea6217ec5746044e0476e0"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/conditional_control_tests.py",
+      "sha256": "57ce3096a33443ea3e0e112ffb633052e64fa52f070db74cd8239f72fc29c1c6",
+      "git_blob": "49618c8c5f5912445297f6bf89ff4ab02b6c8cee"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/datasets.py",
+      "sha256": "f87e8f8531483313013d64a413b207c26ab14c09f82500088b506b5a682bc794",
+      "git_blob": "188bb065ad088c41169a2ed69827a3a7b7577e25"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/datasets_tests.py",
+      "sha256": "366a7f7be584b93aee7f6715033521597f98387475fe364fdd98326d38b40667",
+      "git_blob": "9554dd107052b94a20c07105dd8a8388aa807695"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/distributional_flow.py",
+      "sha256": "f63f0ba94e6ce0aa348e33557b20d64261308d10bf832d1f7324aceec79965a3",
+      "git_blob": "8fb9cae564a0297c47bb34311a3c7096098fad15"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/distributional_flow_tests.py",
+      "sha256": "a1ef5413f26abc293815e2e9f9c9c3e622c68e32a26974d67e3e162c09a2d0a9",
+      "git_blob": "3a236f8fbc9e518bcb8979eda8e08ca01d6c18ae"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/equal_updates_core002.py",
+      "sha256": "d78fb409d07c0cef5c72469a492f34af9a0d76577841e2d5823e661cd71a6c57",
+      "git_blob": "c4676507864522910e3f3b2c65ed870adeceb7d6"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/equal_updates_core002_analysis.py",
+      "sha256": "c1ea6191864476f1a7237e14272e8803d8445b8bdfea6ca3e74fdd9984166668",
+      "git_blob": "10e7b6c4fc05dcf08103cc196d36527a9bab2e81"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/equal_updates_core002_analysis_tests.py",
+      "sha256": "7807261fe767eab24971de6571e615c0cea653bf9884b5bc362af659c4facb1e",
+      "git_blob": "6a7bd6a20f4ef6ea3d9898c5305184ffd427862b"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/equal_updates_core002_tests.py",
+      "sha256": "0834f79c57b8074f897b2e8d2aa3f7cdc2db7e4c49048fbdb9fbbdc14b5950c5",
+      "git_blob": "cb7b9be31aeddd1d1ed52a2c5b22f1eae5bc341a"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/figures/SOURCES.json",
+      "sha256": "61667dbcc66f4b64cbd3c7b3009cc08f2cb9c8880152e9ef12b05d49a269e738",
+      "git_blob": "b581bb9f2e0eb66d9fcca907b0a9481927f19ef4"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/live_study.py",
+      "sha256": "9bcd88c449bc33fb2bbe9c45776069bce1c266229b1ca1e696ec60f72836dfce",
+      "git_blob": "5b038b257b815488596504e588ec51e8acc84bd8"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/live_study_tests.py",
+      "sha256": "a5bb17d9edb6b16f533c6704550dfa2e9465be39d6a14fce9c92ec930b670717",
+      "git_blob": "718f221f90ecf5e85b2aa30f0b7a597f1278564f"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/model.py",
+      "sha256": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+      "git_blob": "1e73659c7490610c6b6b7d6cd5ac2e67f70ecd68"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/model_tests.py",
+      "sha256": "c711cec562177b9825e46216a5ed1016a07f31528f804479bfcb03f019c6b929",
+      "git_blob": "1e483c2272319c2e84982eda83c52bdbfdd0fe02"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/moving_flow.py",
+      "sha256": "698a7e621f89fcde4aee6f485575470ec04e2d11fe1021b2c5ce4e92e720a05c",
+      "git_blob": "7358e4284964a6faa836917d3534d47f6f2a6488"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/moving_flow_tests.py",
+      "sha256": "ae59cf2fcc2c9a7aff648373254af54b38a5fed2ee88d8add085d8bcf7cd9d68",
+      "git_blob": "038816e1ac45bafc9bcf41d4b756414cc85107ec"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_adversarial.py",
+      "sha256": "a06d3d5e3febc8610c6793f502c8d211e3e97ed49c9a3a601970cd60b3549d30",
+      "git_blob": "5d7943d936b3aa0d6e09a238992b33e1cb98c65d"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_common.py",
+      "sha256": "95ecaab4f66ba7b32d831ee3f8d4523080ad80b4d5a372ff8fe206cfe81f7f34",
+      "git_blob": "65dceddb075e774cdf3165cad8b68e18098b8010"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_data.py",
+      "sha256": "0ad3b195f59300f92e9de13e5c50b59a25271c5b1738fe45c201a5419f99ff8e",
+      "git_blob": "6e456971538c29175862a457e3768d485bc39d15"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_eval.py",
+      "sha256": "f5bc33a9c108222e2816845dc44342a2d774edf9510db333306d3a2f9f14333a",
+      "git_blob": "ea25258f647ca7ac6b20fb349f24bf0296806aab"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_heads.py",
+      "sha256": "8322203e0099bee086e8b199ab03a5f8b84a17c9a83971e817e83f82576aae20",
+      "git_blob": "061d47ebcd8b78448945e721f2f5b5cf11a281a6"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_run.py",
+      "sha256": "cd6062edb13dde507e9352f8eff00445e63033d985149f080d91dee9c77a554f",
+      "git_blob": "f254a78ff9fa40ac24d660c3eccc61c8cd3c8752"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_tests.py",
+      "sha256": "0339f6f251a5ee0d299b2eedfaf5f4e80d616e220d70868350fea3398fe20a83",
+      "git_blob": "d3a2e8b0987e64d16da5327557459320d3e6892a"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native003_train.py",
+      "sha256": "5a115cd191e7163af61a42b97a4a31868f7496ff26a10d2e9eea26f073b3690d",
+      "git_blob": "1fb11dfa111e99d0fb9100105813c00d93f71b5b"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_bridge.py",
+      "sha256": "77d752f013cbde2cc4e1424f5e2038352e5cda9b4b241222027c2ddeae9957fd",
+      "git_blob": "3674b0e29dbe2e2fd0d0231b1a8605d9db2d7b01"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_tests.py",
+      "sha256": "0ea799b73dcaffe2652415713901813628fbf3776991d2b289a1d795e2ca6ca0",
+      "git_blob": "80656d8bde654bb5917191b290a53badb8b37c21"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_vendor/MANIFEST.json",
+      "sha256": "1dabd4bf896255ac0100b5fdc011b1505fbd3b04f6afb4b2569862b4a8705ee8",
+      "git_blob": "736e5529365c65b1f051bd169e0c4379fdd502e2"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_vendor/UPSTREAM_BUILD_RECEIPT.json",
+      "sha256": "83af3a44decf914706f24dd405c9c1cdbbbaa68b26a00fdaad24e8e6435b4455",
+      "git_blob": "5922043e73c2adb572a26ec846ecf6690c097f76"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/native_vendor/adapter.py",
+      "sha256": "2a7be4914211a5166fc8ef7fbbf6a2de8632b2e7651c7175d6e3888ddbb1ec0c",
+      "git_blob": "5cde9673c1958888846c66547076e8fcf4220b98"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/oracle.py",
+      "sha256": "72f8171bb3c6121481235288033518516d25eb0644f68c9c9f7d775069eda248",
+      "git_blob": "9c700911385b6becd6c4d21b463cafa1835a5d93"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/oracle_fast.py",
+      "sha256": "51a47ae40369d202c71c5492c0f509dc4d1d919717a4f4c610e24d894bd7d08e",
+      "git_blob": "6c3cb4d9a2c74db1a649ca3c8c76f8e4f0cb0d17"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/oracle_fast_tests.py",
+      "sha256": "deefc6cd6dba94a44b6a3bfaf4f9b57bb26ee7b9ba8663187d100c0cde6158ca",
+      "git_blob": "ec29c3e2659662a5b405587a8ee1a8297c74c113"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/oracle_tests.py",
+      "sha256": "c42b030fa7beee041ac28b8eaaa22f33030f963d5363429b4ad2bcf86705ab41",
+      "git_blob": "f9a075a90cbdcd4e64b445ee4b79598824537b1f"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/oracle_torch.py",
+      "sha256": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a",
+      "git_blob": "bdd71da9e4d93c53f0880b0d974b19c553d93889"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/plot_results.py",
+      "sha256": "a94c9fb5283ae8a8f463e6093ac72ac201d90022ab2606e9d2e927f2fbffd927",
+      "git_blob": "d6ed50276f963d0a71d16404fd4728ee8f219356"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/restore_native.py",
+      "sha256": "918aa4570b2e5119a760cbcd69ad797d43a2a874ed065f636234c52f93d49f06",
+      "git_blob": "f572c16096f2f338fe88c6d2bf66beb738f2a827"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/run_matrix.py",
+      "sha256": "3a8f2ba065a4922a18f5eb7a7a4a86ed128a111e6ed2de3ece6e629e90969323",
+      "git_blob": "8a7c1a8ec1258c4f1037325b3a07448ff2750a7a"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/run_native.py",
+      "sha256": "2d824eb438ea823ef2ebff307188cde4d24af521c7a6386d643775d97dc993c3",
+      "git_blob": "367c35839fb3e4c5ceaaa6f5db411c71f699f547"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/run_native_live.py",
+      "sha256": "0c4055d26bbafc9c762357fdab338a2e438cf7fc5ba97cf8b60317031d177565",
+      "git_blob": "14f152817ee12c62fd5cf6e347c4fc0ab55bc984"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/scale.py",
+      "sha256": "e0c233a2d0834d491ca260a0445610ba656c0834661b6502ac8cb871356c8363",
+      "git_blob": "670a53a393506dd007adefc70c5155e392363d7b"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/scale_tests.py",
+      "sha256": "97deee2da8b57ffce33909d38cf466ee4277533ef822db475e6ad165252b4d20",
+      "git_blob": "57a8bbb6487de97f92cdd033c1eb86e1cfb08f4a"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/training.py",
+      "sha256": "1aab526dec037ba19a5b55fc532027d2a688212f4595ed21d5d86f35ebcbe653",
+      "git_blob": "dabc50dc2b03d016b6a99e715bfe9503175d8dce"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/training_tests.py",
+      "sha256": "ed2368b6a6ea7dfe012d98b78366187ba3a708f8207eb833abf1c3eab4d32087",
+      "git_blob": "6a7f18e65f9f64926ae99a4545db275384cfffa1"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/vendor/PROVENANCE.json",
+      "sha256": "06e03ecf7e485e3d89a7721f6c38c13eab773df64e5a55a4a84aafaac027fb49",
+      "git_blob": "d077a5497a3b85a7c73bc7cabf40a9a1b2c5ee11"
+    },
+    {
+      "path": "experiments/hcsn_free_boundary_v1/vendor/cfc_cell.py",
+      "sha256": "ae2883e58b1e315e82048e178ca87d64a0e5ebd8f476fea9e3849df9f89c94c9",
+      "git_blob": "a21f8be7e623abbbff58e2f487d42eb1ea0a6e0e"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/DATA_AUDIT.json",
+      "sha256": "b9d11d5cfdb3cb2c7ea27150d6a332d8a18d8e64a58246e405510b4e45702a67",
+      "git_blob": "4da4fe835eb2baff3d81c991e350bb199af01f47"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/FREEZE.json",
+      "sha256": "2f97bbdffbfd2f6ad398d7a84fd9d843eaf0e950293e497af54ab9878867744a",
+      "git_blob": "26077f1789768a7e454afb504f561357e284c1bb"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/PREFLIGHT.json",
+      "sha256": "faedcade9cfe6ad63fb274c83a225fc68043065469850c19c6e5636672cf6ace",
+      "git_blob": "d7f2d8a503d11fc66795d5444e2ce9b885452810"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/PROTOCOL.json",
+      "sha256": "ca8b25df68285a7c2e1928781d1d14e06e8be64372f966e1b5432d7017cb0882",
+      "git_blob": "93d736e99ee8c52fe3630c410f9f5f2b7f37e77c"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/README.md",
+      "sha256": "c300518c5a00a5f03a1d2e8b97b45c55d781464b6dcffac83295dc48e6c11f94",
+      "git_blob": "4d96c45346e8c907c6d5868138024f210f91505c"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/SUPERSEDED.json",
+      "sha256": "2c84899c274aab2f758d04ab935466043a3879b16e076770b438cbf1280795ab",
+      "git_blob": "dcd27aac2c895c7ae7216e527683fed5eda3e722"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/audit.py",
+      "sha256": "025ae4b5691d50d075c85158f9cae818aa482a539edf63eb722fcd6a57173a2c",
+      "git_blob": "4da9042793b4c0176dd2990d3e9d9edac33ae124"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/data.py",
+      "sha256": "02fc21d1f3f1b98320659421f6ed03450fbe042eed25d91ae2bc93e50bde485f",
+      "git_blob": "3e954e153320e41afae8e2ea87d537398ae6d6d4"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/study.py",
+      "sha256": "95c7308acd9e0b3f16cfec20a2ef1fcbfe9a3243ec3881a57373978c831adbee",
+      "git_blob": "8bb04a1e797cc657cd74bf0ed71877c7575694a5"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/time_normalized_v2/ADDENDUM.json",
+      "sha256": "2d6d57457961d12a90f322447c3d2419d4d5bf810d5be89d5c8cee3f96cc38c8",
+      "git_blob": "0fcb530500a40969d3054690403ca247ce6b8203"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/time_normalized_v2/FREEZE.json",
+      "sha256": "948e80ac379f7353577a3379cafcce76f6596fcb076c1bf8a671564d88e1a9d6",
+      "git_blob": "4d9cdc4c767381d5ae09169ede6d440f272d7130"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/time_normalized_v2/PREFLIGHT.json",
+      "sha256": "e57c7d1fc33c73529ad84c938918d08f134846291179c6f1776d7ae9db202cc7",
+      "git_blob": "5dbf0f24fe4604c5e92054eae37601703fedd2b7"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/time_normalized_v2/PROTOCOL.json",
+      "sha256": "d88dbc345d4d5b8c77cdd14a7c119413864d0fc389183ab5e99bfb277e5503ce",
+      "git_blob": "74c5f7df010feadec5b6ed37a33fccfa3ef699aa"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/time_normalized_v2/README.md",
+      "sha256": "ade55b0056303e7b463a20e64b96d811385ff3f1ffe59db233875cf85687b68b",
+      "git_blob": "f80160e004dc299600ad0f0f20e763c5c28bee2e"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/time_normalized_v2/diagnostics.py",
+      "sha256": "5940299c56324305ddb2df975f003f99242a8d61533da98df64d85e1fa06ccd2",
+      "git_blob": "aaadfa2622941975b74ddc7026c5a91fbceda4f1"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/time_normalized_v2/registration.py",
+      "sha256": "02194134369449188e625beeac6184ff23531d56b500a53d55ecf85fa74270dc",
+      "git_blob": "b29250ff5a689c24ab4cdbfb1b9add209585f468"
+    },
+    {
+      "path": "experiments/hcsn_real_av_v1/time_normalized_v2/study.py",
+      "sha256": "6cd3b7a2387323c7627a88a8ac29f1a5578e1ac5996f3035a4d7a19c4d3c0109",
+      "git_blob": "9142b36b66583346d0b7cee2e9ba2317993af5c3"
+    }
+  ]
+}

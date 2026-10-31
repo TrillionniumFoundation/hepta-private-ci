@@ -1,0 +1,1662 @@
+[
+  {
+    "detail": {
+      "actual": 68.01749431337498,
+      "expected": 68.01749431337498
+    },
+    "name": "equal_cpu/value_jg:cost:mean_whole_worker_wall_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.10610271187499976,
+      "expected": 0.10610271187499976
+    },
+    "name": "equal_cpu/value_jg:cost:mean_inference_median_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.3294270833333333,
+      "expected": 0.3294270833333333
+    },
+    "name": "equal_cpu/value_jg:audio:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.6823467455832648,
+      "expected": 1.6823467455832648
+    },
+    "name": "equal_cpu/value_jg:audio:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.7890716960946467,
+      "expected": 0.7890716960946467
+    },
+    "name": "equal_cpu/value_jg:audio:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.16870976855046743,
+      "expected": 0.16870976855046743
+    },
+    "name": "equal_cpu/value_jg:audio:ece",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.17447916666666666,
+      "expected": 0.17447916666666666
+    },
+    "name": "equal_cpu/value_jg:video:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 2.2566647688098502,
+      "expected": 2.2566647688098502
+    },
+    "name": "equal_cpu/value_jg:video:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.9793004737540014,
+      "expected": 0.9793004737540014
+    },
+    "name": "equal_cpu/value_jg:video:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.28365052856166395,
+      "expected": 0.28365052856166395
+    },
+    "name": "equal_cpu/value_jg:video:ece",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.3098958333333333,
+      "expected": 0.3098958333333333
+    },
+    "name": "equal_cpu/value_jg:fused:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.6718376212442696,
+      "expected": 1.6718376212442696
+    },
+    "name": "equal_cpu/value_jg:fused:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.7971644557698067,
+      "expected": 0.7971644557698068
+    },
+    "name": "equal_cpu/value_jg:fused:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.1015863365289189,
+      "expected": 0.10158633652891892
+    },
+    "name": "equal_cpu/value_jg:fused:ece",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/two_gates_exact_eight_seed_pairing",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/two_gates_actor_seed_order",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": [
+        [
+          0.20833333333333334,
+          0.16666666666666666,
+          0.25,
+          0.2916666666666667,
+          0.375,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.4166666666666667,
+          0.20833333333333334,
+          0.25,
+          0.5416666666666666,
+          0.25,
+          0.375,
+          0.375,
+          0.25
+        ],
+        [
+          0.20833333333333334,
+          0.16666666666666666,
+          0.25,
+          0.25,
+          0.3333333333333333,
+          0.2916666666666667,
+          0.375,
+          0.20833333333333334
+        ],
+        [
+          0.25,
+          0.16666666666666666,
+          0.25,
+          0.3333333333333333,
+          0.25,
+          0.375,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.25,
+          0.20833333333333334,
+          0.2916666666666667,
+          0.375,
+          0.375,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.2916666666666667,
+          0.16666666666666666,
+          0.25,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.2916666666666667,
+          0.5,
+          0.20833333333333334
+        ],
+        [
+          0.2916666666666667,
+          0.2916666666666667,
+          0.125,
+          0.4166666666666667,
+          0.3333333333333333,
+          0.4583333333333333,
+          0.5,
+          0.25
+        ],
+        [
+          0.125,
+          0.16666666666666666,
+          0.375,
+          0.2916666666666667,
+          0.2916666666666667,
+          0.25,
+          0.4166666666666667,
+          0.2916666666666667
+        ]
+      ],
+      "expected": [
+        [
+          0.20833333333333334,
+          0.16666666666666666,
+          0.25,
+          0.2916666666666667,
+          0.375,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.4166666666666667,
+          0.20833333333333334,
+          0.25,
+          0.5416666666666666,
+          0.25,
+          0.375,
+          0.375,
+          0.25
+        ],
+        [
+          0.20833333333333334,
+          0.16666666666666666,
+          0.25,
+          0.25,
+          0.3333333333333333,
+          0.2916666666666667,
+          0.375,
+          0.20833333333333334
+        ],
+        [
+          0.25,
+          0.16666666666666666,
+          0.25,
+          0.3333333333333333,
+          0.25,
+          0.375,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.25,
+          0.20833333333333334,
+          0.2916666666666667,
+          0.375,
+          0.375,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.2916666666666667,
+          0.16666666666666666,
+          0.25,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.2916666666666667,
+          0.5,
+          0.20833333333333334
+        ],
+        [
+          0.2916666666666667,
+          0.2916666666666667,
+          0.125,
+          0.4166666666666667,
+          0.3333333333333333,
+          0.4583333333333333,
+          0.5,
+          0.25
+        ],
+        [
+          0.125,
+          0.16666666666666666,
+          0.375,
+          0.2916666666666667,
+          0.2916666666666667,
+          0.25,
+          0.4166666666666667,
+          0.2916666666666667
+        ]
+      ]
+    },
+    "name": "equal_cpu/two_gates_independent_actor_matrix",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 2303.125,
+      "expected": 2303.125
+    },
+    "name": "equal_cpu/two_gates:cost:mean_updates",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 60.01461587762503,
+      "expected": 60.01461587762503
+    },
+    "name": "equal_cpu/two_gates:cost:mean_training_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 71.90689825,
+      "expected": 71.90689825
+    },
+    "name": "equal_cpu/two_gates:cost:mean_whole_worker_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 72.17676525675003,
+      "expected": 72.17676525675003
+    },
+    "name": "equal_cpu/two_gates:cost:mean_whole_worker_wall_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.005447965500001928,
+      "expected": 0.005447965500001928
+    },
+    "name": "equal_cpu/two_gates:cost:mean_inference_median_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.318359375,
+      "expected": 0.318359375
+    },
+    "name": "equal_cpu/two_gates:audio:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 7.527327707366377,
+      "expected": 7.527327707366377
+    },
+    "name": "equal_cpu/two_gates:audio:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.2226040657991817,
+      "expected": 1.2226040657991817
+    },
+    "name": "equal_cpu/two_gates:audio:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.5879412113435025,
+      "expected": 0.5879412113435025
+    },
+    "name": "equal_cpu/two_gates:audio:ece",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.19466145833333331,
+      "expected": 0.19466145833333331
+    },
+    "name": "equal_cpu/two_gates:video:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 10.360742812353323,
+      "expected": 10.360742812353323
+    },
+    "name": "equal_cpu/two_gates:video:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.4713261963431445,
+      "expected": 1.4713261963431445
+    },
+    "name": "equal_cpu/two_gates:video:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.7046150765125476,
+      "expected": 0.7046150765125477
+    },
+    "name": "equal_cpu/two_gates:video:ece",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.2923177083333333,
+      "expected": 0.2923177083333333
+    },
+    "name": "equal_cpu/two_gates:fused:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 5.585604735300577,
+      "expected": 5.585604735300577
+    },
+    "name": "equal_cpu/two_gates:fused:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.213738353173058,
+      "expected": 1.2137383531730581
+    },
+    "name": "equal_cpu/two_gates:fused:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.5549890996444862,
+      "expected": 0.5549890996444863
+    },
+    "name": "equal_cpu/two_gates:fused:ece",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/transformer_exact_eight_seed_pairing",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/transformer_actor_seed_order",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": [
+        [
+          0.25,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.4583333333333333,
+          0.4583333333333333,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.2916666666666667
+        ],
+        [
+          0.5,
+          0.2916666666666667,
+          0.2916666666666667,
+          0.4166666666666667,
+          0.375,
+          0.4166666666666667,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.4166666666666667,
+          0.3333333333333333,
+          0.25,
+          0.4166666666666667,
+          0.3333333333333333,
+          0.25,
+          0.4166666666666667,
+          0.3333333333333333
+        ],
+        [
+          0.3333333333333333,
+          0.2916666666666667,
+          0.3333333333333333,
+          0.375,
+          0.375,
+          0.375,
+          0.2916666666666667,
+          0.4583333333333333
+        ],
+        [
+          0.2916666666666667,
+          0.375,
+          0.20833333333333334,
+          0.4166666666666667,
+          0.4583333333333333,
+          0.625,
+          0.4583333333333333,
+          0.25
+        ],
+        [
+          0.25,
+          0.25,
+          0.375,
+          0.5,
+          0.4166666666666667,
+          0.2916666666666667,
+          0.25,
+          0.25
+        ],
+        [
+          0.16666666666666666,
+          0.20833333333333334,
+          0.25,
+          0.4583333333333333,
+          0.375,
+          0.4583333333333333,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.20833333333333334,
+          0.125,
+          0.20833333333333334,
+          0.4166666666666667,
+          0.4583333333333333,
+          0.5,
+          0.625,
+          0.3333333333333333
+        ]
+      ],
+      "expected": [
+        [
+          0.25,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.4583333333333333,
+          0.4583333333333333,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.2916666666666667
+        ],
+        [
+          0.5,
+          0.2916666666666667,
+          0.2916666666666667,
+          0.4166666666666667,
+          0.375,
+          0.4166666666666667,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.4166666666666667,
+          0.3333333333333333,
+          0.25,
+          0.4166666666666667,
+          0.3333333333333333,
+          0.25,
+          0.4166666666666667,
+          0.3333333333333333
+        ],
+        [
+          0.3333333333333333,
+          0.2916666666666667,
+          0.3333333333333333,
+          0.375,
+          0.375,
+          0.375,
+          0.2916666666666667,
+          0.4583333333333333
+        ],
+        [
+          0.2916666666666667,
+          0.375,
+          0.20833333333333334,
+          0.4166666666666667,
+          0.4583333333333333,
+          0.625,
+          0.4583333333333333,
+          0.25
+        ],
+        [
+          0.25,
+          0.25,
+          0.375,
+          0.5,
+          0.4166666666666667,
+          0.2916666666666667,
+          0.25,
+          0.25
+        ],
+        [
+          0.16666666666666666,
+          0.20833333333333334,
+          0.25,
+          0.4583333333333333,
+          0.375,
+          0.4583333333333333,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.20833333333333334,
+          0.125,
+          0.20833333333333334,
+          0.4166666666666667,
+          0.4583333333333333,
+          0.5,
+          0.625,
+          0.3333333333333333
+        ]
+      ]
+    },
+    "name": "equal_cpu/transformer_independent_actor_matrix",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 5098.75,
+      "expected": 5098.75
+    },
+    "name": "equal_cpu/transformer:cost:mean_updates",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 60.004942265624976,
+      "expected": 60.004942265624976
+    },
+    "name": "equal_cpu/transformer:cost:mean_training_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 100.31870599999999,
+      "expected": 100.31870599999999
+    },
+    "name": "equal_cpu/transformer:cost:mean_whole_worker_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 100.70190037424997,
+      "expected": 100.70190037424997
+    },
+    "name": "equal_cpu/transformer:cost:mean_whole_worker_wall_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.002325275500000501,
+      "expected": 0.002325275500000501
+    },
+    "name": "equal_cpu/transformer:cost:mean_inference_median_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.35807291666666663,
+      "expected": 0.35807291666666663
+    },
+    "name": "equal_cpu/transformer:audio:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 8.6288726155999,
+      "expected": 8.6288726155999
+    },
+    "name": "equal_cpu/transformer:audio:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.1862170225206456,
+      "expected": 1.1862170225206456
+    },
+    "name": "equal_cpu/transformer:audio:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.5661672163901665,
+      "expected": 0.5661672163901665
+    },
+    "name": "equal_cpu/transformer:audio:ece",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.23697916666666666,
+      "expected": 0.23697916666666666
+    },
+    "name": "equal_cpu/transformer:video:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 10.23935202191444,
+      "expected": 10.23935202191444
+    },
+    "name": "equal_cpu/transformer:video:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.4084226544703036,
+      "expected": 1.4084226544703036
+    },
+    "name": "equal_cpu/transformer:video:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.6837769191213674,
+      "expected": 0.6837769191213674
+    },
+    "name": "equal_cpu/transformer:video:ece",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.34700520833333337,
+      "expected": 0.34700520833333337
+    },
+    "name": "equal_cpu/transformer:fused:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 6.190803634546837,
+      "expected": 6.190803634546837
+    },
+    "name": "equal_cpu/transformer:fused:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.1610137106265304,
+      "expected": 1.1610137106265306
+    },
+    "name": "equal_cpu/transformer:fused:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.5475039996530067,
+      "expected": 0.5475039996530068
+    },
+    "name": "equal_cpu/transformer:fused:ece",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/lif_snn_exact_eight_seed_pairing",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/lif_snn_actor_seed_order",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": [
+        [
+          0.16666666666666666,
+          0.16666666666666666,
+          0.20833333333333334,
+          0.375,
+          0.125,
+          0.20833333333333334,
+          0.4166666666666667,
+          0.2916666666666667
+        ],
+        [
+          0.20833333333333334,
+          0.25,
+          0.16666666666666666,
+          0.25,
+          0.20833333333333334,
+          0.16666666666666666,
+          0.5,
+          0.16666666666666666
+        ],
+        [
+          0.16666666666666666,
+          0.125,
+          0.125,
+          0.20833333333333334,
+          0.16666666666666666,
+          0.20833333333333334,
+          0.20833333333333334,
+          0.20833333333333334
+        ],
+        [
+          0.25,
+          0.125,
+          0.2916666666666667,
+          0.4166666666666667,
+          0.2916666666666667,
+          0.16666666666666666,
+          0.25,
+          0.20833333333333334
+        ],
+        [
+          0.25,
+          0.125,
+          0.125,
+          0.375,
+          0.125,
+          0.125,
+          0.2916666666666667,
+          0.16666666666666666
+        ],
+        [
+          0.16666666666666666,
+          0.16666666666666666,
+          0.16666666666666666,
+          0.2916666666666667,
+          0.20833333333333334,
+          0.125,
+          0.3333333333333333,
+          0.16666666666666666
+        ],
+        [
+          0.20833333333333334,
+          0.16666666666666666,
+          0.20833333333333334,
+          0.25,
+          0.25,
+          0.25,
+          0.25,
+          0.16666666666666666
+        ],
+        [
+          0.125,
+          0.125,
+          0.25,
+          0.16666666666666666,
+          0.16666666666666666,
+          0.2916666666666667,
+          0.3333333333333333,
+          0.0
+        ]
+      ],
+      "expected": [
+        [
+          0.16666666666666666,
+          0.16666666666666666,
+          0.20833333333333334,
+          0.375,
+          0.125,
+          0.20833333333333334,
+          0.4166666666666667,
+          0.2916666666666667
+        ],
+        [
+          0.20833333333333334,
+          0.25,
+          0.16666666666666666,
+          0.25,
+          0.20833333333333334,
+          0.16666666666666666,
+          0.5,
+          0.16666666666666666
+        ],
+        [
+          0.16666666666666666,
+          0.125,
+          0.125,
+          0.20833333333333334,
+          0.16666666666666666,
+          0.20833333333333334,
+          0.20833333333333334,
+          0.20833333333333334
+        ],
+        [
+          0.25,
+          0.125,
+          0.2916666666666667,
+          0.4166666666666667,
+          0.2916666666666667,
+          0.16666666666666666,
+          0.25,
+          0.20833333333333334
+        ],
+        [
+          0.25,
+          0.125,
+          0.125,
+          0.375,
+          0.125,
+          0.125,
+          0.2916666666666667,
+          0.16666666666666666
+        ],
+        [
+          0.16666666666666666,
+          0.16666666666666666,
+          0.16666666666666666,
+          0.2916666666666667,
+          0.20833333333333334,
+          0.125,
+          0.3333333333333333,
+          0.16666666666666666
+        ],
+        [
+          0.20833333333333334,
+          0.16666666666666666,
+          0.20833333333333334,
+          0.25,
+          0.25,
+          0.25,
+          0.25,
+          0.16666666666666666
+        ],
+        [
+          0.125,
+          0.125,
+          0.25,
+          0.16666666666666666,
+          0.16666666666666666,
+          0.2916666666666667,
+          0.3333333333333333,
+          0.0
+        ]
+      ]
+    },
+    "name": "equal_cpu/lif_snn_independent_actor_matrix",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 2158.125,
+      "expected": 2158.125
+    },
+    "name": "equal_cpu/lif_snn:cost:mean_updates",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 60.012285011624996,
+      "expected": 60.012285011624996
+    },
+    "name": "equal_cpu/lif_snn:cost:mean_training_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 70.871497875,
+      "expected": 70.871497875
+    },
+    "name": "equal_cpu/lif_snn:cost:mean_whole_worker_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 71.15072671512499,
+      "expected": 71.15072671512499
+    },
+    "name": "equal_cpu/lif_snn:cost:mean_whole_worker_wall_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.006412919749999801,
+      "expected": 0.006412919749999801
+    },
+    "name": "equal_cpu/lif_snn:cost:mean_inference_median_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.259765625,
+      "expected": 0.259765625
+    },
+    "name": "equal_cpu/lif_snn:audio:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 5.4602264423387,
+      "expected": 5.4602264423387
+    },
+    "name": "equal_cpu/lif_snn:audio:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.2404565909630088,
+      "expected": 1.2404565909630088
+    },
+    "name": "equal_cpu/lif_snn:audio:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.5590837578029713,
+      "expected": 0.5590837578029713
+    },
+    "name": "equal_cpu/lif_snn:audio:ece",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.18033854166666669,
+      "expected": 0.18033854166666669
+    },
+    "name": "equal_cpu/lif_snn:video:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 10.598169652750823,
+      "expected": 10.598169652750823
+    },
+    "name": "equal_cpu/lif_snn:video:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.5025311832003734,
+      "expected": 1.5025311832003734
+    },
+    "name": "equal_cpu/lif_snn:video:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.7255127839377667,
+      "expected": 0.7255127839377669
+    },
+    "name": "equal_cpu/lif_snn:video:ece",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.21419270833333331,
+      "expected": 0.21419270833333331
+    },
+    "name": "equal_cpu/lif_snn:fused:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 5.756943693807651,
+      "expected": 5.756943693807651
+    },
+    "name": "equal_cpu/lif_snn:fused:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.3143423062464537,
+      "expected": 1.3143423062464537
+    },
+    "name": "equal_cpu/lif_snn:fused:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.5911042225573855,
+      "expected": 0.5911042225573855
+    },
+    "name": "equal_cpu/lif_snn:fused:ece",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/mamba1_exact_eight_seed_pairing",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/mamba1_actor_seed_order",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": [
+        [
+          0.16666666666666666,
+          0.20833333333333334,
+          0.3333333333333333,
+          0.375,
+          0.20833333333333334,
+          0.25,
+          0.4583333333333333,
+          0.25
+        ],
+        [
+          0.25,
+          0.125,
+          0.16666666666666666,
+          0.25,
+          0.16666666666666666,
+          0.5,
+          0.125,
+          0.25
+        ],
+        [
+          0.25,
+          0.16666666666666666,
+          0.20833333333333334,
+          0.4166666666666667,
+          0.25,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.125
+        ],
+        [
+          0.2916666666666667,
+          0.16666666666666666,
+          0.125,
+          0.4166666666666667,
+          0.2916666666666667,
+          0.25,
+          0.4166666666666667,
+          0.16666666666666666
+        ],
+        [
+          0.16666666666666666,
+          0.20833333333333334,
+          0.16666666666666666,
+          0.2916666666666667,
+          0.125,
+          0.20833333333333334,
+          0.20833333333333334,
+          0.16666666666666666
+        ],
+        [
+          0.2916666666666667,
+          0.25,
+          0.125,
+          0.4583333333333333,
+          0.20833333333333334,
+          0.375,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.3333333333333333,
+          0.20833333333333334,
+          0.2916666666666667,
+          0.375,
+          0.375,
+          0.16666666666666666,
+          0.16666666666666666,
+          0.2916666666666667
+        ],
+        [
+          0.2916666666666667,
+          0.16666666666666666,
+          0.25,
+          0.16666666666666666,
+          0.125,
+          0.3333333333333333,
+          0.2916666666666667,
+          0.16666666666666666
+        ]
+      ],
+      "expected": [
+        [
+          0.16666666666666666,
+          0.20833333333333334,
+          0.3333333333333333,
+          0.375,
+          0.20833333333333334,
+          0.25,
+          0.4583333333333333,
+          0.25
+        ],
+        [
+          0.25,
+          0.125,
+          0.16666666666666666,
+          0.25,
+          0.16666666666666666,
+          0.5,
+          0.125,
+          0.25
+        ],
+        [
+          0.25,
+          0.16666666666666666,
+          0.20833333333333334,
+          0.4166666666666667,
+          0.25,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.125
+        ],
+        [
+          0.2916666666666667,
+          0.16666666666666666,
+          0.125,
+          0.4166666666666667,
+          0.2916666666666667,
+          0.25,
+          0.4166666666666667,
+          0.16666666666666666
+        ],
+        [
+          0.16666666666666666,
+          0.20833333333333334,
+          0.16666666666666666,
+          0.2916666666666667,
+          0.125,
+          0.20833333333333334,
+          0.20833333333333334,
+          0.16666666666666666
+        ],
+        [
+          0.2916666666666667,
+          0.25,
+          0.125,
+          0.4583333333333333,
+          0.20833333333333334,
+          0.375,
+          0.3333333333333333,
+          0.20833333333333334
+        ],
+        [
+          0.3333333333333333,
+          0.20833333333333334,
+          0.2916666666666667,
+          0.375,
+          0.375,
+          0.16666666666666666,
+          0.16666666666666666,
+          0.2916666666666667
+        ],
+        [
+          0.2916666666666667,
+          0.16666666666666666,
+          0.25,
+          0.16666666666666666,
+          0.125,
+          0.3333333333333333,
+          0.2916666666666667,
+          0.16666666666666666
+        ]
+      ]
+    },
+    "name": "equal_cpu/mamba1_independent_actor_matrix",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1420.5,
+      "expected": 1420.5
+    },
+    "name": "equal_cpu/mamba1:cost:mean_updates",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 60.02912140412501,
+      "expected": 60.02912140412501
+    },
+    "name": "equal_cpu/mamba1:cost:mean_training_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 67.28299375,
+      "expected": 67.28299375
+    },
+    "name": "equal_cpu/mamba1:cost:mean_whole_worker_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 67.54118313587499,
+      "expected": 67.54118313587499
+    },
+    "name": "equal_cpu/mamba1:cost:mean_whole_worker_wall_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.008346781374999779,
+      "expected": 0.008346781374999779
+    },
+    "name": "equal_cpu/mamba1:cost:mean_inference_median_cpu_seconds",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.26953125,
+      "expected": 0.26953125
+    },
+    "name": "equal_cpu/mamba1:audio:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 7.310975505812551,
+      "expected": 7.310975505812551
+    },
+    "name": "equal_cpu/mamba1:audio:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.2810151161156178,
+      "expected": 1.2810151161156178
+    },
+    "name": "equal_cpu/mamba1:audio:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.5988753281110224,
+      "expected": 0.5988753281110224
+    },
+    "name": "equal_cpu/mamba1:audio:ece",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.18619791666666666,
+      "expected": 0.18619791666666666
+    },
+    "name": "equal_cpu/mamba1:video:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 9.2829284309225,
+      "expected": 9.2829284309225
+    },
+    "name": "equal_cpu/mamba1:video:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.4535695942245228,
+      "expected": 1.4535695942245228
+    },
+    "name": "equal_cpu/mamba1:video:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.6897310013706529,
+      "expected": 0.6897310013706529
+    },
+    "name": "equal_cpu/mamba1:video:ece",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.25130208333333337,
+      "expected": 0.25130208333333337
+    },
+    "name": "equal_cpu/mamba1:fused:accuracy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 5.524609164978761,
+      "expected": 5.524609164978761
+    },
+    "name": "equal_cpu/mamba1:fused:cross_entropy",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 1.2692623984057922,
+      "expected": 1.2692623984057922
+    },
+    "name": "equal_cpu/mamba1:fused:brier",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.5807958315054604,
+      "expected": 0.5807958315054604
+    },
+    "name": "equal_cpu/mamba1:fused:ece",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.017578124999999997,
+      "expected": 0.017578124999999997
+    },
+    "name": "equal_cpu/two_gates:bootstrap:mean",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": [
+        -0.017578125,
+        0.05273437500000001
+      ],
+      "expected": [
+        -0.017578125,
+        0.052734375
+      ]
+    },
+    "name": "equal_cpu/two_gates:bootstrap:percentile95",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": -0.028645833333333332,
+      "expected": -0.02864583333333333
+    },
+    "name": "equal_cpu/two_gates:bootstrap:one_sided_bonferroni_lower",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/two_gates_unchanged_published_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": {
+      "independent_lower": -0.028645833333333332,
+      "numerical_zero_boundary_ambiguity": false,
+      "published_lower": -0.02864583333333333
+    },
+    "name": "equal_cpu/two_gates_independent_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/two_gates_integrity_qualified_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": -0.037109375,
+      "expected": -0.037109375
+    },
+    "name": "equal_cpu/transformer:bootstrap:mean",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": [
+        -0.08138020833333333,
+        0.009114583333333336
+      ],
+      "expected": [
+        -0.08138020833333333,
+        0.009114583333333336
+      ]
+    },
+    "name": "equal_cpu/transformer:bootstrap:percentile95",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": -0.09244791666666669,
+      "expected": -0.09244791666666667
+    },
+    "name": "equal_cpu/transformer:bootstrap:one_sided_bonferroni_lower",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/transformer_unchanged_published_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": {
+      "independent_lower": -0.09244791666666669,
+      "numerical_zero_boundary_ambiguity": false,
+      "published_lower": -0.09244791666666667
+    },
+    "name": "equal_cpu/transformer_independent_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/transformer_integrity_qualified_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.095703125,
+      "expected": 0.095703125
+    },
+    "name": "equal_cpu/lif_snn:bootstrap:mean",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": [
+        0.04622395833333333,
+        0.14908854166666669
+      ],
+      "expected": [
+        0.04622395833333333,
+        0.14908854166666669
+      ]
+    },
+    "name": "equal_cpu/lif_snn:bootstrap:percentile95",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.03255208333333334,
+      "expected": 0.03255208333333334
+    },
+    "name": "equal_cpu/lif_snn:bootstrap:one_sided_bonferroni_lower",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/lif_snn_unchanged_published_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": {
+      "independent_lower": 0.03255208333333334,
+      "numerical_zero_boundary_ambiguity": false,
+      "published_lower": 0.03255208333333334
+    },
+    "name": "equal_cpu/lif_snn_independent_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/lif_snn_integrity_qualified_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 0.05859375,
+      "expected": 0.05859375
+    },
+    "name": "equal_cpu/mamba1:bootstrap:mean",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": [
+        0.009765624999999997,
+        0.11002604166666667
+      ],
+      "expected": [
+        0.009765624999999995,
+        0.11002604166666666
+      ]
+    },
+    "name": "equal_cpu/mamba1:bootstrap:percentile95",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": -0.004557291666666673,
+      "expected": -0.004557291666666671
+    },
+    "name": "equal_cpu/mamba1:bootstrap:one_sided_bonferroni_lower",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/mamba1_unchanged_published_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": {
+      "independent_lower": -0.004557291666666673,
+      "numerical_zero_boundary_ambiguity": false,
+      "published_lower": -0.004557291666666671
+    },
+    "name": "equal_cpu/mamba1_independent_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "equal_cpu/mamba1_integrity_qualified_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "overall_predeclared_scientific_gate",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 4172.835467,
+      "expected": 4172.835467
+    },
+    "name": "all_attempt_whole_worker_cpu",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 3324.184114731,
+      "expected": 3324.184114731
+    },
+    "name": "all_valid_training_cpu_is_nested",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 551911424,
+      "expected": 551911424
+    },
+    "name": "maximum_worker_rss",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "prepare_all_driver_children_accounted",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 11.6965,
+      "expected": 11.6965
+    },
+    "name": "prepare_disjoint_driver_child_sum",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "train_all_driver_children_accounted",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 4174.024584,
+      "expected": 4174.024584
+    },
+    "name": "train_disjoint_driver_child_sum",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "finalize_all_driver_children_accounted",
+    "passed": true
+  },
+  {
+    "detail": {
+      "actual": 3.872103,
+      "expected": 3.872103
+    },
+    "name": "finalize_disjoint_driver_child_sum",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "training_stage_contains_complete_worker_cpu",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "decoder_detail_nested_in_prepare",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "energy_and_gpu_not_fabricated",
+    "passed": true
+  },
+  {
+    "detail": null,
+    "name": "exact_ninety_valid_jobs",
+    "passed": true
+  }
+]

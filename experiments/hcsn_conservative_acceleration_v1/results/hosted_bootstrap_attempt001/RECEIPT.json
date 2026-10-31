@@ -1,0 +1,209 @@
+{
+  "schema": "hcsn-hosted-bootstrap-failure.v1",
+  "public_commit": "59c7734d40b867ebb17f94bab0d2321e22269f0c",
+  "workflow_run_id": 41059211309,
+  "comparison_job_id": 124074389326,
+  "conclusion": "failure",
+  "formal_training_started": false,
+  "formal_jobs_dispatched": 0,
+  "container_initialization": "success",
+  "failed_step": "Materialize only the pinned source and bounded data objects",
+  "observed_error": "fatal: detected dubious ownership in repository at '/__w/hepta-private-ci/hepta-private-ci'",
+  "exit_code": 128,
+  "repair": "Trust only the already authorized and hash-verified GITHUB_WORKSPACE directory with git config --global --add safe.directory, in this disposable job container.",
+  "scientific_sources_changed": false,
+  "cohort_or_seeds_changed": false,
+  "process_cpu_seconds": null,
+  "energy_joules": null,
+  "workflow_job_elapsed_seconds": 27,
+  "wall_scope": "GitHub job timestamps rounded to seconds; includes setup/container pull/checkout/cleanup. No CPU or joule inference.",
+  "jobs": {
+    "total_count": 2,
+    "jobs": [
+      {
+        "id": 124074389326,
+        "run_id": 41059211309,
+        "workflow_name": "HCSN conservative hosted comparison",
+        "head_branch": "research/hcsn-conservative-acceleration-20261030",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41059211309",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAc42jvTg",
+        "head_sha": "59c7734d40b867ebb17f94bab0d2321e22269f0c",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/124074389326",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41059211309/job/124074389326",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-10-30T12:56:48Z",
+        "started_at": "2026-10-30T12:56:51Z",
+        "completed_at": "2026-10-30T12:57:18Z",
+        "name": "comparison",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-10-30T12:56:52Z",
+            "completed_at": "2026-10-30T12:56:53Z"
+          },
+          {
+            "name": "Initialize containers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-10-30T12:56:53Z",
+            "completed_at": "2026-10-30T12:57:13Z"
+          },
+          {
+            "name": "Check out the exact execution source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-10-30T12:57:13Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Materialize only the pinned source and bounded data objects",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 4,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Check the pinned interpreter and actual cgroup namespace",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 5,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Install pinned CPU numerical dependencies",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 6,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Restore data, verify math, and register the full rerun",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 7,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Preserve registration before formal training",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 8,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Run all 70 registered jobs",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 9,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Independently analyze and bind the trained native execution",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 10,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Package all original evidence including failures",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 11,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Preserve complete bounded evidence for publication",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 12,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Require complete audited execution",
+            "status": "completed",
+            "conclusion": "skipped",
+            "number": 13,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Post Check out the exact execution source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 25,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:15Z"
+          },
+          {
+            "name": "Stop containers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 26,
+            "started_at": "2026-10-30T12:57:15Z",
+            "completed_at": "2026-10-30T12:57:16Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 27,
+            "started_at": "2026-10-30T12:57:16Z",
+            "completed_at": "2026-10-30T12:57:16Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/124074389326",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000291468,
+        "runner_name": "GitHub Actions 1000291468",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 124074604213,
+        "run_id": 41059211309,
+        "workflow_name": "HCSN conservative hosted comparison",
+        "head_branch": "research/hcsn-conservative-acceleration-20261030",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41059211309",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAc42w2tQ",
+        "head_sha": "59c7734d40b867ebb17f94bab0d2321e22269f0c",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/124074604213",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41059211309/job/124074604213",
+        "status": "completed",
+        "conclusion": "skipped",
+        "created_at": "2026-10-30T12:57:18Z",
+        "started_at": "2026-10-30T12:57:18Z",
+        "completed_at": "2026-10-30T12:57:18Z",
+        "name": "publish",
+        "steps": [],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/124074604213",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": null,
+        "runner_name": null,
+        "runner_group_id": null,
+        "runner_group_name": null
+      }
+    ]
+  },
+  "job_log_sha256": "7dd1ed5c3520d6cc11da31aa5c2a8401bb191dee3db089d2fd1e31276a6ed9b7"
+}

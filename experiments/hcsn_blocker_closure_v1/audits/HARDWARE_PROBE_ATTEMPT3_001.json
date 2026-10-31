@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn-existing-desktop-probe-observation.v1",
+  "recorded_utc": "2026-10-31 02:23:13 UTC",
+  "observation": 1,
+  "launch_method": "Root successfully called the supported rerun_workflow_job tool for cancelled job119620552339; this agent performed no dispatch or duplicate retry.",
+  "run": {
+    "id": 39526325715,
+    "event": "workflow_dispatch",
+    "head_branch": "main",
+    "head_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "status": "queued",
+    "conclusion": null,
+    "run_attempt": 3,
+    "run_started_at": "2026-10-31T02:22:17Z",
+    "updated_at": "2026-10-31T02:22:19Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39526325715"
+  },
+  "jobs": [
+    {
+      "id": 124414290944,
+      "run_id": 39526325715,
+      "workflow_name": "Self-hosted desktop runner availability",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39526325715",
+      "run_attempt": 3,
+      "node_id": "CR_kwDOTrgxoM8AAAAc96tsAA",
+      "head_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/124414290944",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39526325715/job/124414290944",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-31T02:22:19Z",
+      "started_at": "2026-10-31T02:22:19Z",
+      "completed_at": null,
+      "name": "Desktop runner probe",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/124414290944",
+      "labels": [
+        "self-hosted",
+        "linux",
+        "x64"
+      ],
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null
+    }
+  ],
+  "job_count": 1,
+  "observed_runner_acquired": false,
+  "observed_gpu_name": null,
+  "measured_energy_joules": null,
+  "status_interpretation": "Normal authorized retry was accepted and created attempt3/job124414290944, currently queued without an assigned runner or executed steps. Acceptance proves the retry interface works; it does not yet establish GPU availability, execution success, or a timeout.",
+  "queue_clock_note": "GitHub supplies started_at even for this queued/unassigned job; do not treat that timestamp as measured host execution or CPU cost. A ten-minute execution timeout is not evidence that an unassigned queue has already timed out.",
+  "mutation_scope": "One parent-authorized retry of unchanged diagnostic code. No repository, workflow, runner-label, production or provisioning mutation.",
+  "review_file": "HARDWARE_DISPATCH_REVIEW.json",
+  "sources": [
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39526325715",
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39526325715/jobs?per_page=100"
+  ]
+}

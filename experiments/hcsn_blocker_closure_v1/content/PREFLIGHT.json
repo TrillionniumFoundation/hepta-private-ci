@@ -1,0 +1,1570 @@
+{
+  "checks": [
+    {
+      "detail": null,
+      "name": "selective_copy: label oracle from observed sequence",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "mqar: label oracle from observed sequence",
+      "passed": true
+    },
+    {
+      "detail": 1.6653345369377348e-16,
+      "name": "first-event F/H independent SciPy",
+      "passed": true
+    },
+    {
+      "detail": 4.2424038747381696e-11,
+      "name": "first-event all seven parameter Jacobians versus independent finite differences",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "first-event discount and probability order",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "first-event zero horizon",
+      "passed": true
+    },
+    {
+      "detail": {
+        "discounted_H": 0.8561404497852539,
+        "first_F": 0.9985229220909997,
+        "repeat_C": 4.949420799439071
+      },
+      "name": "repeat count differs from first-event probability",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "JG wrapper identical initialization",
+      "passed": true
+    },
+    {
+      "detail": 0.0,
+      "name": "JG wrapper forward equivalence",
+      "passed": true
+    },
+    {
+      "detail": 2.7755575615628914e-17,
+      "name": "JG wrapper gradient equivalence",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "boundary": 0.00020033074662160826,
+          "content": 2.5286367924876156,
+          "dynamics": 0.005197690409516481,
+          "refractory": 0.0002408957345274452,
+          "reset": 0.0002112173831564039
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.01572149110231226,
+            "maximum_absolute": 0.005997759290039539,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.7389400355589161,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09466723539202823,
+            "maximum_absolute": 0.00600375235080719,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.015801410842401335,
+            "maximum_absolute": 0.005999330431222916,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.01636850686130505,
+            "maximum_absolute": 0.006002133712172508,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "value_jg: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.06719615310430527,
+        0.0761081799864769,
+        0.06451927125453949
+      ],
+      "name": "value_jg: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": "content",
+        "gradient_l2_sums": {
+          "boundary": 0.00022701384359806017,
+          "content": 0.0,
+          "dynamics": 0.0058647743125256075,
+          "refractory": 0.0002789202135184361,
+          "reset": 0.0002232368648250708
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.016964607139631962,
+            "maximum_absolute": 0.0059999097138643265,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.0,
+            "maximum_absolute": 0.0,
+            "nonzero": 0
+          },
+          "dynamics": {
+            "l2": 0.09964601223768861,
+            "maximum_absolute": 0.006003713700920343,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.016963532754231188,
+            "maximum_absolute": 0.006000526715070009,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.01688798384348504,
+            "maximum_absolute": 0.005998322274535894,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "freeze_content: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.06695247441530228,
+        0.0763377696275711,
+        0.06433927267789841
+      ],
+      "name": "freeze_content: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": "dynamics",
+        "gradient_l2_sums": {
+          "boundary": 0.00020036663494410112,
+          "content": 2.5288910658402886,
+          "dynamics": 0.0,
+          "refractory": 0.00024073899529424497,
+          "reset": 0.00021168734704968452
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.015663263050052143,
+            "maximum_absolute": 0.005998667795211077,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.7390575028833734,
+            "maximum_absolute": 0.006004069000482559,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.0,
+            "maximum_absolute": 0.0,
+            "nonzero": 0
+          },
+          "refractory": {
+            "l2": 0.015757951475632467,
+            "maximum_absolute": 0.005999554414302111,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.01636650878785917,
+            "maximum_absolute": 0.006001672241836786,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "freeze_dynamics: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.06561082601547241,
+        0.07625548541545868,
+        0.062448132783174515
+      ],
+      "name": "freeze_dynamics: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": "boundary",
+        "gradient_l2_sums": {
+          "boundary": 0.0,
+          "content": 2.5286403414669025,
+          "dynamics": 0.0051977043245230005,
+          "refractory": 0.00024089596715631362,
+          "reset": 0.00021123533461154257
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.0,
+            "maximum_absolute": 0.0,
+            "nonzero": 0
+          },
+          "content": {
+            "l2": 0.7389424291403661,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.0946653175688262,
+            "maximum_absolute": 0.00600375235080719,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.015801602171198054,
+            "maximum_absolute": 0.005999335087835789,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.016368273707957195,
+            "maximum_absolute": 0.0060021355748176575,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "freeze_boundary: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.06718460470438004,
+        0.07609991729259491,
+        0.06448524445295334
+      ],
+      "name": "freeze_boundary: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": "reset",
+        "gradient_l2_sums": {
+          "boundary": 0.00020034328740179243,
+          "content": 2.5286376787268967,
+          "dynamics": 0.005197487038018448,
+          "refractory": 0.0002408963248768348,
+          "reset": 0.0
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.01571827173667046,
+            "maximum_absolute": 0.005997791886329651,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.7389406275835264,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09466248672573904,
+            "maximum_absolute": 0.00600375235080719,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.01579806756614477,
+            "maximum_absolute": 0.005999332293868065,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.0,
+            "maximum_absolute": 0.0,
+            "nonzero": 0
+          }
+        }
+      },
+      "name": "freeze_reset: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.0671985000371933,
+        0.07610999792814255,
+        0.06453003734350204
+      ],
+      "name": "freeze_reset: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": "refractory",
+        "gradient_l2_sums": {
+          "boundary": 0.00020032846053800955,
+          "content": 2.5286405847141076,
+          "dynamics": 0.005197591720722292,
+          "refractory": 0.0,
+          "reset": 0.0002112071644016327
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.015721500526670967,
+            "maximum_absolute": 0.005997754167765379,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.7389409383845996,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09466652519790286,
+            "maximum_absolute": 0.00600375235080719,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.0,
+            "maximum_absolute": 0.0,
+            "nonzero": 0
+          },
+          "reset": {
+            "l2": 0.016368693571382785,
+            "maximum_absolute": 0.006002134643495083,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "freeze_refractory: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.06717846542596817,
+        0.0761113092303276,
+        0.06453731656074524
+      ],
+      "name": "freeze_refractory: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "boundary": 0.0001994790556573333,
+          "content": 2.5264158745951817,
+          "dynamics": 0.006163838970521688,
+          "refractory": 0.00023214093586117505,
+          "reset": 0.00020576489464292223
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.016190899660629456,
+            "maximum_absolute": 0.005998818203806877,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.7384275774001223,
+            "maximum_absolute": 0.0060040708631277084,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09672904407681024,
+            "maximum_absolute": 0.006003648042678833,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.015518952760781886,
+            "maximum_absolute": 0.005992441903799772,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.016422194700709564,
+            "maximum_absolute": 0.006002445705235004,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "fixed_jg: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.03490268439054489,
+        0.06811518222093582,
+        0.06979810446500778
+      ],
+      "name": "fixed_jg: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "fixed_jg: threshold independent of current observation",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "boundary": 0.00032197274587645957,
+          "content": 2.526410997412641,
+          "dynamics": 0.006163942912047552,
+          "refractory": 0.000232140927579243,
+          "reset": 0.00020575537939070173
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.0219820465911509,
+            "maximum_absolute": 0.00599884707480669,
+            "nonzero": 16
+          },
+          "content": {
+            "l2": 0.7384352124060782,
+            "maximum_absolute": 0.0060040708631277084,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09673422384299307,
+            "maximum_absolute": 0.006003633141517639,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.015519606130768152,
+            "maximum_absolute": 0.005992462858557701,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.01642156744029235,
+            "maximum_absolute": 0.006002443376928568,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "learned_jg: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.034868091344833374,
+        0.06807231158018112,
+        0.06990528851747513
+      ],
+      "name": "learned_jg: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "learned_jg: threshold independent of current observation",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "boundary": 7.140525138503095e-05,
+          "content": 2.51641268187631,
+          "dynamics": 0.003652187110232504,
+          "refractory": 0.0002555027657501859,
+          "reset": 0.00017756045824418243
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.015705307662608824,
+            "maximum_absolute": 0.005970831029117107,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.7403396867454142,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09605635831254425,
+            "maximum_absolute": 0.006003775633871555,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.015076773063736205,
+            "maximum_absolute": 0.0059645697474479675,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.01590067028713606,
+            "maximum_absolute": 0.005999747198075056,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "fixed_ordinary: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.03492347151041031,
+        0.06741178035736084,
+        0.09219100326299667
+      ],
+      "name": "fixed_ordinary: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "fixed_ordinary: threshold independent of current observation",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "boundary": 0.0003000780963846564,
+          "content": 2.516404629209239,
+          "dynamics": 0.003653094182374971,
+          "refractory": 0.0002555155733749684,
+          "reset": 0.00017754891514286207
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.022072722399812682,
+            "maximum_absolute": 0.006001830101013184,
+            "nonzero": 16
+          },
+          "content": {
+            "l2": 0.7403443364552024,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09605830865829902,
+            "maximum_absolute": 0.006003782153129578,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.015077429169379,
+            "maximum_absolute": 0.005964620038866997,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.015900476721930706,
+            "maximum_absolute": 0.0059997281059622765,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "learned_ordinary: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.03488903492689133,
+        0.06736671179533005,
+        0.09226365387439728
+      ],
+      "name": "learned_ordinary: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "learned_ordinary: threshold independent of current observation",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "boundary": 0.00021348455329941215,
+          "content": 2.5188219378620915,
+          "dynamics": 0.004475503020435709,
+          "refractory": 0.0002685102193834652,
+          "reset": 0.0001563253216850381
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.016827844720683546,
+            "maximum_absolute": 0.0060012731701135635,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.7442652121257056,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09406614327401007,
+            "maximum_absolute": 0.006003551185131073,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.015043739447002304,
+            "maximum_absolute": 0.005957157351076603,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.016653556201859012,
+            "maximum_absolute": 0.006000990513712168,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "value_margin: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.0651242583990097,
+        0.10028249025344849,
+        0.11637387424707413
+      ],
+      "name": "value_margin: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "boundary": 0.00012379076709481126,
+          "content": 2.5242271618141925,
+          "dynamics": 0.003335138583161201,
+          "refractory": 0.00025470509773253163,
+          "reset": 0.00018806617994801122
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.01641757844058837,
+            "maximum_absolute": 0.005996733903884888,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.7419634807242399,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09274289142146047,
+            "maximum_absolute": 0.0060034990310668945,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.01605210196749885,
+            "maximum_absolute": 0.005989924073219299,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.0163269569451349,
+            "maximum_absolute": 0.006002114154398441,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "value_j: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.06714131683111191,
+        0.07605867832899094,
+        0.02665683440864086
+      ],
+      "name": "value_j: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "boundary": 0.0001294028301049213,
+          "content": 2.520675494333047,
+          "dynamics": 0.003005221487208065,
+          "refractory": 0.00025833723779542515,
+          "reset": 0.0001944053042675772
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.015394159381606964,
+            "maximum_absolute": 0.005996478721499443,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.7397472385683426,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09335667538117846,
+            "maximum_absolute": 0.006003573536872864,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.016278172387127757,
+            "maximum_absolute": 0.005974539555609226,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.01620199306125557,
+            "maximum_absolute": 0.006000768393278122,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "value_g: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.0672348141670227,
+        0.06439036875963211,
+        0.030100062489509583
+      ],
+      "name": "value_g: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "boundary": 0.00011942149798239697,
+          "content": 2.5239901494627883,
+          "dynamics": 0.0028943765271586793,
+          "refractory": 0.00025681715361161725,
+          "reset": 0.00017977715341181753
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.016333812777136126,
+            "maximum_absolute": 0.005999231711030006,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.7408745271697333,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09128761510009634,
+            "maximum_absolute": 0.006003588438034058,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.016143227926416297,
+            "maximum_absolute": 0.005987101700156927,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.01609449305894355,
+            "maximum_absolute": 0.006001974921673536,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "value_fh: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.06704080104827881,
+        0.006977046839892864,
+        0.0067536127753555775
+      ],
+      "name": "value_fh: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "boundary": 0.00014093077720540856,
+          "content": 2.5176963453788073,
+          "dynamics": 0.003981002669451695,
+          "refractory": 0.000266567175306292,
+          "reset": 0.0001832121109546289
+        },
+        "updates": {
+          "boundary": {
+            "l2": 0.014472930794237648,
+            "maximum_absolute": 0.005986977368593216,
+            "nonzero": 8
+          },
+          "content": {
+            "l2": 0.7406657590891372,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 18376
+          },
+          "dynamics": {
+            "l2": 0.09306737363623192,
+            "maximum_absolute": 0.006003454327583313,
+            "nonzero": 280
+          },
+          "refractory": {
+            "l2": 0.015958377795292,
+            "maximum_absolute": 0.005981329828500748,
+            "nonzero": 8
+          },
+          "reset": {
+            "l2": 0.015903963192132605,
+            "maximum_absolute": 0.0060019646771252155,
+            "nonzero": 8
+          }
+        }
+      },
+      "name": "value_ordinary: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": [
+        0.06712468713521957,
+        0.12225540727376938,
+        0.08788257837295532
+      ],
+      "name": "value_ordinary: all three feature coordinates active",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "backbone": 0.365394682016839,
+          "frontend": 0.15895538282192484,
+          "readout": 0.5926986017218214
+        },
+        "updates": {
+          "backbone": {
+            "l2": 0.7167086758247349,
+            "maximum_absolute": 0.006004061549901962,
+            "nonzero": 17770
+          },
+          "frontend": {
+            "l2": 0.11966259006501605,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 480
+          },
+          "readout": {
+            "l2": 0.09007334612623152,
+            "maximum_absolute": 0.00600406713783741,
+            "nonzero": 264
+          }
+        }
+      },
+      "name": "two_gates: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "backbone": 1.5406273564221855,
+          "frontend": 0.9580740805710766,
+          "readout": 1.3796810711546508
+        },
+        "updates": {
+          "backbone": {
+            "l2": 0.720149437391189,
+            "maximum_absolute": 0.006004072725772858,
+            "nonzero": 17954
+          },
+          "frontend": {
+            "l2": 0.12133439737043823,
+            "maximum_absolute": 0.006004043854773045,
+            "nonzero": 480
+          },
+          "readout": {
+            "l2": 0.08863017814269179,
+            "maximum_absolute": 0.006004065275192261,
+            "nonzero": 264
+          }
+        }
+      },
+      "name": "transformer: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "backbone": 0.3009476472696935,
+          "frontend": 0.07220527822344885,
+          "readout": 0.572964877144185
+        },
+        "updates": {
+          "backbone": {
+            "l2": 0.5379389139618922,
+            "maximum_absolute": 0.006004061549901962,
+            "nonzero": 9465
+          },
+          "frontend": {
+            "l2": 0.11932207425384926,
+            "maximum_absolute": 0.006003737449645996,
+            "nonzero": 480
+          },
+          "readout": {
+            "l2": 0.0941253567446845,
+            "maximum_absolute": 0.006004069000482559,
+            "nonzero": 264
+          }
+        }
+      },
+      "name": "lif_snn: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": {
+        "frozen_group": null,
+        "gradient_l2_sums": {
+          "backbone": 0.8088166062358513,
+          "frontend": 0.9316389274688996,
+          "readout": 0.7701055377494114
+        },
+        "updates": {
+          "backbone": {
+            "l2": 0.6737807853184218,
+            "maximum_absolute": 0.006004072725772858,
+            "nonzero": 17826
+          },
+          "frontend": {
+            "l2": 0.11976597159603763,
+            "maximum_absolute": 0.0060040950775146484,
+            "nonzero": 480
+          },
+          "readout": {
+            "l2": 0.09017566794703967,
+            "maximum_absolute": 0.006004026625305414,
+            "nonzero": 264
+          }
+        }
+      },
+      "name": "mamba1: intended groups receive gradients and update",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "all model frontend/readout initial tensors identical",
+      "passed": true
+    },
+    {
+      "detail": 0.010248412610003341,
+      "name": "active resident backbone spread <=3%",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "all six full registered batch train-only gradients finite and nonzero",
+      "passed": true
+    }
+  ],
+  "cpu_seconds": 4.475878572,
+  "data_scope": "small new train-only probes; no development validation or formal heldout arrays",
+  "details": {
+    "counts": {
+      "fixed_jg": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": null,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20408
+      },
+      "fixed_ordinary": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": null,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20408
+      },
+      "freeze_boundary": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": "boundary",
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20400
+      },
+      "freeze_content": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": "content",
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 304
+      },
+      "freeze_dynamics": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": "dynamics",
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20128
+      },
+      "freeze_refractory": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": "refractory",
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20400
+      },
+      "freeze_reset": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": "reset",
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20400
+      },
+      "learned_jg": {
+        "backbone": 17944,
+        "frontend": 2208,
+        "frozen_group": null,
+        "groups": {
+          "boundary": 16,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20416,
+        "trainable": 20416
+      },
+      "learned_ordinary": {
+        "backbone": 17944,
+        "frontend": 2208,
+        "frozen_group": null,
+        "groups": {
+          "boundary": 16,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20416,
+        "trainable": 20416
+      },
+      "lif_snn": {
+        "backbone": 17886,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 79,
+          "n_parameters": 17886,
+          "parameter_padding": false,
+          "relative_gap": 0.0027876895628902764,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20358
+      },
+      "mamba1": {
+        "backbone": 17826,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 41,
+          "n_parameters": 17826,
+          "parameter_padding": false,
+          "relative_gap": 0.006132917038358609,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20298
+      },
+      "transformer": {
+        "backbone": 17954,
+        "frontend": 2208,
+        "matching": {
+          "ffn_width": 138,
+          "hidden_width": 36,
+          "n_parameters": 17954,
+          "parameter_padding": false,
+          "relative_gap": 0.0010035682426404995,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20426
+      },
+      "two_gates": {
+        "backbone": 17770,
+        "frontend": 2208,
+        "matching": {
+          "hidden_width": 49,
+          "n_parameters": 17770,
+          "parameter_padding": false,
+          "relative_gap": 0.009255129348795719,
+          "target_parameters": 17936
+        },
+        "readout": 264,
+        "total": 20242
+      },
+      "value_fh": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": null,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20408
+      },
+      "value_g": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": null,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20408
+      },
+      "value_j": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": null,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20408
+      },
+      "value_jg": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": null,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20408
+      },
+      "value_margin": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": null,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20408
+      },
+      "value_ordinary": {
+        "backbone": 17936,
+        "frontend": 2208,
+        "frozen_group": null,
+        "groups": {
+          "boundary": 8,
+          "content": 20104,
+          "dynamics": 280,
+          "refractory": 8,
+          "reset": 8
+        },
+        "readout": 264,
+        "total": 20408,
+        "trainable": 20408
+      }
+    },
+    "first_event_max_scaled_gradient_error": 4.2424038747381696e-11,
+    "first_event_state_domain": "8 active cells and 2 remaining refractory phases",
+    "full_batch_train_only_timings": {
+      "lif_snn": {
+        "batch": 32,
+        "gradient_nonzero_coordinates": 11195,
+        "gradients_finite": true,
+        "length": 32,
+        "one_full_update_cpu_seconds": 0.015534068000000012,
+        "physical": {},
+        "wall_seconds": 0.015534669000771828
+      },
+      "mamba1": {
+        "batch": 32,
+        "gradient_nonzero_coordinates": 19082,
+        "gradients_finite": true,
+        "length": 32,
+        "one_full_update_cpu_seconds": 0.028451059,
+        "physical": {},
+        "wall_seconds": 0.028452329999709036
+      },
+      "transformer": {
+        "batch": 32,
+        "gradient_nonzero_coordinates": 19210,
+        "gradients_finite": true,
+        "length": 32,
+        "one_full_update_cpu_seconds": 0.020695803000000623,
+        "physical": {},
+        "wall_seconds": 0.02069696800026577
+      },
+      "two_gates": {
+        "batch": 32,
+        "gradient_nonzero_coordinates": 19026,
+        "gradients_finite": true,
+        "length": 32,
+        "one_full_update_cpu_seconds": 0.01962998999999943,
+        "physical": {},
+        "wall_seconds": 0.019631224997283425
+      },
+      "value_fh": {
+        "batch": 32,
+        "gradient_nonzero_coordinates": 19192,
+        "gradients_finite": true,
+        "length": 32,
+        "one_full_update_cpu_seconds": 1.2344642539999997,
+        "physical": {
+          "boundary_mean": 1.0906610488891602,
+          "discounted_minus_probability_maximum": -1.5738478396087885e-06,
+          "expected_events": 137.99966430664062,
+          "first_event_maximum": 0.029954439029097557,
+          "first_event_minimum": 0.00011180868023075163,
+          "maximum_mass_defect": 4.383036866784096e-08,
+          "minimum": 2.4145694332844414e-09,
+          "refractory_mean": 0.10397663712501526
+        },
+        "wall_seconds": 1.2559272439975757
+      },
+      "value_jg": {
+        "batch": 32,
+        "gradient_nonzero_coordinates": 19192,
+        "gradients_finite": true,
+        "length": 32,
+        "one_full_update_cpu_seconds": 0.2389277070000002,
+        "physical": {
+          "boundary_mean": 1.0906610488891602,
+          "expected_events": 137.99966430664062,
+          "maximum_mass_defect": 4.383036866784096e-08,
+          "minimum": 2.4145694332844414e-09,
+          "refractory_mean": 0.10397663712501526
+        },
+        "wall_seconds": 0.23937230100273155
+      }
+    },
+    "train_only_timings": {
+      "fixed_jg": {
+        "batch": 4,
+        "final_train_loss": 1.9776908159255981,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.3000000715255737,
+          "expected_events": 3.0499167442321777,
+          "maximum_mass_defect": 4.7193680074997246e-08,
+          "minimum": 3.0301414710720564e-08,
+          "refractory_mean": 0.02580685168504715
+        },
+        "two_small_updates_cpu_seconds": 0.08224018700000002
+      },
+      "fixed_ordinary": {
+        "batch": 4,
+        "final_train_loss": 1.977742075920105,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.3000000715255737,
+          "expected_events": 3.0607738494873047,
+          "maximum_mass_defect": 4.469075065571815e-08,
+          "minimum": 3.0299670328304273e-08,
+          "refractory_mean": 0.02580925263464451
+        },
+        "two_small_updates_cpu_seconds": 0.11079056399999976
+      },
+      "freeze_boundary": {
+        "batch": 4,
+        "final_train_loss": 1.9776055812835693,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.0886943340301514,
+          "expected_events": 7.978719234466553,
+          "maximum_mass_defect": 4.081022098034737e-08,
+          "minimum": 7.033374327392039e-09,
+          "refractory_mean": 0.07666565477848053
+        },
+        "two_small_updates_cpu_seconds": 0.09846778400000034
+      },
+      "freeze_content": {
+        "batch": 4,
+        "final_train_loss": 2.069338083267212,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.0866541862487793,
+          "expected_events": 7.976339340209961,
+          "maximum_mass_defect": 3.8708094507455826e-08,
+          "minimum": 6.2409499790305745e-09,
+          "refractory_mean": 0.07674325257539749
+        },
+        "two_small_updates_cpu_seconds": 0.08134976400000005
+      },
+      "freeze_dynamics": {
+        "batch": 4,
+        "final_train_loss": 1.977683663368225,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.0904107093811035,
+          "expected_events": 7.937266826629639,
+          "maximum_mass_defect": 4.44706529378891e-08,
+          "minimum": 7.74764608024725e-09,
+          "refractory_mean": 0.07624199986457825
+        },
+        "two_small_updates_cpu_seconds": 0.08578962799999967
+      },
+      "freeze_refractory": {
+        "batch": 4,
+        "final_train_loss": 1.9776054620742798,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.0886189937591553,
+          "expected_events": 7.979711532592773,
+          "maximum_mass_defect": 4.400499165058136e-08,
+          "minimum": 7.031840887350427e-09,
+          "refractory_mean": 0.07666739821434021
+        },
+        "two_small_updates_cpu_seconds": 0.08610653799999968
+      },
+      "freeze_reset": {
+        "batch": 4,
+        "final_train_loss": 1.9776058197021484,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.088599681854248,
+          "expected_events": 7.980003356933594,
+          "maximum_mass_defect": 4.313187673687935e-08,
+          "minimum": 7.031899063036917e-09,
+          "refractory_mean": 0.07667909562587738
+        },
+        "two_small_updates_cpu_seconds": 0.09064571899999985
+      },
+      "learned_jg": {
+        "batch": 4,
+        "final_train_loss": 1.9776898622512817,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.2996559143066406,
+          "expected_events": 3.052006244659424,
+          "maximum_mass_defect": 3.914260560122784e-08,
+          "minimum": 3.029534667575717e-08,
+          "refractory_mean": 0.02582719922065735
+        },
+        "two_small_updates_cpu_seconds": 0.09268574799999962
+      },
+      "learned_ordinary": {
+        "batch": 4,
+        "final_train_loss": 1.9777414798736572,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.3000011444091797,
+          "expected_events": 3.0617175102233887,
+          "maximum_mass_defect": 4.377216100692749e-08,
+          "minimum": 3.029358808248617e-08,
+          "refractory_mean": 0.025819450616836548
+        },
+        "two_small_updates_cpu_seconds": 0.11654860999999972
+      },
+      "lif_snn": {
+        "batch": 4,
+        "final_train_loss": 2.1072418689727783,
+        "length": 16,
+        "physical": {},
+        "two_small_updates_cpu_seconds": 0.0393979360000003
+      },
+      "mamba1": {
+        "batch": 4,
+        "final_train_loss": 2.0701210498809814,
+        "length": 16,
+        "physical": {},
+        "two_small_updates_cpu_seconds": 0.08437704199999985
+      },
+      "transformer": {
+        "batch": 4,
+        "final_train_loss": 1.9832009077072144,
+        "length": 16,
+        "physical": {},
+        "two_small_updates_cpu_seconds": 0.07875909599999975
+      },
+      "two_gates": {
+        "batch": 4,
+        "final_train_loss": 2.10156512260437,
+        "length": 16,
+        "physical": {},
+        "two_small_updates_cpu_seconds": 0.05166214800000013
+      },
+      "value_fh": {
+        "batch": 4,
+        "final_train_loss": 1.977561116218567,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.0908499956130981,
+          "discounted_minus_probability_maximum": -1.9424333004280925e-06,
+          "expected_events": 7.942564964294434,
+          "first_event_maximum": 0.029982807114720345,
+          "first_event_minimum": 0.00012710019655060023,
+          "maximum_mass_defect": 3.876630216836929e-08,
+          "minimum": 7.459456163871891e-09,
+          "refractory_mean": 0.07636819034814835
+        },
+        "two_small_updates_cpu_seconds": 0.212806783
+      },
+      "value_g": {
+        "batch": 4,
+        "final_train_loss": 1.9775162935256958,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.0871546268463135,
+          "expected_events": 7.935361862182617,
+          "maximum_mass_defect": 4.272442311048508e-08,
+          "minimum": 9.742369577736554e-09,
+          "refractory_mean": 0.07623724639415741
+        },
+        "two_small_updates_cpu_seconds": 0.11014214700000036
+      },
+      "value_j": {
+        "batch": 4,
+        "final_train_loss": 1.9776976108551025,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.0872691869735718,
+          "expected_events": 7.942807674407959,
+          "maximum_mass_defect": 4.516914486885071e-08,
+          "minimum": 9.410074497395726e-09,
+          "refractory_mean": 0.07627629488706589
+        },
+        "two_small_updates_cpu_seconds": 0.126612014
+      },
+      "value_jg": {
+        "batch": 4,
+        "final_train_loss": 1.9776049852371216,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.0886203050613403,
+          "expected_events": 7.979745864868164,
+          "maximum_mass_defect": 4.480716597754508e-08,
+          "minimum": 7.031816018354675e-09,
+          "refractory_mean": 0.0766763836145401
+        },
+        "two_small_updates_cpu_seconds": 1.0024426149999999
+      },
+      "value_margin": {
+        "batch": 4,
+        "final_train_loss": 1.9775524139404297,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.0919429063796997,
+          "expected_events": 7.933629035949707,
+          "maximum_mass_defect": 4.493631422519684e-08,
+          "minimum": 7.67615038199665e-09,
+          "refractory_mean": 0.07632458955049515
+        },
+        "two_small_updates_cpu_seconds": 0.09591024800000003
+      },
+      "value_ordinary": {
+        "batch": 4,
+        "final_train_loss": 1.9777499437332153,
+        "length": 16,
+        "physical": {
+          "boundary_mean": 1.0900533199310303,
+          "expected_events": 7.951520919799805,
+          "maximum_mass_defect": 4.6286004362627864e-08,
+          "minimum": 1.0000937855636494e-08,
+          "refractory_mean": 0.07638740539550781
+        },
+        "two_small_updates_cpu_seconds": 0.08450533000000027
+      }
+    }
+  },
+  "limitations": [
+    "A nonzero gradient does not prove task benefit",
+    "Local Jacobian checks exclude interpolation knots",
+    "No content-task optimality theorem"
+  ],
+  "passed": true,
+  "peak_rss_bytes": 884969472,
+  "schema": "hcsn-blocker-content-preflight.v1",
+  "source_sha256": {
+    "experiments/continuous_spiking_network/baseline.py": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+    "experiments/hcsn_blocker_closure_v1/content/DESIGN.json": "c38b579da45bc200825419f48b0321586dcdbe26eeec8f45323f56d668ca148f",
+    "experiments/hcsn_blocker_closure_v1/content/__init__.py": "b19567b2db5b6961b63c4d2f8359a4f56a2b1664ea31c45e794339066e12e96c",
+    "experiments/hcsn_blocker_closure_v1/content/analysis.py": "aed2dd5bee0561fbea6030b9902f3eef65b513d6ea5aa4ad19409f65c3b46564",
+    "experiments/hcsn_blocker_closure_v1/content/data.py": "89cec4f5d5926d4971880b4103e8b964f702986d7ad0f884fa95b52c32e876ee",
+    "experiments/hcsn_blocker_closure_v1/content/models.py": "f08878c2760bcec859e5e11c7b906b71647029073f782987c3431a4ca0ea71fe",
+    "experiments/hcsn_blocker_closure_v1/content/preflight.py": "edbba48e2d8b2f464fb714611a6c87aa16f8d495aa0b6db7ed1c269bddd59911",
+    "experiments/hcsn_blocker_closure_v1/content/study.py": "1e7039a7d2cbf3e4be1f009c0aeab92b31c5098b606ee55f89d6f74105d7b3d0",
+    "experiments/hcsn_conservative_acceleration_v1/kernel.py": "d528d140b83e11e80b835853d94677e1a2293d6b7c16ec4b27e2fac5d2ffcf68",
+    "experiments/hcsn_conservative_acceleration_v1/model.py": "1326e49d6c5add4eb0ef20524aa5a0c0edd80fc3284da8db4b6266993073118b",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_distributional_v2/model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+    "experiments/hcsn_distributional_v2/stable_probability.py": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770",
+    "experiments/hcsn_free_boundary_v1/model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a"
+  },
+  "wall_seconds": 5.079339331001393
+}

@@ -1,0 +1,44 @@
+{
+  "codespell_version": "2.4.3",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "codespell_lib",
+    "--count",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git",
+    "experiments/hcsn_blocker_closure_v1/audits/content_raw_metric_replay.py",
+    "experiments/hcsn_blocker_closure_v1/audits/CONTENT_RAW_METRIC_PREFLIGHT001.json",
+    "experiments/hcsn_blocker_closure_v1/audits/CONTENT_RAW_METRIC_PREFLIGHT002.json"
+  ],
+  "configuration": {
+    ".codespellignore": "a9e49184a25c2c909c36bbd5046c50f10e6a0979eacfc4a8310841c2ec3aed4d",
+    ".codespellrc": "1af31c5c5b2d80f6292a3ee3a2a1e92b3e87d5bc5998263af89dfda03b553e44"
+  },
+  "created_utc": "2026-10-31T02:56:11.173699+00:00",
+  "exit_code": 0,
+  "inputs": [
+    {
+      "bytes": 20289,
+      "path": "experiments/hcsn_blocker_closure_v1/audits/content_raw_metric_replay.py",
+      "sha256": "110896c16ff84e084d8dd37e6f17804c3c93af0331be9fb5590b7da917336ef6"
+    },
+    {
+      "bytes": 3548,
+      "path": "experiments/hcsn_blocker_closure_v1/audits/CONTENT_RAW_METRIC_PREFLIGHT001.json",
+      "sha256": "e94e84484864167340ce60a6ba05304548089d386628489a145f5601667fa4cc"
+    },
+    {
+      "bytes": 3915,
+      "path": "experiments/hcsn_blocker_closure_v1/audits/CONTENT_RAW_METRIC_PREFLIGHT002.json",
+      "sha256": "250439bb5cfe05c3dcf2be168881825c6eaedb0e14cc6ceb7e2180a6bd6b4703"
+    }
+  ],
+  "passed": true,
+  "schema": "hcsn-raw-metric-source-spelling-check.v1",
+  "scope": "Only three newly added independent raw replay source/preflight files; separate from prior127-file pass. No source changes or ignore changes.",
+  "stderr_utf8_hex": "300a",
+  "stdout_utf8_hex": ""
+}

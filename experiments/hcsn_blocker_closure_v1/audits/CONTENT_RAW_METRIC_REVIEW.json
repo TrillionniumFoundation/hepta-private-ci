@@ -1,0 +1,51 @@
+{
+  "blocking_findings_remaining": [],
+  "checks": [
+    {
+      "finding": "Final probability.argmax matches the frozen FP64 softmax tie rule. Stable SciPy logsumexp/softmax and Brier identity match the declared CE/accuracy/Brier endpoints.",
+      "name": "classification_numeric_contract"
+    },
+    {
+      "finding": "Exactly10 left-closed/right-open equal-width bins; confidence1.0 goes in the last bin. Searchsorted plus binned mass computes the same ECE contract.",
+      "name": "calibration_numeric_contract"
+    },
+    {
+      "finding": "Static generator yields4 supervised targets per episode; all256-episode evaluation splits therefore have1024 targets. Boolean flattening of registered y matches batchwise evaluator output order.",
+      "name": "ground_truth_population_and_order"
+    },
+    {
+      "finding": "Checks compressed NPZ size, exact unique member names, requested NPY shape/order/dtype and allocation byte bound before loading requested arrays. Ground-truth cache loads only y; prediction arrays are processed one file at a time.",
+      "name": "bounded_numpy_loading"
+    },
+    {
+      "finding": "Completed exact run, protocol SHA, metric source SHA and externally pinned archive index/member hashes bind inputs. Source-identical synthetic preflight must predate formal audit start.",
+      "name": "immutable_provenance_and_completion"
+    },
+    {
+      "finding": "Final patch compares complete job dictionaries including stage/task/arm/seed/LR/updates/id; each worker also binds protocol and execution seal. Exact valid/test/OOD inventory and prediction filenames are checked.",
+      "name": "complete_job_contract"
+    },
+    {
+      "finding": "Every replay failure remains in bounded output shards; integer counts compare exactly and frozen FP64 absolute tolerance remains2e-12. No model forward, training, selection or scientific threshold is changed.",
+      "name": "failure_and_publication_scope"
+    }
+  ],
+  "methodological_limits": [
+    "This is independent raw metric replay, not a second model forward or a full second training-trajectory proof.",
+    "Scientific conclusions remain limited by the original registered tasks, baselines, tuning budget and gates."
+  ],
+  "passed": true,
+  "retained_preflight": {
+    "checks": 10,
+    "file": "experiments/hcsn_blocker_closure_v1/audits/CONTENT_RAW_METRIC_PREFLIGHT002.json",
+    "passed": true,
+    "sha256": "250439bb5cfe05c3dcf2be168881825c6eaedb0e14cc6ceb7e2180a6bd6b4703"
+  },
+  "reviewed_utc": "2026-10-31T03:01:25.949680+00:00",
+  "schema": "hcsn-content-raw-metric-source-review.v1",
+  "scope": "Read-only review of the complete independent reader, final patch, frozen metric definition, data generator and declared data sizes. No formal prediction or ground-truth arrays opened; no source modified; no synthetic suite rerun by reviewer.",
+  "source": {
+    "file": "experiments/hcsn_blocker_closure_v1/audits/content_raw_metric_replay.py",
+    "sha256": "110896c16ff84e084d8dd37e6f17804c3c93af0331be9fb5590b7da917336ef6"
+  }
+}

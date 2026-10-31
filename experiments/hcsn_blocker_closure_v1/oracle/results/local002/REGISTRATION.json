@@ -1,0 +1,148 @@
+{
+  "protocol": {
+    "schema": "hcsn-blocker-oracle-protocol.v1",
+    "source_parent": "1d959d8d82091e6014b13c2191f62bf74e778561",
+    "scope": "New fixed-grid regenerative optimal control; no frozen-package modification",
+    "affine_cases": [
+      {
+        "name": "central",
+        "mu": 0.1,
+        "sigma": 0.45,
+        "rho": 0.45,
+        "K": 0.525,
+        "reset": -0.13,
+        "tau": 0.75
+      },
+      {
+        "name": "negative_drift",
+        "mu": -0.28,
+        "sigma": 0.32,
+        "rho": 0.7,
+        "K": 0.65,
+        "reset": -0.25,
+        "tau": 1.1
+      },
+      {
+        "name": "positive_low_discount",
+        "mu": 0.48,
+        "sigma": 0.32,
+        "rho": 0.17,
+        "K": 0.38,
+        "reset": -0.25,
+        "tau": 0.35
+      },
+      {
+        "name": "large_noise",
+        "mu": 0.3,
+        "sigma": 0.58,
+        "rho": 0.2,
+        "K": 0.38,
+        "reset": 0.05,
+        "tau": 0.35
+      },
+      {
+        "name": "negative_high_noise",
+        "mu": -0.28,
+        "sigma": 0.58,
+        "rho": 0.2,
+        "K": 0.65,
+        "reset": 0.05,
+        "tau": 1.1
+      }
+    ],
+    "affine_nodes": [
+      17,
+      33,
+      65,
+      129
+    ],
+    "affine_domain": "fixed [-2, K+2/kappa] for each case; hold domain fixed in differentiation",
+    "task_cases": [
+      {
+        "name": "central",
+        "evidence": 1.0,
+        "rho": 0.2,
+        "cost": 0.04,
+        "fire_cost": 0.1,
+        "reset": 0.5,
+        "tau": 0.5
+      },
+      {
+        "name": "weak_evidence",
+        "evidence": 0.55,
+        "rho": 0.2,
+        "cost": 0.04,
+        "fire_cost": 0.1,
+        "reset": 0.5,
+        "tau": 0.5
+      },
+      {
+        "name": "expensive_observation",
+        "evidence": 1.0,
+        "rho": 0.2,
+        "cost": 0.5,
+        "fire_cost": 0.1,
+        "reset": 0.5,
+        "tau": 0.5
+      },
+      {
+        "name": "long_refractory",
+        "evidence": 1.0,
+        "rho": 0.2,
+        "cost": 0.04,
+        "fire_cost": 0.1,
+        "reset": 0.5,
+        "tau": 1.5
+      },
+      {
+        "name": "asymmetric_reset",
+        "evidence": 1.0,
+        "rho": 0.2,
+        "cost": 0.04,
+        "fire_cost": 0.1,
+        "reset": 0.47,
+        "tau": 0.5
+      }
+    ],
+    "task_nodes": [
+      17,
+      33,
+      65,
+      129
+    ],
+    "phases": 2,
+    "independent_references": [
+      "linear programming",
+      "uniformized contraction value iteration",
+      "expanded labeled regenerative generator"
+    ],
+    "gradient_cases": {
+      "affine": "central on 33 nodes",
+      "task": "asymmetric_reset on 33 nodes",
+      "step": 1e-06
+    },
+    "tolerances": {
+      "lp_value_scaled": 1e-08,
+      "bellman_residual": 1e-09,
+      "contraction_value_bound": 1e-07,
+      "implicit_gradient_scaled": 2e-05,
+      "labeled_value_scaled": 1e-08,
+      "martingale_absolute": 1e-09
+    },
+    "limitations": [
+      "A new fixed-node control problem is not the old moving-mesh threshold family.",
+      "The previous 4.6051 percent counterexample remains valid and is not erased.",
+      "The finite optimal boundary is an action set; no discrete smooth-pasting theorem is asserted.",
+      "Gradients are local on stable active sets, away from reset interpolation knots.",
+      "Task reward alignment holds for this binary evidence task, not for copy, MQAR, CREMA-D or a foundation model."
+    ]
+  },
+  "source_hashes": {
+    "ORACLE_PROTOCOL.json": "ede745ff51686ab64f000a37450276b850c24bda025be53859ef62a9ab4e8010",
+    "audit.py": "732488b3f11fb882e1b3a7d1279e2268497533ddb76870f26bdb0962578be4fc",
+    "finite_qvi.py": "602f7fca63d19876508e123a507d93fa338defe60bfce8d92080810beb9a0d7e",
+    "reference_solvers.py": "6a1e38a413a802c0f4717393d397b57926d6cca862cade86df4af6d68c2cb1b5",
+    "task_model.py": "fcc53d3fb31a1d159a3b1bb200cea1c74b83a8ac4d86c5d23263f5d5e5ca6c27"
+  },
+  "execution": "deterministic validation; not a content heldout study"
+}

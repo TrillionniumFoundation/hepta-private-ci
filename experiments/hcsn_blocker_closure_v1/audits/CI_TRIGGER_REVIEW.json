@@ -1,0 +1,109 @@
+{
+  "concurrency": "New same-branch CI runs can automatically cancel older in-progress runs. Record cancellation as cancellation, not as a passing or failing test. Existing expensive experiment workflows use cancel-in-progress:false.",
+  "expected_final_head": null,
+  "expected_pr_workflows": [
+    {
+      "always_jobs": [
+        "Select blocking CI scope",
+        "Codespell",
+        "Blob size policy"
+      ],
+      "events": [
+        "pull_request",
+        "push to main"
+      ],
+      "expensive_jobs": "Existing scope outputs select native/full-repository lanes; required aggregate only permits explicitly inapplicable skips.",
+      "path": ".github/workflows/blocking-ci.yml",
+      "required_name": "CI required"
+    },
+    {
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "identity": "Source head checkout is explicit. Base-merge lane verifies both prospective merge parents and exact merged tree against current PR base and head.",
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "pr_lanes": [
+        "source-head",
+        "base-merge"
+      ],
+      "required_name": "Architecture required"
+    },
+    {
+      "always_job": "metadata",
+      "events": [
+        "pull_request",
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "expensive_jobs": "Existing change detector controls V8 builds; manual dispatch forces all variants and is unnecessary for normal PR verification.",
+      "path": ".github/workflows/v8-canary.yml"
+    }
+  ],
+  "experimental_workflow_local_sources": [
+    {
+      "path": ".github/workflows/hcsn-blocker-hosted.yml",
+      "sha256": "55a64c064009762c8433373aa93d9f7b0a4c2076ce3b88446dd6362e2c02dce5"
+    },
+    {
+      "path": ".github/workflows/hcsn-blocker-av-training.yml",
+      "sha256": "0101143adae21eaa9e097cd0240ba3e20e4983f1cd72380004243aaaab2b6a57"
+    },
+    {
+      "path": ".github/workflows/hcsn-blocker-av.yml",
+      "sha256": "02f3eea1811efe0e7b40b09e91d0de78170773ef41051fed80d8fa6a7c0e036f"
+    }
+  ],
+  "final_verification": [
+    "Fetch exact final PR head/base metadata after the ref update.",
+    "Fetch actions/runs filtered by exact final head SHA and identify the three expected workflow paths.",
+    "Inspect only those run job collections for scope, Codespell, blob policy, both architecture lanes, required aggregates and V8 metadata.",
+    "For a failing non-Rust source/docs check, read its exact job log before proposing a narrow repair; retain inherited broad failures and all failure evidence.",
+    "No manual dispatch, blanket retry, runner relabelling or broad local testing is required for this verification."
+  ],
+  "prevent_unnecessary_training": {
+    "av_training_trigger_paths": [
+      ".github/workflows/hcsn-blocker-av-training.yml",
+      "experiments/hcsn_blocker_closure_v1/AV_LAUNCH.json"
+    ],
+    "core_trigger_paths": [
+      ".github/workflows/hcsn-blocker-hosted.yml",
+      "experiments/hcsn_blocker_closure_v1/HOSTED_LAUNCH.json"
+    ],
+    "fresh_data_trigger_paths": [
+      ".github/workflows/hcsn-blocker-av.yml",
+      "experiments/hcsn_blocker_closure_v1/av/bootstrap.py",
+      "experiments/hcsn_blocker_closure_v1/av/COHORT_PLAN.json"
+    ],
+    "qualification": "An evidence-only push leaves these trigger paths unchanged. Confirm against the actual previously pushed source-head to final-head changed paths; do not infer solely from the final commit parent."
+  },
+  "raw_retention": "The retrieved full workflow text remains local under audits/ci_trigger_source/. It is not required in the final publication delta; the original immutable source URLs, paths, content SHA256 and computed Git blob identities above identify the reviewed source.",
+  "recorded_utc": "2026-10-31T04:26:42.524505+00:00",
+  "reviewed_ci_source_commit": "d8b94bd750b4c52bd253b81285acc6c4a2dbeacf",
+  "schema": "hcsn-final-head-ci-trigger-review.v1",
+  "scope": "Read-only trigger and required-check review. Final head has not yet been pushed or checked by this reviewer. No workflows, gates, tests, source files or dispatch settings changed.",
+  "source_files": [
+    {
+      "computed_git_blob": "950849763e6cc2c3a0459af3fd746f68bce9e086",
+      "content_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f",
+      "path": ".github/workflows/blocking-ci.yml",
+      "source_commit": "d8b94bd750b4c52bd253b81285acc6c4a2dbeacf",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/.github/workflows/blocking-ci.yml?ref=d8b94bd750b4c52bd253b81285acc6c4a2dbeacf"
+    },
+    {
+      "computed_git_blob": "df330bc1b23af7fbdd9b92de7e1565f2a260393a",
+      "content_sha256": "5ae51b188989bbe6435cc0f5b62caffbc5da4b6fa2d855c2ed69afaaa8b53852",
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "source_commit": "d8b94bd750b4c52bd253b81285acc6c4a2dbeacf",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/.github/workflows/hepta-architecture-convergence.yml?ref=d8b94bd750b4c52bd253b81285acc6c4a2dbeacf"
+    },
+    {
+      "computed_git_blob": "bc0bb7a93bd97d422e6b9d9dd5d5e12294fbd6f1",
+      "content_sha256": "2516afbaa5538004406c0d92179665aba1b541e68944df53ad71d674ecd89cd4",
+      "path": ".github/workflows/v8-canary.yml",
+      "source_commit": "d8b94bd750b4c52bd253b81285acc6c4a2dbeacf",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/.github/workflows/v8-canary.yml?ref=d8b94bd750b4c52bd253b81285acc6c4a2dbeacf"
+    }
+  ],
+  "workflow_path_skipping": "These three CI workflows have no workflow-level path filters. A push to the existing open PR source branch should produce pull_request synchronize runs; verify actual exact-head run metadata instead of assuming delivery."
+}

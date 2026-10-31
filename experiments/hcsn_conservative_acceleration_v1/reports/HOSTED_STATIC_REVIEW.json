@@ -1,0 +1,159 @@
+{
+  "baseline": {
+    "all_matched": true,
+    "files_sha256_and_git_blob_verified": 162,
+    "path": "experiments/hcsn_conservative_acceleration_v1/SOURCE_BASELINE.json",
+    "remote_parent": "63fd568b177c0456ddd8b590e3ac77d35307c0c4",
+    "sha256": "693ab9dc2acbb42839b54c1972b703691a19eed5199ac7ec40774577653ad98f"
+  },
+  "container_contract": {
+    "actual_observation_pending": true,
+    "cpu_quota_cores": 2,
+    "identity_limit": "Image digest is bound by the public workflow and plan; runtime version and resource observations are not independent image attestation.",
+    "image": "python:3.12.14@sha256:6dc02694c53fde08b0e39de9273a708d2f2a612f77dc173a64835c3f7a40ee35",
+    "memory_bytes": 8589934592,
+    "options": "--memory=8g --memory-swap=8g --cpus=2 --cgroupns=private",
+    "private_cgroup_namespace": true,
+    "setup_python_removed": true,
+    "swap_bytes": 0,
+    "workflow_plan_runner_consistent": true
+  },
+  "final_reviewed_sha256": {
+    ".github/workflows/hcsn-conservative-hosted.yml": "99f79f45062c42dc7c5e213ad616f42ad1f3b5560d0db1d116c4a1c89a89a3bd",
+    "experiments/hcsn_conservative_acceleration_v1/HOSTED_EXECUTION_PLAN.json": "84513b40ef4755846e836b4a8233906070a369fc5687566d2d774c60117db55f",
+    "experiments/hcsn_conservative_acceleration_v1/hosted/restore_data.py": "b552f092556e26eb46bf4005747f4e8cce6e46679d3feaa1a56bd6509a4b2a63",
+    "experiments/hcsn_conservative_acceleration_v1/hosted/runner.py": "dbe943e9fa1553bf8ca6f32f7095ae453542b465b5cbff889a05d0a00907754b"
+  },
+  "frozen_scientific_sources": {
+    "count": 124,
+    "exact_map_matches_original_protocol": true,
+    "original_protocol_path": "experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+    "original_protocol_sha256": "38dc6de2b9279b88be653275e1be30a972b9aa0899b6fbc12be5fad776f29114"
+  },
+  "interpretation_limits": [
+    "This is not a completed hosted experiment or actual container startup test.",
+    "Local aborted rows and the hosted rerun are separate attempts; local rows cannot substitute for missing hosted rows or establish cross-machine speed ratios.",
+    "The rerun repeats previously exposed heldout examples and is an engineering replication, not fresh-test confirmation.",
+    "Implementation acceleration and numerical fidelity do not establish a neural mechanism advantage.",
+    "Complete hosted mathematical, quality, timing and cost receipts require a subsequent independent review."
+  ],
+  "launch_context_reported_by_root": {
+    "commit": "59c7734d40b867ebb17f94bab0d2321e22269f0c",
+    "github_actions_run_id": "41059211309",
+    "run_observed_directly_by_this_review": false,
+    "status_at_instruction": "in_progress"
+  },
+  "outcome": "No blocking defect identified in the reviewed static integration.",
+  "pending_independent_checks": [
+    "Actual hosted container/resource observations",
+    "New hosted kernel and gradient validation receipts",
+    "All 70 result identities and completeness",
+    "Paired quality and speed comparisons, uncertainty and gates",
+    "Selected trained runtime and causal receipts",
+    "Disjoint complete cost accounting and negative-result preservation"
+  ],
+  "plan_file_pins": {
+    "design": {
+      "matched": true,
+      "path": "experiments/hcsn_conservative_acceleration_v1/HOSTED_DESIGN.json",
+      "sha256": "3f1c7f7ccd720515867b0bae23b3c39e405d9809acff12d8bad151140e2c578d"
+    },
+    "execution_binding_plan": {
+      "matched": true,
+      "path": "experiments/hcsn_conservative_acceleration_v1/EXECUTION_BINDING_PLAN.json",
+      "sha256": "b473b281b50a96a604a3866643349bf8e0ebc1db1dcac755d15b0714fdf3eb8b"
+    },
+    "original_protocol": {
+      "matched": true,
+      "path": "experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+      "sha256": "38dc6de2b9279b88be653275e1be30a972b9aa0899b6fbc12be5fad776f29114"
+    }
+  },
+  "preserved_scientific_design_keys": [
+    "analysis",
+    "data_design",
+    "execution",
+    "fidelity",
+    "models",
+    "optimization",
+    "primary_seeds",
+    "primary_tasks",
+    "schema",
+    "supplementary_seed",
+    "supplementary_tasks",
+    "timing"
+  ],
+  "preserved_scientific_design_matches_original_and_snapshot": true,
+  "review_class": "static source inspection plus actual local byte-hash, manifest, AST and contract comparisons",
+  "review_recorded_utc": "2026-10-30T12:58:05.822585+00:00",
+  "reviewed_checks": [
+    {
+      "detail": "Requires declared GitHub-hosted Linux x64 identity, exact checkout HEAD/GITHUB_SHA and public Git tree bytes; separates frozen scientific hashes from additional bootstrap hashes.",
+      "item": "prepare public identity",
+      "result": "passed_static_review"
+    },
+    {
+      "detail": "All 162 baseline SHA256/Git blobs and the exact 124-entry scientific map match. Hosted design retains every declared scientific CORE_KEY.",
+      "item": "source and design seal",
+      "result": "passed_actual_hash_and_contract_comparisons"
+    },
+    {
+      "detail": "Selects only the four original AV logical files and 60 bounded ASCII transport parts, uses original restore modules, and verifies original dataset/manifests/checksums without raw media downloads.",
+      "item": "bounded data bootstrap",
+      "result": "passed_static_review"
+    },
+    {
+      "detail": "Requires fresh hosted output and protocol paths; uses the frozen register implementation and compares all 70 jobs, order and source map with the original protocol.",
+      "item": "registration",
+      "result": "passed_static_review"
+    },
+    {
+      "detail": "Requires a complete terminal record, exactly 70 unique expected indices, matching jobs/protocol hash, zero worker failures and a complete error-free 70-row analysis before trained execution.",
+      "item": "complete cohort gate",
+      "result": "passed_static_review"
+    },
+    {
+      "detail": "Binds the predeclared fixed selective_copy hcsn_accelerated seed 98031 job; selects minimum validation CE with earlier-step tie-break; verifies selection, summary, config and weight hashes. Test scores do not select checkpoints.",
+      "item": "selected checkpoint binding",
+      "result": "passed_static_review"
+    },
+    {
+      "detail": "Requires native restore identity and successful stream/native/native_causal subprocesses; checks trained_weights and the original checkpoint SHA, then rechecks source and weight bytes.",
+      "item": "runtime binding",
+      "result": "passed_static_review"
+    },
+    {
+      "detail": "Checks exact Python/package versions, x86_64, Docker marker, nonempty required cgroup interfaces, 8 GiB memory, zero swap, 2 CPU quota and OOM accounting keys. Actual hosted observations remain pending.",
+      "item": "resource environment guard",
+      "result": "passed_static_review"
+    },
+    {
+      "detail": "Direct child CPU includes waited descendants; nested study/native/resume values are details and must not be added again. Coordinator self CPU starts at RunBook creation. Checkout/dependency installation and unmeasured development costs are outside measured subprocess scope.",
+      "item": "wait4 accounting",
+      "result": "passed_static_review"
+    },
+    {
+      "detail": "Workflow preserves failure evidence, conditions optional HOSTED_PROTOCOL publication on its existence, and checks branch head before publishing. This review does not modify branch refs.",
+      "item": "evidence preservation and publication",
+      "result": "passed_static_review"
+    },
+    {
+      "detail": "runner.py, restore_data.py and package_evidence.py parse successfully. AST validity alone is not execution evidence.",
+      "item": "syntax",
+      "result": "passed_ast_parse"
+    }
+  ],
+  "reviewer_role": "operator_math independent collaborator",
+  "schema": "hcsn-hosted-independent-static-review.v1",
+  "scope": {
+    "changed_frozen_sources": false,
+    "changed_git_refs": false,
+    "changed_hosted_code": false,
+    "executed_training": false,
+    "hardware_or_energy_claim": false,
+    "scientific_advantage_claim": false,
+    "started_hosted_container": false,
+    "verified_actual_hosted_environment": false,
+    "verified_hosted_results": false
+  }
+}

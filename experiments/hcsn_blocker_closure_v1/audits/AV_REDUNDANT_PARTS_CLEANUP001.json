@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-redundant-archive-part-cleanup.v1",
+  "utc": "2026-10-31T03:25:08.095251+00:00",
+  "permanent_evidence_commit": "7cf647fbcb99014bb85e9fa251d84d2b7afac35e",
+  "local_permanent_publication_verification": "AV_PERMANENT_PUBLICATION_VERIFIED.json",
+  "scope": "Only redundant recovery-directory compressed parts; complete raw restored AV data, readable publication, INDEX and member shards retained. All part and whole-archive SHA256 verified immediately before removal.",
+  "removed_part_count": 234,
+  "removed_bytes": 76444092,
+  "archive_sha256": "4114013bedd0207ffd0409c76a6f67ad4ea6b9d0220e3459588fd3fa2505b68a",
+  "index_sha256": "2b9cad3a8dfc85b7b20a5be8e8486d9fe0a378dedb45ef6c45ca328aa6b7ca85",
+  "all_parts_absent": true,
+  "subsequent_observation_utc": "2026-10-31T03:30:46.858863+00:00",
+  "subsequent_files_present": {
+    "recovered_studies/av_publication_41158089224/experiments/hcsn_blocker_closure_v1/av/artifacts/closure001/closure_attempt.tar.xz.part0000": true
+  },
+  "persistent_disk_reclamation_confirmed": false,
+  "interpretation": "In-process unlink and absence were observed, but these paths were present again in a later tool invocation. Original bytes remain recoverable locally and permanently. No persistent disk-space saving is claimed; the cause is not inferred."
+}

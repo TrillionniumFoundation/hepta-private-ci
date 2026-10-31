@@ -1,0 +1,748 @@
+{
+  "actual_cgroup": {
+    "cgroup.controllers": "cpuset cpu io memory hugetlb pids rdma misc dmem\n",
+    "cpu.max": "200000 100000\n",
+    "cpu.stat": "usage_usec 1466689097\nuser_usec 1417700589\nsystem_usec 48988507\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 7731\nnr_throttled 5944\nthrottled_usec 6247443\nnr_bursts 0\nburst_usec 0\n",
+    "memory.current": "1472860160\n",
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0\n",
+    "memory.max": "8589934592\n",
+    "memory.stat": "anon 17813504\nfile 1350770688\nkernel 103792640\nkernel_stack 49152\npagetables 225280\nsec_pagetables 0\npercpu 2544\nsock 0\nvmalloc 24576\nshmem 0\nzswap 0\nzswapped 0\nfile_mapped 0\nfile_dirty 3518464\nfile_writeback 0\nswapcached 0\nanon_thp 0\nfile_thp 0\nshmem_thp 0\ninactive_anon 0\nactive_anon 17809408\ninactive_file 1296613376\nactive_file 54136832\nunevictable 0\nslab_reclaimable 103144904\nslab_unreclaimable 327752\nslab 103472656\nworkingset_refault_anon 0\nworkingset_refault_file 0\nworkingset_activate_anon 0\nworkingset_activate_file 0\nworkingset_restore_anon 0\nworkingset_restore_file 0\nworkingset_nodereclaim 0\npgdemote_kswapd 0\npgdemote_direct 0\npgdemote_khugepaged 0\npgdemote_proactive 0\npgpromote_success 0\npgscan 0\npgsteal 0\npswpin 0\npswpout 0\npgscan_kswapd 0\npgscan_direct 0\npgscan_khugepaged 0\npgscan_proactive 0\npgsteal_kswapd 0\npgsteal_direct 0\npgsteal_khugepaged 0\npgsteal_proactive 0\npgfault 9916918\npgmajfault 834\npgrefill 0\npgactivate 0\npgdeactivate 0\npglazyfree 0\npglazyfreed 0\nswpin_zero 0\nswpout_zero 0\nzswpin 0\nzswpout 0\nzswpwb 0\nthp_fault_alloc 451\nthp_collapse_alloc 2\nthp_swpout 0\nthp_swpout_fallback 0\nnuma_pages_migrated 0\nnuma_pte_updates 0\nnuma_hint_faults 0\n",
+    "memory.swap.max": "0\n"
+  },
+  "actual_environment": {
+    "architecture": "x86_64",
+    "cgroup_namespace": "cgroup:[4026532272]",
+    "container_image_digest_independently_attested": false,
+    "dockerenv_exists": true,
+    "os_release": "PRETTY_NAME=\"Debian GNU/Linux 13 (trixie)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"13\"\nVERSION=\"13 (trixie)\"\nVERSION_CODENAME=trixie\nDEBIAN_VERSION_FULL=13.7\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n",
+    "packages": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "torch": "2.8.0+cpu"
+    },
+    "proc_self_cgroup": "0::/\n",
+    "python_version": "3.12.14"
+  },
+  "archive": {
+    "archive_members": 1289,
+    "archive_sha256": "0a320b3d74ecb2db9081d6bba22e37a9f858a35e12d5cb39b72b9017a935cd49",
+    "compressed_bytes": 47241400,
+    "full_archive_rehydrated_by_this_audit": false,
+    "note": "The immutable archive manifest lists weights, midpoint and resumed state, expected/resumed logits, owner journals/witnesses/events/profiles/identities and stderr. Publisher verified the archive during publication; this audit verifies copied text and manifest links, without repeating full archive extraction.",
+    "runtime_members": 73,
+    "runtime_npz_and_journal_payloads_independently_decoded": false,
+    "selected_checkpoint_member": {
+      "bytes": 81545,
+      "path": "comparison002_hosted/runs/fixed__selective_copy__hcsn_accelerated__98031/selected.npz",
+      "sha256": "8679b9aecfe237055c449c92e46510b9832f8ccae03833a38657073c17ce665c"
+    }
+  },
+  "audit_method": "Read 15 immutable GitHub text files; independently recompute their Git blob IDs, SHA256/publication matches, cross-file bindings, calibration and native semantic comparisons, and disjoint cost sums. Compare six reviewed local sources to the immutable execution source map. No model/native rerun and no decoding of archived NPZ/journal payloads.",
+  "checkpoint_binding": {
+    "analysis_sha256": "82c773d6d289477fbb723969d5169cc507d193aa3c3413f06266ddab927931ad",
+    "binding_plan_sha256": "b473b281b50a96a604a3866643349bf8e0ebc1db1dcac755d15b0714fdf3eb8b",
+    "checkpoint": "experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__hcsn_accelerated__98031/selected.npz",
+    "checkpoint_sha256": "8679b9aecfe237055c449c92e46510b9832f8ccae03833a38657073c17ce665c",
+    "config_sha256": "ade410d71fd09c9bf6b1dd7c02e4e4bc5be96ea1bf826a21198a8e6307bd1fc2",
+    "job": {
+      "family": "fixed",
+      "model": "hcsn_accelerated",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    "model_config": {
+      "depth": 1,
+      "input_dim": 64,
+      "name": "distribution_free_dual",
+      "output_dim": 8,
+      "seed": 98031,
+      "width": 32
+    },
+    "protocol_sha256": "e3b17755e4c2cd8bf11457f2d39732e1bb10868f2c7a4ac0e703bcc1027c8dbb",
+    "random_weights": false,
+    "scope": "Engineering runtime panels only; no claim that the owner threshold optimizes task utility",
+    "selected_validation_step": 32,
+    "selection_sha256": "81b9e46f8267f2f78202ea9b72ac5ff94b96c3d444e7e2319db71f44f9893ed3",
+    "selection_uses_test": false,
+    "trained_weights": true
+  },
+  "checks": [
+    {
+      "check": "git_blob_bytes_stream",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_stream",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_native",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_native",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_causal",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_causal",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_binding",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_binding",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_identity",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_identity",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_finalize",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_finalize",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_publication",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_calibration",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_calibration",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_causal_protocol",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_causal_protocol",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_stream_checkpoint",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_stream_checkpoint",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_native_checkpoint",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_native_checkpoint",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_binding_plan",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_archive_manifest",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_archive_manifest",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_analysis",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_analysis",
+      "passed": true
+    },
+    {
+      "check": "git_blob_bytes_hosted_protocol",
+      "passed": true
+    },
+    {
+      "check": "publication_bytes_hosted_protocol",
+      "passed": true
+    },
+    {
+      "check": "execution_identity",
+      "passed": true
+    },
+    {
+      "check": "container_actual_resources",
+      "passed": true
+    },
+    {
+      "check": "observed_oom_counters_zero",
+      "passed": true
+    },
+    {
+      "check": "complete_70_analysis_and_finalize",
+      "passed": true
+    },
+    {
+      "check": "binding_predeclared_job",
+      "passed": true
+    },
+    {
+      "check": "binding_hashes",
+      "passed": true
+    },
+    {
+      "check": "selected_archive_hash",
+      "passed": true
+    },
+    {
+      "check": "selection_archive_hash",
+      "passed": true
+    },
+    {
+      "check": "all_results_bound_to_trained_checkpoint",
+      "passed": true
+    },
+    {
+      "check": "not_random_or_test_selected",
+      "passed": true
+    },
+    {
+      "check": "stream_checkpoint_immutable_inputs",
+      "passed": true
+    },
+    {
+      "check": "stream_checkpoint_source_binding",
+      "passed": true
+    },
+    {
+      "check": "native_checkpoint_immutable_inputs",
+      "passed": true
+    },
+    {
+      "check": "native_checkpoint_source_binding",
+      "passed": true
+    },
+    {
+      "check": "causal_source_binding",
+      "passed": true
+    },
+    {
+      "check": "runtime_result_outer_hashes",
+      "passed": true
+    },
+    {
+      "check": "stream_acceptance",
+      "passed": true
+    },
+    {
+      "check": "stream_archive_exact_state_and_logits",
+      "passed": true
+    },
+    {
+      "check": "native_actions_and_neural_recovery",
+      "passed": true
+    },
+    {
+      "check": "native_owner_semantics_recomputed",
+      "passed": true
+    },
+    {
+      "check": "native_stop_blocks_further_neural_reads",
+      "passed": true
+    },
+    {
+      "check": "native_read_clock",
+      "passed": true
+    },
+    {
+      "check": "native_refractory_and_event_activity_observed",
+      "passed": true
+    },
+    {
+      "check": "causal_calibration_registered",
+      "passed": true
+    },
+    {
+      "check": "calibration_extrema_midpoint_recomputed",
+      "passed": true
+    },
+    {
+      "check": "causal_message_mapping_recomputed",
+      "passed": true
+    },
+    {
+      "check": "q24_separation",
+      "passed": true
+    },
+    {
+      "check": "causal_same_prefix_context_and_nonvalue_fields",
+      "passed": true
+    },
+    {
+      "check": "high_state_frozen_low_value_same_actual_neural_state",
+      "passed": true
+    },
+    {
+      "check": "low_state_counterfactual_high_value_same_actual_neural_state",
+      "passed": true
+    },
+    {
+      "check": "causal_actions_recomputed",
+      "passed": true
+    },
+    {
+      "check": "causal_replayed_values_match_panel",
+      "passed": true
+    },
+    {
+      "check": "seven_actual_native_processes_pinned",
+      "passed": true
+    },
+    {
+      "check": "seven_retries_idempotent",
+      "passed": true
+    },
+    {
+      "check": "four_deliberate_terminal_rejections",
+      "passed": true
+    },
+    {
+      "check": "outer_cost_disjoint_sum",
+      "passed": true
+    },
+    {
+      "check": "reviewed_local_source_matches_seal_experiments/hcsn_conservative_acceleration_v1/runtime.py",
+      "passed": true
+    },
+    {
+      "check": "reviewed_local_source_matches_seal_experiments/hcsn_conservative_acceleration_v1/native_causal.py",
+      "passed": true
+    },
+    {
+      "check": "reviewed_local_source_matches_seal_experiments/hcsn_conservative_acceleration_v1/model.py",
+      "passed": true
+    },
+    {
+      "check": "reviewed_local_source_matches_seal_experiments/hcsn_conservative_acceleration_v1/kernel.py",
+      "passed": true
+    },
+    {
+      "check": "reviewed_local_source_matches_seal_experiments/hcsn_distributional_v2/distribution_kernel.py",
+      "passed": true
+    },
+    {
+      "check": "reviewed_local_source_matches_seal_experiments/hcsn_distributional_v2/model.py",
+      "passed": true
+    }
+  ],
+  "checks_count": 70,
+  "cohort": {
+    "complete": true,
+    "errors": [],
+    "runtime_gate_satisfied": true,
+    "valid_jobs": 70
+  },
+  "costs": {
+    "accounting": "Only the three outer worker wait4 costs are summed as runtime CPU. They already include imports, calibration, neural replay, serialization, fresh interpreter recovery and waited native descendants. Native/resume subtotals are nested details, never additional charges. Finalize includes analysis, native restore and Git validation; its coordinator clock starts after Python imports.",
+    "finalize_coordinator_self_cpu_seconds": 0.11764628399999999,
+    "finalize_cpu_including_coordinator": 15.111433283999999,
+    "finalize_direct_child_cpu_seconds": 14.993787,
+    "finalize_stage_wall_seconds": 15.137225780999984,
+    "memory_scope": "968 bytes is persistent neural numeric state only. Whole-worker peak RSS is separate; native wait4 RSS and owner model_resident_bytes are not an HCSN model-memory benchmark.",
+    "native_actual_owner_ticks": 20,
+    "native_deliberate_terminal_error_counters": 4,
+    "nested_native_cpu_seconds_detail_only": 0.029175,
+    "nested_native_processes": 7,
+    "not_measured": [
+      "Hardware energy",
+      "GPU throughput",
+      "power",
+      "full workflow provisioning/dependency/install CPU"
+    ],
+    "whole_runtime_cpu_seconds": 11.156339,
+    "whole_runtime_workers": [
+      {
+        "cpu_seconds": 4.834384,
+        "exit_code": 0,
+        "name": "trained_stream001",
+        "peak_rss_bytes": 290820096,
+        "wall_seconds": 4.83600909200004
+      },
+      {
+        "cpu_seconds": 3.927266,
+        "exit_code": 0,
+        "name": "trained_native001",
+        "peak_rss_bytes": 277323776,
+        "wall_seconds": 3.9407377979999865
+      },
+      {
+        "cpu_seconds": 2.394689,
+        "exit_code": 0,
+        "name": "trained_native_causal001",
+        "peak_rss_bytes": 277794816,
+        "wall_seconds": 2.4068269020000344
+      }
+    ]
+  },
+  "evidence_commit": "a0de582931981b3742433475ecf5565409854a5c",
+  "evidence_files": [
+    {
+      "bytes": 1525,
+      "git_blob": "f9f3dab64e7520c50eadd8e6fa0e00d92c2ba150",
+      "name": "stream",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/trained_stream001/RESULT.json",
+      "sha256": "8cbe92e9328e7e9669ed76b04fcd961928aa058413f059eb9ed8ad5337c9ea6a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/trained_stream001/RESULT.json"
+    },
+    {
+      "bytes": 52555,
+      "git_blob": "9d5a34cd910f7569ecc9e8e9ce24a884295a2293",
+      "name": "native",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/trained_native001/RESULT.json",
+      "sha256": "54836e65b3daabf1ae65ae27a1579c5a5a01f3b4763aed619bb41b279a0ffe8c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/trained_native001/RESULT.json"
+    },
+    {
+      "bytes": 45146,
+      "git_blob": "bda99118b76d8b8a967c03d73e9196ef0f6aadc5",
+      "name": "causal",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/trained_native_causal001/RESULT.json",
+      "sha256": "16e19c049b66d3d01e43b2aa080089069cde82903d2febee6e020c9e89b0b974",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/trained_native_causal001/RESULT.json"
+    },
+    {
+      "bytes": 1229,
+      "git_blob": "dee2ad547f6c7c8af3f8664e39c77bedb8aad59e",
+      "name": "binding",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/hosted_finalize001/CHECKPOINT_BINDING.json",
+      "sha256": "deb235d020883dc5a63c181b3a2a46e12ca7373fce82d51cf3272ec8ba6b66bb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/hosted_finalize001/CHECKPOINT_BINDING.json"
+    },
+    {
+      "bytes": 43996,
+      "git_blob": "0b4d1eeb725905f8613c3dc1b8ef9931a5d28778",
+      "name": "identity",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/hosted_finalize001/PUBLIC_IDENTITY.json",
+      "sha256": "a573daf1da7a188a5baf3f07fabe92a3587b486e23faa39bdc49669bd0736e9b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/hosted_finalize001/PUBLIC_IDENTITY.json"
+    },
+    {
+      "bytes": 23678,
+      "git_blob": "b16d1a0eec3caca2045b1ab8ad12f0938bec61c0",
+      "name": "finalize",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/hosted_finalize001/RUNNER_FINALIZE_RESULT.json",
+      "sha256": "fa0f767b01a4272d0ba5c6d9ebe991293481eda646dde038f35e93df69a9682d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/hosted_finalize001/RUNNER_FINALIZE_RESULT.json"
+    },
+    {
+      "bytes": 61182,
+      "git_blob": "441afa3466178f3fb8fca4b58bf91f79f9d0a444",
+      "name": "publication",
+      "path": "experiments/hcsn_conservative_acceleration_v1/artifacts/hosted002/PUBLICATION.json",
+      "sha256": "4bf2edb9a34c07c0e20dceeac4295db6534fee8f3ced75774e4e4f5268938df2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/artifacts/hosted002/PUBLICATION.json"
+    },
+    {
+      "bytes": 18098,
+      "git_blob": "6f0dcc882337069f51bb90dc2401ae051458cf52",
+      "name": "calibration",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/trained_native_causal001/CALIBRATION.json",
+      "sha256": "a83a24252bc1aa765c127e4d7228f4b97b4e98d0d7f296e34ccff6a677f69ddb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/trained_native_causal001/CALIBRATION.json"
+    },
+    {
+      "bytes": 13228,
+      "git_blob": "93b9418547602e8d0204e36137bc902400489423",
+      "name": "causal_protocol",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/trained_native_causal001/PROTOCOL.json",
+      "sha256": "fa1bd26e61202d4a20ed23548190d1149b1e7d509aa7de1f5ee6a64e12520c00",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/trained_native_causal001/PROTOCOL.json"
+    },
+    {
+      "bytes": 12649,
+      "git_blob": "2e6569f5d645c59bdf94d1bb031be5b33b9ec399",
+      "name": "stream_checkpoint",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/trained_stream001/CHECKPOINT.json",
+      "sha256": "c37f47f6485b3473ea23e3ed87f788f70ce5e14a0547f3418adaccfb0c7661b3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/trained_stream001/CHECKPOINT.json"
+    },
+    {
+      "bytes": 12734,
+      "git_blob": "2607dd770cb689b191029a4bcf05405ff38a827c",
+      "name": "native_checkpoint",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/trained_native001/CHECKPOINT.json",
+      "sha256": "95778e33f2e24cc83ab9f1f5633fea6fc0965a588e92add31bef11f82381920d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/trained_native001/CHECKPOINT.json"
+    },
+    {
+      "bytes": 1539,
+      "git_blob": "8aa2fecbfe969d739e44a334b257da05c06721f6",
+      "name": "binding_plan",
+      "path": "experiments/hcsn_conservative_acceleration_v1/EXECUTION_BINDING_PLAN.json",
+      "sha256": "b473b281b50a96a604a3866643349bf8e0ebc1db1dcac755d15b0714fdf3eb8b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/EXECUTION_BINDING_PLAN.json"
+    },
+    {
+      "bytes": 302340,
+      "git_blob": "28fcb08f7137951263769b25c53da569a34cf47b",
+      "name": "archive_manifest",
+      "path": "experiments/hcsn_conservative_acceleration_v1/artifacts/hosted002/hosted_attempt.json",
+      "sha256": "c6bd3b6ec41d8849b5ba2cc3f7990f85516fc12dfed4e3d09cf0e09f1ff4f8c2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/artifacts/hosted002/hosted_attempt.json"
+    },
+    {
+      "bytes": 111302,
+      "git_blob": "e84b7e3c055d36aa3e9f9cfb6f1b2b951b97ca0d",
+      "name": "analysis",
+      "path": "experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted_analysis/ANALYSIS.json",
+      "sha256": "82c773d6d289477fbb723969d5169cc507d193aa3c3413f06266ddab927931ad",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted_analysis/ANALYSIS.json"
+    },
+    {
+      "bytes": 39732,
+      "git_blob": "862d65d7f8dfc9c48217e6f57557a41784f2475e",
+      "name": "hosted_protocol",
+      "path": "experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json",
+      "sha256": "e3b17755e4c2cd8bf11457f2d39732e1bb10868f2c7a4ac0e703bcc1027c8dbb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a0de582931981b3742433475ecf5565409854a5c/experiments/hcsn_conservative_acceleration_v1/HOSTED_PROTOCOL.json"
+    }
+  ],
+  "execution_boundary": {
+    "hardware_energy_measured": false,
+    "native_binary_sha256": "1dc702aea6a448ad84407aeb71dc8f23066205fab79fe7c6859fc02c55e6f7a5",
+    "native_kernel_call_counters_are_torch_calls": false,
+    "native_ndu_frontier_note": "STOP evidence uses the real owner effective_action/readout.action. Some raw native_ndu_frontier fields are abstain and should not be relabeled as a separate raw NDU stop primitive.",
+    "neural_kernel": "Python/PyTorch CPU",
+    "owner": "Actual pinned Rust binary",
+    "owner_authority": "DENY_ALL",
+    "production_activation": false
+  },
+  "execution_seal": "78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5",
+  "github_run_id": "41059620366",
+  "limitations": [
+    "This is trained-checkpoint execution coverage on predefined unlabeled engineering panels, not learned task-optimal stopping or an accuracy gain.",
+    "The original native recovery episode deliberately uses a budget schedule. Value causality is supported by the separate fixed-budget crossed-message audit.",
+    "Threshold calibration chooses extrema of the same 32-point unlabeled panel to exercise both actions; it is not heldout policy validation.",
+    "The trained checkpoint is a small selective-copy model at step 32, not a multimodal foundation model.",
+    "Refractory occupancy and regenerative code paths are exercised, but no reset-specific task benefit is isolated.",
+    "Only the Python neural kernel plus native owner integration was exercised; no native implementation of the neural operator or energy advantage is established.",
+    "Raw archived NPZ/journal payloads were not independently decoded in this read-only audit; exact-array recovery is the executed source-bound assertion plus matching archive member hashes.",
+    "Failed local and first-hosted attempts remain separate from successful run accounting."
+  ],
+  "native": {
+    "actions": [
+      "keep",
+      "keep",
+      "keep",
+      "keep",
+      "keep",
+      "stop"
+    ],
+    "base_episode_policy_scope": "Budget schedule changes from +1 to -1 at read six; this recovery test does not isolate value causality.",
+    "event_activity_message_by_read": [
+      0.00015668108244426548,
+      0.0021444177255034447,
+      0.008403127081692219,
+      0.005307826679199934,
+      0.0182428490370512,
+      0.0312211811542511
+    ],
+    "full_plus_prefix_suffix_neural_reads": 12,
+    "independently_equal_owner_fields": [
+      "effective_action",
+      "checkpoint_before",
+      "checkpoint_after",
+      "event_digest",
+      "input_feature_digest",
+      "activation_q24",
+      "eligibility_q24",
+      "readout"
+    ],
+    "logical_episode_neural_reads": 6,
+    "logits_equal": true,
+    "native_journal_replayed_steps": 3,
+    "processes": 3,
+    "recovery_cut": 3,
+    "refractory_occupancy_by_read": [
+      0.0001561927201692015,
+      0.0022860176395624876,
+      0.010507376864552498,
+      0.014760801568627357,
+      0.031198780983686447,
+      0.06093967705965042
+    ],
+    "reported_final_state_bitwise_equal": true,
+    "risk_field_semantics": "Current refractory occupancy, not first-hit risk",
+    "signals_equal": true,
+    "stop_probes_execute_zero_further_neural_calls": true
+  },
+  "native_causal": {
+    "actual_neural_panel_plus_replay_steps": 102,
+    "budget": 0,
+    "case_table": [
+      {
+        "actual_action": "stop",
+        "actual_neural_values": {
+          "continuation": 0.25865116715431213,
+          "intervention": -0.2866993248462677,
+          "value_difference": 0.5453504323959351
+        },
+        "case": "natural_low",
+        "continuation_message": -0.12792110234299248,
+        "intervention": false,
+        "neural_index": 2,
+        "sent_value": 0.5453504323959351,
+        "state_sha256": "9cf85be7c1f5792c129fd7af2c8ba0ce6b568be7f6760d54bb0a6920f1ecfd7c"
+      },
+      {
+        "actual_action": "keep",
+        "actual_neural_values": {
+          "continuation": 0.1034621000289917,
+          "intervention": -0.8425435423851013,
+          "value_difference": 0.9460055828094482
+        },
+        "case": "natural_high",
+        "continuation_message": 0.22792110234299245,
+        "intervention": false,
+        "neural_index": 31,
+        "sent_value": 0.9460055828094482,
+        "state_sha256": "7dabf8a4ab19379b56cd016a77b9b1a8e9267fae30cbc18400f801571d951384"
+      },
+      {
+        "actual_action": "stop",
+        "actual_neural_values": {
+          "continuation": 0.1034621000289917,
+          "intervention": -0.8425435423851013,
+          "value_difference": 0.9460055828094482
+        },
+        "case": "high_state_frozen_low_value",
+        "continuation_message": -0.12792110234299248,
+        "intervention": true,
+        "neural_index": 31,
+        "sent_value": 0.5453504323959351,
+        "state_sha256": "7dabf8a4ab19379b56cd016a77b9b1a8e9267fae30cbc18400f801571d951384"
+      },
+      {
+        "actual_action": "keep",
+        "actual_neural_values": {
+          "continuation": 0.25865116715431213,
+          "intervention": -0.2866993248462677,
+          "value_difference": 0.5453504323959351
+        },
+        "case": "low_state_counterfactual_high_value",
+        "continuation_message": 0.22792110234299245,
+        "intervention": true,
+        "neural_index": 2,
+        "sent_value": 0.9460055828094482,
+        "state_sha256": "9cf85be7c1f5792c129fd7af2c8ba0ce6b568be7f6760d54bb0a6920f1ecfd7c"
+      }
+    ],
+    "common_prefix": {
+      "case": "acceleration-value-causal-v1",
+      "checkpoint": "278892ddba058ad9bd33e1c03b11477565ac81f544f23920a192f0d287bd3f25",
+      "profile_sha256": "3d8d6d7edffb6e02e1f7845181e4434203407e1f158e3710cf68a249d1d4c062",
+      "seed": 730017,
+      "step": 1
+    },
+    "crossed_interventions_flip_both_directions": true,
+    "high_index": 31,
+    "high_message": 0.22792110234299245,
+    "high_value": 0.9460055828094482,
+    "low_index": 2,
+    "low_message": -0.12792110234299248,
+    "low_value": 0.5453504323959351,
+    "only_continuation_coordinate_intervened": true,
+    "panel_length": 32,
+    "panel_seed": 730017,
+    "processes": 4,
+    "q24_separation_each_side": 2985021,
+    "read_fee": 0,
+    "task_utility_or_heldout_quality_claim": false,
+    "threshold": 0.7456780076026917
+  },
+  "passed": true,
+  "reset_and_refractory": {
+    "implemented_probability_state": "Eight active finite-volume cells plus two Erlang refractory phases per physical channel; eight channels. Exit flux enters the first phase; the last phase returns probability through reset_weights.",
+    "native_read_clock_is_physical_time": false,
+    "native_stop_is_intrinsic_neural_reset": false,
+    "neural_phase_state_in_checkpoint_and_exact_recovery": true,
+    "observed_midpoint_max_phase_mass": [
+      0.15735189616680145
+    ],
+    "observed_nonzero_phase_mass": true,
+    "physical_time_scale": 0.1,
+    "scope_limit": "Receipts do not separately log phase-to-reset flux or run a reset-off/refractory-off intervention on this trained panel. They show executed state occupancy and source-bound regenerative dynamics, not an independently measured reset-specific task benefit.",
+    "source_evidence": "Accelerated kernel assembles phase_rate * reset_weights into the regenerative transition; model.advance propagates the complete probability vector and uses probability plus physical parameters in the content gate."
+  },
+  "reviewed_sources": [
+    {
+      "path": "experiments/hcsn_conservative_acceleration_v1/runtime.py",
+      "sha256": "1c23dde578b2f2a60bb13aeb28737949a6b86fc0f2781eb6bcdcd66393d8ab06",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5/experiments/hcsn_conservative_acceleration_v1/runtime.py"
+    },
+    {
+      "path": "experiments/hcsn_conservative_acceleration_v1/native_causal.py",
+      "sha256": "8883a06451620619682b426de57521a5933756dc2d61ffbca6bea5c2a26c9d31",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5/experiments/hcsn_conservative_acceleration_v1/native_causal.py"
+    },
+    {
+      "path": "experiments/hcsn_conservative_acceleration_v1/model.py",
+      "sha256": "1326e49d6c5add4eb0ef20524aa5a0c0edd80fc3284da8db4b6266993073118b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5/experiments/hcsn_conservative_acceleration_v1/model.py"
+    },
+    {
+      "path": "experiments/hcsn_conservative_acceleration_v1/kernel.py",
+      "sha256": "d528d140b83e11e80b835853d94677e1a2293d6b7c16ec4b27e2fac5d2ffcf68",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5/experiments/hcsn_conservative_acceleration_v1/kernel.py"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/distribution_kernel.py",
+      "sha256": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5/experiments/hcsn_distributional_v2/distribution_kernel.py"
+    },
+    {
+      "path": "experiments/hcsn_distributional_v2/model.py",
+      "sha256": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/78b98ed8dd66294a3de6abce2fa0bbbd2c24f8d5/experiments/hcsn_distributional_v2/model.py"
+    }
+  ],
+  "schema": "hcsn-hosted-trained-runtime-audit.v1",
+  "source_identity": {
+    "frozen_source_count": 124,
+    "runner_sha256": "dbe943e9fa1553bf8ca6f32f7095ae453542b465b5cbff889a05d0a00907754b",
+    "runtime_source_count": 93,
+    "runtime_sources_bound": true,
+    "workflow_sha256": "19e76b8c7686f49be485dd32b646b9fd8ca34803d01f5bb900965c6cbe1293e7"
+  },
+  "stream": {
+    "batch": 2,
+    "batch_stream_argmax_disagreements": 0,
+    "batch_stream_max_abs_logit_error": 4.3213367462158203e-07,
+    "cut": 37,
+    "length": 128,
+    "max_normalization_l1": 5.585607141256332e-07,
+    "max_probability_mass_defect": 4.6566128730773926e-08,
+    "midpoint_refractory_mass": [
+      0.15735189616680145
+    ],
+    "persistent_state_bytes_max": 968,
+    "persistent_state_bytes_min": 968,
+    "state_bytes_scope": "Elapsed, content, probability and boundary only; no weights/history/BPTT",
+    "suffix_logits_bitwise_equal": true,
+    "suffix_state_bitwise_equal": true
+  }
+}

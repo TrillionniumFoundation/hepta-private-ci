@@ -1,6 +1,8 @@
 [codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
-skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new
+# HCSN archive chunks and Base64 transports are immutable data, not prose.
+# Keep the exact upstream FSDD README for provenance; check our own prose normally.
+skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,./experiments/hcsn_*/artifacts/*.tar.xz.part[0-9][0-9][0-9][0-9],./experiments/hcsn_sixstage_v1/transport_objects/*.b64,./experiments/hcsn_conservative_acceleration_v1/artifacts/comparison001_aborted_text/*.b64,./experiments/hcsn_free_boundary_v1/data/FSDD_UPSTREAM_README.md
 check-hidden = true
 ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b
 ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness

@@ -1,0 +1,137 @@
+{
+  "schema": "hcsn-unchanged-desktop-diagnostic-dispatch-review.v1",
+  "recorded_utc": "2026-10-31 02:22:26 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "supersedes_authorization_inference_only": "The main-only guard is an execution constraint, not an authorization blocker. Existing all-blockers/read-only-CI authorization covers a normal unchanged diagnostic on its expected main ref.",
+  "workflow": {
+    "path": ".github/workflows/self-hosted-desktop-availability.yml",
+    "main_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "main_source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/732e934ba496d90fbe042b8d41d479ef901643e5/.github/workflows/self-hosted-desktop-availability.yml",
+    "git_blob_sha1": "54fef7f63726fd870974223b2205b73664995f24",
+    "retained_exact_source": "hardware_source/self-hosted-desktop-availability.yml",
+    "historical_source_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "historical_source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f8c9419df6ddeb36ff8b522a50219981fb8d9345/.github/workflows/self-hosted-desktop-availability.yml",
+    "main_and_historical_workflow_bytes_identical": true,
+    "job_count": 1,
+    "permissions": {},
+    "checkout": false,
+    "artifact_upload": false,
+    "timeout_minutes": 10,
+    "runner_group": "trillionnium-android-gpu",
+    "labels": [
+      "self-hosted",
+      "linux",
+      "x64"
+    ],
+    "guarded_event": "workflow_dispatch",
+    "guarded_ref": "refs/heads/main",
+    "guarded_runner_name": "desktop"
+  },
+  "body_review": {
+    "validation": "Checks original manual event, main ref, desktop runner name, and a bounded safe-character reason string before printing metadata.",
+    "commands": [
+      "uname -a",
+      "if adb exists: adb devices -l || true",
+      "if nvidia-smi exists: nvidia-smi --query-gpu=name --format=csv,noheader || true"
+    ],
+    "outputs": "GitHub Actions logs containing runner/OS/architecture/ref/reason, uname output, optional attached-device list and GPU model names.",
+    "production_deploy_or_data_mutation_commands": false,
+    "source_checkout_or_execution": false,
+    "package_installation": false,
+    "hardware_provisioning_commands": false,
+    "gpu_training_or_benchmark": false,
+    "energy_counter_measurement": false,
+    "host_side_effect": "The conditional adb client can start the local adb server if absent and bind its normal localhost port5037. This is a normal diagnostic host-process side effect; the body has no adb install, shell, reboot or device-write command.",
+    "adb_source": "https://developer.android.com/tools/adb"
+  },
+  "cost_scope": {
+    "separately_billable_hardware_requested_by_workflow_body": false,
+    "existing_self_hosted_runner_occupancy": true,
+    "server_gpu_training_requested": false,
+    "external_host_billing_or_autoscaling_policy": "Not established by this workflow or the available runner metadata. No claim of zero dollars or zero energy.",
+    "operational_bound": "One small diagnostic job, ten-minute execution timeout. A runner queue can outlast that execution timeout, as the old unassigned attempt demonstrates."
+  },
+  "tools": {
+    "new_workflow_dispatch_exposed": false,
+    "github_fetch_method_scope": "GET only",
+    "gh_cli_present": false,
+    "supported_selected_retry": {
+      "tool": "mcp__codex_apps__github_rerun_workflow_job",
+      "arguments": {
+        "repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+        "job_id": 119620552339
+      },
+      "tool_documented_scope": "Retry one failed or cancelled job; requires GitHub Actions write permission",
+      "actual_write_permission_tested": false
+    },
+    "no_alternative_credential_route_or_guard_bypass_used": true
+  },
+  "normal_new_dispatch_if_a_direct_tool_is_available": {
+    "workflow": ".github/workflows/self-hosted-desktop-availability.yml",
+    "ref": "main",
+    "inputs": {
+      "reason": "hcsn-hardware-capability-20261031"
+    },
+    "status": "Concrete valid inputs only; no new-dispatch tool is currently exposed"
+  },
+  "supported_retry_candidate": {
+    "run_id": 39526325715,
+    "run_attempt": 2,
+    "job_id": 119620552339,
+    "status": "completed",
+    "conclusion": "cancelled",
+    "created_at": "2026-10-21T01:16:13Z",
+    "updated_at": "2026-10-23T03:25:28Z",
+    "head_ref": "main",
+    "head_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39526325715",
+    "job_metadata": {
+      "id": 119620552339,
+      "run_id": 39526325715,
+      "workflow_name": "Self-hosted desktop runner availability",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39526325715",
+      "run_attempt": 2,
+      "node_id": "CR_kwDOTrgxoM8AAAAb2fDGkw",
+      "head_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/119620552339",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39526325715/job/119620552339",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "created_at": "2026-10-22T03:25:27Z",
+      "started_at": "2026-10-22T03:25:27Z",
+      "completed_at": "2026-10-23T03:25:28Z",
+      "name": "Desktop runner probe",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/119620552339",
+      "labels": [
+        "self-hosted",
+        "linux",
+        "x64"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": ""
+    },
+    "historical_device_evidence": "None: prior attempt has no assigned runner name/id and no executed steps. This does not establish that a GPU is absent.",
+    "original_input_reason": "Not exposed by the retained run metadata; a normal retry keeps the original event and validated input. Do not invent or replace it.",
+    "rerun_identity_source": "https://docs.github.com/en/actions/how-tos/manage-workflow-runs/re-run-workflows-and-jobs?tool=cli"
+  },
+  "bounded_history_lookup": {
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?event=workflow_dispatch&per_page=100",
+    "pages_read": 1,
+    "returned_runs": 100,
+    "total_matching_event_runs": 136,
+    "exact_desktop_runs_matched": 1,
+    "other_workflow_bodies_not_followed": true
+  },
+  "recommendation": "Root can use the exposed single-job retry for cancelled job119620552339 as an ordinary already-authorized existing-runner diagnostic. This reruns byte-identical code at the original main event, without modifying configuration, deploying, provisioning or requesting a separate GPU training resource. Preserve the new attempt and inspect whether a runner is actually assigned; do not infer device availability merely from the accepted retry.",
+  "actions_performed": {
+    "read_only_metadata_and_source": true,
+    "new_dispatch": false,
+    "retry": false,
+    "configuration_modified": false,
+    "branch_guard_bypassed": false
+  }
+}

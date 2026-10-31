@@ -1,0 +1,300 @@
+{
+  "all_execution_gates_pass": true,
+  "analysis_self_cpu_seconds": 0.004536065999999998,
+  "checks": {
+    "actual_reset_intervention": true,
+    "all_children_exit_zero": true,
+    "native_action_and_phase_guards": true,
+    "source_identity_unchanged": true
+  },
+  "counters": {
+    "actual_kernel_calls": 5535,
+    "actual_ndu_calls": 5535,
+    "batch_ticks": 0,
+    "event_validation_kernel_steps": 0,
+    "event_validation_ndu_calls": 0,
+    "native_errors": 640,
+    "native_physical_rpc_micros": 7457510,
+    "original_journal_replay_steps": 0,
+    "owner_ticks": 5535,
+    "python_roundtrip_ns": 8596445174,
+    "request_bytes": 2601837,
+    "response_bytes": 10455116,
+    "rpc_calls": 10335,
+    "total_native_kernel_calls": 5535,
+    "total_native_ndu_calls": 5535
+  },
+  "gpu_executed": false,
+  "hardware_energy_joules": null,
+  "multiple_testing": "Descriptive only; no generalization or architecture-superiority gate is based on these intervals.",
+  "native_binary_sha256": "1dc702aea6a448ad84407aeb71dc8f23066205fab79fe7c6859fc02c55e6f7a5",
+  "native_processes": 160,
+  "paired_qvi_minus_control": {
+    "always_fire": {
+      "exact_value_difference": 0.6408165650360864,
+      "infinite_horizon_estimate": {
+        "descriptive_seed_cluster_t95": [
+          0.46974390962900725,
+          1.3719122504871883
+        ],
+        "mean": 0.9208280800580978,
+        "n": 32,
+        "sample_sd": 1.251140271165726
+      },
+      "observed_discounted_return": {
+        "descriptive_seed_cluster_t95": [
+          0.22148966208485982,
+          1.0100077203927487
+        ],
+        "mean": 0.6157486912388043,
+        "n": 32,
+        "sample_sd": 1.0935283944368503
+      }
+    },
+    "best_fixed_threshold": {
+      "exact_value_difference": 0.0,
+      "infinite_horizon_estimate": {
+        "descriptive_seed_cluster_t95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 32,
+        "sample_sd": 0.0
+      },
+      "observed_discounted_return": {
+        "descriptive_seed_cluster_t95": [
+          0.0,
+          0.0
+        ],
+        "mean": 0.0,
+        "n": 32,
+        "sample_sd": 0.0
+      }
+    },
+    "fixed_confidence_0.8": {
+      "exact_value_difference": 1.1962709716147715,
+      "infinite_horizon_estimate": {
+        "descriptive_seed_cluster_t95": [
+          0.8099852552385602,
+          1.647679543413462
+        ],
+        "mean": 1.228832399326011,
+        "n": 32,
+        "sample_sd": 1.1617267104098936
+      },
+      "observed_discounted_return": {
+        "descriptive_seed_cluster_t95": [
+          -0.4943235464786104,
+          0.14418995791432926
+        ],
+        "mean": -0.17506679428214056,
+        "n": 32,
+        "sample_sd": 0.8854998816177049
+      }
+    },
+    "reset_omitted": {
+      "exact_value_difference": 0.573938929167852,
+      "infinite_horizon_estimate": {
+        "descriptive_seed_cluster_t95": [
+          0.3778286375200606,
+          1.1899099842831309
+        ],
+        "mean": 0.7838693109015957,
+        "n": 32,
+        "sample_sd": 1.126206308050321
+      },
+      "observed_discounted_return": {
+        "descriptive_seed_cluster_t95": [
+          0.12834830313116008,
+          0.7885002561731531
+        ],
+        "mean": 0.4584242796521566,
+        "n": 32,
+        "sample_sd": 0.9155083991906331
+      }
+    }
+  },
+  "protocol_sha256": "3b7cf4a71b471576731f2afef533f195da7adee6d4f42a7bab7582f06bc5a5f5",
+  "regenerative_cycles": 640,
+  "schema": "hcsn-task-runtime-summary.v1",
+  "source_result_sha256": "ce3b4b10cb7559d38063d642a067692a1ea2c42a0fc2f4ee6b8305ad56c6d3dd",
+  "statistical_units": "32 fixed seeds per arm; four cycles within each seed, not 128 independent estimates",
+  "summary": {
+    "always_fire": {
+      "accuracy": 0.4765625,
+      "actual_native_ticks": 128,
+      "empirical_mean": 4.188933488091003,
+      "empirical_sample_sd": 1.0198611319933688,
+      "exact_policy_value": 4.302439024390241,
+      "mean_model_based_tail": 2.9052755421381775,
+      "observed_only_interval": {
+        "descriptive_seed_cluster_t95": [
+          0.9567821498012844,
+          1.610533742104367
+        ],
+        "mean": 1.2836579459528257,
+        "n": 32,
+        "sample_sd": 0.9066322851576117
+      },
+      "observed_only_mean": 1.2836579459528255,
+      "return_interval": {
+        "descriptive_seed_cluster_t95": [
+          3.82123433933811,
+          4.556632636843897
+        ],
+        "mean": 4.188933488091004,
+        "n": 32,
+        "sample_sd": 1.0198611319933688
+      },
+      "total_observations": 0,
+      "whole_trial_cpu_seconds": 0.37710285599999993,
+      "whole_trial_wall_seconds": 0.7414956280263141
+    },
+    "best_fixed_threshold": {
+      "accuracy": 0.671875,
+      "actual_native_ticks": 674,
+      "empirical_mean": 5.109761568149102,
+      "empirical_sample_sd": 0.8905090756971105,
+      "exact_policy_value": 4.943255589426327,
+      "mean_model_based_tail": 3.2103549309574713,
+      "observed_only_interval": {
+        "descriptive_seed_cluster_t95": [
+          1.6370361601650252,
+          2.1617771142182347
+        ],
+        "mean": 1.8994066371916298,
+        "n": 32,
+        "sample_sd": 0.7277184421273085
+      },
+      "observed_only_mean": 1.8994066371916298,
+      "return_interval": {
+        "descriptive_seed_cluster_t95": [
+          4.788698808898185,
+          5.430824327400017
+        ],
+        "mean": 5.109761568149101,
+        "n": 32,
+        "sample_sd": 0.8905090756971105
+      },
+      "total_observations": 546,
+      "whole_trial_cpu_seconds": 0.6654491430000008,
+      "whole_trial_wall_seconds": 1.5283071270459914
+    },
+    "fixed_confidence_0.8": {
+      "accuracy": 0.8359375,
+      "actual_native_ticks": 3771,
+      "empirical_mean": 3.88092916882309,
+      "empirical_sample_sd": 0.8573832948571916,
+      "exact_policy_value": 3.7469846178115556,
+      "mean_model_based_tail": 1.8064557373493195,
+      "observed_only_interval": {
+        "descriptive_seed_cluster_t95": [
+          1.8455026715948188,
+          2.3034441913527215
+        ],
+        "mean": 2.0744734314737703,
+        "n": 32,
+        "sample_sd": 0.635080008086887
+      },
+      "observed_only_mean": 2.0744734314737703,
+      "return_interval": {
+        "descriptive_seed_cluster_t95": [
+          3.5718095271540804,
+          4.190048810492099
+        ],
+        "mean": 3.88092916882309,
+        "n": 32,
+        "sample_sd": 0.8573832948571916
+      },
+      "total_observations": 3643,
+      "whole_trial_cpu_seconds": 2.185857478,
+      "whole_trial_wall_seconds": 6.0313378339778865
+    },
+    "reset_omitted": {
+      "accuracy": 0.515625,
+      "actual_native_ticks": 288,
+      "empirical_mean": 4.325892257247506,
+      "empirical_sample_sd": 0.9902170100743211,
+      "exact_policy_value": 4.369316660258475,
+      "mean_model_based_tail": 2.884909899708032,
+      "observed_only_interval": {
+        "descriptive_seed_cluster_t95": [
+          1.1008310329054185,
+          1.7811336821735282
+        ],
+        "mean": 1.4409823575394733,
+        "n": 32,
+        "sample_sd": 0.9434536799090182
+      },
+      "observed_only_mean": 1.4409823575394731,
+      "return_interval": {
+        "descriptive_seed_cluster_t95": [
+          3.9688809541759706,
+          4.6829035603190405
+        ],
+        "mean": 4.325892257247506,
+        "n": 32,
+        "sample_sd": 0.9902170100743211
+      },
+      "total_observations": 160,
+      "whole_trial_cpu_seconds": 0.4735983880000007,
+      "whole_trial_wall_seconds": 1.0097492650093045
+    },
+    "task_qvi": {
+      "accuracy": 0.671875,
+      "actual_native_ticks": 674,
+      "empirical_mean": 5.109761568149102,
+      "empirical_sample_sd": 0.8905090756971105,
+      "exact_policy_value": 4.943255589426327,
+      "mean_model_based_tail": 3.2103549309574713,
+      "observed_only_interval": {
+        "descriptive_seed_cluster_t95": [
+          1.6370361601650252,
+          2.1617771142182347
+        ],
+        "mean": 1.8994066371916298,
+        "n": 32,
+        "sample_sd": 0.7277184421273085
+      },
+      "observed_only_mean": 1.8994066371916298,
+      "return_interval": {
+        "descriptive_seed_cluster_t95": [
+          4.788698808898185,
+          5.430824327400017
+        ],
+        "mean": 5.109761568149101,
+        "n": 32,
+        "sample_sd": 0.8905090756971105
+      },
+      "total_observations": 546,
+      "whole_trial_cpu_seconds": 0.6542284220000006,
+      "whole_trial_wall_seconds": 1.4614561859925743
+    }
+  },
+  "tail_warning": "Return estimates include an exact model-based continuation after the fourth refractory period. Observed-only values are separate.",
+  "trained_content_model": false,
+  "whole_worker_cost": {
+    "command": [
+      "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+      "-m",
+      "experiments.hcsn_blocker_closure_v1.runtime.task_runtime",
+      "--output",
+      "experiments/hcsn_blocker_closure_v1/runtime/results/task001",
+      "--binary",
+      "/workspace/scratch/d831a963ef2f/native-env-r6/recovered-host/native_readout_objective_host"
+    ],
+    "cost_scope": "Exact worker PID wait4; includes Python imports, oracle solve, model initialization, all native children, IPC, persistence, evidence writing, and checks. Excludes this launcher's imports and installation.",
+    "exit_code": 0,
+    "hardware_energy_joules": null,
+    "launcher_cpu_seconds_from_before_spawn": 0.00039479699999999535,
+    "nested_warning": "Native child CPU and worker self CPU are components of the wait4 total; do not add them to it.",
+    "production_authority": false,
+    "rss_scope": "Linux wait4 maximum RSS is a peak statistic, not the sum of concurrent processes or memory traffic.",
+    "schema": "hcsn-task-runtime-whole-worker-cost.v1",
+    "training_performed": false,
+    "wall_seconds": 11.956019941004342,
+    "worker_and_reaped_descendant_cpu_seconds": 5.509892,
+    "worker_peak_rss_kib": 47420
+  }
+}

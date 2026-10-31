@@ -1,0 +1,17 @@
+{
+  "schema": "hcsn-hosted-packaging-fixture.v1",
+  "passed": true,
+  "checks": [
+    "incomplete failure outcome preserved",
+    "all three raw files restored byte for byte including failure and weights",
+    "wrong seal rejected",
+    "corrupt listed byte rejected",
+    "unlisted file rejected",
+    "path rejected: experiments/hcsn_conservative_acceleration_v1/model.py",
+    "path rejected: experiments/hcsn_conservative_acceleration_v1/../outside",
+    "path rejected: /tmp/outside"
+  ],
+  "scientific_execution": false,
+  "cpu_seconds": 0.024674262999999995,
+  "source_sha256": "aa95b220ec9095755ae7f6e08952cfba21afdb9a7af68c6df0e8e12ed4891933"
+}

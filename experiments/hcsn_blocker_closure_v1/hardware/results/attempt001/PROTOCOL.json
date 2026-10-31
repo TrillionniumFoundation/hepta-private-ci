@@ -1,0 +1,237 @@
+{
+  "archive_index": {
+    "path": "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/INDEX.json",
+    "sha256": "8002a5ed5d6f3c0b30486097123432d570f67056790f72a93d707add9153ca1d"
+  },
+  "cases": [
+    {
+      "arm": "value_jg",
+      "checkpoint": "fixed/selective_copy__value_jg__seed881101/selected_state.npz",
+      "files": {
+        "data/selective_copy_val.npz": "561cc8ac918fec8344f0fd3944f505cfd5a7cfab2202fae0e37105866a69a432",
+        "fixed/selective_copy__value_jg__seed881101/RESULT.json": "8d13611403fe853f22f6b042c88f67b333891c158d171ab4726be4c4d281331e",
+        "fixed/selective_copy__value_jg__seed881101/selected_state.npz": "d7b1b428bf1a19cd28efb2a678b1a7e60248d301f674dba3f99d0cd1e8f8b686",
+        "fixed/selective_copy__value_jg__seed881101/selection.json": "cea084f49cc398617b9d45a3d7f7ba464e15b3aa12b50c870542738b0c5a88d1"
+      },
+      "seed": 881101,
+      "task": "selective_copy",
+      "tensor_hash": "17e000d9779d256e9c2e3f2fee83906d77f082de7aa140753ffc193b1628ffeb",
+      "validation": "data/selective_copy_val.npz"
+    },
+    {
+      "arm": "two_gates",
+      "checkpoint": "fixed/selective_copy__two_gates__seed881101/selected_state.npz",
+      "files": {
+        "data/selective_copy_val.npz": "561cc8ac918fec8344f0fd3944f505cfd5a7cfab2202fae0e37105866a69a432",
+        "fixed/selective_copy__two_gates__seed881101/RESULT.json": "b90292ccce65c4cc9f456740b30afefd532224ce909e23a9f484db7940378310",
+        "fixed/selective_copy__two_gates__seed881101/selected_state.npz": "af9d8ce88f0237292da323fbe886786b792eedf08ddcea76db038e249474f2a8",
+        "fixed/selective_copy__two_gates__seed881101/selection.json": "093c19a817fe2c2634c96d432502f89dddc823eb6cac8be7257bd84f6f64c6d5"
+      },
+      "seed": 881101,
+      "task": "selective_copy",
+      "tensor_hash": "4c743bdf6ebf7218ede34eb3fea79e5665416e5ac33d0baa71e5bf43eb035e1e",
+      "validation": "data/selective_copy_val.npz"
+    },
+    {
+      "arm": "transformer",
+      "checkpoint": "fixed/selective_copy__transformer__seed881101/selected_state.npz",
+      "files": {
+        "data/selective_copy_val.npz": "561cc8ac918fec8344f0fd3944f505cfd5a7cfab2202fae0e37105866a69a432",
+        "fixed/selective_copy__transformer__seed881101/RESULT.json": "a17d2da1bc75f01d7df3e6224107ed54490538b87a0691bab13c558ef4556317",
+        "fixed/selective_copy__transformer__seed881101/selected_state.npz": "b67633a1639a2f53f1811519595a8fc21d2035c6544d83eff2ade2f3bb6b1fd6",
+        "fixed/selective_copy__transformer__seed881101/selection.json": "0f67f32f31656ed8ea36eb8cb34fab407aceef156524b91110f7ea92eb97ae93"
+      },
+      "seed": 881101,
+      "task": "selective_copy",
+      "tensor_hash": "e748e405a68e8225e2427ec5be67b6ff9f15cb2a3f62f88eb72990c48f5d2715",
+      "validation": "data/selective_copy_val.npz"
+    },
+    {
+      "arm": "lif_snn",
+      "checkpoint": "fixed/selective_copy__lif_snn__seed881101/selected_state.npz",
+      "files": {
+        "data/selective_copy_val.npz": "561cc8ac918fec8344f0fd3944f505cfd5a7cfab2202fae0e37105866a69a432",
+        "fixed/selective_copy__lif_snn__seed881101/RESULT.json": "905f42e6415c8e5d43bb5d804ed53d32252104a629838414665c03a4fa28b59f",
+        "fixed/selective_copy__lif_snn__seed881101/selected_state.npz": "51359a611fdb5ba1f9fcdc50a3cc8e56509f41955abdee17bc59b74bca130609",
+        "fixed/selective_copy__lif_snn__seed881101/selection.json": "2992ba6d7875ace9b3e70ab2ece28f34e6aefaa6ab182c5c4ac420b1364cc13c"
+      },
+      "seed": 881101,
+      "task": "selective_copy",
+      "tensor_hash": "b7f1bd57c024a45ce55ec80961b8fa2d10f82ca3027db0338228d68bde27908f",
+      "validation": "data/selective_copy_val.npz"
+    },
+    {
+      "arm": "mamba1",
+      "checkpoint": "fixed/selective_copy__mamba1__seed881101/selected_state.npz",
+      "files": {
+        "data/selective_copy_val.npz": "561cc8ac918fec8344f0fd3944f505cfd5a7cfab2202fae0e37105866a69a432",
+        "fixed/selective_copy__mamba1__seed881101/RESULT.json": "23359393440f2225171fdc0508a0c947d5df9a6b8847a1ee70ff8a217d54ac2f",
+        "fixed/selective_copy__mamba1__seed881101/selected_state.npz": "815e9182da3d764d3b58dad71a8bc75c41322d7d7bae0e42ffd64b9007e6c5c6",
+        "fixed/selective_copy__mamba1__seed881101/selection.json": "47924b1a93134f43903a7d11f8e27124f13ba31350400f5db4fe440e73dda919"
+      },
+      "seed": 881101,
+      "task": "selective_copy",
+      "tensor_hash": "1bffc0525e9c96981f99222ef312ef7fdb79ea0b2d6df051cf59da857a16923c",
+      "validation": "data/selective_copy_val.npz"
+    },
+    {
+      "arm": "value_jg",
+      "checkpoint": "fixed/mqar__value_jg__seed881101/selected_state.npz",
+      "files": {
+        "data/mqar_val.npz": "6c934d0a715d81b17e920bee92ba86656d90fa35530db630a45de238168e112f",
+        "fixed/mqar__value_jg__seed881101/RESULT.json": "e458dbf3003efd103b6a13c1d40808d3767f82574ae29e81ca8a0bfdf51839dd",
+        "fixed/mqar__value_jg__seed881101/selected_state.npz": "a4b41fee9ea23ed40fb7f963b5b1a11e110f14ca97b727c3c81add19367f020d",
+        "fixed/mqar__value_jg__seed881101/selection.json": "2a4a19d54688c48a7fde2f8e22f4bfa030344b6f7c898b27a5ea227fb0885899"
+      },
+      "seed": 881101,
+      "task": "mqar",
+      "tensor_hash": "6bb4c8cb4c84933fc0c79246eb9c9d521390165a2794918c5047d3f4a280f0a0",
+      "validation": "data/mqar_val.npz"
+    },
+    {
+      "arm": "two_gates",
+      "checkpoint": "fixed/mqar__two_gates__seed881101/selected_state.npz",
+      "files": {
+        "data/mqar_val.npz": "6c934d0a715d81b17e920bee92ba86656d90fa35530db630a45de238168e112f",
+        "fixed/mqar__two_gates__seed881101/RESULT.json": "0a78c1424ec48da2c241569f656c718289592ae83c959395cf4758736d0b8f47",
+        "fixed/mqar__two_gates__seed881101/selected_state.npz": "6f481195ec1c6d9c29d1cdb8cf5e88361d9b912e401ac62706c7089530d37e6d",
+        "fixed/mqar__two_gates__seed881101/selection.json": "d2c66d94e0dc3ab45d697caa7fab5b2b159c75df9d28384713860004ff4676f9"
+      },
+      "seed": 881101,
+      "task": "mqar",
+      "tensor_hash": "ade67511c5d6d0f57eedfbe9824bb6a27b20bcbc82bf0f5be2c4117d1e00c1ae",
+      "validation": "data/mqar_val.npz"
+    },
+    {
+      "arm": "transformer",
+      "checkpoint": "fixed/mqar__transformer__seed881101/selected_state.npz",
+      "files": {
+        "data/mqar_val.npz": "6c934d0a715d81b17e920bee92ba86656d90fa35530db630a45de238168e112f",
+        "fixed/mqar__transformer__seed881101/RESULT.json": "8d601afefb073000b46246677e134f1c39d01e0aa216667595456742da335b5a",
+        "fixed/mqar__transformer__seed881101/selected_state.npz": "3c1341d1cccb18215b2910a3b1248df1e30a4490edcdab8d2848de12b2985684",
+        "fixed/mqar__transformer__seed881101/selection.json": "85e94db6209c1b34662b021d5c8ee2271f992d081e5f949200cbc57837ee2846"
+      },
+      "seed": 881101,
+      "task": "mqar",
+      "tensor_hash": "a88c60358929085ccf0ec574cf15ed85687237da863b35a1c7336eeaf03d87c4",
+      "validation": "data/mqar_val.npz"
+    },
+    {
+      "arm": "lif_snn",
+      "checkpoint": "fixed/mqar__lif_snn__seed881101/selected_state.npz",
+      "files": {
+        "data/mqar_val.npz": "6c934d0a715d81b17e920bee92ba86656d90fa35530db630a45de238168e112f",
+        "fixed/mqar__lif_snn__seed881101/RESULT.json": "5452f2a710ab2c41eea0af9b0d90b0bfcebbadf28f5335db1300ecd9c296c4f8",
+        "fixed/mqar__lif_snn__seed881101/selected_state.npz": "9dbfb8599726e812d3fd047ea4cee6d1e08982ce4d8afc91d1a52aadb3dd8e8b",
+        "fixed/mqar__lif_snn__seed881101/selection.json": "294ee3ddf0f5b65b02eb6e7ca2a8591ae325c56a83306d2c1774ddfbad164399"
+      },
+      "seed": 881101,
+      "task": "mqar",
+      "tensor_hash": "ce2dbfb9c0cbe1afe80e318db40d7ef90bc8ab3551b6cb09477ed45edb300ac7",
+      "validation": "data/mqar_val.npz"
+    },
+    {
+      "arm": "mamba1",
+      "checkpoint": "fixed/mqar__mamba1__seed881101/selected_state.npz",
+      "files": {
+        "data/mqar_val.npz": "6c934d0a715d81b17e920bee92ba86656d90fa35530db630a45de238168e112f",
+        "fixed/mqar__mamba1__seed881101/RESULT.json": "afa68355e60cf058f64ffc316d8e15f3340ccf53d2b2856fe826bd1a44bae453",
+        "fixed/mqar__mamba1__seed881101/selected_state.npz": "b4cc27f29f3ac4418c1e67f000fb16ab026cd12383c062acb4c8f3af731904f0",
+        "fixed/mqar__mamba1__seed881101/selection.json": "59ab77104437adb3eab435357384822b28d55e5617931af294c43087d4a6ac63"
+      },
+      "seed": 881101,
+      "task": "mqar",
+      "tensor_hash": "cdf7ea2778e7e6b62d88506bab007816c0720a1c50c348d050d2eaca08f46be9",
+      "validation": "data/mqar_val.npz"
+    }
+  ],
+  "content_root": "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/content/results/hosted001",
+  "design": {
+    "archive_content_prefix": "content/results/hosted001",
+    "backends": [
+      "cpu",
+      "cuda:0"
+    ],
+    "batches": [
+      1,
+      16,
+      32
+    ],
+    "cpu_threads": 1,
+    "dtype": "float32",
+    "energy": {
+      "idle_seconds": 1.0,
+      "maximum_iterations": 2048,
+      "minimum_active_seconds": 2.0
+    },
+    "energy_scope": "Only actual NVML total-device-energy millijoule counter differences from the exact torch CUDA UUID are converted to joules. MIG UUIDs, unmatched UUIDs, absent/unsupported counters, any within-window or between-window counter regression, zero unresolved active increments, or too-short active windows yield null joules. Zero idle increments may reflect counter granularity and do not invalidate a positive active reading. Bracketed idle counters remain separate and are never subtracted. Board-wide energy includes idle/background activity; process exclusivity is not established. No CPU/package/whole-server energy or MAC-based estimate is claimed.",
+    "forward_tolerance": {
+      "atol": 5e-05,
+      "rtol": 0.0005
+    },
+    "host_scope": "Already loaded model, unpinned CPU input. Fresh input and dt copies to the device, full forward and fresh full-output copy back to CPU, with device synchronization. CPU uses equivalent fresh input/output allocations. Disk/network/model startup is excluded here and recorded separately as setup.",
+    "inference_mode": "eval and torch.inference_mode; no compile, autocast or TF32. Same frozen FP32 implementation on every backend. A CUDA failure is retained, not silently replaced by CPU.",
+    "input_dim": 64,
+    "inputs": "Only the first B rows of the registered validation split, with original dt. No label tensor, test or OOD array is loaded. The same task/batch input bytes are used for all arms and devices.",
+    "length": 32,
+    "models": [
+      "value_jg",
+      "two_gates",
+      "transformer",
+      "lif_snn",
+      "mamba1"
+    ],
+    "order_seed": 883971,
+    "repetitions": 20,
+    "resident_scope": "Already loaded model and inputs. CPU wall and process CPU, or CUDA default-stream event elapsed time plus synchronized host wall and process CPU. Event time is stream elapsed time and may include launch gaps; it is not a sum of kernel execution times.",
+    "schema": "hcsn-blocker-hardware-design.v1",
+    "scope_limitations": [
+      "One checkpoint seed per architecture is a hardware probe, not a new statistical quality comparison",
+      "Small batch/length cases do not establish GPU scaling or foundation-model capacity",
+      "An unavailable accelerator or energy counter is preserved as unavailable",
+      "Latency samples share one process and device; quantiles are descriptive and not independent machine replicates"
+    ],
+    "seed": 881101,
+    "selection": "The first predeclared formal seed and five named fixed-stage arms are measured for both tasks, regardless of any heldout outcome. Each uses its already selected validation checkpoint. Hardware registration requires externally supplied exact study protocol and published archive INDEX SHA256 values, verifies the member shards, and binds every checkpoint, selection, result and validation input to that published index before any timing.",
+    "stage": "fixed",
+    "state_contract": "Every call is a complete return_sequence=True, return_aux=False forward with no supplied persistent state. Initial content/probability states and all within-sequence updates, firing/reset/refractory dynamics are included. No state, transition or output is cached between calls.",
+    "study_execution_seal": "c9063043d088b6b469e740b9b6f341f3faea3928",
+    "tasks": [
+      "selective_copy",
+      "mqar"
+    ],
+    "warmup": 3
+  },
+  "measurement_started": false,
+  "preflight": {
+    "path": "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/hardware/PREFLIGHT002.json",
+    "sha256": "21428a0674c7b2ccc5d9afe3676f6615e4c35983087439e6e300969d08d0ce48"
+  },
+  "registered_utc": "2026-10-31T03:32:07.982852+00:00",
+  "schema": "hcsn-blocker-hardware-protocol.v1",
+  "selection_lock_sha256": "512191bd3037f23a14774d69fe9199a1959530b229db7da27ecd4efd0a4ace0d",
+  "source_sha256": {
+    "experiments/continuous_spiking_network/baseline.py": "526eaf3ea650d67188cbf898e8a246e7511b196ee2b0b50e7a6063c9ab1583f8",
+    "experiments/hcsn_blocker_closure_v1/content/DESIGN.json": "c38b579da45bc200825419f48b0321586dcdbe26eeec8f45323f56d668ca148f",
+    "experiments/hcsn_blocker_closure_v1/content/__init__.py": "b19567b2db5b6961b63c4d2f8359a4f56a2b1664ea31c45e794339066e12e96c",
+    "experiments/hcsn_blocker_closure_v1/content/analysis.py": "aed2dd5bee0561fbea6030b9902f3eef65b513d6ea5aa4ad19409f65c3b46564",
+    "experiments/hcsn_blocker_closure_v1/content/data.py": "89cec4f5d5926d4971880b4103e8b964f702986d7ad0f884fa95b52c32e876ee",
+    "experiments/hcsn_blocker_closure_v1/content/models.py": "f08878c2760bcec859e5e11c7b906b71647029073f782987c3431a4ca0ea71fe",
+    "experiments/hcsn_blocker_closure_v1/content/preflight.py": "edbba48e2d8b2f464fb714611a6c87aa16f8d495aa0b6db7ed1c269bddd59911",
+    "experiments/hcsn_blocker_closure_v1/content/study.py": "1e7039a7d2cbf3e4be1f009c0aeab92b31c5098b606ee55f89d6f74105d7b3d0",
+    "experiments/hcsn_blocker_closure_v1/hardware/HARDWARE_DESIGN.json": "cf50e46ba5cb944f82f19db86adc79b22b77b327dfad6e1974bab6f674223727",
+    "experiments/hcsn_blocker_closure_v1/hardware/__init__.py": "c0d24d25d01960bf97444982f3997b056d9b19d90c4e1bb064f715d0747531da",
+    "experiments/hcsn_blocker_closure_v1/hardware/energy.py": "77720abf774f15e0d9d4546882095eba4bdc920bb4796f280b0340734c56eb10",
+    "experiments/hcsn_blocker_closure_v1/hardware/measure.py": "e9bfb3695c547707052cdfc5c042aa9a442af6407035872b8294667d6e76d478",
+    "experiments/hcsn_blocker_closure_v1/hardware/preflight.py": "0deb70e2af3c65391248d70a798369da3a53b9200499c840d513f1908fa7515d",
+    "experiments/hcsn_conservative_acceleration_v1/kernel.py": "d528d140b83e11e80b835853d94677e1a2293d6b7c16ec4b27e2fac5d2ffcf68",
+    "experiments/hcsn_conservative_acceleration_v1/model.py": "1326e49d6c5add4eb0ef20524aa5a0c0edd80fc3284da8db4b6266993073118b",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_distributional_v2/model.py": "3eb5f6b8797475abf84b09ae5b588f3d0a253e0584578586cb081f15142a355f",
+    "experiments/hcsn_distributional_v2/stable_probability.py": "d4bc918a5907a253007f8efd793ef379ab8c0e7ce9d5753af7feadcd8b836770",
+    "experiments/hcsn_free_boundary_v1/model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "experiments/hcsn_free_boundary_v1/oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a"
+  },
+  "study_protocol_sha256": "911067f668c94a68ca41af710e1977005806dad202fbf18f32bda580b077a27b",
+  "test_or_ood_arrays_loaded": false
+}

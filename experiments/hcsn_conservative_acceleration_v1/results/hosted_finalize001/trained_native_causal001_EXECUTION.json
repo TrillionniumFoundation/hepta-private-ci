@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "experiments.hcsn_conservative_acceleration_v1.runtime",
+    "native-causal",
+    "--output",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/trained_native_causal001",
+    "--backend",
+    "accelerated",
+    "--profile",
+    "stable",
+    "--config",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/hosted_finalize001/MODEL_CONFIG.json",
+    "--checkpoint",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_conservative_acceleration_v1/results/comparison002_hosted/runs/fixed__selective_copy__hcsn_accelerated__98031/selected.npz",
+    "--binary",
+    "/__w/_temp/hcsn-native/continuous_host"
+  ],
+  "complete_child_cpu_seconds": 2.394689,
+  "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+  "ended_utc": "2026-10-30T13:13:33.016185+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_conservative_acceleration_v1/results/hosted_finalize001/trained_native_causal001.log",
+  "name": "trained_native_causal001",
+  "peak_rss_bytes": 277794816,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-30T13:13:30.609364+00:00",
+  "system_cpu_seconds": 0.212441,
+  "user_cpu_seconds": 2.182248,
+  "wall_seconds": 2.4068269020000344
+}

@@ -1,0 +1,1590 @@
+{
+  "schema": "hcsn-prior-content-execution-audit.v1",
+  "pinned_parent_commit": "63fd568b177c0456ddd8b590e3ac77d35307c0c4",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "audit_date": "2026-10-30",
+  "scope": "Read-only review of published parent-commit evidence for stages 4-6. No training, inference, timing, protocol modification, or new statistical test was performed for this audit.",
+  "method": [
+    "Fetch exact-ref GitHub directory listings and source files; record immutable Git object identities.",
+    "Download the two small published content/LIF analysis archives; verify compressed SHA256 and every member SHA256 before reading.",
+    "Read their original ANALYSIS.json and REPORT.md without replacing strict audit decisions.",
+    "Compare AV/sampling/cost-scaling directory contents and both published transport indexes with the claimed result cohorts."
+  ],
+  "raw_training_archives_fully_rehydrated_here": false,
+  "sources": {
+    "content_manifest": {
+      "path": "experiments/hcsn_sixstage_v1/artifacts/content002_analysis.json",
+      "git_blob_sha1": "cba048e7ff78029901b71d03a91b7ff7df62ff54",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_sixstage_v1/artifacts/content002_analysis.json"
+    },
+    "lif_manifest": {
+      "path": "experiments/hcsn_sixstage_v1/artifacts/lif_supplement001_analysis.json",
+      "git_blob_sha1": "7ca70351e82a0ad1c4695b93b53c3ef8a99ae517",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_sixstage_v1/artifacts/lif_supplement001_analysis.json"
+    },
+    "packaging_summary": {
+      "path": "experiments/hcsn_sixstage_v1/artifacts/CONTENT_PACKAGING_SUMMARY.json",
+      "git_blob_sha1": "b2080995c02ee97334bd85b1b516260d491643c1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_sixstage_v1/artifacts/CONTENT_PACKAGING_SUMMARY.json"
+    },
+    "initial_transport_index": {
+      "path": "experiments/hcsn_sixstage_v1/transport_indexes/initial_text_bounded.json",
+      "git_blob_sha1": "c32e955be03e2d8206070eac436534c1c28c2ee8",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_sixstage_v1/transport_indexes/initial_text_bounded.json"
+    },
+    "content_transport_index": {
+      "path": "experiments/hcsn_sixstage_v1/transport_indexes/content_text_bounded.json",
+      "git_blob_sha1": "c6da7024f2ff452f6e97d50649b99441484bf5ac",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_sixstage_v1/transport_indexes/content_text_bounded.json"
+    },
+    "av_readme": {
+      "path": "experiments/hcsn_real_av_v1/time_normalized_v2/README.md",
+      "git_blob_sha1": "f80160e004dc299600ad0f0f20e763c5c28bee2e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_real_av_v1/time_normalized_v2/README.md"
+    },
+    "sampling_readme": {
+      "path": "experiments/hcsn_sampling_refinement_v1/README.md",
+      "git_blob_sha1": "2e2220f3dad62e253957feb73dffb7f4b3581a0d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_sampling_refinement_v1/README.md"
+    },
+    "scale_readme": {
+      "path": "experiments/hcsn_cost_scaling_v1/README.md",
+      "git_blob_sha1": "45afc960c03b780fdfec19dbe493f4732b7ddda8",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_cost_scaling_v1/README.md"
+    },
+    "scale_static_review": {
+      "path": "experiments/hcsn_distributional_v2/results/sixstage_20261030_cost_review/REVIEW.json",
+      "git_blob_sha1": "3947320af2c2143d4bf59fd40fed9440aa5a5da6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_distributional_v2/results/sixstage_20261030_cost_review/REVIEW.json"
+    },
+    "v1_scale_summary": {
+      "path": "experiments/hcsn_free_boundary_v1/results/scaling002/summary.json",
+      "git_blob_sha1": "8cbbf0c51a1c71423290c3363091f443e41c16be",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_free_boundary_v1/results/scaling002/summary.json"
+    },
+    "v1_native_report": {
+      "path": "experiments/hcsn_free_boundary_v1/results/native003/REPORT.md",
+      "git_blob_sha1": "0f97e7b391ec808c04911101d96bb6fbeaa210d3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_free_boundary_v1/results/native003/REPORT.md"
+    },
+    "v1_native_review": {
+      "path": "experiments/hcsn_free_boundary_v1/results/native003/REVIEW.json",
+      "git_blob_sha1": "cbb1924d36cc67a4b26e5c140faab2bd5287fa1c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_free_boundary_v1/results/native003/REVIEW.json"
+    },
+    "content002_analysis_verified_archive": {
+      "manifest_source": "content_manifest",
+      "archive_path": "experiments/hcsn_sixstage_v1/artifacts/content002_analysis.tar.xz.part0000",
+      "archive_git_blob_sha1": "c11d7abbb35a96477556c9c82ba096665116625e",
+      "archive_sha256": "bb5c00f735f5b22e479095bfdf44bd60a45d804c3c93a6a139ed8f4e358b8c90",
+      "archive_bytes": 74860,
+      "complete_small_archive_downloaded": true,
+      "all_members_sha256_verified": true,
+      "members": [
+        {
+          "bytes": 595012,
+          "path": "ANALYSIS.json",
+          "sha256": "654f1f3b235bd066e8ee64f2f20e18dc16eb7f83ecbef31379a066d94433da76"
+        },
+        {
+          "bytes": 5835,
+          "path": "CORE_TABLE.csv",
+          "sha256": "88d927459c3da935f5bc9f25ff1997757bdc84f61cb8b3bbdc63ac770b3755c1"
+        },
+        {
+          "bytes": 1441,
+          "path": "EXECUTION.json",
+          "sha256": "888306666e60ee51c40aa7af02e8c2f46bd4aaf4ff88a2601fd1dd5d51b37218"
+        },
+        {
+          "bytes": 5388,
+          "path": "REPORT.md",
+          "sha256": "795f8dc3a9fc99f58cb796387cc1bf1106c4bcff9404d8cb6def30c145a0a4de"
+        }
+      ]
+    },
+    "lif_supplement001_analysis_verified_archive": {
+      "manifest_source": "lif_manifest",
+      "archive_path": "experiments/hcsn_sixstage_v1/artifacts/lif_supplement001_analysis.tar.xz.part0000",
+      "archive_git_blob_sha1": "93b4f0acfdb998873a8dfd2c351edc2a89deeeda",
+      "archive_sha256": "9048b7743c26954f3e9631d76ef72ec86ce35b7993d492c9866df8eb28133a35",
+      "archive_bytes": 25772,
+      "complete_small_archive_downloaded": true,
+      "all_members_sha256_verified": true,
+      "members": [
+        {
+          "bytes": 184131,
+          "path": "ANALYSIS.json",
+          "sha256": "757a13820a15517c65b5c157f26715cb1a7cd30d35ebc10a10201f9d7c3f582f"
+        },
+        {
+          "bytes": 373,
+          "path": "EXECUTION.json",
+          "sha256": "dbfe13bbb08a430b38e7abdec506889a18929603cbba3247341131cb7c4d5512"
+        },
+        {
+          "bytes": 2771,
+          "path": "REPORT.md",
+          "sha256": "dfcd2e1d4ade04b485679dec48572cecfa414707442bdc81a40ed3dd9534c0c9"
+        }
+      ]
+    }
+  },
+  "directory_evidence": [
+    {
+      "path": "experiments/hcsn_real_av_v1/time_normalized_v2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_real_av_v1/time_normalized_v2",
+      "entries": [
+        {
+          "name": "ADDENDUM.json",
+          "type": "file",
+          "git_object_sha1": "0fcb530500a40969d3054690403ca247ce6b8203",
+          "bytes": 2480
+        },
+        {
+          "name": "FREEZE.json",
+          "type": "file",
+          "git_object_sha1": "4d9cdc4c767381d5ae09169ede6d440f272d7130",
+          "bytes": 6713
+        },
+        {
+          "name": "PREFLIGHT.json",
+          "type": "file",
+          "git_object_sha1": "5dbf0f24fe4604c5e92054eae37601703fedd2b7",
+          "bytes": 20643
+        },
+        {
+          "name": "PROTOCOL.json",
+          "type": "file",
+          "git_object_sha1": "74c5f7df010feadec5b6ed37a33fccfa3ef699aa",
+          "bytes": 4539
+        },
+        {
+          "name": "README.md",
+          "type": "file",
+          "git_object_sha1": "f80160e004dc299600ad0f0f20e763c5c28bee2e",
+          "bytes": 2978
+        },
+        {
+          "name": "diagnostics.py",
+          "type": "file",
+          "git_object_sha1": "aaadfa2622941975b74ddc7026c5a91fbceda4f1",
+          "bytes": 6349
+        },
+        {
+          "name": "registration.py",
+          "type": "file",
+          "git_object_sha1": "b29250ff5a689c24ab4cdbfb1b9add209585f468",
+          "bytes": 6166
+        },
+        {
+          "name": "study.py",
+          "type": "file",
+          "git_object_sha1": "9142b36b66583346d0b7cee2e9ba2317993af5c3",
+          "bytes": 9448
+        }
+      ]
+    },
+    {
+      "path": "experiments/hcsn_sampling_refinement_v1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_sampling_refinement_v1",
+      "entries": [
+        {
+          "name": "FREEZE.json",
+          "type": "file",
+          "git_object_sha1": "01c3664d8168cd5ce79d02ee600544e03d863812",
+          "bytes": 19708
+        },
+        {
+          "name": "PROTOCOL.json",
+          "type": "file",
+          "git_object_sha1": "001a3cb46750a84f48ad1707177b5f441642a770",
+          "bytes": 38503
+        },
+        {
+          "name": "README.md",
+          "type": "file",
+          "git_object_sha1": "2e2220f3dad62e253957feb73dffb7f4b3581a0d",
+          "bytes": 2461
+        },
+        {
+          "name": "REGISTRATION.log",
+          "type": "file",
+          "git_object_sha1": "338e1ac1a0b1bfc20b23eb76b8d08bb314afaaf7",
+          "bytes": 240
+        },
+        {
+          "name": "REGISTRATION_EXECUTION.json",
+          "type": "file",
+          "git_object_sha1": "ea3277267724c7b4d178f6e5cfb117476c60a2a0",
+          "bytes": 738
+        },
+        {
+          "name": "common.py",
+          "type": "file",
+          "git_object_sha1": "395020d28acf62bba131b4a680d8904f5f5bb233",
+          "bytes": 5407
+        },
+        {
+          "name": "run.py",
+          "type": "file",
+          "git_object_sha1": "4c6c351dd16c4fd977a2aae1f147d5dd59f86dcb",
+          "bytes": 7287
+        },
+        {
+          "name": "study.py",
+          "type": "file",
+          "git_object_sha1": "8103b6ebfd6bfb761b0df8a9198aea1c33068707",
+          "bytes": 20792
+        }
+      ]
+    },
+    {
+      "path": "experiments/hcsn_cost_scaling_v1/results/scale001",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_cost_scaling_v1/results/scale001",
+      "entries": [
+        {
+          "name": "REGISTRATION.json",
+          "type": "file",
+          "git_object_sha1": "5d44f215f285daf5762552d5bc6924faff20f421",
+          "bytes": 148
+        }
+      ]
+    },
+    {
+      "path": "experiments/hcsn_sixstage_v1/artifacts",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_sixstage_v1/artifacts",
+      "entries": [
+        {
+          "name": "CONTENT_PACKAGING_SUMMARY.json",
+          "type": "file",
+          "git_object_sha1": "b2080995c02ee97334bd85b1b516260d491643c1",
+          "bytes": 2957
+        },
+        {
+          "name": "content002_analysis.json",
+          "type": "file",
+          "git_object_sha1": "cba048e7ff78029901b71d03a91b7ff7df62ff54",
+          "bytes": 1176
+        },
+        {
+          "name": "content002_analysis.tar.xz.part0000",
+          "type": "file",
+          "git_object_sha1": "c11d7abbb35a96477556c9c82ba096665116625e",
+          "bytes": 74860
+        },
+        {
+          "name": "content002_analysis_TRANSPORT_VERIFICATION.json",
+          "type": "file",
+          "git_object_sha1": "433a31a374c1ec7ec6d2ce017265c834a79eb1fa",
+          "bytes": 650
+        },
+        {
+          "name": "content002_complete_TRANSPORT_VERIFICATION.json",
+          "type": "file",
+          "git_object_sha1": "61b46b21c2ea5226f1952844ba1a3f186170748e",
+          "bytes": 648
+        },
+        {
+          "name": "lif_supplement001_analysis.json",
+          "type": "file",
+          "git_object_sha1": "7ca70351e82a0ad1c4695b93b53c3ef8a99ae517",
+          "bytes": 1040
+        },
+        {
+          "name": "lif_supplement001_analysis.tar.xz.part0000",
+          "type": "file",
+          "git_object_sha1": "93b4f0acfdb998873a8dfd2c351edc2a89deeeda",
+          "bytes": 25772
+        },
+        {
+          "name": "lif_supplement001_analysis_TRANSPORT_VERIFICATION.json",
+          "type": "file",
+          "git_object_sha1": "67dff74b403128162cd5b2e19a147e80da407deb",
+          "bytes": 662
+        },
+        {
+          "name": "lif_supplement001_complete.json",
+          "type": "file",
+          "git_object_sha1": "6d28335ef857f29262ee08a651eb878a99395165",
+          "bytes": 96378
+        },
+        {
+          "name": "lif_supplement001_complete_TRANSPORT_VERIFICATION.json",
+          "type": "file",
+          "git_object_sha1": "c7364b4012346be13f9293cd0e77a59b529d5c4d",
+          "bytes": 662
+        }
+      ]
+    },
+    {
+      "path": "experiments/hcsn_sixstage_v1/transport_indexes",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/63fd568b177c0456ddd8b590e3ac77d35307c0c4/experiments/hcsn_sixstage_v1/transport_indexes",
+      "entries": [
+        {
+          "name": "TEXT_ROUNDTRIP.json",
+          "type": "file",
+          "git_object_sha1": "9fc7a47f9758551f5f20c7582a004757992c2fd8",
+          "bytes": 1141
+        },
+        {
+          "name": "content_text_bounded.json",
+          "type": "file",
+          "git_object_sha1": "c6da7024f2ff452f6e97d50649b99441484bf5ac",
+          "bytes": 285157
+        },
+        {
+          "name": "initial_text_bounded.json",
+          "type": "file",
+          "git_object_sha1": "c32e955be03e2d8206070eac436534c1c28c2ee8",
+          "bytes": 45073
+        }
+      ]
+    }
+  ],
+  "publication_status": {
+    "content002": {
+      "status": "published_completed_analysis_with_one_strict_invalid_search",
+      "sources": [
+        "content_manifest",
+        "content002_analysis_verified_archive",
+        "content_transport_index"
+      ],
+      "raw_archive_discovery": "content002_complete is transported through content_text_bounded.json; the complete raw training archive was not rehydrated by this audit."
+    },
+    "lif_supplement001": {
+      "status": "published_completed_supplement_analysis",
+      "sources": [
+        "lif_manifest",
+        "lif_supplement001_analysis_verified_archive",
+        "content_transport_index"
+      ]
+    },
+    "real_av_time_normalized_v2": {
+      "status": "published_design_and_train_only_preflight; completed outcome evidence not present in audited parent paths/indexes",
+      "published": [
+        "protocol",
+        "freeze",
+        "train-only preflight",
+        "README",
+        "data hashes/transport"
+      ],
+      "not_verified_as_published": [
+        "complete 21-job training ledger",
+        "validation-selected checkpoint outputs",
+        "heldout prediction metrics",
+        "final analysis/report"
+      ],
+      "sources": [
+        "av_readme",
+        "initial_transport_index"
+      ]
+    },
+    "sampling_refinement_v1": {
+      "status": "published_protocol_freeze_registration_and_source; completed inference evidence not present in audited parent paths/indexes",
+      "not_verified_as_published": [
+        "15-checkpoint x 3-factor prediction results",
+        "complete worker ledger",
+        "final analysis"
+      ],
+      "sources": [
+        "sampling_readme"
+      ]
+    },
+    "cost_scaling_v1_scale001": {
+      "status": "published_protocol_preflights_and_registration; completed 72-job outcomes not present in audited parent paths/indexes",
+      "not_verified_as_published": [
+        "72-job completion ledger",
+        "quality-qualified operating-point results",
+        "heldout checkpoint predictions",
+        "final timing/analysis report"
+      ],
+      "sources": [
+        "scale_readme",
+        "scale_static_review"
+      ]
+    },
+    "extension_transport": {
+      "status": "not_present_at_pinned_parent",
+      "observed_transport_indexes": [
+        "initial_text_bounded.json",
+        "content_text_bounded.json",
+        "TEXT_ROUNDTRIP.json"
+      ],
+      "not_present": [
+        "extensions_text_bounded.json",
+        "artifacts/extensions"
+      ],
+      "reason": "A README's forward reference to a future archive is not a completed published result."
+    }
+  },
+  "stage4": {
+    "status": "executed_published_mechanism_comparison; superiority_not_supported",
+    "scientific_findings": {
+      "schema": "hcsn-distribution-content-analysis.v2",
+      "valid": 175,
+      "invalid": 1,
+      "expected": 176,
+      "positive_mechanism_gates": 0,
+      "passed_content_screens": 0,
+      "complete_child_cpu_seconds": 25273.811006,
+      "training_cpu_seconds": 21106.157494484,
+      "coordinator_cpu_seconds": 29.466033974,
+      "both_study_worker_cpu_seconds": 27498.533343,
+      "protocol_sha256": "03070eb0d3fc264ace436f25a06c989bb898f3c33caba83936f5040c660e6b9c",
+      "statistical_scope": "post-v1/content001 source-registered study; same previously observed test datasets; three-seed core descriptive",
+      "mechanism": [
+        {
+          "comparison": "distribution_conditional_dual",
+          "complete": true,
+          "holm_p": 1,
+          "interval": [
+            -0.01939074803617272,
+            0.02879016209867272
+          ],
+          "mean": 0.00469970703125,
+          "p": 0.640625,
+          "positive_gate": false,
+          "seed_differences": [
+            0.00390625,
+            -0.014404296875,
+            -0.0224609375,
+            -0.02587890625,
+            0.030517578125,
+            -0.016357421875,
+            0.043212890625,
+            0.0390625
+          ]
+        },
+        {
+          "comparison": "distribution_free_ordinary",
+          "complete": true,
+          "holm_p": 1,
+          "interval": [
+            -0.024182912223652042,
+            0.024427052848652042
+          ],
+          "mean": 0.0001220703125,
+          "p": 1,
+          "positive_gate": false,
+          "seed_differences": [
+            0.02490234375,
+            -0.0078125,
+            -0.03466796875,
+            -0.0478515625,
+            0.01708984375,
+            0.025146484375,
+            -0.004150390625,
+            0.0283203125
+          ]
+        },
+        {
+          "comparison": "active_mean_collapse_free_dual",
+          "complete": true,
+          "holm_p": 1,
+          "interval": [
+            -0.02503726021733845,
+            0.03223940865483845
+          ],
+          "mean": 0.00360107421875,
+          "p": 0.7421875,
+          "positive_gate": false,
+          "seed_differences": [
+            0.025634765625,
+            -0.03662109375,
+            -0.022705078125,
+            0.024658203125,
+            -0.013916015625,
+            0.05029296875,
+            -0.034423828125,
+            0.035888671875
+          ]
+        },
+        {
+          "comparison": "two_gates",
+          "complete": true,
+          "holm_p": 0.03125,
+          "interval": [
+            -0.5103927564366457,
+            -0.4575637865321043
+          ],
+          "mean": -0.483978271484375,
+          "p": 0.0078125,
+          "positive_gate": false,
+          "seed_differences": [
+            -0.502685546875,
+            -0.45166015625,
+            -0.467041015625,
+            -0.5185546875,
+            -0.4677734375,
+            -0.531982421875,
+            -0.4873046875,
+            -0.44482421875
+          ]
+        }
+      ],
+      "content_screens": [
+        {
+          "best_external": "two_gates",
+          "complete": true,
+          "gap": -0.7731119791666667,
+          "screen": false,
+          "task": "selective_copy"
+        },
+        {
+          "best_external": "transformer",
+          "complete": true,
+          "gap": -0.8011067708333334,
+          "screen": false,
+          "task": "mqar"
+        },
+        {
+          "best_external": "two_gates",
+          "complete": true,
+          "gap": -0.04557291666666663,
+          "screen": false,
+          "task": "irregular"
+        },
+        {
+          "best_external": "two_gates",
+          "complete": true,
+          "gap": -0.4348958333333333,
+          "screen": false,
+          "task": "mnist"
+        },
+        {
+          "complete": false,
+          "screen": false,
+          "task": "fsdd"
+        },
+        {
+          "best_external": "transformer",
+          "complete": true,
+          "gap": -0.23763020833333331,
+          "screen": false,
+          "task": "multimodal_select"
+        }
+      ],
+      "invalid_records": [
+        {
+          "error": "AssertionError: cross entropy summary",
+          "job": {
+            "model": "transformer",
+            "seed": 9202,
+            "task": "fsdd"
+          },
+          "valid": false
+        }
+      ],
+      "core_id": [
+        {
+          "complete": true,
+          "mean": 0.21598307291666666,
+          "model": "distribution_free_dual",
+          "sd": 0.037544774769708474,
+          "split": "test",
+          "task": "selective_copy",
+          "values": [
+            0.1923828125,
+            0.25927734375,
+            0.1962890625
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.23470052083333334,
+          "model": "distribution_conditional_dual",
+          "sd": 0.07155833491791126,
+          "split": "test",
+          "task": "selective_copy",
+          "values": [
+            0.1669921875,
+            0.3095703125,
+            0.2275390625
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.20296223958333334,
+          "model": "distribution_free_ordinary",
+          "sd": 0.07942091287293693,
+          "split": "test",
+          "task": "selective_copy",
+          "values": [
+            0.111328125,
+            0.24560546875,
+            0.251953125
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.21826171875,
+          "model": "active_mean_collapse_free_dual",
+          "sd": 0.10168918631198191,
+          "split": "test",
+          "task": "selective_copy",
+          "values": [
+            0.11376953125,
+            0.31689453125,
+            0.22412109375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.6126302083333334,
+          "model": "legacy_free",
+          "sd": 0.05891904602569911,
+          "split": "test",
+          "task": "selective_copy",
+          "values": [
+            0.63232421875,
+            0.6591796875,
+            0.54638671875
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.9890950520833334,
+          "model": "two_gates",
+          "sd": 0.010712553822854385,
+          "split": "test",
+          "task": "selective_copy",
+          "values": [
+            0.97705078125,
+            0.99267578125,
+            0.99755859375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.4886067708333333,
+          "model": "transformer",
+          "sd": 0.004376409394449464,
+          "split": "test",
+          "task": "selective_copy",
+          "values": [
+            0.486328125,
+            0.49365234375,
+            0.48583984375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.19889322916666666,
+          "model": "distribution_free_dual",
+          "sd": 0.05322340285217927,
+          "split": "test",
+          "task": "mqar",
+          "values": [
+            0.224609375,
+            0.234375,
+            0.1376953125
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.21630859375,
+          "model": "distribution_conditional_dual",
+          "sd": 0.029252081642090155,
+          "split": "test",
+          "task": "mqar",
+          "values": [
+            0.24951171875,
+            0.205078125,
+            0.1943359375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.19645182291666666,
+          "model": "distribution_free_ordinary",
+          "sd": 0.06996975472396044,
+          "split": "test",
+          "task": "mqar",
+          "values": [
+            0.20166015625,
+            0.263671875,
+            0.1240234375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.21305338541666666,
+          "model": "active_mean_collapse_free_dual",
+          "sd": 0.017749096198197378,
+          "split": "test",
+          "task": "mqar",
+          "values": [
+            0.23291015625,
+            0.19873046875,
+            0.20751953125
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.3484700520833333,
+          "model": "legacy_free",
+          "sd": 0.06079117903885332,
+          "split": "test",
+          "task": "mqar",
+          "values": [
+            0.28759765625,
+            0.4091796875,
+            0.3486328125
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.3779296875,
+          "model": "two_gates",
+          "sd": 0.019457869965987574,
+          "split": "test",
+          "task": "mqar",
+          "values": [
+            0.35546875,
+            0.3896484375,
+            0.388671875
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 1,
+          "model": "transformer",
+          "sd": 0,
+          "split": "test",
+          "task": "mqar",
+          "values": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.921875,
+          "model": "distribution_free_dual",
+          "sd": 0.020577448736040505,
+          "split": "test",
+          "task": "irregular",
+          "values": [
+            0.923828125,
+            0.94140625,
+            0.900390625
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.9108072916666666,
+          "model": "distribution_conditional_dual",
+          "sd": 0.029642063640188048,
+          "split": "test",
+          "task": "irregular",
+          "values": [
+            0.9375,
+            0.87890625,
+            0.916015625
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.9407552083333334,
+          "model": "distribution_free_ordinary",
+          "sd": 0.024884784965646344,
+          "split": "test",
+          "task": "irregular",
+          "values": [
+            0.953125,
+            0.95703125,
+            0.912109375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.9108072916666666,
+          "model": "active_mean_collapse_free_dual",
+          "sd": 0.04262707430955951,
+          "split": "test",
+          "task": "irregular",
+          "values": [
+            0.95703125,
+            0.90234375,
+            0.873046875
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.9544270833333334,
+          "model": "legacy_free",
+          "sd": 0.024884784965646344,
+          "split": "test",
+          "task": "irregular",
+          "values": [
+            0.970703125,
+            0.966796875,
+            0.92578125
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.9674479166666666,
+          "model": "two_gates",
+          "sd": 0.009634536840461422,
+          "split": "test",
+          "task": "irregular",
+          "values": [
+            0.9609375,
+            0.962890625,
+            0.978515625
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.9401041666666666,
+          "model": "transformer",
+          "sd": 0.010756973725168168,
+          "split": "test",
+          "task": "irregular",
+          "values": [
+            0.939453125,
+            0.9296875,
+            0.951171875
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.4401041666666667,
+          "model": "distribution_free_dual",
+          "sd": 0.06655925999547946,
+          "split": "test",
+          "task": "mnist",
+          "values": [
+            0.48046875,
+            0.4765625,
+            0.36328125
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.3782552083333333,
+          "model": "distribution_conditional_dual",
+          "sd": 0.021513947450336336,
+          "split": "test",
+          "task": "mnist",
+          "values": [
+            0.400390625,
+            0.376953125,
+            0.357421875
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.4127604166666667,
+          "model": "distribution_free_ordinary",
+          "sd": 0.0627537978442756,
+          "split": "test",
+          "task": "mnist",
+          "values": [
+            0.341796875,
+            0.435546875,
+            0.4609375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.3424479166666667,
+          "model": "active_mean_collapse_free_dual",
+          "sd": 0.08058465307891421,
+          "split": "test",
+          "task": "mnist",
+          "values": [
+            0.267578125,
+            0.427734375,
+            0.33203125
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.75390625,
+          "model": "legacy_free",
+          "sd": 0.057807221042768524,
+          "split": "test",
+          "task": "mnist",
+          "values": [
+            0.79296875,
+            0.78125,
+            0.6875
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.875,
+          "model": "two_gates",
+          "sd": 0.00390625,
+          "split": "test",
+          "task": "mnist",
+          "values": [
+            0.875,
+            0.87109375,
+            0.87890625
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.8404947916666666,
+          "model": "transformer",
+          "sd": 0.022211877746395808,
+          "split": "test",
+          "task": "mnist",
+          "values": [
+            0.833984375,
+            0.865234375,
+            0.822265625
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.11328125,
+          "model": "distribution_free_dual",
+          "sd": 0.03250647847088523,
+          "split": "test",
+          "task": "fsdd",
+          "values": [
+            0.150390625,
+            0.099609375,
+            0.08984375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.123046875,
+          "model": "distribution_conditional_dual",
+          "sd": 0.03215249537725455,
+          "split": "test",
+          "task": "fsdd",
+          "values": [
+            0.142578125,
+            0.140625,
+            0.0859375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.11783854166666667,
+          "model": "distribution_free_ordinary",
+          "sd": 0.01590728088915445,
+          "split": "test",
+          "task": "fsdd",
+          "values": [
+            0.125,
+            0.099609375,
+            0.12890625
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.11653645833333333,
+          "model": "active_mean_collapse_free_dual",
+          "sd": 0.016611133883037858,
+          "split": "test",
+          "task": "fsdd",
+          "values": [
+            0.1171875,
+            0.099609375,
+            0.1328125
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.1875,
+          "model": "legacy_free",
+          "sd": 0.01863162502767472,
+          "split": "test",
+          "task": "fsdd",
+          "values": [
+            0.166015625,
+            0.19921875,
+            0.197265625
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.24674479166666666,
+          "model": "two_gates",
+          "sd": 0.06071465329184511,
+          "split": "test",
+          "task": "fsdd",
+          "values": [
+            0.18359375,
+            0.251953125,
+            0.3046875
+          ]
+        },
+        {
+          "complete": false,
+          "mean": null,
+          "model": "transformer",
+          "sd": null,
+          "split": "test",
+          "task": "fsdd",
+          "values": []
+        },
+        {
+          "complete": true,
+          "mean": 0.12109375,
+          "model": "distribution_free_dual",
+          "sd": 0.015254393898255184,
+          "split": "test",
+          "task": "multimodal_select",
+          "values": [
+            0.111328125,
+            0.11328125,
+            0.138671875
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.12434895833333333,
+          "model": "distribution_conditional_dual",
+          "sd": 0.03052962002003478,
+          "split": "test",
+          "task": "multimodal_select",
+          "values": [
+            0.12890625,
+            0.091796875,
+            0.15234375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.14583333333333334,
+          "model": "distribution_free_ordinary",
+          "sd": 0.005638186222554939,
+          "split": "test",
+          "task": "multimodal_select",
+          "values": [
+            0.142578125,
+            0.142578125,
+            0.15234375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.14127604166666666,
+          "model": "active_mean_collapse_free_dual",
+          "sd": 0.013856638446479663,
+          "split": "test",
+          "task": "multimodal_select",
+          "values": [
+            0.138671875,
+            0.12890625,
+            0.15625
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.150390625,
+          "model": "legacy_free",
+          "sd": 0.02174907954230477,
+          "split": "test",
+          "task": "multimodal_select",
+          "values": [
+            0.126953125,
+            0.154296875,
+            0.169921875
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.2955729166666667,
+          "model": "two_gates",
+          "sd": 0.03211292306025657,
+          "split": "test",
+          "task": "multimodal_select",
+          "values": [
+            0.33203125,
+            0.283203125,
+            0.271484375
+          ]
+        },
+        {
+          "complete": true,
+          "mean": 0.3587239583333333,
+          "model": "transformer",
+          "sd": 0.016611133883037855,
+          "split": "test",
+          "task": "multimodal_select",
+          "values": [
+            0.359375,
+            0.341796875,
+            0.375
+          ]
+        }
+      ]
+    },
+    "mechanism_interpretation": "Eight paired seeds, two fixed tasks averaged within each seed, four exact sign-flip comparisons in one Holm family. All positive gates false. Lack of a significant contrast is not equivalence.",
+    "model_limits": [
+      "Eight active spatial cells and two Erlang refractory phases approximate the process.",
+      "Marginal retained distributions do not retain all cross-channel/high-dimensional correlations.",
+      "Active-mean-collapse preserves refractory phases; this is not a no-reset or complete reset-law ablation.",
+      "Analytic Brownian/Erlang boundary and grid-policy J/G are not proved task-optimal classification values."
+    ],
+    "source_ids": [
+      "content_manifest",
+      "content002_analysis_verified_archive"
+    ]
+  },
+  "stage5": {
+    "status": "small_content_and_LIF_comparisons_published; natural_AV_and_sampling_completion_not_established_by_this_parent",
+    "lif_supplement": {
+      "schema": "hcsn-lif-supplement-analysis.v1",
+      "status": "passed",
+      "valid_pairs": 18,
+      "expected_pairs": 18,
+      "extra_lif_search_worker_cpu_seconds": 2252.437787,
+      "reused_distribution_search_worker_cpu_seconds": 2752.031203,
+      "reused_distribution_cost_additive": false,
+      "fresh_test_confirmation": false,
+      "statistics_scope": "Three paired training seeds per fixed task, descriptive raw differences/mean/SD/range. No new superiority gate, p-value or Holm family.",
+      "outcomes": [
+        {
+          "available": true,
+          "complete": true,
+          "difference_mean": 0.09000651041666667,
+          "difference_range": [
+            0.06494140625,
+            0.13134765625
+          ],
+          "difference_sd": 0.03607117490485896,
+          "distribution_accuracies": [
+            0.1923828125,
+            0.25927734375,
+            0.1962890625
+          ],
+          "distribution_mean": 0.21598307291666666,
+          "lif_accuracies": [
+            0.12744140625,
+            0.1279296875,
+            0.12255859375
+          ],
+          "lif_mean": 0.1259765625,
+          "paired_accuracy_differences": [
+            0.06494140625,
+            0.13134765625,
+            0.07373046875
+          ],
+          "seeds": [
+            9201,
+            9202,
+            9203
+          ],
+          "split": "test",
+          "task": "selective_copy"
+        },
+        {
+          "available": true,
+          "complete": true,
+          "difference_mean": 0.0908203125,
+          "difference_range": [
+            0.0458984375,
+            0.1484375
+          ],
+          "difference_sd": 0.05243513186976093,
+          "distribution_accuracies": [
+            0.193359375,
+            0.27197265625,
+            0.2138671875
+          ],
+          "distribution_mean": 0.22639973958333334,
+          "lif_accuracies": [
+            0.1474609375,
+            0.12353515625,
+            0.1357421875
+          ],
+          "lif_mean": 0.13557942708333334,
+          "paired_accuracy_differences": [
+            0.0458984375,
+            0.1484375,
+            0.078125
+          ],
+          "seeds": [
+            9201,
+            9202,
+            9203
+          ],
+          "split": "ood",
+          "task": "selective_copy"
+        },
+        {
+          "available": true,
+          "complete": true,
+          "difference_mean": 0.0703125,
+          "difference_range": [
+            0.005859375,
+            0.10400390625
+          ],
+          "difference_sd": 0.05583726138441187,
+          "distribution_accuracies": [
+            0.224609375,
+            0.234375,
+            0.1376953125
+          ],
+          "distribution_mean": 0.19889322916666666,
+          "lif_accuracies": [
+            0.12353515625,
+            0.13037109375,
+            0.1318359375
+          ],
+          "lif_mean": 0.12858072916666666,
+          "paired_accuracy_differences": [
+            0.10107421875,
+            0.10400390625,
+            0.005859375
+          ],
+          "seeds": [
+            9201,
+            9202,
+            9203
+          ],
+          "split": "test",
+          "task": "mqar"
+        },
+        {
+          "available": true,
+          "complete": true,
+          "difference_mean": 0.06103515625,
+          "difference_range": [
+            0.01318359375,
+            0.0986328125
+          ],
+          "difference_sd": 0.04363770378106735,
+          "distribution_accuracies": [
+            0.19482421875,
+            0.21875,
+            0.1396484375
+          ],
+          "distribution_mean": 0.18440755208333334,
+          "lif_accuracies": [
+            0.12353515625,
+            0.1201171875,
+            0.12646484375
+          ],
+          "lif_mean": 0.12337239583333333,
+          "paired_accuracy_differences": [
+            0.0712890625,
+            0.0986328125,
+            0.01318359375
+          ],
+          "seeds": [
+            9201,
+            9202,
+            9203
+          ],
+          "split": "ood",
+          "task": "mqar"
+        },
+        {
+          "available": true,
+          "complete": true,
+          "difference_mean": -0.03515625,
+          "difference_range": [
+            -0.0625,
+            -0.005859375
+          ],
+          "difference_sd": 0.028370779387370995,
+          "distribution_accuracies": [
+            0.923828125,
+            0.94140625,
+            0.900390625
+          ],
+          "distribution_mean": 0.921875,
+          "lif_accuracies": [
+            0.9609375,
+            0.947265625,
+            0.962890625
+          ],
+          "lif_mean": 0.95703125,
+          "paired_accuracy_differences": [
+            -0.037109375,
+            -0.005859375,
+            -0.0625
+          ],
+          "seeds": [
+            9201,
+            9202,
+            9203
+          ],
+          "split": "test",
+          "task": "irregular"
+        },
+        {
+          "available": true,
+          "complete": true,
+          "difference_mean": -0.193359375,
+          "difference_range": [
+            -0.283203125,
+            -0.138671875
+          ],
+          "difference_sd": 0.07841742148392473,
+          "distribution_accuracies": [
+            0.484375,
+            0.490234375,
+            0.51953125
+          ],
+          "distribution_mean": 0.498046875,
+          "lif_accuracies": [
+            0.623046875,
+            0.6484375,
+            0.802734375
+          ],
+          "lif_mean": 0.69140625,
+          "paired_accuracy_differences": [
+            -0.138671875,
+            -0.158203125,
+            -0.283203125
+          ],
+          "seeds": [
+            9201,
+            9202,
+            9203
+          ],
+          "split": "ood",
+          "task": "irregular"
+        },
+        {
+          "available": true,
+          "complete": true,
+          "difference_mean": -0.16471354166666666,
+          "difference_range": [
+            -0.287109375,
+            -0.076171875
+          ],
+          "difference_sd": 0.10946796644262345,
+          "distribution_accuracies": [
+            0.48046875,
+            0.4765625,
+            0.36328125
+          ],
+          "distribution_mean": 0.4401041666666667,
+          "lif_accuracies": [
+            0.611328125,
+            0.552734375,
+            0.650390625
+          ],
+          "lif_mean": 0.6048177083333334,
+          "paired_accuracy_differences": [
+            -0.130859375,
+            -0.076171875,
+            -0.287109375
+          ],
+          "seeds": [
+            9201,
+            9202,
+            9203
+          ],
+          "split": "test",
+          "task": "mnist"
+        },
+        {
+          "available": true,
+          "complete": true,
+          "difference_mean": -0.027994791666666668,
+          "difference_range": [
+            -0.0859375,
+            0.001953125
+          ],
+          "difference_sd": 0.05018935904220842,
+          "distribution_accuracies": [
+            0.150390625,
+            0.099609375,
+            0.08984375
+          ],
+          "distribution_mean": 0.11328125,
+          "lif_accuracies": [
+            0.1484375,
+            0.099609375,
+            0.17578125
+          ],
+          "lif_mean": 0.14127604166666666,
+          "paired_accuracy_differences": [
+            0.001953125,
+            0,
+            -0.0859375
+          ],
+          "seeds": [
+            9201,
+            9202,
+            9203
+          ],
+          "split": "test",
+          "task": "fsdd"
+        },
+        {
+          "available": true,
+          "complete": true,
+          "difference_mean": -0.09765625,
+          "difference_range": [
+            -0.115234375,
+            -0.078125
+          ],
+          "difference_sd": 0.01863162502767472,
+          "distribution_accuracies": [
+            0.111328125,
+            0.11328125,
+            0.138671875
+          ],
+          "distribution_mean": 0.12109375,
+          "lif_accuracies": [
+            0.2265625,
+            0.212890625,
+            0.216796875
+          ],
+          "lif_mean": 0.21875,
+          "paired_accuracy_differences": [
+            -0.115234375,
+            -0.099609375,
+            -0.078125
+          ],
+          "seeds": [
+            9201,
+            9202,
+            9203
+          ],
+          "split": "test",
+          "task": "multimodal_select"
+        }
+      ]
+    },
+    "generalization_limits": [
+      "Previously observed v1/content001/content002 datasets; no fresh-test confirmation.",
+      "Three-seed core and LIF comparisons are descriptive, not a new superiority gate.",
+      "CONTENT002 multimodal_select is queried digit image/audio selection, not natural paired audiovisual retrieval.",
+      "FSDD uses 600 speaker-disjoint recordings, offline features and repeated episodes; no broad speech or foundation-model claim.",
+      "Real content tasks have no registered OOD split; synthetic irregular OOD changes sequence length and time scale together.",
+      "Sampling subdivision preserves an external label-integral oracle; the learned encoder is not guaranteed to have an exact semigroup under subdivision."
+    ],
+    "source_ids": [
+      "content002_analysis_verified_archive",
+      "lif_supplement001_analysis_verified_archive",
+      "av_readme",
+      "sampling_readme"
+    ]
+  },
+  "stage6": {
+    "status": "published_v1_engineering_execution_and_training_head_pilot; no_architecture_wide_quality_cost_advantage",
+    "v1_scaling": {
+      "status": "completed",
+      "quality_measured": false,
+      "energy_measured": false,
+      "device": "cpu",
+      "performance_configurations": 48,
+      "width_depth_configurations": 6,
+      "repeats": 3,
+      "warmups": 1,
+      "streaming_state_bytes": [
+        {
+          "length": 32,
+          "bytes": 2056
+        },
+        {
+          "length": 64,
+          "bytes": 2056
+        },
+        {
+          "length": 128,
+          "bytes": 2056
+        },
+        {
+          "length": 256,
+          "bytes": 2056
+        },
+        {
+          "length": 512,
+          "bytes": 2056
+        }
+      ],
+      "batch_step_max_logit_error": 3.5762786865234375e-7,
+      "recovery_passed": true,
+      "recovery_max_logit_error": 0,
+      "recovery_suffix_steps": 143,
+      "rss_scope": "cumulative whole-process high-water mark, not isolated model memory"
+    },
+    "v1_native003": {
+      "review_status": "passed",
+      "failed_checks": [],
+      "counts": {
+        "actual_neural_steps_including_recovery": 7324,
+        "actual_reference_steps": 30720,
+        "deliberate_terminal_rejection_probes": 964,
+        "float_q24_disagreements": 0,
+        "native_episode_records_including_recovery": 1155,
+        "native_owner_ticks": 7324,
+        "native_process_nonzero_exit": 0,
+        "native_processes": 1157,
+        "native_reported_errors": 964,
+        "q24_zero_ties": 0,
+        "reference_episode_records": 1536,
+        "total_native_kernel_calls": 7328,
+        "total_native_ndu_calls": 7326
+      },
+      "price_intervention": {
+        "changed_actual_model_step_count": 128,
+        "changed_actual_native_action": 128,
+        "matched_first_step_pairs": 128
+      },
+      "recovery": {
+        "ordinary_mlp": {
+          "actual_recovery_count": 0,
+          "claim": "not exercised: first-step STOP",
+          "new_python_interpreter": false,
+          "trajectory_matches": true
+        },
+        "risk_threshold": {
+          "actual_recovery_count": 1,
+          "claim": "exercised same-interpreter object/native-process restart",
+          "new_python_interpreter": false,
+          "trajectory_matches": true
+        },
+        "value_maxout": {
+          "actual_recovery_count": 1,
+          "claim": "exercised same-interpreter object/native-process restart",
+          "new_python_interpreter": false,
+          "trajectory_matches": true
+        }
+      },
+      "registered_value_head_macro_utility": 0.127708,
+      "registered_ordinary_mlp_macro_utility": 0.076563,
+      "posthoc_validation_selected_fixed_prefix_macro_utility": 0.173333,
+      "value_minus_posthoc_ordinary_macro_utility": -0.045625,
+      "posthoc_value_wins_of_36_complete_CPU_scenarios": 0,
+      "interpretation": "Actual price-conditioned neural score controls real owner KEEP/STOP, but a stronger explicitly posthoc ordinary fixed-prefix schedule exceeds the value head. One fixed backbone/one head seed does not establish HCSN architecture superiority.",
+      "native_binary_sha256": "1dc702aea6a448ad84407aeb71dc8f23066205fab79fe7c6859fc02c55e6f7a5"
+    },
+    "prohibited_inferences": [
+      "CPU seconds are not measured energy.",
+      "Constant inference state in one recurrent model is not a measured memory advantage over unmeasured baseline caches.",
+      "Synthetic forward/Adam timing without matched learned quality is not equal-quality cost superiority.",
+      "Source/preflight/registration/static review is not a completed training study.",
+      "Native receipt causality is not task-optimal stopping or general architecture quality."
+    ],
+    "source_ids": [
+      "v1_scale_summary",
+      "v1_native_report",
+      "v1_native_review",
+      "scale_static_review"
+    ]
+  },
+  "current_acceleration_package": {
+    "included_in_prior_parent_evidence": false,
+    "engineering_only_records": [
+      "results/model_tests003",
+      "results/stream_smoke002",
+      "results/native_smoke002",
+      "results/native_causal_smoke002",
+      "results/benchmark002"
+    ],
+    "classification": "Separate current-run model fidelity, normalization, recovery, real-owner message causality and synthetic timing evidence; these do not change the earlier scientific gates.",
+    "formal_training_status_at_this_audit": "New formal-study outcomes are deliberately excluded from this prior audit; no completion or trained-checkpoint acceptance is asserted here.",
+    "future_trained_execution_binding": "EXECUTION_BINDING_PLAN.json fixes family=fixed,task=selective_copy,model=hcsn_accelerated,seed=98031; use its validation-selected selected.npz only after the formal run completes."
+  },
+  "audit_conclusion": "The parent commit supports implemented differentiable finite-distribution neurons and several executed small empirical/engineering studies. It does not support general superiority over ordinary gates, Transformer, LIF, natural-AV encoders or foundation-scale models. Do not promote unpublished scratch outcome claims into this prior-evidence ledger."
+}

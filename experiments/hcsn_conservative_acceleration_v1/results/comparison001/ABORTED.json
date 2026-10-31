@@ -1,0 +1,683 @@
+{
+  "completed": false,
+  "coordinator_cpu_seconds": 1.5449291440000001,
+  "cost_scope": "Isolated cohort workers and coordinator only; preflight, kernel audit, data registration and analysis are separate costs, not included here.",
+  "protocol_sha256": "38dc6de2b9279b88be653275e1be30a972b9aa0899b6fbc12be5fad776f29114",
+  "reason": "worker failure or measured peak exceeds reservation",
+  "records": [
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+        "--output",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results/comparison001/runs/cpu__mqar__transformer__98032",
+        "--job-index",
+        "0"
+      ],
+      "directory": "runs/cpu__mqar__transformer__98032",
+      "index": 0,
+      "job": {
+        "family": "cpu",
+        "model": "transformer",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 311914496,
+      "returncode": 0,
+      "wall_seconds": 34.60522354600107,
+      "whole_worker_cpu_seconds": 33.812602999999996
+    },
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+        "--output",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results/comparison001/runs/cpu__mqar__transformer__98033",
+        "--job-index",
+        "1"
+      ],
+      "directory": "runs/cpu__mqar__transformer__98033",
+      "index": 1,
+      "job": {
+        "family": "cpu",
+        "model": "transformer",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 312344576,
+      "returncode": 0,
+      "wall_seconds": 37.21572257099979,
+      "whole_worker_cpu_seconds": 34.247406
+    },
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+        "--output",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results/comparison001/runs/fixed__mqar__transformer__98031",
+        "--job-index",
+        "2"
+      ],
+      "directory": "runs/fixed__mqar__transformer__98031",
+      "index": 2,
+      "job": {
+        "family": "fixed",
+        "model": "transformer",
+        "seed": 98031,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 312455168,
+      "returncode": 0,
+      "wall_seconds": 4.360438817999238,
+      "whole_worker_cpu_seconds": 3.8772830000000003
+    },
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+        "--output",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results/comparison001/runs/fixed__mqar__two_gates__98033",
+        "--job-index",
+        "3"
+      ],
+      "directory": "runs/fixed__mqar__two_gates__98033",
+      "index": 3,
+      "job": {
+        "family": "fixed",
+        "model": "two_gates",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 311468032,
+      "returncode": 0,
+      "wall_seconds": 4.240252047000467,
+      "whole_worker_cpu_seconds": 3.994012
+    },
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+        "--output",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results/comparison001/runs/fixed__selective_copy__two_gates__98033",
+        "--job-index",
+        "4"
+      ],
+      "directory": "runs/fixed__selective_copy__two_gates__98033",
+      "index": 4,
+      "job": {
+        "family": "fixed",
+        "model": "two_gates",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 311844864,
+      "returncode": 0,
+      "wall_seconds": 4.869855706001545,
+      "whole_worker_cpu_seconds": 4.763171
+    },
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+        "--output",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results/comparison001/runs/fixed__cremad__two_gates__98041",
+        "--job-index",
+        "5"
+      ],
+      "directory": "runs/fixed__cremad__two_gates__98041",
+      "index": 5,
+      "job": {
+        "family": "fixed",
+        "model": "two_gates",
+        "seed": 98041,
+        "supplementary": true,
+        "task": "cremad"
+      },
+      "peak_rss_bytes": 325496832,
+      "returncode": 0,
+      "wall_seconds": 4.33035798399942,
+      "whole_worker_cpu_seconds": 4.233099
+    },
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+        "--output",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results/comparison001/runs/fixed__mqar__lif_snn__98033",
+        "--job-index",
+        "6"
+      ],
+      "directory": "runs/fixed__mqar__lif_snn__98033",
+      "index": 6,
+      "job": {
+        "family": "fixed",
+        "model": "lif_snn",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "mqar"
+      },
+      "peak_rss_bytes": 313532416,
+      "returncode": 0,
+      "wall_seconds": 4.739689312998962,
+      "whole_worker_cpu_seconds": 4.7069149999999995
+    },
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+        "--output",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results/comparison001/runs/cpu__selective_copy__hcsn_reference__98033",
+        "--job-index",
+        "7"
+      ],
+      "directory": "runs/cpu__selective_copy__hcsn_reference__98033",
+      "index": 7,
+      "job": {
+        "family": "cpu",
+        "model": "hcsn_reference",
+        "seed": 98033,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 755757056,
+      "returncode": 1,
+      "wall_seconds": 36.012726470000416,
+      "whole_worker_cpu_seconds": 35.44755
+    },
+    {
+      "command": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_conservative_acceleration_v1.study",
+        "worker",
+        "--protocol",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/PROTOCOL.json",
+        "--output",
+        "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_conservative_acceleration_v1/results/comparison001/runs/cpu__selective_copy__two_gates__98032",
+        "--job-index",
+        "8"
+      ],
+      "directory": "runs/cpu__selective_copy__two_gates__98032",
+      "index": 8,
+      "job": {
+        "family": "cpu",
+        "model": "two_gates",
+        "seed": 98032,
+        "supplementary": false,
+        "task": "selective_copy"
+      },
+      "peak_rss_bytes": 274153472,
+      "returncode": 120,
+      "wall_seconds": 5.0921447679993435,
+      "whole_worker_cpu_seconds": 2.9500029999999997
+    }
+  ],
+  "unstarted": [
+    {
+      "family": "cpu",
+      "model": "hcsn_accelerated",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_reference",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "two_gates",
+      "seed": 98041,
+      "supplementary": true,
+      "task": "irregular"
+    },
+    {
+      "family": "cpu",
+      "model": "hcsn_reference",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_reference",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "cpu",
+      "model": "transformer",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "cpu",
+      "model": "hcsn_accelerated",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "cpu",
+      "model": "lif_snn",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "transformer",
+      "seed": 98041,
+      "supplementary": true,
+      "task": "irregular"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_accelerated",
+      "seed": 98041,
+      "supplementary": true,
+      "task": "irregular"
+    },
+    {
+      "family": "cpu",
+      "model": "two_gates",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_accelerated",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "transformer",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "cpu",
+      "model": "two_gates",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_reference",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "lif_snn",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_accelerated",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "transformer",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "transformer",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_reference",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "two_gates",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "lif_snn",
+      "seed": 98041,
+      "supplementary": true,
+      "task": "irregular"
+    },
+    {
+      "family": "cpu",
+      "model": "lif_snn",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "cpu",
+      "model": "two_gates",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "lif_snn",
+      "seed": 98041,
+      "supplementary": true,
+      "task": "cremad"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_accelerated",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "cpu",
+      "model": "hcsn_accelerated",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "cpu",
+      "model": "hcsn_reference",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_reference",
+      "seed": 98041,
+      "supplementary": true,
+      "task": "irregular"
+    },
+    {
+      "family": "fixed",
+      "model": "lif_snn",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "cpu",
+      "model": "two_gates",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_reference",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "two_gates",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "two_gates",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_accelerated",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "cpu",
+      "model": "hcsn_accelerated",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "cpu",
+      "model": "hcsn_reference",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "lif_snn",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_reference",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "cpu",
+      "model": "transformer",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "transformer",
+      "seed": 98041,
+      "supplementary": true,
+      "task": "cremad"
+    },
+    {
+      "family": "fixed",
+      "model": "two_gates",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "cpu",
+      "model": "hcsn_reference",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "lif_snn",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "cpu",
+      "model": "hcsn_accelerated",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "cpu",
+      "model": "two_gates",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "transformer",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_accelerated",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "transformer",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_accelerated",
+      "seed": 98041,
+      "supplementary": true,
+      "task": "cremad"
+    },
+    {
+      "family": "cpu",
+      "model": "lif_snn",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "cpu",
+      "model": "hcsn_accelerated",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "cpu",
+      "model": "lif_snn",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "cpu",
+      "model": "lif_snn",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "lif_snn",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "cpu",
+      "model": "hcsn_reference",
+      "seed": 98033,
+      "supplementary": false,
+      "task": "mqar"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_reference",
+      "seed": 98041,
+      "supplementary": true,
+      "task": "cremad"
+    },
+    {
+      "family": "cpu",
+      "model": "transformer",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "fixed",
+      "model": "hcsn_accelerated",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "cpu",
+      "model": "lif_snn",
+      "seed": 98032,
+      "supplementary": false,
+      "task": "selective_copy"
+    },
+    {
+      "family": "cpu",
+      "model": "transformer",
+      "seed": 98031,
+      "supplementary": false,
+      "task": "selective_copy"
+    }
+  ],
+  "wall_seconds": 211.1586238,
+  "whole_child_cpu_seconds": 128.032042
+}

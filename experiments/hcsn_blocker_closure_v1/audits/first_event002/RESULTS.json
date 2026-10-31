@@ -1,0 +1,614 @@
+{
+  "schema": "hcsn-first-event-independent-audit.v1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "case0/F/dense",
+      "passed": true,
+      "max_error": 1.651109942077579e-16
+    },
+    {
+      "name": "case0/F/independent_flux_quadrature",
+      "passed": true,
+      "max_error": 5.551115123125783e-17,
+      "quadrature_reported_error": 5.095303948697267e-15
+    },
+    {
+      "name": "case0/F/gradient/mu",
+      "passed": true,
+      "scaled_error": 1.6575476774661954e-11
+    },
+    {
+      "name": "case0/F/gradient/sigma",
+      "passed": true,
+      "scaled_error": 4.423016912889698e-12
+    },
+    {
+      "name": "case0/F/gradient/boundary",
+      "passed": true,
+      "scaled_error": 1.1351372067308973e-11
+    },
+    {
+      "name": "case0/F/gradient/reset",
+      "passed": true,
+      "scaled_error": 2.3110275681131983e-11
+    },
+    {
+      "name": "case0/F/gradient/tau",
+      "passed": true,
+      "scaled_error": 1.6973873030773684e-14
+    },
+    {
+      "name": "case0/F/gradient/rho",
+      "passed": true,
+      "scaled_error": 0.0
+    },
+    {
+      "name": "case0/F/gradient/horizon",
+      "passed": true,
+      "scaled_error": 7.292273215939569e-12
+    },
+    {
+      "name": "case0/H/dense",
+      "passed": true,
+      "max_error": 2.7755575615628914e-17
+    },
+    {
+      "name": "case0/H/independent_flux_quadrature",
+      "passed": true,
+      "max_error": 2.6020852139652106e-18,
+      "quadrature_reported_error": 4.965404437195101e-15
+    },
+    {
+      "name": "case0/H/gradient/mu",
+      "passed": true,
+      "scaled_error": 5.959057625540005e-13
+    },
+    {
+      "name": "case0/H/gradient/sigma",
+      "passed": true,
+      "scaled_error": 3.4459544633893872e-12
+    },
+    {
+      "name": "case0/H/gradient/boundary",
+      "passed": true,
+      "scaled_error": 2.1469383099491733e-12
+    },
+    {
+      "name": "case0/H/gradient/reset",
+      "passed": true,
+      "scaled_error": 1.8555285693198904e-16
+    },
+    {
+      "name": "case0/H/gradient/tau",
+      "passed": true,
+      "scaled_error": 4.0972561733013876e-18
+    },
+    {
+      "name": "case0/H/gradient/rho",
+      "passed": true,
+      "scaled_error": 5.075281442087178e-13
+    },
+    {
+      "name": "case0/H/gradient/horizon",
+      "passed": true,
+      "scaled_error": 2.418028394474776e-13
+    },
+    {
+      "name": "case0/probability_order",
+      "passed": true
+    },
+    {
+      "name": "case0/existing_refractory_completes",
+      "passed": true
+    },
+    {
+      "name": "case0/repeat_count_not_first_probability",
+      "passed": true
+    },
+    {
+      "name": "case1/F/dense",
+      "passed": true,
+      "max_error": 3.100619160565938e-16
+    },
+    {
+      "name": "case1/F/independent_flux_quadrature",
+      "passed": true,
+      "max_error": 2.220446049250313e-16,
+      "quadrature_reported_error": 1.596984501390039e-14
+    },
+    {
+      "name": "case1/F/gradient/mu",
+      "passed": true,
+      "scaled_error": 6.628036108809232e-11
+    },
+    {
+      "name": "case1/F/gradient/sigma",
+      "passed": true,
+      "scaled_error": 4.8367840473576795e-11
+    },
+    {
+      "name": "case1/F/gradient/boundary",
+      "passed": true,
+      "scaled_error": 7.708382747124152e-11
+    },
+    {
+      "name": "case1/F/gradient/reset",
+      "passed": true,
+      "scaled_error": 2.252111392618031e-12
+    },
+    {
+      "name": "case1/F/gradient/tau",
+      "passed": true,
+      "scaled_error": 2.1417888214657545e-11
+    },
+    {
+      "name": "case1/F/gradient/rho",
+      "passed": true,
+      "scaled_error": 0.0
+    },
+    {
+      "name": "case1/F/gradient/horizon",
+      "passed": true,
+      "scaled_error": 9.912537982911125e-12
+    },
+    {
+      "name": "case1/H/dense",
+      "passed": true,
+      "max_error": 1.942890293094024e-16
+    },
+    {
+      "name": "case1/H/independent_flux_quadrature",
+      "passed": true,
+      "max_error": 1.6653345369377348e-16,
+      "quadrature_reported_error": 1.436414995707832e-14
+    },
+    {
+      "name": "case1/H/gradient/mu",
+      "passed": true,
+      "scaled_error": 2.235921764576199e-11
+    },
+    {
+      "name": "case1/H/gradient/sigma",
+      "passed": true,
+      "scaled_error": 3.0471085962828058e-12
+    },
+    {
+      "name": "case1/H/gradient/boundary",
+      "passed": true,
+      "scaled_error": 1.2928602156808446e-11
+    },
+    {
+      "name": "case1/H/gradient/reset",
+      "passed": true,
+      "scaled_error": 5.072173092044424e-14
+    },
+    {
+      "name": "case1/H/gradient/tau",
+      "passed": true,
+      "scaled_error": 3.9931098252446835e-14
+    },
+    {
+      "name": "case1/H/gradient/rho",
+      "passed": true,
+      "scaled_error": 8.91101787827531e-12
+    },
+    {
+      "name": "case1/H/gradient/horizon",
+      "passed": true,
+      "scaled_error": 5.967856992100148e-12
+    },
+    {
+      "name": "case1/probability_order",
+      "passed": true
+    },
+    {
+      "name": "case1/existing_refractory_completes",
+      "passed": true
+    },
+    {
+      "name": "case1/repeat_count_not_first_probability",
+      "passed": true
+    },
+    {
+      "name": "tested_source_unchanged",
+      "passed": true
+    }
+  ],
+  "records": [
+    {
+      "parameters": {
+        "mu": 0.1,
+        "sigma": 0.45,
+        "boundary": 1.3,
+        "reset": -0.13,
+        "tau": 0.75,
+        "rho": 0.45,
+        "horizon": 0.12
+      },
+      "forward": {
+        "F": {
+          "value": [
+            3.791091805361148e-13,
+            2.9987500092673615e-11,
+            2.0928010660248587e-09,
+            1.2527043186248003e-07,
+            6.255107208845264e-06,
+            0.0002503178175141198,
+            0.007539922485793665,
+            0.15276095856930166,
+            5.996840911208194e-08,
+            1.0208775083138426e-06
+          ],
+          "reference": [
+            3.7903014060702844e-13,
+            2.998756798433533e-11,
+            2.0928010435738997e-09,
+            1.2527043202759103e-07,
+            6.255107208863464e-06,
+            0.0002503178175141674,
+            0.007539922485793715,
+            0.15276095856930172,
+            5.996840912736445e-08,
+            1.0208775083064836e-06
+          ],
+          "error": 1.651109942077579e-16
+        },
+        "H": {
+          "value": [
+            3.613804020003261e-13,
+            2.860750310252451e-11,
+            1.9984931047268896e-09,
+            1.1978581678910072e-07,
+            5.992525998658015e-06,
+            0.00024049165170361925,
+            0.0072784426428263785,
+            0.14886994710463547,
+            5.732102767446982e-08,
+            9.77390083108006e-07
+          ],
+          "reference": [
+            3.6138040199989967e-13,
+            2.860750310252609e-11,
+            1.9984931047268884e-09,
+            1.197858167891008e-07,
+            5.99252599865802e-06,
+            0.00024049165170361917,
+            0.007278442642826379,
+            0.1488699471046355,
+            5.732102767446972e-08,
+            9.773900831080067e-07
+          ],
+          "error": 2.7755575615628914e-17
+        }
+      },
+      "gradients": [
+        {
+          "channel": "F",
+          "parameter": "mu",
+          "autodiff": 0.039001551861896064,
+          "dense_finite_difference": 0.03900155184467412,
+          "scaled_error": 1.6575476774661954e-11
+        },
+        {
+          "channel": "F",
+          "parameter": "sigma",
+          "autodiff": 0.07843459371459968,
+          "dense_finite_difference": 0.07843459370982975,
+          "scaled_error": 4.423016912889698e-12
+        },
+        {
+          "channel": "F",
+          "parameter": "boundary",
+          "autodiff": -0.01188249204649238,
+          "dense_finite_difference": -0.011882492057978635,
+          "scaled_error": 1.1351372067308973e-11
+        },
+        {
+          "channel": "F",
+          "parameter": "reset",
+          "autodiff": 8.824275756893867e-06,
+          "dense_finite_difference": 8.82429886737348e-06,
+          "scaled_error": 2.3110275681131983e-11
+        },
+        {
+          "channel": "F",
+          "parameter": "tau",
+          "autodiff": -2.5780692410940253e-07,
+          "dense_finite_difference": -2.578069071355251e-07,
+          "scaled_error": 1.6973873030773684e-14
+        },
+        {
+          "channel": "F",
+          "parameter": "rho",
+          "autodiff": 0.0,
+          "dense_finite_difference": 0.0,
+          "scaled_error": 0.0
+        },
+        {
+          "channel": "F",
+          "parameter": "horizon",
+          "autodiff": 0.17956776772639677,
+          "dense_finite_difference": 0.1795677677349985,
+          "scaled_error": 7.292273215939569e-12
+        },
+        {
+          "channel": "H",
+          "parameter": "mu",
+          "autodiff": 0.03799446028293334,
+          "dense_finite_difference": 0.037994460283551884,
+          "scaled_error": 5.959057625540005e-13
+        },
+        {
+          "channel": "H",
+          "parameter": "sigma",
+          "autodiff": 0.07646903971388441,
+          "dense_finite_difference": 0.07646903971017495,
+          "scaled_error": 3.4459544633893872e-12
+        },
+        {
+          "channel": "H",
+          "parameter": "boundary",
+          "autodiff": -0.011583734088267104,
+          "dense_finite_difference": -0.011583734086095296,
+          "scaled_error": 2.1469383099491733e-12
+        },
+        {
+          "channel": "H",
+          "parameter": "reset",
+          "autodiff": 8.45379237439495e-06,
+          "dense_finite_difference": 8.453792374580504e-06,
+          "scaled_error": 1.8555285693198904e-16
+        },
+        {
+          "channel": "H",
+          "parameter": "tau",
+          "autodiff": -2.4681036062552055e-07,
+          "dense_finite_difference": -2.468103606214233e-07,
+          "scaled_error": 4.0972561733013876e-18
+        },
+        {
+          "channel": "H",
+          "parameter": "rho",
+          "autodiff": -0.0013106063539251717,
+          "dense_finite_difference": -0.001310606354433365,
+          "scaled_error": 5.075281442087178e-13
+        },
+        {
+          "channel": "H",
+          "parameter": "horizon",
+          "autodiff": 0.1701282684368456,
+          "dense_finite_difference": 0.17012826843656265,
+          "scaled_error": 2.418028394474776e-13
+        }
+      ],
+      "long_horizon": {
+        "horizon": 40.0,
+        "expected_repeat_count": [
+          2.291359636035991,
+          2.3790034250988397,
+          2.528938269755373,
+          2.723158886267847,
+          2.948871924694408,
+          3.196981153180868,
+          3.4610143619881377,
+          3.736363862013091,
+          2.9020351287671025,
+          2.9295888755320707
+        ],
+        "next_first_event_probability": [
+          0.8916456010068226,
+          0.900732366296769,
+          0.9155145419341261,
+          0.9331051608738575,
+          0.9512170519930521,
+          0.9681806322894141,
+          0.9829051245006205,
+          0.9948027461165281,
+          0.9491361589349419,
+          0.9504770326412559
+        ]
+      }
+    },
+    {
+      "parameters": {
+        "mu": -0.25,
+        "sigma": 0.55,
+        "boundary": 0.9,
+        "reset": -0.25,
+        "tau": 1.05,
+        "rho": 0.7,
+        "horizon": 0.4
+      },
+      "forward": {
+        "F": {
+          "value": [
+            3.69776939367273e-08,
+            6.024004117525005e-07,
+            9.334773423269574e-06,
+            0.00012482225702341998,
+            0.0014050191278785905,
+            0.012873199332765609,
+            0.09146567094838595,
+            0.4679681097761722,
+            0.00014656314327318298,
+            0.000969414207762706
+          ],
+          "reference": [
+            3.6977694017892304e-08,
+            6.024004114424386e-07,
+            9.334773423241849e-06,
+            0.00012482225702337146,
+            0.001405019127878382,
+            0.012873199332765428,
+            0.09146567094838609,
+            0.4679681097761722,
+            0.00014656314327310405,
+            0.0009694142077624202
+          ],
+          "error": 3.100619160565938e-16
+        },
+        "H": {
+          "value": [
+            2.8938745216973948e-08,
+            4.73875463165844e-07,
+            7.389998187824371e-06,
+            9.967374853225015e-05,
+            0.0011358395998692376,
+            0.010603802755151655,
+            0.07773167280581324,
+            0.4219194236773151,
+            0.00011679014858443119,
+            0.0007816079843699279
+          ],
+          "reference": [
+            2.8938745216973763e-08,
+            4.738754631658434e-07,
+            7.389998187824348e-06,
+            9.967374853225043e-05,
+            0.0011358395998692459,
+            0.010603802755151638,
+            0.07773167280581343,
+            0.42191942367731516,
+            0.00011679014858443139,
+            0.0007816079843699328
+          ],
+          "error": 1.942890293094024e-16
+        }
+      },
+      "gradients": [
+        {
+          "channel": "F",
+          "parameter": "mu",
+          "autodiff": 0.032428714195973936,
+          "dense_finite_difference": 0.032428714264403684,
+          "scaled_error": 6.628036108809232e-11
+        },
+        {
+          "channel": "F",
+          "parameter": "sigma",
+          "autodiff": 0.20979428913999665,
+          "dense_finite_difference": 0.2097942890814815,
+          "scaled_error": 4.8367840473576795e-11
+        },
+        {
+          "channel": "F",
+          "parameter": "boundary",
+          "autodiff": -0.037783201327978154,
+          "dense_finite_difference": -0.037783201407974455,
+          "scaled_error": 7.708382747124152e-11
+        },
+        {
+          "channel": "F",
+          "parameter": "reset",
+          "autodiff": 0.0013094876417897162,
+          "dense_finite_difference": 0.0013094876395346557,
+          "scaled_error": 2.252111392618031e-12
+        },
+        {
+          "channel": "F",
+          "parameter": "tau",
+          "autodiff": -0.00018239373625122347,
+          "dense_finite_difference": -0.00018239375767301817,
+          "scaled_error": 2.1417888214657545e-11
+        },
+        {
+          "channel": "F",
+          "parameter": "rho",
+          "autodiff": 0.0,
+          "dense_finite_difference": 0.0,
+          "scaled_error": 0.0
+        },
+        {
+          "channel": "F",
+          "parameter": "horizon",
+          "autodiff": 0.12444441096892339,
+          "dense_finite_difference": 0.12444441098006949,
+          "scaled_error": 9.912537982911125e-12
+        },
+        {
+          "channel": "H",
+          "parameter": "mu",
+          "autodiff": 0.027518562852045104,
+          "dense_finite_difference": 0.027518562875019616,
+          "scaled_error": 2.235921764576199e-11
+        },
+        {
+          "channel": "H",
+          "parameter": "sigma",
+          "autodiff": 0.1905141752418676,
+          "dense_finite_difference": 0.19051417524549522,
+          "scaled_error": 3.0471085962828058e-12
+        },
+        {
+          "channel": "H",
+          "parameter": "boundary",
+          "autodiff": -0.034397700631761646,
+          "dense_finite_difference": -0.03439770061838833,
+          "scaled_error": 1.2928602156808446e-11
+        },
+        {
+          "channel": "H",
+          "parameter": "reset",
+          "autodiff": 0.0010572435211959339,
+          "dense_finite_difference": 0.0010572435211451585,
+          "scaled_error": 5.072173092044424e-14
+        },
+        {
+          "channel": "H",
+          "parameter": "tau",
+          "autodiff": -0.0001469591890109859,
+          "dense_finite_difference": -0.00014695918905092287,
+          "scaled_error": 3.9931098252446835e-14
+        },
+        {
+          "channel": "H",
+          "parameter": "rho",
+          "autodiff": -0.01149262802403585,
+          "dense_finite_difference": -0.011492628033049278,
+          "scaled_error": 8.91101787827531e-12
+        },
+        {
+          "channel": "H",
+          "parameter": "horizon",
+          "autodiff": 0.09405306252534681,
+          "dense_finite_difference": 0.09405306251881766,
+          "scaled_error": 5.967856992100148e-12
+        }
+      ],
+      "long_horizon": {
+        "horizon": 40.0,
+        "expected_repeat_count": [
+          0.3504365933772125,
+          0.3590649251709821,
+          0.3814914603239534,
+          0.4259837250226638,
+          0.5057629329984588,
+          0.6419721030095799,
+          0.8684225921080289,
+          1.2391846242428655,
+          0.5399552427855931,
+          0.5451692134375823
+        ],
+        "next_first_event_probability": [
+          0.2665533270225864,
+          0.27206330601726636,
+          0.28634330431320754,
+          0.31454080789116556,
+          0.3647829857161652,
+          0.449900982029557,
+          0.5901520205985756,
+          0.8175167338045389,
+          0.3871145558403343,
+          0.3898968268280001
+        ]
+      }
+    }
+  ],
+  "tested_source": "experiments/hcsn_blocker_closure_v1/content/models.py",
+  "tested_source_sha256": "f08878c2760bcec859e5e11c7b906b71647029073f782987c3431a4ca0ea71fe",
+  "audit_source_sha256": "438f3061f63dcd2ffda3ebabfbfad94c674634b8da90035d9acb4f23ce71d39d",
+  "torch_version": "2.8.0+cpu",
+  "cpu_seconds": 0.022655724000000044,
+  "scope": "Two float64 flow cases, 28 physical/channel derivatives; finite-model numerical evidence, not a global derivative certificate"
+}

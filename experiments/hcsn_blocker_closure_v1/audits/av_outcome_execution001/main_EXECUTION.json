@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-m",
+    "experiments.hcsn_blocker_closure_v1.audits.av_outcome_audit",
+    "audit",
+    "--study",
+    "/workspace/scratch/af4384a0a49b/recovered_studies/av_restored_41158089224/results/hosted001",
+    "--driver",
+    "/workspace/scratch/af4384a0a49b/recovered_studies/av_restored_41158089224/results/hosted_driver001",
+    "--run-receipt",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/av_outcome_completed_run.json",
+    "--jobs-receipt",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/av_outcome_completed_jobs.json",
+    "--output",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/av_outcome_001.json"
+  ],
+  "complete_child_cpu_seconds": 1.968176,
+  "cwd": "/workspace/scratch/af4384a0a49b/hepta-hcsn",
+  "ended_utc": "2026-10-31T03:00:34.803800+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_blocker_closure_v1/audits/av_outcome_execution001/main.log",
+  "name": "main",
+  "peak_rss_bytes": 70443008,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-31T03:00:32.691081+00:00",
+  "system_cpu_seconds": 0.218412,
+  "user_cpu_seconds": 1.7497639999999999,
+  "wall_seconds": 2.1127154790010536
+}

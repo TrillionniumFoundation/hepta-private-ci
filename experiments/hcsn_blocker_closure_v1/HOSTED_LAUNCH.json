@@ -1,0 +1,22 @@
+{
+  "container_image": "python:3.12.14@sha256:6dc02694c53fde08b0e39de9273a708d2f2a612f77dc173a64835c3f7a40ee35",
+  "cpu_cores": 4,
+  "design_sha256": "c38b579da45bc200825419f48b0321586dcdbe26eeec8f45323f56d668ca148f",
+  "evidence_branch_rule": "research/hcsn-blocker-evidence-${GITHUB_RUN_ID}; source branch not automatically rewritten",
+  "expected_jobs": {
+    "development": 76,
+    "equal_cpu": 64,
+    "fixed": 304,
+    "total": 444
+  },
+  "local_preflight_sha256": "09c4fef70313212ff4ba8ec181d0633a0ea0b80b68d14dd26eacf9a9d6eb1506",
+  "maximum_job_minutes": 180,
+  "memory_bytes": 8589934592,
+  "no_parameter_or_test_selection_after_outcomes": true,
+  "prior_native_and_math_repeated_as": "Engineering replication of already observed deterministic or seeded checks, not fresh confirmatory task outcomes",
+  "publication_includes_failed_attempts": true,
+  "purpose": "New independent content seeds and source-bound experiment; inherited negative results remain unchanged",
+  "schema": "hcsn-blocker-hosted-launch.v1",
+  "scientific_gates": "Preserve old gates and failed outcomes; new design locked before public launch. Integrity success is separate from net benefit.",
+  "workers": 4
+}
