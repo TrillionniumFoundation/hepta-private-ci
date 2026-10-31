@@ -1,0 +1,1224 @@
+{
+  "accepted": 72,
+  "correct": 55,
+  "encoder_cost_included": false,
+  "evaluated": 72,
+  "label_correct": 55,
+  "predictions": [
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "β",
+        "α",
+        "γ"
+      ],
+      "expected_skill": "unique_stable",
+      "id": "b12acff6a1ca5ff3b3a906a0a6614a076f73dd470586c174175301172e3924e1",
+      "label_correct": true,
+      "output": [
+        "β",
+        "α",
+        "γ"
+      ],
+      "predicted_skill": "unique_stable",
+      "prediction": 0,
+      "query": "Walk left to right and emit an item only if it has not been emitted before."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "2",
+        "10",
+        "-1"
+      ],
+      "expected_skill": "unique_stable",
+      "id": "29634390c30ddd0a11530ed0020b08413961091a5fbebd251172308c516f1324",
+      "label_correct": true,
+      "output": [
+        "2",
+        "10",
+        "-1"
+      ],
+      "predicted_skill": "unique_stable",
+      "prediction": 0,
+      "query": "My list revisits earlier values; suppress those revisits while keeping the itinerary."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "é",
+        "é",
+        "!"
+      ],
+      "expected_skill": "unique_stable",
+      "id": "8e7d076b5108709d421f1db51cc289b83f32cc0cc86f7abd6175421050ab8a1d",
+      "label_correct": true,
+      "output": [
+        "é",
+        "é",
+        "!"
+      ],
+      "predicted_skill": "unique_stable",
+      "prediction": 0,
+      "query": "Treat the first sighting as authoritative and ignore every later exact match."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "β",
+        "α",
+        "γ"
+      ],
+      "expected_skill": "unique_stable",
+      "id": "faecfce1ea71459bbf6b999001f733ff74abeb074ce30f08d7ee11f6b9dcbfd5",
+      "label_correct": true,
+      "output": [
+        "β",
+        "α",
+        "γ"
+      ],
+      "predicted_skill": "unique_stable",
+      "prediction": 0,
+      "query": "A repeated value must not occupy another slot in the returned sequence."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": [
+        "2",
+        "10",
+        "-1"
+      ],
+      "expected_skill": "unique_stable",
+      "id": "063a0ce027c32b61df18aa4b07d5ffbe42a8435b5a65b66588c0f95f2cccc9f0",
+      "label_correct": false,
+      "output": [
+        "-1",
+        "10",
+        "10",
+        "2",
+        "2"
+      ],
+      "predicted_skill": "sort_casefold",
+      "prediction": 2,
+      "query": "Return the first appearances, in chronological order of their positions."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "é",
+        "é",
+        "!"
+      ],
+      "expected_skill": "unique_stable",
+      "id": "3e29558468454dce1600fb4e421764db8af2ab8719293b900dd2c5ec5db688af",
+      "label_correct": true,
+      "output": [
+        "é",
+        "é",
+        "!"
+      ],
+      "predicted_skill": "unique_stable",
+      "prediction": 0,
+      "query": "Make this sequence repetition-free without changing which distinct item comes first."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": [
+        "-2.5",
+        "0.09",
+        "12",
+        "1e2"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "8c23442ae2a0702155b7c219070f20d342e16267a95b9b95dac32859dda77da3",
+      "label_correct": false,
+      "output": {
+        "-2.5": 1,
+        "0.09": 1,
+        "12": 1,
+        "1e2": 1
+      },
+      "predicted_skill": "count_items",
+      "prediction": 3,
+      "query": "Read every element as a number, then line them up along the real axis from left to right."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-1",
+        "-0",
+        "0.00",
+        "1"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "8052acbd7112fcfb2464133a1dbdca26bb3e3f33b8572d272567678331bca57f",
+      "label_correct": true,
+      "output": [
+        "-1",
+        "-0",
+        "0.00",
+        "1"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "The smallest represented quantity should lead and the largest should close the list."
+    },
+    {
+      "correct": false,
+      "error": "TypeError",
+      "expected_output": [
+        "-7",
+        "3.01",
+        "3.1",
+        "20"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "fdc01c8f233d2a7d4bb96412fc53621beb59d612e730a06f1d49587f1364c8dd",
+      "label_correct": false,
+      "output": null,
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Treat the minus signs and decimal points as arithmetic, not as letters for collation."
+    },
+    {
+      "correct": false,
+      "error": "TypeError",
+      "expected_output": [
+        "-2.5",
+        "0.09",
+        "12",
+        "1e2"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "45624c4834410dd94dac54262b89386c90947d4adc456f20ccbbad31eeef5209",
+      "label_correct": false,
+      "output": null,
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "I want a monotone increasing sequence of values, with the input representations retained."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-1",
+        "-0",
+        "0.00",
+        "1"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "7ccd8324a149d92c4215da8584a9a1ba29f8612cf6dd867e0f7c48ae79a89955",
+      "label_correct": true,
+      "output": [
+        "-1",
+        "-0",
+        "0.00",
+        "1"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Compare magnitudes arithmetically and give me the low-to-high permutation."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-7",
+        "3.01",
+        "3.1",
+        "20"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "7c06d295c3a166ee4c19d36f2ec7fc2f01380bd6ec691d724a3f43e6483e4043",
+      "label_correct": true,
+      "output": [
+        "-7",
+        "3.01",
+        "3.1",
+        "20"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Put these measurements in increasing order; two must come before ten."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "Beta",
+        "Straße",
+        "STRASSE",
+        "z"
+      ],
+      "expected_skill": "sort_casefold",
+      "id": "d9ff0c2e4cfe85a784be41115f1e7aef3d321d2f6865c4e60daf3fcb91a5f6c3",
+      "label_correct": true,
+      "output": [
+        "Beta",
+        "Straße",
+        "STRASSE",
+        "z"
+      ],
+      "predicted_skill": "sort_casefold",
+      "prediction": 2,
+      "query": "Arrange these words lexicographically after disregarding differences in capitalization."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "alpha",
+        "beta",
+        "Β",
+        "Ω"
+      ],
+      "expected_skill": "sort_casefold",
+      "id": "70fc9f119c0bde74f4f08565a9b32031830ccaf49924e774533de07c430b3381",
+      "label_correct": true,
+      "output": [
+        "alpha",
+        "beta",
+        "Β",
+        "Ω"
+      ],
+      "predicted_skill": "sort_casefold",
+      "prediction": 2,
+      "query": "The original typography must remain, although sorting must compare casefolded keys."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "Apple",
+        "apple",
+        "tea",
+        "TEA"
+      ],
+      "expected_skill": "sort_casefold",
+      "id": "0cb251686599f1c759084fe15f8892c4eb20766827ac781597aaae6ae1256088",
+      "label_correct": true,
+      "output": [
+        "Apple",
+        "apple",
+        "tea",
+        "TEA"
+      ],
+      "predicted_skill": "sort_casefold",
+      "prediction": 2,
+      "query": "An initial capital should not make a name jump ahead of otherwise earlier names."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "Beta",
+        "Straße",
+        "STRASSE",
+        "z"
+      ],
+      "expected_skill": "sort_casefold",
+      "id": "498542ef5df4b1d88b9513cf5e0e77c716474f23c157d719a95308629d08575f",
+      "label_correct": true,
+      "output": [
+        "Beta",
+        "Straße",
+        "STRASSE",
+        "z"
+      ],
+      "predicted_skill": "sort_casefold",
+      "prediction": 2,
+      "query": "Use Unicode caseless ordering, and preserve arrival order where those keys tie."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "alpha",
+        "beta",
+        "Β",
+        "Ω"
+      ],
+      "expected_skill": "sort_casefold",
+      "id": "d49318441a5a79c2344b645089572f14bf8e8878e6a79a5e7ae76a471b061f13",
+      "label_correct": true,
+      "output": [
+        "alpha",
+        "beta",
+        "Β",
+        "Ω"
+      ],
+      "predicted_skill": "sort_casefold",
+      "prediction": 2,
+      "query": "Return the list in alphabetic order with no capital-letter preference."
+    },
+    {
+      "correct": false,
+      "error": "TypeError",
+      "expected_output": [
+        "Apple",
+        "apple",
+        "tea",
+        "TEA"
+      ],
+      "expected_skill": "sort_casefold",
+      "id": "5983b31be7cfc58d6a0f86abaa24563d72c74da8b6afa0827b832154f590523f",
+      "label_correct": false,
+      "output": null,
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "Imagine the spellings had all been casefolded for comparison, but return the original spellings."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "α": 2,
+        "β": 2,
+        "γ": 1
+      },
+      "expected_skill": "count_items",
+      "id": "9b7064ea6b0219e27e3df086fe6ab74f869af747b95bdfc34488e45a51270bca",
+      "label_correct": true,
+      "output": {
+        "α": 2,
+        "β": 2,
+        "γ": 1
+      },
+      "predicted_skill": "count_items",
+      "prediction": 3,
+      "query": "Replace the sequence with a mapping whose values say how often its keys were observed."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "-1": 1,
+        "10": 2,
+        "2": 2
+      },
+      "expected_skill": "count_items",
+      "id": "d909bbec4b9f73b0fc90705befcf979d6e3e60628c27da8522541c07ee8d7227",
+      "label_correct": true,
+      "output": {
+        "-1": 1,
+        "10": 2,
+        "2": 2
+      },
+      "predicted_skill": "count_items",
+      "prediction": 3,
+      "query": "Every sighting should add one to the corresponding item's total."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "!": 1,
+        "é": 1,
+        "é": 2
+      },
+      "expected_skill": "count_items",
+      "id": "0aedf4e8ecf904226cff35fef15b7059fc43bdc5de2ef73c3e9b8d8f88bc5bab",
+      "label_correct": true,
+      "output": {
+        "!": 1,
+        "é": 1,
+        "é": 2
+      },
+      "predicted_skill": "count_items",
+      "prediction": 3,
+      "query": "How many instances of each exact value are present in the supplied batch?"
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "α": 2,
+        "β": 2,
+        "γ": 1
+      },
+      "expected_skill": "count_items",
+      "id": "819602040a74b950fd8a3dfbe15361086190dc95171eb28bc66395064deef673",
+      "label_correct": true,
+      "output": {
+        "α": 2,
+        "β": 2,
+        "γ": 1
+      },
+      "predicted_skill": "count_items",
+      "prediction": 3,
+      "query": "Collapse equal items into bins and return each bin's population."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "-1": 1,
+        "10": 2,
+        "2": 2
+      },
+      "expected_skill": "count_items",
+      "id": "ee6c8123f80d2210fc0eba01ac76c207da7d8092a83cd6751af8cf7ee8cd7c29",
+      "label_correct": true,
+      "output": {
+        "-1": 1,
+        "10": 2,
+        "2": 2
+      },
+      "predicted_skill": "count_items",
+      "prediction": 3,
+      "query": "The answer should associate every observed string with its frequency, not its position."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "!": 1,
+        "é": 1,
+        "é": 2
+      },
+      "expected_skill": "count_items",
+      "id": "dea60188901bedee106838ee68240d03728b9febc7fa934dbe8ab9d19c430be0",
+      "label_correct": true,
+      "output": {
+        "!": 1,
+        "é": 1,
+        "é": 2
+      },
+      "predicted_skill": "count_items",
+      "prediction": 3,
+      "query": "Make an inventory: one key for each item and an integer recording the quantity."
+    },
+    {
+      "correct": false,
+      "error": "JSONDecodeError",
+      "expected_output": "ﬃ Å á",
+      "expected_skill": "normalize_nfc",
+      "id": "180497b186eec79c37bdd1047cf8f204e9779c4c36eb93669e2d7ac8832f7666",
+      "label_correct": false,
+      "output": null,
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "An e followed by its combining acute should become the composed letter, while a circled digit stays circled."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "Ｂ ü ²",
+      "expected_skill": "normalize_nfc",
+      "id": "6a4d8e62011d28058845a88cfc6ca4747f1f224a4b34915b6d44fa99a752284e",
+      "label_correct": false,
+      "output": "B ü 2",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Canonical equivalents may collapse; compatibility-only equivalents must remain distinguishable."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "⑵ Ž",
+      "expected_skill": "normalize_nfc",
+      "id": "c72ac5db089aaa29853b32556a042ef92fbea61d377123e68320fa11296e3016",
+      "label_correct": true,
+      "output": "⑵ Ž",
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "Preserve the fullwidth symbols and ligatures while composing eligible accent sequences."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "ﬃ Å á",
+      "expected_skill": "normalize_nfc",
+      "id": "6414f9c24887b343e8919542def72d64610c22246e4a93ea4af38b423d5b77db",
+      "label_correct": true,
+      "output": "ﬃ Å á",
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "Bring the text to composed normal form using canonical mappings only."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "Ｂ ü ²",
+      "expected_skill": "normalize_nfc",
+      "id": "cd52056854a2f051bfb696b4973261f8f1fead0fbe981daf9b0ee8773e8f14fb",
+      "label_correct": true,
+      "output": "Ｂ ü ²",
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "Make equivalent accent encodings identical without turning ornamental characters into ordinary ones."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "⑵ Ž",
+      "expected_skill": "normalize_nfc",
+      "id": "c5ad0ad8f3182cec927fdf43938cb914b714e3ab3e23de6b3779d8917d5207eb",
+      "label_correct": false,
+      "output": "(2) Ž",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Resolve decomposed canonical characters but do not simplify compatibility forms."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "ffi Å á",
+      "expected_skill": "normalize_nfkc",
+      "id": "18ee058a60b4bd49b64d66d7b7213cc275c31351bdb063e058f29587b7ce84b2",
+      "label_correct": true,
+      "output": "ffi Å á",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "A circled one should turn into an ordinary digit, and fullwidth letters should lose their extra width."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "B ü 2",
+      "expected_skill": "normalize_nfkc",
+      "id": "993b7840c08dc08a844905a59f063e60c4114df70b9daf57b87097868aea78b1",
+      "label_correct": true,
+      "output": "B ü 2",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Canonical equivalence is not enough here; simplify compatibility-only variants too."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "(2) Ž",
+      "expected_skill": "normalize_nfkc",
+      "id": "024e082718c1cd0618b151e5b08853c40ffeb998a4e1cc2069f084d21fe19a4a",
+      "label_correct": true,
+      "output": "(2) Ž",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Replace presentation-specific glyphs with their compatibility character sequences and then compose."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "ffi Å á",
+      "expected_skill": "normalize_nfkc",
+      "id": "776b9ec2429e31c90c19b892cad50e8bb5c5313330afbc8dbfbe18f03ebdefab",
+      "label_correct": true,
+      "output": "ffi Å á",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Erase width and ligature distinctions using the Unicode compatibility normal form."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "B ü 2",
+      "expected_skill": "normalize_nfkc",
+      "id": "0b28b8b0c93332dc218ba75097a8ac89cf1a7e4981bc5b378b5813cf55ee04fa",
+      "label_correct": true,
+      "output": "B ü 2",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Produce the compatibility-normalized version while leaving uppercase versus lowercase unchanged."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "(2) Ž",
+      "expected_skill": "normalize_nfkc",
+      "id": "66893a1fffc0be2ce5239b7a934da39eebe171aeb4fd495f9dd5e6d01ebcc3ed",
+      "label_correct": true,
+      "output": "(2) Ž",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Normalize decorative variants, superscripts, and decomposed accents with compatibility composition."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "sstrasse ω",
+      "expected_skill": "casefold",
+      "id": "43e592c515d69038ad3c80dbf10a12969fc9c40353b13d498cb2d5220c0af33d",
+      "label_correct": true,
+      "output": "sstrasse ω",
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "German sharp s should match double s; normalize character case accordingly."
+    },
+    {
+      "correct": false,
+      "error": "TypeError",
+      "expected_output": "i̇stanbul",
+      "expected_skill": "casefold",
+      "id": "3c6a715a94e137fbb61bbc037ab4a91728ef39adad08f4f292f6f48c9c4d962a",
+      "label_correct": false,
+      "output": null,
+      "predicted_skill": "sort_casefold",
+      "prediction": 2,
+      "query": "Prepare one string so comparisons no longer depend on upper or lower letter forms."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "  mixed\tcase! ",
+      "expected_skill": "casefold",
+      "id": "4c5fe6a41e22629d215c5914e7c7cd0f3c5970b6fd846130bff2f62eaf0b9b48",
+      "label_correct": true,
+      "output": "  mixed\tcase! ",
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "Fold the letters' case but preserve spaces and punctuation exactly."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "sstrasse ω",
+      "expected_skill": "casefold",
+      "id": "42c33c05764d2b61b77c243411d4fe58aa19bd78830bd891c768629e97c7f56b",
+      "label_correct": true,
+      "output": "sstrasse ω",
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "Use the Unicode operation intended for caseless matching, not merely lowercasing."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "i̇stanbul",
+      "expected_skill": "casefold",
+      "id": "bd8ad7ac7c7cc205e15d496d92728d7d23eb3575649d7da896b8674528010170",
+      "label_correct": true,
+      "output": "i̇stanbul",
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "Unify the case variants in this text without changing its word order."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "  mixed\tcase! ",
+      "expected_skill": "casefold",
+      "id": "3a543c34179be8dd3d3b1ecc20120b4036efe14872698e55228b858926d0d38e",
+      "label_correct": true,
+      "output": "  mixed\tcase! ",
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "Return the standard case-folded spelling of the complete input."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "Café ß END",
+      "expected_skill": "collapse_whitespace",
+      "id": "1ef97ffad0bb61460fff138a98d11d32030a18d9f1f5db51e025bdc7955500ad",
+      "label_correct": true,
+      "output": "Café ß END",
+      "predicted_skill": "collapse_whitespace",
+      "prediction": 7,
+      "query": "The text should occupy one line, with each whitespace-separated token separated by exactly one space."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "x y z",
+      "expected_skill": "collapse_whitespace",
+      "id": "74569778180734c9707d9dcb259afef89054bbdf98ea76306f6e3ebae0b34143",
+      "label_correct": true,
+      "output": "x y z",
+      "predicted_skill": "collapse_whitespace",
+      "prediction": 7,
+      "query": "No blank margin should remain, and no internal whitespace run should be longer than one ordinary space."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "A,B C!",
+      "expected_skill": "collapse_whitespace",
+      "id": "81f8ed9d8b2696e8cb516581682e53da8f591d771bf3c419a4c50b3d5837d6bd",
+      "label_correct": true,
+      "output": "A,B C!",
+      "predicted_skill": "collapse_whitespace",
+      "prediction": 7,
+      "query": "Treat all whitespace characters as word boundaries, then rebuild the line with simple separators."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "Café ß END",
+      "expected_skill": "collapse_whitespace",
+      "id": "58e4b065996c843d4cc1ba75cfa3feb162efe7c2054511dd9205ac8791c44ecc",
+      "label_correct": true,
+      "output": "Café ß END",
+      "predicted_skill": "collapse_whitespace",
+      "prediction": 7,
+      "query": "Keep the tokens untouched while removing messy spacing around and between them."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "x y z",
+      "expected_skill": "collapse_whitespace",
+      "id": "4b615257876698dfae255abf2f1725b40981e1f97a16e4cf06115988a73257ab",
+      "label_correct": true,
+      "output": "x y z",
+      "predicted_skill": "collapse_whitespace",
+      "prediction": 7,
+      "query": "Leading and trailing gaps must vanish; each remaining gap must be one ASCII space."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "A,B C!",
+      "expected_skill": "collapse_whitespace",
+      "id": "32d02d46d1bcd2cd8b7ab72c0c7cea1cd6c1317cd7f359c55015e1197142d3a4",
+      "label_correct": false,
+      "output": " \t a,b\n c! \r",
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "Flatten the layout into a clean space-separated string without case conversion."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        [
+          "name",
+          "note"
+        ],
+        [
+          "Li, Wei",
+          "said \"yes\""
+        ]
+      ],
+      "expected_skill": "csv_parse",
+      "id": "38baf45af19501fe3648888f1117f19ac07ec03f673b829afb5a8409acf798cc",
+      "label_correct": true,
+      "output": [
+        [
+          "name",
+          "note"
+        ],
+        [
+          "Li, Wei",
+          "said \"yes\""
+        ]
+      ],
+      "predicted_skill": "csv_parse",
+      "prediction": 8,
+      "query": "A comma inside quotation marks belongs to the cell, so recover the table with a proper CSV reader."
+    },
+    {
+      "correct": false,
+      "error": "TypeError",
+      "expected_output": [
+        [
+          "α\nβ",
+          "",
+          "γ"
+        ]
+      ],
+      "expected_skill": "csv_parse",
+      "id": "dc8d6d09c06fafcbfacefa1d2041f3bf1214c58f8534008cf5a06ddc924c45e3",
+      "label_correct": false,
+      "output": null,
+      "predicted_skill": "csv_write",
+      "prediction": 9,
+      "query": "The text encodes rows and columns; decode it without treating quoted line breaks as new records."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        [
+          "",
+          "a,b",
+          "\"q\""
+        ]
+      ],
+      "expected_skill": "csv_parse",
+      "id": "71121bc25b9416b4ab6f7036107f846a82bef125775fbc5a0e628c2cac815942",
+      "label_correct": true,
+      "output": [
+        [
+          "",
+          "a,b",
+          "\"q\""
+        ]
+      ],
+      "predicted_skill": "csv_parse",
+      "prediction": 8,
+      "query": "Return nested string lists from this comma-separated representation."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        [
+          "name",
+          "note"
+        ],
+        [
+          "Li, Wei",
+          "said \"yes\""
+        ]
+      ],
+      "expected_skill": "csv_parse",
+      "id": "065e5d39891c9f93831b8504d7f8bd8cd3b14249e75d4b063e7c5a87cd887049",
+      "label_correct": true,
+      "output": [
+        [
+          "name",
+          "note"
+        ],
+        [
+          "Li, Wei",
+          "said \"yes\""
+        ]
+      ],
+      "predicted_skill": "csv_parse",
+      "prediction": 8,
+      "query": "Interpret the CSV syntax and hand back the underlying field values."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        [
+          "α\nβ",
+          "",
+          "γ"
+        ]
+      ],
+      "expected_skill": "csv_parse",
+      "id": "4bed1e4ee9305a3e66b95f2e4c2e94eee9963dd89d6ff9203a4b8e558fa89ff4",
+      "label_correct": true,
+      "output": [
+        [
+          "α\nβ",
+          "",
+          "γ"
+        ]
+      ],
+      "predicted_skill": "csv_parse",
+      "prediction": 8,
+      "query": "Unpack the quoted comma-delimited document into its record structure."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": [
+        [
+          "",
+          "a,b",
+          "\"q\""
+        ]
+      ],
+      "expected_skill": "csv_parse",
+      "id": "8e4ab0388da1ec6c1e9736881562073ba0adb402bc80b41017a6d864629bc4b6",
+      "label_correct": false,
+      "output": "\"\",\"a,b\",\"\"\"q\"\"\"\n",
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "Convert the serialized table into rows while honoring doubled quotation marks."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "name,note\n\"Li, Wei\",\"said \"\"yes\"\"\"\n",
+      "expected_skill": "csv_write",
+      "id": "fde73c7ead02357153ef7c1bec1786578e7f58c2d8ae6cb3bb5625ec8e29e355",
+      "label_correct": true,
+      "output": "name,note\n\"Li, Wei\",\"said \"\"yes\"\"\"\n",
+      "predicted_skill": "csv_write",
+      "prediction": 9,
+      "query": "The destination needs a CSV file body, so encode these existing rows with the correct escaping."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "\"α\nβ\",,γ\n",
+      "expected_skill": "csv_write",
+      "id": "a3b3cb1aa1c332a2912b51de73bfc94d8a4a04aa49f153b1506b04e3ef9b9cc0",
+      "label_correct": true,
+      "output": "\"α\nβ\",,γ\n",
+      "predicted_skill": "csv_write",
+      "prediction": 9,
+      "query": "Return a string representation of the table using commas and newline-terminated records."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": ",\"a,b\",\"\"\"q\"\"\"\n",
+      "expected_skill": "csv_write",
+      "id": "718cedda68e5e31148d329213ab79c138fa3752ee9d6ebaf9090e1d03ca79f65",
+      "label_correct": true,
+      "output": ",\"a,b\",\"\"\"q\"\"\"\n",
+      "predicted_skill": "csv_write",
+      "prediction": 9,
+      "query": "Cells containing punctuation must survive a CSV round trip; write the table accordingly."
+    },
+    {
+      "correct": false,
+      "error": "TypeError",
+      "expected_output": "name,note\n\"Li, Wei\",\"said \"\"yes\"\"\"\n",
+      "expected_skill": "csv_write",
+      "id": "a02477c6262ce81805c657e10d6b6f0ce9d9a5f5ad2dc3b5a412a8a6f658e804",
+      "label_correct": false,
+      "output": null,
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "Turn the in-memory rows into comma-separated text, doubling any internal quote characters."
+    },
+    {
+      "correct": false,
+      "error": "TypeError",
+      "expected_output": "\"α\nβ\",,γ\n",
+      "expected_skill": "csv_write",
+      "id": "552dfcba08591c0e030825b5a6277ba834cd961b2ae93fce75a40546f6041444",
+      "label_correct": false,
+      "output": null,
+      "predicted_skill": "csv_parse",
+      "prediction": 8,
+      "query": "Emit a CSV document from the structured cells rather than parsing one."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": ",\"a,b\",\"\"\"q\"\"\"\n",
+      "expected_skill": "csv_write",
+      "id": "eeb4196b4763da5a69d736e5b83130ed3dfd40e0001ca34183f3ef183c2c9151",
+      "label_correct": true,
+      "output": ",\"a,b\",\"\"\"q\"\"\"\n",
+      "predicted_skill": "csv_write",
+      "prediction": 9,
+      "query": "Encode the nested row data in CSV syntax, with a final newline for the final row."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "a": [
+          true,
+          4
+        ],
+        "b": {
+          "x": null
+        }
+      },
+      "expected_skill": "json_parse",
+      "id": "ec14a4c9b863ca31975aa0b1f37b15d12be698f42f04a1bf06886904580342ab",
+      "label_correct": true,
+      "output": {
+        "a": [
+          true,
+          4
+        ],
+        "b": {
+          "x": null
+        }
+      },
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "The response should be a structured object or list, with the JSON syntax removed."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "two  spaces",
+        "é",
+        1.25
+      ],
+      "expected_skill": "json_parse",
+      "id": "da1d0190872630af9c737e15f1af499205c80fc1984ea6095941ce006e8af695",
+      "label_correct": true,
+      "output": [
+        "two  spaces",
+        "é",
+        1.25
+      ],
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "This string contains serialized data; load it so its fields can be accessed directly."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "escaped": "a\nb",
+        "q": "\""
+      },
+      "expected_skill": "json_parse",
+      "id": "704c0bac8825b0151d363d85737199d8b0ade76c4df5e4395554d2e22b3e78d8",
+      "label_correct": true,
+      "output": {
+        "escaped": "a\nb",
+        "q": "\""
+      },
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Interpret the braces and brackets as structure rather than retaining them as text."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "a": [
+          true,
+          4
+        ],
+        "b": {
+          "x": null
+        }
+      },
+      "expected_skill": "json_parse",
+      "id": "0290117ef9cb6a0e29f9cbcd12f5253a0555db9ee438570ed0433b64cf10a724",
+      "label_correct": true,
+      "output": {
+        "a": [
+          true,
+          4
+        ],
+        "b": {
+          "x": null
+        }
+      },
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Return the value described by this JSON document, including nested containers."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "two  spaces",
+        "é",
+        1.25
+      ],
+      "expected_skill": "json_parse",
+      "id": "f1b89ce964e5f27efb87ef21904d76ae380c5b2cdc79722ef917f1b1c1ded1aa",
+      "label_correct": true,
+      "output": [
+        "two  spaces",
+        "é",
+        1.25
+      ],
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Deserialize the input into usable data without reserializing it."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "escaped": "a\nb",
+        "q": "\""
+      },
+      "expected_skill": "json_parse",
+      "id": "937ac014895f888a9f3f7f7550d5545ed054ba00e0192bc656dafc43dab7bcd4",
+      "label_correct": true,
+      "output": {
+        "escaped": "a\nb",
+        "q": "\""
+      },
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Resolve the JSON representation into the object it encodes."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "{\"b\":{\"x\":null},\"a\":[true,4]}",
+      "expected_skill": "json_compact",
+      "id": "f152f020c0e083893edadcd7a8bfc070eded7cdba36ad6b10c45868209e27a1d",
+      "label_correct": true,
+      "output": "{\"b\":{\"x\":null},\"a\":[true,4]}",
+      "predicted_skill": "json_compact",
+      "prediction": 11,
+      "query": "The consumer expects text; minimize the JSON formatting without altering any values."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "[\"two  spaces\",\"é\",1.25]",
+      "expected_skill": "json_compact",
+      "id": "a1216918bbf0c5773afde76756780e58b512e5d84dc6243d7d4a7616e6b68af9",
+      "label_correct": false,
+      "output": [
+        [
+          "[ \"two  spaces\"",
+          " \"é\"",
+          " 1.25 ]"
+        ]
+      ],
+      "predicted_skill": "csv_parse",
+      "prediction": 8,
+      "query": "Strip spaces around structural separators but keep spaces that belong to quoted strings."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "{\"escaped\":\"a\\nb\",\"q\":\"\\\"\"}",
+      "expected_skill": "json_compact",
+      "id": "bd5fa914b3df0a46d68170cc6d9ad4aaf000af5b732d353263172d81b1e3bed7",
+      "label_correct": true,
+      "output": "{\"escaped\":\"a\\nb\",\"q\":\"\\\"\"}",
+      "predicted_skill": "json_compact",
+      "prediction": 11,
+      "query": "Pack the serialized JSON onto a compact representation and retain the order of keys."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "{\"b\":{\"x\":null},\"a\":[true,4]}",
+      "expected_skill": "json_compact",
+      "id": "b4f564632b48adbdf10813c501a40cead2d7b6eacd087614bdc12061cf971e5b",
+      "label_correct": false,
+      "output": {
+        "a": [
+          true,
+          4
+        ],
+        "b": {
+          "x": null
+        }
+      },
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Return JSON again after decoding, this time with no optional separator whitespace."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "[\"two  spaces\",\"é\",1.25]",
+      "expected_skill": "json_compact",
+      "id": "f358ca1cd3658205ba7d827d49a6d02a7c18745309e200cc8426c3596ba95571",
+      "label_correct": false,
+      "output": "[ \"two spaces\", \"é\", 1.25 ]",
+      "predicted_skill": "collapse_whitespace",
+      "prediction": 7,
+      "query": "Preserve the document's meaning while removing pretty-print layout from its text."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "{\"escaped\":\"a\\nb\",\"q\":\"\\\"\"}",
+      "expected_skill": "json_compact",
+      "id": "11c75add3abfa389941fd7d2be0c5953368914f657a898972601a4821aaf2386",
+      "label_correct": true,
+      "output": "{\"escaped\":\"a\\nb\",\"q\":\"\\\"\"}",
+      "predicted_skill": "json_compact",
+      "prediction": 11,
+      "query": "This must remain a JSON string, only without formatting blanks and indentation."
+    }
+  ],
+  "scoring_cpu_seconds": 0.0012001219999999702,
+  "scoring_wall_seconds": 0.001202159997774288
+}

@@ -1,0 +1,195 @@
+{
+  "accepted": 12,
+  "correct": 12,
+  "encoder_cost_included": false,
+  "evaluated": 12,
+  "label_correct": 12,
+  "predictions": [
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-5",
+        "3",
+        "20",
+        "20"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "36d4a9021e1d660ef2cabcbf0da17995f7497a88ed9b13157a1d8f5bb638447a",
+      "label_correct": true,
+      "output": [
+        "-5",
+        "3",
+        "20",
+        "20"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Amber owns this input. Carry out the operation specified by its latest project record."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-0.5",
+        "1.05",
+        "1.5",
+        "1.5"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "acfbea6cf2ed6c4c861678d229b96004f3a38017ab1021c7d893973152566314",
+      "label_correct": true,
+      "output": [
+        "-0.5",
+        "1.05",
+        "1.5",
+        "1.5"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "What result does this payload produce under the current amber convention?"
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-5",
+        "3",
+        "20",
+        "20"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "4d6512ba1cd1c7979135ffaa73576a25ee0c0f7403649c0a4877b15082df6529",
+      "label_correct": true,
+      "output": [
+        "-5",
+        "3",
+        "20",
+        "20"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Handle the attached values according to the standing rule assigned to amber."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-0.5",
+        "1.05",
+        "1.5",
+        "1.5"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "a8d8c3bcb57a0cc446d9d7ae3701bafa8f27b0e9d756d0d67764ccaeff860e68",
+      "label_correct": true,
+      "output": [
+        "-0.5",
+        "1.05",
+        "1.5",
+        "1.5"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Use amber's active project setting to process this data."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "T ü ffi",
+      "expected_skill": "normalize_nfkc",
+      "id": "74a797620825259309a599ba9115c4e6479f6e3e76603873feb94504c2d08656",
+      "label_correct": true,
+      "output": "T ü ffi",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Consult the binding learned for birch and process the attached payload accordingly."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "1 ñ 2",
+      "expected_skill": "normalize_nfkc",
+      "id": "bee1bd0903918583a73ffad64d31f1892f375427e9359d424f7b7545568c0229",
+      "label_correct": true,
+      "output": "1 ñ 2",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "This request is for birch. Return the result its current project convention requires."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "T ü ffi",
+      "expected_skill": "normalize_nfkc",
+      "id": "4ab9359d4d1f4bc434335b613298acd9ab0522f22f72edac547495ef4ca4c188",
+      "label_correct": true,
+      "output": "T ü ffi",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "The owning project is birch; execute its active data-processing choice."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "1 ñ 2",
+      "expected_skill": "normalize_nfkc",
+      "id": "5ae05a0c36cf6981fc301a6c1940e3c8f4f9cf94b3e3ff09a20704612c36f610",
+      "label_correct": true,
+      "output": "1 ñ 2",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Carry out birch's latest recorded transformation on the input provided."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "{\"word\":\"two spaces\",\"a\":[4,2]}",
+      "expected_skill": "json_compact",
+      "id": "68efb97bcf878205d29a8239c4e8a442328954a65b5e4c681c55fd6896b1c311",
+      "label_correct": true,
+      "output": "{\"word\":\"two spaces\",\"a\":[4,2]}",
+      "predicted_skill": "json_compact",
+      "prediction": 11,
+      "query": "For this cobalt request, produce the output dictated by its latest stored convention."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "[\"Café\",null,{\"z\":true}]",
+      "expected_skill": "json_compact",
+      "id": "af04937f91462ce0fdaa8eaf0091c15050660591d61845635510eceb56d2363b",
+      "label_correct": true,
+      "output": "[\"Café\",null,{\"z\":true}]",
+      "predicted_skill": "json_compact",
+      "prediction": 11,
+      "query": "Execute the currently assigned cobalt processing rule against the supplied payload."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "{\"word\":\"two spaces\",\"a\":[4,2]}",
+      "expected_skill": "json_compact",
+      "id": "6cfbbf8bbd1766f546dac8f2807301fb37ed57d16ad79ae199566e9b35c2343c",
+      "label_correct": true,
+      "output": "{\"word\":\"two spaces\",\"a\":[4,2]}",
+      "predicted_skill": "json_compact",
+      "prediction": 11,
+      "query": "Cobalt is the project responsible for this input. Apply its current choice."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "[\"Café\",null,{\"z\":true}]",
+      "expected_skill": "json_compact",
+      "id": "1bccca6f9f751c66d263e67fcd16e075f4408ebfb900070fe01988ef84612285",
+      "label_correct": true,
+      "output": "[\"Café\",null,{\"z\":true}]",
+      "predicted_skill": "json_compact",
+      "prediction": 11,
+      "query": "Follow the most recent cobalt configuration to derive the requested result."
+    }
+  ],
+  "scoring_cpu_seconds": 0.00014032900000016113,
+  "scoring_wall_seconds": 0.000141182987135835
+}

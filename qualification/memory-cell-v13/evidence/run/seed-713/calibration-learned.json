@@ -1,0 +1,788 @@
+{
+  "accepted": 48,
+  "correct": 40,
+  "encoder_cost_included": false,
+  "evaluated": 48,
+  "label_correct": 40,
+  "predictions": [
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "red",
+        "blue",
+        "green"
+      ],
+      "expected_skill": "unique_stable",
+      "id": "97c934a4133efdc20791019a215db2f47ce2f962fd88bc1a1f64cc4fdd452d0d",
+      "label_correct": true,
+      "output": [
+        "red",
+        "blue",
+        "green"
+      ],
+      "predicted_skill": "unique_stable",
+      "prediction": 0,
+      "query": "I need one representative per value; arrival order must survive."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "",
+        "z"
+      ],
+      "expected_skill": "unique_stable",
+      "id": "9590d6eed3ee4cbbf6af9f819bbf4be28e5b25de93f53f3e542fc544293dddfa",
+      "label_correct": true,
+      "output": [
+        "",
+        "z"
+      ],
+      "predicted_skill": "unique_stable",
+      "prediction": 0,
+      "query": "Repeated names should disappear after their initial appearance."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "red",
+        "blue",
+        "green"
+      ],
+      "expected_skill": "unique_stable",
+      "id": "4059a346c5793c2fcd7686e395ef973eee24269defe8548e3f90040b411c5219",
+      "label_correct": true,
+      "output": [
+        "red",
+        "blue",
+        "green"
+      ],
+      "predicted_skill": "unique_stable",
+      "prediction": 0,
+      "query": "Compress this list by eliminating subsequent identical entries."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "",
+        "z"
+      ],
+      "expected_skill": "unique_stable",
+      "id": "5c122582857d616e502a5572f40c5425385af5fa9044797c423e2f22e6c80794",
+      "label_correct": true,
+      "output": [
+        "",
+        "z"
+      ],
+      "predicted_skill": "unique_stable",
+      "prediction": 0,
+      "query": "Give each distinct string its first position, with no rearrangement."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-12",
+        "0.5",
+        "9",
+        "100"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "dd0d89c2d3327db739fdcb58916cc8f0cbc57b0eb2269b2a1e72903468a64ef0",
+      "label_correct": true,
+      "output": [
+        "-12",
+        "0.5",
+        "9",
+        "100"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "The entries are decimal quantities; place the least quantity first."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-3",
+        "3",
+        "03"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "e44ad69a976243f1a17529ba94bb0b8601cedac59bc399c58affb9edb3d88f64",
+      "label_correct": true,
+      "output": [
+        "-3",
+        "3",
+        "03"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "An ordinary string sort would put ten before two. Avoid that mistake."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-12",
+        "0.5",
+        "9",
+        "100"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "9d1152d3fdc6cac375d14d2ef7fe370e8198910058b9cd88efed09f480e4779b",
+      "label_correct": true,
+      "output": [
+        "-12",
+        "0.5",
+        "9",
+        "100"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Increase numerical value as you move through the output list."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-3",
+        "3",
+        "03"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "195a1eb42fb1dead61b3ba6081cb2eab2a17a2cff646ea5716a37e3d27789a71",
+      "label_correct": true,
+      "output": [
+        "-3",
+        "3",
+        "03"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Arrange signed numbers on a number line and preserve the text of each entry."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "ALPHA",
+        "delta",
+        "Echo"
+      ],
+      "expected_skill": "sort_casefold",
+      "id": "6a7adfcc8e288db01e0a337a41a5fb43879bd6a98fdfea23f57cdc0133d6ac0e",
+      "label_correct": true,
+      "output": [
+        "ALPHA",
+        "delta",
+        "Echo"
+      ],
+      "predicted_skill": "sort_casefold",
+      "prediction": 2,
+      "query": "Capitalization should not affect where an entry lands in the ordered list."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "a",
+        "x",
+        "X"
+      ],
+      "expected_skill": "sort_casefold",
+      "id": "d6258f6d0b26b006ea093b5185ce2e23e206fe6f0d933b607ee94dc36da2182f",
+      "label_correct": true,
+      "output": [
+        "a",
+        "x",
+        "X"
+      ],
+      "predicted_skill": "sort_casefold",
+      "prediction": 2,
+      "query": "Alphabetize the labels while retaining the exact original letter cases."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "ALPHA",
+        "delta",
+        "Echo"
+      ],
+      "expected_skill": "sort_casefold",
+      "id": "ae5a5be57b2a623c69f16e81b4c62159aed1c4ff52781abae3213bfe1f32eaa2",
+      "label_correct": true,
+      "output": [
+        "ALPHA",
+        "delta",
+        "Echo"
+      ],
+      "predicted_skill": "sort_casefold",
+      "prediction": 2,
+      "query": "Give me a stable ordering on caseless versions of these strings."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "a",
+        "x",
+        "X"
+      ],
+      "expected_skill": "sort_casefold",
+      "id": "15473d8dc8a6bb5e32c2b2c09870769e8dc644308c11d8255354f0c7a193b9ca",
+      "label_correct": true,
+      "output": [
+        "a",
+        "x",
+        "X"
+      ],
+      "predicted_skill": "sort_casefold",
+      "prediction": 2,
+      "query": "Use the same order for uppercase and lowercase variants of a word."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "blue": 1,
+        "red": 3
+      },
+      "expected_skill": "count_items",
+      "id": "7584ec0fca6e614adf9c0e3a13769b7035cb567bbde4975f556125145e88e5a8",
+      "label_correct": true,
+      "output": {
+        "blue": 1,
+        "red": 3
+      },
+      "predicted_skill": "count_items",
+      "prediction": 3,
+      "query": "For each string, tell me how many positions contain it."
+    },
+    {
+      "correct": false,
+      "error": "TypeError",
+      "expected_output": {
+        "": 2,
+        "z": 1
+      },
+      "expected_skill": "count_items",
+      "id": "b81d284d82cea28d9ca3e0aaf585ffdb1e90216fa611f86862f6638ee75b3239",
+      "label_correct": false,
+      "output": null,
+      "predicted_skill": "csv_write",
+      "prediction": 9,
+      "query": "I need a tally table rather than another ordered list."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "blue": 1,
+        "red": 3
+      },
+      "expected_skill": "count_items",
+      "id": "273c006f66db5ae0e1e7f0992c57a4f0e12b5dd8b26128f04f93e359e54ff0cd",
+      "label_correct": true,
+      "output": {
+        "blue": 1,
+        "red": 3
+      },
+      "predicted_skill": "count_items",
+      "prediction": 3,
+      "query": "Turn the sequence into counts indexed by the original values."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "": 2,
+        "z": 1
+      },
+      "expected_skill": "count_items",
+      "id": "e725cdfef91167866095bbe815b7110dd99ac8467f774f558092f3f620d25cbb",
+      "label_correct": true,
+      "output": {
+        "": 2,
+        "z": 1
+      },
+      "predicted_skill": "count_items",
+      "prediction": 3,
+      "query": "Combine equal entries into their occurrence totals."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "Ａ ö",
+      "expected_skill": "normalize_nfc",
+      "id": "7a84f24776ce9b5b47ee9d18075ce624e8fa54b23571bf3ee53c2d0aa65df933",
+      "label_correct": false,
+      "output": "A ö",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Repair decomposed letter accents but keep presentation variants distinct."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "① ñ",
+      "expected_skill": "normalize_nfc",
+      "id": "f2bee5a81dc1a49c035fe86d1ac926669ebcf485d51de19be5578451ce595445",
+      "label_correct": true,
+      "output": "① ñ",
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "I want canonical composed Unicode without flattening compatibility glyphs."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "Ａ ö",
+      "expected_skill": "normalize_nfc",
+      "id": "c0adecbf7bd3f8313747867c1693b4aca52c43278b1ea7cee1748f69f8cf1932",
+      "label_correct": true,
+      "output": "Ａ ö",
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "Combine equivalent character sequences under the NFC rule."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "① ñ",
+      "expected_skill": "normalize_nfc",
+      "id": "4b0a802e0e1f0fcb77251be516e0f010045944334a68fb18eafd3c909565db9b",
+      "label_correct": false,
+      "output": "1 ñ",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Standardize canonical equivalence while retaining special-width forms."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "A ö",
+      "expected_skill": "normalize_nfkc",
+      "id": "3b4b8c6964fe09728737fa7c2dd709fb2b1c760ee2d56792e0d3dcc9c8fcb710",
+      "label_correct": true,
+      "output": "A ö",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Flatten decorative number forms and fullwidth letters into regular characters."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "1 ñ",
+      "expected_skill": "normalize_nfkc",
+      "id": "4f29b942644969f9235f36c99bb8acbf2547e3595e7f2423f9c852f49090a65b",
+      "label_correct": true,
+      "output": "1 ñ",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "I need composed normalization that also collapses compatibility distinctions."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "A ö",
+      "expected_skill": "normalize_nfkc",
+      "id": "06e7d2c1e092df2239cc35a021dae0e160c3ed48cf52637926bdae210a326896",
+      "label_correct": false,
+      "output": "Ａ ö",
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "Map ligatures to their compatibility expansions while normalizing accents."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "1 ñ",
+      "expected_skill": "normalize_nfkc",
+      "id": "861ab0fee6ce18d1ff6413a6f8b52c9f424a919e7e96a3e11cffdb9f9e7512fa",
+      "label_correct": true,
+      "output": "1 ñ",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Use the Unicode compatibility mapping, rather than canonical mapping alone."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "café",
+      "expected_skill": "casefold",
+      "id": "32c769637caaa1a78267e1ef1f438711a45b229fdba6baa6285fd8963ed317d7",
+      "label_correct": true,
+      "output": "café",
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "Create the caseless comparison key for this entire string."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "masse!",
+      "expected_skill": "casefold",
+      "id": "9d45ec0afd657fa32071ac7d7830b3ae9016c24a658d8175fe890836c951f089",
+      "label_correct": true,
+      "output": "masse!",
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "Lowercase is insufficient; use full Unicode case folding."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "café",
+      "expected_skill": "casefold",
+      "id": "59ee65aa6da4173379e08d5189703e370c4704dca43acdfb39616f527218ad4e",
+      "label_correct": true,
+      "output": "café",
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "Map case variants to the shared matching form."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "masse!",
+      "expected_skill": "casefold",
+      "id": "09189e0b156605a613041a90db8eb6915cadc57a5771d110e00b54d7e1a3df52",
+      "label_correct": true,
+      "output": "masse!",
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "I want letter-case distinctions removed, including special Unicode cases."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "left right",
+      "expected_skill": "collapse_whitespace",
+      "id": "65ac690949962d7415633176905e647d62e84f51d3f2096a4c4c3ca6bdd05cfa",
+      "label_correct": true,
+      "output": "left right",
+      "predicted_skill": "collapse_whitespace",
+      "prediction": 7,
+      "query": "Discard empty space at both ends and regularize the gaps inside."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "a b",
+      "expected_skill": "collapse_whitespace",
+      "id": "b0ab9b2df219ec3e739c0d95ce082c36cc4292a666adc18108078c8b4dc7b013",
+      "label_correct": true,
+      "output": "a b",
+      "predicted_skill": "collapse_whitespace",
+      "prediction": 7,
+      "query": "Tabs, newlines, and repeated spaces should all become one separator."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "left right",
+      "expected_skill": "collapse_whitespace",
+      "id": "7c02beea83bc80e00477cca5b66e0a497b2ab1b5a2d278fe893fc016c1689113",
+      "label_correct": true,
+      "output": "left right",
+      "predicted_skill": "collapse_whitespace",
+      "prediction": 7,
+      "query": "Give me the same words with uniform single spaces between them."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "a b",
+      "expected_skill": "collapse_whitespace",
+      "id": "8f48066307868ab74a8cad17bb4abd363a650bd05018011d28bd442c7739aac8",
+      "label_correct": false,
+      "output": "a b",
+      "predicted_skill": "casefold",
+      "prediction": 6,
+      "query": "Compress spacing while preserving punctuation and letter case."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        [
+          "x",
+          "",
+          "y"
+        ]
+      ],
+      "expected_skill": "csv_parse",
+      "id": "33cf32db85ee9e8ad2497d3a7f11592b567fb6304e4078e4ed21007ad83dc413",
+      "label_correct": true,
+      "output": [
+        [
+          "x",
+          "",
+          "y"
+        ]
+      ],
+      "predicted_skill": "csv_parse",
+      "prediction": 8,
+      "query": "The input is serialized CSV; return the actual cells arranged by record."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        [
+          "line\nbreak",
+          "a"
+        ]
+      ],
+      "expected_skill": "csv_parse",
+      "id": "14e15cabf23be3a0377659746d7d023650b91b4fa961841e32a823c80466aecb",
+      "label_correct": true,
+      "output": [
+        [
+          "line\nbreak",
+          "a"
+        ]
+      ],
+      "predicted_skill": "csv_parse",
+      "prediction": 8,
+      "query": "Recover tabular values from the comma-delimited file text."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        [
+          "x",
+          "",
+          "y"
+        ]
+      ],
+      "expected_skill": "csv_parse",
+      "id": "21403ad9f2cff6b75c649136a4008c97a535b0e74453da9976b44aacdde9cbd8",
+      "label_correct": true,
+      "output": [
+        [
+          "x",
+          "",
+          "y"
+        ]
+      ],
+      "predicted_skill": "csv_parse",
+      "prediction": 8,
+      "query": "Honor quote escaping while unpacking these comma-separated records."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        [
+          "line\nbreak",
+          "a"
+        ]
+      ],
+      "expected_skill": "csv_parse",
+      "id": "a78fd6a088fd0c46ed299b7ed81f982590e8c861c7569838fda0b63abb1d223e",
+      "label_correct": true,
+      "output": [
+        [
+          "line\nbreak",
+          "a"
+        ]
+      ],
+      "predicted_skill": "csv_parse",
+      "prediction": 8,
+      "query": "Deserialize the CSV, keeping every cell a string."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "x,,y\n",
+      "expected_skill": "csv_write",
+      "id": "9e82453b31a80e8662fad15e160246b27bc5f3d6c98b85bbce37a0c3b3616412",
+      "label_correct": true,
+      "output": "x,,y\n",
+      "predicted_skill": "csv_write",
+      "prediction": 9,
+      "query": "The data is already tabular; turn it into a CSV document."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "\"line\nbreak\",a\n",
+      "expected_skill": "csv_write",
+      "id": "05ddf27e95e28d312deba0e50b550cf7dff5f2d98bc876860ed176abba4b05f2",
+      "label_correct": true,
+      "output": "\"line\nbreak\",a\n",
+      "predicted_skill": "csv_write",
+      "prediction": 9,
+      "query": "Serialize the rows and escape cells that require CSV quotation."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "x,,y\n",
+      "expected_skill": "csv_write",
+      "id": "1e432096f812c8e68139f907f26ee326f3f99077b2483b3b7ffc240903037075",
+      "label_correct": true,
+      "output": "x,,y\n",
+      "predicted_skill": "csv_write",
+      "prediction": 9,
+      "query": "Create comma-delimited file contents with one newline after every record."
+    },
+    {
+      "correct": false,
+      "error": "TypeError",
+      "expected_output": "\"line\nbreak\",a\n",
+      "expected_skill": "csv_write",
+      "id": "3142ccfda7f268a3bcc269e67c68e821231df29c28a97d1b1231c6a4ac8b0409",
+      "label_correct": false,
+      "output": null,
+      "predicted_skill": "csv_parse",
+      "prediction": 8,
+      "query": "Pack these field lists into properly quoted CSV records."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "a": false,
+        "z": [
+          0
+        ]
+      },
+      "expected_skill": "json_parse",
+      "id": "cd9c223c5d9144da5d97eb146e5c2111d9d5cf471981567c4f89137633baeae0",
+      "label_correct": true,
+      "output": {
+        "a": false,
+        "z": [
+          0
+        ]
+      },
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "I need the data represented by the JSON, not another JSON string."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "Café",
+        {
+          "n": -2
+        }
+      ],
+      "expected_skill": "json_parse",
+      "id": "b8a22647a3805e91f1e7d430b94a0e8fc882e4ad49950ccfc27bfb4a08af035f",
+      "label_correct": true,
+      "output": [
+        "Café",
+        {
+          "n": -2
+        }
+      ],
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Recover the object structure from this serialized JSON."
+    },
+    {
+      "correct": false,
+      "error": "TypeError",
+      "expected_output": {
+        "a": false,
+        "z": [
+          0
+        ]
+      },
+      "expected_skill": "json_parse",
+      "id": "2bb7f1e964725b6aefdbf53dfc5fa60e7cb04c3f6a449bbc67ce86924f0dbb61",
+      "label_correct": false,
+      "output": null,
+      "predicted_skill": "count_items",
+      "prediction": 3,
+      "query": "Materialize the arrays and objects encoded in the text."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "Café",
+        {
+          "n": -2
+        }
+      ],
+      "expected_skill": "json_parse",
+      "id": "9f17f5a969d6581ecc294e5ccab9fb78d408eaa8f4363fda9ea8632f589aa034",
+      "label_correct": true,
+      "output": [
+        "Café",
+        {
+          "n": -2
+        }
+      ],
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Decode all JSON literals into their corresponding data values."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "{\"z\":[0],\"a\":false}",
+      "expected_skill": "json_compact",
+      "id": "f3b652a71ab403d47ef2b684b6a781e3213d4dab3c2dcdc56d3381f32c48c72f",
+      "label_correct": true,
+      "output": "{\"z\":[0],\"a\":false}",
+      "predicted_skill": "json_compact",
+      "prediction": 11,
+      "query": "Keep the result serialized, but eliminate its JSON formatting padding."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "[\"Café\",{\"n\":-2}]",
+      "expected_skill": "json_compact",
+      "id": "6f59023528ec546a3c266deb4a7f4b2a4c87d853a5bb8fddb5bde54489919843",
+      "label_correct": false,
+      "output": [
+        "Café",
+        {
+          "n": -2
+        }
+      ],
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "I want the same document as a compact JSON string, not an object."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "{\"z\":[0],\"a\":false}",
+      "expected_skill": "json_compact",
+      "id": "fd0e08548caf74b73b954638b3d8e0057e713bdd3aa65196b9fa1add46563bb0",
+      "label_correct": true,
+      "output": "{\"z\":[0],\"a\":false}",
+      "predicted_skill": "json_compact",
+      "prediction": 11,
+      "query": "Remove cosmetic whitespace outside quoted JSON strings."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "[\"Café\",{\"n\":-2}]",
+      "expected_skill": "json_compact",
+      "id": "e80f4feaab12af7bbf4035020aca3994f0f7eca118bbff41aa0c904bf6cb6b02",
+      "label_correct": true,
+      "output": "[\"Café\",{\"n\":-2}]",
+      "predicted_skill": "json_compact",
+      "prediction": 11,
+      "query": "Reserialize without indentation while preserving the original object key order."
+    }
+  ],
+  "scoring_cpu_seconds": 0.0009681379999999518,
+  "scoring_wall_seconds": 0.0009699110087240115
+}
