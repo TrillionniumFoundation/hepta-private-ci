@@ -1,0 +1,3079 @@
+{
+  "schema": "hcsn-portable-evidence-replay.v1",
+  "created_at_utc": "2026-10-31T03:35:25.415823+00:00",
+  "results_root": "/workspace/scratch/b8d29bac8668/evidence_restore/study001",
+  "source_package": "/workspace/scratch/b8d29bac8668/hepta-hcsn/experiments/hcsn_task_value_v1",
+  "manifest_sha256": "3c97927b4026e4da68bfc9c7485e3bb21ea064af2687bc4c0c5e34d2496e8782",
+  "archive_sha256": "bae75b038da8f361cf343d916d4465dd5007527b058d69f7911554a8a645bab1",
+  "verified_members": 2444,
+  "original_aggregate_sha256": "06939b5da956236db7e24296e6b4af8d58347ccd2773f3099c4f4e07a6222bc3",
+  "protocol_sha256": "643320e6d8e081df54e0ef8362de95d1eebddbd5b026f4e2373cf33d97a183c1",
+  "analysis_source_sha256": {
+    "analysis.py": "bfc43ebf6c8f29eb988a9693502cdb1d4691518d5c3f4adcb44b80d5b1be0f9b",
+    "analysis_audit.py": "f73f6c096729ddafc419f3473ad9ba36426286c5d82aef463299aa78f80cf08a"
+  },
+  "replay_source_sha256": "8fe63dcfc4fa3407c3ceab91112a746c4152b6190b36e41c576851a116842d02",
+  "jobs": 168,
+  "comparisons": 159,
+  "recomputable_checks_and_statistics_match": true,
+  "statistic_comparisons": {
+    "comparisons": {
+      "numbers": 11148,
+      "maximum_absolute_error": 0.0
+    },
+    "factorial": {
+      "numbers": 912,
+      "maximum_absolute_error": 0.0
+    },
+    "arm_summaries": {
+      "numbers": 12795,
+      "maximum_absolute_error": 0.0
+    },
+    "inference_summaries": {
+      "numbers": 6161,
+      "maximum_absolute_error": 0.0
+    },
+    "shared_frontend_account": {
+      "numbers": 8,
+      "maximum_absolute_error": 0.0
+    }
+  },
+  "historical_execution_audit": "inherited_historical_audit; bound to verified original aggregate",
+  "independent_filesystem_chronology_audit": "unavailable: deterministic archive omits original selection-file mtime",
+  "recorded_order_scope": "Recorded train/validation/test loads within recorded worker interval; not independent proof of selection-file creation time",
+  "qualification_scope": "Reproduces archived numerical qualification flags; historical execution chronology remains inherited",
+  "model_forward_or_training_executed": false,
+  "source_evidence_modified": false,
+  "relocated_logs": [
+    {
+      "member": "study001/meter/fixed_mqar_two_gates_w32_s31067.json.log",
+      "sha256": "7e704a18b6a0b154a1dda8c023933672169d6c4f69262977ff9d673397863667"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_two_gates_w32_s31031.json.log",
+      "sha256": "2d7bf38d1bdbf085e48116953d8388a518063220483770c86133d0309e731bdd"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_dual_w8_s31067.json.log",
+      "sha256": "eb21857c090882657c8ae0e40dee12e56c7930bc87d920ebb72d3741be6e17d8"
+    },
+    {
+      "member": "study001/meter/cpu_selective_copy_transformer_w16_s31103.json.log",
+      "sha256": "0ba2cb1414fb10d32af3ba48b6258f47319519f95e4488a132be40060a0d48c7"
+    },
+    {
+      "member": "study001/meter/cpu_mqar_two_gates_w16_s31103.json.log",
+      "sha256": "d56970f970b0ce2ed6eac419b3f24bcefc1c5f83354f740cd1c977e7f0bf6dbc"
+    },
+    {
+      "member": "study001/meter/cpu_mqar_transformer_w16_s31067.json.log",
+      "sha256": "5b1736934b3d4b2c60c8e188d349cc80ed8a32ea4a97e0c276354afbb2b67f6b"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_dual_w16_s31103.json.log",
+      "sha256": "703d99095f879e17d0ff784e7fabe99f5a447db1f882f4ae671c4f6c98656ecd"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_transformer_w16_s31031.json.log",
+      "sha256": "0cb79047c3891f0e9bb769fd1c465a0d720fdb144ae0ee72bdf5ae2d345737fd"
+    },
+    {
+      "member": "study001/meter/cpu_selective_copy_value_dual_w16_s31031.json.log",
+      "sha256": "3500856a131af0a77d17f319dbd440f12c63ae0071e60453a21896917aae4a27"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_two_gates_w16_s31067.json.log",
+      "sha256": "d060483133ae5679ea239395073f5e72757e775e1f17f6338f5f4034d986fd15"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_transformer_w8_s31103.json.log",
+      "sha256": "7912f9a01fd60d865514681c6e346ff9a334a692beb50d0087d94ebc2e85d2c3"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_direct_ordinary_w16_s31031.json.log",
+      "sha256": "a63c583a5678f7c92a4204439dbf722924312eab6e8a8c0f32779e8c8d5b9f8a"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_direct_ordinary_w16_s31103.json.log",
+      "sha256": "872be84fa79e95760ce3936b6ae32474d780c90ae6ab6c11dc8092a243671542"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_value_single_w16_s31103.json.log",
+      "sha256": "2d6f98fb1424a3ccb2dcc1057b24f2e4a0b19ac19ee0caa106f6916ac37f1447"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_transformer_w8_s31067.json.log",
+      "sha256": "22c6845252ce78c131fff8ac49c03ab40e0bfb9e3b6f76f01eba7e5d6f594e4d"
+    },
+    {
+      "member": "study001/meter/cpu_mqar_transformer_w16_s31103.json.log",
+      "sha256": "1342feb1b78b329e04475de6f492029f88e1077619523cbe77c51b04ffe79539"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_value_ordinary_w16_s31067.json.log",
+      "sha256": "34858fa697e15eb94a80769f6abb3a9066d44fda064de9ccaa916d161c38dd82"
+    },
+    {
+      "member": "study001/meter/cpu_mqar_value_dual_w16_s31067.json.log",
+      "sha256": "c83b8ce572efaa086ccb9927b1d51ff7f3d80a6aff2e2fb27ab0abda25956d3e"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_dual_w32_s31031.json.log",
+      "sha256": "3597e9b98604b65d9819dde44728b991fbf9f66b557fe0d5be8252da652f2776"
+    },
+    {
+      "member": "study001/meter/cpu_mqar_value_dual_w16_s31103.json.log",
+      "sha256": "951a9a158a34308882ffbc19fd22045826f62ee114fec6932a034be188fb2f44"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_single_w16_s31103.json.log",
+      "sha256": "2bd543d48e2123b3dd093d7ba144591800a8a7297608f1fb2c5f5ff33ff3ea4f"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_fixed_single_w16_s31103.json.log",
+      "sha256": "f4613b657b4f0183d10589b888ebabe1bd6ecd61bd51dcce59d860973ef196f1"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_fixed_dual_w16_s31103.json.log",
+      "sha256": "17b6490fa20013a8f4f4df37779cb99d7c35191b099ded74d465c23f2a72a6de"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_value_dual_w16_s31067.json.log",
+      "sha256": "40cc76c6c4e02befb77ad70f5d9ad40c39d6e9384d6b0aec26d9d2ec9e94b9ca"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_transformer_w32_s31067.json.log",
+      "sha256": "12fba6c5eb0d277e61e9d58f6feafa5e8c392941d5a77f257e676c8271339da9"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_boundary_w16_s31067.json.log",
+      "sha256": "d32222c875511a42307e6dfe9da41b4e2b030ec4d95dac5488e4f4292e792926"
+    },
+    {
+      "member": "study001/meter/cpu_selective_copy_transformer_w16_s31067.json.log",
+      "sha256": "129b0f9c9fb40ada549da6b6b582bbda5f7288a04e707ae5332107383bb6e4b1"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_content_w16_s31103.json.log",
+      "sha256": "63467ec23dca1f3d17ec444eabbd3adcd3c717a894bc20f9ef75543a9d131e9b"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_two_gates_w16_s31103.json.log",
+      "sha256": "a2e602caf8421481add146a7b0183bdd4369b934a2df64617a3075c7b9546d44"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_fixed_single_w16_s31031.json.log",
+      "sha256": "02f6c25b6bd52e009eef7c4974609398da2e082bb16acf899b28d45d50f8ba69"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_dual_w32_s31103.json.log",
+      "sha256": "1644afb82f12b0adf320d8137737082987dc8771730b5064f6959aa2fc00a200"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_fixed_dual_w16_s31067.json.log",
+      "sha256": "a0d871bc491a58c5ff34944c3f3cf1efe453fd12b1a71ede13d0a4c624244d22"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_transformer_w32_s31031.json.log",
+      "sha256": "43e2cc2574e8e66e36b8c822b0b96a43b4d28bd2dc1b1c1319c1d1cc6bf94bbd"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_transformer_w8_s31067.json.log",
+      "sha256": "196273708a8c44b574ae29d9238fea2e3fb45b6ae430234a86f9e991c44e7472"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_ordinary_w16_s31067.json.log",
+      "sha256": "17f2a8ff6895a275ca168f14b376176a96d9ea27a55ba7feddb56334a4a1ecce"
+    },
+    {
+      "member": "study001/meter/cpu_mqar_value_dual_w16_s31031.json.log",
+      "sha256": "51e2513ec8bc9002c13322dc689732df4fdb2cf8ee938f3c33ff012ebdf22d3d"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_ordinary_w16_s31103.json.log",
+      "sha256": "f28075378b546d0573fee988b9065410937e3a1e4a49218662a52fb1692ed6b7"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_single_w16_s31067.json.log",
+      "sha256": "3afd70c1f605a7c7c6e2e6081dab79699986a6a5e1c0b745d71da1bf9d4caec3"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_reset_w16_s31067.json.log",
+      "sha256": "09e7818fe4b86b2ac8883e94f841a5e0a5f528052cd8a47b8eb124c444478ded"
+    },
+    {
+      "member": "study001/meter/cpu_selective_copy_value_dual_w16_s31103.json.log",
+      "sha256": "6f254ca67bea02858b71e56ac3887ec1f7387a1c89ce703e542be8b7c10b1655"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_boundary_w16_s31103.json.log",
+      "sha256": "cc7e36ff38ede4c06f41f851cb6bfabe2d6451edbca5e0ca66750e497b20a996"
+    },
+    {
+      "member": "study001/meter/cpu_selective_copy_two_gates_w16_s31067.json.log",
+      "sha256": "e6d3570fa6df3be4fdbf72623e7fe4adc869b326b4cf92478fddf67bad89f304"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_boundary_w16_s31031.json.log",
+      "sha256": "412b29373d6f84f07964409c08eda83e4fc06ebc6687a8bfd9e478b9fc37cf28"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_transformer_w8_s31103.json.log",
+      "sha256": "0e64efab41301e39aa9f4022762ca110f0170d9fdf7b2db6c594530192d1d6ae"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_two_gates_w16_s31031.json.log",
+      "sha256": "01ed05e20eff4e0f0dca8d7d65627abcb79c67ec45c70ff336fb57da5a4a4858"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_ordinary_w16_s31031.json.log",
+      "sha256": "4d8839acc7c3be0a1c8cf80812c7f6c7cd2fca97fdc9121959f4ef685c1339d2"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_transformer_w16_s31103.json.log",
+      "sha256": "6fc3424b35e08511502691f4d49a66fab3b53d366ea7bfd7770e8d7b14aa950f"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_value_ordinary_w16_s31067.json.log",
+      "sha256": "b6af1f3f7f877d8aef9c40719bf30aff751f5bc462d5a77e83e690f17396dc1f"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_lif_snn_w16_s31103.json.log",
+      "sha256": "42fea5ca08da060a7cba8981df6df374a22fea8757e6c8310ad8d045acc2f591"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_lif_snn_w16_s31103.json.log",
+      "sha256": "7342c9aca37edd7e9c94ec635919224dbceb5df73268a1a356d052c5da92cdae"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_direct_dual_w16_s31103.json.log",
+      "sha256": "015f20eb4bfb36260ae9f685c51aa3437d32b6b3e07b3b0c1bb4d83f0bb5eef9"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_dual_w8_s31103.json.log",
+      "sha256": "2f066481bf47eaced26f4ff368e1b2aca2c0fe961ed159f178d7b7a193600e22"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_lif_snn_w16_s31031.json.log",
+      "sha256": "b594694e234ee43c0eeef12bb3976c2bbb1fa1103ed0056ec26528c959d64ddb"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_transformer_w16_s31103.json.log",
+      "sha256": "7104ded8099c75a43d363b740e91df13fdb12af7add6063314bda3d54c063f4d"
+    },
+    {
+      "member": "study001/meter/cpu_delayed_recall_transformer_w16_s31067.json.log",
+      "sha256": "704bb10eff129b7ea878e2ff5fe24954743f896d28cd37e78c665f86e76ed921"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_value_ordinary_w16_s31103.json.log",
+      "sha256": "63f25dd1fd0aca65fd42768dc5a8df1d06d9d4f65b8c10f3716a63e5d51c456a"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_dynamics_w16_s31031.json.log",
+      "sha256": "2ba7837a4e58fce152e6a784d17ff234d057618a9c8088a754428ce7193fdbb7"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_value_dual_w16_s31031.json.log",
+      "sha256": "c7b0b68cfc5d300da4ff5a6949aaca29be762c3088490e0c6f22c7286fe18141"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_dual_w16_s31031.json.log",
+      "sha256": "7066c4d8dd92c188cb1d0e582bdb2ac29600b2ff0ff870bbe982cf2a696c4d2c"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_value_dual_w16_s31103.json.log",
+      "sha256": "77e4ae4981c5704b11fb0b1caa5fc2048a97e3cfdd2ab69a30fd2176c5ef6a9b"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_two_gates_w8_s31031.json.log",
+      "sha256": "487a686ce927619fa0d1e8aa4100f74901f3a92c8bf4c22b091d1e8bd41d9217"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_reset_w16_s31031.json.log",
+      "sha256": "82f1cad0fe1f5838ecd43d885dd1d32d1d8f426832cc1675a5a906c84e4ce71a"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_dynamics_w16_s31067.json.log",
+      "sha256": "08e0202111f8533e12c47516ea06715143bdb15b4b45cdfe31809597e475c7af"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_dual_w8_s31031.json.log",
+      "sha256": "27a3b9f8f140fbc9f3e2044fbb7476e7b255ddddfea99942ef7a5538aeda39d0"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_transformer_w8_s31031.json.log",
+      "sha256": "aed0d43d0aa1a7bb8b0b15f248f214c19c3f79f0799da2d5e233190b6b1437ed"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_two_gates_w16_s31103.json.log",
+      "sha256": "f5920b696e5e7ad405bbd98360cf38b01d57ac63c2e144dd87ef57a060278098"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_refractory_w16_s31031.json.log",
+      "sha256": "af211c231903f93874c178c4a968bcdd29a2294e27a7d3f82efc546669a2d289"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_lif_snn_w16_s31067.json.log",
+      "sha256": "d7f29651119a4dddd311f11fe8ee641da508754b86dd779fd1f4d35705013384"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_transformer_w16_s31103.json.log",
+      "sha256": "63e11f85d691aea86d255fde8c3de2a048bcbfc2f9db98bb7e5e15bec29b5fdb"
+    },
+    {
+      "member": "study001/meter/cpu_selective_copy_transformer_w16_s31031.json.log",
+      "sha256": "69ebd7e84459e68cb218cc612e337bc5c5395a8e731c2b254e3a2b6116aa6522"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_reset_w16_s31103.json.log",
+      "sha256": "09683a12ca6fd44f1f46b0d3f34d0d35d3eae204f978636c0328f3855ed2b5df"
+    },
+    {
+      "member": "study001/meter/cpu_mqar_two_gates_w16_s31067.json.log",
+      "sha256": "eb753784fb8f21fe98c2d1e647616a295501d25dd0774d4bea312171471caf55"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_fixed_ordinary_w16_s31103.json.log",
+      "sha256": "c92806613d63c82ce2a8a0e7f285f7281fef7649142a3435235526d1bc8f6fe1"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_ordinary_w16_s31103.json.log",
+      "sha256": "5fe9053223aecf2648d73bbb4d74728df71b8eae0f55dc23117424c0867777da"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_transformer_w32_s31031.json.log",
+      "sha256": "0b89af13f88121268932fb45f4bcd80093d490b736cbb717534e3de21ca76f15"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_lif_snn_w16_s31031.json.log",
+      "sha256": "b3f4671695fb52b1b1e121317a8e6f042a96627ea8dc02602e3fa32886767f6c"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_direct_dual_w16_s31031.json.log",
+      "sha256": "e2d87bb1a60a70f3a528a55104675f1364c33004a0b42b3e13c901b9e2681475"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_two_gates_w16_s31031.json.log",
+      "sha256": "db5ea8b1be6da6012304b7defb8db49aca09bfc9379d87fb6ff483f866bee4ba"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_dual_w32_s31067.json.log",
+      "sha256": "cca86aa3a348d8255647d19bad14f90bb6a7b947e327e27fe97b9886d8094e27"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_value_ordinary_w16_s31031.json.log",
+      "sha256": "a0bedf3c2bb28b8ab83fa8a16480a44c2958f035234bdaaec3c0ad3afde5dd98"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_two_gates_w16_s31103.json.log",
+      "sha256": "3f67c14e56014ee8c500122269019d72bcdfe7dddc31d56a1bd0f79d917ed2ff"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_two_gates_w8_s31067.json.log",
+      "sha256": "954fd3700322512c095ee1a29e11eb297aa62f7366c7b933199e80e01aa23bd5"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_two_gates_w16_s31103.json.log",
+      "sha256": "d070a72d25fda4c14684c1191327b61fba887b007fe51a45da949cbd36ad64e3"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_transformer_w16_s31067.json.log",
+      "sha256": "ae3aaf3c75046305710f600cc25b8fe8b1b80633e3293e9babfe02f52512d89b"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_stop_gradient_dual_w16_s31067.json.log",
+      "sha256": "8823fafcfefbf521db7388ddf89e312231b5b683c08b1bf61de7ab5bd10010e7"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_dual_w32_s31103.json.log",
+      "sha256": "45b0790e1356a7fc10dfff8bfcb91ea348397f7dfa5484caa0f4a3b5a116449a"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_fixed_ordinary_w16_s31067.json.log",
+      "sha256": "ec125d0a097882dd26fa8e37fa0bd9ff486cb9f2be91ed4376e830a5559dd5b1"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_value_dual_w16_s31031.json.log",
+      "sha256": "dda82fc1a96a66fc705d0c2a988b59644e7d6684642e09b42a3ebc27e9ae2139"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_lif_snn_w16_s31067.json.log",
+      "sha256": "c6f0458dc85c5621f74afec200af0f6ac78cf934174febc7693b63e03f0a28dc"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_direct_single_w16_s31031.json.log",
+      "sha256": "b3772ac3a03f952705eb34bb377f35784c1ab5f3c37f43258aaad76b195d2df0"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_transformer_w32_s31103.json.log",
+      "sha256": "0fbd404b2465cf72bfe9e6228968f4e6f240208b1c76e265dd0802ab69e20016"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_value_ordinary_w16_s31031.json.log",
+      "sha256": "c172c1bf853b9fba186b09469749daea0554d3ad7d5447d215ca749fbe793032"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_two_gates_w32_s31103.json.log",
+      "sha256": "8c65d3b70c3bdc22539c808c331683dde8cc985b04fc6b186fc42ab661b15489"
+    },
+    {
+      "member": "study001/meter/cpu_selective_copy_two_gates_w16_s31103.json.log",
+      "sha256": "dd627ecd00c2c474a2437b7b031af276736dd986d5c423b5579f5e81f260b749"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_dual_w16_s31067.json.log",
+      "sha256": "b7395fa42413eb401dc33059cacef8d822c4e84be92ab1c8d95a5483990b8526"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_lif_snn_w16_s31103.json.log",
+      "sha256": "263a3309e658051ba456a96b949c139be900d554629c274b39f1d273efce0c6c"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_refractory_w16_s31103.json.log",
+      "sha256": "2f8c7dd3fdf7f3077669dcb8b78e89565c95c453051ecaa94bea208a208c3e62"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_transformer_w16_s31031.json.log",
+      "sha256": "80e6d028b78fbeca23b06a985bf8ade893e9c068fd26bb162c7c41a058c7e74c"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_transformer_w16_s31067.json.log",
+      "sha256": "79008b1602a8682200ead7791265414fe323ad2c00b0a9962d3abf74f771111d"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_content_w16_s31031.json.log",
+      "sha256": "af9139cfde31d67f30d1d376468f4f482325eb5af5987b9883f52580480d70a6"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_two_gates_w8_s31103.json.log",
+      "sha256": "ac8c7eef19336e6416d6d40c56f52dced490c5adbf56fc21e75abf0c0ba87f41"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_two_gates_w16_s31031.json.log",
+      "sha256": "dbf71052ffe6d2af37275965991ffd18e65baed1607839b7557ab9dbf599d61f"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_direct_dual_w16_s31067.json.log",
+      "sha256": "7e06ab9ef4c0f83f8b873cfeb359151f50a5cd324a4ee1c533ffd489f3fbf413"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_lif_snn_w16_s31067.json.log",
+      "sha256": "d10088579e5f6e4c9c263e21e928447214ff2259dcff92a9136c19525249a770"
+    },
+    {
+      "member": "study001/meter/cpu_delayed_recall_two_gates_w16_s31031.json.log",
+      "sha256": "96d55f78b7225fb54352e94b19fe315d524153f16c07c1c3769fde42d65f3fb6"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_two_gates_w32_s31031.json.log",
+      "sha256": "0cd684b53d935e5114b8eb885ea7ca2c9433d32fcab240d878341df5a2824ef7"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_ordinary_w16_s31031.json.log",
+      "sha256": "a967d70bf02cc75c8dffb023191571770437e9f82c35ce272912142bcb48aecb"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_dual_w8_s31103.json.log",
+      "sha256": "31161292dc9918ffae2158e4c93760695716bc5a96309aa58d39a855c0ad92ba"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_single_w16_s31067.json.log",
+      "sha256": "1a34075f6fc07cf8fcfebcb8ae3e2f215574bb3709e9c31c3ffccc4bdfa3d2fb"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_lif_snn_w16_s31031.json.log",
+      "sha256": "f713553096974257fc82c3209bf95ee02e75a1321412ba5265bfc15216d4bf52"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_stop_gradient_dual_w16_s31031.json.log",
+      "sha256": "52b09a71a88d07f0728d4bc257aa9d650f09510367982b141b41f86315e8f7c2"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_value_single_w16_s31067.json.log",
+      "sha256": "e1fe219809cb99e8e3d6dd2e5420236fd46e825e66b0f21feeeb4e64d04136fd"
+    },
+    {
+      "member": "study001/meter/cpu_delayed_recall_transformer_w16_s31103.json.log",
+      "sha256": "9cd74dd91014f178a56642ec40d92bce5073083b29236b1f2cf35003cc7e071d"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_stop_gradient_dual_w16_s31103.json.log",
+      "sha256": "372865a0c21077113f4546f809f51c9fc143186662b2de1e48c075c3641881b9"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_fixed_single_w16_s31067.json.log",
+      "sha256": "92a83cde5c4228c16359c62b9e12ff1bb9bcc9353f75372da9e113b10e3f0829"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_transformer_w16_s31067.json.log",
+      "sha256": "1cdfda8521aefdb2f61632e8c372845d2a8e482b9823bc2e879565d256364fa4"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_direct_ordinary_w16_s31067.json.log",
+      "sha256": "ad43bb08d3ffce30cc58e935def308a2a430d11412a88e3350f7d9bfedb675b8"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_transformer_w32_s31067.json.log",
+      "sha256": "90c8659599eeb718dee661f7398e930536c6d2bd6ad081b5277d059c31e44d3f"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_dual_w16_s31067.json.log",
+      "sha256": "15bc50957c252eaf453c198439e4a0e772f9f486e97134a88e73e493747d38ef"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_two_gates_w16_s31031.json.log",
+      "sha256": "f23d020dd7ee2a13d1e88895d8375ec5701734aef7a8321e06b933e2ad926d7e"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_single_w16_s31103.json.log",
+      "sha256": "760e465bb23680ae8fb0bda08ab48037d63fb4ecf323590d919ee4471ebbcc0c"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_two_gates_w8_s31103.json.log",
+      "sha256": "b32b92f71853c9ad3a0b1dc80c1fc664393d1336d5069dd180a8050394b787d5"
+    },
+    {
+      "member": "study001/meter/cpu_selective_copy_two_gates_w16_s31031.json.log",
+      "sha256": "c321df0a778f116d72fdc2ddb67028a920258a44b9e8030bd82f604a3caefd67"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_lif_snn_w16_s31103.json.log",
+      "sha256": "b795f91e8352be398648164569f3c47b96fa0ba0bc52a9073ae8c16655449631"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_value_dual_w16_s31103.json.log",
+      "sha256": "3d4788aaccbb778f37aef47a42b28f3de1415f16ba314a0623a717e3dcd64354"
+    },
+    {
+      "member": "study001/meter/cpu_mqar_transformer_w16_s31031.json.log",
+      "sha256": "3e584a57eb85883166b1e8a6b6b34e3797833f6f1c460a1320bfacdfd1c20393"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_lif_snn_w16_s31067.json.log",
+      "sha256": "3e3f008b415a704a75e14da3721a0571414eb1354c09f1d85141cb66f20fb9b8"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_transformer_w32_s31103.json.log",
+      "sha256": "1e15a7c8baa6134e3b2ba73d4bed3fa80f09d3af0f43dcfe31e41cba71157ce8"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_two_gates_w8_s31031.json.log",
+      "sha256": "2432a2862e4b2f51482f0ebbab0d85ead1806bd2c971916263b1ec44abc5e8e2"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_dual_w32_s31067.json.log",
+      "sha256": "e46fa4bc881ff74037fc025b3368a5e000f7542accffc10790218c2b8a2721f3"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_two_gates_w16_s31067.json.log",
+      "sha256": "45c0779200bdc5ec72a7ef632836a54bbaaac82b28709b9e34cf8a78e8a974b2"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_transformer_w16_s31031.json.log",
+      "sha256": "83136080a5351b251b0e04bd961db85a33f24cd9cbf7c4ec36eede1f3dfdd6f2"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_dual_w8_s31031.json.log",
+      "sha256": "ac291871655add526d36c4cfe678b132de10b169beac923abdcb6e9ff5a1cc12"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_refractory_w16_s31067.json.log",
+      "sha256": "0660e9913c343ad9600853c3f9e33a359e7d400bc792baca2e07ff9b95150006"
+    },
+    {
+      "member": "study001/meter/cpu_delayed_recall_value_dual_w16_s31103.json.log",
+      "sha256": "b3285ea21f63eeb5bb225aa69aea7fb6392193639ff3bfa6c6b2fd27fd37bbb5"
+    },
+    {
+      "member": "study001/meter/cpu_mqar_two_gates_w16_s31031.json.log",
+      "sha256": "cec9192c52a873f31441949febb60a7bcb0d318429f2b797b716a669ace251bd"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_dual_w16_s31031.json.log",
+      "sha256": "11d0d101f5623d30e8098b8726fdeed21797a6791821fe34409ef854f45f5435"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_direct_single_w16_s31067.json.log",
+      "sha256": "382e47585c8ad1b65f1c44207da964f1c5ce2d9c9c5b98c6fd0ef8301b693fff"
+    },
+    {
+      "member": "study001/meter/cpu_delayed_recall_two_gates_w16_s31103.json.log",
+      "sha256": "683042547fb63940d9f6b42c159d3b779ef5bfbd6f91c834dc87690bea941e01"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_transformer_w16_s31103.json.log",
+      "sha256": "ccf4cd8e585d55680948861375db95112906f865c6e5d59f7d5c667a7d7c3170"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_content_w16_s31067.json.log",
+      "sha256": "ef2e35467b7eb661f35ffd8d1f13c8153253c45111a9fa7303a0346006a470f7"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_value_ordinary_w16_s31103.json.log",
+      "sha256": "224641f26b8e363b26b4f710708e985a38fe845b46e6e9acab57f748d53e4349"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_transformer_w16_s31067.json.log",
+      "sha256": "7e4b8a64b3cf90500f8f4bc3f6a066926a97d4192e2935b364d778d2f93f623f"
+    },
+    {
+      "member": "study001/meter/fixed_async_av_two_gates_w16_s31067.json.log",
+      "sha256": "701dc9c26d96f4a2a73378a10c74af023c56e4704ba48bda3a1387fb66c82612"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_dual_w8_s31067.json.log",
+      "sha256": "ad7770c643c9c6f48e06d58dbf88fed773f17014126fd3d857683f1544eeeeea"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_direct_single_w16_s31103.json.log",
+      "sha256": "94c891b697bc7a8ca5410dc01d03d0af72b21537170aa680699ed76453a82afa"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_two_gates_w16_s31067.json.log",
+      "sha256": "9b0f25ae9af3c133148576aabbcd51248c2b19e81a90148cffc7d241323aeffd"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_freeze_dynamics_w16_s31103.json.log",
+      "sha256": "f572bef51b08b894da38d761f6af67196a4dcec8354bdba92939db128f5b3873"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_two_gates_w32_s31067.json.log",
+      "sha256": "203de01b08660c04f1e9f7ab15c6eaa74d42304649064804b27d97ace46c599b"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_transformer_w8_s31031.json.log",
+      "sha256": "e38490aa069a1d5350188dd288d08529cc7a0afdf36eb9ada5eb169e49756390"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_two_gates_w8_s31067.json.log",
+      "sha256": "31d49eba12f15b250081f0070b7d7ea54dd423105df5ce515bf2063c20ef8c42"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_fixed_dual_w16_s31031.json.log",
+      "sha256": "f9d31ae1c53c8d46d87e6aa2d24a8eac5b40643e7333f187d6959b32b24ea3cd"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_single_w16_s31031.json.log",
+      "sha256": "45588d75e39de8ed0e43e74ac1e600dff7e7b1bc4b5cc3c086dedf9d1f8ae6cc"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_fixed_ordinary_w16_s31031.json.log",
+      "sha256": "931ee710c2880ad1289e7278f02ba7871e47c34d1e0a33575c37d96c25f372c3"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_ordinary_w16_s31067.json.log",
+      "sha256": "1139b0af519c3f95a12e8e0507fe7437455d24971c35c256b8244992457be23e"
+    },
+    {
+      "member": "study001/meter/fixed_mqar_value_single_w16_s31031.json.log",
+      "sha256": "31e228c1e753d24140ac31ba012a5fd47422e36b76bc9bab9354925024d8d940"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_two_gates_w32_s31103.json.log",
+      "sha256": "137a9625fb57716d3732a34b9b6c62b9e5afa728d9411222b879202306864926"
+    },
+    {
+      "member": "study001/meter/cpu_delayed_recall_value_dual_w16_s31067.json.log",
+      "sha256": "233c089ce20b5dfe2e27a223b87bf22d678c792f49dc796d397b04278c987e06"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_transformer_w16_s31031.json.log",
+      "sha256": "2d05f813a29c29fd274481b4e2671069e4275e0d937626833452e0e632a47df7"
+    },
+    {
+      "member": "study001/meter/cpu_selective_copy_value_dual_w16_s31067.json.log",
+      "sha256": "1a7efe78285cb45ba2eea5cb8853a7e37273750eb0db1e7468ab3bcf0fbfa27d"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_dual_w32_s31031.json.log",
+      "sha256": "c4dfc6bc876e204919508395ea881cbaf6ecd5d465476cc515fa7fd2a0ef8bc2"
+    },
+    {
+      "member": "study001/meter/fixed_delayed_recall_value_dual_w16_s31103.json.log",
+      "sha256": "f62fbe02127467ee99cbfe0edf0500583df41043b07404eabf4e134484084e5d"
+    },
+    {
+      "member": "study001/meter/cpu_delayed_recall_value_dual_w16_s31031.json.log",
+      "sha256": "1b84b3a5c6fa33a5bdab5aee24c5d2f4d3ad9abd31c1f620e956e2d10d22e3c0"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_lif_snn_w16_s31031.json.log",
+      "sha256": "ab9bbbde2958b7655ff67d3c61771c2627575b51fddf8c7aea8f5172d0d096b3"
+    },
+    {
+      "member": "study001/meter/cpu_delayed_recall_two_gates_w16_s31067.json.log",
+      "sha256": "07694cd665818f66920f5cb5fa0396d622c3068546fa1d2d5d4e0c16fe651d2c"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_value_dual_w16_s31067.json.log",
+      "sha256": "57d082fae7bc5510fa350316ab67af2c3c0cd514c714fa586104804a3f31a551"
+    },
+    {
+      "member": "study001/meter/fixed_selective_copy_value_single_w16_s31031.json.log",
+      "sha256": "6ad892c70f71b9d52194c7888538e1674d70ac5f0be8577ed2b673e8a0f4802a"
+    },
+    {
+      "member": "study001/meter/cpu_delayed_recall_transformer_w16_s31031.json.log",
+      "sha256": "cab22632ba267d949d5051dad6e770513867eaa481bc3ada4bb75cd45e3d740c"
+    },
+    {
+      "member": "frontend_cost001/whole_process.json.log",
+      "sha256": "c3d5c818ca79c4a5ea1a20d68f3b4604ecf02ddf6a767ddbb5ba50c6f70b1796"
+    }
+  ],
+  "job_receipts": [
+    {
+      "id": "fixed_mqar_two_gates_w32_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_two_gates_w32_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_dual_w8_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_selective_copy_transformer_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 103,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_mqar_two_gates_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 109,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_mqar_transformer_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 103,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_dual_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_transformer_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_selective_copy_value_dual_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 145,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_two_gates_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_transformer_w8_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_direct_ordinary_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_direct_ordinary_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_value_single_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_transformer_w8_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_mqar_transformer_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 103,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_value_ordinary_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_mqar_value_dual_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 145,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_dual_w32_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_mqar_value_dual_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 145,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_single_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_fixed_single_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_fixed_dual_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_value_dual_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_transformer_w32_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_boundary_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_selective_copy_transformer_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 103,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_content_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_two_gates_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_fixed_single_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_dual_w32_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_fixed_dual_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_transformer_w32_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_transformer_w8_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_ordinary_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_mqar_value_dual_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 145,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_ordinary_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_single_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_reset_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_selective_copy_value_dual_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 145,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_boundary_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_selective_copy_two_gates_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 109,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_boundary_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_transformer_w8_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_two_gates_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_ordinary_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_transformer_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 70,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_value_ordinary_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_lif_snn_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_lif_snn_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_direct_dual_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_dual_w8_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_lif_snn_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_transformer_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_delayed_recall_transformer_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 103,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_value_ordinary_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_dynamics_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_value_dual_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_dual_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_value_dual_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_two_gates_w8_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_reset_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_dynamics_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_dual_w8_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_transformer_w8_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_two_gates_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_refractory_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_lif_snn_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 72,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_transformer_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_selective_copy_transformer_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 103,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_reset_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_mqar_two_gates_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 109,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_fixed_ordinary_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_ordinary_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_transformer_w32_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_lif_snn_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 72,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_direct_dual_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_two_gates_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 72,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_dual_w32_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_value_ordinary_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_two_gates_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_two_gates_w8_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_two_gates_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 72,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_transformer_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_stop_gradient_dual_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_dual_w32_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_fixed_ordinary_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_value_dual_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_lif_snn_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_direct_single_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_transformer_w32_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_value_ordinary_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_two_gates_w32_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_selective_copy_two_gates_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 109,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_dual_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_lif_snn_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 72,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_refractory_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_transformer_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 70,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_transformer_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_content_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_two_gates_w8_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_two_gates_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_direct_dual_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_lif_snn_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_delayed_recall_two_gates_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 109,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_two_gates_w32_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_ordinary_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_dual_w8_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_single_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_lif_snn_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_stop_gradient_dual_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_value_single_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_delayed_recall_transformer_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 103,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_stop_gradient_dual_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_fixed_single_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_transformer_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_direct_ordinary_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_transformer_w32_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_dual_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_two_gates_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_single_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_two_gates_w8_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_selective_copy_two_gates_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 109,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_lif_snn_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_value_dual_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_mqar_transformer_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 103,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_lif_snn_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_transformer_w32_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_two_gates_w8_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_dual_w32_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_two_gates_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_transformer_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_dual_w8_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_refractory_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_delayed_recall_value_dual_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 145,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_mqar_two_gates_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 109,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_dual_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_direct_single_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_delayed_recall_two_gates_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 109,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_transformer_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_content_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_value_ordinary_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_transformer_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 70,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_async_av_two_gates_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 72,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_dual_w8_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_direct_single_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_two_gates_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_freeze_dynamics_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_two_gates_w32_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_transformer_w8_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_two_gates_w8_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_fixed_dual_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_single_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_fixed_ordinary_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_ordinary_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_mqar_value_single_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_two_gates_w32_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_delayed_recall_value_dual_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 145,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_transformer_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 102,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_selective_copy_value_dual_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 145,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_dual_w32_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_delayed_recall_value_dual_w16_s31103",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_delayed_recall_value_dual_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 145,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_lif_snn_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 108,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_delayed_recall_two_gates_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 109,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_value_dual_w16_s31067",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "fixed_selective_copy_value_single_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 144,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    },
+    {
+      "id": "cpu_delayed_recall_transformer_w16_s31031",
+      "recomputable_checks_verified": true,
+      "original_audit_errors_on_restored_files": [
+        "Test access predates durable validation selection or is unrecorded"
+      ],
+      "numeric_comparison": {
+        "numbers": 103,
+        "maximum_absolute_error": 0.0
+      },
+      "recorded_load_order_verified": true,
+      "filesystem_chronology": "not_reconstructible_from_archive",
+      "original_filesystem_chronology": "inherited_historical_audit"
+    }
+  ]
+}

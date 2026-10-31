@@ -109,6 +109,57 @@ must not already exist. The analysis is based on three paired seeds; nominal
 analysis and figures should normally be read from the verified archive rather
 than overwritten.
 
+### Replay after moving or restoring the evidence
+
+The original execution receipts contain the old working directory and log paths.
+The deterministic archive does not preserve the original `selection.json`
+filesystem modification time: restoration creates a new file. Consequently,
+running the original `analysis.py` directly on a restored tree can fail its
+log-location and filesystem-chronology checks. Do not rewrite receipts or set
+artificial modification times to make that check pass.
+
+After restoring both bundles as above, use the separate read-only entry point:
+
+```bash
+python -m experiments.hcsn_task_value_v1.portable_replay \
+  --results-root experiments/hcsn_task_value_v1/results \
+  --output /tmp/hcsn_portable_replay
+```
+
+The output directory must be new and outside the restored evidence root. An
+external `--results-root` is also supported; it must contain the restored
+`study001`, `frontend_cost001`, and `independent_review001` subdirectories.
+Even in that case, first restore the foundation bundle into this source
+package's `results` directory: the original audit still verifies the registered
+`async_frontend001/data` inputs and other source files at their package-relative
+locations. The study bundle alone is not a substitute for those foundation
+inputs.
+
+The replay first verifies every declared study-bundle member against its
+manifest, including the original aggregate, protocol, receipts, and saved
+predictions. Log relocation is an exact allowlist from each hash-verified old
+receipt to its expected archived member under the new root; traversal,
+root-prefix lookalikes, out-of-root symlinks, and mismatched hashes are rejected.
+It does not fall back to an old log that happens still to exist.
+
+The original analysis implementation and evidence remain unchanged. The replay
+recomputes saved-prediction metrics, selected-checkpoint rules, registered
+identities, paired comparisons, factorial effects, arm summaries, inference
+summaries, and the separate frontend account, then compares the corresponding
+fields numerically with the frozen aggregate. It does not perform model forward
+passes, training, or hyperparameter selection. The separate receipt lists the
+sections actually compared; it is not a new copy of the full aggregate.
+
+Original filesystem chronology is explicitly reported as
+`inherited_historical_audit`, bound to the verified original aggregate hash,
+and **not independently reconstructible from the archive**. The legacy
+mtime error remains visible in each relocated job receipt. Recorded
+train/validation/test load order can be rechecked within the recorded worker
+interval, but it does not independently prove the selection file's historical
+creation time. Reproduced statistical qualification flags retain this declared
+historical-audit dependency. The replay writes its own schema and never
+overwrites the original results or presents chronology as independently passed.
+
 `ECONOMICS_SCOPE.md` defines the ledger. Whole-worker CPU already includes the
 training, validation, numerical solves and inference phases. Frontend preparation
 is reported once. GPU throughput, measured joules, optimized KV-cache serving
