@@ -326,7 +326,9 @@ def equity_resolvent(p: HX, asset: float, asset_boundary: float | None = None,
         raise ValueError('Invalid HX equity input')
     if asset<=b:
         return 0.0
-    x=math.log(asset/b)
+    # Reuse the stable input-coordinate transform, even in the independent
+    # Green-integral oracle; quotient rounding can distort a one-ULP gap.
+    x=_log_asset_ratio(asset,b)
     a,z=p.a,p.z
     const=(1-p.tax_shield)*p.coupon+p.per_bond_principal
     def integrand(y):
