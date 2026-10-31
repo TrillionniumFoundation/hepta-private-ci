@@ -1,0 +1,252 @@
+{
+  "base_freeze_sha256": "f4edffc4451697fd543bdf0e10dc7242297c13f38f8c96d21bc8d7c68355988e",
+  "created_utc": "2026-10-31T08:37:57.603391+00:00",
+  "protocol": {
+    "artifacts": [
+      "REGISTRATION.json with source and R7 checkpoint hashes",
+      "initial/final checkpoint for all 20 fits",
+      "31 exact-return records and 30 complete pre-clip gradient vectors per fit",
+      "per-step group norms and clipped norms",
+      "parameter changes including inactive groups",
+      "CANDIDATES.json before heldout evaluation",
+      "exact nominal/heldout soft/greedy metrics",
+      "all paired hard_soft rollout paths",
+      "failures and resource ledger"
+    ],
+    "development_validation": {
+      "checks": [
+        "H=2 explicit 16-world and full latent/action-path expectation",
+        "compute/event fee derivatives",
+        "H=4 full-return finite differences through content, drive, diffusion, boundary, reset, recovery and readout",
+        "at most two Adam updates per family on a separate tiny development fixture; N remains 15; record time and peak RSS"
+      ],
+      "scope": "Only synthetic tiny graphs, before formal training and without heldout evaluation",
+      "separation": "Development fixture weights are not candidates and cannot initialize the formal runs."
+    },
+    "evaluation": {
+      "comparisons": [
+        "Within-family final minus initial for each of five fits",
+        "FPT final minus clocked final for each fit",
+        "FPT final minus direct final for each fit"
+      ],
+      "deployment": "Actual Python Policy(deployment=hard_soft, head=1) with frozen final weights and matched original task.step; no new native qualification",
+      "exact": "Report initial/final soft-policy and greedy-policy exact finite-DAG utility, decisions and events on nominal eight and new heldout four configurations. Greedy conversion is separate from the trained soft-policy objective.",
+      "inference": "Report all five fit-level paired differences and descriptive means. This appendix does not add or replace primary-confirmation hypotheses; no significance or superiority claim from the small rollout sample.",
+      "order": "Complete all 20 training runs; freeze every initial/final checkpoint hash; then evaluate the four new heldout configurations. No partial heldout readout during training."
+    },
+    "experiment": "Post-primary separately registered full-cell soft-policy learning",
+    "heldout_configurations": [
+      {
+        "arrival_tick": 1,
+        "budget": 3,
+        "corruption_probability": 0.22,
+        "delayed_reliability": 0.91,
+        "horizon": 4,
+        "invalid_attempt_cost": 0.03,
+        "latency_cost": 0.004,
+        "ordinary_count": 3,
+        "ordinary_reliability": 0.68,
+        "prior_probability": 0.57,
+        "read_budget": 1,
+        "read_cost": 0.021,
+        "repair_budget": 2,
+        "repair_cost": 0.031,
+        "stop_cost": 0.003,
+        "wait_cost": 0.009
+      },
+      {
+        "arrival_tick": 3,
+        "budget": 4,
+        "corruption_probability": 0.41,
+        "delayed_reliability": 0.84,
+        "horizon": 5,
+        "invalid_attempt_cost": 0.03,
+        "latency_cost": 0.007,
+        "ordinary_count": 3,
+        "ordinary_reliability": 0.79,
+        "prior_probability": 0.43,
+        "read_budget": 2,
+        "read_cost": 0.008,
+        "repair_budget": 1,
+        "repair_cost": 0.026,
+        "stop_cost": 0.002,
+        "wait_cost": 0.011
+      },
+      {
+        "arrival_tick": 2,
+        "budget": 2,
+        "corruption_probability": 0.18,
+        "delayed_reliability": 0.95,
+        "horizon": 3,
+        "invalid_attempt_cost": 0.03,
+        "latency_cost": 0.006,
+        "ordinary_count": 3,
+        "ordinary_reliability": 0.64,
+        "prior_probability": 0.63,
+        "read_budget": 1,
+        "read_cost": 0.035,
+        "repair_budget": 1,
+        "repair_cost": 0.015,
+        "stop_cost": 0.004,
+        "wait_cost": 0.003
+      },
+      {
+        "arrival_tick": 2,
+        "budget": 5,
+        "corruption_probability": 0.52,
+        "delayed_reliability": 0.88,
+        "horizon": 6,
+        "invalid_attempt_cost": 0.03,
+        "latency_cost": 0.003,
+        "ordinary_count": 3,
+        "ordinary_reliability": 0.82,
+        "prior_probability": 0.51,
+        "read_budget": 2,
+        "read_cost": 0.014,
+        "repair_budget": 2,
+        "repair_cost": 0.044,
+        "stop_cost": 0.003,
+        "wait_cost": 0.007
+      }
+    ],
+    "initialization": {
+      "common_non_direct_law": "Constant drift Brownian, leak=0, dt=1, voltage grid N=15, 12 image terms; tick-end recovery with inherited reference probability and full reset/survivor law",
+      "count": 20,
+      "direct_kernel": "r8-full-joint-direct-v1; identity latent transition and no internal events",
+      "families": [
+        "direct",
+        "continuous",
+        "clocked",
+        "first_passage"
+      ],
+      "fit_seeds": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "native_scope": "All new checkpoints have hepta.full-joint-policy.v1 schema and are rejected by the old R7 native loader. Native deployment is not implied.",
+      "non_direct_kernel": "r8-brownian-images-v1",
+      "source": "Every family's own original R7 fits_primary/{family}_none_{seed}.json, never a calibrated candidate"
+    },
+    "publication": "Root must publish this protocol and source registration remotely before formal training. Candidate identities are frozen before heldout evaluation. Original R7 and prior Round8 freeze files are not modified.",
+    "rollout": {
+      "episodes_per_fit_per_regime": 32,
+      "indexing": "seed_start + (fit_seed-11)*10000 + episode_index; config = episode_index modulo regime configuration count",
+      "interpretation": "Compare sample mean and standard error to exact soft expectation as a deployment diagnostic. Retain raw paths and every attempted run; do not tune from discrepancies or claim Monte Carlo equality.",
+      "latent_seed_start": {
+        "heldout": 2711310000,
+        "nominal": 2710310000
+      },
+      "pairing": "Identical private world and keyed internal/action uniforms for initial/final and every family within fit. All states passed to the policy are public.",
+      "regimes": [
+        "nominal",
+        "heldout"
+      ],
+      "stages": [
+        "initial",
+        "final"
+      ],
+      "total_trajectories": 2560,
+      "world_seed_start": {
+        "heldout": 1711310000,
+        "nominal": 1710310000
+      }
+    },
+    "schema": "hepta.full-joint.protocol.v1",
+    "scope": "This is a new experiment. Original FREEZE.json, all original candidates and primary confirmation endpoints remain unchanged. Registered after primary confirmation was inspected; added to complete the requested full-cell learning stage. Fixed 30-step settings reuse R7 budget; the four new heldout configurations/worlds have not been evaluated or used for tuning.",
+    "training": {
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "clip_norm": 5.0,
+      "configurations": "Exactly the eight original R7 task_configuration(0..7), all 738 public states; equal weight per configuration",
+      "epsilon": 1e-08,
+      "head": 1,
+      "head_meaning": "Pure-return-trained outputs are action-policy scores. They are not claimed to estimate calibrated Q-star or Q-pi.",
+      "inactive": "All raw_leak scalars are frozen; direct core/drive are frozen; continuous reset/recovery are unreachable and frozen. Head 0 output rows remain stored but receive no gradient under the head 1 objective. Shared hidden readout parameters are trained.",
+      "learning_rate": 0.003,
+      "normalization": "Differentiate through the same nonnegative row normalization used by hard_soft sampling from a one-hot predecessor; event rewards are recomputed from normalized active-to-refractory probabilities.",
+      "objective": "Only negative complete finite-DAG expected registered utility of the soft action policy over sampled internal states. No critic/myopic regression, detached Q targets, straight-through estimators, entropy penalty, or private-world supervision.",
+      "optimizer": "Adam",
+      "runtime": "Torch CPU FP64, one thread per process. N=15 is fixed. If measured resource use makes the registered plan impractical, stop and publish a prospective amendment; do not silently lower N or updates.",
+      "selection": "Retain every final update-30 model and every failure. No early stopping, best-epoch selection, seed replacement, or heldout-driven hyperparameter tuning.",
+      "temperature": 0.12,
+      "trainable": {
+        "clocked": [
+          "content encoder",
+          "drive",
+          "diffusion",
+          "boundary",
+          "reset plus/minus",
+          "recovery",
+          "readout"
+        ],
+        "continuous": [
+          "content encoder",
+          "drive",
+          "diffusion",
+          "projection boundary scale",
+          "readout"
+        ],
+        "direct": [
+          "content encoder",
+          "readout"
+        ],
+        "first_passage": [
+          "content encoder",
+          "drive",
+          "diffusion",
+          "boundary",
+          "reset plus/minus",
+          "recovery",
+          "readout"
+        ]
+      },
+      "transition_order": "Propagate and observe internal state; pay current compute/event cost; choose public legal action; integrate every external successor and future reset/recovery/event/policy branch. STOP pays the already incurred incoming transition fees once.",
+      "updates": 30,
+      "utility": "Terminal task quality minus original task action/latency fees minus 0.0005 per decision minus 0.0002 per newly emitted model event",
+      "weight_decay": 0.0
+    }
+  },
+  "schema": "hepta.full-joint-registration.v1",
+  "scope": "Separate post-primary experiment; unchanged original FREEZE and confirmation endpoints.",
+  "sources": {
+    "../round7/data.py": "fff4ac95455c25b5b16bddda754107763ce352d7fe98db272f78be748294f935",
+    "../round7/dynamics.py": "52857735514c295c5bb09846ac7200709d7ecb6a2537c2e38db1d42526f76bc8",
+    "../round7/joint_control.py": "403a9f61a539aae8baae03e69340a962f9d8d5c20aca1e9a21ae3002812c4d5e",
+    "../round7/model.py": "17226ecd197677d04e5be2227c8f15b7e5f44f02ee6b93271d4cfa1738bdfea7",
+    "../round7/oracle.py": "c834be7566eb29429e057c04af520b557a1b4743a2406884c902e12ac61f2181",
+    "../round7/policy.py": "781e6459d4f7d22eaebfa5e739ce7f9ae8c4208f5b041a178ab0b0f562de7f34",
+    "../round7/task.py": "c53f09496975c15236962469adf8ad3e0be175bc5fc36f03f7cd79d8d7899522",
+    "JOINT_PROTOCOL.json": "4932ef754701fe15f7be6cc25abe516f3c08df084cab9702a7e621df2e08ea6a",
+    "kernels.py": "2367c43a37fb3edd14e17095fa3bc72b1a614812ecbf87267f41eb16c0570715",
+    "posthoc/full_joint.py": "f22098aa384bc78d0e1ae4e926c7cfaa4c838c924e22f496e6d98225c123584b",
+    "posthoc/full_joint_audit.py": "10b617ad165446c55c153387ed46879b46b07030ee44ce0596f321ef09f2e37b"
+  },
+  "sources_checkpoints": {
+    "clocked_11": "c02f8c7761d1c0d0fd93d5cf3dcfef00562d591b247eab02ad85cdb245244432",
+    "clocked_12": "0272f1a97ae44c081e9a1dbce40d035bb92ace5afb9054782a1039c7abdd035c",
+    "clocked_13": "505b2a67a9d3d390c1b32f871fdda567a2f1e431370221e8adb5b34a898e8bc5",
+    "clocked_14": "c5513515e56d4d9a583a9bd3eb3014e4a361028b2035ed07e69a98cfb74ed0b2",
+    "clocked_15": "46b82e720800ca178b368e47f23f0d5fcf70f6429c3420e9a36487b39360fec4",
+    "continuous_11": "63e18127e5ff1a673173fc00123851aa78d45ed024648ccbcf167a101de78532",
+    "continuous_12": "15f7de28b62fb035a49cdad72b09ea7d90f72631ab05c15853615a2538915de9",
+    "continuous_13": "5bde56a8ac6ea52e41e95d67fe6c702a716b2d1961617a7745427e49a4b4c610",
+    "continuous_14": "96fd9ace23719b5296bb398c4104afd1d6a84ccb5a1d8c734e13f9dee0381d79",
+    "continuous_15": "02b7683ffb6553f8d1aef4e4a10546529322808403a41a2ba4868a649829ef03",
+    "direct_11": "1fb5cc3048d34346f2f5d8f491b5fcf94cc734cefdcb244ddd8da04d4ce96be0",
+    "direct_12": "bfd3145b24dec52238aee542edf1161447389475fdd201fe75effe917ff6a364",
+    "direct_13": "e481257ed77a6e94dac0dae26836884557981e4cc061afdee2a957ba0cbf838b",
+    "direct_14": "cfba97ec7e63d97ab85c3592c81cd9ed4b93c5944d98124cd25d33ed280ff40b",
+    "direct_15": "66419a17f7c8bcf252bc39aca8a599066244707ed1bbe8bcdb95e8babda3b4f9",
+    "first_passage_11": "847d73cc7479f484cbf9d1b4cbd8d648afa43ffba7501f45ff6f1548a955f8c6",
+    "first_passage_12": "b1e0f03fd682b0400cdd670e02cc28a7332d2406bc348057db5c51ec94f56d4d",
+    "first_passage_13": "a179988727925b13b130b51a13436c41cf560226fe9d4fab071dae9288ee82ca",
+    "first_passage_14": "1b8b172aac49712e8180d5675dc7ae21026e359e911dafb9b655436c23006736",
+    "first_passage_15": "82b40ba32a58a40f566de923940254cf71d19c1db68db6b660d5ded62cb44d1f"
+  },
+  "training_started": false
+}
