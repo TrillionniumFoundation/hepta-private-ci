@@ -1,0 +1,30 @@
+{
+  "schema": "hcsn.experiment.stage-process.v1",
+  "command": [
+    "python",
+    "-m",
+    "tools.hcsn.task_progression_20261031.native_confirmation_reporting_fix",
+    "--prepared",
+    "/dev/shm/hepta-task-policy-v2-20261031/formal_campaign01",
+    "--confirmed",
+    "/dev/shm/hepta-task-policy-v2-20261031/formal_confirmation01",
+    "--binary",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/codex-task-native-v2",
+    "--out",
+    "/dev/shm/hepta-native-formal-v2-20261031/confirmation02"
+  ],
+  "started_at": "2026-10-31T02:48:15.459458+00:00",
+  "finished_at": "2026-10-31T02:48:38.078007+00:00",
+  "returncode": 0,
+  "child_pid": 999601,
+  "user_cpu_seconds": 19.680991,
+  "system_cpu_seconds": 1.5270489999999999,
+  "total_cpu_seconds": 21.208039999999997,
+  "wall_seconds": 22.618554025000776,
+  "peak_rss_bytes": 503300096,
+  "voluntary_context_switches": 8058,
+  "involuntary_context_switches": 623,
+  "output_sha256": "4b151863d42cd331a97e3c80c37f65c69502af162ef9c1f472987f2bc9222faf",
+  "measurement": "Linux wait4 on this exact stage process; retain nested subprocess records separately, do not add nested and enclosing totals",
+  "runner_sha256": "254086e7e92e9e71b96e65a3ebc55cfa60c796b4bc9183d399803e9101eebaa6"
+}
