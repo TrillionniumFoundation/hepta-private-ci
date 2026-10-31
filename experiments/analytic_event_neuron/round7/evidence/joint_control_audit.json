@@ -1,0 +1,273 @@
+{
+  "created_utc": "2026-10-31T02:08:41.153979+00:00",
+  "errors": 0,
+  "failures": 0,
+  "records": [
+    {
+      "absolute_difference": 2.220446049250313e-16,
+      "expected_decisions": 1.6609821937668101,
+      "expected_events": 0.4172384826127199,
+      "expected_return": 0.39912703267948485,
+      "explicit_leaf_paths": 1552,
+      "external_worlds": 16,
+      "graph_return": 0.39912703267948463,
+      "mode": "clocked",
+      "probability_mass": 0.9999999999999989,
+      "test": "explicit_path_sum"
+    },
+    {
+      "finite_difference": -1.6609821937657585,
+      "mode": "clocked",
+      "negative_explicit_count": -1.6609821937668101,
+      "price": "compute_price",
+      "test": "complete_fee_derivative"
+    },
+    {
+      "finite_difference": -0.41723848261121516,
+      "mode": "clocked",
+      "negative_explicit_count": -0.4172384826127199,
+      "price": "event_price",
+      "test": "complete_fee_derivative"
+    },
+    {
+      "absolute_difference": 1.6653345369377348e-16,
+      "expected_decisions": 1.6366850276681983,
+      "expected_events": 0.7962908636481868,
+      "expected_return": 0.37422250978124294,
+      "explicit_leaf_paths": 1552,
+      "external_worlds": 16,
+      "graph_return": 0.3742225097812428,
+      "mode": "first_passage",
+      "probability_mass": 1.0000000000000038,
+      "test": "explicit_path_sum"
+    },
+    {
+      "finite_difference": -1.6366850276727793,
+      "mode": "first_passage",
+      "negative_explicit_count": -1.6366850276681983,
+      "price": "compute_price",
+      "test": "complete_fee_derivative"
+    },
+    {
+      "finite_difference": -0.7962908636471865,
+      "mode": "first_passage",
+      "negative_explicit_count": -0.7962908636481868,
+      "price": "event_price",
+      "test": "complete_fee_derivative"
+    },
+    {
+      "graph_return": 0.3600747679127903,
+      "incoming_event_count": 0.25565264797450304,
+      "independent_return": 0.3600747679127903,
+      "mode": "clocked",
+      "reset_plus_reset_minus_recovery_gradients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "test": "forced_stop_cost_and_causality"
+    },
+    {
+      "graph_return": 0.34898316152778786,
+      "incoming_event_count": 0.6134464023294557,
+      "independent_return": 0.34898316152778674,
+      "mode": "first_passage",
+      "reset_plus_reset_minus_recovery_gradients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "test": "forced_stop_cost_and_causality"
+    },
+    {
+      "absolute_difference": 6.483343376051387e-12,
+      "autodiff": 0.001969783787925476,
+      "central_difference": 0.0019697837944088192,
+      "mode": "clocked",
+      "parameter": "core.raw_leak",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 1.5992411388221495e-12,
+      "autodiff": -0.0035371452977056217,
+      "central_difference": -0.0035371452961063805,
+      "mode": "clocked",
+      "parameter": "core.raw_diffusion",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 4.5374958131116916e-12,
+      "autodiff": 0.003349297355111927,
+      "central_difference": 0.0033492973505744312,
+      "mode": "clocked",
+      "parameter": "core.raw_boundary",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 3.5676158208208797e-12,
+      "autodiff": 0.004057435933664896,
+      "central_difference": 0.004057435937232512,
+      "mode": "clocked",
+      "parameter": "core.raw_reset_plus",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 4.404564332618349e-12,
+      "autodiff": 0.0003860030473398458,
+      "central_difference": 0.00038600305174441013,
+      "mode": "clocked",
+      "parameter": "core.raw_reset_minus",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 1.5871174817091993e-13,
+      "autodiff": -0.0004577214883306148,
+      "central_difference": -0.00045772148848932653,
+      "mode": "clocked",
+      "parameter": "core.raw_recovery",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 3.4815841615937204e-12,
+      "autodiff": -0.0014552974860037394,
+      "central_difference": -0.0014552974825221552,
+      "mode": "clocked",
+      "parameter": "content.encoder_weight",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 3.9632975720738095e-12,
+      "autodiff": -0.007208241779654645,
+      "central_difference": -0.007208241775691348,
+      "mode": "clocked",
+      "parameter": "content.drive_bias",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 4.929630922217987e-13,
+      "autodiff": 0.0018810106338573956,
+      "central_difference": 0.0018810106333644325,
+      "mode": "clocked",
+      "parameter": "readout.voltage_weight",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 3.661099591892314e-11,
+      "autodiff": 0.001326297294741711,
+      "central_difference": 0.001326297258130715,
+      "mode": "first_passage",
+      "parameter": "core.raw_leak",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 1.0804102144185146e-10,
+      "autodiff": -0.004795887437386902,
+      "central_difference": -0.004795887545427924,
+      "mode": "first_passage",
+      "parameter": "core.raw_diffusion",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 1.5776988222804267e-11,
+      "autodiff": 0.007056556593732662,
+      "central_difference": 0.007056556577955674,
+      "mode": "first_passage",
+      "parameter": "core.raw_boundary",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 2.2657943229975608e-12,
+      "autodiff": 0.007753967574085811,
+      "central_difference": 0.007753967576351605,
+      "mode": "first_passage",
+      "parameter": "core.raw_reset_plus",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 3.3463568287900314e-12,
+      "autodiff": 0.0016252397755221687,
+      "central_difference": 0.0016252397788685256,
+      "mode": "first_passage",
+      "parameter": "core.raw_reset_minus",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 2.6118772943062307e-12,
+      "autodiff": -0.0006264921388859147,
+      "central_difference": -0.000626492141497792,
+      "mode": "first_passage",
+      "parameter": "core.raw_recovery",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 4.290619942670659e-12,
+      "autodiff": -0.0022395339098364962,
+      "central_difference": -0.0022395339055458763,
+      "mode": "first_passage",
+      "parameter": "content.encoder_weight",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 9.74988943747146e-11,
+      "autodiff": -0.02346115636728907,
+      "central_difference": -0.023461156464787965,
+      "mode": "first_passage",
+      "parameter": "content.drive_bias",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "absolute_difference": 4.39072888290537e-12,
+      "autodiff": -0.00047581717616520185,
+      "central_difference": -0.00047581717177447297,
+      "mode": "first_passage",
+      "parameter": "readout.voltage_weight",
+      "public_states": 46,
+      "test": "full_return_gradient"
+    },
+    {
+      "external_worlds": 16,
+      "latent_states": 7,
+      "maximum_absolute_error": 3.3306690738754696e-16,
+      "meaning": "current compute plus next forced-STOP compute and incoming event fee; current event is already sunk",
+      "mode": "clocked",
+      "stop_future_reset_recovery_gradients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "test": "full_cost_myopic_targets"
+    },
+    {
+      "external_worlds": 16,
+      "latent_states": 7,
+      "maximum_absolute_error": 2.1094237467877974e-15,
+      "meaning": "current compute plus next forced-STOP compute and incoming event fee; current event is already sunk",
+      "mode": "first_passage",
+      "stop_future_reset_recovery_gradients": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "test": "full_cost_myopic_targets"
+    }
+  ],
+  "status": "PASS",
+  "tests_run": 4
+}
