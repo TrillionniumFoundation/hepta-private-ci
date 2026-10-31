@@ -1,0 +1,337 @@
+{
+  "passed": true,
+  "protocol": {
+    "binary_sha256": "9e31b10bb1718f97e3932666dd544aa5b80dbc6ea459981ed008942b37915568",
+    "dt_log_range": [
+      -3.0,
+      3.0
+    ],
+    "lengths": [
+      2,
+      7,
+      32,
+      128
+    ],
+    "maximum_logit_error": 5e-05,
+    "random_seed": 931031,
+    "source_sha256": "1eef7e8c5da08fae52f273f65bb623faa875c94021f0543ca2dd8144df224b46",
+    "symbols": [
+      0,
+      1
+    ]
+  },
+  "rows": [
+    {
+      "length": 2,
+      "maximum_logit_error": 9.5367431640625e-07,
+      "native": {
+        "logits_bits": [
+          "40e3af62",
+          "c025b8a0",
+          "c07a361e",
+          "beacfd89"
+        ],
+        "observation": 0,
+        "payload_bytes": 136,
+        "payload_sha256": "1f11773edf8fce506d08facaea758b49b87d9592be4a5fb7299a9e8ce0f3390d"
+      },
+      "observations_equal": true,
+      "reference": {
+        "content_wall_seconds": 0.0015344410057878122,
+        "feature_wall_seconds": 0.00016675099323038012,
+        "io_wall_seconds": 6.2364008044824e-05,
+        "logits": [
+          7.11515998840332,
+          -2.5893943309783936,
+          -3.909553050994873,
+          -0.33787214756011963
+        ],
+        "numerical": {
+          "maximum_condition": 10.421311979771014,
+          "maximum_read": 0.7761952877044678,
+          "maximum_relative_residual": 1.3118936395083455e-16,
+          "maximum_write_mass": 0.3433147989717693
+        },
+        "observation": 0,
+        "payload_bytes": 136,
+        "payload_sha256": "1f11773edf8fce506d08facaea758b49b87d9592be4a5fb7299a9e8ce0f3390d",
+        "total_cpu_seconds": 0.0018041690000000221,
+        "total_wall_seconds": 0.0018043069867417216
+      },
+      "symbol": 0
+    },
+    {
+      "length": 2,
+      "maximum_logit_error": 9.5367431640625e-07,
+      "native": {
+        "logits_bits": [
+          "409c68e1",
+          "3f82a3e0",
+          "c0ab0267",
+          "c035b0b2"
+        ],
+        "observation": 0,
+        "payload_bytes": 133,
+        "payload_sha256": "d7585c402ba8d008456a1431b0bc899dbe56454053563bc3b5fda450250ffdeb"
+      },
+      "observations_equal": true,
+      "reference": {
+        "content_wall_seconds": 0.000953976996243,
+        "feature_wall_seconds": 9.153800783678889e-05,
+        "io_wall_seconds": 7.790800009388477e-05,
+        "logits": [
+          4.887803554534912,
+          1.0206260681152344,
+          -5.344043731689453,
+          -2.838909387588501
+        ],
+        "numerical": {
+          "maximum_condition": 15.811906116745183,
+          "maximum_read": 0.9538765549659729,
+          "maximum_relative_residual": 1.0855398018297553e-16,
+          "maximum_write_mass": 0.5417993449849479
+        },
+        "observation": 0,
+        "payload_bytes": 133,
+        "payload_sha256": "d7585c402ba8d008456a1431b0bc899dbe56454053563bc3b5fda450250ffdeb",
+        "total_cpu_seconds": 0.0011549950000000475,
+        "total_wall_seconds": 0.0011556800018297508
+      },
+      "symbol": 1
+    },
+    {
+      "length": 7,
+      "maximum_logit_error": 9.5367431640625e-07,
+      "native": {
+        "logits_bits": [
+          "411693a6",
+          "c08ef176",
+          "c08ea141",
+          "3dc03e10"
+        ],
+        "observation": 0,
+        "payload_bytes": 291,
+        "payload_sha256": "240c1f4a345551ba188642639ed96029cabecc924f428501dd7314edbfedfe94"
+      },
+      "observations_equal": true,
+      "reference": {
+        "content_wall_seconds": 0.0024251120048575103,
+        "feature_wall_seconds": 9.825799497775733e-05,
+        "io_wall_seconds": 5.138700362294912e-05,
+        "logits": [
+          9.411046981811523,
+          -4.466976165771484,
+          -4.457183837890625,
+          0.09386923909187317
+        ],
+        "numerical": {
+          "maximum_condition": 11.820158359258741,
+          "maximum_read": 1.6609147787094116,
+          "maximum_relative_residual": 1.394753051712359e-16,
+          "maximum_write_mass": 1.7303262646616648
+        },
+        "observation": 0,
+        "payload_bytes": 291,
+        "payload_sha256": "240c1f4a345551ba188642639ed96029cabecc924f428501dd7314edbfedfe94",
+        "total_cpu_seconds": 0.002599459999999998,
+        "total_wall_seconds": 0.0025992930022766814
+      },
+      "symbol": 0
+    },
+    {
+      "length": 7,
+      "maximum_logit_error": 1.430511474609375e-06,
+      "native": {
+        "logits_bits": [
+          "bf3cf0b5",
+          "40c97121",
+          "bfa514e7",
+          "c09dae1c"
+        ],
+        "observation": 1,
+        "payload_bytes": 290,
+        "payload_sha256": "d6c8c67e684d5d0115def65b214050b6c7e424fb0e8068c4f48e651485e6a88d"
+      },
+      "observations_equal": true,
+      "reference": {
+        "content_wall_seconds": 0.0023379809863399714,
+        "feature_wall_seconds": 5.803699605166912e-05,
+        "io_wall_seconds": 4.9695008783601224e-05,
+        "logits": [
+          -0.7380475401878357,
+          6.295058250427246,
+          -1.2897006273269653,
+          -4.927502632141113
+        ],
+        "numerical": {
+          "maximum_condition": 15.907378502436293,
+          "maximum_read": 0.9468157291412354,
+          "maximum_relative_residual": 1.8511612090075298e-16,
+          "maximum_write_mass": 2.01400198511612
+        },
+        "observation": 1,
+        "payload_bytes": 290,
+        "payload_sha256": "d6c8c67e684d5d0115def65b214050b6c7e424fb0e8068c4f48e651485e6a88d",
+        "total_cpu_seconds": 0.002468546000000016,
+        "total_wall_seconds": 0.0024683170049684122
+      },
+      "symbol": 1
+    },
+    {
+      "length": 32,
+      "maximum_logit_error": 1.9073486328125e-06,
+      "native": {
+        "logits_bits": [
+          "40eb738d",
+          "bfd1e03c",
+          "c029377b",
+          "c02be768"
+        ],
+        "observation": 0,
+        "payload_bytes": 1070,
+        "payload_sha256": "9726b5ee963b1a003486a2c53095f108e97547f855a9113d011d0dd4d807a38e"
+      },
+      "observations_equal": true,
+      "reference": {
+        "content_wall_seconds": 0.00921849999576807,
+        "feature_wall_seconds": 5.825699190609157e-05,
+        "io_wall_seconds": 6.118199962656945e-05,
+        "logits": [
+          7.3578572273254395,
+          -1.6396563053131104,
+          -2.6440112590789795,
+          -2.6859991550445557
+        ],
+        "numerical": {
+          "maximum_condition": 68.31933093718845,
+          "maximum_read": 1.2109558582305908,
+          "maximum_relative_residual": 1.4518487376229192e-16,
+          "maximum_write_mass": 8.320170065776294
+        },
+        "observation": 0,
+        "payload_bytes": 1070,
+        "payload_sha256": "9726b5ee963b1a003486a2c53095f108e97547f855a9113d011d0dd4d807a38e",
+        "total_cpu_seconds": 0.009372197999999998,
+        "total_wall_seconds": 0.009369677005452104
+      },
+      "symbol": 0
+    },
+    {
+      "length": 32,
+      "maximum_logit_error": 1.430511474609375e-06,
+      "native": {
+        "logits_bits": [
+          "bf202ca6",
+          "40e67fa4",
+          "bfa70d67",
+          "c0d3c295"
+        ],
+        "observation": 1,
+        "payload_bytes": 1062,
+        "payload_sha256": "bec8556b38ff207802997a3e48e1a46beda04c60f54faee4f7385956d22817e1"
+      },
+      "observations_equal": true,
+      "reference": {
+        "content_wall_seconds": 0.009360794996609911,
+        "feature_wall_seconds": 8.0110999988392e-05,
+        "io_wall_seconds": 6.590900011360645e-05,
+        "logits": [
+          -0.6256811618804932,
+          7.20308256149292,
+          -1.3050973415374756,
+          -6.6175031661987305
+        ],
+        "numerical": {
+          "maximum_condition": 63.17841762525573,
+          "maximum_read": 1.6460394859313965,
+          "maximum_relative_residual": 1.704029070855269e-16,
+          "maximum_write_mass": 8.363928451454758
+        },
+        "observation": 1,
+        "payload_bytes": 1062,
+        "payload_sha256": "bec8556b38ff207802997a3e48e1a46beda04c60f54faee4f7385956d22817e1",
+        "total_cpu_seconds": 0.009546906999999938,
+        "total_wall_seconds": 0.009545573004288599
+      },
+      "symbol": 1
+    },
+    {
+      "length": 128,
+      "maximum_logit_error": 1.3113021850585938e-05,
+      "native": {
+        "logits_bits": [
+          "40b400ba",
+          "bfe50e67",
+          "bfd238bb",
+          "bff44a8d"
+        ],
+        "observation": 0,
+        "payload_bytes": 4036,
+        "payload_sha256": "4999b0320afd1d91595d577d0cd431a7aad5df84717411ae39a11a2c9fe7b972"
+      },
+      "observations_equal": true,
+      "reference": {
+        "content_wall_seconds": 0.0540313370001968,
+        "feature_wall_seconds": 7.203799032140523e-05,
+        "io_wall_seconds": 8.628000796306878e-05,
+        "logits": [
+          5.625085353851318,
+          -1.7894967794418335,
+          -1.6423431634902954,
+          -1.9085361957550049
+        ],
+        "numerical": {
+          "maximum_condition": 278.24421860281,
+          "maximum_read": 1.0605146884918213,
+          "maximum_relative_residual": 2.3943380629270235e-16,
+          "maximum_write_mass": 32.54831152991526
+        },
+        "observation": 0,
+        "payload_bytes": 4036,
+        "payload_sha256": "4999b0320afd1d91595d577d0cd431a7aad5df84717411ae39a11a2c9fe7b972",
+        "total_cpu_seconds": 0.05423500399999992,
+        "total_wall_seconds": 0.054234351991908625
+      },
+      "symbol": 0
+    },
+    {
+      "length": 128,
+      "maximum_logit_error": 1.0013580322265625e-05,
+      "native": {
+        "logits_bits": [
+          "c0888750",
+          "40dd1b7d",
+          "40149625",
+          "c0969115"
+        ],
+        "observation": 1,
+        "payload_bytes": 4051,
+        "payload_sha256": "9201ce078dad59cf45de39617111d40c18b4417ca86aa8689d8f278c849e375f"
+      },
+      "observations_equal": true,
+      "reference": {
+        "content_wall_seconds": 0.019759350005188026,
+        "feature_wall_seconds": 6.62889942759648e-05,
+        "io_wall_seconds": 7.3741000960581e-05,
+        "logits": [
+          -4.266513347625732,
+          6.909615516662598,
+          2.3216586112976074,
+          -4.705219268798828
+        ],
+        "numerical": {
+          "maximum_condition": 260.34991933426556,
+          "maximum_read": 1.7575714588165283,
+          "maximum_relative_residual": 1.9817026243358846e-16,
+          "maximum_write_mass": 34.467912583407625
+        },
+        "observation": 1,
+        "payload_bytes": 4051,
+        "payload_sha256": "9201ce078dad59cf45de39617111d40c18b4417ca86aa8689d8f278c849e375f",
+        "total_cpu_seconds": 0.01993463299999998,
+        "total_wall_seconds": 0.01993490499444306
+      },
+      "symbol": 1
+    }
+  ]
+}
