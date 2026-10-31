@@ -1,0 +1,162 @@
+{
+  "schema": "hepta.parameter-field.fullstudy.operational-storage-amendment.2",
+  "amendment_id": "OPS_EXECUTION07_ACTIONS_20261031",
+  "attempt_id": "attempt02",
+  "status": "REGISTERED_PRE_ENDPOINT",
+  "execution_ready": true,
+  "repository_branch": "research/parameter-field-recovery07-20261031",
+  "raw_root": "/work/execution07/raw",
+  "content_addressed_store": "/work/execution07/raw_cas",
+  "original_protocol": {
+    "path": "/work/source/experiments/parameter_field_fullstudy_20261029/PROTOCOL.json",
+    "sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+    "preserve_bytes": true
+  },
+  "original_source_freezes": {
+    "A": {
+      "path": "/work/source/experiments/parameter_field_fullstudy_20261029/registrations/A_SOURCE_FREEZE.json",
+      "sha256": "2a5219147d38ebb6514059bd69e2d3489bf7d69d213cd01343455f63a08a53d2",
+      "registered_commit": "68b4ecc44cea5f5bc7478ea1008adb1ab81098c6",
+      "protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+      "source_root": "/work/source"
+    },
+    "C": {
+      "path": "/work/source/experiments/parameter_field_fullstudy_20261029/registrations/C_SOURCE_FREEZE.json",
+      "sha256": "5f427c8a8cebe8c96a2a0d81318e22d286dc0aaa8b3dbf4d5844df2177949c6d",
+      "registered_commit": "4fc9ce3744525a5b916dd31a13ebcbe05d07cea1",
+      "protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+      "source_root": "/work/source"
+    }
+  },
+  "scope": "Fresh complete 14-job execution07 from the original fixed inputs, with explicit GitHub artifact barriers. Unchanged original science and numerical resource contract; no old stage import. Initial execution-ready compatibility field does not replace target runtime/source/capacity/asset admission.",
+  "execution_episode": "execution07_actions_20261031",
+  "durable_execution": {
+    "schema": "hepta.execution07.operational-plan.1",
+    "execution_episode": "execution07_actions_20261031",
+    "canonical_job_order": [
+      "A-17",
+      "A-29",
+      "A-43",
+      "C",
+      "B-17",
+      "B-29",
+      "B-43",
+      "W",
+      "R-17",
+      "R-29",
+      "R-43",
+      "A_endpoint",
+      "B_endpoint",
+      "C_endpoint"
+    ],
+    "imported_jobs": [],
+    "new_scientific_jobs": [
+      "A-17",
+      "A-29",
+      "A-43",
+      "C",
+      "B-17",
+      "B-29",
+      "B-43",
+      "W",
+      "R-17",
+      "R-29",
+      "R-43",
+      "A_endpoint",
+      "B_endpoint",
+      "C_endpoint"
+    ],
+    "effective_scientific_concurrency": 1,
+    "unchanged_numeric_resource_contract": true,
+    "initial_gate_samples": 3,
+    "initial_gate_interval_seconds": 10,
+    "initial_ram_headroom_bytes": 1879048192,
+    "initial_disk_headroom_bytes": 2415919104,
+    "maximum_capacity_wait_seconds": 300,
+    "automatic_scientific_retry": false,
+    "unknown_upload_outcome_retry": false,
+    "stage_barrier_count": 17,
+    "source_contract": "operational/parameter_field_recovery07/INPUT_CONTRACT.json",
+    "runtime_qualification_scope": "Fresh measurements in the actual finite 8GiB Docker destination, never inherited host receipts.",
+    "prior_runs": "Preserved separately as historical costs/evidence; no prior output supplies a current scientific job."
+  },
+  "concurrency": {
+    "max_workers": 2,
+    "worker_reservation_bytes": 805306368,
+    "memory_margin_bytes": 1073741824,
+    "controller_registration_wait_seconds": 5.0,
+    "controller_registration_poll_seconds": 0.05,
+    "memory_measurement": "cgroup v2 memory.current/memory.max/memory.stat; do not count all slab_reclaimable as available.",
+    "clean_reclaimable_formula": "max(0, inactive_file - file_dirty - file_writeback)",
+    "effective_current_formula": "max(0, memory.current - clean_reclaimable)",
+    "pending_growth_formula": "sum(max(0, registered_worker_reservation - live_process_VmRSS)) over ACTIVE_WORKERS.json; nonexistent PIDs contribute zero.",
+    "admission_rule": "effective_current + pending_growth + new_worker_reservation + 1 GiB margin <= cgroup memory.max; workers wait for their PID to appear in ACTIVE_WORKERS before importing scientific runtime.",
+    "payload_rule": "effective_current + pending_growth + rounded_new_file_allocation + 1 GiB margin <= memory.max, as well as filesystem and logical-byte checks, inside the shared write lock.",
+    "resource_qualification": {
+      "enabled_families": {
+        "legacy": [
+          "A",
+          "B",
+          "R"
+        ]
+      },
+      "initial_reservation_bytes": 805306368,
+      "after_successful_family_completion": "max(512 MiB, ceil((1.25 * maximum_completed_family_VmHWM) / 64 MiB) * 64 MiB)",
+      "eligibility": "Completed jobs only, positive recorded process high-water mark, same declared legacy family. Pure memory/completion metadata only; no score or effect qualification.",
+      "unqualified_families": [
+        "C",
+        "W",
+        "A_endpoint",
+        "B_endpoint",
+        "C_endpoint"
+      ],
+      "unqualified_reservation_bytes": 805306368,
+      "max_workers_and_margin_unchanged": true
+    },
+    "groups": "Controller enforces declared phase dependencies and group compatibility. W/finalization are exclusive. R may use two registered slots but is not mixed with other scientific writer groups.",
+    "oom_events": "Record baseline counters before admission. On increment, stop new admission, preserve/record the event and let existing workers reach guarded persistence boundaries; do not silently retry affected work."
+  },
+  "readiness_flag_scope": "The inherited execution_ready field is an original API declaration only. It is not destination capacity, runtime, asset, durability, lifecycle, or scientific admission evidence.",
+  "original_resource_profile": {
+    "path": "/work/source/experiments/parameter_field_fullstudy_20261029/OPS_ATTEMPT02_DISK.json",
+    "bytes": 15269,
+    "sha256": "d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372"
+  },
+  "restart": {
+    "kind": "All fourteen prescribed jobs execute fresh; no previous stage is imported.",
+    "same_scientific_configuration": true,
+    "unchanged": [
+      "architectures and all trainable parameters",
+      "initial seeds and tensors",
+      "source roles and exact identities",
+      "minibatch/noise tapes and schedules",
+      "actions and baselines",
+      "teacher/rehearsal objective",
+      "guards and complete rollback",
+      "warmup/continuation budgets",
+      "field coordinates and head fits",
+      "fit/calibration partitions",
+      "thresholds and fallback",
+      "all sample sizes and paired seeds",
+      "observers, estimands, margins, bootstrap and multiplicity rules"
+    ],
+    "repeated_seeds_add_independent_samples": 0,
+    "outcome_selection": "No outcome is used to select this operational plan."
+  },
+  "proposed_resource_contract": {
+    "global_raw_logical_bytes": 2147483648,
+    "minimum_private_allocatable_bytes": 268435456,
+    "minimum_allocatable_bytes": 268435456,
+    "minimum_available_inodes": 2000,
+    "C_training_evidence_bytes": 367001600,
+    "private_mount_used": false,
+    "archive_reservation_bytes": 0,
+    "external_raw_uploads": 0,
+    "original_2GiB_reserve_satisfied": false,
+    "original_whole_study_1GiB_contract_satisfied": false,
+    "raw_storage_kind": "Disk-backed task-owned raw and CAS roots in the registered Docker destination.",
+    "persistence_scope": "Per-stage independent GitHub artifact readback and ACK are required before advancement; no successful delivery or current capacity is claimed by this static document.",
+    "numeric_legacy_scope": "The original numeric core resource policy is unchanged. external_raw_uploads=0 describes the original core; the new independently measured supervisor transport has seventeen required archives plus terminal closure.",
+    "current_capacity_scope": "Only actual execution07 destination capacity/runtime receipts establish current measurements. Historical capacity samples are not copied here."
+  }
+}

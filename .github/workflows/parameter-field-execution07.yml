@@ -1,0 +1,133 @@
+name: Parameter field fresh execution07
+run-name: Fresh 14-job study with original science and explicit delivery
+
+on:
+  push:
+    branches:
+      - research/parameter-field-recovery07-20261031
+    paths:
+      - .github/workflows/parameter-field-execution07.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: parameter-field-fresh-execution07
+  cancel-in-progress: false
+
+jobs:
+  registered-study:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    container:
+      image: ubuntu:24.04@sha256:78d4744ead1f5b19b04d0df558ab182a5300903900755e515b2ca4d10eb2044d
+      options: --memory=8g --memory-swap=8g
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HEPTA_ARTIFACT_SDK_ROOT: /work/transport-sdk
+    steps:
+      - name: Install public container prerequisites
+        run: |
+          mkdir -p /work/preparation
+          date --utc --iso-8601=ns > /work/preparation/STARTED_AT.txt
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates curl git
+      - name: Checkout the exact registered source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Preserve a clean canonical source checkout
+        run: |
+          test ! -e /work/source
+          mkdir /work/source
+          cp -a "$GITHUB_WORKSPACE/." /work/source/
+          git config --global --add safe.directory /work/source
+          git -c safe.directory=/work/source -C /work/source rev-parse HEAD
+          test "$(git -c safe.directory=/work/source -C /work/source rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Select Node24 for the integrity-pinned transport SDK
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Restore the exact public scientific runtime
+        working-directory: /work/source
+        run: |
+          mkdir -p /opt/runtime /work/qualification
+          curl --fail --location --retry 2 --output /opt/runtime/python.tar.gz 'https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14%2B20260825-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz'
+          echo '7ce4a71285d913955a76053cc7605ea96da8ecada54dba9cf395245961816421  /opt/runtime/python.tar.gz' | sha256sum --check --strict
+          tar -xzf /opt/runtime/python.tar.gz -C /opt/runtime
+          echo 'fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7  /opt/runtime/python/bin/python3.12' | sha256sum --check --strict
+          echo '7e177a680eabb11fcb7d3867f7a1b9c4b93a9bd5b18129ce1af51ec07977b024  /opt/runtime/python/lib/libpython3.12.so.1.0' | sha256sum --check --strict
+          /opt/runtime/python/bin/python3.12 -m venv /opt/runtime/venv
+          /opt/runtime/venv/bin/python -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: -r tools/parameter_field_executor/packages.txt
+          /opt/runtime/venv/bin/python -m pip install --disable-pip-version-check --no-cache-dir --no-deps --require-hashes -r tools/parameter_field_executor/torch-wheel.txt
+      - name: Require actual original runtime and finite cgroup before input preparation
+        working-directory: /work/source
+        run: |
+          /opt/runtime/venv/bin/python -B tools/parameter_field_executor/diagnose.py --output /work/qualification/runtime.json
+          /opt/runtime/venv/bin/python -B -c 'import json; r=json.load(open("/work/qualification/runtime.json")); assert r["runtime"]["exact_match"] and r["three_original_joint_passes"] and r["process"]["supported"] and all(r["filesystem"].get(k) is True for k in ["fsync","flock","xattr","atomic_rename","byte_readback"])'
+      - name: Install the external pinned SDK without modifying source
+        working-directory: /work/source
+        run: |
+          mkdir /work/transport-sdk
+          cp operational/parameter_field_recovery07/package.json operational/parameter_field_recovery07/package-lock.json /work/transport-sdk/
+          npm ci --prefix /work/transport-sdk --ignore-scripts --no-audit --no-fund
+      - name: Retrieve original inputs and seal current provenance for the original loader
+        working-directory: /work/source
+        run: /opt/runtime/venv/bin/python -B tools/parameter_field_executor/prepare_inputs.py
+      - name: Check source closure and direct-script boundaries before initialization
+        working-directory: /work/source
+        run: |
+          /opt/runtime/venv/bin/python -B -m unittest operational.parameter_field_recovery07.test_artifact_transport operational.parameter_field_recovery07.test_supervisor operational.parameter_field_recovery07.test_semantic_preflight operational.parameter_field_recovery07.test_registration operational.parameter_field_recovery07.test_postseal operational.parameter_field_recovery07.test_bootstrap -v
+          date --utc --iso-8601=ns > /work/preparation/READY_AT.txt
+      - name: Run fresh original science with measured initialization and semantic admission
+        uses: ./.github/actions/parameter-field-science
+      - name: Preserve complete or partial scientific RAW and CAS
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: execution07-scientific-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            /work/execution07/raw
+            /work/execution07/raw_cas
+          include-hidden-files: true
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 90
+      - name: Preserve operational closure, review, preparation and failure evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: execution07-operational-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            /work/preparation
+            /work/qualification
+            /work/execution07/pipeline_measurement
+            /work/execution07/initialization_measurement
+            /work/execution07/initial_runtime_probe
+            /work/execution07/postseal
+            /work/execution07/postseal_measurement
+            /work/execution07/*.log
+            /work/execution07/ops/*.json
+            /work/execution07/ops/*.jsonl
+            /work/execution07/ops/*.log
+            /work/execution07/ops/registrations
+            /work/execution07/ops/wrapper_runs
+            /work/execution07/ops/resource_backpressure
+            /work/execution07/ops/owned_workers
+            /work/execution07/ops/outer_wait4
+            /work/execution07/ops/supervisor_run
+            /work/execution07/ops/terminal_publication_measurement
+            /work/execution07/ops/durable/*/*.json
+            /work/execution07/ops/durable/*/upload/MANIFEST.json
+            /work/execution07/ops/terminal_archive/*.json
+            /work/execution07/ops/terminal_archive/upload/MANIFEST.json
+          include-hidden-files: true
+          if-no-files-found: error
+          compression-level: 6
+          retention-days: 90

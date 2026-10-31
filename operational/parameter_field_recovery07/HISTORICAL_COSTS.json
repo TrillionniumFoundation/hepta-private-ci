@@ -1,0 +1,132 @@
+{
+  "completed_A17_counted_once": "Original execution04 A17 was imported into 05/06 without adding its work again; fresh execution07 A17 is a separate actual cost.",
+  "current_executor_reverification_scope": "Committed projection bytes only; original sources were checked when this new projection was created.",
+  "execution06_new_work_or_cpu_total": "unknown; do not infer zero from surviving registration/import metadata",
+  "gradient_microsteps_known_lower_bound": 253328,
+  "new_independent_samples": 0,
+  "old_completion_claim_created": false,
+  "original_historical_input": {
+    "bytes": 2392,
+    "name": "REPORT_INPUTS_BLOCKED.json",
+    "sha256": "2848a9fc4b3092b79c3bff158b4c966bce5941760c0ea531eb7b4cb45c31c785"
+  },
+  "original_integrity": {
+    "historical_exact_regression_gate": "FAIL \u2014 prior V5 exact-regression status is preserved; this study has not rerun or cleared it."
+  },
+  "original_receipts_bundled": false,
+  "parser_source": {
+    "bytes": 22202,
+    "name": "historical_costs.py",
+    "sha256": "e8ec187543e5d249142a706699156fa97db767d6f1193ec9be466359a59ad440"
+  },
+  "rows": [
+    {
+      "episode": "original_engineering_preflights",
+      "evidence_tier": "public summary; original completed receipts unavailable",
+      "gradient_microsteps_lower_bound": 864,
+      "original_receipt_impersonation": false,
+      "source": {
+        "bytes": 3312,
+        "name": "ENGINEERING_SUMMARY.json",
+        "sha256": "7c492c2ddf6ae5cb8a9ccaa6037a35f14f3b1a7900ea1611ea997e3a18a43f73"
+      },
+      "source_fields": [
+        "preflights[*].gradient_microsteps"
+      ]
+    },
+    {
+      "episode": "attempt01",
+      "evidence_tier": "original registered failure lower bound",
+      "gradient_microsteps_lower_bound": 102320,
+      "original_receipt_impersonation": false,
+      "source": {
+        "bytes": 2392,
+        "name": "REPORT_INPUTS_BLOCKED.json",
+        "sha256": "2848a9fc4b3092b79c3bff158b4c966bce5941760c0ea531eb7b4cb45c31c785"
+      },
+      "source_fields": [
+        "failed_attempts[*].training_microsteps_lower_bound"
+      ]
+    },
+    {
+      "episode": "episode02",
+      "evidence_tier": "previously registered historical observation; incomplete original evidence",
+      "gradient_microsteps_lower_bound": 576,
+      "original_receipt_impersonation": false,
+      "source": {
+        "bytes": 1425,
+        "name": "EPISODE02_COST_FACTS.json",
+        "sha256": "b62350c7d56ab998746479bb5810ba204eff4431ef4a456635b46780e90d99f8"
+      },
+      "source_fields": [
+        "scheduled_microsteps_lower_bound"
+      ]
+    },
+    {
+      "episode": "episode03",
+      "evidence_tier": "previously registered historical observation; incomplete original evidence",
+      "gradient_microsteps_lower_bound": 78336,
+      "original_receipt_impersonation": false,
+      "source": {
+        "bytes": 1295,
+        "name": "EPISODE03_COST_FACTS.json",
+        "sha256": "eac8096b6dc7d82ef52a8ddb091ea4a4d465b50c83a406fd50bf720bb3b7c9a7"
+      },
+      "source_fields": [
+        "scheduled_microsteps_lower_bound"
+      ]
+    },
+    {
+      "episode": "execution04_completed_A17",
+      "evidence_tier": "new cost-only extraction from surviving original metadata",
+      "gradient_microsteps_lower_bound": 39168,
+      "original_receipt_impersonation": false,
+      "recorded_stage_cpu_seconds": 3265.9212046860002,
+      "recorded_stage_wall_seconds": 1722.8864183090009,
+      "source": {
+        "bytes": 5780,
+        "name": "COMPLETE.json",
+        "sha256": "ae0550f42d155750dce2186766ed986b58070edc983487e8736abefd528e4366"
+      },
+      "source_fields": [
+        "costs.scheduled_gradient_microsteps"
+      ]
+    },
+    {
+      "episode": "execution04_failed_A29",
+      "evidence_tier": "new cost-only extraction from surviving original metadata",
+      "gradient_microsteps_lower_bound": 14784,
+      "original_receipt_impersonation": false,
+      "recorded_stage_cpu_seconds": 1270.1102759120001,
+      "recorded_stage_wall_seconds": 675.1297257020015,
+      "source": {
+        "bytes": 3786,
+        "name": "FAILED.json",
+        "sha256": "eedb52e2cc05c5fdcc8ed295f27954952730038cdc2851ca4d7e110562f7e0ec"
+      },
+      "source_fields": [
+        "costs.scheduled_gradient_microsteps"
+      ]
+    },
+    {
+      "episode": "execution05_failed_A29",
+      "evidence_tier": "existing cost-only failure forensics",
+      "gradient_microsteps_lower_bound": 17280,
+      "original_receipt_impersonation": false,
+      "recorded_stage_cpu_seconds": 1509.489910855,
+      "recorded_stage_wall_seconds": 2117.036076925997,
+      "source": {
+        "bytes": 10117,
+        "name": "EXECUTION05_FAILED_A29_COST_FORENSICS.json",
+        "sha256": "25eab40176693625b3c6fcf6f29be7ee566805d32301b84191fe154a930af324"
+      },
+      "source_fields": [
+        "failure_cost_only_projection.costs.scheduled_gradient_microsteps"
+      ]
+    }
+  ],
+  "schema": "hepta.execution07.historical-cost-projection.1",
+  "scientific_values_decoded": false,
+  "unknown_additional_work": true,
+  "whole_history_cpu_or_wall_total_known": false
+}

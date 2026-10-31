@@ -1,0 +1,12 @@
+name: Recovery07 synthetic worker lifecycle
+description: Exercise fourteen owned fixture workers and real archive barriers without scientific inputs
+inputs:
+  python:
+    description: Python executable for the owned synthetic process
+    default: python3
+  output-directory:
+    description: New absolute directory for the synthetic receipts
+    required: true
+runs:
+  using: node24
+  main: action_bootstrap.mjs

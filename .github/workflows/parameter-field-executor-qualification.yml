@@ -1,0 +1,59 @@
+name: Parameter field executor qualification
+
+on:
+  push:
+    branches:
+      - research/parameter-field-execution-20261031
+      - research/parameter-field-executor-20261031
+    paths:
+      - tools/parameter_field_executor/**
+      - .github/workflows/parameter-field-executor-qualification.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  host-qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Record host capacity before dependency installation
+        run: python3 -B tools/parameter_field_executor/diagnose.py --resource-only --output "$RUNNER_TEMP/executor-qualification/host.json"
+
+      - name: Restore the verified public Python build
+        run: |
+          mkdir "$RUNNER_TEMP/executor-python"
+          curl --fail --location --retry 2 --output "$RUNNER_TEMP/python.tar.gz" 'https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14%2B20260825-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz'
+          echo "7ce4a71285d913955a76053cc7605ea96da8ecada54dba9cf395245961816421  $RUNNER_TEMP/python.tar.gz" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/python.tar.gz" -C "$RUNNER_TEMP/executor-python"
+          echo "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7  $RUNNER_TEMP/executor-python/python/bin/python3.12" | sha256sum --check --strict
+          echo "7e177a680eabb11fcb7d3867f7a1b9c4b93a9bd5b18129ce1af51ec07977b024  $RUNNER_TEMP/executor-python/python/lib/libpython3.12.so.1.0" | sha256sum --check --strict
+
+      - name: Install recorded CPU dependency versions
+        run: |
+          "$RUNNER_TEMP/executor-python/python/bin/python3.12" -m venv "$RUNNER_TEMP/executor-qualification-env"
+          "$RUNNER_TEMP/executor-qualification-env/bin/python" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: -r tools/parameter_field_executor/packages.txt
+          "$RUNNER_TEMP/executor-qualification-env/bin/python" -m pip install --disable-pip-version-check --no-cache-dir --no-deps --require-hashes -r tools/parameter_field_executor/torch-wheel.txt
+
+      - name: Measure actual runtime and process capabilities
+        run: |
+          "$RUNNER_TEMP/executor-qualification-env/bin/python" -B tools/parameter_field_executor/diagnose.py --output "$RUNNER_TEMP/executor-qualification/runtime.json"
+          echo 'Engineering measurements only; no scientific worker, input, admission or durable ACK was produced.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve qualification observations
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: executor-qualification-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/executor-qualification/*.json
+          if-no-files-found: error
+          retention-days: 14
