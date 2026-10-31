@@ -11,6 +11,8 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
 
+#[path = "token_delete_control_tests.rs"]
+mod control_reference;
 #[path = "token_owner_boundary_tests.rs"]
 mod owner_boundary;
 
@@ -64,8 +66,8 @@ fn denied<T>() -> NativeResult<T> {
 #[derive(Debug, Eq, PartialEq)]
 struct BoundaryObservation {
     authority: DeleteAuthority,
-    host_delete_file: NativeResult<()>,
-    host_delete_dir: NativeResult<()>,
+    ordinary_delete_file: NativeResult<()>,
+    ordinary_delete_dir: NativeResult<()>,
     outside_read: NativeResult<String>,
     outside_write: NativeResult<()>,
     outside_create: NativeResult<()>,
@@ -223,12 +225,18 @@ fn observe_boundary(authority: DeleteAuthority, mode: TokenMode) -> Result<Bound
         for parent in [&outside, &inside] {
             fixture.paths.push(parent.clone());
             std::fs::create_dir(parent)?;
-            for name in ["keep.txt", "delete.txt", "rename.txt", "host-delete.txt"] {
+            for name in [
+                "keep.txt",
+                "delete.txt",
+                "rename.txt",
+                "host-delete.txt",
+                "reference-delete.txt",
+            ] {
                 let path = parent.join(name);
                 fixture.paths.push(path.clone());
                 std::fs::write(path, name)?;
             }
-            for name in ["delete-dir", "host-delete-dir"] {
+            for name in ["delete-dir", "host-delete-dir", "reference-delete-dir"] {
                 let path = parent.join(name);
                 fixture.paths.push(path.clone());
                 std::fs::create_dir(path)?;
@@ -247,46 +255,42 @@ fn observe_boundary(authority: DeleteAuthority, mode: TokenMode) -> Result<Bound
             DeleteAuthority::TargetOnly | DeleteAuthority::Both => DELETE,
             DeleteAuthority::Neither | DeleteAuthority::ParentOnly => 0,
         };
+        let mut acl_observations = Vec::new();
         for path in &fixture.paths {
             match std::fs::symlink_metadata(path) {
                 Ok(_) => {}
                 Err(error) if error.kind() == std::io::ErrorKind::NotFound => continue,
                 Err(error) => return Err(error.into()),
             }
-            if path.starts_with(&inside) {
-                replace_fixture_dacl(
-                    path,
-                    &[
-                        (user, FILE_ALL_ACCESS),
-                        (
-                            write.as_ptr(),
-                            FILE_GENERIC_READ
-                                | FILE_GENERIC_WRITE
-                                | FILE_GENERIC_EXECUTE
-                                | DELETE
-                                | FILE_DELETE_CHILD,
-                        ),
-                    ],
-                )?;
+            let grants = if path.starts_with(&inside) {
+                [
+                    (user, FILE_ALL_ACCESS),
+                    (
+                        write.as_ptr(),
+                        FILE_GENERIC_READ
+                            | FILE_GENERIC_WRITE
+                            | FILE_GENERIC_EXECUTE
+                            | DELETE
+                            | FILE_DELETE_CHILD,
+                    ),
+                ]
             } else {
                 let delete = if path == &outside {
                     parent_delete
                 } else {
                     target_delete
                 };
-                replace_fixture_dacl(
-                    path,
-                    &[
-                        (user, ordinary | delete),
-                        (read.as_ptr(), FILE_GENERIC_READ | FILE_GENERIC_EXECUTE),
-                    ],
-                )?;
-            }
+                [
+                    (user, ordinary | delete),
+                    (read.as_ptr(), FILE_GENERIC_READ | FILE_GENERIC_EXECUTE),
+                ]
+            };
+            replace_fixture_dacl(path, &grants)?;
+            acl_observations.push((
+                path.strip_prefix(fixture.root.path())?.to_path_buf(),
+                control_reference::verify_fixture_acl(path, &grants)?,
+            ));
         }
-        // Native unsandboxed controls prove that each isolated route grants
-        // deletion, while Neither is a genuinely denied fixture.
-        let host_delete_file = observe(std::fs::remove_file(outside.join("host-delete.txt")));
-        let host_delete_dir = observe(std::fs::remove_dir(outside.join("host-delete-dir")));
         let token = unsafe {
             match mode {
                 TokenMode::WorkspaceToken => OwnedToken(
@@ -297,12 +301,24 @@ fn observe_boundary(authority: DeleteAuthority, mode: TokenMode) -> Result<Bound
                 }
             }
         };
+        // A reference token has the subject's ordinary identity and privileges,
+        // but no restricting SIDs. Its controls must still deny Neither and
+        // allow all three granted routes; raw host results remain diagnostic.
+        let (ordinary_delete_file, ordinary_delete_dir) =
+            control_reference::observe_reference_deletions(
+                base.0,
+                token.0,
+                &outside,
+                mode,
+                authority,
+                &acl_observations,
+            )?;
         let mut observation = {
             let _impersonation = unsafe { Impersonation::enter(token.0)? };
             BoundaryObservation {
                 authority,
-                host_delete_file,
-                host_delete_dir,
+                ordinary_delete_file,
+                ordinary_delete_dir,
                 outside_read: observe(std::fs::read_to_string(outside.join("keep.txt"))),
                 outside_write: observe(std::fs::write(outside.join("keep.txt"), "changed")),
                 outside_create: observe(std::fs::write(outside.join("created.txt"), "new")),
@@ -363,7 +379,7 @@ fn observe_boundary(authority: DeleteAuthority, mode: TokenMode) -> Result<Bound
 }
 
 fn expected_boundary(authority: DeleteAuthority) -> BoundaryObservation {
-    let host_delete = || match authority {
+    let ordinary_delete = || match authority {
         DeleteAuthority::Neither => denied(),
         DeleteAuthority::TargetOnly | DeleteAuthority::ParentOnly | DeleteAuthority::Both => {
             NativeResult::Allowed(())
@@ -371,8 +387,8 @@ fn expected_boundary(authority: DeleteAuthority) -> BoundaryObservation {
     };
     BoundaryObservation {
         authority,
-        host_delete_file: host_delete(),
-        host_delete_dir: host_delete(),
+        ordinary_delete_file: ordinary_delete(),
+        ordinary_delete_dir: ordinary_delete(),
         outside_read: NativeResult::Allowed("keep.txt".to_owned()),
         outside_write: denied(),
         outside_create: denied(),
