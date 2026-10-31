@@ -1,0 +1,104 @@
+{
+  "all_passed": true,
+  "authority": "DENY_ALL",
+  "binary_sha256": "b519cae26325f818d9596aab34504490a0b5355b9eb633369878e6f07a50e179",
+  "controller_cpu_ns_excluding_child_processes": 33493837,
+  "feedback_scope": "Artifact integrity only; no task-answer or calibrated-success-probability feedback claim.",
+  "fresh_compile_this_run": false,
+  "historical_build_receipt_sha256": "3d791e7d7245904a31a9d71301075ac562772130dd6d9628a8369e7ae701ba3d",
+  "historical_source_commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+  "manifest_sha256": "c826d119952bee7ffef6d479a0c6f9248ffa7eee876c2717dc698b2b90b826ee",
+  "native_child_cpu_ns": 30350000,
+  "outcomes": [
+    {
+      "case": "round7_broker_00",
+      "receipt": "case_00/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_01",
+      "receipt": "case_01/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_02",
+      "receipt": "case_02/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_03",
+      "receipt": "case_03/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_04",
+      "receipt": "case_04/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_05",
+      "receipt": "case_05/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_06",
+      "receipt": "case_06/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_07",
+      "receipt": "case_07/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_08",
+      "receipt": "case_08/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_09",
+      "receipt": "case_09/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_10",
+      "receipt": "case_10/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_11",
+      "receipt": "case_11/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_12",
+      "receipt": "case_12/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_13",
+      "receipt": "case_13/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_14",
+      "receipt": "case_14/EXECUTION.json",
+      "status": "passed"
+    },
+    {
+      "case": "round7_broker_15",
+      "receipt": "case_15/EXECUTION.json",
+      "status": "passed"
+    }
+  ],
+  "production_activation": false,
+  "schema": "hepta.analytic-event.round7.native-bridge.v1",
+  "scope": "Executed historical typed NeuronRuntime and sparse-tick I/O bridge over actual broker readbacks; Round7 dynamics and learned weights are not installed in Rust.",
+  "state_scope": "The typed request writes its own persistent journal. Each pair request starts a separate fresh sparse state and does not restore or mutate that typed journal. The reset control is internal to its two-tick pair.",
+  "totals": {
+    "native_calls": 48,
+    "native_subprocess_roundtrip_ns": 55871102,
+    "original_sparse_ticks": 80
+  },
+  "wall_ns": 109795726
+}
