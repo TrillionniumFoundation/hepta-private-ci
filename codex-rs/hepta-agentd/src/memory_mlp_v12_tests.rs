@@ -124,9 +124,14 @@ async fn memory_v12_trained_cells_publish_read_restart_correct_and_forget() {
     let owner = snapshot(&store, &access).await;
     let mut semantic = CellFixture::new(root.path().join("semantic"), &owner, "cell:semantic", Semantic, "item:a");
     let mut procedure = CellFixture::new(root.path().join("procedure"), &owner, "cell:procedure", Procedure, "flow:a");
+    let previous_manifest = semantic.publication.admission.validated_manifest.manifest.clone();
     semantic.selector.keys.push(key("item:b"));
     publish_trained(&mut semantic, &owner);
     publish_trained(&mut procedure, &owner);
+    let learned_manifest = &semantic.publication.admission.validated_manifest.manifest;
+    assert_eq!(learned_manifest.objective_class_digest, previous_manifest.objective_class_digest);
+    assert_ne!(learned_manifest.schema_profile_digest, previous_manifest.schema_profile_digest);
+    assert_ne!(learned_manifest.compatibility_digest, previous_manifest.compatibility_digest);
     let plan = MemoryServingPlanV11::prepare(&owner, generation(2), vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)]).expect("learned plan");
     let scope = CognitiveScope::AgentPrivate;
     let query = request(&owner);

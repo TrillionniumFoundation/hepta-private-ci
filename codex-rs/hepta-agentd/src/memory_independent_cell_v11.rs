@@ -242,7 +242,10 @@ impl SelectedMemoryCellV11 {
         manifest.bytes_digest = self.digest.digest();
         manifest.encoded_size_bytes = self.encoded_size_bytes;
         manifest.schema_profile_digest = Digest32::of_bytes(self.wire.schema.as_bytes());
-        let objective = serde_json::to_vec(&(&self.wire.schema, self.cell_id(), self.selector().kind))
+        // The logical inventory objective survives an evaluator/envelope
+        // upgrade. Keep its established V11 domain; the actual wire version
+        // remains independently bound by schema_profile_digest above.
+        let objective = serde_json::to_vec(&(ENVELOPE_V11, self.cell_id(), self.selector().kind))
             .map_err(|error| error.to_string())?;
         manifest.objective_class_digest = Digest32::of_bytes(&objective);
         self.with_model(|model| model.bind_manifest(manifest))

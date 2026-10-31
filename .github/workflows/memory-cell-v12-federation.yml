@@ -66,6 +66,7 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           artifact-ids: ${{ needs.source.outputs.artifact_id }}
+          merge-multiple: true
           path: ${{ runner.temp }}/federation-input
       - name: Independently load the actual checkpoint on this runner
         run: python3 qualification/memory-cell-v12/federation_experiment.py replica --input "$RUNNER_TEMP/federation-input" --out "$RUNNER_TEMP/federation-replica" --node '${{ matrix.node }}'
@@ -96,6 +97,7 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           artifact-ids: ${{ needs.source.outputs.artifact_id }}
+          merge-multiple: true
           path: ${{ runner.temp }}/federation-input/source
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
@@ -137,6 +139,7 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           artifact-ids: ${{ needs.controller.outputs.artifact_id }}
+          merge-multiple: true
           path: ${{ runner.temp }}/federation-input
       - name: Cold-restore owner or read-only replica and compute epoch-2 outputs
         run: python3 qualification/memory-cell-v12/federation_experiment.py readback --input "$RUNNER_TEMP/federation-input" --out "$RUNNER_TEMP/federation-readback" --node '${{ matrix.node }}'
@@ -164,10 +167,12 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           artifact-ids: ${{ needs.source.outputs.artifact_id }}
+          merge-multiple: true
           path: ${{ runner.temp }}/federation-input/source
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           artifact-ids: ${{ needs.controller.outputs.artifact_id }}
+          merge-multiple: true
           path: ${{ runner.temp }}/federation-input/migrate
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:

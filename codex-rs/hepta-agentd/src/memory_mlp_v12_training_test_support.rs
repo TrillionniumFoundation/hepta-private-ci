@@ -110,6 +110,9 @@ pub fn publish_trained(fixture: &mut CellFixture, owner: &MemoryInventoryOwnerSn
     let candidate = MemoryCellCandidateV12::from_projection(&projection, generation(revision), &payload).expect("V12 candidate");
     let manifest = candidate.bind_manifest(fixture_manifest_template(&fixture.config, revision,
         Digest32::of_bytes(b"test-sgd-two-layer-relu-mse-4000"))).expect("manifest");
+    assert_eq!(manifest.objective_class_digest,
+        fixture.publication.admission.validated_manifest.manifest.objective_class_digest,
+        "same cell inventory objective across evaluator upgrades and corrections");
     let publication = prepare_payload_request(&fixture.service, &fixture.config, manifest, candidate.bytes().to_vec(), revision);
     fixture.host.publish(publication.clone(), owner).expect("independent publication");
     fixture.publication = publication;
