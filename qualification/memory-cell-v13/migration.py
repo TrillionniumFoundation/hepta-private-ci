@@ -48,7 +48,8 @@ def identity(role):
                 job=os.environ.get("GITHUB_JOB"), numpy=np.__version__,
                 python=platform.python_version(), blas_core=os.environ.get("OPENBLAS_CORETYPE"),
                 source_hashes={name: file_sha(package / name) for name in
-                               ("adapter.py", "lifecycle.py", "migration.py")})
+                               ("adapter.py", "lifecycle.py", "migration.py", "runtime_restore.py",
+                                "backend.py", "download_model.py", "requirements-runtime.txt")})
 
 
 def same_execution(earlier, current):
@@ -208,6 +209,12 @@ def verify(args):
                   step_exact=model.step == expected.step == TOTAL,
                   sender_state_exact=model.state_hash() == continuation["resumed_state_sha256"],
                   sender_predictions_exact=model.predict(X).tolist() == continuation["predictions"])
+    if args.require_runtime_restore:
+        runtime = read_json(resumed / "runtime-restore.json")
+        same_execution(runtime["node"], node)
+        checks["target_backend_restored"] = (runtime["passed"] is True and runtime["binding"] == binding
+            and runtime["checkpoint_sha256"] == continuation["checkpoint_sha256"]
+            and runtime["state_before"] == runtime["state_after"] == model.state_hash())
     # Incorrect base/source bindings must fail at load, not only after prediction.
     for key in ("encoder_hash", "source_version", "features_sha256"):
         wrong = dict(binding, **{key: "0" * 64 if binding[key] != "0" * 64 else "1" * 64})
@@ -245,6 +252,7 @@ def main():
         parser.add_argument("--" + name)
     parser.add_argument("--out", required=True)
     parser.add_argument("--require-distinct-boots", action="store_true")
+    parser.add_argument("--require-runtime-restore", action="store_true")
     args = parser.parse_args()
     if args.phase == "mark-transfer":
         Path(args.out).parent.mkdir(parents=True, exist_ok=True)
