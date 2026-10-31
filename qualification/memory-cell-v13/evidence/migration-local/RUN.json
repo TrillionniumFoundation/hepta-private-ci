@@ -1,0 +1,94 @@
+{
+  "all_checks": {
+    "complete_state_exact": true,
+    "future_predictions_exact": true,
+    "future_training_exact": true,
+    "predictions_exact": true,
+    "reject_wrong_encoder_hash": true,
+    "reject_wrong_features_sha256": true,
+    "reject_wrong_source_version": true,
+    "sender_predictions_exact": true,
+    "sender_state_exact": true,
+    "step_exact": true
+  },
+  "attempts": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/migration.py",
+        "prepare",
+        "--input",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/inputs/train_features.npz",
+        "--manifest",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/inputs/encoder_manifest.json",
+        "--out",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/migration-local/prepare"
+      ],
+      "exit_code": 0,
+      "label": "prepare",
+      "wall_seconds": 0.1614642820059089
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/migration.py",
+        "resume",
+        "--input",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/migration-local/prepare/handoff",
+        "--out",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/migration-local/resume"
+      ],
+      "exit_code": 0,
+      "label": "resume",
+      "wall_seconds": 0.13362500799121335
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/migration.py",
+        "verify",
+        "--source",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/migration-local/prepare/handoff",
+        "--reference",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/migration-local/prepare/reference",
+        "--input",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/migration-local/resume",
+        "--out",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/migration-local/verify"
+      ],
+      "exit_code": 0,
+      "label": "verify",
+      "wall_seconds": 0.13538557900756132
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/migration.py",
+        "verify",
+        "--source",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/migration-local/prepare/handoff",
+        "--reference",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/migration-local/prepare/reference",
+        "--input",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/migration-local/negative-adam/resume",
+        "--out",
+        "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/migration-local/negative-adam/verify"
+      ],
+      "exit_code": 1,
+      "label": "negative-adam",
+      "wall_seconds": 0.12692086400056724
+    }
+  ],
+  "cross_vm_claim": false,
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_CORETYPE": "NEHALEM",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "negative_adam_rejected_with_current_predictions_unchanged": true,
+  "positive_passed": true,
+  "scope": "Three independent local processes on one host; real frozen MiniLM training features; no VM claim",
+  "source_commit": "569859fdadd70c2ebbb318515f6902cfba0fa4d2",
+  "train_rows": 120
+}

@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/migration.py", line 276, in <module>
+    main()
+  File "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/migration.py", line 263, in main
+    result = {"prepare": prepare, "resume": resume, "verify": verify}[args.phase](args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/migration.py", line 244, in verify
+    raise ValueError("migration verification failed; exact evidence retained")
+ValueError: migration verification failed; exact evidence retained
