@@ -181,6 +181,15 @@ fn mandatory_zero_abstain_guards_negative_only_plans() {
         Err("missing mandatory abstain candidate".into())
     );
 
+    // The action-set guard runs before expensive or invalid path evaluation.
+    let mut malformed_path = missing;
+    malformed_path["candidates"][0]["events"][0]["discount_q32"] = json!(-1);
+    let malformed_wire = serde_json::to_vec(&malformed_path).expect("encode bad path");
+    assert_eq!(
+        evaluate(&malformed_wire),
+        Err("missing mandatory abstain candidate".into())
+    );
+
     let mut uncertain = request(vec![path("negative", &[-10])]);
     uncertain["candidates"][1]["uncertainty_q32"] = json!(Q32 / 2);
     let uncertain_wire = serde_json::to_vec(&uncertain).expect("encode invalid abstain");
