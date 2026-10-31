@@ -1,0 +1,33 @@
+{
+  "all_pass": true,
+  "candidate_or_evidence_modified": false,
+  "content_receipt_dicts_identical": true,
+  "content_receipts": 108,
+  "new_sources": {
+    "audit.py": "4b68ba966efddede158fee6a3b74df32f304d1af6e5471035eeea800e83b4991",
+    "audit_study.py": "f7aa18b35c4fd81197b6e141cb1ef83c40f67097df0531a68ee084b0b1d7ceaf"
+  },
+  "old_sources_manifest_sha256": "5546b902cb58d2cff34a508fa63a017b6fa25561ecaff4309470506d33d32e42",
+  "schema": "hcsn-auditor-path-relocation-check.v1",
+  "scope": "File-verification relocation only; the original raw-quality audit and candidate model were not rerun or altered",
+  "studies": [
+    {
+      "audit_ok": true,
+      "complete_worker_cpu_seconds": 516.31748,
+      "jobs": 12,
+      "original_root": "/workspace/scratch/355ce93c7251/hepta-hcsn-fourtrack",
+      "study": "mechanism001",
+      "verification_root": "/tmp/hcsn_audit_relocated_ptqlxn_l"
+    },
+    {
+      "audit_ok": true,
+      "complete_worker_cpu_seconds": 2180.01233,
+      "jobs": 108,
+      "original_root": "/workspace/scratch/355ce93c7251/hepta-hcsn-fourtrack",
+      "study": "content001",
+      "verification_root": "/tmp/hcsn_audit_relocated_ptqlxn_l"
+    }
+  ],
+  "temporary_root_differs_from_recorded_root": true,
+  "test_mapping": "Temporary checkout-shaped directory points read-only at identical experiment evidence; recorded cwd remains original"
+}
