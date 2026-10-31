@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.contract-closure.protocol.v1",
+  "baseline_commit": "1bbf9712140ec388f7fb7967fa7b22244386441d",
+  "baseline_frozen_manifest_sha256": "3cda25b5fc17774e624d590679267066b51a9246072801c53453ee964b2202f0",
+  "scope": "New development diagnostics plus fresh paired confirmation; existing R7 observations informed this design. No claim that the old confirmation is unseen.",
+  "fit_seeds": [11, 12, 13, 14, 15],
+  "families": ["direct", "continuous", "clocked", "first_passage"],
+  "fixed_anchor_exchange": {
+    "anchor_families": ["continuous", "clocked", "first_passage"],
+    "contracts": ["continuous", "clocked", "first_passage"],
+    "laws": ["r7-finite-v1", "r8-brownian-images-v1"],
+    "fixed": ["content_encoder", "drive", "readout", "diffusion", "boundary", "reset", "reference_tick_recovery_probability"],
+    "brownian_exception": "All three Brownian contracts jointly set leak=0. These are not exact killed OU models.",
+    "primary_quantity": "Exact finite-model greedy return and occupancy-weighted Q-star action regret on the original task; unbounded Gaussian/probit control separately avoids state projection."
+  },
+  "calibration": {
+    "training_configurations": "Eight original R7 public configurations only",
+    "reference": "Independent fixed-cell product-state optimal Bellman recursion; full legal successor distribution",
+    "stages": [
+      {"name": "readout", "steps": 400, "optimizer": "Adam", "learning_rate": 0.01, "train": ["readout"]},
+      {"name": "content_readout", "steps": 400, "optimizer": "Adam", "learning_rate": 0.003, "train": ["content", "readout"]}
+    ],
+    "clip_norm": 5,
+    "loss_weights": "90% mixture of fixed baseline/optimal occupancy plus 10% uniform legal-state coverage",
+    "transition_encoder": "Frozen separate kernel_content branch; drive and core remain frozen. Stage two is content/readout joint calibration, not joint cell optimization.",
+    "selection": "Final fixed-budget step, no best-checkpoint or heldout selection",
+    "controls": "Apply the identical schedule and reference generation to direct, projected Gaussian, clocked and first-passage families."
+  },
+  "confirmation": {
+    "episodes_per_fit_per_regime": 128,
+    "regimes": ["nominal", "heldout"],
+    "world_seed_starts": {"nominal": 81000000, "heldout": 82000000},
+    "configuration_source": "protocol.py; new heldout combinations frozen before their execution",
+    "latent_seed_start": 930000000,
+    "pairing": "Same private world and public task budget, keyed latent uniforms; randomized arm order",
+    "arms": "Four families times baseline/readout/content_readout in hard deployment; corresponding mean policies; task DP and myopic DP; common-anchor Brownian projected three-contract controls and exact unbounded endpoint hard/mean.",
+    "primary_contrasts": ["FPT content_readout minus direct content_readout", "FPT content_readout minus clocked content_readout", "FPT content_readout minus FPT baseline"],
+    "inference": "Report all five fit-level paired differences and fit-cluster bootstrap intervals. Three primary contrasts use 98.333333% intervals; secondary contrasts are descriptive. Five fits limit inferential strength.",
+    "utility": "Task return - 0.0005 decisions - 0.0002 model events. Fees are proxies, separately from measured runtime.",
+    "failures": "Retain every attempted arm and report any operational failure; no silent drop, no post-confirmation selection."
+  },
+  "numerics": {
+    "reference": "Stable CDF/interval arithmetic, independent SciPy quadrature/flux, short exact branches and finite differences",
+    "critical_corner": "Brownian upper hit: drift=1, sigma=0.05, boundary=1, x=0, dt=0.8",
+    "recovery": "q(dt)=1-exp(-lambda dt), lambda=-log(1-q_ref)/dt_ref; event freezes remainder of tick, old refractory mass releases at tick end",
+    "claims": "Finite image truncation, voltage projection, and tick semantics remain explicit. No continuous OU or multiple-within-tick firing equivalence claim."
+  },
+  "native": {
+    "kernel": "r7-finite-v1",
+    "execution": "Encode, propagate, sample and read out inside real NeuronModelPort; chosen action drives unchanged READ/STOP artifact broker.",
+    "state": "Model/source/schema identity, latent mass, RNG seed/counter, owner journal/anchor and acknowledged checkpoint",
+    "acceptance": "Python/Rust numerical and selected-action parity; cold-process acknowledged recovery; component costs plus IPC/artifact/full episode; no claim of arbitrary crash atomicity.",
+    "production_activation": false
+  },
+  "publication": "Freeze source and completed candidate identities before fresh confirmation. Preserve unsuccessful diagnostics and publish evidence in a new branch without changing R7."
+}
