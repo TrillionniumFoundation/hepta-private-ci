@@ -35,7 +35,9 @@ def run_cell(output, *, seed=17, width=32, smoke=False):
     result = {"schema": "hepta.joint-generation.v3.factorial-development", "seed": seed, "width": width,
         "smoke": smoke, "protocol_sha256": hashlib.sha256(PROTOCOL.read_bytes()).hexdigest(),
         "source_sha256": {name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
-                          for name in ("model.py", "runtime.py", "profile.py", "training.py", "study.py", "diagnostics.py")},
+                          for name in ("model.py", "runtime.py", "profile.py", "training.py", "study.py", "diagnostics.py", "critic_calibration.py")},
+        "parent_source_sha256": {name: hashlib.sha256((Path(__file__).parent.parent/name).read_bytes()).hexdigest()
+                                 for name in ("model.py", "hepta_core.py", "runtime.py", "contract.py", "learning.py", "media.py", "mechanism_data.py")},
         "runtime": {"python": platform.python_version(), "torch": str(torch.__version__), "threads": protocol["threads"]},
         "profile_sha256": profile.digest, "pretraining": {}, "arms": {}, "inference_controls": {},
         "phase_costs": {}, "comparisons": {}, "confirmation_sources_consumed": 0,

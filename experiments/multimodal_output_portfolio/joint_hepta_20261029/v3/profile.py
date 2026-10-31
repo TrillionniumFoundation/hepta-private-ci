@@ -26,7 +26,7 @@ class Profile:
                 "source": dict(self.implementation), "horizon": self.horizon,
                 "initial_budget": self.initial_budget, "initial_stop_legal": True,
                 "audio_rate": self.audio_rate, "frame_ms": self.frame_ms,
-                "tariff": TARIFF, "clock": "measured_process_cpu_and_wall",
+                "tariff": TARIFF, "clock": "continuous_process_cpu_and_wall_boundaries",
                 "prefix": "immutable_state_budget_named_rng_and_already_charged_events",
                 "randomness": "actor_seed; emission_seed_xor_0x5eed1234; conditional_sampling",
                 "commitment": "buffered_bundle; native_stream_profile_is_separate",

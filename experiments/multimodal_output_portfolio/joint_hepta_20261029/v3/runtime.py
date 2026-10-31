@@ -29,7 +29,12 @@ def _charge(start, service):
     now = _clock()
     cpu, wall = now[0] - start[0], now[1] - start[1]
     return {"cpu_seconds": cpu, "wall_seconds": wall, "service_fee": TARIFF.get(service, 0.0),
+            "meter_cpu_end": now[0], "meter_wall_end": now[1],
             "amount": cpu * TARIFF["cpu_second"] + wall * TARIFF["wall_second"] + TARIFF.get(service, 0.0)}
+
+
+def _end(event):
+    return event["meter_cpu_end"], event["meter_wall_end"]
 
 
 def _copy_tree(value, detach):
@@ -150,10 +155,10 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
     if (any(a not in ACTIONS for a in prefix)
             or "stop" in prefix and prefix.index("stop") != len(prefix) - 1):
         raise ValueError("Invalid forced continuation")
+    begun = _clock()
     profile = profile or make_profile()
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
-    begun = _clock()
     if initial_snapshot is None:
         snapshot = start_snapshot(model, public, seed=seed, context_id=context_id,
                                   source_id=source_id, profile=profile)
@@ -179,13 +184,14 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
         setup["wall_seconds"] = max(0.0, setup["wall_seconds"] - encoding["wall_seconds"])
         setup["amount"] = (setup["cpu_seconds"] * TARIFF["cpu_second"]
                            + setup["wall_seconds"] * TARIFF["wall_second"])
+    meter = _end(setup)
     # Rehydration is billed at the first transition boundary. The first action
     # sees the exact frozen budget, irrespective of host-specific restore time.
     # Its resulting successor includes the actual restore cost.
     setup_billed, pending_service = False, "control"
     try:
         for index in range(profile.horizon + 1):
-            started = _clock()
+            started = meter
             pending_service = "control"
             law, value = _legal_law(model, snapshot, profile)
             values.append(value[0]); costs_before.append(snapshot.prefix_cost)
@@ -214,6 +220,7 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
             before = snapshot.state_hash
             pending_service = action
             snapshot = advance_snapshot(model, public, snapshot, action, profile=profile, _started=started)
+            meter = _end(snapshot.events[-1])
             if index == 0:
                 event = dict(snapshot.events[-1])
                 for key in ("cpu_seconds", "wall_seconds", "amount"):
@@ -226,7 +233,7 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
             actions.append({**snapshot.events[-1], "action": action, "before_sha256": before,
                             "after_sha256": snapshot.state_hash, "selected_probability": float(law[0, selected].exp().detach()),
                             "sampled_actor": sampled})
-            started = _clock()
+            started = meter
             pending_service = "control"
             if snapshot.budget < 0:
                 raise RuntimeError("Measured budget exhausted; no free continuation")
@@ -234,7 +241,7 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
                 break
         if not snapshot.state.stopped:
             raise RuntimeError("Finite horizon did not execute STOP")
-        started = _clock()
+        started = meter
         pending_service = "delivery"
         sample, _, emission_score = model.sample(snapshot.state, emission_rng, deterministic=deterministic_emission)
         if not deterministic_emission:
@@ -245,10 +252,11 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
         if not math.isfinite(observed) or not -1 <= observed <= 1:
             raise ValueError("Independent observation outside the fixed utility domain")
         delivery = {"action": "delivery", **_charge(started, "delivery")}
+        meter = _end(delivery)
         snapshot = replace(snapshot, budget=snapshot.budget-delivery["amount"],
                            prefix_cost=snapshot.prefix_cost+delivery["amount"],
                            events=snapshot.events + (delivery,))
-        started = _clock()
+        started = meter
         pending_service = "control"
         values.append(stop_value); costs_before.append(stop_cost_origin)
         if snapshot.budget < 0:
@@ -257,6 +265,7 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
         # Preserve failed executed work, including any partially written files.
         event = {"action": "failure", "attempted_service": pending_service,
                  **_charge(started, pending_service)}
+        meter = _end(event)
         if not setup_billed:
             for key in ("cpu_seconds", "wall_seconds", "amount"):
                 event[key] += setup[key]
@@ -281,16 +290,14 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
               "resumed": initial_snapshot is not None, "prefix_event_count": original_events,
               "contract_validated": True, "semantic_qualification": False,
               "policy": strategy, "deterministic_emission": deterministic_emission}
-    started = _clock()
     (directory / "AUDIT_DRAFT.json").write_text(json.dumps(record, sort_keys=True, allow_nan=False)+"\n")
-    audit = {"action": "audit_draft", **_charge(started, "audit")}
+    audit = {"action": "audit_draft", **_charge(meter, "audit")}
     total = snapshot.prefix_cost + audit["amount"]
     record.update(actual_cost=total, suffix_cost=total-inherited_cost,
                   remaining_budget=profile.initial_budget-total, net_return=observed-total)
     record["events"].append(audit)
-    started = _clock()
     (directory / "TRAJECTORY.json").write_text(json.dumps(record, sort_keys=True, indent=2, allow_nan=False)+"\n")
-    seal = _charge(started, "seal")
+    seal = _charge(_end(audit), "seal")
     total += seal["amount"]
     seal.update(action="audit_close", actual_cost_through_seal=total,
                 net_return_through_seal=observed-total,
