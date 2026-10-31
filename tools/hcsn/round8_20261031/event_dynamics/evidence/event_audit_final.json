@@ -1,0 +1,603 @@
+{
+  "all_new_model_gates_pass": true,
+  "cdf_gradients": [
+    {
+      "analytic": -0.0004502168626419318,
+      "central_difference": -0.00045021686547377774,
+      "parameter": "distance",
+      "parameters": [
+        1.0,
+        1.0,
+        0.05,
+        0.8
+      ],
+      "relative_error": 6.2899597018731166e-09
+    },
+    {
+      "analytic": 0.00035977423296698277,
+      "central_difference": 0.0003597742344174389,
+      "parameter": "drift",
+      "parameters": [
+        1.0,
+        1.0,
+        0.05,
+        0.8
+      ],
+      "relative_error": 4.0315731255695115e-09
+    },
+    {
+      "analytic": 0.001808852593498981,
+      "central_difference": 0.0018088525949068728,
+      "parameter": "sigma",
+      "parameters": [
+        1.0,
+        1.0,
+        0.05,
+        0.8
+      ],
+      "relative_error": 7.783341883927909e-10
+    },
+    {
+      "analytic": 0.0005062444347555691,
+      "central_difference": 0.0005062444372272666,
+      "parameter": "time",
+      "parameters": [
+        1.0,
+        1.0,
+        0.05,
+        0.8
+      ],
+      "relative_error": 4.882419189482007e-09
+    },
+    {
+      "analytic": -0.6381858892478225,
+      "central_difference": -0.6381858892456904,
+      "parameter": "distance",
+      "parameters": [
+        1.0,
+        0.4,
+        0.6,
+        1.2
+      ],
+      "relative_error": 3.3408327141219776e-12
+    },
+    {
+      "analytic": 0.6238562067290127,
+      "central_difference": 0.6238562068328068,
+      "parameter": "drift",
+      "parameters": [
+        1.0,
+        0.4,
+        0.6,
+        1.2
+      ],
+      "relative_error": 1.6637519085512464e-10
+    },
+    {
+      "analytic": 0.6477390109270291,
+      "central_difference": 0.6477390109236685,
+      "parameter": "sigma",
+      "parameters": [
+        1.0,
+        0.4,
+        0.6,
+        1.2
+      ],
+      "relative_error": 5.188270335502367e-12
+    },
+    {
+      "analytic": 0.36988682164142817,
+      "central_difference": 0.36988682161157954,
+      "parameter": "time",
+      "parameters": [
+        1.0,
+        0.4,
+        0.6,
+        1.2
+      ],
+      "relative_error": 8.06966396919624e-11
+    },
+    {
+      "analytic": -1.235902411963351,
+      "central_difference": -1.2359024116152344,
+      "parameter": "distance",
+      "parameters": [
+        0.3,
+        -0.2,
+        0.7,
+        0.8
+      ],
+      "relative_error": 2.816700115239185e-10
+    },
+    {
+      "analytic": 0.3944578158648262,
+      "central_difference": 0.39445781613300923,
+      "parameter": "drift",
+      "parameters": [
+        0.3,
+        -0.2,
+        0.7,
+        0.8
+      ],
+      "relative_error": 6.798775954022426e-10
+    },
+    {
+      "analytic": 0.6423746953742437,
+      "central_difference": 0.642374695420627,
+      "parameter": "sigma",
+      "parameters": [
+        0.3,
+        -0.2,
+        0.7,
+        0.8
+      ],
+      "relative_error": 7.220588065455253e-11
+    },
+    {
+      "analytic": 0.18242447526002503,
+      "central_difference": 0.18242447524796646,
+      "parameter": "time",
+      "parameters": [
+        0.3,
+        -0.2,
+        0.7,
+        0.8
+      ],
+      "relative_error": 6.610174617455014e-11
+    }
+  ],
+  "discounted": {
+    "actual": {
+      "log_value": -1.650503330076093,
+      "value": 0.19195326844862723
+    },
+    "reference": {
+      "log_value": -1.650503330076093,
+      "relative_quadrature_error_estimate": 1.8863747077689072e-14
+    }
+  },
+  "environment": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "gates": [
+    {
+      "criterion": "absolute log-CDF error < 2e-10, including underflow cases",
+      "name": "first_hit_tails_against_independent_density_integral",
+      "passed": true
+    },
+    {
+      "criterion": "log survival agrees with independent tail integral within 2e-10; 1-F is not used",
+      "name": "survival_tail_preserved",
+      "passed": true
+    },
+    {
+      "criterion": "discounted density integral agrees; G is separately named from probability F",
+      "name": "discounted_hit_is_value",
+      "passed": true
+    },
+    {
+      "criterion": "central difference relative error < 2e-7 at registered regular/rare-event fixtures",
+      "name": "cdf_parameter_gradients",
+      "passed": true
+    },
+    {
+      "criterion": "positive killed density integrates to survival within 1e-11",
+      "name": "killed_mass_matches_survival",
+      "passed": true
+    },
+    {
+      "criterion": "split first-hit composition relative error < 1e-8 in the low-noise fixture",
+      "name": "piecewise_killed_composition",
+      "passed": true
+    },
+    {
+      "criterion": "two affine segments plus a downward jump agree with exact bridge Monte Carlo within 5 standard errors",
+      "name": "moving_boundary_jump",
+      "passed": true
+    },
+    {
+      "criterion": "R7 Brownian low-noise grid63 upper probability reproduced; independent exact upper value is 4.321826e-6",
+      "name": "historical_counterexample_reproduced",
+      "passed": true
+    },
+    {
+      "criterion": "all registered coarse low-noise upwind/SG grids fail the fixed 5% local variance gate",
+      "name": "coarse_generators_rejected_for_continuum_claim",
+      "passed": true
+    },
+    {
+      "criterion": "10 physical 0.1-second recovery steps equal 1 second within 2e-13",
+      "name": "physical_recovery_semigroup",
+      "passed": true
+    },
+    {
+      "criterion": "analytic-integrand count derivatives agree with central differences within 2e-6",
+      "name": "renewal_count_gradients",
+      "passed": true
+    },
+    {
+      "criterion": "count tail has analytic bound <1e-10; adding 4 events changes fixture gradients <1e-9 (not a uniform derivative bound)",
+      "name": "renewal_truncation_fixture",
+      "passed": true
+    },
+    {
+      "criterion": "positive renewal integral agrees with independent Wald/Gamma event-time Monte Carlo within 5 standard errors",
+      "name": "repeated_events_independent_sampling",
+      "passed": true
+    }
+  ],
+  "kernels": [
+    {
+      "absolute_log_error": 3.552713678800501e-15,
+      "actual": {
+        "density": 0.0005062444347555691,
+        "log_probability": -12.3518325582719,
+        "log_survival": -4.3218353458476865e-06,
+        "probability": 4.321826006730762e-06,
+        "reflected_probability": 4.497177912087285e-07,
+        "survival": 0.9999956781739933
+      },
+      "parameters": [
+        1.0,
+        1.0,
+        0.05,
+        0.8
+      ],
+      "reference": {
+        "log_value": -12.351832558271896,
+        "relative_quadrature_error_estimate": 1.127990676537316e-14
+      }
+    },
+    {
+      "absolute_log_error": 2.2737367544323206e-13,
+      "actual": {
+        "density": 0.0,
+        "log_probability": -812.351832558272,
+        "log_survival": -0.0,
+        "probability": 0.0,
+        "reflected_probability": 0.0,
+        "survival": 1.0
+      },
+      "parameters": [
+        1.0,
+        -1.0,
+        0.05,
+        0.8
+      ],
+      "reference": {
+        "log_value": -812.3518325582718,
+        "relative_quadrature_error_estimate": 1.1175692477275967e-14
+      }
+    },
+    {
+      "absolute_log_error": 1.1368683772161603e-13,
+      "actual": {
+        "density": 0.0,
+        "log_probability": -803.9152948331939,
+        "log_survival": -0.0,
+        "probability": 0.0,
+        "reflected_probability": 0.0,
+        "survival": 1.0
+      },
+      "parameters": [
+        40.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "reference": {
+        "log_value": -803.9152948331938,
+        "relative_quadrature_error_estimate": 3.9453015642783065e-12
+      }
+    },
+    {
+      "absolute_log_error": 4.440892098500626e-16,
+      "actual": {
+        "density": 0.36988682164142817,
+        "log_probability": -1.1186488433255382,
+        "log_survival": -0.39559539591792237,
+        "probability": 0.3267209477116415,
+        "reflected_probability": 0.11229411721122227,
+        "survival": 0.6732790522883585
+      },
+      "parameters": [
+        1.0,
+        0.4,
+        0.6,
+        1.2
+      ],
+      "reference": {
+        "log_value": -1.1186488433255377,
+        "relative_quadrature_error_estimate": 1.6942217846652668e-13
+      }
+    },
+    {
+      "absolute_log_error": 0.0,
+      "actual": {
+        "density": 0.18242447526002503,
+        "log_probability": -0.5916756427463259,
+        "log_survival": -0.80609016622434,
+        "probability": 0.553399208020411,
+        "reflected_probability": 0.32214054962294136,
+        "survival": 0.4466007919795891
+      },
+      "parameters": [
+        0.3,
+        -0.2,
+        0.7,
+        0.8
+      ],
+      "reference": {
+        "log_value": -0.5916756427463259,
+        "relative_quadrature_error_estimate": 1.0155651571680404e-13
+      }
+    }
+  ],
+  "killed": {
+    "mass": 0.6732790522883585,
+    "quadrature_error_estimate": 4.858386692735836e-13
+  },
+  "limitations": [
+    "Exact Brownian fixed/affine boundary law, not an OU or interacting-network certificate.",
+    "No old checkpoint was reinterpreted as the new continuous model.",
+    "Finite SG/upwind examples remain rejected for continuous low-noise accuracy.",
+    "Positive quadrature error estimates exclude floating-point roundoff; count-tail bounds do not certify derivative tails."
+  ],
+  "low_noise_finite_generators": [
+    {
+      "absolute_probability_error": 0.3153327047284416,
+      "extra_variance_ratio": 49.99999999999999,
+      "grid": 15,
+      "local_moment_admitted": false,
+      "mass_error": -3.3306690738754696e-16,
+      "minus": 2.912084534504929e-17,
+      "plus": 0.31533702655444834,
+      "scheme": "upwind",
+      "survival": 0.6846629734455514
+    },
+    {
+      "absolute_probability_error": 0.3126746271948439,
+      "extra_variance_ratio": 48.99999999999999,
+      "grid": 15,
+      "local_moment_admitted": false,
+      "mass_error": 0.0,
+      "minus": 0.0,
+      "plus": 0.31267894902085064,
+      "scheme": "fitted",
+      "survival": 0.6873210509791492
+    },
+    {
+      "absolute_probability_error": 0.2243097719976824,
+      "extra_variance_ratio": 24.999999999999996,
+      "grid": 31,
+      "local_moment_admitted": false,
+      "mass_error": 0.0,
+      "minus": 1.0708625824348162e-28,
+      "plus": 0.22431409382368914,
+      "scheme": "upwind",
+      "survival": 0.7756859061763108
+    },
+    {
+      "absolute_probability_error": 0.2189734639802195,
+      "extra_variance_ratio": 23.999999999999996,
+      "grid": 31,
+      "local_moment_admitted": false,
+      "mass_error": -2.220446049250313e-16,
+      "minus": 0.0,
+      "plus": 0.21897778580622623,
+      "scheme": "fitted",
+      "survival": 0.7810222141937735
+    },
+    {
+      "absolute_probability_error": 0.1330740591524246,
+      "extra_variance_ratio": 12.499999999999998,
+      "grid": 63,
+      "local_moment_admitted": false,
+      "mass_error": -2.3314683517128287e-15,
+      "minus": 6.997781430712935e-47,
+      "plus": 0.13307838097843133,
+      "scheme": "upwind",
+      "survival": 0.8669216190215664
+    },
+    {
+      "absolute_probability_error": 0.12362658240247995,
+      "extra_variance_ratio": 11.500000000347198,
+      "grid": 63,
+      "local_moment_admitted": false,
+      "mass_error": 1.3322676295501878e-15,
+      "minus": 0.0,
+      "plus": 0.12363090422848669,
+      "scheme": "fitted",
+      "survival": 0.8763690957715149
+    },
+    {
+      "absolute_probability_error": 0.058996842990318675,
+      "extra_variance_ratio": 6.249999999999999,
+      "grid": 127,
+      "local_moment_admitted": false,
+      "mass_error": -2.220446049250313e-15,
+      "minus": 2.688434141239212e-74,
+      "plus": 0.059001164816325405,
+      "scheme": "upwind",
+      "survival": 0.9409988351836723
+    },
+    {
+      "absolute_probability_error": 0.04659837692911083,
+      "extra_variance_ratio": 5.25004658333825,
+      "grid": 127,
+      "local_moment_admitted": false,
+      "mass_error": 6.661338147750939e-16,
+      "minus": 0.0,
+      "plus": 0.04660269875511756,
+      "scheme": "fitted",
+      "survival": 0.9533973012448831
+    },
+    {
+      "absolute_probability_error": 0.01734415608317089,
+      "extra_variance_ratio": 3.125,
+      "grid": 255,
+      "local_moment_admitted": false,
+      "mass_error": -1.532107773982716e-14,
+      "minus": 1.3061604709483154e-112,
+      "plus": 0.01734847790917762,
+      "scheme": "upwind",
+      "survival": 0.9826515220908074
+    },
+    {
+      "absolute_probability_error": 0.008195363599932563,
+      "extra_variance_ratio": 2.1370886749840476,
+      "grid": 255,
+      "local_moment_admitted": false,
+      "mass_error": 2.220446049250313e-16,
+      "minus": 0.0,
+      "plus": 0.008199685425939294,
+      "scheme": "fitted",
+      "survival": 0.991800314574061
+    }
+  ],
+  "moving": {
+    "actual": {
+      "initial_hit": 0.10747148233582506,
+      "jump_hit": 0.025399684602975443,
+      "later_hit": 0.28521980021723603,
+      "omitted_mass_upper_bound": 1e-13,
+      "probability": 0.41809096715603655,
+      "quadrature_error_estimate": 1.9086229093377966e-13,
+      "roundoff_included": false
+    },
+    "monte_carlo": {
+      "hits": 83635,
+      "paths": 200000,
+      "probability": 0.418175,
+      "seed": 83103,
+      "standard_error": 0.0011029611719707091
+    }
+  },
+  "physical_recovery": {
+    "matched_single_phase_hazard": 1.0498221244986778,
+    "one_second_release": 0.9084218055563291,
+    "reference_q": 0.65,
+    "semigroup_error": 2.220446049250313e-16
+  },
+  "piecewise": {
+    "initial_hit": 3.2389241939672605e-144,
+    "jump_hit": 0.0,
+    "later_hit": 4.3218260067307645e-06,
+    "omitted_mass_upper_bound": 1e-13,
+    "probability": 4.3218260067307645e-06,
+    "quadrature_error_estimate": 1.8628430280385182e-18,
+    "roundoff_included": false
+  },
+  "renewal": {
+    "actual": {
+      "count_log_tail_bound": -24.549251125724982,
+      "count_tail_bound": 2.1796948658473544e-11,
+      "event_survival": [
+        0.9997077257619514,
+        0.9355557737634698,
+        0.43602376924759334,
+        0.043457384427000915,
+        0.0007325710603173352,
+        2.173900064160065e-06,
+        1.2329255918744568e-09,
+        1.441492286893532e-13,
+        3.699770905607682e-18,
+        2.1947260935168134e-23,
+        3.139369029193535e-29,
+        1.1217649218806606e-35,
+        1.0315654032191107e-42,
+        2.504175285131417e-50,
+        1.640307717424451e-58,
+        2.9552275848839894e-67,
+        1.4893577117457393e-76
+      ],
+      "expected_count": 2.415479399393467,
+      "gradient": {
+        "drift": 1.714974235108292,
+        "initial_gap": -0.833003156388137,
+        "recovery_mean": -1.4910975191592486,
+        "reset_gap": -1.6109501238891963,
+        "sigma": 0.1977334418116378
+      },
+      "gradient_tail_certified": false,
+      "included_events": 17,
+      "quadrature_error_estimate": 8.752183596735049e-13,
+      "roundoff_included": false
+    },
+    "gradient_tail_change": 0.0,
+    "gradients": [
+      {
+        "absolute_error": 9.312217663648426e-12,
+        "analytic": -0.833003156388137,
+        "numeric": -0.8330031563974493,
+        "parameter": "initial_gap"
+      },
+      {
+        "absolute_error": 2.1827384344419443e-10,
+        "analytic": -1.6109501238891963,
+        "numeric": -1.6109501241074702,
+        "parameter": "reset_gap"
+      },
+      {
+        "absolute_error": 9.243583676266098e-11,
+        "analytic": 1.714974235108292,
+        "numeric": 1.7149742352007278,
+        "parameter": "drift"
+      },
+      {
+        "absolute_error": 2.9803381984550015e-12,
+        "analytic": 0.1977334418116378,
+        "numeric": 0.19773344181461813,
+        "parameter": "sigma"
+      },
+      {
+        "absolute_error": 7.579181726669049e-11,
+        "analytic": -1.4910975191592486,
+        "numeric": -1.4910975192350404,
+        "parameter": "recovery_mean"
+      }
+    ],
+    "monte_carlo": {
+      "histogram": [
+        26,
+        6256,
+        49924,
+        39423,
+        4300,
+        71
+      ],
+      "mean": 2.41928,
+      "paths": 100000,
+      "seed": 20261031,
+      "standard_error": 0.002145760671391054
+    }
+  },
+  "schema": "hcsn_round8_event_audit_v1",
+  "source_baselines": {
+    "native": "e67a5e13ba82768a25858153452c15e76670b641",
+    "r7": "1bbf9712140ec388f7fb7967fa7b22244386441d"
+  },
+  "source_sha256": {
+    "__init__.py": "92a4fd5368670a4899a6b7b74ba5f94e52342a54866bc13bef3e6c88a79d76f5",
+    "event_kernel.py": "ce65a9e418eb979a40b2cd108864b12369132a1e78bbf9d7870cb11b10d0f4c9",
+    "generator.py": "2dff8cea6b9fd366537488eeec051db20a77d8e58b76fda1b72e21afa38808d8",
+    "renewal.py": "de509c90cb052b4c40ff7f1ae2c6011dce6741f5057cd2fa3df0c8851bc469b7",
+    "test_event_dynamics.py": "2c0aa9c7ba852d12fffb4991039ae8f1508b4bffe6666fe4033a1968ee723c9c",
+    "validation.py": "59fde560fc456d9414f19b94ce365f51ebb4d3d7e316120f71ad1653442817dc"
+  },
+  "survival": {
+    "actual": {
+      "density": 1.6279643678073267e-177,
+      "log_probability": -3.278768571528738e-179,
+      "log_survival": -410.9752637295412,
+      "probability": 1.0,
+      "reflected_probability": 1.4787475134269225e-178,
+      "survival": 3.278768571528738e-179
+    },
+    "reference": {
+      "log_value": -410.975263729541,
+      "relative_quadrature_error_estimate": 6.270759854070699e-13
+    }
+  }
+}
