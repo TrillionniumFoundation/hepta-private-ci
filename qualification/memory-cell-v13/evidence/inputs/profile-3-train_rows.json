@@ -1,0 +1,380 @@
+[
+  {
+    "domain": "sequence",
+    "expected": [
+      "3",
+      "1",
+      "2"
+    ],
+    "fixture_id": "amber:train:0",
+    "frontier": 3,
+    "id": "78e5d3089a82ea999f6cdb4b9da892ee7b52e2a965dc3d68408f9c8f96ba4aa4",
+    "label": 0,
+    "payload": [
+      "3",
+      "1",
+      "3",
+      "2"
+    ],
+    "project": "amber",
+    "query": "Apply the amber project convention to this payload.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "source_digest": "acee00f99636e96a91a2c707961fb154c173b34a5f0c741b87bcf594f37ca334",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Apply the amber project convention to this payload."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "10",
+      "-2",
+      "0"
+    ],
+    "fixture_id": "amber:train:1",
+    "frontier": 3,
+    "id": "f7419dbf1c422da4164b1a00484c759b0682532fca56dc4f79fc3c2530708176",
+    "label": 0,
+    "payload": [
+      "10",
+      "-2",
+      "10",
+      "0"
+    ],
+    "project": "amber",
+    "query": "Use the configured processing rule for amber.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "source_digest": "acee00f99636e96a91a2c707961fb154c173b34a5f0c741b87bcf594f37ca334",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Use the configured processing rule for amber."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "3",
+      "1",
+      "2"
+    ],
+    "fixture_id": "amber:train:0",
+    "frontier": 3,
+    "id": "95899394cd25021dab964ef8c5e02c6d73406c23bb6f74816f13645e9c343769",
+    "label": 0,
+    "payload": [
+      "3",
+      "1",
+      "3",
+      "2"
+    ],
+    "project": "amber",
+    "query": "This batch belongs to amber; handle it by that project policy.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "source_digest": "acee00f99636e96a91a2c707961fb154c173b34a5f0c741b87bcf594f37ca334",
+    "source_revision": 1,
+    "split": "train",
+    "text": "This batch belongs to amber; handle it by that project policy."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "10",
+      "-2",
+      "0"
+    ],
+    "fixture_id": "amber:train:1",
+    "frontier": 3,
+    "id": "ebe8e742d406b9c39625b495f9cecdd285de7ef1d81923e6fc72b2cfdb842ba7",
+    "label": 0,
+    "payload": [
+      "10",
+      "-2",
+      "10",
+      "0"
+    ],
+    "project": "amber",
+    "query": "Perform the transformation registered for project amber.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "source_digest": "acee00f99636e96a91a2c707961fb154c173b34a5f0c741b87bcf594f37ca334",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Perform the transformation registered for project amber."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "3",
+      "1",
+      "2"
+    ],
+    "fixture_id": "amber:train:0",
+    "frontier": 3,
+    "id": "eb4ac2f67caea935a2f9dafcad613b6670846fcb6a598e95dba416d5aa058ddc",
+    "label": 0,
+    "payload": [
+      "3",
+      "1",
+      "3",
+      "2"
+    ],
+    "project": "amber",
+    "query": "Process these values as required by amber.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "source_digest": "acee00f99636e96a91a2c707961fb154c173b34a5f0c741b87bcf594f37ca334",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Process these values as required by amber."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "10",
+      "-2",
+      "0"
+    ],
+    "fixture_id": "amber:train:1",
+    "frontier": 3,
+    "id": "33760e58e64d74633da39decae30419d55407c62647c27d441f2adb8990e9556",
+    "label": 0,
+    "payload": [
+      "10",
+      "-2",
+      "10",
+      "0"
+    ],
+    "project": "amber",
+    "query": "Return the result of the currently recorded amber operation.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "source_digest": "acee00f99636e96a91a2c707961fb154c173b34a5f0c741b87bcf594f37ca334",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Return the result of the currently recorded amber operation."
+  },
+  {
+    "domain": "text",
+    "expected": "Ａ é",
+    "fixture_id": "birch:train:0",
+    "frontier": 3,
+    "id": "ff43c0e6451b2a7328910c42e49c40375f6cde6d864d388c6579c59c8c2fe69c",
+    "label": 4,
+    "payload": "Ａ é",
+    "project": "birch",
+    "query": "Run the established birch rule on this input.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Run the established birch rule on this input."
+  },
+  {
+    "domain": "text",
+    "expected": "ﬃ ö",
+    "fixture_id": "birch:train:1",
+    "frontier": 3,
+    "id": "16a9c929c02340f5d0b7c9d5c511052ea23787292948e78c61da353ad9a7f097",
+    "label": 4,
+    "payload": "ﬃ ö",
+    "project": "birch",
+    "query": "Birch is the applicable project; transform the supplied payload.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Birch is the applicable project; transform the supplied payload."
+  },
+  {
+    "domain": "text",
+    "expected": "Ａ é",
+    "fixture_id": "birch:train:0",
+    "frontier": 3,
+    "id": "4a5944586683aeaa497105849f2a3bc676dfae1245f24be883afb1c135dfd726",
+    "label": 4,
+    "payload": "Ａ é",
+    "project": "birch",
+    "query": "Use birch's configured convention here.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Use birch's configured convention here."
+  },
+  {
+    "domain": "text",
+    "expected": "ﬃ ö",
+    "fixture_id": "birch:train:1",
+    "frontier": 3,
+    "id": "fa85f45750ce6890a4a5c95dbdff0a104edccce06991385fe92c39bf6ffe3679",
+    "label": 4,
+    "payload": "ﬃ ö",
+    "project": "birch",
+    "query": "Give the output prescribed for this data by project birch.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Give the output prescribed for this data by project birch."
+  },
+  {
+    "domain": "text",
+    "expected": "Ａ é",
+    "fixture_id": "birch:train:0",
+    "frontier": 3,
+    "id": "73ce1e6acef8de3df53c647b167cecfd3c0392c296b880149530b6fdba51e591",
+    "label": 4,
+    "payload": "Ａ é",
+    "project": "birch",
+    "query": "Handle this input with the active birch processing setting.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Handle this input with the active birch processing setting."
+  },
+  {
+    "domain": "text",
+    "expected": "ﬃ ö",
+    "fixture_id": "birch:train:1",
+    "frontier": 3,
+    "id": "0a8959463f9d68f68c32d301ab8e6d1d48972d174b43c16f80415e1376d97a00",
+    "label": 4,
+    "payload": "ﬃ ö",
+    "project": "birch",
+    "query": "The stored birch project policy governs this request; apply it.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "split": "train",
+    "text": "The stored birch project policy governs this request; apply it."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "x": 1
+    },
+    "fixture_id": "cobalt:train:0",
+    "frontier": 3,
+    "id": "32d33a0230bc1dc23a436e94481edcb770d5c4472e187a2c9a97e91a85ac60e5",
+    "label": 10,
+    "payload": " { \"x\" : 1 } ",
+    "project": "cobalt",
+    "query": "Process the attached input using cobalt's rule.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Process the attached input using cobalt's rule."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      true,
+      null,
+      2
+    ],
+    "fixture_id": "cobalt:train:1",
+    "frontier": 3,
+    "id": "7c3a7ee06859230557e47854fa4ce23fbe1f154b770567ea09a44c698620d0b5",
+    "label": 10,
+    "payload": "[ true, null, 2 ]",
+    "project": "cobalt",
+    "query": "Apply the operation configured for project cobalt.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Apply the operation configured for project cobalt."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "x": 1
+    },
+    "fixture_id": "cobalt:train:0",
+    "frontier": 3,
+    "id": "3e122d5d9bedb81edef84b32ba3e2ce405210e7efd6f787b8f40fdbd8016a76b",
+    "label": 10,
+    "payload": " { \"x\" : 1 } ",
+    "project": "cobalt",
+    "query": "Cobalt defines how this payload should be transformed; follow it.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Cobalt defines how this payload should be transformed; follow it."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      true,
+      null,
+      2
+    ],
+    "fixture_id": "cobalt:train:1",
+    "frontier": 3,
+    "id": "e0ee943d768aacb1b1f121ed6536417bb2730604642ba326d2cc00ad600df6ad",
+    "label": 10,
+    "payload": "[ true, null, 2 ]",
+    "project": "cobalt",
+    "query": "Use the current cobalt project configuration on this document.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Use the current cobalt project configuration on this document."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "x": 1
+    },
+    "fixture_id": "cobalt:train:0",
+    "frontier": 3,
+    "id": "af280818bd6f42b05d530bd5ec522b14040b46153287fe10b0245faaed94a0da",
+    "label": 10,
+    "payload": " { \"x\" : 1 } ",
+    "project": "cobalt",
+    "query": "Return the data-processing result requested by cobalt's policy.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Return the data-processing result requested by cobalt's policy."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      true,
+      null,
+      2
+    ],
+    "fixture_id": "cobalt:train:1",
+    "frontier": 3,
+    "id": "860ebf77906704849971fdbd58a1d3a8b907c50d25081e0c5cbf05889e9b80d5",
+    "label": 10,
+    "payload": "[ true, null, 2 ]",
+    "project": "cobalt",
+    "query": "Handle this batch according to the recorded cobalt setting.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "train",
+    "text": "Handle this batch according to the recorded cobalt setting."
+  }
+]

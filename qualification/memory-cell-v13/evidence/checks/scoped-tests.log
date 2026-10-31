@@ -1,0 +1,29 @@
+test_baselines_share_training_only_admission (tasks_tests.BaselineAndChronologyTests.test_baselines_share_training_only_admission) ... ok
+test_exact_project_lookup_tracks_legal_observations (tasks_tests.BaselineAndChronologyTests.test_exact_project_lookup_tracks_legal_observations) ... ok
+test_future_corrections_do_not_leak_into_earlier_frontier (tasks_tests.BaselineAndChronologyTests.test_future_corrections_do_not_leak_into_earlier_frontier) ... ok
+test_profile_parameter_input_has_no_live_policy (tasks_tests.BaselineAndChronologyTests.test_profile_parameter_input_has_no_live_policy) ... ok
+test_profile_training_goldens_respect_each_source_revision (tasks_tests.BaselineAndChronologyTests.test_profile_training_goldens_respect_each_source_revision) ... ok
+test_reference_retrievers_use_the_actual_query (tasks_tests.BaselineAndChronologyTests.test_reference_retrievers_use_the_actual_query) ... ok
+test_csv_executes_quotes_and_embedded_newlines (tasks_tests.ExecutableSkillTests.test_csv_executes_quotes_and_embedded_newlines) ... ok
+test_json_parse_differs_from_compact_text (tasks_tests.ExecutableSkillTests.test_json_parse_differs_from_compact_text) ... ok
+test_order_and_count_are_distinct_real_operations (tasks_tests.ExecutableSkillTests.test_order_and_count_are_distinct_real_operations) ... ok
+test_public_input_is_independent_of_oracle_metadata (tasks_tests.ExecutableSkillTests.test_public_input_is_independent_of_oracle_metadata) ... ok
+test_rejects_bad_payloads_and_unknown_operations (tasks_tests.ExecutableSkillTests.test_rejects_bad_payloads_and_unknown_operations) ... ok
+test_training_goldens_are_not_executor_generated (tasks_tests.ExecutableSkillTests.test_training_goldens_are_not_executor_generated) ... ok
+test_unicode_contracts_preserve_their_differences (tasks_tests.ExecutableSkillTests.test_unicode_contracts_preserve_their_differences) ... ok
+test_wrong_operation_runs_and_is_scored_as_failure (tasks_tests.ExecutableSkillTests.test_wrong_operation_runs_and_is_scored_as_failure) ... ok
+test_complete_model_publication_cold_read_and_idempotent_staging (lifecycle_tests.LifecycleTests.test_complete_model_publication_cold_read_and_idempotent_staging) ... ok
+test_correction_fences_old_reads_rejects_relabelled_weights_and_preserves_other_answers (lifecycle_tests.LifecycleTests.test_correction_fences_old_reads_rejects_relabelled_weights_and_preserves_other_answers) ... ok
+test_real_sigkill_before_and_after_publication_commit (lifecycle_tests.LifecycleTests.test_real_sigkill_before_and_after_publication_commit) ... ok
+test_scope_encoder_and_immutable_bytes_are_checked (lifecycle_tests.LifecycleTests.test_scope_encoder_and_immutable_bytes_are_checked) ... ok
+test_experiment_partition_receives_only_train_matrix (structural_tests.StructuralTests.test_experiment_partition_receives_only_train_matrix) ... ok
+test_invalid_sparse_routes_and_partitions_are_rejected (structural_tests.StructuralTests.test_invalid_sparse_routes_and_partitions_are_rejected) ... ok
+test_partition_covers_training_classes_without_mutating_inputs (structural_tests.StructuralTests.test_partition_covers_training_classes_without_mutating_inputs) ... ok
+test_sparse_router_invokes_only_selected_rows_and_experts (structural_tests.StructuralTests.test_sparse_router_invokes_only_selected_rows_and_experts) ... ok
+test_subset_preserves_adam_rng_sampler_and_selected_logits (structural_tests.StructuralTests.test_subset_preserves_adam_rng_sampler_and_selected_logits) ... ok
+test_widen_preserves_function_and_matches_aggregate_child_capacity (structural_tests.StructuralTests.test_widen_preserves_function_and_matches_aggregate_child_capacity) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.684s
+
+OK
