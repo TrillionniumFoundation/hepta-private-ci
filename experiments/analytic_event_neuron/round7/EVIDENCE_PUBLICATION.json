@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.round7.evidence-publication.v1",
+  "verified_utc": "2026-10-31 03:03:02 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/analytic-event-joint-value-20261030-r7",
+  "base_branch": "research/analytic-event-round6-20261030",
+  "base_commit": "bf88335edc41d40d57d8e84716dd1d2e8cd13a68",
+  "preconfirmation_commit": "e5202c923bbd4dc9f4879d6a95f2baec788eebdf",
+  "archive_publication_commit": "1311e39219db64de25614319cb3dc57f298fec93",
+  "verified_commit": "2225d6d53b2c033efc2b592dd7128016ecc95cd9",
+  "verified_file_identities": 325,
+  "frozen_inputs": 108,
+  "frozen_manifest_sha256": "3cda25b5fc17774e624d590679267066b51a9246072801c53453ee964b2202f0",
+  "bundle_files": 178,
+  "standalone_evidence_and_figures": 34,
+  "all_remote_git_blob_sha1_and_byte_lengths_match": true,
+  "remote_subtree_truncated": false,
+  "archive": {
+    "manifest_path": "evidence_bundle/BUNDLE_MANIFEST.json",
+    "part_count": 177,
+    "compressed_bytes": 92389272,
+    "compressed_sha256": "938a00c2beca370049e7d0d26facba0933da2d5f0085420b9b291916982f920f",
+    "verification_receipt": "BUNDLE_VERIFICATION.json",
+    "upload_manifest": "BUNDLE_UPLOAD_MANIFEST.json",
+    "restored_file_count": 305,
+    "restored_directory_count": 65,
+    "restored_content_bytes": 101242834,
+    "exact_byte_hash_type_and_mode_comparison_passed": true
+  },
+  "report": {
+    "path": "REPORT.md",
+    "sha256": "33f4d10dafe6d34ae2f75b3b4dfeaeef8fd3bf6c21d490f86a60812216c266ef",
+    "git_blob_sha1": "141f6292f7fac5728420e0bed151d004d9b5ddbc"
+  },
+  "verification_method": "Compare every selected remote Git tree blob SHA1 and byte length to Git blob SHA1 calculated from exact local bytes. SHA256 is bound by the frozen/archival manifests. All archive and standalone evidence blob-creation responses also matched their expected Git SHA1. This is a remote content-addressed identity check, not a second remote archive extraction.",
+  "validation_scope": {
+    "original_frozen_tests": 45,
+    "separate_postfreeze_tests": 4,
+    "confirmation_trajectory_records": 108800,
+    "confirmation_operational_failures": 0,
+    "primary_efficacy_gates_passed": 0,
+    "primary_efficacy_gates_total": 3,
+    "mainline_promotion": false,
+    "fresh_native_build": false
+  },
+  "immutable_inputs_edited_after_freeze": false,
+  "postfreeze_diagnostics_retrained_or_selected_models": false,
+  "scope": "Research implementation, evidence, and reproduction; no production activation or merge.",
+  "self_reference_note": "verified_commit is the complete publication tree immediately before adding this receipt. This receipt is added in a later descendant commit; its own Git SHA is separately checked after publication."
+}
