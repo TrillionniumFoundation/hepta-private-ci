@@ -12,7 +12,7 @@ query binding, or an advantage over optimized large models.
 
 | File | Bytes | SHA256 |
 |---|---:|---|
-| `REPORT.md` | 18316 | `5b1bc54e7a8c6626abbeb58e46e02be61ff036e1bd0b351dca62bf352156acaa` |
+| `REPORT.md` | 18340 | `1a855b41657ab89814145a5eeb899bd13b8974dfd04f5776992a2df18d2b59a6` |
 | `REPRODUCE.md` | 7117 | `81b85c81e18edc7adf41518307901290e4287258bfb82c402db69ea2bd148e05` |
 
 These identities refer to the final local documents after the owner-authorized
@@ -46,10 +46,14 @@ claim to repeat every earlier verification from scratch.
 | “Six families/seeds” could be misread as six architectures | Reproduction now says six family–seed combinations, comprising two families and three seeds. |
 | Development evaluation precedes candidate freezing | Both documents distinguish development selection from the final heldout test. They do not assert that all dev evaluation occurred after candidate freezing. |
 | Training process timing could imply one process per fit | The report identifies two full training stages covering 108 fits and separately describes per-fit and whole-process timing scopes. |
+| A negative controller effect could be mistaken for negative absolute return | The follow-up wording now explicitly says that original-heldout net return decreased relative to the lightweight controller. Absolute mean net returns remain positive, approximately 0.65; the relative effect is approximately -0.0186 to -0.0187. |
 
-The final reviewer directly made only the three owner-authorized scope edits
+At the initial review, the reviewer directly made only the three owner-authorized scope edits
 concerning the 54-model ablation, six `heldout_a` roots, and six family–seed
-combinations. The owner made the other corrections before this final readback.
+combinations. The owner made the other corrections before that readback.
+The reviewer subsequently made the owner-authorized relative-return wording
+clarification and refreshed the document identity above; no evidence or frozen
+source changed.
 
 ## Mathematical assessment
 
