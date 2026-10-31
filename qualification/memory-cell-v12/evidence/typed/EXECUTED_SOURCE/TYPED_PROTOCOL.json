@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.memory.typed-protocol.v12",
+  "seeds": [31031, 41033, 51047],
+  "dimension": 256,
+  "hidden": 32,
+  "steps": 240,
+  "batch_size": 32,
+  "evidence_limit": 2,
+  "task_scope": "Authored requests about actual module declarations and actual numbered procedure blocks. Procedure execution advances a bounded checklist cursor; it causes no external effect.",
+  "event_scope": "Explicit constructed scenarios: incomplete ingestion of the first three authentic steps, correction to the complete source block, then withdrawal. These are not historical document revisions or production event logs.",
+  "semantic_cell": "Exact source-bound declaration cache; generic fallback parses the same evidence at query time.",
+  "procedure_cell": "Exact source-bound compiled ordered checklist; generic fallback parses and executes the same checklist at query time.",
+  "event_cell": "Exact current-state projection; generic fallback replays the same supplied event journal.",
+  "meta_cell": "Learned heading addressing with literal module resolution; generic fallback uses full-text BM25 with the same module registry.",
+  "arms": ["full_typed", "without_event", "without_semantic", "without_procedure", "without_meta", "bm25_generic", "history_generic", "single_generic"],
+  "controls": "All strategies receive identical current sources and permitted past labels, and have a maximum of two evidence reads. Learned heading and single-source classifiers each receive hidden=32, 240 steps, batch=32. Retrieval controls require no gradient training; their index construction and retained labeled examples are counted. No equal-FLOPs claim.",
+  "ablation": "Missing specialists execute capable generic implementations. No ablation directly returns failure. All learned ablations share the exact same fitted address weights so accuracy changes cannot be attributed to retraining luck.",
+  "time_contract": "Phase 0 trains on phase-0 train prompts; later phases train on past non-calibration queries and newly available canonical sources. Threshold calibration uses past calibration prompts (phase 0 uses its own). New-phase test outputs do not select weights, thresholds or type structure.",
+  "calibration": "Source coverage versus unsupported-module rejection, restricted to past calibration. Unknown requested fields and withdrawn sources remain separate final-reader checks.",
+  "cost_contract": "Report actual model parameters, optimizer, index, source text, event/cache serialization, setup time, address runtime, actual evidence reads/bytes, parse work and event replay. Cache setup and retained source evidence are never free; microsecond timings are not general capability evidence.",
+  "interpretation": "Same-repository method development, not independent confirmation. Deterministic typed readers are not learned generative memory. Zero ablation loss is an admissible result. No compression, production, general understanding or spontaneous emergence claim."
+}

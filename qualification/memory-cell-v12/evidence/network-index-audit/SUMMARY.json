@@ -1,0 +1,166 @@
+{
+  "canonical_self_nearest_correct": 600,
+  "corpus_sha256": "cbad82b9e82da96a26e3f8382a68816367a43c1d5827d35afa53494c6c3cadc1",
+  "missing_targets": 0,
+  "phases": [
+    {
+      "diagnosis": {
+        "affine_rank": 257,
+        "design_shape": [
+          854,
+          257
+        ],
+        "groups": {
+          "canonical": {
+            "canonical_prototype": {
+              "all_required_top3": 1.0,
+              "first_relevant_mrr": 1.0,
+              "rows": 210
+            },
+            "closed_form_linear": {
+              "all_required_top3": 1.0,
+              "first_relevant_mrr": 1.0,
+              "rows": 210
+            },
+            "learned": {
+              "all_required_top3": 0.0380952380952381,
+              "first_relevant_mrr": 0.06579851472973089,
+              "rows": 210
+            }
+          },
+          "historical_queries": {
+            "canonical_prototype": {
+              "all_required_top3": 0.5745341614906833,
+              "first_relevant_mrr": 0.5473078362781242,
+              "rows": 644
+            },
+            "closed_form_linear": {
+              "all_required_top3": 1.0,
+              "first_relevant_mrr": 1.0,
+              "rows": 644
+            },
+            "learned": {
+              "all_required_top3": 0.049689440993788817,
+              "first_relevant_mrr": 0.07217975097054127,
+              "rows": 644
+            }
+          }
+        },
+        "nonzero_condition": 7963070721.179953,
+        "ridge": 0.001,
+        "source": "training/canonical rows only",
+        "wall_seconds": 0.12863052100146888
+      },
+      "phase": 0,
+      "rows": 854
+    },
+    {
+      "diagnosis": {
+        "affine_rank": 257,
+        "design_shape": [
+          1483,
+          257
+        ],
+        "groups": {
+          "canonical": {
+            "canonical_prototype": {
+              "all_required_top3": 1.0,
+              "first_relevant_mrr": 1.0,
+              "rows": 405
+            },
+            "closed_form_linear": {
+              "all_required_top3": 1.0,
+              "first_relevant_mrr": 1.0,
+              "rows": 405
+            },
+            "learned": {
+              "all_required_top3": 0.15555555555555556,
+              "first_relevant_mrr": 0.13828174500184948,
+              "rows": 405
+            }
+          },
+          "historical_queries": {
+            "canonical_prototype": {
+              "all_required_top3": 0.40538033395176254,
+              "first_relevant_mrr": 0.3806066856530357,
+              "rows": 1078
+            },
+            "closed_form_linear": {
+              "all_required_top3": 1.0,
+              "first_relevant_mrr": 1.0,
+              "rows": 1078
+            },
+            "learned": {
+              "all_required_top3": 0.36363636363636365,
+              "first_relevant_mrr": 0.3284380596754253,
+              "rows": 1078
+            }
+          }
+        },
+        "nonzero_condition": 751.6197285390485,
+        "ridge": 0.001,
+        "source": "training/canonical rows only",
+        "wall_seconds": 0.2493408649970661
+      },
+      "phase": 1,
+      "rows": 1497
+    },
+    {
+      "diagnosis": {
+        "affine_rank": 257,
+        "design_shape": [
+          2679,
+          257
+        ],
+        "groups": {
+          "canonical": {
+            "canonical_prototype": {
+              "all_required_top3": 1.0,
+              "first_relevant_mrr": 1.0,
+              "rows": 600
+            },
+            "closed_form_linear": {
+              "all_required_top3": 1.0,
+              "first_relevant_mrr": 0.9958333333333333,
+              "rows": 600
+            },
+            "learned": {
+              "all_required_top3": 0.17666666666666667,
+              "first_relevant_mrr": 0.1661896926156219,
+              "rows": 600
+            }
+          },
+          "historical_queries": {
+            "canonical_prototype": {
+              "all_required_top3": 0.37037037037037035,
+              "first_relevant_mrr": 0.34544427684620294,
+              "rows": 2079
+            },
+            "closed_form_linear": {
+              "all_required_top3": 1.0,
+              "first_relevant_mrr": 1.0,
+              "rows": 2079
+            },
+            "learned": {
+              "all_required_top3": 0.37614237614237617,
+              "first_relevant_mrr": 0.3351475962194863,
+              "rows": 2079
+            }
+          }
+        },
+        "nonzero_condition": 507.87919904686777,
+        "ridge": 0.001,
+        "source": "training/canonical rows only",
+        "wall_seconds": 0.4686988429966732
+      },
+      "phase": 2,
+      "rows": 2706
+    }
+  ],
+  "queries": 3802,
+  "records": 600,
+  "same_text_conflicting_target_sets": 0,
+  "scope": "post-run training/index diagnosis, not new held confirmation",
+  "unique_feature_rows": 600,
+  "unique_record_ids": 600
+}

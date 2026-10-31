@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.memory.network-resource-interruption.v12",
+  "recorded_at_utc": "2026-10-31T01:40:17.904631+00:00",
+  "exit_code": 130,
+  "signal": "Ctrl-C through the owned execution session 17474",
+  "observed_shared_disk_available_bytes": 0,
+  "reason": "Shared filesystem reached zero available space; owner interrupted to preserve evidence.",
+  "completed_phases": [
+    {
+      "seed": 31031,
+      "phase": 0,
+      "path": "seed-31031/phase-0/RESULT.json"
+    },
+    {
+      "seed": 31031,
+      "phase": 1,
+      "path": "seed-31031/phase-1/RESULT.json"
+    },
+    {
+      "seed": 31031,
+      "phase": 2,
+      "path": "seed-31031/phase-2/RESULT.json"
+    },
+    {
+      "seed": 41033,
+      "phase": 0,
+      "path": "seed-41033/phase-0/RESULT.json"
+    },
+    {
+      "seed": 41033,
+      "phase": 1,
+      "path": "seed-41033/phase-1/RESULT.json"
+    },
+    {
+      "seed": 41033,
+      "phase": 2,
+      "path": "seed-41033/phase-2/RESULT.json"
+    },
+    {
+      "seed": 51047,
+      "phase": 0,
+      "path": "seed-51047/phase-0/RESULT.json"
+    }
+  ],
+  "incomplete_artifacts": [],
+  "source_hashes_still_equal_freeze": true,
+  "retained_fit_receipts": 39,
+  "recorded_fit_seconds_lower_bound": 5.7002605620000395,
+  "recorded_presentations_lower_bound": 330240,
+  "total_wall_seconds": null,
+  "total_cpu_seconds": null,
+  "unrecorded_inflight_work_possible": true,
+  "cost_limit": "Original driver catches Exception but KeyboardInterrupt is BaseException. Whole-run elapsed/CPU footer was not emitted. Retained per-fit receipts are lower bounds, not a complete cost total. No interrupted work is credited as passed.",
+  "resume_policy": "Replay only third seed under exactly the frozen source and same seed-specific protocol in a new directory; retain old prefix and count duplicate work."
+}

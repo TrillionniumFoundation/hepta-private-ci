@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.memory.factorized-postrun-language-audit.v12",
+  "corpus_sha256": "cbad82b9e82da96a26e3f8382a68816367a43c1d5827d35afa53494c6c3cadc1",
+  "post_run_analysis": true,
+  "phases": [
+    {
+      "phase": 0,
+      "held_instances": 448,
+      "unique_normalized_held": 32,
+      "known_instances": 434,
+      "unique_normalized_known": 31,
+      "known_exact_normalized_match_to_past_known": 0,
+      "unknown_instances": 14,
+      "unique_normalized_unknown": 1,
+      "held_exact_normalized_match_to_any_past": 0
+    },
+    {
+      "phase": 1,
+      "held_instances": 416,
+      "unique_normalized_held": 32,
+      "known_instances": 403,
+      "unique_normalized_known": 31,
+      "known_exact_normalized_match_to_past_known": 403,
+      "unknown_instances": 13,
+      "unique_normalized_unknown": 1,
+      "held_exact_normalized_match_to_any_past": 416
+    },
+    {
+      "phase": 2,
+      "held_instances": 417,
+      "unique_normalized_held": 33,
+      "known_instances": 403,
+      "unique_normalized_known": 31,
+      "known_exact_normalized_match_to_past_known": 403,
+      "unknown_instances": 14,
+      "unique_normalized_unknown": 2,
+      "held_exact_normalized_match_to_any_past": 416
+    }
+  ],
+  "interpretation": "All phase-1/2 known query wordings become exact matches to earlier known wordings after removing the publicly named module. Their module/source identities are new, but language forms are not new. Perfect historical-nearest results therefore do not demonstrate novel-language generalization. Repeated normalized unknown phrases are not independent unknown-language trials."
+}
