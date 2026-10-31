@@ -41,7 +41,26 @@ After byte qualification, the same original resource, inference.control and
 Unix FinalUse owners start the same cancellable inference port. The caller's
 cancellation token is preserved. A cancelled or failed preparation never falls
 back to an unqualified model; after-load cancellation retains the original
-terminal unload path. Local filesystem reads remain cooperative, not preemptible.
+terminal unload path.
+
+The existing 120-second startup window starts before queuing preparation. Original
+qualification, Cell validation, opening inference owners, FinalUse and physical
+loading all consume that one monotonic deadline and cancellation token. The
+loader receives the original execution object; it does not start another
+120-second window after scanning. Its durable load request is also limited to the
+remaining whole milliseconds. Each Cell payload read checks the same execution
+before and after the OS call, including short reads, EOF and EINTR, and after
+each chunk hash. Expired verification cannot open inference owners or start a
+model. A late physical completion keeps the original failed/terminal handling.
+
+This is cooperative deadline enforcement, not a hard wall-time bound on a
+blocking filesystem. Regular-file open, metadata or read operations may remain
+inside the OS after expiry; small original source/config reads also only observe
+the deadline after returning. The blocking task retains its owned files until
+they return, then rejects their late result. Cancelling the preparation future
+does not pretend that its blocking worker stopped or release a live model
+custodian. Hard interruption of a stuck filesystem remains an open PN3 limit;
+the CI observer's execution timeout is not a product startup budget.
 
 ## Exact registered closure
 

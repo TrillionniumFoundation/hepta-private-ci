@@ -7,17 +7,18 @@ use std::io::Read;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use codex_hepta_agentd::NeuralCognitiveExecutionV1;
 use codex_hepta_agentd::NeuralCognitivePinV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
-use tokio_util::sync::CancellationToken;
 
 use crate::model_worker::ResourceGrant;
 use crate::native_app_server::TurnStartAuthorizer;
 use crate::smollm_neural_read::SmolLmNeuralReadConfigV1;
 use crate::smollm_neural_read::SmolLmNeuralReadPortV1;
+use crate::smollm_neural_read::SmolLmStartupExecutionV1;
 
 #[path = "smollm_cell_wire.rs"]
 mod wire;
@@ -25,6 +26,10 @@ mod wire;
 #[path = "smollm_cell_dependency.rs"]
 mod dependency;
 pub(crate) use dependency::ControlledCellInputsV2;
+
+#[cfg(test)]
+#[path = "smollm_cell_startup_tests.rs"]
+mod startup_tests;
 
 const SCHEMA: &str = "hepta-smollm-controlled-cell-release-v1";
 const PROFILE: &str = "smollm2-135m-f32-r4-dense-single-adapter-no-fallback-v1";
@@ -127,12 +132,12 @@ impl VerifiedCellMaterialV1 {
         )
     }
 
-    pub(crate) fn start_cancellable(
+    pub(crate) fn start_with_execution(
         self,
         owner: SmolLmCellStartOwnerV1,
-        cancellation: CancellationToken,
+        startup: SmolLmStartupExecutionV1,
     ) -> Result<SmolLmNeuralReadPortV1, String> {
-        SmolLmNeuralReadPortV1::start_cancellable(
+        SmolLmNeuralReadPortV1::start_with_execution(
             self.config,
             self.pin,
             self.parameters,
@@ -143,7 +148,7 @@ impl VerifiedCellMaterialV1 {
             owner.control,
             owner.authorizer,
             owner.runtime,
-            cancellation,
+            startup,
         )
     }
 }
@@ -180,6 +185,7 @@ pub fn verify_controlled_cell_material_v1(
         parameters,
         expected_operation_id,
         dependency::DependencyPlan::OriginalTcr1,
+        None,
     )
 }
 
@@ -188,6 +194,7 @@ pub(crate) fn verify_controlled_cell_material_v2(
     config: SmolLmNeuralReadConfigV1,
     pin: NeuralCognitivePinV1,
     parameters: Vec<u8>,
+    execution: &NeuralCognitiveExecutionV1,
 ) -> Result<VerifiedCellMaterialV1, String> {
     verify_controlled_cell_bytes(
         inputs.sidecar,
@@ -200,9 +207,11 @@ pub(crate) fn verify_controlled_cell_material_v2(
             wire: inputs.dependency_wire,
             id: inputs.dependency_id,
         },
+        Some(execution),
     )
 }
 
+#[allow(clippy::too_many_arguments)]
 fn verify_controlled_cell_bytes(
     raw: Vec<u8>,
     expected_sha256: Digest32,
@@ -211,7 +220,9 @@ fn verify_controlled_cell_bytes(
     parameters: Vec<u8>,
     expected_operation_id: &str,
     dependency: dependency::DependencyPlan,
+    execution: Option<&NeuralCognitiveExecutionV1>,
 ) -> Result<VerifiedCellMaterialV1, String> {
+    wire::check_execution(execution)?;
     need(
         !raw.is_empty()
             && raw.len() as u64 <= MAX_SIDECAR
@@ -221,6 +232,7 @@ fn verify_controlled_cell_bytes(
     let sidecar: Sidecar = serde_json::from_slice(&raw).map_err(|e| e.to_string())?;
     let sources =
         validate_declaration(&sidecar, &config, &pin, &parameters, expected_operation_id)?;
+    wire::check_execution(execution)?;
     let family_path = config
         .source_pins
         .keys()
@@ -229,6 +241,7 @@ fn verify_controlled_cell_bytes(
         })
         .ok_or("family source")?;
     let family_raw = super::session::read_bounded(family_path, 2 * 1024 * 1024)?;
+    wire::check_execution(execution)?;
     need(
         Digest32::of_bytes(&family_raw) == pin.family_digest
             && pin.family_digest.to_string() == FAMILY_SHA256,
@@ -257,20 +270,25 @@ fn verify_controlled_cell_bytes(
     )?;
     let mut ids = Vec::new();
     for member in &sidecar.members {
+        wire::check_execution(execution)?;
         let (size, sha, chunks) = match member.name.as_str() {
             "adapter/artifact.safetensors" => {
-                wire::measure(Cursor::new(&parameters), 2 * 1024 * 1024)?
+                wire::measure(Cursor::new(&parameters), 2 * 1024 * 1024, execution)?
             }
-            "adapter/target-contract.json" => {
-                wire::measure(Cursor::new(&config.target_contract), 2 * 1024 * 1024)?
-            }
-            "adapter/wrapped-adapter.json" => {
-                wire::measure(Cursor::new(&config.wrapped_adapter), 2 * 1024 * 1024)?
-            }
+            "adapter/target-contract.json" => wire::measure(
+                Cursor::new(&config.target_contract),
+                2 * 1024 * 1024,
+                execution,
+            )?,
+            "adapter/wrapped-adapter.json" => wire::measure(
+                Cursor::new(&config.wrapped_adapter),
+                2 * 1024 * 1024,
+                execution,
+            )?,
             _ => {
                 let name = member.name.strip_prefix("base/").ok_or("base path")?;
                 let file = wire::open_regular(&config.materials.join(name), 300 * 1024 * 1024)?;
-                let measured = wire::measure(file, 300 * 1024 * 1024)?;
+                let measured = wire::measure(file, 300 * 1024 * 1024, execution)?;
                 if name != "material-manifest.json" {
                     let expected = &family["material_pins"]["files"][name];
                     need(
@@ -297,6 +315,7 @@ fn verify_controlled_cell_bytes(
     }
     let manifest_raw =
         super::session::read_bounded(&config.materials.join("material-manifest.json"), 65_536)?;
+    wire::check_execution(execution)?;
     let material_manifest: serde_json::Value =
         serde_json::from_slice(&manifest_raw).map_err(|e| e.to_string())?;
     need(
@@ -329,6 +348,7 @@ fn verify_controlled_cell_bytes(
         &(raw.len() as u64).to_be_bytes(),
         &raw,
     ]);
+    wire::check_execution(execution)?;
     Ok(VerifiedCellMaterialV1 {
         config,
         pin,

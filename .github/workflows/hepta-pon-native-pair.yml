@@ -956,7 +956,7 @@ jobs:
         env:
           CARGO_NET_OFFLINE: "true"
         run: |
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/host-material.json" --minimum-tests 18 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(smollm_neural_read::driver::cell_material::) | test(smollm_cognitive_process::tests::) | test(smollm_cognitive_host::tests::)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/host-material.json" --minimum-tests 23 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(smollm_neural_read::driver::cell_material::) | test(smollm_cognitive_process::tests::) | test(smollm_cognitive_host::tests::)' --no-capture
       - name: Execute the actual ordinary CLI subprocess controls
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
         env:
@@ -968,7 +968,7 @@ jobs:
         env:
           CARGO_NET_OFFLINE: "true"
         run: |
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/original-owner.json" --minimum-tests 32 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(final_use_authorizer::) | test(model_worker::tests::) | test(smollm_neural_read::driver::failure::tests::) | test(smollm_neural_read::driver::session::owner::tests::)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/original-owner.json" --minimum-tests 40 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(final_use_authorizer::) | test(model_worker::tests::) | test(smollm_neural_read::driver::failure::tests::) | test(smollm_neural_read::driver::session::owner::tests::) | test(smollm_neural_read::tests::)' --no-capture
       - name: Run the required scoped Clippy fix with unchanged-source enforcement
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
         env:

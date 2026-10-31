@@ -29,6 +29,7 @@ use crate::smollm_neural_read::ControlledCellInputsV2;
 use crate::smollm_neural_read::SmolLmCellStartOwnerV1;
 use crate::smollm_neural_read::SmolLmNeuralReadConfigV1;
 use crate::smollm_neural_read::SmolLmNeuralReadPortV1;
+use crate::smollm_neural_read::SmolLmStartupExecutionV1;
 use crate::smollm_neural_read::VerifiedCellMaterialV1;
 use crate::smollm_neural_read::verify_controlled_cell_material_v2;
 
@@ -180,8 +181,11 @@ async fn prepare_with_cell_admission(
     let worker_runtime = runtime.clone();
     let cancellation = CancellationToken::new();
     let mut pending = CancelPreparation(Some(cancellation.clone()));
+    // The original startup budget includes blocking-executor queueing and all
+    // subsequent Cell work. Neither qualification nor the loader restarts it.
+    let startup = SmolLmStartupExecutionV1::new(cancellation);
     let result = runtime
-        .spawn_blocking(move || prepare(config, inputs, cell, worker_runtime, cancellation))
+        .spawn_blocking(move || prepare(config, inputs, cell, worker_runtime, startup))
         .await
         .map_err(|error| format!("neural composition worker: {error}"))?;
     pending.0 = None;
@@ -193,11 +197,10 @@ fn prepare(
     inputs: SmolLmCognitiveHostInputsV1,
     cell: CellAdmission,
     runtime: tokio::runtime::Handle,
-    cancellation: CancellationToken,
+    startup: SmolLmStartupExecutionV1,
 ) -> Result<PreparedSmolLmAgentdV1, String> {
-    if cancellation.is_cancelled() {
-        return Err("neural host preparation cancelled before qualification".to_owned());
-    }
+    let load_execution = startup.execution().clone();
+    load_execution.check()?;
     StableId::new(inputs.worker_id.clone()).map_err(|error| error.to_string())?;
     if !inputs.inference_journal.is_absolute()
         || !inputs.final_use_authorizer_config.is_absolute()
@@ -235,9 +238,7 @@ fn prepare(
 
     // A Cell plan never supplies a selection or parameter path. Its measured
     // bytes must match the original selected payload FD and host execution pins.
-    if cancellation.is_cancelled() {
-        return Err("neural host preparation cancelled before Cell verification".to_owned());
-    }
+    load_execution.check()?;
     let selected = match cell {
         CellAdmission::OriginalOwner => SelectedMaterial::Original {
             config: inputs.worker,
@@ -245,16 +246,20 @@ fn prepare(
             parameters,
         },
         CellAdmission::PinnedClosure(cell) => SelectedMaterial::Cell(
-            verify_controlled_cell_material_v2(cell, inputs.worker, pin, parameters)
-                .map_err(|error| format!("neural complete Cell bytes: {error}"))?,
+            verify_controlled_cell_material_v2(
+                cell,
+                inputs.worker,
+                pin,
+                parameters,
+                &load_execution,
+            )
+            .map_err(|error| format!("neural complete Cell bytes: {error}"))?,
         ),
     };
 
     // No inference journal is opened, resource entered, issuer called or model
     // started until the original qualification and selection factories succeed.
-    if cancellation.is_cancelled() {
-        return Err("neural host preparation cancelled before inference owners".to_owned());
-    }
+    load_execution.check()?;
     let authorizer = Arc::new(
         UnixFinalUseAuthorizer::open(&inputs.final_use_authorizer_config)
             .map_err(|error| format!("neural original FinalUse owner: {error}"))?,
@@ -268,7 +273,7 @@ fn prepare(
             config,
             pin,
             parameters,
-        } => SmolLmNeuralReadPortV1::start_cancellable(
+        } => SmolLmNeuralReadPortV1::start_with_execution(
             config,
             pin,
             parameters,
@@ -279,9 +284,9 @@ fn prepare(
             control,
             authorizer,
             runtime.clone(),
-            cancellation.clone(),
+            startup,
         ),
-        SelectedMaterial::Cell(material) => material.start_cancellable(
+        SelectedMaterial::Cell(material) => material.start_with_execution(
             SmolLmCellStartOwnerV1 {
                 owner_id: owner,
                 body_generation: generation,
@@ -291,14 +296,14 @@ fn prepare(
                 authorizer,
                 runtime: runtime.clone(),
             },
-            cancellation.clone(),
+            startup,
         ),
     };
     let port = Arc::new(port.map_err(|error| format!("neural original model load: {error}"))?);
-    if cancellation.is_cancelled() {
+    if let Err(error) = load_execution.check() {
         let cleanup = port.shutdown();
         return Err(format!(
-            "neural host preparation cancelled after load; terminal unload: {cleanup:?}"
+            "neural host preparation expired or cancelled after load: {error}; terminal unload: {cleanup:?}"
         ));
     }
     if slot.0.set(port.clone()).is_err() {

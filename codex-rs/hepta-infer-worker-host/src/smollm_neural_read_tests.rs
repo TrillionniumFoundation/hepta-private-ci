@@ -122,6 +122,75 @@ fn runtime() -> tokio::runtime::Runtime {
 }
 
 #[test]
+fn original_startup_window_and_cancellation_survive_transfer_to_the_loader() {
+    let token = CancellationToken::new();
+    let startup = SmolLmStartupExecutionV1::new(token.clone());
+    let deadline = startup.execution().deadline();
+    let execution = startup.execution().clone();
+    assert_eq!(execution.deadline(), deadline);
+    execution.check().unwrap();
+    token.cancel();
+    assert!(execution.check().unwrap_err().contains("cancelled"));
+    assert!(
+        startup
+            .execution()
+            .check()
+            .unwrap_err()
+            .contains("cancelled")
+    );
+}
+
+#[test]
+fn expired_startup_is_not_restarted_and_cannot_admit_claim_or_spawn() {
+    for cancelled in [false, true] {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        let runtime = runtime();
+        let issuer = Arc::new(TestIssuer::open(&root.join("authority")));
+        let (config, pin, parameters) = controlled_start_inputs(root);
+        let path = root.join("inference.control");
+        let control = Arc::new(Mutex::new(DurableInferenceControl::open(&path, 8).unwrap()));
+        let journal_before = fs::read(&path).unwrap();
+        let token = CancellationToken::new();
+        let deadline = if cancelled {
+            token.cancel();
+            std::time::Instant::now() + Duration::from_secs(120)
+        } else {
+            std::time::Instant::now()
+        };
+        // A shorter already-expired window is a rejection input, never a
+        // production alternate budget or permission to reset the original one.
+        let startup = SmolLmStartupExecutionV1 {
+            execution: codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
+                deadline,
+                token.clone(),
+            ),
+            cancellation: token,
+        };
+        let result = SmolLmNeuralReadPortV1::start_with_execution(
+            config,
+            pin,
+            parameters,
+            owner(),
+            1,
+            "controlled-neural-worker".to_owned(),
+            grant(),
+            control,
+            issuer.clone(),
+            runtime.handle().clone(),
+            startup,
+        );
+        assert!(
+            matches!(result, Err(ref error) if error.contains(if cancelled { "cancelled" } else { "deadline" }))
+        );
+        assert_eq!(fs::read(&path).unwrap(), journal_before);
+        assert!(issuer.bindings.lock().unwrap().is_empty());
+        assert!(issuer.issued.lock().unwrap().is_empty());
+        assert!(!root.join("must-not-create-model-session").exists());
+    }
+}
+
+#[test]
 fn original_control_and_final_use_bind_resource_epoch_owner_and_body_on_reopen() {
     let directory = tempfile::tempdir().unwrap();
     let runtime = runtime();
@@ -245,13 +314,9 @@ fn original_control_and_final_use_bind_resource_epoch_owner_and_body_on_reopen()
     assert_eq!(reopened.get(&fourth.request_id), Some(&fourth_before));
 }
 
-#[test]
-fn original_final_use_denial_prevents_even_starting_the_model_process() {
-    let directory = tempfile::tempdir().unwrap();
-    let root = directory.path();
-    let runtime = runtime();
-    let issuer = Arc::new(TestIssuer::open(&root.join("authority")));
-    issuer.denied.store(true, Ordering::SeqCst);
+fn controlled_start_inputs(
+    root: &Path,
+) -> (SmolLmNeuralReadConfigV1, NeuralCognitivePinV1, Vec<u8>) {
     let source_pins = [
         "llm_adapter_contract.py",
         "llm_inherited_runtime.py",
@@ -291,6 +356,17 @@ fn original_final_use_denial_prevents_even_starting_the_model_process() {
         family_digest: Digest32::of_bytes(b"family"),
         execution_profile_digest: config.execution_profile_digest().unwrap(),
     };
+    (config, pin, parameters)
+}
+
+#[test]
+fn original_final_use_denial_prevents_even_starting_the_model_process() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path();
+    let runtime = runtime();
+    let issuer = Arc::new(TestIssuer::open(&root.join("authority")));
+    issuer.denied.store(true, Ordering::SeqCst);
+    let (config, pin, parameters) = controlled_start_inputs(root);
     let control = Arc::new(Mutex::new(
         DurableInferenceControl::open(root.join("inference.control"), 8).unwrap(),
     ));
