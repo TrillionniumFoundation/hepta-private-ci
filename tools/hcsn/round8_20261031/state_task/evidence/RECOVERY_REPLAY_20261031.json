@@ -1,0 +1,390 @@
+{
+  "schema": "hepta.r8.state-independent-replay.v1",
+  "passed": true,
+  "source_freeze_sha256": "fc49a9c5e1cba1aa76ec8c1ac19f29b4b8fdbce83add513a3f43f4c857c05f8c",
+  "frozen_hashes_verified": 22,
+  "original_evidence_hashes_verified": 30,
+  "predictor_episodes_replayed": 106496,
+  "unique_confirmation_examples": 8192,
+  "new_confirmation_examples": 0,
+  "max_abs_prediction_difference": 1.235808260197091e-06,
+  "all_actions_identical": true,
+  "rows": [
+    {
+      "regime": "iid",
+      "model": "analytic_filter_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 3.4723797392999245e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "analytic_filter_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 4.075073928300199e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "analytic_filter_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 3.3845574887170216e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "sufficient_mlp_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.26324327220928e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "sufficient_mlp_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.4915412410720919e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "sufficient_mlp_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.420218874725876e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "gru_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.2934094317795797e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "gru_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.236295407713861e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "gru_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 9.690173669030244e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "memoryless_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 8.905729542707519e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "memoryless_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 8.972209142310561e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "memoryless_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.044067204913901e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "iid",
+      "model": "fixed_ordinary_filter",
+      "examples": 2048,
+      "max_abs_prediction_difference": 3.988675635335781e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "analytic_filter_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 5.62234358847391e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "analytic_filter_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 5.689514698259401e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "analytic_filter_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 5.526694156765544e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "sufficient_mlp_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.587273376624232e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "sufficient_mlp_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.7204190988495682e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "sufficient_mlp_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.2859212339400017e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "gru_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.537413856222969e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "gru_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.6237698563514869e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "gru_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.89089693458655e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "memoryless_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 9.039754672590661e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "memoryless_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 8.228700143497747e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "memoryless_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.111587673019443e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "long_history",
+      "model": "fixed_ordinary_filter",
+      "examples": 2048,
+      "max_abs_prediction_difference": 6.124465474766083e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "analytic_filter_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.235808260197091e-06,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "analytic_filter_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.226380742291866e-06,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "analytic_filter_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.2294284111868947e-06,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "sufficient_mlp_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.3865488623920896e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "sufficient_mlp_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.3492710115858841e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "sufficient_mlp_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.2993701481445186e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "gru_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.313508636857641e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "gru_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.2786971903544497e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "gru_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.3010123756096448e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "memoryless_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 7.81773596969515e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "memoryless_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 8.421592578855552e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "memoryless_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 8.088283304230615e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "low_noise",
+      "model": "fixed_ordinary_filter",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.2337596496103664e-06,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "analytic_filter_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.9488597702288502e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "analytic_filter_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.933017059752018e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "analytic_filter_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 2.3620402561652654e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "sufficient_mlp_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.1152378542877983e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "sufficient_mlp_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.2392254744586495e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "sufficient_mlp_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 9.921436666671113e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "gru_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.3406756682599053e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "gru_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.0407908052068038e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "gru_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 1.21867079094784e-07,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "memoryless_17",
+      "examples": 2048,
+      "max_abs_prediction_difference": 7.536871526880873e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "memoryless_29",
+      "examples": 2048,
+      "max_abs_prediction_difference": 7.37973604447717e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "memoryless_43",
+      "examples": 2048,
+      "max_abs_prediction_difference": 8.834998938000993e-08,
+      "action_differences": 0
+    },
+    {
+      "regime": "moving_boundary",
+      "model": "fixed_ordinary_filter",
+      "examples": 2048,
+      "max_abs_prediction_difference": 2.409056548136057e-07,
+      "action_differences": 0
+    }
+  ],
+  "cost_gates_recomputed_from_original_raw_timings": true,
+  "amortization_rows_recomputed": 128,
+  "new_hardware_timing_claim": false,
+  "production_activation": false,
+  "scope": "Independent NumPy float64 forward replay of frozen PyTorch float32 weights; original model and data bytes preserved. Exact ordinary filter still matches risk and actions; necessity of spikes remains unproved.",
+  "audit_cpu_seconds": 0.772505405,
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+  }
+}
