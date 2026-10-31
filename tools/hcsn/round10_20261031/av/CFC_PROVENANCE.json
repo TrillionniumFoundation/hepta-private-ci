@@ -1,0 +1,17 @@
+{
+  "repository": "https://github.com/mlech26l/ncps",
+  "commit": "695ec22d7d1831f2ced67346ef7d2f08c525bd47",
+  "path": "ncps/torch/cfc_cell.py",
+  "git_blob_sha1": "564885f723882dc4b9f8d3046ada152474eb9294",
+  "local_source": "upstream_cfc_cell.py",
+  "copyright": "Copyright 2022 Mathias Lechner and Ramin Hasani",
+  "license": "Apache-2.0; notice preserved verbatim in upstream source",
+  "implemented_configuration": "default mode, backbone_layers=0, no sparsity mask",
+  "equation": "f1=tanh(ff1(concat(x,h))); f2=tanh(ff2(concat(x,h))); mix=sigmoid(time_a(concat(x,h))*dt+time_b(concat(x,h))); h_next=f1*(1-mix)+f2*mix",
+  "differences": [
+    "Independent NumPy float64 implementation and hand-written BPTT",
+    "Common experiment initialization uses zero biases, not the upstream PyTorch Linear random bias initialization",
+    "No claim of reproducing pretrained weights, original paper hyperparameters, or fused hardware runtime",
+    "Official PyTorch execution unavailable in this environment; exact equation and finite-difference checks executed"
+  ]
+}
