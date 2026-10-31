@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.v3.independent-audits-bound.v1",
+  "passed": true,
+  "errors": [],
+  "actual_trajectories": 13056,
+  "component_sha256": {
+    "final_20261031": "16ad488d3939168eb6d367286f40598cd96c5edda4c429fea3710d207f5a9720",
+    "consumer_20261031": "7223d88c6d7bf83dfa7ee4f11208fc7c6fd2a9b793e087ad3f2a6bf54a0cb3f6",
+    "calibration_20261031": "77060df769307ed2c238aca1fe1a635506e522b515abab26331846c1e090c40a"
+  },
+  "source_roles": {
+    "critic_choice.analysis": {
+      "sources": 16,
+      "inputs": 16,
+      "namespaces": [
+        "joint-v3-critic-choice.fresh-analysis.20261030"
+      ]
+    },
+    "diagnostic.analysis": {
+      "sources": 8,
+      "inputs": 8,
+      "namespaces": [
+        "joint-v3-calibration.analysis.20261030"
+      ]
+    },
+    "diagnostic.fit": {
+      "sources": 8,
+      "inputs": 8,
+      "namespaces": [
+        "joint-v3-calibration.fit.20261030"
+      ]
+    },
+    "matrix.analysis": {
+      "sources": 24,
+      "inputs": 24,
+      "namespaces": [
+        "joint-v3-initial-stop.analysis.20261030"
+      ]
+    },
+    "matrix.train": {
+      "sources": 238,
+      "inputs": 238,
+      "namespaces": [
+        "joint-v3-initial-stop.train.20261030"
+      ]
+    }
+  },
+  "cross_role_overlap": {
+    "critic_choice.analysis__diagnostic.analysis": {
+      "source_overlap": 0,
+      "input_overlap": 0
+    },
+    "critic_choice.analysis__diagnostic.fit": {
+      "source_overlap": 0,
+      "input_overlap": 0
+    },
+    "critic_choice.analysis__matrix.analysis": {
+      "source_overlap": 0,
+      "input_overlap": 0
+    },
+    "critic_choice.analysis__matrix.train": {
+      "source_overlap": 0,
+      "input_overlap": 0
+    },
+    "diagnostic.analysis__diagnostic.fit": {
+      "source_overlap": 0,
+      "input_overlap": 0
+    },
+    "diagnostic.analysis__matrix.analysis": {
+      "source_overlap": 0,
+      "input_overlap": 0
+    },
+    "diagnostic.analysis__matrix.train": {
+      "source_overlap": 0,
+      "input_overlap": 0
+    },
+    "diagnostic.fit__matrix.analysis": {
+      "source_overlap": 0,
+      "input_overlap": 0
+    },
+    "diagnostic.fit__matrix.train": {
+      "source_overlap": 0,
+      "input_overlap": 0
+    },
+    "matrix.analysis__matrix.train": {
+      "source_overlap": 0,
+      "input_overlap": 0
+    }
+  },
+  "summary_source_sha256": "0d211c59263f952ba4d32d54ed2462a4c3c188096c19378e928fa2bcd324aa09",
+  "reconciliation_only_no_scientific_or_production_qualification": true
+}

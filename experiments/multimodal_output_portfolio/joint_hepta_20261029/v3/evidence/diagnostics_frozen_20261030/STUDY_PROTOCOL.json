@@ -1,0 +1,138 @@
+{
+  "bootstrap": 400,
+  "checkpoint_metadata": {
+    "arm": "dual.joint.dynamic",
+    "protocol_sha256": "ab148cfa2f95b87d9100d2908d00ae671a1180e5c2cf0c34f1d1a7861b4f26f9",
+    "seed": 17,
+    "stage": "development_joint"
+  },
+  "checkpoint_sha256": "9032b0750ea07c9ad5f9d0fb657d0ce16fd67ccacde1a653908207cbfdb542dc",
+  "continuations": [
+    "stop",
+    "dynamic"
+  ],
+  "draws": 4,
+  "fit_lr": 0.001,
+  "fit_updates": 100,
+  "future_seed": "17000000+role_index*1000000+source*10000+prefix_index*1000+continuation_index*100+7919*draw",
+  "gradient_clip": 5.0,
+  "model_sha256": "086fa1df4fd7eb414697938032de7cb1e3fc6de93a407186d96a8a8aaf7cbcdd",
+  "namespaces": {
+    "analysis": "joint-v3-calibration.analysis.20261030",
+    "fit": "joint-v3-calibration.fit.20261030"
+  },
+  "old_confirmation_sources_consumed": 0,
+  "prefixes": [
+    [],
+    [
+      "shared"
+    ]
+  ],
+  "profile": {
+    "audio_rate": 2048,
+    "capability": "development_only_no_natural_or_global_optimum_claim",
+    "clock": "continuous_process_cpu_and_wall_boundaries",
+    "commitment": "buffered_bundle; native_stream_profile_is_separate",
+    "cost_boundary": "encode_identity_checks_control_transition_codec_observer_audit_draft_and_seal",
+    "final_seal_cost": "included_in_training_return; final_sidecar_is_outer_run_overhead",
+    "frame_ms": 120,
+    "horizon": 6,
+    "initial_budget": 100.0,
+    "initial_stop_legal": true,
+    "parent": {
+      "commitment": "buffered_bundle; one_immutable_final_file_per_modality",
+      "compute_clock": "measured_monotonic_microseconds",
+      "conditional_scope": "same_gamma_joint_selected_action_complete_return",
+      "event_clock": "monotone_decision_index",
+      "filtration": "bound_input_and_past_executed_events",
+      "generation_clock": "per_modality_transition_count",
+      "input_contract_sha256": "ccb03e8cf957dde7d28587d5fa9837d99bb2c7ba14425dc0a3ff2b4b2dba848b",
+      "max_events": 9,
+      "media_units": {
+        "audio": "sample",
+        "image": "none",
+        "text": "token",
+        "video": "frame"
+      },
+      "model_port_sha256": "fc8779e1c0976d45a33a3bffa251415933daae09f1f125a156fc233fea34e1b5",
+      "ndu": {
+        "aggregation": "population",
+        "continuation_sha256": "75155cc8f3e4f5b81a36874c1e90fa56d714c9bfafe6461e407602fc0fb6d397",
+        "cost_treatment": "actual_joint_increment_once",
+        "cost_unit": "normalized_utility",
+        "gamma": 2.0,
+        "objective_sha256": "40d25e5e8376050dc0dc151e7b364c50b1405a3b5a716395393b649a0240abb3",
+        "observer_sha256": "a8f65e79460a1dbf2b4fd70e59bdb0953401b99f663bc1398e92d47f08bad93b",
+        "required_modalities": [
+          "text",
+          "image",
+          "audio",
+          "video"
+        ],
+        "reward_source": "bound_external_post_codec_observer",
+        "schema": "hepta.ndu.unified-profile.v1",
+        "stopping": "explicit_delivered_terminal_outcome",
+        "time_discount": 1.0,
+        "utility_bounds": [
+          -1.0,
+          1.0
+        ]
+      },
+      "parameter_updates": "candidate_only; immutable_selected_snapshot_per_episode",
+      "parent_blob": "98c62c6cef43489dadc8d010ce9b59735a88fc66",
+      "parent_code": "experiments/multimodal_output_portfolio/unified_20261028/profile.py",
+      "parent_commit": "a50c8974ac23c20c5174f7c3ad542a96e5652854",
+      "parent_schema": "hepta.ndu.unified-profile.v1",
+      "population_scope": "log_after_expectation_over_tasks_and_actual_rollouts",
+      "randomness_contract_sha256": "11a79e0ef5e669dbe20d5d450eaac0748563bd3247ce9fadea2a55a14961deb6",
+      "resource_accounting_sha256": "84c50f8b53c6c11fb5f8a155ce043d17acd5c7b1469b5ef36ebf459af103c90f",
+      "runtime_feature_keys": [
+        "encoded_input",
+        "latent_state",
+        "committed_prefix",
+        "remaining_budget",
+        "remaining_steps",
+        "clocks",
+        "uncertainty"
+      ],
+      "schema": "hepta.joint-generation.contract.v1",
+      "stopping": "execute_delivery_then_observe; no_oracle_terminal_label",
+      "time_discount": 1.0
+    },
+    "physical_hard_budget_guarantee": false,
+    "prefix": "immutable_state_budget_named_rng_and_already_charged_events",
+    "randomness": "actor_seed; emission_seed_xor_0x5eed1234; conditional_sampling",
+    "risk": "finite_horizon_population_entropic_CE_gamma2; not_general_NDU",
+    "schema": "hepta.joint-generation.initial-stop.v3",
+    "source": {
+      "model.py": "16e285818a0e70d60da50ebec6e1bd15ecdc75a09df1db08caf43772f60cf612",
+      "profile.py": "a9ee97c4c2ffc36c08ba12db32fde082856307a3c6b42fc57e9a9dc93b4a7bbc",
+      "runtime.py": "90d92d180d9663dcb733e9dfa9a9271cf12c61c34c0977a7f45371745d207b51"
+    },
+    "tariff": {
+      "audio": 0.0025,
+      "cpu_second": 0.02,
+      "delivery": 0.005,
+      "encode": 0.001,
+      "image": 0.0025,
+      "shared": 0.004,
+      "stop": 0.0005,
+      "text": 0.0025,
+      "verify": 0.003,
+      "video": 0.0025,
+      "wall_second": 0.001
+    },
+    "verification": "public_consistency_proxy; not_independent_new_evidence"
+  },
+  "research_effect_qualified": false,
+  "schema": "hepta.joint-generation.diagnostic-cohort.v3",
+  "source_sha256": {
+    "critic_calibration.py": "9391bf8acf7eabbb2518280b07e6a569a36473287b266565c976105fb8fc2e7c",
+    "diagnostics.py": "3d80cae5fdc6deef273d2246ca4ede392f084703dc4345ebff49445af27fea6b",
+    "diagnostics_study.py": "056449394ad548923b89bfedb4109cdbee2988bdfcb6dd4355111e8774eca46b",
+    "model.py": "16e285818a0e70d60da50ebec6e1bd15ecdc75a09df1db08caf43772f60cf612",
+    "profile.py": "a9ee97c4c2ffc36c08ba12db32fde082856307a3c6b42fc57e9a9dc93b4a7bbc",
+    "runtime.py": "90d92d180d9663dcb733e9dfa9a9271cf12c61c34c0977a7f45371745d207b51"
+  },
+  "sources_per_role": 8
+}

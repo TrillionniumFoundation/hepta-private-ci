@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.native-qualification-whole-process.v3",
+  "returncode": 0,
+  "command": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "-m",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.native_generation.qualify",
+    "--checkpoint",
+    "/workspace/scratch/82c7d4c559ad/hepta-portfolio/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/matrix_frozen_20261030/seed-17-width-32/dual.joint.dynamic/MODEL.pt",
+    "--output",
+    "/workspace/scratch/82c7d4c559ad/hepta-portfolio/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/native_generation/evidence/frozen_trained_20261031",
+    "--rustc",
+    "/tmp/pq-r3-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc"
+  ],
+  "scope": "whole qualification process including imports, compilation, differential, stream and evidence writes",
+  "excluded": "outer standard-library launcher startup and this process-report assembly",
+  "wall_seconds": 7.358050506998552,
+  "child_cpu_seconds": 10.386945999999998,
+  "max_child_rss_kib": 235368,
+  "rss_scope": "Linux maximum observed individual child RSS, not summed concurrent memory",
+  "python_source_sha256": {
+    "qualify_external.py": "29a7fe18fd6a2e7e8b78ca41f30b5f3dd398a2cd341e7e2943248820a0efbd48",
+    "qualify.py": "278f22bc6a72a1da865d1ab1402156907c141375c714d5808078c7dbbe501f55",
+    "native_bridge.py": "51a8406c9c871f7b50f13ac049c75cdd173bd2bc4e1834b962d298736124803c"
+  },
+  "serving_cost_or_quality_comparison": false
+}

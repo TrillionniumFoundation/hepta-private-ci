@@ -1,0 +1,208 @@
+{
+  "all_registered_endpoint_lower_bounds_positive": false,
+  "analysis_trajectories": 2304,
+  "cells": 6,
+  "confirmation_sources_consumed": 0,
+  "failures": 0,
+  "inference_control_trajectories": 2304,
+  "initial_stop_training_samples": 387,
+  "interpretation": "Marginal source-bootstrap intervals are development diagnostics, not multiplicity-adjusted confirmatory evidence.",
+  "outer_phase_cost": {
+    "cpu_seconds": 722.831159,
+    "wall_seconds": 579.680432496003
+  },
+  "primary_comparison": "dual.joint.dynamic__minus__dual.joint.fixed",
+  "primary_endpoints": [
+    {
+      "amortized_training_deltas": {
+        "1000": -0.00869956178893812,
+        "10000": -0.009323833176805326,
+        "100000": -0.009386260315592046
+      },
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": -0.009393196664346126,
+      "ce_delta_percentile_95": [
+        -0.025100031860935373,
+        0.002713087048003093
+      ],
+      "ce_left": 0.5158060437888172,
+      "ce_right": 0.5251992404531634,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 24,
+      "mean_paired_return_delta": -0.0102061599250723,
+      "paired_draws": 48,
+      "seed": 17,
+      "training_cost": {
+        "dual.joint.dynamic": 2.258931987427,
+        "dual.joint.fixed": 2.952566862835007
+      },
+      "width": 32
+    },
+    {
+      "amortized_training_deltas": {
+        "1000": 0.0012329749225826441,
+        "10000": 0.0008886495713723432,
+        "100000": 0.0008542170362513133
+      },
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": 0.0008503911990156432,
+      "ce_delta_percentile_95": [
+        -0.009471741606664174,
+        0.00807614474767203
+      ],
+      "ce_left": 0.5061205757358176,
+      "ce_right": 0.505270184536802,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 24,
+      "mean_paired_return_delta": 0.0009234870531844222,
+      "paired_draws": 48,
+      "seed": 17,
+      "training_cost": {
+        "dual.joint.dynamic": 2.563602344481004,
+        "dual.joint.fixed": 2.946186068048005
+      },
+      "width": 64
+    },
+    {
+      "amortized_training_deltas": {
+        "1000": -0.004569174174165549,
+        "10000": -0.00483706802090815,
+        "100000": -0.00486385740558241
+      },
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": -0.00486683400387955,
+      "ce_delta_percentile_95": [
+        -0.007578264457306211,
+        -0.001794492834743272
+      ],
+      "ce_left": 0.42685251813347524,
+      "ce_right": 0.4317193521373548,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 24,
+      "mean_paired_return_delta": -0.0030431705765524494,
+      "paired_draws": 48,
+      "seed": 29,
+      "training_cost": {
+        "dual.joint.dynamic": 2.631002234777002,
+        "dual.joint.fixed": 2.928662064491003
+      },
+      "width": 32
+    },
+    {
+      "amortized_training_deltas": {
+        "1000": 0.0008679367674033794,
+        "10000": 0.00018593340208088475,
+        "100000": 0.0001177330655486353
+      },
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": 0.00011015525037838536,
+      "ce_delta_percentile_95": [
+        -0.010794841839114333,
+        0.009972897638186467
+      ],
+      "ce_left": 0.5334995035854948,
+      "ce_right": 0.5333893483351164,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 24,
+      "mean_paired_return_delta": 0.0015654933325807234,
+      "paired_draws": 48,
+      "seed": 29,
+      "training_cost": {
+        "dual.joint.dynamic": 2.354591418579997,
+        "dual.joint.fixed": 3.112372935604991
+      },
+      "width": 64
+    },
+    {
+      "amortized_training_deltas": {
+        "1000": 0.00845216945232109,
+        "10000": 0.007790699813528591,
+        "100000": 0.007724552849649341
+      },
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": 0.007717203186996091,
+      "ce_delta_percentile_95": [
+        -0.005469648380677255,
+        0.021153909034758465
+      ],
+      "ce_left": 0.43718489811202255,
+      "ce_right": 0.42946769492502646,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 24,
+      "mean_paired_return_delta": 0.008014071276210703,
+      "paired_draws": 48,
+      "seed": 43,
+      "training_cost": {
+        "dual.joint.dynamic": 2.260315495297005,
+        "dual.joint.fixed": 2.9952817606220026
+      },
+      "width": 32
+    },
+    {
+      "amortized_training_deltas": {
+        "1000": -0.004655459559025405,
+        "10000": -0.005051125267361605,
+        "100000": -0.0050906918381952255
+      },
+      "bootstrap_replicates": 1000,
+      "bootstrap_unit": "original_source",
+      "ce_delta": -0.005095088123843405,
+      "ce_delta_percentile_95": [
+        -0.01954738451856929,
+        0.0060111892552762135
+      ],
+      "ce_left": 0.5086185680741455,
+      "ce_right": 0.5137136561979889,
+      "confirmation": false,
+      "finite_sample_ce_bias": true,
+      "independent_units": 24,
+      "mean_paired_return_delta": -0.004086624612652003,
+      "paired_draws": 48,
+      "seed": 43,
+      "training_cost": {
+        "dual.joint.dynamic": 2.6009430886489953,
+        "dual.joint.fixed": 3.0405716534669955
+      },
+      "width": 64
+    }
+  ],
+  "research_effect_qualified": false,
+  "schema": "hepta.generation.v3.complete-development-matrix",
+  "seed_widths": [
+    [
+      17,
+      32
+    ],
+    [
+      17,
+      64
+    ],
+    [
+      29,
+      32
+    ],
+    [
+      29,
+      64
+    ],
+    [
+      43,
+      32
+    ],
+    [
+      43,
+      64
+    ]
+  ],
+  "training_trajectories": 6144
+}

@@ -1,0 +1,343 @@
+{
+  "audit_source_sha256": {
+    "adjacent.py": "1917bd7be93bd574080e2dea6d059056bce31709c18275537155a25f42870984",
+    "core.py": "034f61272f495799254efa0e1bb28835557884098a920680c1d2d31fedacd92a",
+    "diagnostic.py": "244e72f749c5a06b49fe409274995c5382c4ef3903d76b7790a9800227386e6d",
+    "matrix.py": "5486acffe2bf0cd1218fdc6c5329b7608e8ffa0cfa48695e95e6aae0c74c0fb9",
+    "run.py": "dfa946d0ea34d0ba3feb0339704eca342d858001e5c31f8b48f9070bb557426f"
+  },
+  "checks_by_kind": {
+    "actual_artifact_sha256": 51200,
+    "all_six_registered_cells_complete": 1,
+    "amortization_training_cost": 96,
+    "amortized_training_delta": 144,
+    "calibrated_checkpoint_identity": 1,
+    "checkpoint_configuration": 60,
+    "checkpoint_file_identity": 60,
+    "checkpoint_parameter_count": 60,
+    "checkpoint_parameter_identity": 60,
+    "complete_delivered_bundle": 12800,
+    "continuous_suffix_meter": 168288,
+    "critic_fit_claim_boundary": 1,
+    "critic_fit_original_source_disjoint": 1,
+    "critic_fit_preserved_actor": 1,
+    "critic_fit_preserved_generator": 1,
+    "critic_fitted_state_identity": 1,
+    "critic_only_file_identity": 1,
+    "critic_only_weights_match_full_checkpoint": 1,
+    "critic_target_actual_suffix": 2048,
+    "delivered_stop_terminal": 12800,
+    "development_claim_boundary": 6,
+    "diagnostic_all_legal_interventions_retained": 64,
+    "diagnostic_conditional_ce": 512,
+    "diagnostic_continuation_count": 1,
+    "diagnostic_delivered_utility": 2048,
+    "diagnostic_difference_of_population_ce": 512,
+    "diagnostic_failure_retained": 2048,
+    "diagnostic_final_checkpoint_binding": 1,
+    "diagnostic_group_completeness": 1,
+    "diagnostic_model_input_binding": 64,
+    "diagnostic_prediction_moment_ce": 512,
+    "diagnostic_prefix_payload_sha": 64,
+    "diagnostic_readback_actual_bytes": 2048,
+    "diagnostic_readback_receipt_payload": 2048,
+    "diagnostic_readback_tensor_identity": 2048,
+    "diagnostic_same_sunk_cost": 2048,
+    "diagnostic_sealed_cost": 2048,
+    "diagnostic_sealed_return": 2048,
+    "diagnostic_source_role": 64,
+    "diagnostic_suffix_cost": 2048,
+    "diagnostic_suffix_return": 2048,
+    "evaluation_actions_failure": 4608,
+    "evaluation_cost_kind_amount": 36356,
+    "evaluation_cost_kinds": 4608,
+    "evaluation_failure_count": 96,
+    "evaluation_mean_cost": 96,
+    "evaluation_mean_utility": 96,
+    "evaluation_namespace": 4608,
+    "evaluation_no_unreported_trajectories": 96,
+    "evaluation_row_artifacts": 4608,
+    "evaluation_row_binding": 4608,
+    "evaluation_row_cost": 4608,
+    "evaluation_row_return": 4608,
+    "evaluation_row_utility": 4608,
+    "evaluation_source_draw_complete": 96,
+    "factorial_arm_completeness": 6,
+    "failures_retained": 0,
+    "fixed_actor_unchanged": 24,
+    "forced_action_no_actor_score": 32576,
+    "fresh_native_exact_artifact_replay": 4,
+    "fresh_native_full_semantic_replay_and_codec": 1,
+    "fresh_prefix_not_inherited": 10752,
+    "frozen_generator_unchanged": 24,
+    "human_packet_unrated_actual_completion": 12,
+    "identical_pretrained_start": 48,
+    "immutable_training_batch_parameters": 1536,
+    "independent_full_vocabulary_token_decode": 12,
+    "independent_media_utility": 12800,
+    "independent_named_future_rng": 2048,
+    "independent_prefix_input_identity": 64,
+    "independent_prefix_state_identity": 64,
+    "inference_controls_complete": 12,
+    "inherited_prefix_once": 2048,
+    "initial_stop_sample_count": 48,
+    "ledger_boundaries": 12800,
+    "local_lm_tokenizer_file_identity": 7,
+    "matrix_summary_count_analysis_trajectories": 1,
+    "matrix_summary_count_cells": 1,
+    "matrix_summary_count_inference_control_trajectories": 1,
+    "matrix_summary_count_training_trajectories": 1,
+    "meter_amount": 110768,
+    "native_claim_boundary": 1,
+    "native_committed_chunk_identity": 8,
+    "native_committed_prefix_append_only": 64,
+    "native_exact_hash_chain": 16,
+    "native_final_checkpoint_binding": 1,
+    "native_final_retained_head": 1,
+    "native_numeric_error_max": 2,
+    "native_numeric_profile_tolerance": 2,
+    "native_output_file_identity": 4,
+    "native_qualification_source_identity": 3,
+    "native_reexport_selected_weights_input": 1,
+    "nonnegative_meter": 110768,
+    "paired_ce_delta": 48,
+    "paired_ce_left": 48,
+    "paired_ce_right": 48,
+    "paired_future_randomness": 256,
+    "paired_mean_paired_return_delta": 48,
+    "paired_outcome_record_identity": 2048,
+    "paired_source_order": 48,
+    "population_ce": 96,
+    "preseal_return": 12800,
+    "preseal_suffix": 12800,
+    "pretrained_group_identity": 12,
+    "registered_cell_identity": 1,
+    "registered_non_smoke_protocol": 6,
+    "registered_protocol_hash": 6,
+    "remaining_budget": 12800,
+    "retained_failure_contract": 12800,
+    "same_conditioning_prefix": 2048,
+    "sealed_ledger_sum": 12800,
+    "sealed_return": 12800,
+    "selected_action_legal_probability": 58544,
+    "selected_parameter_identity": 6848,
+    "service_fee": 110768,
+    "source_and_input_roles_disjoint": 6,
+    "source_bootstrap_interval": 96,
+    "source_bootstrap_units": 48,
+    "source_bound_input": 12800,
+    "source_sha256": 115,
+    "state_hash_chain": 59568,
+    "terminal_state_hash": 12800,
+    "text_actual_adapter_changes": 1,
+    "text_actual_token_domain": 12,
+    "text_analysis_role": 12,
+    "text_claim_boundary": 1,
+    "text_complete_control_grid": 1,
+    "text_document_context_identity": 8,
+    "text_final_checkpoint_binding": 1,
+    "text_final_weight_identity": 1,
+    "text_fixed_predicates_recomputed": 12,
+    "text_initial_weight_identity": 1,
+    "text_module_roles_disjoint": 1,
+    "text_prefix_weight_identity": 1,
+    "text_reported_generated_tokens": 1,
+    "text_reported_lm_unchanged": 1,
+    "text_reported_predicate_counts": 1,
+    "text_source_identity": 1,
+    "trained_parameter_group_identity": 48,
+    "training_episode_count": 48,
+    "training_failure_count": 48,
+    "training_namespace": 6144,
+    "training_no_missing_or_unreported_trajectories": 48,
+    "training_total_cost": 48,
+    "trajectories": 12800,
+    "trajectory_ledger_sum": 12800,
+    "trajectory_profile_identity": 12800,
+    "unique_diagnostic_arm_draw": 2048
+  },
+  "errors": [],
+  "limitations": [
+    "No claim that physical CPU/wall timings are exogenous or have a modelled direct gradient.",
+    "Recorded counters are reconciled; external physical time measurement is not independently reconstructed.",
+    "Training and optimizer updates are not replayed; actual final parameter groups and retained rollout identities are checked.",
+    "Synthetic namespaces and public document module roles are disjoint; foundation-model pretraining may overlap.",
+    "No general NDU optimum, natural four-modality qualification, human semantic rating or production-owner integration is certified.",
+    "Native replay checks local declared profile; no automatic external witness service or hardware power-loss qualification."
+  ],
+  "max_independent_utility_absolute_error": 1.0963386576356982e-07,
+  "partial": false,
+  "passed": true,
+  "role_overlaps": {
+    "diagnostic.analysis__diagnostic.fit": {
+      "public_input_overlap": 0,
+      "source_overlap": 0
+    },
+    "diagnostic.analysis__matrix.analysis": {
+      "public_input_overlap": 0,
+      "source_overlap": 0
+    },
+    "diagnostic.analysis__matrix.train": {
+      "public_input_overlap": 0,
+      "source_overlap": 0
+    },
+    "diagnostic.fit__matrix.analysis": {
+      "public_input_overlap": 0,
+      "source_overlap": 0
+    },
+    "diagnostic.fit__matrix.train": {
+      "public_input_overlap": 0,
+      "source_overlap": 0
+    },
+    "matrix.analysis__matrix.train": {
+      "public_input_overlap": 0,
+      "source_overlap": 0
+    }
+  },
+  "schema": "hepta.v3.independent-evidence-audit.v1",
+  "scope": "read-only retained-data/weight/source reconciliation; independently decoded media and utility arithmetic",
+  "sections": {
+    "diagnostic": {
+      "actual_trajectories": 2048,
+      "checkpoint_sha256": "9032b0750ea07c9ad5f9d0fb657d0ce16fd67ccacde1a653908207cbfdb542dc",
+      "critic_only_changes_verified": true,
+      "failures_retained": 0,
+      "groups": 64,
+      "raw_summary_sha256": "940042624f7392cc98096bbf60e10d39b04faa54f73fff5458e0e44e78091842"
+    },
+    "matrix": {
+      "analysis_trajectories": 2304,
+      "completed_cells": [
+        {
+          "arms": 8,
+          "result_sha256": "d45276c364674c8ac4fd2c5bceff3bed49f2c3bef3fee8ddf43aa3fdc13bd6ef",
+          "seed": 17,
+          "width": 32
+        },
+        {
+          "arms": 8,
+          "result_sha256": "41f683ec20df339600cbb2ce2206e53cc921029bc91401d5c7638590d7391c3e",
+          "seed": 17,
+          "width": 64
+        },
+        {
+          "arms": 8,
+          "result_sha256": "2ccc26654900de17e944b2ba089d09c8235c55820a810a85e7faad1de9c17669",
+          "seed": 29,
+          "width": 32
+        },
+        {
+          "arms": 8,
+          "result_sha256": "ff96641adb619083ccbb34c68e691ae70f4600cfa0f01cf89a54760b5c3d306c",
+          "seed": 29,
+          "width": 64
+        },
+        {
+          "arms": 8,
+          "result_sha256": "be63b3801c1ae04fb71a8e6902f49892ccf07e3a316b863573ce6e7b8fa5a2ae",
+          "seed": 43,
+          "width": 32
+        },
+        {
+          "arms": 8,
+          "result_sha256": "d9a4ede90aa8f9ae1a21d48c8d006a6b5b73a227aed61d8c4a44e8e258087faa",
+          "seed": 43,
+          "width": 64
+        }
+      ],
+      "control_trajectories": 2304,
+      "expected_cells": [
+        [
+          17,
+          32
+        ],
+        [
+          17,
+          64
+        ],
+        [
+          29,
+          32
+        ],
+        [
+          29,
+          64
+        ],
+        [
+          43,
+          32
+        ],
+        [
+          43,
+          64
+        ]
+      ],
+      "frozen_source_sha256": "76bad74ff6a828fcea866f5fdc45b23060b6f986053b2d09d7aa018cdf55c199",
+      "full_matrix_present": true,
+      "training_trajectories": 6144
+    },
+    "native": {
+      "automatic_external_witness_service": false,
+      "checkpoint_sha256": "9032b0750ea07c9ad5f9d0fb657d0ce16fd67ccacde1a653908207cbfdb542dc",
+      "final_head": "0baf7bcf067c411fb8ed5439b6b837ff265050f1475313562c1dfc78e6a1227b",
+      "fresh_native_full_replay": true,
+      "journal_events": 16,
+      "original_binary_sha256": "c0bdd8732fb582347cda08e0dc23bffb63dd52231f0f82a9622472280fe54bab",
+      "production_owner_integrated": false,
+      "recompiled_binary_sha256": "c0bdd8732fb582347cda08e0dc23bffb63dd52231f0f82a9622472280fe54bab",
+      "results_sha256": "2cc1bf9f89bc7c5be05e3b67ac8ed3e9820ac283ecb262d1f5bc4b16abc459c7"
+    },
+    "text": {
+      "base_checkpoint_sha256": "9032b0750ea07c9ad5f9d0fb657d0ce16fd67ccacde1a653908207cbfdb542dc",
+      "fixed_predicates": {
+        "shuffled_state": 0,
+        "state": 0,
+        "zero_state": 0
+      },
+      "full_vocabulary_decode_independently_verified": true,
+      "generated_tokens": 544,
+      "lm_runtime_immutability_scope": "reported before/after tensor identity plus independently verified local source weights; training not replayed",
+      "report_sha256": "f88b467c8e31d079fa3e95077ac264974933b7bffa39ade2670294c3b93ca51f",
+      "rows": 12
+    }
+  },
+  "sections_requested": [
+    "matrix",
+    "diagnostic",
+    "text",
+    "native"
+  ],
+  "self_cpu_seconds": 54.43794299999999,
+  "source_roles": {
+    "diagnostic.analysis": {
+      "inputs": 8,
+      "namespaces": [
+        "joint-v3-calibration.analysis.20261030"
+      ],
+      "sources": 8
+    },
+    "diagnostic.fit": {
+      "inputs": 8,
+      "namespaces": [
+        "joint-v3-calibration.fit.20261030"
+      ],
+      "sources": 8
+    },
+    "matrix.analysis": {
+      "inputs": 24,
+      "namespaces": [
+        "joint-v3-initial-stop.analysis.20261030"
+      ],
+      "sources": 24
+    },
+    "matrix.train": {
+      "inputs": 238,
+      "namespaces": [
+        "joint-v3-initial-stop.train.20261030"
+      ],
+      "sources": 238
+    }
+  },
+  "trajectory_audit_sha256": "4254bf1b1d277ed9b4ab8da59882678130509c5ce27231c5d14b3c18d15c88c3",
+  "wall_seconds": 173.56377291399986
+}

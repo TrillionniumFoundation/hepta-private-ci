@@ -47,7 +47,7 @@ jobs:
           export HEPTA_NATIVE_RUSTC="$(rustup which --toolchain 1.95.0 rustc)"
           mkdir -p "$RUNNER_TEMP/joint-v3"
           test "$(git rev-parse HEAD)" = "${{ github.sha }}"
-          python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_runtime experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_diagnostics experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_open_domain experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_native_bridge -v 2>&1 | tee "$RUNNER_TEMP/joint-v3/tests.log"
+          python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_runtime experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_diagnostics experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_open_domain experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.test_native_bridge experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.critic_choice.test_run experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.packaging.test_evidence_pack -v 2>&1 | tee "$RUNNER_TEMP/joint-v3/tests.log"
           python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.study --smoke --output "$RUNNER_TEMP/joint-v3/smoke" 2>&1 | tee "$RUNNER_TEMP/joint-v3/smoke.log"
           python -m pip freeze > "$RUNNER_TEMP/joint-v3/environment.txt"
           git diff --check

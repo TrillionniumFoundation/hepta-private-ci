@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.v3.independent-calibration-audit.v1",
+  "passed": true,
+  "errors": [],
+  "checks": {
+    "retained_source_uniform_fit_tensor": 12,
+    "independent_calibration_proper_moment_loss": 8,
+    "independent_calibration_weighted_moment_bias": 8,
+    "independent_calibration_aggregate_ce_error": 8,
+    "independent_calibration_samples": 8,
+    "superseded_attempt_explicitly_retained": 1,
+    "superseded_attempt_raw_trajectories_present": 1
+  },
+  "recomputed_metrics": {
+    "before/training/critic": {
+      "proper_moment_loss": 0.7423909306526184,
+      "weighted_moment_bias": 0.0317753329873085,
+      "aggregate_ce_error": -0.040841073265508454,
+      "samples": 448
+    },
+    "after/training/critic": {
+      "proper_moment_loss": 0.7401496171951294,
+      "weighted_moment_bias": 0.0001324173790635541,
+      "aggregate_ce_error": -0.00017731245208435498,
+      "samples": 448
+    },
+    "before/training/delivery_critic": {
+      "proper_moment_loss": 0.7392261028289795,
+      "weighted_moment_bias": 0.019625263288617134,
+      "aggregate_ce_error": -0.025812757447483348,
+      "samples": 576
+    },
+    "after/training/delivery_critic": {
+      "proper_moment_loss": 0.7371276617050171,
+      "weighted_moment_bias": 0.00025124551029875875,
+      "aggregate_ce_error": -0.00033901940073716164,
+      "samples": 576
+    },
+    "before/validation/critic": {
+      "proper_moment_loss": 0.7354811429977417,
+      "weighted_moment_bias": 0.03591218590736389,
+      "aggregate_ce_error": -0.04676732280953505,
+      "samples": 448
+    },
+    "after/validation/critic": {
+      "proper_moment_loss": 0.7342424988746643,
+      "weighted_moment_bias": -0.009778530336916447,
+      "aggregate_ce_error": 0.013530263920114693,
+      "samples": 448
+    },
+    "before/validation/delivery_critic": {
+      "proper_moment_loss": 0.7315518260002136,
+      "weighted_moment_bias": 0.0340733602643013,
+      "aggregate_ce_error": -0.04510415455312572,
+      "samples": 576
+    },
+    "after/validation/delivery_critic": {
+      "proper_moment_loss": 0.7269924879074097,
+      "weighted_moment_bias": -0.010127073153853416,
+      "aggregate_ce_error": 0.014229392443148692,
+      "samples": 576
+    }
+  },
+  "source_sha256": {
+    "adjacent.py": "1917bd7be93bd574080e2dea6d059056bce31709c18275537155a25f42870984",
+    "calibration.py": "01e86684c8f50b5d068c169f4c1d0c475b1262cbff47f8791b54a87d20393227",
+    "consumer.py": "cd6336ed6ce639282eeaffdfeed60bc321b765954923747faa0e673e5011967f",
+    "core.py": "034f61272f495799254efa0e1bb28835557884098a920680c1d2d31fedacd92a",
+    "diagnostic.py": "244e72f749c5a06b49fe409274995c5382c4ef3903d76b7790a9800227386e6d",
+    "matrix.py": "5486acffe2bf0cd1218fdc6c5329b7608e8ffa0cfa48695e95e6aae0c74c0fb9",
+    "run.py": "dfa946d0ea34d0ba3feb0339704eca342d858001e5c31f8b48f9070bb557426f"
+  },
+  "fit_validation_sha256": "96ef2a433671cb17b5575eb72a33c49e9f65199d9deb5ad242b920408c532503",
+  "actual_checkpoint_sha256": {
+    "before": "9032b0750ea07c9ad5f9d0fb657d0ce16fd67ccacde1a653908207cbfdb542dc",
+    "after": "46011bbbf0050af8023e9ef5a64d053a9fb9b20859f8876aa8d83decdac001be"
+  },
+  "retained_pilot_status_sha256": "e1ff0129693fb32156e3ec104b2986d79783d93edcb3a7bb355a153547312a14",
+  "retained_pilot_training_trajectories": 3328,
+  "scope": "actual feature/target/source weights and actual before/after critic parameters; no optimizer rerun or policy-improvement claim"
+}
