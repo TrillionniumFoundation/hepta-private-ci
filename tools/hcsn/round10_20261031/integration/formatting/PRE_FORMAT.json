@@ -1,0 +1,119 @@
+{
+  "upstream_commit": "e7eaa5e0be835269636216c8fe8b1ae2f1a22361",
+  "isolated_baseline_commit": "94f631ccb4fae38f69f353c5842c6db91c229ad2",
+  "helpers": [
+    {
+      "path": "justfile",
+      "blob_sha": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "upstream_commit": "e7eaa5e0be835269636216c8fe8b1ae2f1a22361",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "scripts/format.py",
+      "blob_sha": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "upstream_commit": "e7eaa5e0be835269636216c8fe8b1ae2f1a22361",
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "blob_sha": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "upstream_commit": "e7eaa5e0be835269636216c8fe8b1ae2f1a22361",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "blob_sha": "910c65114ec128a8317ee8257428451f3cd28230",
+      "upstream_commit": "e7eaa5e0be835269636216c8fe8b1ae2f1a22361",
+      "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+    },
+    {
+      "path": "codex-rs/rustfmt.toml",
+      "blob_sha": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+      "upstream_commit": "e7eaa5e0be835269636216c8fe8b1ae2f1a22361",
+      "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+    }
+  ],
+  "immutable_r9": [
+    {
+      "path": "tools/hcsn/round9_20261031/native/src/cell.rs",
+      "sha256": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9",
+      "temp_sha256": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9"
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/src/content.rs",
+      "sha256": "93b34ac7ce743e3cafc5d54124dc477d03999f47b99fcc23ebc6439f7d22ae79",
+      "temp_sha256": "93b34ac7ce743e3cafc5d54124dc477d03999f47b99fcc23ebc6439f7d22ae79"
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/src/main.rs",
+      "sha256": "4b01c823a9f19ef7463ccf5c6518e7f75e6f0535652e55cbc6cf4a8ae3e16fe6",
+      "temp_sha256": "4b01c823a9f19ef7463ccf5c6518e7f75e6f0535652e55cbc6cf4a8ae3e16fe6"
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/src/native.rs",
+      "sha256": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+      "temp_sha256": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7"
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/src/owner.rs",
+      "sha256": "870aaa407f66eab55df98b0ef386a7a60e1209bae3368521454dac38248d294f",
+      "temp_sha256": "870aaa407f66eab55df98b0ef386a7a60e1209bae3368521454dac38248d294f"
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/src/rustfmt.toml",
+      "sha256": "4b21b072b824dffa5bb560f1eaf080783ff2638bf96621b021034093f07eba69",
+      "temp_sha256": "4b21b072b824dffa5bb560f1eaf080783ff2638bf96621b021034093f07eba69"
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/src/schedule.rs",
+      "sha256": "2340e300afa93cc370843faa1aca84d0f03640f86daf1d4ebbf60113f0c0ca1a",
+      "temp_sha256": "2340e300afa93cc370843faa1aca84d0f03640f86daf1d4ebbf60113f0c0ca1a"
+    },
+    {
+      "path": "tools/hcsn/round9_20261031/native/src/tests.rs",
+      "sha256": "156d2882f3a1edbd53a3ee49274ee6f7eb7d776d012bcce9509039d81e6d8446",
+      "temp_sha256": "156d2882f3a1edbd53a3ee49274ee6f7eb7d776d012bcce9509039d81e6d8446"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "tools/hcsn/round10_20261031/native/contract.rs",
+      "canonical_before_sha256": "d17b9061433fd6c64481632b55bd833500c2f06aa5441ba259f0c51952ab244c",
+      "temp_before_sha256": "d17b9061433fd6c64481632b55bd833500c2f06aa5441ba259f0c51952ab244c"
+    },
+    {
+      "path": "tools/hcsn/round10_20261031/native/main.rs",
+      "canonical_before_sha256": "d1b370bc88b6e18c96088f3ced5b89561fdc344305b1546d1dd722b1eccc1ec4",
+      "temp_before_sha256": "d1b370bc88b6e18c96088f3ced5b89561fdc344305b1546d1dd722b1eccc1ec4"
+    },
+    {
+      "path": "tools/hcsn/round10_20261031/native/policy.rs",
+      "canonical_before_sha256": "809e3f7db52aab28219a4be020d25d0720d778f1626ce3bc2454a09252677a52",
+      "temp_before_sha256": "809e3f7db52aab28219a4be020d25d0720d778f1626ce3bc2454a09252677a52"
+    },
+    {
+      "path": "tools/hcsn/round10_20261031/native/storage.rs",
+      "canonical_before_sha256": "9f9a6ae8b0fd261220541f094ab84fcdb30fa56205ec7cb2a9e17957583aaf71",
+      "temp_before_sha256": "9f9a6ae8b0fd261220541f094ab84fcdb30fa56205ec7cb2a9e17957583aaf71"
+    },
+    {
+      "path": "tools/hcsn/round10_20261031/native/task_owner.rs",
+      "canonical_before_sha256": "d03608a6c8e7162920ed19c307d6fa7efe255f081dbdb8ad7b956c8bec4a59a2",
+      "temp_before_sha256": "d03608a6c8e7162920ed19c307d6fa7efe255f081dbdb8ad7b956c8bec4a59a2"
+    },
+    {
+      "path": "tools/hcsn/round10_20261031/native/task_tests.rs",
+      "canonical_before_sha256": "2ad733553d0e644b6a73224809724cead677e7bde6c46e36f213fbe3ed44b94f",
+      "temp_before_sha256": "2ad733553d0e644b6a73224809724cead677e7bde6c46e36f213fbe3ed44b94f"
+    }
+  ],
+  "expected_scope": [
+    "tools/hcsn/round10_20261031/native/contract.rs",
+    "tools/hcsn/round10_20261031/native/main.rs",
+    "tools/hcsn/round10_20261031/native/policy.rs",
+    "tools/hcsn/round10_20261031/native/storage.rs",
+    "tools/hcsn/round10_20261031/native/task_owner.rs",
+    "tools/hcsn/round10_20261031/native/task_tests.rs"
+  ],
+  "note": "Local synthetic baseline preserves helper Git blobs and canonical R9 sources; only six new R10 Rust sources are untracked."
+}

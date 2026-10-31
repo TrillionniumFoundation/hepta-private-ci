@@ -75,9 +75,15 @@ impl Config {
                 return Err("packet probability envelope".into());
             }
         }
-        if [self.read_cost, self.latency_cost, self.stop_cost, self.failure_cost, self.invalid_cost]
-            .iter()
-            .any(|cost| !cost.is_finite() || *cost < 0.0 || *cost > 1e100)
+        if [
+            self.read_cost,
+            self.latency_cost,
+            self.stop_cost,
+            self.failure_cost,
+            self.invalid_cost,
+        ]
+        .iter()
+        .any(|cost| !cost.is_finite() || *cost < 0.0 || *cost > 1e100)
         {
             return Err("task cost envelope".into());
         }
@@ -123,7 +129,10 @@ impl Config {
         let read = wait
             && state.budget_left > 0
             && state.clock >= state.recovery_until
-            && self.packets.get(state.next_packet).is_some_and(|p| p.arrival <= state.clock);
+            && self
+                .packets
+                .get(state.next_packet)
+                .is_some_and(|p| p.arrival <= state.clock);
         [read, wait, true]
     }
 
@@ -137,13 +146,22 @@ impl Config {
         if state.terminated {
             return Err("terminal task".into());
         }
-        let actual = if self.legal(state)[requested.index()] { requested } else { Action::Stop };
+        let actual = if self.legal(state)[requested.index()] {
+            requested
+        } else {
+            Action::Stop
+        };
         let mut next = state.clone();
         let cost = match actual {
             Action::Stop => {
                 next.terminated = true;
                 next.answer = Some(usize::from(self.posterior(state) >= 0.5));
-                self.stop_cost + if actual != requested { self.invalid_cost } else { 0.0 }
+                self.stop_cost
+                    + if actual != requested {
+                        self.invalid_cost
+                    } else {
+                        0.0
+                    }
             }
             Action::Wait => {
                 next.clock += 1;
@@ -181,7 +199,10 @@ impl State {
             || self.budget_left > config.budget
             || self.next_packet > config.packets.len()
             || self.history.len() != self.next_packet
-            || self.history.bytes().any(|bit| !matches!(bit, b'0' | b'1' | b'x'))
+            || self
+                .history
+                .bytes()
+                .any(|bit| !matches!(bit, b'0' | b'1' | b'x'))
             || self.next_packet as u64 + self.budget_left != config.budget
             || self.clock < self.next_packet as u64
             || self.recovery_until > config.deadline + config.refractory_ticks

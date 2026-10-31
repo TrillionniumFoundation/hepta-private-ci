@@ -102,19 +102,25 @@ fn bits(value: f64) -> String {
 }
 
 fn pending(task: &Config, state: &State) -> Vec<Pending> {
-    task.packets.iter().enumerate().skip(state.next_packet).map(|(index, packet)| Pending {
-        index,
-        arrival: packet.arrival,
-        reliability_bits: bits(packet.reliability),
-        failure_probability_bits: bits(packet.failure_probability),
-    }).collect()
+    task.packets
+        .iter()
+        .enumerate()
+        .skip(state.next_packet)
+        .map(|(index, packet)| Pending {
+            index,
+            arrival: packet.arrival,
+            reliability_bits: bits(packet.reliability),
+            failure_probability_bits: bits(packet.failure_probability),
+        })
+        .collect()
 }
 
 impl TaskOwner {
     pub fn open(root: &Path, acknowledged: &str, setup: Setup) -> Result<Self, String> {
         setup.task.validate()?;
         setup.policy.validate()?;
-        if !root.is_dir() || root.is_symlink()
+        if !root.is_dir()
+            || root.is_symlink()
             || !(1..=8_000_000).contains(&setup.tick_micros)
             || setup.payloads.len() != setup.task.packets.len()
         {
@@ -126,14 +132,25 @@ impl TaskOwner {
             }
         }
         let binding = Digest32::of_bytes(&storage::encode(&(
-            env!("HEPTA_TASK_NATIVE_SOURCE_DIGEST"), &setup.task, &setup.policy,
-            &setup.payloads, setup.tick_micros, setup.cell.snapshot(), &setup.content_model.digest,
-        ))?).to_string();
-        let expected = acknowledged.parse::<Digest32>().map_err(|error| error.to_string())?;
-        if ["task-intent.json", "task-checkpoint.pending"].iter().any(|name| {
-            let path = root.join(name);
-            path.exists() || path.is_symlink()
-        }) {
+            env!("HEPTA_TASK_NATIVE_SOURCE_DIGEST"),
+            &setup.task,
+            &setup.policy,
+            &setup.payloads,
+            setup.tick_micros,
+            setup.cell.snapshot(),
+            &setup.content_model.digest,
+        ))?)
+        .to_string();
+        let expected = acknowledged
+            .parse::<Digest32>()
+            .map_err(|error| error.to_string())?;
+        if ["task-intent.json", "task-checkpoint.pending"]
+            .iter()
+            .any(|name| {
+                let path = root.join(name);
+                path.exists() || path.is_symlink()
+            })
+        {
             return Err("incomplete task intent/publication; reconciliation required".into());
         }
         let path = root.join("task-checkpoint.json");
@@ -141,15 +158,22 @@ impl TaskOwner {
             if path.exists() || path.is_symlink() {
                 return Err("task checkpoint requires external acknowledgement".into());
             }
-            (setup.task.initial(), Digest32::ZERO.to_string(), 0, Vec::new())
+            (
+                setup.task.initial(),
+                Digest32::ZERO.to_string(),
+                0,
+                Vec::new(),
+            )
         } else {
             let bytes = storage::read(&path, /*limit*/ 262_144)?;
             if Digest32::of_bytes(&bytes) != expected {
                 return Err("task acknowledgement mismatch".into());
             }
-            let mut checkpoint: Checkpoint = serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
+            let mut checkpoint: Checkpoint =
+                serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
             checkpoint.state.paid_cost = f64::from_bits(
-                u64::from_str_radix(&checkpoint.paid_cost_bits, /*radix*/ 16).map_err(|error| error.to_string())?,
+                u64::from_str_radix(&checkpoint.paid_cost_bits, /*radix*/ 16)
+                    .map_err(|error| error.to_string())?,
             );
             checkpoint.state.validate(&setup.task)?;
             if checkpoint.schema != "hcsn.preread-native-task.v1"
@@ -165,7 +189,10 @@ impl TaskOwner {
             }
             let mut replay = setup.task.initial();
             for (index, entry) in checkpoint.ledger.iter().enumerate() {
-                let (next, cost, actual) = setup.task.successor(&replay, entry.requested, entry.observation)?;
+                let (next, cost, actual) =
+                    setup
+                        .task
+                        .successor(&replay, entry.requested, entry.observation)?;
                 if entry.sequence != index as u64 + 1
                     || entry.state_before != replay.key()
                     || entry.state_after != next.key()
@@ -182,16 +209,31 @@ impl TaskOwner {
             if replay != checkpoint.state {
                 return Err("task state/replayed ledger mismatch".into());
             }
-            (checkpoint.state, checkpoint.inner_pair, checkpoint.sequence, checkpoint.ledger)
+            (
+                checkpoint.state,
+                checkpoint.inner_pair,
+                checkpoint.sequence,
+                checkpoint.ledger,
+            )
         };
         let inner = owner::Owner::open(root, setup.cell, &inner_pair, Some(setup.content_model))?;
         if inner.cell.sequence != state.clock {
             return Err("task clock/native frontier mismatch".into());
         }
         Ok(Self {
-            state, task: setup.task, acknowledged: acknowledged.to_owned(), inner, inner_pair,
-            policy: setup.policy, payloads: setup.payloads, tick_micros: setup.tick_micros,
-            binding, sequence, ledger, root: root.to_path_buf(), poisoned: false,
+            state,
+            task: setup.task,
+            acknowledged: acknowledged.to_owned(),
+            inner,
+            inner_pair,
+            policy: setup.policy,
+            payloads: setup.payloads,
+            tick_micros: setup.tick_micros,
+            binding,
+            sequence,
+            ledger,
+            root: root.to_path_buf(),
+            poisoned: false,
         })
     }
 
@@ -210,9 +252,19 @@ impl TaskOwner {
             Some(action) => action,
             None => self.decision()?,
         };
-        let actual = if self.task.legal(&self.state)[requested.index()] { requested } else { Action::Stop };
+        let actual = if self.task.legal(&self.state)[requested.index()] {
+            requested
+        } else {
+            Action::Stop
+        };
         let state_before = self.state.key();
-        let intent = storage::encode(&(self.sequence + 1, acknowledged, &state_before, requested, actual))?;
+        let intent = storage::encode(&(
+            self.sequence + 1,
+            acknowledged,
+            &state_before,
+            requested,
+            actual,
+        ))?;
         self.poisoned = true;
         storage::create(&self.root.join("task-intent.json"), &intent)?;
         // The complete legality/selection decision and durable intent precede this first payload access.
@@ -221,12 +273,21 @@ impl TaskOwner {
         let inner_receipt = if actual == Action::Stop {
             None
         } else {
-            let read = if actual == Action::Read { Some(self.payloads[self.state.next_packet].clone()) } else { None };
+            let read = if actual == Action::Read {
+                Some(self.payloads[self.state.next_packet].clone())
+            } else {
+                None
+            };
             let driver = 2.0 * self.task.posterior(&self.state) - 1.0;
             let horizon = (self.task.deadline - self.state.clock).max(1) * self.tick_micros;
             let request = owner::Request {
-                sequence: self.inner.cell.sequence + 1, pair_before: self.inner_pair.clone(), driver,
-                duration_micros: self.tick_micros, horizon_micros: horizon, reset: false, content: read,
+                sequence: self.inner.cell.sequence + 1,
+                pair_before: self.inner_pair.clone(),
+                driver,
+                duration_micros: self.tick_micros,
+                horizon_micros: horizon,
+                reset: false,
+                content: read,
             };
             let receipt = match self.inner.step(request) {
                 Ok(receipt) => receipt,
@@ -237,40 +298,70 @@ impl TaskOwner {
                     read_error = Some(error);
                     observation = Some('x');
                     self.inner.step(owner::Request {
-                        sequence: self.inner.cell.sequence + 1, pair_before: self.inner_pair.clone(), driver,
-                        duration_micros: self.tick_micros, horizon_micros: horizon, reset: false, content: None,
+                        sequence: self.inner.cell.sequence + 1,
+                        pair_before: self.inner_pair.clone(),
+                        driver,
+                        duration_micros: self.tick_micros,
+                        horizon_micros: horizon,
+                        reset: false,
+                        content: None,
                     })?
                 }
                 Err(error) => return Err(error),
             };
             if actual == Action::Read && observation.is_none() {
-                let output = receipt.content.as_ref().and_then(|state| state.last.as_ref()).ok_or("missing decoded content")?;
+                let output = receipt
+                    .content
+                    .as_ref()
+                    .and_then(|state| state.last.as_ref())
+                    .ok_or("missing decoded content")?;
                 observation = Some(if output.observation == 1 { '1' } else { '0' });
             }
             Some(receipt)
         };
-        let (state, cost, checked_actual) = self.task.successor(&self.state, requested, observation)?;
+        let (state, cost, checked_actual) =
+            self.task.successor(&self.state, requested, observation)?;
         if checked_actual != actual {
             return Err("task guard changed during execution".into());
         }
         let ledger = Ledger {
-            sequence: self.sequence + 1, state_before: state_before.clone(), state_after: state.key(),
-            requested, actual, observation, read_attempted: actual == Action::Read,
+            sequence: self.sequence + 1,
+            state_before: state_before.clone(),
+            state_after: state.key(),
+            requested,
+            actual,
+            observation,
+            read_attempted: actual == Action::Read,
             read_failed: observation == Some('x'),
             payload_bytes: if actual == Action::Read && read_error.is_none() {
-                inner_receipt.as_ref().and_then(|r| r.content.as_ref()).and_then(|c| c.last.as_ref()).map(|c| c.payload_bytes)
-            } else { None },
-            cost_bits: bits(cost), native_committed: actual != Action::Stop,
+                inner_receipt
+                    .as_ref()
+                    .and_then(|r| r.content.as_ref())
+                    .and_then(|c| c.last.as_ref())
+                    .map(|c| c.payload_bytes)
+            } else {
+                None
+            },
+            cost_bits: bits(cost),
+            native_committed: actual != Action::Stop,
         };
-        let inner_pair = inner_receipt.as_ref().map_or_else(|| self.inner_pair.clone(), |r| r.pair_after.clone());
+        let inner_pair = inner_receipt
+            .as_ref()
+            .map_or_else(|| self.inner_pair.clone(), |r| r.pair_after.clone());
         let mut entries = self.ledger.clone();
         entries.push(ledger.clone());
         let checkpoint = Checkpoint {
-            schema: "hcsn.preread-native-task.v1".into(), binding: self.binding.clone(),
-            source_digest: env!("HEPTA_TASK_NATIVE_SOURCE_DIGEST").into(), inner_pair: inner_pair.clone(),
-            sequence: self.sequence + 1, paid_cost_bits: bits(state.paid_cost),
-            log_odds_bits: bits(self.task.log_odds(&state)), deadline: self.task.deadline,
-            pending: pending(&self.task, &state), state: state.clone(), ledger: entries.clone(),
+            schema: "hcsn.preread-native-task.v1".into(),
+            binding: self.binding.clone(),
+            source_digest: env!("HEPTA_TASK_NATIVE_SOURCE_DIGEST").into(),
+            inner_pair: inner_pair.clone(),
+            sequence: self.sequence + 1,
+            paid_cost_bits: bits(state.paid_cost),
+            log_odds_bits: bits(self.task.log_odds(&state)),
+            deadline: self.task.deadline,
+            pending: pending(&self.task, &state),
+            state: state.clone(),
+            ledger: entries.clone(),
         };
         let acknowledged = storage::publish(&self.root, &storage::encode(&checkpoint)?)?;
         storage::finish_intent(&self.root)?;
@@ -281,9 +372,19 @@ impl TaskOwner {
         self.ledger = entries;
         self.poisoned = false;
         Ok(Receipt {
-            sequence: self.sequence, task_after: self.acknowledged.clone(), state_key_before: state_before,
-            state: self.state.clone(), posterior: self.task.posterior(&self.state), requested, actual,
-            read_attempted: actual == Action::Read, observation, read_error, cost, ledger, inner: inner_receipt,
+            sequence: self.sequence,
+            task_after: self.acknowledged.clone(),
+            state_key_before: state_before,
+            state: self.state.clone(),
+            posterior: self.task.posterior(&self.state),
+            requested,
+            actual,
+            read_attempted: actual == Action::Read,
+            observation,
+            read_error,
+            cost,
+            ledger,
+            inner: inner_receipt,
             production_activation: false,
         })
     }

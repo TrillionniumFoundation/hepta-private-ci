@@ -1,0 +1,73 @@
+{
+  "status": "PASS",
+  "scope": "Actual upstream just fmt and just fmt --check on six new R10 Rust files in isolated temporary Git checkout. No compilation, unit tests, or scientific experiments rerun.",
+  "upstream_commit": "e7eaa5e0be835269636216c8fe8b1ae2f1a22361",
+  "tools_manifest": "TOOLS.json",
+  "source_manifest": "PRE_FORMAT.json",
+  "execution_log": "RUN.json",
+  "actual_fmt_exit": 0,
+  "actual_fmt_check_exit": 0,
+  "formatted_file_count": 6,
+  "helpers_unchanged": true,
+  "isolated_r9_unchanged": true,
+  "canonical_r9_unchanged": true,
+  "canonical_r10_unchanged": true,
+  "patch_sha256": "63adae6481bac6d459f97901c35d9dd7a4d1175c076f0fa4bdf89bca2b0d32d3",
+  "patch_bytes": 35884,
+  "files": [
+    {
+      "path": "tools/hcsn/round10_20261031/native/contract.rs",
+      "before_sha256": "d17b9061433fd6c64481632b55bd833500c2f06aa5441ba259f0c51952ab244c",
+      "after_sha256": "ddfd1a4b9f10a54589ef93f5aff996f4cf0e1a4f8416b55b5108e54187485486",
+      "changed": true,
+      "insertions": 28,
+      "deletions": 7
+    },
+    {
+      "path": "tools/hcsn/round10_20261031/native/main.rs",
+      "before_sha256": "d1b370bc88b6e18c96088f3ced5b89561fdc344305b1546d1dd722b1eccc1ec4",
+      "after_sha256": "5de8dcdf3d88abbafca242fc9a263a2c11c2b649fc459740283a35a3d2ac3f4a",
+      "changed": true,
+      "insertions": 21,
+      "deletions": 7
+    },
+    {
+      "path": "tools/hcsn/round10_20261031/native/policy.rs",
+      "before_sha256": "809e3f7db52aab28219a4be020d25d0720d778f1626ce3bc2454a09252677a52",
+      "after_sha256": "ca5d1e7be557e6784bfb1c761a9d9e8ab595d5016b4388958ae65d7addd60f10",
+      "changed": true,
+      "insertions": 15,
+      "deletions": 8
+    },
+    {
+      "path": "tools/hcsn/round10_20261031/native/storage.rs",
+      "before_sha256": "9f9a6ae8b0fd261220541f094ab84fcdb30fa56205ec7cb2a9e17957583aaf71",
+      "after_sha256": "141d443b4b4671d4e5b694304bc3bbb350cda2f4cda76af3534ef2bbead32ffc",
+      "changed": true,
+      "insertions": 16,
+      "deletions": 5
+    },
+    {
+      "path": "tools/hcsn/round10_20261031/native/task_owner.rs",
+      "before_sha256": "d03608a6c8e7162920ed19c307d6fa7efe255f081dbdb8ad7b956c8bec4a59a2",
+      "after_sha256": "34cbc1ee62d12388c5ab5af226977ba17077503f7428640245151471c200b756",
+      "changed": true,
+      "insertions": 148,
+      "deletions": 47
+    },
+    {
+      "path": "tools/hcsn/round10_20261031/native/task_tests.rs",
+      "before_sha256": "2ad733553d0e644b6a73224809724cead677e7bde6c46e36f213fbe3ed44b94f",
+      "after_sha256": "167bf6397ea120ddd54090c8ab37797fe632021fa604acab931486e322eab61c",
+      "changed": true,
+      "insertions": 177,
+      "deletions": 33
+    }
+  ],
+  "limits": [
+    "Only six new R10 native Rust files were in the changed-file scope. This is not a full-tree format run.",
+    "The upstream scoped helper selected edition 2021 because no owning Cargo manifest exists for these tools paths.",
+    "Stable Rust 1.95.0 packages rustfmt 1.9.0-stable; archive and binary versions are separately recorded.",
+    "Canonical source files were deliberately not patched; parent review/application remains."
+  ]
+}

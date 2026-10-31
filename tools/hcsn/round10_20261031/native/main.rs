@@ -3,11 +3,11 @@
 mod cell;
 #[path = "../../round9_20261031/native/src/content.rs"]
 mod content;
+mod contract;
 #[path = "../../round9_20261031/native/src/native.rs"]
 mod native;
 #[path = "../../round9_20261031/native/src/owner.rs"]
 mod owner;
-mod contract;
 mod policy;
 mod storage;
 mod task_owner;
@@ -36,21 +36,30 @@ struct Model {
 #[derive(Deserialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 enum Command {
-    Decide { task_before: String, requested: Option<contract::Action> },
+    Decide {
+        task_before: String,
+        requested: Option<contract::Action>,
+    },
     Snapshot,
 }
 
 fn run() -> Result<(), String> {
     let args = std::env::args().collect::<Vec<_>>();
     if args.len() != 4 {
-        return Err("usage: hcsn-owner-preread CONFIG.json OWNER_DIR ACKNOWLEDGED_TASK_SHA256".into());
+        return Err(
+            "usage: hcsn-owner-preread CONFIG.json OWNER_DIR ACKNOWLEDGED_TASK_SHA256".into(),
+        );
     }
     let bytes = storage::read(Path::new(&args[1]), /*limit*/ 32_000_000)?;
     let model: Model = serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
-    let seed = u64::from_str_radix(&model.seed_hex, /*radix*/ 16).map_err(|error| error.to_string())?;
+    let seed =
+        u64::from_str_radix(&model.seed_hex, /*radix*/ 16).map_err(|error| error.to_string())?;
     let setup = task_owner::Setup {
         cell: cell::Cell::new(model.parameters, model.family, seed)?,
-        content_model: content::Model::load(Path::new(&model.content_model), &model.content_model_sha256)?,
+        content_model: content::Model::load(
+            Path::new(&model.content_model),
+            &model.content_model_sha256,
+        )?,
         task: model.task,
         policy: model.policy,
         payloads: model.payloads,
@@ -66,14 +75,19 @@ fn run() -> Result<(), String> {
             Ok(Command::Snapshot) => json!({"ok":true,"task_after":owner.acknowledged,
                 "state":owner.state,"posterior":owner.task.posterior(&owner.state),
                 "legal":owner.task.legal(&owner.state),"state_key":owner.state.key()}),
-            Ok(Command::Decide { task_before, requested }) => match owner.step(&task_before, requested) {
+            Ok(Command::Decide {
+                task_before,
+                requested,
+            }) => match owner.step(&task_before, requested) {
                 Ok(receipt) => json!({"ok":true,"receipt":receipt}),
                 Err(error) => json!({"ok":false,"error":error}),
             },
             Err(error) => json!({"ok":false,"error":error.to_string()}),
         };
         println!("{response}");
-        std::io::stdout().flush().map_err(|error| error.to_string())?;
+        std::io::stdout()
+            .flush()
+            .map_err(|error| error.to_string())?;
     }
     Ok(())
 }

@@ -19,7 +19,9 @@ impl Policy {
         match self {
             Self::QTable { entries } => {
                 if entries.len() > 100_000
-                    || entries.iter().any(|(key, row)| key.len() > 160 || row.iter().any(|v| !v.is_finite()))
+                    || entries
+                        .iter()
+                        .any(|(key, row)| key.len() > 160 || row.iter().any(|v| !v.is_finite()))
                 {
                     return Err("Q table envelope".into());
                 }
@@ -43,12 +45,16 @@ impl Policy {
         match self {
             Self::QTable { entries } => {
                 let key = state.key();
-                let row = entries.get(&key).ok_or_else(|| format!("Q table lacks visible state {key}"))?;
-                let best = [Action::Read, Action::Wait, Action::Stop].iter()
+                let row = entries
+                    .get(&key)
+                    .ok_or_else(|| format!("Q table lacks visible state {key}"))?;
+                let best = [Action::Read, Action::Wait, Action::Stop]
+                    .iter()
                     .filter(|action| legal[action.index()])
                     .map(|action| row[action.index()])
                     .fold(f64::NEG_INFINITY, f64::max);
-                [Action::Stop, Action::Wait, Action::Read].into_iter()
+                [Action::Stop, Action::Wait, Action::Read]
+                    .into_iter()
                     .find(|action| legal[action.index()] && row[action.index()] >= best - 1e-12)
                     .ok_or_else(|| "Q table has no legal action".into())
             }
@@ -60,8 +66,9 @@ impl Policy {
                     Ok(Action::Read)
                 } else if legal[Action::Wait.index()]
                     && state.budget_left > 0
-                    && task.packets.get(state.next_packet)
-                        .is_some_and(|packet| state.recovery_until.max(packet.arrival) < task.deadline)
+                    && task.packets.get(state.next_packet).is_some_and(|packet| {
+                        state.recovery_until.max(packet.arrival) < task.deadline
+                    })
                 {
                     Ok(Action::Wait)
                 } else {
@@ -79,8 +86,8 @@ impl Policy {
                 let p = task.posterior(state);
                 let q = packet.reliability;
                 let current = p.max(1.0 - p);
-                let success_quality = (p * q).max((1.0 - p) * (1.0 - q))
-                    + (p * (1.0 - q)).max((1.0 - p) * q);
+                let success_quality =
+                    (p * q).max((1.0 - p) * (1.0 - q)) + (p * (1.0 - q)).max((1.0 - p) * q);
                 let failure = packet.failure_probability;
                 let expected = (1.0 - failure) * success_quality + failure * current
                     - task.read_cost

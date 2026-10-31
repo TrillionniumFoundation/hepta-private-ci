@@ -1,0 +1,102 @@
+{
+  "actual_runs": [
+    {
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/tmp/hcsn-r10-format-checkout/codex-rs",
+      "returncode": 0,
+      "elapsed_seconds": 0.14964323300227989,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--check"
+      ],
+      "cwd": "/tmp/hcsn-r10-format-checkout/codex-rs",
+      "returncode": 0,
+      "elapsed_seconds": 0.14492132900340948,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "unchanged_helper_selected_commands": [
+    {
+      "args": [
+        "rustfmt",
+        "--edition",
+        "2021",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "--",
+        "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native/contract.rs"
+      ],
+      "cwd": "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native"
+    },
+    {
+      "args": [
+        "rustfmt",
+        "--edition",
+        "2021",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "--",
+        "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native/main.rs"
+      ],
+      "cwd": "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native"
+    },
+    {
+      "args": [
+        "rustfmt",
+        "--edition",
+        "2021",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "--",
+        "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native/policy.rs"
+      ],
+      "cwd": "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native"
+    },
+    {
+      "args": [
+        "rustfmt",
+        "--edition",
+        "2021",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "--",
+        "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native/storage.rs"
+      ],
+      "cwd": "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native"
+    },
+    {
+      "args": [
+        "rustfmt",
+        "--edition",
+        "2021",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "--",
+        "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native/task_owner.rs"
+      ],
+      "cwd": "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native"
+    },
+    {
+      "args": [
+        "rustfmt",
+        "--edition",
+        "2021",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "--",
+        "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native/task_tests.rs"
+      ],
+      "cwd": "/tmp/hcsn-r10-format-checkout/tools/hcsn/round10_20261031/native"
+    }
+  ],
+  "path_prefix": "/tmp/hcsn-r10-format-tools/bin"
+}

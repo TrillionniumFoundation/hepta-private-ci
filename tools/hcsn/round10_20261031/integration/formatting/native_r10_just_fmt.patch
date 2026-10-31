@@ -1,0 +1,830 @@
+--- a/tools/hcsn/round10_20261031/native/contract.rs
++++ b/tools/hcsn/round10_20261031/native/contract.rs
+@@ -75,9 +75,15 @@
+                 return Err("packet probability envelope".into());
+             }
+         }
+-        if [self.read_cost, self.latency_cost, self.stop_cost, self.failure_cost, self.invalid_cost]
+-            .iter()
+-            .any(|cost| !cost.is_finite() || *cost < 0.0 || *cost > 1e100)
++        if [
++            self.read_cost,
++            self.latency_cost,
++            self.stop_cost,
++            self.failure_cost,
++            self.invalid_cost,
++        ]
++        .iter()
++        .any(|cost| !cost.is_finite() || *cost < 0.0 || *cost > 1e100)
+         {
+             return Err("task cost envelope".into());
+         }
+@@ -123,7 +129,10 @@
+         let read = wait
+             && state.budget_left > 0
+             && state.clock >= state.recovery_until
+-            && self.packets.get(state.next_packet).is_some_and(|p| p.arrival <= state.clock);
++            && self
++                .packets
++                .get(state.next_packet)
++                .is_some_and(|p| p.arrival <= state.clock);
+         [read, wait, true]
+     }
+ 
+@@ -137,13 +146,22 @@
+         if state.terminated {
+             return Err("terminal task".into());
+         }
+-        let actual = if self.legal(state)[requested.index()] { requested } else { Action::Stop };
++        let actual = if self.legal(state)[requested.index()] {
++            requested
++        } else {
++            Action::Stop
++        };
+         let mut next = state.clone();
+         let cost = match actual {
+             Action::Stop => {
+                 next.terminated = true;
+                 next.answer = Some(usize::from(self.posterior(state) >= 0.5));
+-                self.stop_cost + if actual != requested { self.invalid_cost } else { 0.0 }
++                self.stop_cost
++                    + if actual != requested {
++                        self.invalid_cost
++                    } else {
++                        0.0
++                    }
+             }
+             Action::Wait => {
+                 next.clock += 1;
+@@ -181,7 +199,10 @@
+             || self.budget_left > config.budget
+             || self.next_packet > config.packets.len()
+             || self.history.len() != self.next_packet
+-            || self.history.bytes().any(|bit| !matches!(bit, b'0' | b'1' | b'x'))
++            || self
++                .history
++                .bytes()
++                .any(|bit| !matches!(bit, b'0' | b'1' | b'x'))
+             || self.next_packet as u64 + self.budget_left != config.budget
+             || self.clock < self.next_packet as u64
+             || self.recovery_until > config.deadline + config.refractory_ticks
+--- a/tools/hcsn/round10_20261031/native/main.rs
++++ b/tools/hcsn/round10_20261031/native/main.rs
+@@ -3,11 +3,11 @@
+ mod cell;
+ #[path = "../../round9_20261031/native/src/content.rs"]
+ mod content;
++mod contract;
+ #[path = "../../round9_20261031/native/src/native.rs"]
+ mod native;
+ #[path = "../../round9_20261031/native/src/owner.rs"]
+ mod owner;
+-mod contract;
+ mod policy;
+ mod storage;
+ mod task_owner;
+@@ -36,21 +36,30 @@
+ #[derive(Deserialize)]
+ #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
+ enum Command {
+-    Decide { task_before: String, requested: Option<contract::Action> },
++    Decide {
++        task_before: String,
++        requested: Option<contract::Action>,
++    },
+     Snapshot,
+ }
+ 
+ fn run() -> Result<(), String> {
+     let args = std::env::args().collect::<Vec<_>>();
+     if args.len() != 4 {
+-        return Err("usage: hcsn-owner-preread CONFIG.json OWNER_DIR ACKNOWLEDGED_TASK_SHA256".into());
++        return Err(
++            "usage: hcsn-owner-preread CONFIG.json OWNER_DIR ACKNOWLEDGED_TASK_SHA256".into(),
++        );
+     }
+     let bytes = storage::read(Path::new(&args[1]), /*limit*/ 32_000_000)?;
+     let model: Model = serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
+-    let seed = u64::from_str_radix(&model.seed_hex, /*radix*/ 16).map_err(|error| error.to_string())?;
++    let seed =
++        u64::from_str_radix(&model.seed_hex, /*radix*/ 16).map_err(|error| error.to_string())?;
+     let setup = task_owner::Setup {
+         cell: cell::Cell::new(model.parameters, model.family, seed)?,
+-        content_model: content::Model::load(Path::new(&model.content_model), &model.content_model_sha256)?,
++        content_model: content::Model::load(
++            Path::new(&model.content_model),
++            &model.content_model_sha256,
++        )?,
+         task: model.task,
+         policy: model.policy,
+         payloads: model.payloads,
+@@ -66,14 +75,19 @@
+             Ok(Command::Snapshot) => json!({"ok":true,"task_after":owner.acknowledged,
+                 "state":owner.state,"posterior":owner.task.posterior(&owner.state),
+                 "legal":owner.task.legal(&owner.state),"state_key":owner.state.key()}),
+-            Ok(Command::Decide { task_before, requested }) => match owner.step(&task_before, requested) {
++            Ok(Command::Decide {
++                task_before,
++                requested,
++            }) => match owner.step(&task_before, requested) {
+                 Ok(receipt) => json!({"ok":true,"receipt":receipt}),
+                 Err(error) => json!({"ok":false,"error":error}),
+             },
+             Err(error) => json!({"ok":false,"error":error.to_string()}),
+         };
+         println!("{response}");
+-        std::io::stdout().flush().map_err(|error| error.to_string())?;
++        std::io::stdout()
++            .flush()
++            .map_err(|error| error.to_string())?;
+     }
+     Ok(())
+ }
+--- a/tools/hcsn/round10_20261031/native/policy.rs
++++ b/tools/hcsn/round10_20261031/native/policy.rs
+@@ -19,7 +19,9 @@
+         match self {
+             Self::QTable { entries } => {
+                 if entries.len() > 100_000
+-                    || entries.iter().any(|(key, row)| key.len() > 160 || row.iter().any(|v| !v.is_finite()))
++                    || entries
++                        .iter()
++                        .any(|(key, row)| key.len() > 160 || row.iter().any(|v| !v.is_finite()))
+                 {
+                     return Err("Q table envelope".into());
+                 }
+@@ -43,12 +45,16 @@
+         match self {
+             Self::QTable { entries } => {
+                 let key = state.key();
+-                let row = entries.get(&key).ok_or_else(|| format!("Q table lacks visible state {key}"))?;
+-                let best = [Action::Read, Action::Wait, Action::Stop].iter()
++                let row = entries
++                    .get(&key)
++                    .ok_or_else(|| format!("Q table lacks visible state {key}"))?;
++                let best = [Action::Read, Action::Wait, Action::Stop]
++                    .iter()
+                     .filter(|action| legal[action.index()])
+                     .map(|action| row[action.index()])
+                     .fold(f64::NEG_INFINITY, f64::max);
+-                [Action::Stop, Action::Wait, Action::Read].into_iter()
++                [Action::Stop, Action::Wait, Action::Read]
++                    .into_iter()
+                     .find(|action| legal[action.index()] && row[action.index()] >= best - 1e-12)
+                     .ok_or_else(|| "Q table has no legal action".into())
+             }
+@@ -60,8 +66,9 @@
+                     Ok(Action::Read)
+                 } else if legal[Action::Wait.index()]
+                     && state.budget_left > 0
+-                    && task.packets.get(state.next_packet)
+-                        .is_some_and(|packet| state.recovery_until.max(packet.arrival) < task.deadline)
++                    && task.packets.get(state.next_packet).is_some_and(|packet| {
++                        state.recovery_until.max(packet.arrival) < task.deadline
++                    })
+                 {
+                     Ok(Action::Wait)
+                 } else {
+@@ -79,8 +86,8 @@
+                 let p = task.posterior(state);
+                 let q = packet.reliability;
+                 let current = p.max(1.0 - p);
+-                let success_quality = (p * q).max((1.0 - p) * (1.0 - q))
+-                    + (p * (1.0 - q)).max((1.0 - p) * q);
++                let success_quality =
++                    (p * q).max((1.0 - p) * (1.0 - q)) + (p * (1.0 - q)).max((1.0 - p) * q);
+                 let failure = packet.failure_probability;
+                 let expected = (1.0 - failure) * success_quality + failure * current
+                     - task.read_cost
+--- a/tools/hcsn/round10_20261031/native/storage.rs
++++ b/tools/hcsn/round10_20261031/native/storage.rs
+@@ -18,11 +18,17 @@
+         .custom_flags(libc::O_NOFOLLOW)
+         .open(path)
+         .map_err(|error| error.to_string())?;
+-    if !file.metadata().map_err(|error| error.to_string())?.is_file() {
++    if !file
++        .metadata()
++        .map_err(|error| error.to_string())?
++        .is_file()
++    {
+         return Err("checkpoint must be a regular file".into());
+     }
+     let mut bytes = Vec::new();
+-    file.take(limit + 1).read_to_end(&mut bytes).map_err(|error| error.to_string())?;
++    file.take(limit + 1)
++        .read_to_end(&mut bytes)
++        .map_err(|error| error.to_string())?;
+     if bytes.len() as u64 > limit {
+         return Err("checkpoint size limit".into());
+     }
+@@ -47,12 +53,17 @@
+ pub fn publish(root: &Path, bytes: &[u8]) -> Result<String, String> {
+     let pending = root.join("task-checkpoint.pending");
+     create(&pending, bytes)?;
+-    std::fs::rename(&pending, root.join("task-checkpoint.json")).map_err(|error| error.to_string())?;
+-    File::open(root).and_then(|directory| directory.sync_all()).map_err(|error| error.to_string())?;
++    std::fs::rename(&pending, root.join("task-checkpoint.json"))
++        .map_err(|error| error.to_string())?;
++    File::open(root)
++        .and_then(|directory| directory.sync_all())
++        .map_err(|error| error.to_string())?;
+     Ok(Digest32::of_bytes(bytes).to_string())
+ }
+ 
+ pub fn finish_intent(root: &Path) -> Result<(), String> {
+     std::fs::remove_file(root.join("task-intent.json")).map_err(|error| error.to_string())?;
+-    File::open(root).and_then(|directory| directory.sync_all()).map_err(|error| error.to_string())
++    File::open(root)
++        .and_then(|directory| directory.sync_all())
++        .map_err(|error| error.to_string())
+ }
+--- a/tools/hcsn/round10_20261031/native/task_owner.rs
++++ b/tools/hcsn/round10_20261031/native/task_owner.rs
+@@ -102,19 +102,25 @@
+ }
+ 
+ fn pending(task: &Config, state: &State) -> Vec<Pending> {
+-    task.packets.iter().enumerate().skip(state.next_packet).map(|(index, packet)| Pending {
+-        index,
+-        arrival: packet.arrival,
+-        reliability_bits: bits(packet.reliability),
+-        failure_probability_bits: bits(packet.failure_probability),
+-    }).collect()
++    task.packets
++        .iter()
++        .enumerate()
++        .skip(state.next_packet)
++        .map(|(index, packet)| Pending {
++            index,
++            arrival: packet.arrival,
++            reliability_bits: bits(packet.reliability),
++            failure_probability_bits: bits(packet.failure_probability),
++        })
++        .collect()
+ }
+ 
+ impl TaskOwner {
+     pub fn open(root: &Path, acknowledged: &str, setup: Setup) -> Result<Self, String> {
+         setup.task.validate()?;
+         setup.policy.validate()?;
+-        if !root.is_dir() || root.is_symlink()
++        if !root.is_dir()
++            || root.is_symlink()
+             || !(1..=8_000_000).contains(&setup.tick_micros)
+             || setup.payloads.len() != setup.task.packets.len()
+         {
+@@ -126,14 +132,25 @@
+             }
+         }
+         let binding = Digest32::of_bytes(&storage::encode(&(
+-            env!("HEPTA_TASK_NATIVE_SOURCE_DIGEST"), &setup.task, &setup.policy,
+-            &setup.payloads, setup.tick_micros, setup.cell.snapshot(), &setup.content_model.digest,
+-        ))?).to_string();
+-        let expected = acknowledged.parse::<Digest32>().map_err(|error| error.to_string())?;
+-        if ["task-intent.json", "task-checkpoint.pending"].iter().any(|name| {
+-            let path = root.join(name);
+-            path.exists() || path.is_symlink()
+-        }) {
++            env!("HEPTA_TASK_NATIVE_SOURCE_DIGEST"),
++            &setup.task,
++            &setup.policy,
++            &setup.payloads,
++            setup.tick_micros,
++            setup.cell.snapshot(),
++            &setup.content_model.digest,
++        ))?)
++        .to_string();
++        let expected = acknowledged
++            .parse::<Digest32>()
++            .map_err(|error| error.to_string())?;
++        if ["task-intent.json", "task-checkpoint.pending"]
++            .iter()
++            .any(|name| {
++                let path = root.join(name);
++                path.exists() || path.is_symlink()
++            })
++        {
+             return Err("incomplete task intent/publication; reconciliation required".into());
+         }
+         let path = root.join("task-checkpoint.json");
+@@ -141,15 +158,22 @@
+             if path.exists() || path.is_symlink() {
+                 return Err("task checkpoint requires external acknowledgement".into());
+             }
+-            (setup.task.initial(), Digest32::ZERO.to_string(), 0, Vec::new())
++            (
++                setup.task.initial(),
++                Digest32::ZERO.to_string(),
++                0,
++                Vec::new(),
++            )
+         } else {
+             let bytes = storage::read(&path, /*limit*/ 262_144)?;
+             if Digest32::of_bytes(&bytes) != expected {
+                 return Err("task acknowledgement mismatch".into());
+             }
+-            let mut checkpoint: Checkpoint = serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
++            let mut checkpoint: Checkpoint =
++                serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
+             checkpoint.state.paid_cost = f64::from_bits(
+-                u64::from_str_radix(&checkpoint.paid_cost_bits, /*radix*/ 16).map_err(|error| error.to_string())?,
++                u64::from_str_radix(&checkpoint.paid_cost_bits, /*radix*/ 16)
++                    .map_err(|error| error.to_string())?,
+             );
+             checkpoint.state.validate(&setup.task)?;
+             if checkpoint.schema != "hcsn.preread-native-task.v1"
+@@ -165,7 +189,10 @@
+             }
+             let mut replay = setup.task.initial();
+             for (index, entry) in checkpoint.ledger.iter().enumerate() {
+-                let (next, cost, actual) = setup.task.successor(&replay, entry.requested, entry.observation)?;
++                let (next, cost, actual) =
++                    setup
++                        .task
++                        .successor(&replay, entry.requested, entry.observation)?;
+                 if entry.sequence != index as u64 + 1
+                     || entry.state_before != replay.key()
+                     || entry.state_after != next.key()
+@@ -182,16 +209,31 @@
+             if replay != checkpoint.state {
+                 return Err("task state/replayed ledger mismatch".into());
+             }
+-            (checkpoint.state, checkpoint.inner_pair, checkpoint.sequence, checkpoint.ledger)
++            (
++                checkpoint.state,
++                checkpoint.inner_pair,
++                checkpoint.sequence,
++                checkpoint.ledger,
++            )
+         };
+         let inner = owner::Owner::open(root, setup.cell, &inner_pair, Some(setup.content_model))?;
+         if inner.cell.sequence != state.clock {
+             return Err("task clock/native frontier mismatch".into());
+         }
+         Ok(Self {
+-            state, task: setup.task, acknowledged: acknowledged.to_owned(), inner, inner_pair,
+-            policy: setup.policy, payloads: setup.payloads, tick_micros: setup.tick_micros,
+-            binding, sequence, ledger, root: root.to_path_buf(), poisoned: false,
++            state,
++            task: setup.task,
++            acknowledged: acknowledged.to_owned(),
++            inner,
++            inner_pair,
++            policy: setup.policy,
++            payloads: setup.payloads,
++            tick_micros: setup.tick_micros,
++            binding,
++            sequence,
++            ledger,
++            root: root.to_path_buf(),
++            poisoned: false,
+         })
+     }
+ 
+@@ -210,9 +252,19 @@
+             Some(action) => action,
+             None => self.decision()?,
+         };
+-        let actual = if self.task.legal(&self.state)[requested.index()] { requested } else { Action::Stop };
++        let actual = if self.task.legal(&self.state)[requested.index()] {
++            requested
++        } else {
++            Action::Stop
++        };
+         let state_before = self.state.key();
+-        let intent = storage::encode(&(self.sequence + 1, acknowledged, &state_before, requested, actual))?;
++        let intent = storage::encode(&(
++            self.sequence + 1,
++            acknowledged,
++            &state_before,
++            requested,
++            actual,
++        ))?;
+         self.poisoned = true;
+         storage::create(&self.root.join("task-intent.json"), &intent)?;
+         // The complete legality/selection decision and durable intent precede this first payload access.
+@@ -221,12 +273,21 @@
+         let inner_receipt = if actual == Action::Stop {
+             None
+         } else {
+-            let read = if actual == Action::Read { Some(self.payloads[self.state.next_packet].clone()) } else { None };
++            let read = if actual == Action::Read {
++                Some(self.payloads[self.state.next_packet].clone())
++            } else {
++                None
++            };
+             let driver = 2.0 * self.task.posterior(&self.state) - 1.0;
+             let horizon = (self.task.deadline - self.state.clock).max(1) * self.tick_micros;
+             let request = owner::Request {
+-                sequence: self.inner.cell.sequence + 1, pair_before: self.inner_pair.clone(), driver,
+-                duration_micros: self.tick_micros, horizon_micros: horizon, reset: false, content: read,
++                sequence: self.inner.cell.sequence + 1,
++                pair_before: self.inner_pair.clone(),
++                driver,
++                duration_micros: self.tick_micros,
++                horizon_micros: horizon,
++                reset: false,
++                content: read,
+             };
+             let receipt = match self.inner.step(request) {
+                 Ok(receipt) => receipt,
+@@ -237,40 +298,70 @@
+                     read_error = Some(error);
+                     observation = Some('x');
+                     self.inner.step(owner::Request {
+-                        sequence: self.inner.cell.sequence + 1, pair_before: self.inner_pair.clone(), driver,
+-                        duration_micros: self.tick_micros, horizon_micros: horizon, reset: false, content: None,
++                        sequence: self.inner.cell.sequence + 1,
++                        pair_before: self.inner_pair.clone(),
++                        driver,
++                        duration_micros: self.tick_micros,
++                        horizon_micros: horizon,
++                        reset: false,
++                        content: None,
+                     })?
+                 }
+                 Err(error) => return Err(error),
+             };
+             if actual == Action::Read && observation.is_none() {
+-                let output = receipt.content.as_ref().and_then(|state| state.last.as_ref()).ok_or("missing decoded content")?;
++                let output = receipt
++                    .content
++                    .as_ref()
++                    .and_then(|state| state.last.as_ref())
++                    .ok_or("missing decoded content")?;
+                 observation = Some(if output.observation == 1 { '1' } else { '0' });
+             }
+             Some(receipt)
+         };
+-        let (state, cost, checked_actual) = self.task.successor(&self.state, requested, observation)?;
++        let (state, cost, checked_actual) =
++            self.task.successor(&self.state, requested, observation)?;
+         if checked_actual != actual {
+             return Err("task guard changed during execution".into());
+         }
+         let ledger = Ledger {
+-            sequence: self.sequence + 1, state_before: state_before.clone(), state_after: state.key(),
+-            requested, actual, observation, read_attempted: actual == Action::Read,
++            sequence: self.sequence + 1,
++            state_before: state_before.clone(),
++            state_after: state.key(),
++            requested,
++            actual,
++            observation,
++            read_attempted: actual == Action::Read,
+             read_failed: observation == Some('x'),
+             payload_bytes: if actual == Action::Read && read_error.is_none() {
+-                inner_receipt.as_ref().and_then(|r| r.content.as_ref()).and_then(|c| c.last.as_ref()).map(|c| c.payload_bytes)
+-            } else { None },
+-            cost_bits: bits(cost), native_committed: actual != Action::Stop,
+-        };
+-        let inner_pair = inner_receipt.as_ref().map_or_else(|| self.inner_pair.clone(), |r| r.pair_after.clone());
++                inner_receipt
++                    .as_ref()
++                    .and_then(|r| r.content.as_ref())
++                    .and_then(|c| c.last.as_ref())
++                    .map(|c| c.payload_bytes)
++            } else {
++                None
++            },
++            cost_bits: bits(cost),
++            native_committed: actual != Action::Stop,
++        };
++        let inner_pair = inner_receipt
++            .as_ref()
++            .map_or_else(|| self.inner_pair.clone(), |r| r.pair_after.clone());
+         let mut entries = self.ledger.clone();
+         entries.push(ledger.clone());
+         let checkpoint = Checkpoint {
+-            schema: "hcsn.preread-native-task.v1".into(), binding: self.binding.clone(),
+-            source_digest: env!("HEPTA_TASK_NATIVE_SOURCE_DIGEST").into(), inner_pair: inner_pair.clone(),
+-            sequence: self.sequence + 1, paid_cost_bits: bits(state.paid_cost),
+-            log_odds_bits: bits(self.task.log_odds(&state)), deadline: self.task.deadline,
+-            pending: pending(&self.task, &state), state: state.clone(), ledger: entries.clone(),
++            schema: "hcsn.preread-native-task.v1".into(),
++            binding: self.binding.clone(),
++            source_digest: env!("HEPTA_TASK_NATIVE_SOURCE_DIGEST").into(),
++            inner_pair: inner_pair.clone(),
++            sequence: self.sequence + 1,
++            paid_cost_bits: bits(state.paid_cost),
++            log_odds_bits: bits(self.task.log_odds(&state)),
++            deadline: self.task.deadline,
++            pending: pending(&self.task, &state),
++            state: state.clone(),
++            ledger: entries.clone(),
+         };
+         let acknowledged = storage::publish(&self.root, &storage::encode(&checkpoint)?)?;
+         storage::finish_intent(&self.root)?;
+@@ -281,9 +372,19 @@
+         self.ledger = entries;
+         self.poisoned = false;
+         Ok(Receipt {
+-            sequence: self.sequence, task_after: self.acknowledged.clone(), state_key_before: state_before,
+-            state: self.state.clone(), posterior: self.task.posterior(&self.state), requested, actual,
+-            read_attempted: actual == Action::Read, observation, read_error, cost, ledger, inner: inner_receipt,
++            sequence: self.sequence,
++            task_after: self.acknowledged.clone(),
++            state_key_before: state_before,
++            state: self.state.clone(),
++            posterior: self.task.posterior(&self.state),
++            requested,
++            actual,
++            read_attempted: actual == Action::Read,
++            observation,
++            read_error,
++            cost,
++            ledger,
++            inner: inner_receipt,
+             production_activation: false,
+         })
+     }
+--- a/tools/hcsn/round10_20261031/native/task_tests.rs
++++ b/tools/hcsn/round10_20261031/native/task_tests.rs
+@@ -44,8 +44,16 @@
+         invalid_cost: 0.07,
+         refractory_ticks: 1,
+         packets: vec![
+-            Packet { arrival: 0, reliability: 0.8, failure_probability: 0.1 },
+-            Packet { arrival: 0, reliability: 0.7, failure_probability: 0.1 },
++            Packet {
++                arrival: 0,
++                reliability: 0.8,
++                failure_probability: 0.1,
++            },
++            Packet {
++                arrival: 0,
++                reliability: 0.7,
++                failure_probability: 0.1,
++            },
+         ],
+     }
+ }
+@@ -54,14 +62,28 @@
+     let bytes = br#"{"schema":"hcsn.memory.packet.v1","symbols":[0,1,2,3,-1],"dt":[1,1,1,1,1]}"#;
+     let path = root.join("payload.json");
+     std::fs::write(&path, bytes).unwrap();
+-    content::Request { path: path.to_string_lossy().into_owned(), sha256: Digest32::of_bytes(bytes).to_string() }
++    content::Request {
++        path: path.to_string_lossy().into_owned(),
++        sha256: Digest32::of_bytes(bytes).to_string(),
++    }
+ }
+ 
+ fn setup(task: Config, payload: content::Request, policy: Policy) -> Setup {
+-    let fixture = Path::new(file!()).parent().unwrap().join("../../round9_20261031/native/fixtures/fullhx.json");
+-    let digest = Digest32::of_bytes(&std::fs::read(&fixture).expect("real frozen FullHX fixture is required")).to_string();
++    let fixture = Path::new(file!())
++        .parent()
++        .unwrap()
++        .join("../../round9_20261031/native/fixtures/fullhx.json");
++    let digest = Digest32::of_bytes(
++        &std::fs::read(&fixture).expect("real frozen FullHX fixture is required"),
++    )
++    .to_string();
+     Setup {
+-        cell: Cell::new([0.2, -0.3, 0.4, -0.1, 0.5, 0.2, 0.4, -0.2, 0.3, 0.5, -0.1], Family::Distribution, /*seed*/ 173).unwrap(),
++        cell: Cell::new(
++            [0.2, -0.3, 0.4, -0.1, 0.5, 0.2, 0.4, -0.2, 0.3, 0.5, -0.1],
++            Family::Distribution,
++            /*seed*/ 173,
++        )
++        .unwrap(),
+         content_model: content::Model::load(&fixture, &digest).unwrap(),
+         payloads: vec![payload; task.packets.len()],
+         task,
+@@ -73,55 +95,154 @@
+ #[test]
+ fn policy_wait_and_stop_do_not_read_missing_payloads() {
+     let root = Directory::new();
+-    let payload = content::Request { path: root.0.join("never-created").to_string_lossy().into_owned(), sha256: Digest32::ZERO.to_string() };
++    let payload = content::Request {
++        path: root.0.join("never-created").to_string_lossy().into_owned(),
++        sha256: Digest32::ZERO.to_string(),
++    };
+     let task = task();
+     let mut entries = BTreeMap::new();
+     entries.insert(task.initial().key(), [0.0, 1.0, 0.0]);
+-    let (after_wait, _, _) = task.successor(&task.initial(), Action::Wait, /*observation*/ None).unwrap();
++    let (after_wait, _, _) = task
++        .successor(&task.initial(), Action::Wait, /*observation*/ None)
++        .unwrap();
+     entries.insert(after_wait.key(), [0.0, 0.0, 1.0]);
+-    let mut owner = TaskOwner::open(&root.0, &Digest32::ZERO.to_string(), setup(task, payload, Policy::QTable { entries })).unwrap();
+-    let first = owner.step(&owner.acknowledged.clone(), /*forced*/ None).unwrap();
+-    assert_eq!((first.actual, first.read_attempted, first.observation, first.read_error), (Action::Wait, false, None, None));
+-    assert_eq!(first.inner.as_ref().unwrap().content.as_ref().unwrap().completed_reads, 0);
+-    let second = owner.step(&owner.acknowledged.clone(), /*forced*/ None).unwrap();
+-    assert_eq!((second.actual, second.state.clock, second.state.answer, second.inner.is_none()), (Action::Stop, 1, Some(1), true));
++    let mut owner = TaskOwner::open(
++        &root.0,
++        &Digest32::ZERO.to_string(),
++        setup(task, payload, Policy::QTable { entries }),
++    )
++    .unwrap();
++    let first = owner
++        .step(&owner.acknowledged.clone(), /*forced*/ None)
++        .unwrap();
++    assert_eq!(
++        (
++            first.actual,
++            first.read_attempted,
++            first.observation,
++            first.read_error
++        ),
++        (Action::Wait, false, None, None)
++    );
++    assert_eq!(
++        first
++            .inner
++            .as_ref()
++            .unwrap()
++            .content
++            .as_ref()
++            .unwrap()
++            .completed_reads,
++        0
++    );
++    let second = owner
++        .step(&owner.acknowledged.clone(), /*forced*/ None)
++        .unwrap();
++    assert_eq!(
++        (
++            second.actual,
++            second.state.clock,
++            second.state.answer,
++            second.inner.is_none()
++        ),
++        (Action::Stop, 1, Some(1), true)
++    );
+ }
+ 
+ #[test]
+ fn real_decode_and_native_checkpoint_survive_task_restart() {
+     let root = Directory::new();
+     let payload = packet(&root.0);
+-    let mut owner = TaskOwner::open(&root.0, &Digest32::ZERO.to_string(), setup(task(), payload.clone(), Policy::OneRead)).unwrap();
+-    let first = owner.step(&owner.acknowledged.clone(), Some(Action::Read)).unwrap();
++    let mut owner = TaskOwner::open(
++        &root.0,
++        &Digest32::ZERO.to_string(),
++        setup(task(), payload.clone(), Policy::OneRead),
++    )
++    .unwrap();
++    let first = owner
++        .step(&owner.acknowledged.clone(), Some(Action::Read))
++        .unwrap();
+     let inner = first.inner.as_ref().unwrap();
+     let output = inner.content.as_ref().unwrap().last.as_ref().unwrap();
+-    assert_eq!((first.read_attempted, first.ledger.read_failed, inner.native_physics_executed), (true, false, true));
++    assert_eq!(
++        (
++            first.read_attempted,
++            first.ledger.read_failed,
++            inner.native_physics_executed
++        ),
++        (true, false, true)
++    );
+     assert_eq!(first.state.history, output.observation.to_string());
+     assert_eq!(first.state.clock, inner.cell.sequence);
+     let state = first.state.clone();
+     let ack = first.task_after;
+     drop(owner);
+-    let mut resumed = TaskOwner::open(&root.0, &ack, setup(task(), payload, Policy::OneRead)).unwrap();
++    let mut resumed =
++        TaskOwner::open(&root.0, &ack, setup(task(), payload, Policy::OneRead)).unwrap();
+     assert_eq!(resumed.state, state);
+     let wait = resumed.step(&ack, Some(Action::Wait)).unwrap();
+-    assert_eq!((wait.actual, wait.state.clock, wait.state.recovery_until), (Action::Wait, 2, 2));
++    assert_eq!(
++        (wait.actual, wait.state.clock, wait.state.recovery_until),
++        (Action::Wait, 2, 2)
++    );
+     let second = resumed.step(&wait.task_after, Some(Action::Read)).unwrap();
+-    assert_eq!((second.state.next_packet, second.state.budget_left, second.inner.unwrap().content.unwrap().completed_reads), (2, 0, 2));
++    assert_eq!(
++        (
++            second.state.next_packet,
++            second.state.budget_left,
++            second.inner.unwrap().content.unwrap().completed_reads
++        ),
++        (2, 0, 2)
++    );
+ }
+ 
+ #[test]
+ fn failed_read_consumes_real_attempt_budget_time_and_failure_cost() {
+     let root = Directory::new();
+-    let missing = content::Request { path: root.0.join("missing").to_string_lossy().into_owned(), sha256: Digest32::ZERO.to_string() };
+-    let mut owner = TaskOwner::open(&root.0, &Digest32::ZERO.to_string(), setup(task(), missing, Policy::OneRead)).unwrap();
+-    let first = owner.step(&owner.acknowledged.clone(), Some(Action::Read)).unwrap();
+-    assert_eq!((first.actual, first.observation, first.read_attempted, first.ledger.read_failed), (Action::Read, Some('x'), true, true));
++    let missing = content::Request {
++        path: root.0.join("missing").to_string_lossy().into_owned(),
++        sha256: Digest32::ZERO.to_string(),
++    };
++    let mut owner = TaskOwner::open(
++        &root.0,
++        &Digest32::ZERO.to_string(),
++        setup(task(), missing, Policy::OneRead),
++    )
++    .unwrap();
++    let first = owner
++        .step(&owner.acknowledged.clone(), Some(Action::Read))
++        .unwrap();
++    assert_eq!(
++        (
++            first.actual,
++            first.observation,
++            first.read_attempted,
++            first.ledger.read_failed
++        ),
++        (Action::Read, Some('x'), true, true)
++    );
+     assert!(first.read_error.is_some());
+-    assert_eq!((first.state.clock, first.state.budget_left, first.state.recovery_until, first.state.history.as_str()), (1, 1, 2, "x"));
++    assert_eq!(
++        (
++            first.state.clock,
++            first.state.budget_left,
++            first.state.recovery_until,
++            first.state.history.as_str()
++        ),
++        (1, 1, 2, "x")
++    );
+     assert_eq!(first.cost, 0.05);
+     assert_eq!(first.inner.unwrap().content.unwrap().completed_reads, 0);
+     let stop = owner.step(&first.task_after, Some(Action::Read)).unwrap();
+-    assert_eq!((stop.actual, stop.read_attempted, stop.state.clock, stop.state.answer), (Action::Stop, false, 1, Some(1)));
++    assert_eq!(
++        (
++            stop.actual,
++            stop.read_attempted,
++            stop.state.clock,
++            stop.state.answer
++        ),
++        (Action::Stop, false, 1, Some(1))
++    );
+     assert_eq!(stop.cost, task().invalid_cost + task().stop_cost);
+ }
+ 
+@@ -130,7 +251,12 @@
+     let root = Directory::new();
+     let payload = packet(&root.0);
+     let zero = Digest32::ZERO.to_string();
+-    let mut owner = TaskOwner::open(&root.0, &zero, setup(task(), payload.clone(), Policy::OneRead)).unwrap();
++    let mut owner = TaskOwner::open(
++        &root.0,
++        &zero,
++        setup(task(), payload.clone(), Policy::OneRead),
++    )
++    .unwrap();
+     let first = owner.step(&zero, Some(Action::Wait)).unwrap();
+     let saved = owner.state.clone();
+     assert!(owner.step(&zero, Some(Action::Read)).is_err());
+@@ -138,9 +264,20 @@
+     drop(owner);
+     let mut altered = task();
+     altered.read_cost = 0.04;
+-    assert!(TaskOwner::open(&root.0, &first.task_after, setup(altered, payload.clone(), Policy::OneRead)).is_err());
++    assert!(TaskOwner::open(
++        &root.0,
++        &first.task_after,
++        setup(altered, payload.clone(), Policy::OneRead)
++    )
++    .is_err());
+     std::fs::write(root.0.join("task-intent.json"), b"interrupted read intent").unwrap();
+-    let error = TaskOwner::open(&root.0, &first.task_after, setup(task(), payload, Policy::OneRead)).err().unwrap();
++    let error = TaskOwner::open(
++        &root.0,
++        &first.task_after,
++        setup(task(), payload, Policy::OneRead),
++    )
++    .err()
++    .unwrap();
+     assert!(error.contains("reconciliation required"));
+ }
+ 
+@@ -149,11 +286,18 @@
+     let mut task = task();
+     task.deadline = 1;
+     let initial = task.initial();
+-    let (state, _, _) = task.successor(&initial, Action::Wait, /*observation*/ None).unwrap();
++    let (state, _, _) = task
++        .successor(&initial, Action::Wait, /*observation*/ None)
++        .unwrap();
+     let mut entries = BTreeMap::new();
+     entries.insert(state.key(), [100.0, 50.0, -1.0]);
+     let policy = Policy::QTable { entries };
+     assert_eq!(policy.decision(&task, &state).unwrap(), Action::Stop);
+-    let (terminated, cost, actual) = task.successor(&state, Action::Read, /*observation*/ None).unwrap();
+-    assert_eq!((terminated.clock, terminated.answer, actual, cost), (1, Some(1), Action::Stop, task.invalid_cost + task.stop_cost));
+-}
++    let (terminated, cost, actual) = task
++        .successor(&state, Action::Read, /*observation*/ None)
++        .unwrap();
++    assert_eq!(
++        (terminated.clock, terminated.answer, actual, cost),
++        (1, Some(1), Action::Stop, task.invalid_cost + task.stop_cost)
++    );
++}

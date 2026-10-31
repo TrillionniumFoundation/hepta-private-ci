@@ -18,11 +18,17 @@ pub fn read(path: &Path, limit: u64) -> Result<Vec<u8>, String> {
         .custom_flags(libc::O_NOFOLLOW)
         .open(path)
         .map_err(|error| error.to_string())?;
-    if !file.metadata().map_err(|error| error.to_string())?.is_file() {
+    if !file
+        .metadata()
+        .map_err(|error| error.to_string())?
+        .is_file()
+    {
         return Err("checkpoint must be a regular file".into());
     }
     let mut bytes = Vec::new();
-    file.take(limit + 1).read_to_end(&mut bytes).map_err(|error| error.to_string())?;
+    file.take(limit + 1)
+        .read_to_end(&mut bytes)
+        .map_err(|error| error.to_string())?;
     if bytes.len() as u64 > limit {
         return Err("checkpoint size limit".into());
     }
@@ -47,12 +53,17 @@ pub fn create(path: &Path, bytes: &[u8]) -> Result<(), String> {
 pub fn publish(root: &Path, bytes: &[u8]) -> Result<String, String> {
     let pending = root.join("task-checkpoint.pending");
     create(&pending, bytes)?;
-    std::fs::rename(&pending, root.join("task-checkpoint.json")).map_err(|error| error.to_string())?;
-    File::open(root).and_then(|directory| directory.sync_all()).map_err(|error| error.to_string())?;
+    std::fs::rename(&pending, root.join("task-checkpoint.json"))
+        .map_err(|error| error.to_string())?;
+    File::open(root)
+        .and_then(|directory| directory.sync_all())
+        .map_err(|error| error.to_string())?;
     Ok(Digest32::of_bytes(bytes).to_string())
 }
 
 pub fn finish_intent(root: &Path) -> Result<(), String> {
     std::fs::remove_file(root.join("task-intent.json")).map_err(|error| error.to_string())?;
-    File::open(root).and_then(|directory| directory.sync_all()).map_err(|error| error.to_string())
+    File::open(root)
+        .and_then(|directory| directory.sync_all())
+        .map_err(|error| error.to_string())
 }
