@@ -34,18 +34,33 @@ def two_segment_first_hit(x, b, mu, sigma, c1, c2, switch, T, q=0, *, dps=60):
 
         first = linear_boundary_first_hit(x, b, mu, sigma, c1, switch, q, dps=dps + 15)
         nu1 = mu - c1
-        variance = sigma**2 * switch
-        root = mp.sqrt(2 * mp.pi * variance)
-        decay = mp.exp(-nu1**2 * switch / (2 * sigma**2))
+        # Standardize the absorbed endpoint as y=center+scale*z. Integrating
+        # in unscaled y misses the entire Gaussian when switch is very small:
+        # even adaptive quadrature can report zero while survival tends to 1.
+        scale = sigma * mp.sqrt(switch)
+        center = a + nu1 * switch
+        variance = scale**2
+        gaussian_norm = 1 / mp.sqrt(2 * mp.pi)
 
-        def killed_density(y):
+        def killed_standard(z):
+            y = center + scale * z
             if y <= 0:
                 return mp.mpf(0)
-            # Exponential tilt of the driftless method-of-images kernel.
-            # -expm1 avoids cancellation close to the absorbing boundary.
-            return (decay / root * mp.exp(nu1 * (y - a) / sigma**2
-                    - (y - a)**2 / (2 * variance))
+            # The Jacobian cancels the 1/scale density normalization.
+            # The image factor is bounded in [0,1] for a,y>0.
+            return (gaussian_norm * mp.exp(-z*z/2)
                     * (-mp.expm1(-2 * a * y / variance)))
+
+        def integrate_continuation(continuation):
+            lower = -center / scale
+            # Explicit normal-mass panels cannot collapse onto a when the
+            # first interval is narrower than the working mantissa.
+            nodes = [lower]
+            nodes.extend(k for k in map(mp.mpf, (-40,-12,-6,0,6,12,40))
+                         if k > lower)
+            nodes.append(mp.inf)
+            return mp.quad(lambda z: killed_standard(z) *
+                           continuation(center + scale*z), nodes)
 
         remaining = T - switch
         nu2 = mu - c2
@@ -66,22 +81,15 @@ def two_segment_first_hit(x, b, mu, sigma, c1, c2, switch, T, q=0, *, dps=60):
                 return second_F(y)
             return mp.exp(-(nu2+s2)*y/sigma**2)*first_hit_tail(y, -s2)
 
-        # Integrate over the entire surviving gap domain, with knots near
-        # the Gaussian's mass; no finite-tail truncation or MC approximation.
-        scale = sigma * mp.sqrt(switch)
-        knots = sorted({mp.mpf(0), a/4, a/2, a, a+scale,
-                        max(mp.mpf(0), a+nu1*switch),
-                        max(mp.mpf(0), a+nu1*switch+4*scale)})
-        knots.append(mp.inf)
-        continuation_F = mp.quad(lambda y: killed_density(y)*second_F(y),
-                                 knots)
+        # No finite-tail truncation or Monte Carlo approximation: the
+        # interval extends to +infinity in standardized coordinates.
+        continuation_F = integrate_continuation(second_F)
         p = first.probability + continuation_F
         if q == 0:
             # Discount-free first-event weight equals probability *exactly*.
             g = p
         else:
-            continuation_G = mp.quad(lambda y: killed_density(y)*second_G(y),
-                                     knots)
+            continuation_G = integrate_continuation(second_G)
             g = first.discounted + mp.exp(-q * switch) * continuation_G
         if not (mp.isfinite(p) and mp.isfinite(g) and 0 <= g <= p <= 1):
             raise ArithmeticError("invalid piecewise first-hit ordering")
