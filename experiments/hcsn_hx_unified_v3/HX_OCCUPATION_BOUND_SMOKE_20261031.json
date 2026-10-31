@@ -1,0 +1,47 @@
+{
+  "admission": "RESEARCH_ONLY_DENY_ALL_NO_GO",
+  "cases": [
+    {
+      "barrier_f64": 64.62517667527493,
+      "bond_occupation_upper": "1.111828090031",
+      "fixed_barrier_only": true,
+      "new_equity_abs_error_upper": "1.640608880050",
+      "new_lower": "2305.806020476897",
+      "new_upper": "2308.154649924768",
+      "nominal_held_policy_equity": 2306.514041044718,
+      "old_equity_abs_error_upper": "278.220790742521",
+      "perpetual_put_premium_upper": "0.000000000000",
+      "sale_fraction": 0.015,
+      "staircase_cutoff": "3/2",
+      "staircase_steps": 32
+    },
+    {
+      "barrier_f64": 101.32402860907811,
+      "bond_occupation_upper": "3.295784212750",
+      "fixed_barrier_only": true,
+      "new_equity_abs_error_upper": "4.255687461278",
+      "new_lower": "3474.392134706899",
+      "new_upper": "3482.113788505947",
+      "nominal_held_policy_equity": 3477.8581010446687,
+      "old_equity_abs_error_upper": "370.901575840771",
+      "perpetual_put_premium_upper": "3.663960206662",
+      "sale_fraction": 0.2,
+      "staircase_cutoff": "3/2",
+      "staircase_steps": 32
+    }
+  ],
+  "complete_debt_error_budget": false,
+  "global_equilibrium_certified": false,
+  "head_parent": "0d4d948cdd7c9f9ce83971659d29d764435cfa61",
+  "limitations": [
+    "fixed financial default barrier",
+    "conditional payout and drift domain",
+    "not a coupled financial equilibrium",
+    "not a complete debt PDE/interior or fp32/bf16/GPU error budget",
+    "no P1-P5 superiority or hardware evidence"
+  ],
+  "parameters_log_upper": 3.6,
+  "production_activation": false,
+  "schema": "hcsn-p0-killed-occupation-equity-budget-v1",
+  "scientific_gate_closed": false
+}
