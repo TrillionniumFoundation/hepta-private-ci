@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn.round10.numeric.contract-source.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "commit": "18efb4c8dbff36aa6f4450bd98122115b336aff6",
+  "path": "experiments/hcsn_distributional_v2/distribution_kernel.py",
+  "blob_sha": "be25116b29278978b4a34c91a1f1b19c0c541c58",
+  "local": "vendor/upstream/distribution_kernel.py",
+  "comparison_implementation": "finite_volume_reference.py",
+  "execution_note": "PyTorch dependency was not available. The independent SciPy implementation realizes the same declared finite generator/remap/Erlang contract; this does not claim execution of upstream PyTorch code.",
+  "mapped_functions": [
+    "make_flow",
+    "initial_probability",
+    "remap_operator",
+    "moments"
+  ],
+  "time_solver": "scipy.sparse.linalg.expm_multiply; differs from upstream uniformization solver",
+  "boundary_time_approximation": "Left-held boundary then physical remap at each observation"
+}

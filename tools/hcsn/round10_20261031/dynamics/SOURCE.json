@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn.round10.dynamics.source.v1",
+  "scope": "Pinned upstream reference sources and narrow corrected copies; no production activation",
+  "sources": [
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "commit": "946ec0ed3c58c021f38c231cbb2a9d389422c68c",
+      "path": "experiments/hcsn_hx_unified_v3/moving_boundary_enclosure.py",
+      "blob_sha": "f2f2f864188f6563d0033af998d7cdec7ab95b6d",
+      "upstream_local": "vendor/upstream/moving_boundary_enclosure.py",
+      "patched_local": "vendor/patched/moving_boundary_enclosure.py"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "commit": "18efb4c8dbff36aa6f4450bd98122115b336aff6",
+      "path": "experiments/hcsn_distributional_v2/renewal_event_oracle.py",
+      "blob_sha": "76cdfeb363e08b052d0634994f67248a9b01f72d",
+      "upstream_local": "vendor/upstream/renewal_event_oracle.py",
+      "patched_local": "vendor/patched/renewal_event_oracle.py"
+    }
+  ]
+}
