@@ -1,0 +1,52 @@
+{
+  "all_parameter_groups_changed": {
+    "A": true,
+    "B": true,
+    "W": true,
+    "b": true
+  },
+  "changed_labels_rejected": true,
+  "claims": "CPU pretrained encoding and local adapter correctness only; no generalization or production claim",
+  "clone_independent": true,
+  "complete_resume_equal": true,
+  "encoder_manifest_hash": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+  "encoder_mismatch_rejected": true,
+  "encoder_stats": {
+    "calls": 3,
+    "encode_seconds": 0.13145805499516428,
+    "encoded_tokens": 448,
+    "examples": 17,
+    "input_tokens": 494,
+    "load_seconds": 0.3305997870047577,
+    "padded_tokens": 496,
+    "truncated_examples": 1
+  },
+  "final_state_hash": "1763b89941564cabdbc7e5917085ef935e1650fd398034b45d1c7e1d6b0f07a4",
+  "finite_difference_max_abs_error": {
+    "A": 1.9005914951662067e-11,
+    "B": 1.3343131558419402e-11,
+    "W": 1.2482237465860635e-11,
+    "b": 1.6543939829194443e-11
+  },
+  "prefix": {
+    "examples": 94,
+    "first_loss": 0.6783917327691883,
+    "last_loss": 0.0,
+    "mean_loss": 0.0884836067062884,
+    "seconds": 0.004728314001113176,
+    "step": 35,
+    "updates": 35
+  },
+  "schema": "hepta-memory-v13-backend-checks-v1",
+  "suffix": {
+    "examples": 173,
+    "first_loss": 0.0,
+    "last_loss": 0.0,
+    "mean_loss": 1.1386902816668272e-18,
+    "seconds": 0.009819323997362517,
+    "step": 100,
+    "updates": 65
+  },
+  "total_seconds": 0.5129161390068475,
+  "train_accuracy": 1.0
+}

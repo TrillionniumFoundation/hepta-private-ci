@@ -1,0 +1,42 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "-v",
+    "tasks_tests",
+    "lifecycle_tests",
+    "structural_tests"
+  ],
+  "exit_code": 0,
+  "log": "scoped-tests.log",
+  "log_sha256": "877a5516a7e5e7941d62e5ac7f0363164fd48e3f9010053c4d71ded1ebbea1fe",
+  "source_sha256_after": {
+    "adapter.py": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+    "backend.py": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53",
+    "baselines.py": "92022d8450a7edea3d97f1b3084d83680bcdd35fb7c766b7c01aa5181f53a355",
+    "experiment.py": "2491064e2ae2dfdc888c811fef1d065718f4d52408c29dcfcbbe5757b6f0af95",
+    "lifecycle.py": "0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb",
+    "lifecycle_tests.py": "52ee094d6755e435b80c9f0b8c43fdb890460405851b6961a54fec87b654db31",
+    "structural.py": "fbe3321e2246f85505f64ffa71f1e6168fe35e2c058a0fa092b7fab10e7a10fc",
+    "structural_tests.py": "c1cda0c69c0880f5978cba3e29a5d71f992e4c2ec4b62e2e2936014ace717021",
+    "tasks.py": "b2e9942631aa645b3e9e2d77ecd7bb8092fa4c7a2a3fa96efae0b9e6bbb49b54",
+    "tasks_tests.py": "2d8dbea0e546e608b9fe3f860056d7a5a46550db1a2bfdfa4e314726228c3986"
+  },
+  "source_sha256_before": {
+    "adapter.py": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+    "backend.py": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53",
+    "baselines.py": "92022d8450a7edea3d97f1b3084d83680bcdd35fb7c766b7c01aa5181f53a355",
+    "experiment.py": "2491064e2ae2dfdc888c811fef1d065718f4d52408c29dcfcbbe5757b6f0af95",
+    "lifecycle.py": "0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb",
+    "lifecycle_tests.py": "52ee094d6755e435b80c9f0b8c43fdb890460405851b6961a54fec87b654db31",
+    "structural.py": "fbe3321e2246f85505f64ffa71f1e6168fe35e2c058a0fa092b7fab10e7a10fc",
+    "structural_tests.py": "c1cda0c69c0880f5978cba3e29a5d71f992e4c2ec4b62e2e2936014ace717021",
+    "tasks.py": "b2e9942631aa645b3e9e2d77ecd7bb8092fa4c7a2a3fa96efae0b9e6bbb49b54",
+    "tasks_tests.py": "2d8dbea0e546e608b9fe3f860056d7a5a46550db1a2bfdfa4e314726228c3986"
+  },
+  "source_unchanged_during_test": true,
+  "streams": "stdout and stderr merged without truncation",
+  "test_count": 24,
+  "wall_seconds": 0.9706326599989552
+}
