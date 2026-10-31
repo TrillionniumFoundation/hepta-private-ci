@@ -1,0 +1,107 @@
+{
+  "schema": "HCSN_SCIENTIFIC_ADMISSION_LEDGER_V2",
+  "recorded_date": "2026-10-31",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent_pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4496",
+  "research_pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4498",
+  "research_only": true,
+  "production_activation": false,
+  "all_scientific_blockers_closed": false,
+  "decision": "DENY_ALL_NO_GO",
+  "evidence_scope": {
+    "host": "local Python 3.13.5; SciPy 1.17.0; PyTorch 2.10 CPU; mpmath",
+    "upstream_checkout": "reconstructed HX reference subset; not complete repository checkout",
+    "cuda_measured": false,
+    "rust_kernel_measured": false,
+    "whole_repo_ci_measured": false,
+    "focused_unittest_pass": 24,
+    "focused_unittest_total": 24,
+    "focused_unittest_skipped": 0,
+    "original_historical_evidence_untouched": true
+  },
+  "p0_math": {
+    "closed": false,
+    "verified_locally": [
+      "fixed-maturity no-default bond upper-Dirichlet correction",
+      "16 high-precision physical-time bond quadrature comparisons",
+      "deterministic 24-case three-grid panel, no dropped results",
+      "actual CPU FP32/BF16 financial-bond forward & asset gradient, guarded near boundary"
+    ],
+    "critical_correction": "B_inf=c/q+exp(-q*T)*(P-c/q); old c/q-only upper boundary invalid",
+    "sample_evidence": {
+      "financial_panel_cases": 24,
+      "extra_stop_observed": 2,
+      "no_extra_stop_on_grid": 22,
+      "unresolved": 0,
+      "python_json_sha256": "b3beda73ca1bda246ba5a01f30bfd53b52ef801f3e3f897012001a0b0c6da72e",
+      "mp_bond_cases": 16,
+      "mp_bond_max_absolute_discrepancy": 7.105427357601002e-15,
+      "fp32_max_normalized_bond_error": 3.0390636946261836e-7,
+      "fp32_max_normalized_gradient_error": 6.708156052869143e-8,
+      "bf16_max_normalized_bond_error": 0.004322823837864785,
+      "bf16_max_normalized_gradient_error": 0.004169490018129907,
+      "near_default_rejection_probes": 4,
+      "finite_obstacle_high_liquidity_stop_asset_101_nodes": 105.03814664761444,
+      "finite_obstacle_high_liquidity_stop_asset_201_nodes": 103.16437454842358,
+      "finite_obstacle_high_liquidity_stop_asset_401_nodes": 104.09704463925351
+    },
+    "blockers": [
+      "full self-consistent coupled financial HX equilibrium (not just smooth fit)",
+      "certified continuum global obstacle/optimal stopping with all legitimate parameters and degenerate limits",
+      "rigorous finite-domain truncation and floating-point error enclosures",
+      "true FP32/BF16 full financial equity and QVI with stable active-set/implicit derivatives",
+      "separately validated posterior global optimality and parameter-regime admission"
+    ]
+  },
+  "p1_mechanism": {
+    "closed": false,
+    "blockers": [
+      "independent preregistered matched-information, signed-local-slope, active-parameter and full-compute ablation for ordinary, Call, Risk, Margin, pairs, triple",
+      "out-of-sample positive utility net of cost and OOD negative transfer with multiple comparisons correction"
+    ],
+    "historic_negative_findings_retained": true
+  },
+  "p2_memory": {
+    "closed": false,
+    "blockers": [
+      "trainable causal content state with Selective Copy, MQAR, overwrite, long range retrieval and irregular time",
+      "multiple regenerative events and power-loss/crash restart with exact event-by-event replay"
+    ]
+  },
+  "p3_multimodal": {
+    "closed": false,
+    "blockers": [
+      "separate authentic text/image/audio/video encoders and paired task datasets",
+      "held-out crossmodal alignment, OOD and noisy robustness"
+    ]
+  },
+  "p4_native": {
+    "closed": false,
+    "blockers": [
+      "Rust/GPU native content and event operators with resource authorization",
+      "64/256/1024/4096 Cell actual CPU/GPU, RSS, throughput, p95/p99, joules and power-loss recovery"
+    ]
+  },
+  "p5_scale": {
+    "closed": false,
+    "blocked_by": [
+      "P0",
+      "P1",
+      "P2",
+      "P3",
+      "P4"
+    ],
+    "blockers": [
+      "matched-data, tokens, FLOPs, total training/inference cost, stable quality+cost win over tuned ordinary gates, Transformer, SSM/Mamba before increasing parameters"
+    ]
+  },
+  "evidence_blobs": {
+    "corrected_grid": "71866f321981424fe05e3c1ffaca6b92c71f0e80",
+    "mp_reference": "3e1fe137624b9c8c2a843b7eb6226eca695a8a5f",
+    "mp_test": "3a5658011e58ef587ba83865471fd11d792940a5",
+    "panel_v2": "e6c6cb4c211b02a12edafc565eed20e5e5b15e48",
+    "panel_test_v2": "c3054f9b195abecd685d9ca4b18068a25a4c106a",
+    "financial_low_precision": "5f26e10da899d5b6878465c4b8a86a1f03ecd0b6",
+    "financial_low_precision_test": "001241a1fd7b7292abd93b8b2cb9cfce813f4dd5"
+  }
+}
