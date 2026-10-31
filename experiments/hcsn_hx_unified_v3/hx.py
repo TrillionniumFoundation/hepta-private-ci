@@ -98,6 +98,33 @@ def _log_asset_ratio(asset: float, asset_boundary: float) -> float:
     return v
 
 
+def _first_passage_factors(p: HX, v: float, tau: float) -> tuple[float, float]:
+    """Joint HX first-hit probability F and discounted first-hit factor G.
+
+    For a nonnegative discount, 0 <= G <= F <= 1 is mandatory. Separate
+    normal-tail evaluations can violate this ordering by f64 roundoff near
+    the absorbing boundary; this reference explicitly refuses such inputs.
+    A refusal is NOT a certified interval estimate or permission to clamp.
+    tau > 0 and asset > boundary are validated by public callers.
+    """
+    u=p.volatility*math.sqrt(tau)
+    a,zhat=p.a,p.zhat
+    if (not all(math.isfinite(t) for t in (v,u,a,zhat))
+            or v<0 or u<=0):
+        raise ArithmeticError('HX first-passage scaled state unresolved in f64')
+    u2=u*u
+    h1=(-v-a*u2)/u
+    h2=(-v+a*u2)/u
+    q1=(-v-zhat*u2)/u
+    q2=(-v+zhat*u2)/u
+    F=float(ndtr(h1))+_exp_cdf(-2*a*v,h2)
+    G=(_exp_cdf((-a+zhat)*v,q1)
+       +_exp_cdf((-a-zhat)*v,q2))
+    if not (math.isfinite(F) and math.isfinite(G) and 0<=G<=F<=1):
+        raise ArithmeticError('HX F/G first-passage ordering unresolved in f64')
+    return F,G
+
+
 def _b_and_B(p: HX, t: float):
     """The auxiliary b(t), B(t) of HX (12); t is a, -a, +/-zhat."""
     z,a,m,sigma = p.z,p.a,p.maturity,p.volatility
@@ -160,14 +187,7 @@ def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = N
         return recovery
     if tau==0:
         return p.per_bond_principal
-    v=_log_asset_ratio(asset,b)
-    u=p.volatility*math.sqrt(tau)
-    h1=(-v-p.a*u*u)/u
-    h2=(-v+p.a*u*u)/u
-    q1=(-v-p.zhat*u*u)/u
-    q2=(-v+p.zhat*u*u)/u
-    F=float(ndtr(h1))+_exp_cdf(-2*p.a*v,h2)
-    G=_exp_cdf((-p.a+p.zhat)*v,q1)+_exp_cdf((-p.a-p.zhat)*v,q2)
+    F,G=_first_passage_factors(p,_log_asset_ratio(asset,b),tau)
     base=p.per_bond_coupon/p.q
     return base+math.exp(-p.q*tau)*(p.per_bond_principal-base)*(1-F)+(recovery-base)*G
 
@@ -327,10 +347,7 @@ def default_probability(p: HX, asset: float, tau: float, asset_boundary: float |
         return 1.0
     if tau==0:
         return 0.0
-    v=_log_asset_ratio(asset,b)
-    u=p.volatility*math.sqrt(tau)
-    result=float(ndtr((-v-p.a*u*u)/u))+_exp_cdf(-2*p.a*v,(-v+p.a*u*u)/u)
-    return result
+    return _first_passage_factors(p,_log_asset_ratio(asset,b),tau)[0]
 
 
 def discounted_default_factor(p: HX, asset: float, tau: float,
@@ -344,10 +361,7 @@ def discounted_default_factor(p: HX, asset: float, tau: float,
         return 1.0
     if tau==0:
         return 0.0
-    v=_log_asset_ratio(asset,b)
-    u=p.volatility*math.sqrt(tau)
-    return (_exp_cdf((-p.a+p.zhat)*v,(-v-p.zhat*u*u)/u)
-            +_exp_cdf((-p.a-p.zhat)*v,(-v+p.zhat*u*u)/u))
+    return _first_passage_factors(p,_log_asset_ratio(asset,b),tau)[1]
 
 
 def mechanism_channels(p: HX, asset: float, asset_boundary: float | None = None) -> HXChannels:
