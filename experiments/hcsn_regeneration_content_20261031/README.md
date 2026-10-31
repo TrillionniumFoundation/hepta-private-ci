@@ -1,5 +1,11 @@
 # HCSN: regeneration, raw content, and action value
 
+**Completed result:** 2,142 renewal checks passed; 108 raw-content fits and all
+324 heldout condition rows were evaluated. The current analytic gate has no
+consistent quality/cost advantage. Query-swap diagnostics expose weak binding,
+blank image rows degrade task output, and learned value control underperforms
+the dev-selected lightweight policy on average. See the [full Chinese report](REPORT.md).
+
 This additive experiment addresses five questions: exact repeated firing and
 recovery; learning from raw observations; separation of content and policy;
 agreement of action values with actual successors and full task costs; and
@@ -15,7 +21,7 @@ Read `MATHEMATICS.md`, `CONTENT_CONTRACT.md`, and `POLICY_CONTRACT.md` for the
 separate contracts. `PROTOCOL.json` fixes the primary matrix and the ordering of
 publication, training, candidate freezing, and heldout evaluation. A secondary
 LIF/Transformer comparison has its own implementation and freeze. `REPORT.md`
-will report all results, including failures and limitations.
+reports all results, including failures and limitations.
 
 The repository baseline is pinned in `BASELINE.json`. All changes stay in this
 namespace. The old finite-kernel qualification, native loader, Rust application,
@@ -33,6 +39,9 @@ recorded real source commit. Training and controller fitting must precede
 candidate publication; test and controller evaluation must follow it. The runner
 verifies code hashes and writes separate process output and resource receipts.
 Existing training/evaluation directories are never overwritten by the runner.
+The complete raw evidence is preserved in 107 lossless archive parts. Restore
+and validate them with `python archive_evidence.py restore --manifest
+archives/evidence_v1/MANIFEST.json`; see [REPRODUCE.md](REPRODUCE.md).
 
 ## Timing scope
 
