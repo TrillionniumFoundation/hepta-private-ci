@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.full-joint.protocol.v1",
+  "experiment": "Post-primary separately registered full-cell soft-policy learning",
+  "scope": "This is a new experiment. Original FREEZE.json, all original candidates and primary confirmation endpoints remain unchanged. Registered after primary confirmation was inspected; added to complete the requested full-cell learning stage. Fixed 30-step settings reuse R7 budget; the four new heldout configurations/worlds have not been evaluated or used for tuning.",
+  "initialization": {
+    "families": ["direct", "continuous", "clocked", "first_passage"],
+    "fit_seeds": [11, 12, 13, 14, 15],
+    "source": "Every family's own original R7 fits_primary/{family}_none_{seed}.json, never a calibrated candidate",
+    "non_direct_kernel": "r8-brownian-images-v1",
+    "common_non_direct_law": "Constant drift Brownian, leak=0, dt=1, voltage grid N=15, 12 image terms; tick-end recovery with inherited reference probability and full reset/survivor law",
+    "direct_kernel": "r8-full-joint-direct-v1; identity latent transition and no internal events",
+    "count": 20,
+    "native_scope": "All new checkpoints have hepta.full-joint-policy.v1 schema and are rejected by the old R7 native loader. Native deployment is not implied."
+  },
+  "training": {
+    "configurations": "Exactly the eight original R7 task_configuration(0..7), all 738 public states; equal weight per configuration",
+    "updates": 30,
+    "optimizer": "Adam",
+    "learning_rate": 0.003,
+    "betas": [0.9, 0.999],
+    "epsilon": 1e-8,
+    "weight_decay": 0.0,
+    "clip_norm": 5.0,
+    "temperature": 0.12,
+    "head": 1,
+    "objective": "Only negative complete finite-DAG expected registered utility of the soft action policy over sampled internal states. No critic/myopic regression, detached Q targets, straight-through estimators, entropy penalty, or private-world supervision.",
+    "utility": "Terminal task quality minus original task action/latency fees minus 0.0005 per decision minus 0.0002 per newly emitted model event",
+    "transition_order": "Propagate and observe internal state; pay current compute/event cost; choose public legal action; integrate every external successor and future reset/recovery/event/policy branch. STOP pays the already incurred incoming transition fees once.",
+    "normalization": "Differentiate through the same nonnegative row normalization used by hard_soft sampling from a one-hot predecessor; event rewards are recomputed from normalized active-to-refractory probabilities.",
+    "trainable": {
+      "direct": ["content encoder", "readout"],
+      "continuous": ["content encoder", "drive", "diffusion", "projection boundary scale", "readout"],
+      "clocked": ["content encoder", "drive", "diffusion", "boundary", "reset plus/minus", "recovery", "readout"],
+      "first_passage": ["content encoder", "drive", "diffusion", "boundary", "reset plus/minus", "recovery", "readout"]
+    },
+    "inactive": "All raw_leak scalars are frozen; direct core/drive are frozen; continuous reset/recovery are unreachable and frozen. Head 0 output rows remain stored but receive no gradient under the head 1 objective. Shared hidden readout parameters are trained.",
+    "head_meaning": "Pure-return-trained outputs are action-policy scores. They are not claimed to estimate calibrated Q-star or Q-pi.",
+    "selection": "Retain every final update-30 model and every failure. No early stopping, best-epoch selection, seed replacement, or heldout-driven hyperparameter tuning.",
+    "runtime": "Torch CPU FP64, one thread per process. N=15 is fixed. If measured resource use makes the registered plan impractical, stop and publish a prospective amendment; do not silently lower N or updates."
+  },
+  "development_validation": {
+    "scope": "Only synthetic tiny graphs, before formal training and without heldout evaluation",
+    "checks": ["H=2 explicit 16-world and full latent/action-path expectation", "compute/event fee derivatives", "H=4 full-return finite differences through content, drive, diffusion, boundary, reset, recovery and readout", "at most two Adam updates per family on a separate tiny development fixture; N remains 15; record time and peak RSS"],
+    "separation": "Development fixture weights are not candidates and cannot initialize the formal runs."
+  },
+  "heldout_configurations": [
+    {"horizon": 4, "budget": 3, "ordinary_count": 3, "ordinary_reliability": 0.68, "delayed_reliability": 0.91, "arrival_tick": 1, "corruption_probability": 0.22, "read_budget": 1, "repair_budget": 2, "read_cost": 0.021, "wait_cost": 0.009, "repair_cost": 0.031, "stop_cost": 0.003, "latency_cost": 0.004, "invalid_attempt_cost": 0.030, "prior_probability": 0.57},
+    {"horizon": 5, "budget": 4, "ordinary_count": 3, "ordinary_reliability": 0.79, "delayed_reliability": 0.84, "arrival_tick": 3, "corruption_probability": 0.41, "read_budget": 2, "repair_budget": 1, "read_cost": 0.008, "wait_cost": 0.011, "repair_cost": 0.026, "stop_cost": 0.002, "latency_cost": 0.007, "invalid_attempt_cost": 0.030, "prior_probability": 0.43},
+    {"horizon": 3, "budget": 2, "ordinary_count": 3, "ordinary_reliability": 0.64, "delayed_reliability": 0.95, "arrival_tick": 2, "corruption_probability": 0.18, "read_budget": 1, "repair_budget": 1, "read_cost": 0.035, "wait_cost": 0.003, "repair_cost": 0.015, "stop_cost": 0.004, "latency_cost": 0.006, "invalid_attempt_cost": 0.030, "prior_probability": 0.63},
+    {"horizon": 6, "budget": 5, "ordinary_count": 3, "ordinary_reliability": 0.82, "delayed_reliability": 0.88, "arrival_tick": 2, "corruption_probability": 0.52, "read_budget": 2, "repair_budget": 2, "read_cost": 0.014, "wait_cost": 0.007, "repair_cost": 0.044, "stop_cost": 0.003, "latency_cost": 0.003, "invalid_attempt_cost": 0.030, "prior_probability": 0.51}
+  ],
+  "evaluation": {
+    "order": "Complete all 20 training runs; freeze every initial/final checkpoint hash; then evaluate the four new heldout configurations. No partial heldout readout during training.",
+    "exact": "Report initial/final soft-policy and greedy-policy exact finite-DAG utility, decisions and events on nominal eight and new heldout four configurations. Greedy conversion is separate from the trained soft-policy objective.",
+    "comparisons": ["Within-family final minus initial for each of five fits", "FPT final minus clocked final for each fit", "FPT final minus direct final for each fit"],
+    "inference": "Report all five fit-level paired differences and descriptive means. This appendix does not add or replace primary-confirmation hypotheses; no significance or superiority claim from the small rollout sample.",
+    "deployment": "Actual Python Policy(deployment=hard_soft, head=1) with frozen final weights and matched original task.step; no new native qualification"
+  },
+  "rollout": {
+    "episodes_per_fit_per_regime": 32,
+    "regimes": ["nominal", "heldout"],
+    "stages": ["initial", "final"],
+    "world_seed_start": {"nominal": 1710310000, "heldout": 1711310000},
+    "latent_seed_start": {"nominal": 2710310000, "heldout": 2711310000},
+    "indexing": "seed_start + (fit_seed-11)*10000 + episode_index; config = episode_index modulo regime configuration count",
+    "pairing": "Identical private world and keyed internal/action uniforms for initial/final and every family within fit. All states passed to the policy are public.",
+    "total_trajectories": 2560,
+    "interpretation": "Compare sample mean and standard error to exact soft expectation as a deployment diagnostic. Retain raw paths and every attempted run; do not tune from discrepancies or claim Monte Carlo equality."
+  },
+  "artifacts": ["REGISTRATION.json with source and R7 checkpoint hashes", "initial/final checkpoint for all 20 fits", "31 exact-return records and 30 complete pre-clip gradient vectors per fit", "per-step group norms and clipped norms", "parameter changes including inactive groups", "CANDIDATES.json before heldout evaluation", "exact nominal/heldout soft/greedy metrics", "all paired hard_soft rollout paths", "failures and resource ledger"],
+  "publication": "Root must publish this protocol and source registration remotely before formal training. Candidate identities are frozen before heldout evaluation. Original R7 and prior Round8 freeze files are not modified."
+}
