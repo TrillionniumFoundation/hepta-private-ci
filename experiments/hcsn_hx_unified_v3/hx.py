@@ -189,16 +189,17 @@ def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = N
         return p.per_bond_principal
     F,G=_first_passage_factors(p,_log_asset_ratio(asset,b),tau)
     qt=p.q*tau
-    # When exp(-q*tau) rounds to one, the original coupon/q expression
-    # subtracts two enormous numbers. For F=G=0, use the exact no-first-hit
-    # cashflow limit, including the q*tau -> 0 annuity limit. With resolvable
-    # first-hit mass, the stopped-coupon F-G contribution is not determined
-    # by separately rounded f64 factors: refuse rather than invent a price.
-    # This narrowly repairs the unity-rounding path, NOT general f64
-    # F-G subtraction or full-domain first-passage precision.
-    if p.per_bond_coupon>0 and math.exp(-qt)==1.0:
+    # For q*tau below the conservative f64 danger band, coupon/q-sized
+    # terms can cancel catastrophically EVEN when exp(-q*tau) is < 1.
+    # For F=G=0, use the exact no-hit cashflow with the stable expm1
+    # annuity and its zero-product limit. With any resolved first-hit mass,
+    # rounded F-G cannot safely determine stopped coupon duration, so
+    # refuse instead of returning an unsupported bond price.
+    # The 2**-26 cutoff is heuristic numerical safety, not a certified
+    # all-domain error bound. Ordinary q*tau pricing remains identical.
+    if p.per_bond_coupon>0 and qt<2.0**-26:
         if F!=0.0 or G!=0.0:
-            raise ArithmeticError('HX stopped coupon unresolved at unit discount rounding')
+            raise ArithmeticError('HX stopped coupon unresolved at small discount product')
         lost=-math.expm1(-qt)
         annuity=tau if qt==0.0 else tau*(lost/qt)
         try:
