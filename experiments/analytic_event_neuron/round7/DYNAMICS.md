@@ -308,7 +308,57 @@ They do not certify a marginalized-Q greedy policy, a continuous diffusion
 model, or task-level superiority. The raw measurements are saved in
 `evidence/joint_control_audit.json`.
 
+The final refinement's one-step head is also aligned to the internal cost
+contract. Its target includes current action/compute cost, then the next
+core transition's expected event charge and the next forced STOP's compute
+and task costs. The current incoming event charge is already sunk at the
+post-transition action-value state and is counted separately in the before-
+transition value. `graph.myopic` remains an external-task-only construction
+field; refinement uses `myopic_targets`, not that field. An additional
+16-world direct enumeration test checks the one-step targets, including zero
+future reset/recovery dependence for an immediate STOP. The earlier external-
+cost-only supervision is pretraining; both heads use the full stated cost
+contract during joint refinement.
+
 ```sh
 PYTHONPATH=/tmp/convergence-smollm-runtime/lib/python3.12/site-packages python -m experiments.analytic_event_neuron.round7.test_joint_control --evidence experiments/analytic_event_neuron/round7/evidence/joint_control_audit.json
 ```
+
+## Learned-checkpoint resolution transfer
+
+`resolution_transfer.py` reads saved checkpoints and transfers only named
+learned parameters to newly built voltage grids. Encoder/readout parameters,
+physical parameters and their byte-level digest remain identical; grid nodes,
+bin edges and generator bases are rebuilt. Source checkpoint bytes are checked
+again at the end and never rewritten. There is no optimizer or retraining.
+
+The audit compares source-grid, grid-31 and grid-63 results in two ways:
+
+- Identical public inputs: one-step event probabilities from zero, followed
+  by repeated propagation on identical public oracle-policy traces. It records
+  event counts, moments, refractory masses, continuous tail projection and the
+  active-mass-weighted upwind extra-variance ratio using the **learned** drift,
+  noise and boundary parameters.
+- Action-dependent performance: finite-DAG expected return, decisions and
+  events under soft dynamic, statewise greedy dynamic and one-step greedy
+  policies. These values use each transferred model's own action probabilities
+  and the full registered internal proxy fees.
+
+The default public configuration indices are the short cases `1,4`, with
+eight replay traces. Use `--config-indices 0 1 2 3 4 5 6 7` to audit the full
+configuration set. The output names the subset, checkpoint/source hashes and
+every fixed input trace. A short-case result must not be reported as covering
+all configurations. The source checkpoint's grid is always included even if
+it is omitted from `--grids`.
+
+```sh
+PYTHONPATH=/tmp/convergence-smollm-runtime/lib/python3.12/site-packages python -m experiments.analytic_event_neuron.round7.resolution_transfer --checkpoints PATH_TO_REGISTERED_CHECKPOINT.json --grids 15 31 63 --config-indices 1 4 --output experiments/analytic_event_neuron/round7/evidence/checkpoint_resolution_transfer.json
+```
+
+`test_resolution_transfer.py` checks identical parameter bytes and rebuilt
+buffers, and verifies the counter/return recursion against `evaluate_graph`
+and independent compute/event-price derivatives. Grid-transfer differences
+remain deployment-sensitivity measurements. They do not establish continuous
+OU accuracy, and a greedy decision can change discontinuously under a small
+state/value perturbation.
 
