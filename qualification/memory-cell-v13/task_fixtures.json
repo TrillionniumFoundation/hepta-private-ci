@@ -1,0 +1,1273 @@
+{
+  "unique_stable": {
+    "description": "Remove exact repeated strings from a list, keeping the first occurrence order.",
+    "queries": {
+      "train": [
+        "Remove repeated items but keep their first-seen order.",
+        "Deduplicate this sequence without sorting it.",
+        "Keep the earliest occurrence of every distinct value.",
+        "Discard later copies of an item and leave the survivors in place.",
+        "Build a unique list in the order values arrived.",
+        "When the same string appears again, omit that later entry.",
+        "Retain one copy of each item, following the original ordering.",
+        "Clean duplicate list entries while preserving first occurrence positions.",
+        "Produce the ordered set of values encountered in this list.",
+        "Leave the first instance untouched and drop all its repetitions."
+      ],
+      "calibration": [
+        "I need one representative per value; arrival order must survive.",
+        "Repeated names should disappear after their initial appearance.",
+        "Compress this list by eliminating subsequent identical entries.",
+        "Give each distinct string its first position, with no rearrangement."
+      ],
+      "test": [
+        "Walk left to right and emit an item only if it has not been emitted before.",
+        "My list revisits earlier values; suppress those revisits while keeping the itinerary.",
+        "Treat the first sighting as authoritative and ignore every later exact match.",
+        "A repeated value must not occupy another slot in the returned sequence.",
+        "Return the first appearances, in chronological order of their positions.",
+        "Make this sequence repetition-free without changing which distinct item comes first."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          [
+            "a",
+            "b",
+            "a",
+            "c"
+          ],
+          [
+            "a",
+            "b",
+            "c"
+          ]
+        ],
+        [
+          [
+            "x",
+            "x",
+            "y",
+            "x"
+          ],
+          [
+            "x",
+            "y"
+          ]
+        ],
+        [
+          [
+            "B",
+            "b",
+            "B"
+          ],
+          [
+            "B",
+            "b"
+          ]
+        ]
+      ],
+      "calibration": [
+        [
+          [
+            "red",
+            "blue",
+            "red",
+            "green"
+          ],
+          [
+            "red",
+            "blue",
+            "green"
+          ]
+        ],
+        [
+          [
+            "",
+            "z",
+            "",
+            "z"
+          ],
+          [
+            "",
+            "z"
+          ]
+        ]
+      ],
+      "test": [
+        [
+          [
+            "β",
+            "α",
+            "β",
+            "γ",
+            "α"
+          ],
+          [
+            "β",
+            "α",
+            "γ"
+          ]
+        ],
+        [
+          [
+            "2",
+            "10",
+            "2",
+            "-1",
+            "10"
+          ],
+          [
+            "2",
+            "10",
+            "-1"
+          ]
+        ],
+        [
+          [
+            "é",
+            "é",
+            "é",
+            "!"
+          ],
+          [
+            "é",
+            "é",
+            "!"
+          ]
+        ]
+      ]
+    }
+  },
+  "sort_numeric": {
+    "description": "Sort numeric strings by finite decimal value, ascending, with stable ties and unchanged spellings.",
+    "queries": {
+      "train": [
+        "Sort these numeric strings by numerical value in ascending order.",
+        "Order the listed numbers from smallest to largest.",
+        "Arrange the text numbers numerically, keeping their original spellings.",
+        "Put negative values before zero and larger values after it.",
+        "Use number magnitude, not alphabetic order, to sort this list.",
+        "Return the ascending numeric ordering of these strings.",
+        "Compare each item's decimal value when ordering the sequence.",
+        "Rank these number representations from lowest value to highest.",
+        "Sort the quantities in increasing order without converting the output strings.",
+        "Reorder this list according to the numbers the strings denote."
+      ],
+      "calibration": [
+        "The entries are decimal quantities; place the least quantity first.",
+        "An ordinary string sort would put ten before two. Avoid that mistake.",
+        "Increase numerical value as you move through the output list.",
+        "Arrange signed numbers on a number line and preserve the text of each entry."
+      ],
+      "test": [
+        "Read every element as a number, then line them up along the real axis from left to right.",
+        "The smallest represented quantity should lead and the largest should close the list.",
+        "Treat the minus signs and decimal points as arithmetic, not as letters for collation.",
+        "I want a monotone increasing sequence of values, with the input representations retained.",
+        "Compare magnitudes arithmetically and give me the low-to-high permutation.",
+        "Put these measurements in increasing order; two must come before ten."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          [
+            "10",
+            "2",
+            "-3"
+          ],
+          [
+            "-3",
+            "2",
+            "10"
+          ]
+        ],
+        [
+          [
+            "1.5",
+            "1.05",
+            "0"
+          ],
+          [
+            "0",
+            "1.05",
+            "1.5"
+          ]
+        ],
+        [
+          [
+            "02",
+            "2",
+            "-1"
+          ],
+          [
+            "-1",
+            "02",
+            "2"
+          ]
+        ]
+      ],
+      "calibration": [
+        [
+          [
+            "100",
+            "9",
+            "-12",
+            "0.5"
+          ],
+          [
+            "-12",
+            "0.5",
+            "9",
+            "100"
+          ]
+        ],
+        [
+          [
+            "3",
+            "-3",
+            "03"
+          ],
+          [
+            "-3",
+            "3",
+            "03"
+          ]
+        ]
+      ],
+      "test": [
+        [
+          [
+            "1e2",
+            "0.09",
+            "-2.5",
+            "12"
+          ],
+          [
+            "-2.5",
+            "0.09",
+            "12",
+            "1e2"
+          ]
+        ],
+        [
+          [
+            "-0",
+            "0.00",
+            "-1",
+            "1"
+          ],
+          [
+            "-1",
+            "-0",
+            "0.00",
+            "1"
+          ]
+        ],
+        [
+          [
+            "20",
+            "3.1",
+            "3.01",
+            "-7"
+          ],
+          [
+            "-7",
+            "3.01",
+            "3.1",
+            "20"
+          ]
+        ]
+      ]
+    }
+  },
+  "sort_casefold": {
+    "description": "Sort strings by Unicode casefold keys, ascending, stably, preserving original spellings.",
+    "queries": {
+      "train": [
+        "Sort the strings alphabetically without regard to letter case.",
+        "Order these names by their casefolded text, preserving their spelling.",
+        "Use a case-insensitive sort for this sequence.",
+        "Arrange the entries as if capital and small letters were equivalent.",
+        "Alphabetize this list with Unicode case folding as the comparison key.",
+        "Reorder the names ignoring capitalization, but do not lowercase the output.",
+        "Sort words without giving uppercase letters a separate priority.",
+        "Produce alphabetical order under casefold comparison.",
+        "Use caseless ordering and keep equal keys in their original order.",
+        "Compare each string's casefolded form when sorting the list."
+      ],
+      "calibration": [
+        "Capitalization should not affect where an entry lands in the ordered list.",
+        "Alphabetize the labels while retaining the exact original letter cases.",
+        "Give me a stable ordering on caseless versions of these strings.",
+        "Use the same order for uppercase and lowercase variants of a word."
+      ],
+      "test": [
+        "Arrange these words lexicographically after disregarding differences in capitalization.",
+        "The original typography must remain, although sorting must compare casefolded keys.",
+        "An initial capital should not make a name jump ahead of otherwise earlier names.",
+        "Use Unicode caseless ordering, and preserve arrival order where those keys tie.",
+        "Return the list in alphabetic order with no capital-letter preference.",
+        "Imagine the spellings had all been casefolded for comparison, but return the original spellings."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          [
+            "b",
+            "A",
+            "a",
+            "C"
+          ],
+          [
+            "A",
+            "a",
+            "b",
+            "C"
+          ]
+        ],
+        [
+          [
+            "Zoo",
+            "apple",
+            "Banana"
+          ],
+          [
+            "apple",
+            "Banana",
+            "Zoo"
+          ]
+        ],
+        [
+          [
+            "ß",
+            "SS",
+            "t"
+          ],
+          [
+            "ß",
+            "SS",
+            "t"
+          ]
+        ]
+      ],
+      "calibration": [
+        [
+          [
+            "Echo",
+            "delta",
+            "ALPHA"
+          ],
+          [
+            "ALPHA",
+            "delta",
+            "Echo"
+          ]
+        ],
+        [
+          [
+            "x",
+            "X",
+            "a"
+          ],
+          [
+            "a",
+            "x",
+            "X"
+          ]
+        ]
+      ],
+      "test": [
+        [
+          [
+            "z",
+            "Straße",
+            "STRASSE",
+            "Beta"
+          ],
+          [
+            "Beta",
+            "Straße",
+            "STRASSE",
+            "z"
+          ]
+        ],
+        [
+          [
+            "Ω",
+            "alpha",
+            "Β",
+            "beta"
+          ],
+          [
+            "alpha",
+            "beta",
+            "Β",
+            "Ω"
+          ]
+        ],
+        [
+          [
+            "tea",
+            "TEA",
+            "Apple",
+            "apple"
+          ],
+          [
+            "Apple",
+            "apple",
+            "tea",
+            "TEA"
+          ]
+        ]
+      ]
+    }
+  },
+  "count_items": {
+    "description": "Return a dictionary counting exact occurrences of each string in a list.",
+    "queries": {
+      "train": [
+        "Count how often each distinct list item appears.",
+        "Return a frequency map for these strings.",
+        "Tally occurrences of every value in this sequence.",
+        "Make a dictionary mapping each item to its number of repetitions.",
+        "Report the multiplicity of each exact string.",
+        "Build a histogram of the listed items.",
+        "Give the occurrence count for every unique value.",
+        "Accumulate one count each time an item is encountered.",
+        "Summarize this list as item-to-frequency pairs.",
+        "Count duplicates as additional occurrences instead of discarding them."
+      ],
+      "calibration": [
+        "For each string, tell me how many positions contain it.",
+        "I need a tally table rather than another ordered list.",
+        "Turn the sequence into counts indexed by the original values.",
+        "Combine equal entries into their occurrence totals."
+      ],
+      "test": [
+        "Replace the sequence with a mapping whose values say how often its keys were observed.",
+        "Every sighting should add one to the corresponding item's total.",
+        "How many instances of each exact value are present in the supplied batch?",
+        "Collapse equal items into bins and return each bin's population.",
+        "The answer should associate every observed string with its frequency, not its position.",
+        "Make an inventory: one key for each item and an integer recording the quantity."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          [
+            "a",
+            "b",
+            "a"
+          ],
+          {
+            "a": 2,
+            "b": 1
+          }
+        ],
+        [
+          [
+            "x",
+            "x",
+            "x",
+            "y"
+          ],
+          {
+            "x": 3,
+            "y": 1
+          }
+        ],
+        [
+          [
+            "A",
+            "a",
+            "A"
+          ],
+          {
+            "A": 2,
+            "a": 1
+          }
+        ]
+      ],
+      "calibration": [
+        [
+          [
+            "red",
+            "blue",
+            "red",
+            "red"
+          ],
+          {
+            "red": 3,
+            "blue": 1
+          }
+        ],
+        [
+          [
+            "",
+            "z",
+            ""
+          ],
+          {
+            "": 2,
+            "z": 1
+          }
+        ]
+      ],
+      "test": [
+        [
+          [
+            "β",
+            "α",
+            "β",
+            "γ",
+            "α"
+          ],
+          {
+            "β": 2,
+            "α": 2,
+            "γ": 1
+          }
+        ],
+        [
+          [
+            "2",
+            "10",
+            "2",
+            "-1",
+            "10"
+          ],
+          {
+            "2": 2,
+            "10": 2,
+            "-1": 1
+          }
+        ],
+        [
+          [
+            "é",
+            "é",
+            "é",
+            "!"
+          ],
+          {
+            "é": 2,
+            "é": 1,
+            "!": 1
+          }
+        ]
+      ]
+    }
+  },
+  "normalize_nfc": {
+    "description": "Canonical composed Unicode normalization; compatibility variants remain distinct.",
+    "queries": {
+      "train": [
+        "Normalize this Unicode text to NFC.",
+        "Compose canonical Unicode sequences without compatibility folding.",
+        "Combine decomposed accents using canonical composition.",
+        "Use NFC normalization and preserve fullwidth and circled characters.",
+        "Apply canonical decomposition followed by canonical composition.",
+        "Put this string into Unicode canonical composed form.",
+        "Make canonically equivalent spellings share the composed representation.",
+        "Compose accent marks with their base letters when Unicode permits.",
+        "Normalize accents canonically, leaving compatibility distinctions intact.",
+        "Use canonical normalization, not compatibility normalization, on this text."
+      ],
+      "calibration": [
+        "Repair decomposed letter accents but keep presentation variants distinct.",
+        "I want canonical composed Unicode without flattening compatibility glyphs.",
+        "Combine equivalent character sequences under the NFC rule.",
+        "Standardize canonical equivalence while retaining special-width forms."
+      ],
+      "test": [
+        "An e followed by its combining acute should become the composed letter, while a circled digit stays circled.",
+        "Canonical equivalents may collapse; compatibility-only equivalents must remain distinguishable.",
+        "Preserve the fullwidth symbols and ligatures while composing eligible accent sequences.",
+        "Bring the text to composed normal form using canonical mappings only.",
+        "Make equivalent accent encodings identical without turning ornamental characters into ordinary ones.",
+        "Resolve decomposed canonical characters but do not simplify compatibility forms."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          "Café",
+          "Café"
+        ],
+        [
+          "Å",
+          "Å"
+        ],
+        [
+          "ﬁ é",
+          "ﬁ é"
+        ]
+      ],
+      "calibration": [
+        [
+          "Ａ ö",
+          "Ａ ö"
+        ],
+        [
+          "① ñ",
+          "① ñ"
+        ]
+      ],
+      "test": [
+        [
+          "ﬃ Å á",
+          "ﬃ Å á"
+        ],
+        [
+          "Ｂ ü ²",
+          "Ｂ ü ²"
+        ],
+        [
+          "⑵ Ž",
+          "⑵ Ž"
+        ]
+      ]
+    }
+  },
+  "normalize_nfkc": {
+    "description": "Compatibility decomposition followed by canonical Unicode composition; no case folding.",
+    "queries": {
+      "train": [
+        "Normalize this Unicode text to NFKC.",
+        "Apply compatibility decomposition and then canonical composition.",
+        "Convert fullwidth characters to their ordinary equivalents through Unicode normalization.",
+        "Fold compatibility variants such as ligatures and circled digits.",
+        "Use NFKC compatibility normalization on the string.",
+        "Make presentation forms equivalent to their standard character sequences.",
+        "Normalize both canonical and compatibility Unicode differences.",
+        "Expand compatibility glyphs and compose the resulting Unicode text.",
+        "Standardize width and compatibility variants without doing case folding.",
+        "Use compatibility-composed Unicode normalization."
+      ],
+      "calibration": [
+        "Flatten decorative number forms and fullwidth letters into regular characters.",
+        "I need composed normalization that also collapses compatibility distinctions.",
+        "Map ligatures to their compatibility expansions while normalizing accents.",
+        "Use the Unicode compatibility mapping, rather than canonical mapping alone."
+      ],
+      "test": [
+        "A circled one should turn into an ordinary digit, and fullwidth letters should lose their extra width.",
+        "Canonical equivalence is not enough here; simplify compatibility-only variants too.",
+        "Replace presentation-specific glyphs with their compatibility character sequences and then compose.",
+        "Erase width and ligature distinctions using the Unicode compatibility normal form.",
+        "Produce the compatibility-normalized version while leaving uppercase versus lowercase unchanged.",
+        "Normalize decorative variants, superscripts, and decomposed accents with compatibility composition."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          "Café",
+          "Café"
+        ],
+        [
+          "ＡＢＣ",
+          "ABC"
+        ],
+        [
+          "ﬁ é",
+          "fi é"
+        ]
+      ],
+      "calibration": [
+        [
+          "Ａ ö",
+          "A ö"
+        ],
+        [
+          "① ñ",
+          "1 ñ"
+        ]
+      ],
+      "test": [
+        [
+          "ﬃ Å á",
+          "ffi Å á"
+        ],
+        [
+          "Ｂ ü ²",
+          "B ü 2"
+        ],
+        [
+          "⑵ Ž",
+          "(2) Ž"
+        ]
+      ]
+    }
+  },
+  "casefold": {
+    "description": "Return the Unicode casefolded string for caseless comparison, retaining whitespace.",
+    "queries": {
+      "train": [
+        "Casefold this text for caseless matching.",
+        "Convert the string using Unicode case folding.",
+        "Remove letter-case distinctions with casefold rather than simple lowercase.",
+        "Make uppercase and lowercase variants share a casefolded representation.",
+        "Apply the Unicode caseless conversion to this whole string.",
+        "Fold capital letters and special case variants in this text.",
+        "Prepare this text for case-insensitive comparison using casefold.",
+        "Return the casefolded form of the supplied string.",
+        "Use Unicode case folding, including expansions such as sharp s.",
+        "Convert case comprehensively without sorting or splitting the text."
+      ],
+      "calibration": [
+        "Create the caseless comparison key for this entire string.",
+        "Lowercase is insufficient; use full Unicode case folding.",
+        "Map case variants to the shared matching form.",
+        "I want letter-case distinctions removed, including special Unicode cases."
+      ],
+      "test": [
+        "German sharp s should match double s; normalize character case accordingly.",
+        "Prepare one string so comparisons no longer depend on upper or lower letter forms.",
+        "Fold the letters' case but preserve spaces and punctuation exactly.",
+        "Use the Unicode operation intended for caseless matching, not merely lowercasing.",
+        "Unify the case variants in this text without changing its word order.",
+        "Return the standard case-folded spelling of the complete input."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          "Straße",
+          "strasse"
+        ],
+        [
+          "HELLO World",
+          "hello world"
+        ],
+        [
+          "Σςσ",
+          "σσσ"
+        ]
+      ],
+      "calibration": [
+        [
+          "CAFÉ",
+          "café"
+        ],
+        [
+          "Maße!",
+          "masse!"
+        ]
+      ],
+      "test": [
+        [
+          "ẞtraße Ω",
+          "sstrasse ω"
+        ],
+        [
+          "İSTANBUL",
+          "i̇stanbul"
+        ],
+        [
+          "  MIXED\tCase! ",
+          "  mixed\tcase! "
+        ]
+      ]
+    }
+  },
+  "collapse_whitespace": {
+    "description": "Split on Unicode whitespace, join tokens with one ASCII space, and trim edges.",
+    "queries": {
+      "train": [
+        "Replace runs of whitespace with one ordinary space and trim the ends.",
+        "Collapse tabs and newlines into single spaces.",
+        "Normalize spacing by joining whitespace-separated words with spaces.",
+        "Remove leading and trailing whitespace and squash internal whitespace runs.",
+        "Make all whitespace gaps a single space.",
+        "Clean repeated spacing without changing the actual words.",
+        "Split on whitespace and rejoin with one ASCII space.",
+        "Trim this text and compress every whitespace sequence.",
+        "Use one space between tokens, even where tabs or line breaks appear.",
+        "Turn irregular whitespace into ordinary single-space word separation."
+      ],
+      "calibration": [
+        "Discard empty space at both ends and regularize the gaps inside.",
+        "Tabs, newlines, and repeated spaces should all become one separator.",
+        "Give me the same words with uniform single spaces between them.",
+        "Compress spacing while preserving punctuation and letter case."
+      ],
+      "test": [
+        "The text should occupy one line, with each whitespace-separated token separated by exactly one space.",
+        "No blank margin should remain, and no internal whitespace run should be longer than one ordinary space.",
+        "Treat all whitespace characters as word boundaries, then rebuild the line with simple separators.",
+        "Keep the tokens untouched while removing messy spacing around and between them.",
+        "Leading and trailing gaps must vanish; each remaining gap must be one ASCII space.",
+        "Flatten the layout into a clean space-separated string without case conversion."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          "  a   b  ",
+          "a b"
+        ],
+        [
+          "one\ttwo\nthree",
+          "one two three"
+        ],
+        [
+          "  Keep CASE!\n",
+          "Keep CASE!"
+        ]
+      ],
+      "calibration": [
+        [
+          " left\r\nright ",
+          "left right"
+        ],
+        [
+          "a b",
+          "a b"
+        ]
+      ],
+      "test": [
+        [
+          "  Café\t\nß END  ",
+          "Café ß END"
+        ],
+        [
+          "x\u000b y\f z",
+          "x y z"
+        ],
+        [
+          " \t A,B\n C! \r",
+          "A,B C!"
+        ]
+      ]
+    }
+  },
+  "csv_parse": {
+    "description": "Read CSV text into nested string rows with comma delimiters and double-quote escaping.",
+    "queries": {
+      "train": [
+        "Parse this comma-separated text into rows of string fields.",
+        "Read the CSV document, respecting quoted commas.",
+        "Decode CSV text into a nested list of cells.",
+        "Use CSV quoting rules to recover the rows and columns.",
+        "Convert this CSV string to a table of strings.",
+        "Interpret doubled quotes inside quoted CSV fields correctly.",
+        "Split this CSV into records without breaking quoted fields.",
+        "Load the comma-separated document as rows, not a plain string.",
+        "Read CSV while preserving embedded newlines in quoted cells.",
+        "Turn the textual CSV data into lists of field values."
+      ],
+      "calibration": [
+        "The input is serialized CSV; return the actual cells arranged by record.",
+        "Recover tabular values from the comma-delimited file text.",
+        "Honor quote escaping while unpacking these comma-separated records.",
+        "Deserialize the CSV, keeping every cell a string."
+      ],
+      "test": [
+        "A comma inside quotation marks belongs to the cell, so recover the table with a proper CSV reader.",
+        "The text encodes rows and columns; decode it without treating quoted line breaks as new records.",
+        "Return nested string lists from this comma-separated representation.",
+        "Interpret the CSV syntax and hand back the underlying field values.",
+        "Unpack the quoted comma-delimited document into its record structure.",
+        "Convert the serialized table into rows while honoring doubled quotation marks."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          "a,b\n1,2\n",
+          [
+            [
+              "a",
+              "b"
+            ],
+            [
+              "1",
+              "2"
+            ]
+          ]
+        ],
+        [
+          "\"a,b\",c\n",
+          [
+            [
+              "a,b",
+              "c"
+            ]
+          ]
+        ],
+        [
+          "\"say \"\"hi\"\"\",z\n",
+          [
+            [
+              "say \"hi\"",
+              "z"
+            ]
+          ]
+        ]
+      ],
+      "calibration": [
+        [
+          "x,,y\n",
+          [
+            [
+              "x",
+              "",
+              "y"
+            ]
+          ]
+        ],
+        [
+          "\"line\nbreak\",a\n",
+          [
+            [
+              "line\nbreak",
+              "a"
+            ]
+          ]
+        ]
+      ],
+      "test": [
+        [
+          "name,note\n\"Li, Wei\",\"said \"\"yes\"\"\"\n",
+          [
+            [
+              "name",
+              "note"
+            ],
+            [
+              "Li, Wei",
+              "said \"yes\""
+            ]
+          ]
+        ],
+        [
+          "\"α\nβ\",,γ\n",
+          [
+            [
+              "α\nβ",
+              "",
+              "γ"
+            ]
+          ]
+        ],
+        [
+          "\"\",\"a,b\",\"\"\"q\"\"\"\n",
+          [
+            [
+              "",
+              "a,b",
+              "\"q\""
+            ]
+          ]
+        ]
+      ]
+    }
+  },
+  "csv_write": {
+    "description": "Write nested string rows as CSV text, minimally quoted, with newline record terminators.",
+    "queries": {
+      "train": [
+        "Write these rows of strings as comma-separated CSV text.",
+        "Serialize the table to CSV with proper quoting.",
+        "Produce CSV from the nested list, using newline record terminators.",
+        "Encode these cells as a comma-delimited document.",
+        "Quote fields containing commas, quotes, or line breaks when writing CSV.",
+        "Convert the row lists to a textual CSV file.",
+        "Use doubled quotes to escape quotation marks inside CSV cells.",
+        "Render this table as CSV ending each record with a newline.",
+        "Write comma-separated records from the supplied structured rows.",
+        "Generate CSV text while preserving every cell's content."
+      ],
+      "calibration": [
+        "The data is already tabular; turn it into a CSV document.",
+        "Serialize the rows and escape cells that require CSV quotation.",
+        "Create comma-delimited file contents with one newline after every record.",
+        "Pack these field lists into properly quoted CSV records."
+      ],
+      "test": [
+        "The destination needs a CSV file body, so encode these existing rows with the correct escaping.",
+        "Return a string representation of the table using commas and newline-terminated records.",
+        "Cells containing punctuation must survive a CSV round trip; write the table accordingly.",
+        "Turn the in-memory rows into comma-separated text, doubling any internal quote characters.",
+        "Emit a CSV document from the structured cells rather than parsing one.",
+        "Encode the nested row data in CSV syntax, with a final newline for the final row."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          [
+            [
+              "a",
+              "b"
+            ],
+            [
+              "1",
+              "2"
+            ]
+          ],
+          "a,b\n1,2\n"
+        ],
+        [
+          [
+            [
+              "a,b",
+              "c"
+            ]
+          ],
+          "\"a,b\",c\n"
+        ],
+        [
+          [
+            [
+              "say \"hi\"",
+              "z"
+            ]
+          ],
+          "\"say \"\"hi\"\"\",z\n"
+        ]
+      ],
+      "calibration": [
+        [
+          [
+            [
+              "x",
+              "",
+              "y"
+            ]
+          ],
+          "x,,y\n"
+        ],
+        [
+          [
+            [
+              "line\nbreak",
+              "a"
+            ]
+          ],
+          "\"line\nbreak\",a\n"
+        ]
+      ],
+      "test": [
+        [
+          [
+            [
+              "name",
+              "note"
+            ],
+            [
+              "Li, Wei",
+              "said \"yes\""
+            ]
+          ],
+          "name,note\n\"Li, Wei\",\"said \"\"yes\"\"\"\n"
+        ],
+        [
+          [
+            [
+              "α\nβ",
+              "",
+              "γ"
+            ]
+          ],
+          "\"α\nβ\",,γ\n"
+        ],
+        [
+          [
+            [
+              "",
+              "a,b",
+              "\"q\""
+            ]
+          ],
+          ",\"a,b\",\"\"\"q\"\"\"\n"
+        ]
+      ]
+    }
+  },
+  "json_parse": {
+    "description": "Decode JSON text into its structured data value.",
+    "queries": {
+      "train": [
+        "Parse this JSON text into structured values.",
+        "Decode the JSON document rather than returning text.",
+        "Load the JSON string as dictionaries, lists, and scalar values.",
+        "Deserialize this JSON to its underlying data structure.",
+        "Convert JSON syntax into actual structured data.",
+        "Interpret this JSON document and return its values.",
+        "Read the serialized JSON as an object or array.",
+        "Turn the JSON text into data, including booleans and null values.",
+        "Unpack the JSON string into its nested structure.",
+        "Use a JSON decoder on this document."
+      ],
+      "calibration": [
+        "I need the data represented by the JSON, not another JSON string.",
+        "Recover the object structure from this serialized JSON.",
+        "Materialize the arrays and objects encoded in the text.",
+        "Decode all JSON literals into their corresponding data values."
+      ],
+      "test": [
+        "The response should be a structured object or list, with the JSON syntax removed.",
+        "This string contains serialized data; load it so its fields can be accessed directly.",
+        "Interpret the braces and brackets as structure rather than retaining them as text.",
+        "Return the value described by this JSON document, including nested containers.",
+        "Deserialize the input into usable data without reserializing it.",
+        "Resolve the JSON representation into the object it encodes."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          "{\"a\":1,\"b\":[2,3]}",
+          {
+            "a": 1,
+            "b": [
+              2,
+              3
+            ]
+          }
+        ],
+        [
+          "[ true, null, \"x\" ]",
+          [
+            true,
+            null,
+            "x"
+          ]
+        ],
+        [
+          "{\"text\":\"hello world\"}",
+          {
+            "text": "hello world"
+          }
+        ]
+      ],
+      "calibration": [
+        [
+          " { \"z\" : [0], \"a\" : false } ",
+          {
+            "z": [
+              0
+            ],
+            "a": false
+          }
+        ],
+        [
+          "[\"Café\", {\"n\": -2}]",
+          [
+            "Café",
+            {
+              "n": -2
+            }
+          ]
+        ]
+      ],
+      "test": [
+        [
+          " { \"b\": { \"x\": null }, \"a\": [ true, 4 ] } ",
+          {
+            "b": {
+              "x": null
+            },
+            "a": [
+              true,
+              4
+            ]
+          }
+        ],
+        [
+          "[ \"two  spaces\", \"é\", 1.25 ]",
+          [
+            "two  spaces",
+            "é",
+            1.25
+          ]
+        ],
+        [
+          " { \"escaped\": \"a\\nb\", \"q\": \"\\\"\" } ",
+          {
+            "escaped": "a\nb",
+            "q": "\""
+          }
+        ]
+      ]
+    }
+  },
+  "json_compact": {
+    "description": "Parse then serialize compact JSON text without optional spacing, preserving key order and Unicode.",
+    "queries": {
+      "train": [
+        "Compact this JSON text by removing optional formatting whitespace.",
+        "Return a minified JSON string preserving the data and key order.",
+        "Parse and reserialize this JSON without pretty-print spacing.",
+        "Make the JSON document compact while keeping it as text.",
+        "Write the same JSON data with no unnecessary spaces after separators.",
+        "Minify the JSON but preserve spaces inside string values.",
+        "Remove indentation and line breaks used only to format this JSON.",
+        "Use compact JSON separators without sorting object keys.",
+        "Produce the compact textual form of this JSON document.",
+        "Shrink formatting whitespace in the JSON representation, retaining Unicode text."
+      ],
+      "calibration": [
+        "Keep the result serialized, but eliminate its JSON formatting padding.",
+        "I want the same document as a compact JSON string, not an object.",
+        "Remove cosmetic whitespace outside quoted JSON strings.",
+        "Reserialize without indentation while preserving the original object key order."
+      ],
+      "test": [
+        "The consumer expects text; minimize the JSON formatting without altering any values.",
+        "Strip spaces around structural separators but keep spaces that belong to quoted strings.",
+        "Pack the serialized JSON onto a compact representation and retain the order of keys.",
+        "Return JSON again after decoding, this time with no optional separator whitespace.",
+        "Preserve the document's meaning while removing pretty-print layout from its text.",
+        "This must remain a JSON string, only without formatting blanks and indentation."
+      ]
+    },
+    "goldens": {
+      "train": [
+        [
+          " { \"a\" : 1, \"b\" : [ 2, 3 ] } ",
+          "{\"a\":1,\"b\":[2,3]}"
+        ],
+        [
+          "[ true, null, \"x\" ]",
+          "[true,null,\"x\"]"
+        ],
+        [
+          "{ \"text\" : \"hello world\" }",
+          "{\"text\":\"hello world\"}"
+        ]
+      ],
+      "calibration": [
+        [
+          " { \"z\" : [0], \"a\" : false } ",
+          "{\"z\":[0],\"a\":false}"
+        ],
+        [
+          "[ \"Café\", { \"n\" : -2 } ]",
+          "[\"Café\",{\"n\":-2}]"
+        ]
+      ],
+      "test": [
+        [
+          " { \"b\": { \"x\": null }, \"a\": [ true, 4 ] } ",
+          "{\"b\":{\"x\":null},\"a\":[true,4]}"
+        ],
+        [
+          "[ \"two  spaces\", \"é\", 1.25 ]",
+          "[\"two  spaces\",\"é\",1.25]"
+        ],
+        [
+          " { \"escaped\": \"a\\nb\", \"q\": \"\\\"\" } ",
+          "{\"escaped\":\"a\\nb\",\"q\":\"\\\"\"}"
+        ]
+      ]
+    }
+  }
+}
