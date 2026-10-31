@@ -1,0 +1,15 @@
+{
+  "created_unix_time": 1793448339.0004199,
+  "heldout_already_seen": true,
+  "models": 36,
+  "new_training_or_model_selection": false,
+  "original_histories": 512,
+  "queries_each": 3,
+  "schema": "hcsn.recall-binding-posthoc-registration.v1",
+  "source_sha256": {
+    "RECALL_BINDING_CONTRACT.md": "12e2d56f8f1398dcda29e2f0b268117db3507a801b907d51b74c8b03010b43bc",
+    "recall_binding_audit.py": "bda6ef4759e225d8d2bd4b023d698da75582e30809c5a05be541daad5090fcf9"
+  },
+  "status": "POSTHOC",
+  "trigger": "All heldout recall results were near the 17/27 bag-of-values majority accuracy; test key-value binding without refitting."
+}
