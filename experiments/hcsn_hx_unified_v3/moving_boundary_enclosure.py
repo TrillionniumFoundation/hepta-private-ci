@@ -46,6 +46,15 @@ def linear_boundary_first_hit(x, b, mu, sigma, c, T, q=0, *, dps=100):
         g = mp.exp(-(nu+s)*gap/sigma**2)*F(-s)
         if not (mp.isfinite(p) and mp.isfinite(g) and 0 <= g <= p <= 1):
             raise ArithmeticError("invalid first-hit probability ordering")
+        # For a positive horizon, gap and discount, the stopped discount loss
+        # D=E[(1-exp(-q*tau)) 1(tau<=T)] is strictly positive and at most
+        # F(T)*(-expm1(-q*T)). F-G may silently lose significance even in mpf.
+        # Reject unresolved rather than promoting false zero/oversized loss.
+        if q > 0:
+            loss = p - g
+            upper = p * (-mp.expm1(-q * T))
+            if not (0 < g and 0 < loss <= upper):
+                raise ArithmeticError("unresolved discounted first-hit loss")
         return FirstHit(+p, +g)
 
 
