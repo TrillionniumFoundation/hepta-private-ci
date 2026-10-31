@@ -98,6 +98,7 @@ def exact_audit(model, graph, kernel, optimum, table):
 def replay_saved(output):
     """Recompute targets and stage diagnostics from saved bytes after fitting ends."""
     from ..round7.model import load_model
+    from ..round7.study import checkpoint_path
     from .calibration import MODES, SEEDS, _json_write, load_calibrated
 
     started, cpu_started = time.perf_counter(), time.process_time()
@@ -105,14 +106,16 @@ def replay_saved(output):
     for mode in MODES:
         for seed in SEEDS:
             record = json.loads((output / f"calibration_{mode}_{seed}.json").read_text())
-            source = Path(record["source_checkpoint"])
+            # Stored absolute paths record the run's origin.  Resolve artifacts
+            # in this checkout so the published replay is portable.
+            source = checkpoint_path(Path(__file__).resolve().parents[1] / "round7/evidence", mode, "none", seed)
             if hashlib.sha256(source.read_bytes()).hexdigest() != record["source_checkpoint_sha256"]:
                 raise AssertionError("original R7 checkpoint changed")
             original, _ = load_model(source)
             graph = build_public_graph([TaskParameters(**row) for row in record["public_training_configurations"]])
             original_kernel = prepare_kernel(original, graph)
             optimum = solve(graph, original_kernel)
-            target_path = Path(record["target_archive"])
+            target_path = output / "calibration_targets" / Path(record["target_archive"]).name
             if hashlib.sha256(target_path.read_bytes()).hexdigest() != record["target_archive_sha256"]:
                 raise AssertionError("target archive changed")
             with np.load(target_path, allow_pickle=False) as archive:
@@ -124,7 +127,7 @@ def replay_saved(output):
             stage_rows, previous = [], original
             for stage in ("baseline", "readout", "content_readout"):
                 saved = record["checkpoints"][stage]
-                path = Path(saved["path"])
+                path = output / "calibration_models" / Path(saved["path"]).name
                 if hashlib.sha256(path.read_bytes()).hexdigest() != saved["sha256"]:
                     raise AssertionError("stage checkpoint changed")
                 model, metadata = load_calibrated(path)
