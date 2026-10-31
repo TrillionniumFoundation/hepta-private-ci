@@ -20,7 +20,7 @@ python -m unittest -v experiments.hcsn_distributional_v2.test_time_varying_refra
 - New targeted tests: **10/10 PASS**, 0 skipped. An initially invalid test grid exceeded the declared hazard-per-step admission limit and was repaired before committing; that error is not counted as scientific success.
 - P0: three parameter sets compared to the existing Lambert-W boundary; 12 central differences for six physical parameters across two regimes; independent scalar QVI/obstacle comparison; task gradients of six parameters; fail-closed boundary/dtype/domain cases.
 - P2: exact inhomogeneous Poisson zero-refractory limit; independent constant-rate Gamma renewal reference at 300/600/1200 steps; preserved prefix under different future rates; refractory suppression; invalid-input refusals.
-- The local test scaffold had the same exported `Stop`/QVI interface as upstream, but did **not** reconstruct the complete exact remote parent checkout. Full-stack exact-source integration remains **unverified**.
+- The local test harness reconstructed the **byte-identical upstream `stopping.py` Git blob** from exact parent `f0ceb7c2d5384463b50271a9471a34c007ed76b2` (blob `d165ed777990bbf8f3606b58e1b0991de59a1544`, 4,294 bytes), then reran **all 10/10 tests PASS**. Each of the four new source/test blobs likewise matches the locally executed files. This verifies the relevant exact parent source only; it is **not** a complete repository checkout, full CI, or HX financial-equilibrium integration.
 
 ## P0-P5 ledger (no inherited claims upgraded)
 
