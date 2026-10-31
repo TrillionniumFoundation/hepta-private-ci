@@ -75,3 +75,19 @@ python -c 'from experiments.hcsn_hx_unified_v3.hx_obstacle_panel_tail_v2 import 
 ```
 
 本地测试/远程读回的新增 Git blobs：`hx_obstacle_panel_tail_v2.py`=`e6c6cb4c211b02a12edafc565eed20e5e5b15e48`；`test_hx_obstacle_panel_tail_v2.py`=`c3054f9b195abecd685d9ca4b18068a25a4c106a`。所有门禁仍 **OPEN / NO_GO**。
+
+
+## 新增：真正的 CPU HX 金融债券 FP32/BF16 运算及反向梯度
+
+与旧的仅输入量化检测不同，`hx_financial_precision_screen.py` 在 **PyTorch CPU FP32/BF16** 中实际计算 `a`、`zhat`、贴现、Normal CDF 首达概率、债券现金流并通过 autograd 计算债券价格对资产的导数。独立对照路径是 `bond_from_first_hit` 物理模型的 SciPy 双精度数值积分及对资产中心差分，不直接反向传播待测 Torch 表达式。靠近违约边界的输入使用明确的工程拒绝带；不可计算或物理不合法的概率也拒绝。这个筛查**不是**严格区间包围、完整金融权益/QVI 求解、GPU 核或生产梯度许可。
+
+实际本地筛查覆盖 2 套金融参数 × 3 种资产倍率 × FP32/BF16 = **12 个可测组合**，此外 4 个紧邻边界的输入被按预定规则拒绝。该受限组内：
+- FP32 最大归一化价格误差 `3.0391e-7`，最大归一化资产梯度误差 `6.7082e-8`。
+- BF16 最大归一化价格误差 `0.004322824`，最大归一化梯度误差 `0.00416949`。
+- 3 项新增测试通过，旧 21 项加上 3 项为 **24/24 PASS，0 skipped**（本地重建 HX 参考子集；未跑完整仓库 CI / GPU）。
+
+源文件及测试远端回读与本地字节完全一致，Git blob 分别为 `5f26e10da899d5b6878465c4b8a86a1f03ecd0b6` 和 `001241a1fd7b7292abd93b8b2cb9cfce813f4dd5`。
+
+复现命令：`python -m unittest -v experiments.hcsn_hx_unified_v3.test_hx_financial_precision_screen`。
+
+本轮 **P0 仍未关闭**：FP32/BF16 的金融 bond 有受限实算证据，但金融**权益与耦合 QVI 活动集**尚无可认证全域误差和导数，GPU/Rust 与真实硬件能耗尚未执行。P1–P5 均未因此升级。
