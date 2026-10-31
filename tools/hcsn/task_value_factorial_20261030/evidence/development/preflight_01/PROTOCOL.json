@@ -1,0 +1,132 @@
+{
+  "additional_references": [
+    "fitted_dp",
+    "myopic_dp",
+    "fixed_boundary",
+    "learned_boundary",
+    "analytic_value_sampled"
+  ],
+  "admission": "No main activation unless D-B lower simultaneous bound is positive in IID and OOD, completed-job accuracy is noninferior, measured CPU-adjusted utility is positive at 0.01 utility/CPU-second including training amortized over 1000 sessions, and native integration is independently qualified",
+  "amortization_sessions": [
+    100,
+    1000,
+    10000
+  ],
+  "arms": [
+    "ordinary_myopic",
+    "ordinary_value",
+    "analytic_myopic",
+    "analytic_value"
+  ],
+  "baseline_commit": "8fc9bfcf5fc21a95facf36790e2d7f1463c7d04b",
+  "batch_seed_base": 950000,
+  "batch_size": 32,
+  "boundary_candidates": [
+    0.65,
+    0.85
+  ],
+  "boundary_scope": "Fixed and TRAIN-selected posterior-confidence task boundaries share the task owner. They do not identify the intrinsic neural cell free-boundary effect.",
+  "calibration_packets": 32,
+  "cell_init_seed_base": 930000,
+  "cell_l2": 0.001,
+  "cell_maxfun": 80,
+  "cell_maxiter": 3,
+  "checkpoint_updates": [
+    10
+  ],
+  "cpu_prices_utility_per_second": [
+    0.0,
+    0.001,
+    0.01,
+    0.1
+  ],
+  "critic_init_seed_base": 940000,
+  "critic_l2": 0.0001,
+  "critic_updates": 10,
+  "critic_width": 24,
+  "data_seed_base": 18603100,
+  "date": "2026-10-30",
+  "deadlines": [
+    6,
+    8,
+    10
+  ],
+  "energy_measurement": null,
+  "fixed_boundary": 0.8,
+  "gradient_clip": 2.0,
+  "latency_price": 0.015,
+  "learning_rate": 0.003,
+  "multiplier": 1.5,
+  "native_integration_qualified": false,
+  "ood": {
+    "deadlines": [
+      6,
+      8,
+      10
+    ],
+    "packet_length": 48,
+    "packet_prices": [
+      0.025,
+      0.06,
+      0.12
+    ],
+    "packet_reliabilities": [
+      0.55,
+      0.7,
+      0.85
+    ],
+    "read_budgets": [
+      2,
+      3,
+      4
+    ],
+    "step_durations": [
+      0.2,
+      0.8,
+      2.0
+    ]
+  },
+  "ood_sessions": 64,
+  "packet_length": 24,
+  "packet_prices": [
+    0.015,
+    0.04,
+    0.09
+  ],
+  "packet_reliabilities": [
+    0.6,
+    0.75,
+    0.9
+  ],
+  "policy_seed_base": 960000,
+  "primary_contrasts": [
+    "D-B",
+    "C-A",
+    "B-A",
+    "D-C",
+    "interaction"
+  ],
+  "quality_noninferiority_margin": 0.02,
+  "read_budgets": [
+    2,
+    3,
+    4
+  ],
+  "sampled_execution": "Frozen distribution-trained analytic_value critic is additionally deployed on one Gillespie CTMC path per session, without retraining. Auxiliary migration diagnostic, excluded from the five primary contrasts.",
+  "schema": "hcsn.task.value.factorial.v1",
+  "scientific_scope": "Actual file reads and frozen inherited content inference on synthetic marked-symbol tasks; finite CTMC cells and finite TRAIN-fitted task Bellman model; not native production Hepta",
+  "seeds": [
+    1234
+  ],
+  "source_freeze": "Publish protocol, implementation and selected trained models before creating either heldout cohort. Preserve aborted runs and raw results; never retune on confirmation.",
+  "step_durations": [
+    0.4,
+    1.0,
+    1.6
+  ],
+  "task_objective": "Terminal correct-minus-incorrect reward minus priced queries minus declared task elapsed time. Measured hardware CPU enters a separate admission sensitivity; it is not a teacher Q input or task duration.",
+  "test_sessions": 64,
+  "train_sessions": 8,
+  "uncertainty": "Two-sided Student t intervals across five paired training seeds, Bonferroni for five contrasts separately within each split; episodes are not independent training replications",
+  "validation_sessions": 4
+}

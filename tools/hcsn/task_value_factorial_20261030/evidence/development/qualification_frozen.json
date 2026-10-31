@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "tools.hcsn.task_value_factorial_20261030.task_tests",
+    "tools.hcsn.task_value_factorial_20261030.dataset_tests",
+    "tools.hcsn.task_value_factorial_20261030.controller_tests",
+    "tools.hcsn.task_value_factorial_20261030.execution_tests",
+    "tools.hcsn.task_value_factorial_20261030.test_propagation"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "................................\n----------------------------------------------------------------------\nRan 32 tests in 0.244s\n\nOK\n",
+  "wall_seconds": 0.7438399099992239,
+  "source_freeze_commit": "72db5c49809be2d7d5545489492e14e6f897282a",
+  "native_rust_ci": "not run; just/cargo/rustc unavailable in this reconstructed research checkout",
+  "just_fmt_attempt": {
+    "exit_code": 127,
+    "stderr": "/bin/bash: line 1: just: command not found"
+  }
+}
