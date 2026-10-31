@@ -30,6 +30,37 @@ def verify_freeze():
     return sha(BASE / "SOURCE_FREEZE.json")
 
 
+def verify_candidate(candidate_commit, source_digest):
+    path = BASE / "CANDIDATE_FREEZE.json"
+    manifest = json.loads(path.read_text())
+    if manifest["source_freeze_sha256"] != source_digest:
+        raise RuntimeError("candidate source freeze differs")
+    expected = {
+        f"evidence/content/runs/{task}/{family}_w{width}_s{seed}/final.npz"
+        for task in ("associative_recall", "multimodal_evidence", "digits_rows")
+        for family in ("ordinary", "analytic") for width in (16, 32, 64)
+        for seed in (11, 23, 37)}
+    expected.update(f"evidence/policy/fits/{family}_s{seed}/controller.json"
+                    for family in ("ordinary", "analytic") for seed in (11, 23, 37))
+    if set(manifest["artifact_sha256"]) != expected:
+        raise RuntimeError("candidate must identify all 54 models and six controllers")
+    for name, digest in manifest["artifact_sha256"].items():
+        if sha(BASE / name) != digest:
+            raise RuntimeError("candidate artifact changed: " + name)
+    # A normal clone can prove the commit binding directly from its Git objects.
+    result = subprocess.run(["git", "show", candidate_commit + ":experiments/"
+                             "hcsn_regeneration_content_20261031/CANDIDATE_FREEZE.json"],
+                            cwd=BASE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if result.returncode == 0:
+        if hashlib.sha256(result.stdout).hexdigest() != sha(path):
+            raise RuntimeError("candidate manifest differs from the published commit")
+    else:
+        # In the API-backed workspace, root records an actual GitHub fetch/readback.
+        receipt = json.loads((BASE / "evidence" / "candidate_remote_readback.json").read_text())
+        if receipt["commit"] != candidate_commit or receipt["manifest_sha256"] != sha(path):
+            raise RuntimeError("missing matching remote candidate readback")
+
+
 def execute(name, arguments, freeze_commit, candidate_commit, source_digest):
     folder = BASE / "evidence" / "execution"
     folder.mkdir(parents=True, exist_ok=True)
@@ -71,6 +102,8 @@ def main():
             "[0-9a-f]{40}", args.candidate_commit or ""):
         parser.error("published 40-hex candidate freeze required")
     source_digest = verify_freeze()
+    if args.phase in ("test", "policy", "diagnostics"):
+        verify_candidate(args.candidate_commit, source_digest)
     commands = []
     if args.phase == "renewal":
         commands.append(("renewal", ["renewal_audit.py", "--stage", "formal", "--out",
