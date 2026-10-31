@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   effect-recovery:
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'fix/hepta-provider-operation-binding-20261030'
+    if: github.event.pull_request.head.repo.full_name == github.repository && (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031')
     strategy:
       fail-fast: false
       matrix:
@@ -107,9 +107,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && 'c16507147b65285ea94dead22d3b93c5db7295af' || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
-      CHAIN_BASE_SHA: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && '1d11f875493f8125e36b9adceacb342df108e5e5' || '9fedf7ecbbe07177069c030592b4e03dcffebb81' }}
-      HEPTA_PON_CHAIN_SOURCE: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && (matrix.lane == 'source-head' && 'c16507147b65285ea94dead22d3b93c5db7295af' || 'd1b8ae970bb5e014b6feaa49030823e1d8228c90') || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
+      CHAIN_SOURCE_SHA: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031') && 'c16507147b65285ea94dead22d3b93c5db7295af' || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
+      CHAIN_BASE_SHA: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031') && '1d11f875493f8125e36b9adceacb342df108e5e5' || '9fedf7ecbbe07177069c030592b4e03dcffebb81' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031') && (matrix.lane == 'source-head' && 'c16507147b65285ea94dead22d3b93c5db7295af' || 'd1b8ae970bb5e014b6feaa49030823e1d8228c90') || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
       TRNM_FROM_ZERO_HOST_OWNER: ${{ github.run_id }}.${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -182,7 +182,7 @@ jobs:
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-bounded-process.json" --minimum-tests 26 -- python3 ../chain/formal/pon-nakamoto-v1/test_bounded_process.py -v
       - name: Require durable PQ replay ownership on the continuation pair
-        if: github.head_ref == 'fix/hepta-provider-operation-binding-20261030'
+        if: (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031')
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-pq-owner.json" --minimum-tests 14 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib pq_authority:: -- --show-output --test-threads=1
       - name: Require complete bounded W1 collector and cross-architecture report controls
@@ -265,7 +265,7 @@ jobs:
       - name: Require complete native SQL reuse and conditional query-bound controls
         env:
           TRNM_RETAINED_DELTA_COST_PATH: ${{ runner.temp }}/pon-pair/chain-retained-delta-cost.jsonl
-          CHAIN_NATIVE_SQL_MINIMUM: ${{ github.head_ref == 'fix/hepta-provider-operation-binding-20261030' && '77' || '37' }}
+          CHAIN_NATIVE_SQL_MINIMUM: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031') && '77' || '37' }}
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-sql.json" --minimum-tests "$CHAIN_NATIVE_SQL_MINIMUM" -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: -- --include-ignored --show-output --test-threads=1

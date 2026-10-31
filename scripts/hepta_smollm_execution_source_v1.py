@@ -60,17 +60,24 @@ def unique(pairs):
     return value
 
 
+def registered_sources():
+    """Own the closed profile registry for both CLI parsing and verification."""
+    return {
+        PROFILE: (CHAIN_COMMIT, MANIFEST_NAME, MANIFEST_SHA256),
+        PROFILE_V2: (CHAIN_COMMIT_V2, MANIFEST_NAME_V2, MANIFEST_SHA256_V2),
+        PROFILE_V3: (CHAIN_COMMIT_V3, MANIFEST_NAME_V3, MANIFEST_SHA256_V3),
+        PROFILE_V4: (CHAIN_COMMIT_V4, MANIFEST_NAME_V4, MANIFEST_SHA256_V4),
+    }
+
+
 def selected_source(profile):
     """Select only the reviewed identities; no caller may supply a commit."""
-    if profile == PROFILE:
-        return CHAIN_COMMIT, MANIFEST_NAME, MANIFEST_SHA256
-    if profile == PROFILE_V2:
-        return CHAIN_COMMIT_V2, MANIFEST_NAME_V2, MANIFEST_SHA256_V2
-    if profile == PROFILE_V3:
-        return CHAIN_COMMIT_V3, MANIFEST_NAME_V3, MANIFEST_SHA256_V3
-    if profile == PROFILE_V4:
-        return CHAIN_COMMIT_V4, MANIFEST_NAME_V4, MANIFEST_SHA256_V4
-    raise ValueError("explicit closed execution-source profile required")
+    sources = registered_sources()
+    require(
+        type(profile) is str and profile in sources,
+        "explicit closed execution-source profile required",
+    )
+    return sources[profile]
 
 
 def checked_manifest(profile):
@@ -230,7 +237,7 @@ def main():
     parser.add_argument("--chain", type=Path, required=True)
     parser.add_argument(
         "--profile",
-        choices=[PROFILE, PROFILE_V2, PROFILE_V3, PROFILE_V4],
+        choices=registered_sources(),
         required=True,
     )
     args = parser.parse_args()

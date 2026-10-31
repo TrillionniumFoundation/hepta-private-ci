@@ -15,6 +15,9 @@ import struct
 import sys
 import urllib.request
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import hepta_smollm_execution_source_v1 as execution
+
 PROFILES = (
     Path(__file__).resolve().parents[1] / "codex-rs/hepta-learning-artifacts/profiles"
 )
@@ -75,9 +78,6 @@ def derive(chain, materials, output, download, execution_source_profile=None):
                 f"source differs from the public V2 profile: {relative}",
             )
     else:
-        sys.path.insert(0, str(Path(__file__).resolve().parent))
-        import hepta_smollm_execution_source_v1 as execution
-
         execution_source = execution.verify(chain, execution_source_profile)
     # All project imports below follow verification of their complete static
     # source/config dependency set. The Python runtime is separately qualified.
@@ -195,11 +195,7 @@ def main():
         parser.add_argument(f"--{name}", type=Path, required=True)
     parser.add_argument(
         "--execution-source-profile",
-        choices=[
-            "hepta-integrated-chain-execution-v1",
-            "hepta-integrated-chain-execution-v2",
-            "hepta-integrated-chain-execution-v3",
-        ],
+        choices=execution.registered_sources(),
         help="explicit audited execution source; preserves the historical V2 model profile",
     )
     parser.add_argument(
