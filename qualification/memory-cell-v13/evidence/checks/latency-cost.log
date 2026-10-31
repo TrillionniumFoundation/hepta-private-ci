@@ -1,0 +1,408 @@
+{
+  "encoder_calls": 864,
+  "output": "qualification/memory-cell-v13/evidence/run/LATENCY_COST.json",
+  "summaries": {
+    "bm25": {
+      "distinct_requests": 72,
+      "encoder_calls": 0,
+      "inconsistent_request_predictions": 0,
+      "input_tokens": 0,
+      "measurements": {
+        "encode_cpu_ms": {
+          "maximum": 0.0,
+          "mean": 0.0,
+          "minimum": 0.0,
+          "p50": 0.0,
+          "p95": 0.0
+        },
+        "encode_wall_ms": {
+          "maximum": 0.0,
+          "mean": 0.0,
+          "minimum": 0.0,
+          "p50": 0.0,
+          "p95": 0.0
+        },
+        "execute_cpu_ms": {
+          "maximum": 0.048462,
+          "mean": 0.016426629629629628,
+          "minimum": 0.004967,
+          "p50": 0.013875499999999999,
+          "p95": 0.035025
+        },
+        "execute_wall_ms": {
+          "maximum": 0.048142,
+          "mean": 0.016336782407407408,
+          "minimum": 0.004887,
+          "p50": 0.0137905,
+          "p95": 0.03485275
+        },
+        "select_cpu_ms": {
+          "maximum": 1.125452,
+          "mean": 0.5211145324074073,
+          "minimum": 0.353465,
+          "p50": 0.482356,
+          "p95": 0.776563
+        },
+        "select_wall_ms": {
+          "maximum": 1.124652,
+          "mean": 0.5207980601851852,
+          "minimum": 0.353402,
+          "p50": 0.4821805,
+          "p95": 0.7760705
+        },
+        "total_cpu_ms": {
+          "maximum": 1.160744,
+          "mean": 0.5492796851851852,
+          "minimum": 0.362889,
+          "p50": 0.508094,
+          "p95": 0.8131605000000001
+        },
+        "total_wall_ms": {
+          "maximum": 1.160857,
+          "mean": 0.549370037037037,
+          "minimum": 0.362936,
+          "p50": 0.5081994999999999,
+          "p95": 0.813111
+        }
+      },
+      "timing_trials": 216,
+      "unique_accepted": 72,
+      "unique_correct": 42
+    },
+    "centroid": {
+      "distinct_requests": 72,
+      "encoder_calls": 216,
+      "inconsistent_request_predictions": 0,
+      "input_tokens": 3909,
+      "measurements": {
+        "encode_cpu_ms": {
+          "maximum": 9.823238,
+          "mean": 6.302254263888888,
+          "minimum": 4.880067,
+          "p50": 6.157018,
+          "p95": 7.8942179999999995
+        },
+        "encode_wall_ms": {
+          "maximum": 9.82034,
+          "mean": 6.299133537037036,
+          "minimum": 4.877981,
+          "p50": 6.154317000000001,
+          "p95": 7.8909400000000005
+        },
+        "execute_cpu_ms": {
+          "maximum": 0.174719,
+          "mean": 0.032748458333333334,
+          "minimum": 0.012969,
+          "p50": 0.0308005,
+          "p95": 0.055267250000000004
+        },
+        "execute_wall_ms": {
+          "maximum": 0.173691,
+          "mean": 0.03250634259259259,
+          "minimum": 0.012899,
+          "p50": 0.030396,
+          "p95": 0.0548005
+        },
+        "select_cpu_ms": {
+          "maximum": 0.266336,
+          "mean": 0.05406436111111111,
+          "minimum": 0.042503,
+          "p50": 0.049478499999999995,
+          "p95": 0.07280299999999999
+        },
+        "select_wall_ms": {
+          "maximum": 0.265269,
+          "mean": 0.053901231481481474,
+          "minimum": 0.042423,
+          "p50": 0.049359,
+          "p95": 0.0725265
+        },
+        "total_cpu_ms": {
+          "maximum": 9.930597,
+          "mean": 6.404660458333333,
+          "minimum": 4.978483,
+          "p50": 6.2751684999999995,
+          "p95": 8.01908575
+        },
+        "total_wall_ms": {
+          "maximum": 9.930796,
+          "mean": 6.405130490740741,
+          "minimum": 4.978452,
+          "p50": 6.275254,
+          "p95": 8.01925075
+        }
+      },
+      "timing_trials": 216,
+      "unique_accepted": 72,
+      "unique_correct": 60
+    },
+    "exact_store": {
+      "distinct_requests": 72,
+      "encoder_calls": 0,
+      "inconsistent_request_predictions": 0,
+      "input_tokens": 0,
+      "measurements": {
+        "encode_cpu_ms": {
+          "maximum": 0.0,
+          "mean": 0.0,
+          "minimum": 0.0,
+          "p50": 0.0,
+          "p95": 0.0
+        },
+        "encode_wall_ms": {
+          "maximum": 0.0,
+          "mean": 0.0,
+          "minimum": 0.0,
+          "p50": 0.0,
+          "p95": 0.0
+        },
+        "execute_cpu_ms": {
+          "maximum": 0.001372,
+          "mean": 0.0007351250000000001,
+          "minimum": 0.000321,
+          "p50": 0.0007264999999999999,
+          "p95": 0.000946
+        },
+        "execute_wall_ms": {
+          "maximum": 0.001322,
+          "mean": 0.0007070231481481481,
+          "minimum": 0.000291,
+          "p50": 0.000701,
+          "p95": 0.000882
+        },
+        "select_cpu_ms": {
+          "maximum": 0.029945,
+          "mean": 0.005130092592592593,
+          "minimum": 0.001923,
+          "p50": 0.004987500000000001,
+          "p95": 0.00690025
+        },
+        "select_wall_ms": {
+          "maximum": 0.029935,
+          "mean": 0.005113064814814815,
+          "minimum": 0.001872,
+          "p50": 0.0049575,
+          "p95": 0.00687275
+        },
+        "total_cpu_ms": {
+          "maximum": 0.091486,
+          "mean": 0.018167953703703704,
+          "minimum": 0.007481,
+          "p50": 0.017471,
+          "p95": 0.02947325
+        },
+        "total_wall_ms": {
+          "maximum": 0.094062,
+          "mean": 0.01857932407407407,
+          "minimum": 0.007501,
+          "p50": 0.017495999999999998,
+          "p95": 0.030253
+        }
+      },
+      "timing_trials": 216,
+      "unique_accepted": 0,
+      "unique_correct": 0
+    },
+    "nearest": {
+      "distinct_requests": 72,
+      "encoder_calls": 216,
+      "inconsistent_request_predictions": 0,
+      "input_tokens": 3909,
+      "measurements": {
+        "encode_cpu_ms": {
+          "maximum": 10.429447,
+          "mean": 6.316431893518519,
+          "minimum": 5.059033,
+          "p50": 6.127725,
+          "p95": 7.7425265
+        },
+        "encode_wall_ms": {
+          "maximum": 10.426701,
+          "mean": 6.315402120370371,
+          "minimum": 5.05705,
+          "p50": 6.1248585,
+          "p95": 7.75530125
+        },
+        "execute_cpu_ms": {
+          "maximum": 0.102493,
+          "mean": 0.03245138425925926,
+          "minimum": 0.014041,
+          "p50": 0.031892000000000004,
+          "p95": 0.053895
+        },
+        "execute_wall_ms": {
+          "maximum": 0.101513,
+          "mean": 0.032457541666666666,
+          "minimum": 0.013981,
+          "p50": 0.0317775,
+          "p95": 0.05395375
+        },
+        "select_cpu_ms": {
+          "maximum": 1.47451,
+          "mean": 0.09910814351851852,
+          "minimum": 0.071126,
+          "p50": 0.080705,
+          "p95": 0.1672535
+        },
+        "select_wall_ms": {
+          "maximum": 1.473117,
+          "mean": 0.09881165277777777,
+          "minimum": 0.070947,
+          "p50": 0.0805015,
+          "p95": 0.166438
+        },
+        "total_cpu_ms": {
+          "maximum": 10.57245,
+          "mean": 6.4632120046296295,
+          "minimum": 5.165962,
+          "p50": 6.2587695,
+          "p95": 7.9873375
+        },
+        "total_wall_ms": {
+          "maximum": 10.572561,
+          "mean": 6.464911124999999,
+          "minimum": 5.166064,
+          "p50": 6.258874499999999,
+          "p95": 8.0030585
+        }
+      },
+      "timing_trials": 216,
+      "unique_accepted": 72,
+      "unique_correct": 58
+    },
+    "ridge": {
+      "distinct_requests": 72,
+      "encoder_calls": 216,
+      "inconsistent_request_predictions": 0,
+      "input_tokens": 3909,
+      "measurements": {
+        "encode_cpu_ms": {
+          "maximum": 9.98641,
+          "mean": 6.337220046296296,
+          "minimum": 4.984852,
+          "p50": 6.174664,
+          "p95": 7.8273357500000005
+        },
+        "encode_wall_ms": {
+          "maximum": 9.983174,
+          "mean": 6.336802546296297,
+          "minimum": 4.982469,
+          "p50": 6.1722295,
+          "p95": 7.82402725
+        },
+        "execute_cpu_ms": {
+          "maximum": 0.147209,
+          "mean": 0.0329804537037037,
+          "minimum": 0.011978,
+          "p50": 0.031402,
+          "p95": 0.05230525
+        },
+        "execute_wall_ms": {
+          "maximum": 0.146571,
+          "mean": 0.03287349074074074,
+          "minimum": 0.011908,
+          "p50": 0.0313125,
+          "p95": 0.052203
+        },
+        "select_cpu_ms": {
+          "maximum": 0.191785,
+          "mean": 0.042402370370370375,
+          "minimum": 0.032909,
+          "p50": 0.038362,
+          "p95": 0.06391775
+        },
+        "select_wall_ms": {
+          "maximum": 0.190957,
+          "mean": 0.04224608333333334,
+          "minimum": 0.032769,
+          "p50": 0.038262500000000005,
+          "p95": 0.063633
+        },
+        "total_cpu_ms": {
+          "maximum": 10.088442,
+          "mean": 6.427965703703704,
+          "minimum": 5.059143,
+          "p50": 6.240902999999999,
+          "p95": 7.91750225
+        },
+        "total_wall_ms": {
+          "maximum": 10.088722,
+          "mean": 6.430283986111111,
+          "minimum": 5.059174,
+          "p50": 6.240852,
+          "p95": 7.917572
+        }
+      },
+      "timing_trials": 216,
+      "unique_accepted": 72,
+      "unique_correct": 61
+    },
+    "single_adapter": {
+      "distinct_requests": 72,
+      "encoder_calls": 216,
+      "inconsistent_request_predictions": 0,
+      "input_tokens": 3909,
+      "measurements": {
+        "encode_cpu_ms": {
+          "maximum": 11.350716,
+          "mean": 6.304025666666667,
+          "minimum": 4.936541,
+          "p50": 6.1607835,
+          "p95": 7.5778887500000005
+        },
+        "encode_wall_ms": {
+          "maximum": 11.345945,
+          "mean": 6.317529953703704,
+          "minimum": 4.934126,
+          "p50": 6.158588,
+          "p95": 7.66684325
+        },
+        "execute_cpu_ms": {
+          "maximum": 0.419893,
+          "mean": 0.03733913425925925,
+          "minimum": 0.01326,
+          "p50": 0.0325385,
+          "p95": 0.071181
+        },
+        "execute_wall_ms": {
+          "maximum": 0.41851,
+          "mean": 0.03721775462962963,
+          "minimum": 0.01317,
+          "p50": 0.032449,
+          "p95": 0.070782
+        },
+        "select_cpu_ms": {
+          "maximum": 0.183683,
+          "mean": 0.06377287037037035,
+          "minimum": 0.050856,
+          "p50": 0.058356500000000006,
+          "p95": 0.08918075
+        },
+        "select_wall_ms": {
+          "maximum": 0.182735,
+          "mean": 0.06358739351851853,
+          "minimum": 0.050737,
+          "p50": 0.058202500000000004,
+          "p95": 0.08881900000000001
+        },
+        "total_cpu_ms": {
+          "maximum": 11.452728,
+          "mean": 6.421615324074074,
+          "minimum": 5.033975,
+          "p50": 6.298287999999999,
+          "p95": 7.68047
+        },
+        "total_wall_ms": {
+          "maximum": 11.452757,
+          "mean": 6.437919949074074,
+          "minimum": 5.034096,
+          "p50": 6.2984345,
+          "p95": 7.77416225
+        }
+      },
+      "timing_trials": 216,
+      "unique_accepted": 72,
+      "unique_correct": 59
+    }
+  }
+}
