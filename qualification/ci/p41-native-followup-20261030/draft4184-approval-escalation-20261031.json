@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.app-server-approval-fixture-candidate.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4184,
+  "source_head_before_candidate": "3571a89dee5782a5a0538ccb496adfd5b477262d",
+  "source_tree_before_candidate": "bb198b615b70aeb424459d8b87fdb1e1a56bdc04",
+  "source_path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+  "parent_blocking_ci_run": 41149030781,
+  "observed_native_jobs": [
+    {
+      "platform": "linux-gnu",
+      "job": 124381284174,
+      "tests": [
+        "recover_rejects_busy_completed_and_cross_thread_turns",
+        "cold_sigkill_after_provider_output_is_not_recoverable"
+      ],
+      "observation": "CommandExecutionRequestApproval wait timed out"
+    },
+    {
+      "platform": "linux-musl",
+      "job": 124381284123,
+      "tests": [
+        "recover_rejects_busy_completed_and_cross_thread_turns",
+        "cold_sigkill_after_provider_output_is_not_recoverable"
+      ],
+      "observation": "CommandExecutionRequestApproval wait timed out"
+    }
+  ],
+  "diagnosis": "on-request accepts ordinary non-escalated mock shell command without generating a user approval; old untrusted configuration is unsupported. The already-used turn_start.rs fixture requests explicit escalation to force elicitation under on-request.",
+  "change": "Test-only blocked_turn_response now uses create_escalated_command_execution_sse_response, retaining command, workdir, timeout, call_id, exact request/turn identity, original approval and recovery assertions.",
+  "preserved": "Existing positive/negative tests and production auth/sandbox/recovery logic unchanged; no Rust dependencies or locks modified.",
+  "qualification": "SOURCE_CANDIDATE_AWAITING_OWNING_NATIVE_TEST",
+  "required": "Run owning AppServer GNU and musl tests on exact new commit; do not count prior Architecture success as new head; Windows DELETE, Plugin TTL, RustSec, owner-backed policy, target device remain OPEN.",
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "promotion": "HOLD_NO_GO"
+}
