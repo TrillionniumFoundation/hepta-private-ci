@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.fullstudy.operational-finite-head-guard-test-summary.1",
+  "status": "prepared_not_active",
+  "scientific_run_started": false,
+  "overlay_installed_in_scientific_run": false,
+  "historical_trigger_evidence_found": false,
+  "base_commit": "c27e1b2c291dc213b4a34bb41360235013c909e0",
+  "frozen_heads": {
+    "path": "experiments/parameter_field_fullstudy_20261029/heads.py",
+    "bytes": 5571,
+    "git_blob_sha1": "27c9e98d1039fbc06b1c68d88161ee8bc3bc4998",
+    "sha256": "19254959a30e3719024841dc91376d1ecdfa018c30427b962a265e3b3d4647f7"
+  },
+  "candidate_sources": {
+    "finite_head_guard.py": "9670b030530f540cd20bcdeaafa623a55be416a9d440d578eba129cfc7c64b07",
+    "test_finite_head_guard.py": "ba69df872886c6541e3f91812bc6d6fab7be807f83e7543c42e3e52453553217"
+  },
+  "test_record_kind": "summary_recorded_from_actual_exec_tool_output_not_wait4_scientific_receipt",
+  "test_source": "synthetic_only_exact_frozen_heads_import",
+  "tests_run": 13,
+  "tests_passed": 13,
+  "exit_code": 0,
+  "unittest_reported_seconds": 0.022,
+  "run_exec_wall_time_seconds": 0.062307343,
+  "initial_fixture_only_error": "NumPy scalar threshold in synthetic fixture caused JSON TypeError; fixture normalized to the Python float used by original fit/load, then 9/9 passed; after independent callable/context review current 13/13 passed",
+  "scientific_training_microsteps": 0,
+  "data_outcomes_opened": false,
+  "new_label_checker_written": false,
+  "label_checker_reason": "Original postseal supplement already recomputes advantage arithmetic and saved reward means; see review for exact scope and remaining complete replay requirements"
+}
