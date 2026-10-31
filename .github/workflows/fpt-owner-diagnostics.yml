@@ -1,0 +1,120 @@
+name: First-passage owner native diagnostics
+
+on:
+  push:
+    branches: [research/fpt-clock-owner-20261030]
+  workflow_dispatch:
+
+# These focused probes preserve their failures. They supplement the complete
+# repository checks and never replace qualification or deployment gates.
+permissions:
+  contents: read
+
+concurrency:
+  group: fpt-owner-native-diagnostics-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-boundaries:
+    name: Windows deletion and fork lifecycle diagnostics
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.ref == 'refs/heads/research/fpt-clock-owner-20261030'
+    runs-on: windows-latest
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Record source provenance
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "fpt-owner-diagnostics"
+          output.mkdir(parents=True, exist_ok=True)
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["SOURCE_SHA"]:
+              raise SystemExit("checkout does not match the requested source head")
+          subprocess.run(["git", "diff", "--exit-code"], check=True)
+          subprocess.run(["git", "diff", "--cached", "--exit-code"], check=True)
+          receipt = {
+              "source_head": head,
+              "source_tree": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD^{tree}"], text=True
+              ).strip(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "scope": "Focused native diagnostics; complete required CI remains authoritative",
+          }
+          (output / "source.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
+
+      - name: Prepare native Windows Bazel
+        id: prepare
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+
+      - name: Exercise original deletion regressions and capability matrix
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/fpt-owner-diagnostics"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_output=all --test_arg=--nocapture -- \
+            //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests \
+            2>&1 | tee "$output/windows-deletion.log"
+
+      - name: Isolate the sanitized parent-history fork lifecycle
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/fpt-owner-diagnostics"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_sharding_strategy=disabled --test_output=all \
+            --test_arg=agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items \
+            --test_arg=--exact --test_arg=--nocapture -- \
+            //codex-rs/core:core-unit-tests \
+            2>&1 | tee "$output/core-fork.log"
+
+      - name: Preserve diagnostics even after a failed probe
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fpt-owner-native-diagnostics-${{ github.sha }}
+          path: ${{ runner.temp }}/fpt-owner-diagnostics/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Check unchanged tracked source
+        if: ${{ always() && !cancelled() }}
+        uses: ./.github/actions/check-clean-worktree
