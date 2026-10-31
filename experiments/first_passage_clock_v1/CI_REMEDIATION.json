@@ -216,11 +216,91 @@
     }
   },
   "publication": {
-    "status": "BLOCKED_APPROVAL",
-    "action": "GitHub create_tree for the first two Windows trust fixture files",
-    "tool_response": "user rejected MCP tool call",
-    "remote_head_unchanged": "2e55f76cd632e097e255cebbce9569423f7d8e1c",
-    "new_head_ci_started": false,
-    "next_required_action": "Resolve the GitHub write approval block before publishing the complete reviewed repair series; do not retry through another write mechanism to bypass the rejection."
+    "status": "GITHUB_WRITE_ACCESS_RESTORED",
+    "previous_rejected_attempt": {
+      "status": "BLOCKED_APPROVAL",
+      "action": "GitHub create_tree for the first two Windows trust fixture files",
+      "tool_response": "user rejected MCP tool call",
+      "remote_head_unchanged": "2e55f76cd632e097e255cebbce9569423f7d8e1c",
+      "new_head_ci_started": false,
+      "next_required_action": "Resolve the GitHub write approval block before publishing the complete reviewed repair series; do not retry through another write mechanism to bypass the rejection."
+    },
+    "authorized_retry": {
+      "result": "20 remote commits created; every tree matches the corresponding reviewed local commit",
+      "remote_repair_chain_head": "d5620ee3a663055b36cde91d72737b043fa5fad4",
+      "local_review_head": "d2eb5632600d5d152c78a828dc7c3cfce9fca860",
+      "matching_tree": "a8b7d6ef1403726c852b63ac04e1e2976a0d44d5"
+    },
+    "record_scope": "This evidence is recorded before the atomic branch update. GitHub branch refs and check runs remain authoritative for publication and candidate CI."
+  },
+  "continuation_round": {
+    "workspace_recovery": {
+      "head_at_recovery": "d2eb5632600d5d152c78a828dc7c3cfce9fca860",
+      "restored_files": 5370,
+      "restored_bytes": 49996433,
+      "restored_tree": "a8b7d6ef1403726c852b63ac04e1e2976a0d44d5",
+      "index_tree_matches_head": true,
+      "all_restored_blob_sha_verified": true,
+      "additional_existing_code_objects_restored": 4237,
+      "edited_file_baseline_objects_restored_without_worktree_overwrite": 4,
+      "cargo_metadata_no_deps_offline": {
+        "status": "PASS",
+        "exit_code": 0,
+        "workspace_members": 193,
+        "json": "/tmp/pr4378-cargo-metadata-restored.json"
+      },
+      "cargo_metadata_locked_full_offline": {
+        "status": "BLOCKED_MISSING_REGISTRY_INDEX",
+        "exit_code": 101,
+        "package": "ruma-federation-api",
+        "via": "ruma 0.17.2 / matrix-sdk 0.19.1 / codex-hepta-matrixd",
+        "compilation_performed": false
+      },
+      "remaining_missing_tracked_codex_paths": [],
+      "scope": "Restored exact indexed source and Git objects only. No dependency manifests, lock files, or existing working-tree edits were changed."
+    },
+    "windows_delete_matrix": {
+      "status": "NATIVE_EXECUTION_PENDING",
+      "routes": [
+        "neither",
+        "target DELETE only",
+        "parent DELETE_CHILD only",
+        "both"
+      ],
+      "modes": [
+        "actual production workspace token",
+        "test-only complete restricted token with explicit read/write capabilities"
+      ],
+      "checks": [
+        "same-ACL native host deletion controls",
+        "outside read/write/create/file delete/directory delete/rename into workspace",
+        "inside positive controls",
+        "exact resulting file bytes and directory state"
+      ],
+      "scope": "Original security assertions and production token remain unchanged. The finite explicit-read fixture does not prove arbitrary shell startup, full-disk reading, registry or IPC compatibility."
+    },
+    "core_fork_diagnostics": {
+      "status": "ROOT_CAUSE_UNCONFIRMED",
+      "changes": "cfg(test) exact ThreadId subscriptions, RAII uninstall, 128-record bound per thread, direct stderr identity/phase/completion events, shutdown await boundaries and final fixture-return marker",
+      "independent_module_tests": {
+        "passed": 3,
+        "failed": 0,
+        "source": "Actual new module and its two tests plus stderr smoke compiled against cached real codex_protocol and pretty_assertions rlibs",
+        "scope": "Not a build of codex-core or execution of the original fork-history test"
+      },
+      "preserved": "No watchdog, lifecycle state transition, completion fence or original assertion changes"
+    },
+    "focused_workflow": {
+      "path": ".github/workflows/fpt-owner-diagnostics.yml",
+      "trigger": "Only the research/fpt-clock-owner-20261030 branch; additive Windows native diagnostics",
+      "scope": "Original Windows sandbox unit regressions and new matrix, followed independently by the exact Core fork test. Actual MSVC host and target configuration. Failures are preserved; complete repository CI is unchanged."
+    },
+    "scoped_fix_recipe": {
+      "before": "just --dry-run fix -p codex-core emitted literal {args}, losing the requested scope",
+      "after": "The recipe interpolates {{args}} and dry-run forwards both requested -p selectors",
+      "actual_attempt": "Offline just fix -p codex-core -p codex-windows-sandbox with approved local TCP locking progressed to registry resolution and exited 101 for missing ruma-federation-api; no complete lint pass is claimed"
+    },
+    "remaining_local_build_limit": "Complete locked dependency resolution and compilation are not yet verified. Default-sandbox network attempts failed; an approved targeted fetch subsequently succeeded. The restored source metadata is no longer a blocker, while dependency-cache gaps and fluctuating disk capacity still constrain a full local build.",
+    "scientific_freeze": "Unchanged; no new confirmation run or superiority claim"
   }
 }
