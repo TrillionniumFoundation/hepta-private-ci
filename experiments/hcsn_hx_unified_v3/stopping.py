@@ -84,6 +84,12 @@ def one_shot_boundary(p: Stop) -> float:
     b=p.cost+displacement
     if not (math.isfinite(displacement) and math.isfinite(b) and b>p.cost):
         raise ArithmeticError('One-shot boundary unresolved in f64')
+    # A finite, strictly greater boundary can still quantize away a
+    # material fraction of the optimal one-shot firing reward at large
+    # absolute cost. Match the scalar renewal f64 resolution policy.
+    # This is a fail-closed tolerance guard, not a certified interval.
+    if math.ulp(b)>1e-8*displacement:
+        raise ArithmeticError('One-shot boundary resolution unresolved at cost scale')
     return b
 
 
