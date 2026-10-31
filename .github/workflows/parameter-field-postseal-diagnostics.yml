@@ -1,0 +1,47 @@
+name: Parameter field postseal diagnostics
+
+on:
+  push:
+    branches:
+      - research/parameter-field-p0-actions-20261031
+      - research/parameter-field-execution-20261031
+    paths:
+      - supplements/parameter_field_execution_20261031/**
+      - .github/workflows/parameter-field-postseal-diagnostics.yml
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Prepare bounded synthetic test environment
+        run: |
+          python3 -m venv "$RUNNER_TEMP/parameter-field-diagnostics"
+          "$RUNNER_TEMP/parameter-field-diagnostics/bin/python" -m pip install --disable-pip-version-check numpy==2.3.5
+
+      - name: Check arithmetic, interpretation, and closed evidence gates
+        run: |
+          set -o pipefail
+          "$RUNNER_TEMP/parameter-field-diagnostics/bin/python" -B -m unittest discover -s supplements/parameter_field_execution_20261031 -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/parameter-field-diagnostics-tests.log"
+
+      - name: Preserve engineering test output
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: parameter-field-diagnostics-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/parameter-field-diagnostics-tests.log
+          if-no-files-found: warn
+          retention-days: 14
