@@ -1,0 +1,170 @@
+{
+  "schema": "hepta.task.native-bridge.numerical-qualification.v2",
+  "accepted": false,
+  "sample_selection": "Fixed first 512 validation rows in recorded order; declared before native evaluation",
+  "evaluated_rows": 512,
+  "model_sha256": "fce8e093bef9e6f8f3a55641469463822ea0c3c30827d53ed0aa5c9e033b3cc4",
+  "model_selected_update": 6000,
+  "binary_sha256": "d85855967cb58ac0c5742ac2fd3650e05d65427a9fd57799afafb6d4c8f19725",
+  "vectors_sha256": "65ae3de31b3b44114be08a95723083eb3b3db5810689dcdfdaf1cbd74b3234de",
+  "trained_head_nonzero": true,
+  "maximum_original_float64_q_error": 9.188276789418026e-08,
+  "maximum_q24_reference_q_error": 4.440892098500626e-16,
+  "action_mismatches": [
+    {
+      "index": 142,
+      "python_action": 3,
+      "native_action": 1,
+      "python_scores": [
+        0.0,
+        0.9386923076923075,
+        0.31449999999999995,
+        0.9386923076923077
+      ],
+      "native_scores": [
+        0.0,
+        0.9386923313140869,
+        0.31449997425079346,
+        0.9386923313140869
+      ]
+    },
+    {
+      "index": 255,
+      "python_action": 3,
+      "native_action": 1,
+      "python_scores": [
+        0.0,
+        0.8218076923076921,
+        0.3720946130356631,
+        0.8218076923076922
+      ],
+      "native_scores": [
+        0.0,
+        0.8218076825141907,
+        0.37209462244890995,
+        0.8218076825141907
+      ]
+    },
+    {
+      "index": 338,
+      "python_action": 3,
+      "native_action": 1,
+      "python_scores": [
+        0.0,
+        0.3609999999999999,
+        0.0,
+        0.36099999999999993
+      ],
+      "native_scores": [
+        0.0,
+        0.3610000014305115,
+        0.0,
+        0.3610000014305115
+      ]
+    },
+    {
+      "index": 385,
+      "python_action": 2,
+      "native_action": 1,
+      "python_scores": [
+        0.0,
+        0.7641153846153845,
+        0.7641153846153846,
+        0.6388381705340495
+      ],
+      "native_scores": [
+        0.0,
+        0.7641153931617737,
+        0.7641153931617737,
+        0.6388381882089399
+      ]
+    },
+    {
+      "index": 468,
+      "python_action": 3,
+      "native_action": 1,
+      "python_scores": [
+        0.0,
+        0.35199999999999987,
+        0.022450727350932773,
+        0.3519999999999999
+      ],
+      "native_scores": [
+        0.0,
+        0.35199999809265137,
+        0.02245071482537596,
+        0.35199999809265137
+      ]
+    }
+  ],
+  "predeclared_tolerances": {
+    "original_q_absolute": 2e-06,
+    "q24_reference_absolute": 2e-12,
+    "action_mismatches": 0
+  },
+  "restart_after_acknowledged_sequence": 256,
+  "final_sequence": 512,
+  "injected_rejections": [
+    {
+      "index": 128,
+      "error": "nonfinite or outside native Q24 input envelope",
+      "durable_bytes_unchanged": true
+    }
+  ],
+  "process_accounting": [
+    {
+      "calls": 257,
+      "failed_calls": 1,
+      "request_bytes": 231230,
+      "response_bytes": 282141,
+      "process_setup_wall_seconds": 0.000657048003631644,
+      "process_setup_parent_cpu_seconds": 0.0004960560000000086,
+      "transport_wall_seconds": 0.5833262998785358,
+      "transport_parent_cpu_seconds": 0.03026056299999992,
+      "native_execution_micros": 346388,
+      "model_execution_micros": 16972,
+      "journal_bytes_written": 98304,
+      "child_process_usage": {
+        "user_cpu_seconds": 0.158088,
+        "system_cpu_seconds": 0.048664,
+        "peak_rss_bytes": 25059328,
+        "voluntary_context_switches": 1823,
+        "involuntary_context_switches": 1
+      },
+      "child_usage_source": "Linux wait4 for this exact child; entire process lifetime",
+      "close_wall_seconds": 0.005446676004794426,
+      "native_physics_executed": false,
+      "production_activation": false
+    },
+    {
+      "calls": 256,
+      "failed_calls": 0,
+      "request_bytes": 232334,
+      "response_bytes": 281959,
+      "process_setup_wall_seconds": 0.0009708510042401031,
+      "process_setup_parent_cpu_seconds": 0.0007502739999999952,
+      "transport_wall_seconds": 0.4773421809950378,
+      "transport_parent_cpu_seconds": 0.028054694999999852,
+      "native_execution_micros": 204145,
+      "model_execution_micros": 18309,
+      "journal_bytes_written": 98304,
+      "child_process_usage": {
+        "user_cpu_seconds": 0.23965899999999998,
+        "system_cpu_seconds": 0.02881,
+        "peak_rss_bytes": 26361856,
+        "voluntary_context_switches": 1828,
+        "involuntary_context_switches": 2
+      },
+      "child_usage_source": "Linux wait4 for this exact child; entire process lifetime",
+      "close_wall_seconds": 0.005274616007227451,
+      "native_physics_executed": false,
+      "production_activation": false
+    }
+  ],
+  "total_wall_seconds": 1.351527963008266,
+  "parent_cpu_seconds": 0.336558063,
+  "native_physics_executed": false,
+  "task_utility_admission": false,
+  "production_activation": false,
+  "scope": "Native frozen trained residual MLP, Q24 sparse action selection, real journal/witness ingress; public feature/planner/cell producers remain external"
+}
