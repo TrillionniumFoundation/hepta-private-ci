@@ -22,6 +22,11 @@ POLICY_PATH = "scripts/codespell_frozen_findings.json"
 AUTHORIZED_POLICY_SHA256 = (
     "129801b8619a7e349e7091542248e30f6e6df976255631aea1b5f9a45e774071"
 )
+EXTENSION_PATH = "scripts/codespell_frozen_findings_v2.json"
+EXTENSION_SOURCE_COMMITS = ("800f34f4a869c83d6f6b33d96b7153daa0fa6e97",)
+AUTHORIZED_EXTENSION_SHA256 = (
+    "da127e874620a917153d1cffd724efea2979706abc474baf7d56de69978b90e3"
+)
 CONFIGURATION = {".codespellrc", ".codespellignore"}
 ABSENT_CONFIGURATION = {"setup.cfg", "pyproject.toml"}
 SCAN_ARGUMENTS = [
@@ -175,6 +180,113 @@ def load_policy(root):
     return policy, raw, expected
 
 
+def load_extension(root, expected):
+    """Add a pinned inventory without replacing any version-one observation."""
+    raw = source_path(root, EXTENSION_PATH).read_bytes()
+    require(len(raw) <= 65536, "Extension exceeds 65536 bytes")
+    extension = json.loads(
+        raw,
+        object_pairs_hook=unique_object,
+        parse_constant=lambda value: (_ for _ in ()).throw(PolicyError(value)),
+    )
+    exact_keys(
+        extension,
+        {"schema_version", "codespell_version", "legacy_policy", "sources"},
+        "extension",
+    )
+    require(
+        type(extension["schema_version"]) is int and extension["schema_version"] == 2,
+        "Unsupported extension schema",
+    )
+    require(extension["codespell_version"] == VERSION, "Checker version changed")
+    require(
+        extension["legacy_policy"]
+        == {
+            "path": POLICY_PATH,
+            "source_commit": SOURCE_COMMIT,
+            "canonical_sha256": AUTHORIZED_POLICY_SHA256,
+        },
+        "Original policy binding changed",
+    )
+    require(
+        type(extension["sources"]) is list
+        and len(extension["sources"]) == len(EXTENSION_SOURCE_COMMITS),
+        "Unregistered extension source count",
+    )
+    combined = expected.copy()
+    paths = CONFIGURATION | {key[0] for key in expected}
+    commits = []
+    for source in extension["sources"]:
+        exact_keys(source, {"source_commit", "files"}, "extension source")
+        commit = source["source_commit"]
+        require(
+            type(commit) is str and re.fullmatch(r"[0-9a-f]{40}", commit),
+            "Invalid extension source commit",
+        )
+        require(
+            commit != SOURCE_COMMIT and commit not in commits,
+            "Duplicate historical source",
+        )
+        commits.append(commit)
+        require(type(source["files"]) is list and source["files"], "Empty files")
+        for entry in source["files"]:
+            exact_keys(entry, {"path", "sha256", "bytes", "findings"}, "file")
+            path = entry["path"]
+            source_path(root, path)
+            require(path not in paths, "Duplicate source path")
+            paths.add(path)
+            require(
+                type(entry["bytes"]) is int and entry["bytes"] > 0,
+                "Invalid byte count",
+            )
+            require(
+                type(entry["sha256"]) is str
+                and re.fullmatch(r"[0-9a-f]{64}", entry["sha256"]),
+                "Invalid file digest",
+            )
+            require(
+                type(entry["findings"]) is list and entry["findings"],
+                "Empty findings",
+            )
+            for finding in entry["findings"]:
+                exact_keys(
+                    finding,
+                    {"line", "token_sha256", "diagnostic_sha256", "count"},
+                    "finding",
+                )
+                require(
+                    type(finding["line"]) is int and finding["line"] > 0,
+                    "Invalid line",
+                )
+                require(
+                    type(finding["count"]) is int and finding["count"] > 0,
+                    "Invalid diagnostic count",
+                )
+                token, diagnostic = (
+                    finding["token_sha256"],
+                    finding["diagnostic_sha256"],
+                )
+                require(
+                    all(
+                        type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value)
+                        for value in (token, diagnostic)
+                    ),
+                    "Invalid diagnostic digest",
+                )
+                key = (path, finding["line"], token, diagnostic)
+                require(key not in combined, "Duplicate historical finding")
+                combined[key] = finding["count"]
+    require(
+        tuple(commits) == EXTENSION_SOURCE_COMMITS,
+        "Historical extension source commits changed",
+    )
+    require(
+        policy_identity(extension) == AUTHORIZED_EXTENSION_SHA256,
+        "Authorized extension inventory changed",
+    )
+    return extension, raw, combined
+
+
 def git(root, *arguments):
     result = subprocess.run(
         ["git", *arguments],
@@ -186,13 +298,21 @@ def git(root, *arguments):
     return result.stdout
 
 
-def verify_checkout(root, policy):
+def verify_checkout(root, policy, extension):
     require(
         Path(git(root, "rev-parse", "--show-toplevel").decode().strip()).resolve()
         == root,
         "Checker must run at the repository root",
     )
-    git(root, "merge-base", "--is-ancestor", SOURCE_COMMIT, "HEAD")
+    sources = [
+        {
+            "source_commit": SOURCE_COMMIT,
+            "files": policy["configuration"] + policy["files"],
+        },
+        *extension["sources"],
+    ]
+    for source in sources:
+        git(root, "merge-base", "--is-ancestor", source["source_commit"], "HEAD")
     tracked = git(root, "ls-files", "-v", "-z").split(b"\0")
     for row in filter(None, tracked):
         require(
@@ -206,15 +326,19 @@ def verify_checkout(root, policy):
     for relative in policy["absent_configuration"]:
         path = source_path(root, relative)
         require(not path.exists(), f"Unexpected automatic configuration: {relative}")
-    for entry in policy["configuration"] + policy["files"]:
-        path = source_path(root, entry["path"])
-        data = path.read_bytes()
-        require(
-            len(data) == entry["bytes"] and digest(data) == entry["sha256"],
-            f"Frozen source bytes changed: {entry['path']}",
-        )
-        historical = git(root, "show", f"{SOURCE_COMMIT}:{entry['path']}")
-        require(data == historical, f"Historical provenance mismatch: {entry['path']}")
+    for source in sources:
+        for entry in source["files"]:
+            path = source_path(root, entry["path"])
+            data = path.read_bytes()
+            require(
+                len(data) == entry["bytes"] and digest(data) == entry["sha256"],
+                f"Frozen source bytes changed: {entry['path']}",
+            )
+            historical = git(root, "show", f"{source['source_commit']}:{entry['path']}")
+            require(
+                data == historical,
+                f"Historical provenance mismatch: {entry['path']}",
+            )
     return len(tracked) - 1
 
 
@@ -271,7 +395,8 @@ def classify(stdout, stderr, returncode, expected):
 
 def evaluate(root):
     policy, original, expected = load_policy(root)
-    tracked = verify_checkout(root, policy)
+    extension, original_extension, expected = load_extension(root, expected)
+    tracked = verify_checkout(root, policy, extension)
     version = subprocess.run(
         [sys.executable, "-I", "-m", "codespell_lib", "--version"],
         cwd=root,
@@ -291,24 +416,37 @@ def evaluate(root):
         text=True,
         encoding="utf-8",
     )
-    verify_checkout(root, policy)
+    verify_checkout(root, policy, extension)
     require(
         source_path(root, POLICY_PATH).read_bytes() == original,
         "Policy changed during scan",
     )
+    require(
+        source_path(root, EXTENSION_PATH).read_bytes() == original_extension,
+        "Extension changed during scan",
+    )
     report = classify(result.stdout, result.stderr, result.returncode, expected)
     report.update(
         {
-            "schema_version": 1,
-            "source_commit": SOURCE_COMMIT,
+            "schema_version": 2,
+            "source_commits": [SOURCE_COMMIT, *EXTENSION_SOURCE_COMMITS],
             "codespell_version": VERSION,
             "tracked_files_checked": tracked,
             "scan_arguments": SCAN_ARGUMENTS,
             "policy_sha256": digest(original),
             "authorized_policy_sha256": AUTHORIZED_POLICY_SHA256,
+            "extension_policy_sha256": digest(original_extension),
+            "authorized_extension_policy_sha256": AUTHORIZED_EXTENSION_SHA256,
             "frozen_files": [
-                {k: v for k, v in entry.items() if k != "findings"}
-                for entry in policy["files"]
+                {
+                    "source_commit": source["source_commit"],
+                    **{k: v for k, v in entry.items() if k != "findings"},
+                }
+                for source in [
+                    {"source_commit": SOURCE_COMMIT, "files": policy["files"]},
+                    *extension["sources"],
+                ]
+                for entry in source["files"]
             ],
         }
     )
@@ -336,7 +474,7 @@ def main():
             report_path = args.report
         report = evaluate(root)
     except (PolicyError, OSError, UnicodeError, json.JSONDecodeError) as error:
-        report = {"schema_version": 1, "policy_passed": False, "error": str(error)}
+        report = {"schema_version": 2, "policy_passed": False, "error": str(error)}
     encoded = json.dumps(report, indent=2, sort_keys=True) + "\n"
     print(encoded, end="")
     if report_path:
