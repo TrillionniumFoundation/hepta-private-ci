@@ -120,7 +120,13 @@ def advance_probability(probability, transition, *, operator_kind,
         _require(torch.isfinite(vector), "Nonfinite " + name)
         if nonnegative:
             _require(vector >= 0, "Negative " + name)
-        return (probability.expand(shape) * vector).sum(-1)
+        # Finite entries do not guarantee finite accumulated counts/reward:
+        # the permitted roundoff in input mass may push a near-max finite
+        # vector expectation beyond the dtype range. Refuse instead of
+        # returning infinity as a valid-looking physical observation.
+        expectation=(probability.expand(shape) * vector).sum(-1)
+        _require(torch.isfinite(expectation), "Nonfinite accumulated " + name)
+        return expectation
 
     return dict(
         probability=probability_next,
