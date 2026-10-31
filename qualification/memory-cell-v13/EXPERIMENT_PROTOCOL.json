@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.memory-cell-v13.experiment.v1",
+  "status": "prospective-method-development",
+  "seeds": [713, 971, 1237],
+  "backend": {
+    "model": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "frozen": true,
+    "profile": "onnx-fp32-masked-mean-l2",
+    "adapter": "numpy-float64-residual-tanh-low-rank-plus-classifier",
+    "is_transformer_lora": false,
+    "is_generative_language_model": false
+  },
+  "training": {"rank": 8, "initial_steps": 240, "batch_size": 20, "learning_rate": 0.01},
+  "structure": {
+    "groups": 3,
+    "top_k": 2,
+    "expert_steps": 120,
+    "continue_and_widen_steps": 360,
+    "partition": "training class prototypes plus separate exhaustive minimum within-group negative A/B-gradient cosine candidate",
+    "router": "training-only-ridge-lambda-0.1",
+    "selection": "calibration correct then lower parameter count; incumbent retained on ties",
+    "capacity_control": "wide-single has exactly aggregate expert parameters, router additional",
+    "exposure_control": "same extra presentations when balanced class counts and batch size divide both datasets",
+    "prospective_gate": "positive paired held-task quality and no claimed all-cost gain without crossover"
+  },
+  "updates": {"frontiers": [3, 4, 5, 6], "steps_each": 240, "replay": "all currently valid training observations"},
+  "baselines": ["exact_store", "bm25", "pretrained_nearest_example", "pretrained_centroid", "ridge_classifier", "single_adapter", "hybrid"],
+  "evaluation": {
+    "unit": "authored request; seeds rerun same requests",
+    "target": "execute predicted fixed skill on raw payload and compare independent golden",
+    "held_labels_used_for_training": false,
+    "model_selection_split": "calibration",
+    "prediction_set": "all test examples, including errors",
+    "ood_detection_claim": false,
+    "composition": "public step decomposition, not learned planning",
+    "source_update": "constructed arbitrary project-to-skill bindings",
+    "production_generalization_claim": false
+  },
+  "cost": {
+    "read_horizons": [100, 1000, 10000, 100000],
+    "storage": "weights, optimizer, source, index, shared pretrained base, runtime, evidence separately",
+    "latency": "warm end-to-end CPU per request with actual encoder, routing, executor; no batch-only speed claim",
+    "failed_candidates": "preserve checkpoints, scores and incurred training work",
+    "network_gain": "requires measured benefit beyond successful transport"
+  },
+  "limitations": [
+    "Finite standard-library operation vocabulary and authored instructions, not open code synthesis.",
+    "Skill executors are deterministic supplied programs; learned content is selection and project bindings.",
+    "Grouping is domain specialization, not proof of emergent biological cell types.",
+    "Chronological corrections are constructed, not observed production histories.",
+    "Migration continues adapter training on fixed real pretrained embeddings, not training the encoder."
+  ]
+}

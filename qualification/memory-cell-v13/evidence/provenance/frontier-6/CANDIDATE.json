@@ -1,0 +1,100 @@
+{
+  "active_release": {
+    "artifact": "4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815",
+    "cut": {
+      "records": [
+        {
+          "body_sha256": "e04ea2a936947ee14944c8836ec1d484b2dabc1c62e0895bad4b7c119df49ce7",
+          "revision": 2,
+          "source_id": "project:amber"
+        },
+        {
+          "body_sha256": "a4ca95e3d483572d86702f9198ddb64247524aed02b3d20f6fbe8418d8e6625b",
+          "revision": 1,
+          "source_id": "project:birch"
+        },
+        {
+          "body_sha256": "62b484f66756ae3e83875144cf6cde2575a736b7a8fc2ce8e5c18242bc23c3c1",
+          "revision": 1,
+          "source_id": "project:cobalt"
+        },
+        {
+          "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+          "revision": 1,
+          "source_id": "skills"
+        }
+      ],
+      "scope": "v13-provenance-independent-run"
+    },
+    "epoch": 3
+  },
+  "active_release_matches_candidate": false,
+  "candidate_artifact": "dfb9437f8cf2bc623ee514fbf02a390e08f22d9bd3fe75478a21ef809a79e079",
+  "candidate_file_sha256": "b5da59673fa00a94245209147dbae5b3f13792bc60e3c53e0add1db7e4ee78e0",
+  "candidate_path": "/workspace/scratch/c7f5fb7f221c/memory-cell-work/qualification/memory-cell-v13/evidence/provenance/owner/artifacts/dfb9437f8cf2bc623ee514fbf02a390e08f22d9bd3fe75478a21ef809a79e079/model.npz",
+  "cut": {
+    "records": [
+      {
+        "body_sha256": "e04ea2a936947ee14944c8836ec1d484b2dabc1c62e0895bad4b7c119df49ce7",
+        "revision": 2,
+        "source_id": "project:amber"
+      },
+      {
+        "body_sha256": "9e6bdce1c22f41fba27a097a7196ef70effbb0f5a101aaec72bd41462507cf57",
+        "revision": 2,
+        "source_id": "project:birch"
+      },
+      {
+        "body_sha256": "c0fd3b39e3a11db0e01e485da9b2c25e72fde97f6663e7d0512b1040e8b283ad",
+        "revision": 2,
+        "source_id": "project:cobalt"
+      },
+      {
+        "body_sha256": "943f2c4b27b9ae308967c62c57eb70c19dcc9b7b523002f45eb17a03d7731d66",
+        "revision": 1,
+        "source_id": "skills"
+      }
+    ],
+    "scope": "v13-provenance-independent-run"
+  },
+  "frontier": 6,
+  "old_release_depends_on_correction": true,
+  "old_release_probe": {
+    "reason": "source correction invalidated this release",
+    "status": "unavailable"
+  },
+  "parameter_hash_after": "c35f6e252d673aea0f551ecc63497e053c9a3fd9d4bfa3607a0bf8c98c208f2f",
+  "parameter_hash_before": "d874a5d62801eb63d2c06bd7cf044d58398fc98908f3bd3a557ff670379ef931",
+  "parent_artifact": "4bb8a3898d0afffc1bf59a5065b1c7cbe9a3cb702f8ca58be755e2ee93e19ae7",
+  "publication": {
+    "epoch": 3,
+    "reason": "executable publication validator rejected the model",
+    "status": "candidate_retained_not_published"
+  },
+  "read_fencing_passed": true,
+  "source_additions": [],
+  "source_corrections": [
+    "project:cobalt"
+  ],
+  "source_version": "cf7dd2ab5201e7a8f17c0090f6f08ba45721b0456a22dd673f582872beaaec4c",
+  "state_sha256": "e4a46be569ed1e52bf4036c9432a8d922b23c4e54c3da6588e4150e887747bf7",
+  "training": {
+    "examples": 4732,
+    "first_loss": 0.5137201109036915,
+    "last_loss": 5.383859645427312e-05,
+    "mean_loss": 0.02000933644544584,
+    "seconds": 0.06893698399653658,
+    "step": 1200,
+    "updates": 240
+  },
+  "validation": {
+    "calibration_only": true,
+    "passed": false,
+    "profile_correct": 6,
+    "profile_total": 6,
+    "skill_correct": 38,
+    "skill_floor": 40,
+    "skill_total": 48,
+    "source_count": 4
+  }
+}

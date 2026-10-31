@@ -1,0 +1,288 @@
+{
+  "amber": {
+    "queries": {
+      "train": [
+        "Apply the amber project convention to this payload.",
+        "Use the configured processing rule for amber.",
+        "This batch belongs to amber; handle it by that project policy.",
+        "Perform the transformation registered for project amber.",
+        "Process these values as required by amber.",
+        "Return the result of the currently recorded amber operation."
+      ],
+      "calibration": [
+        "Follow amber's present configuration when handling the supplied data.",
+        "The project is amber; produce its configured output for this batch."
+      ],
+      "test": [
+        "Amber owns this input. Carry out the operation specified by its latest project record.",
+        "What result does this payload produce under the current amber convention?",
+        "Handle the attached values according to the standing rule assigned to amber.",
+        "Use amber's active project setting to process this data."
+      ]
+    },
+    "goldens": {
+      "train": [
+        {
+          "payload": [
+            "3",
+            "1",
+            "3",
+            "2"
+          ],
+          "by_revision": {
+            "1": [
+              "3",
+              "1",
+              "2"
+            ],
+            "2": [
+              "1",
+              "2",
+              "3",
+              "3"
+            ]
+          }
+        },
+        {
+          "payload": [
+            "10",
+            "-2",
+            "10",
+            "0"
+          ],
+          "by_revision": {
+            "1": [
+              "10",
+              "-2",
+              "0"
+            ],
+            "2": [
+              "-2",
+              "0",
+              "10",
+              "10"
+            ]
+          }
+        }
+      ],
+      "calibration": [
+        {
+          "payload": [
+            "8",
+            "4",
+            "8",
+            "-1"
+          ],
+          "by_revision": {
+            "1": [
+              "8",
+              "4",
+              "-1"
+            ],
+            "2": [
+              "-1",
+              "4",
+              "8",
+              "8"
+            ]
+          }
+        }
+      ],
+      "test": [
+        {
+          "payload": [
+            "20",
+            "3",
+            "20",
+            "-5"
+          ],
+          "by_revision": {
+            "1": [
+              "20",
+              "3",
+              "-5"
+            ],
+            "2": [
+              "-5",
+              "3",
+              "20",
+              "20"
+            ]
+          }
+        },
+        {
+          "payload": [
+            "1.5",
+            "1.05",
+            "1.5",
+            "-0.5"
+          ],
+          "by_revision": {
+            "1": [
+              "1.5",
+              "1.05",
+              "-0.5"
+            ],
+            "2": [
+              "-0.5",
+              "1.05",
+              "1.5",
+              "1.5"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "birch": {
+    "queries": {
+      "train": [
+        "Run the established birch rule on this input.",
+        "Birch is the applicable project; transform the supplied payload.",
+        "Use birch's configured convention here.",
+        "Give the output prescribed for this data by project birch.",
+        "Handle this input with the active birch processing setting.",
+        "The stored birch project policy governs this request; apply it."
+      ],
+      "calibration": [
+        "Take this payload through the operation currently assigned to birch.",
+        "Which output follows from using birch's present rule on this input?"
+      ],
+      "test": [
+        "Consult the binding learned for birch and process the attached payload accordingly.",
+        "This request is for birch. Return the result its current project convention requires.",
+        "The owning project is birch; execute its active data-processing choice.",
+        "Carry out birch's latest recorded transformation on the input provided."
+      ]
+    },
+    "goldens": {
+      "train": [
+        {
+          "payload": "Ａ é",
+          "by_revision": {
+            "1": "Ａ é",
+            "2": "A é"
+          }
+        },
+        {
+          "payload": "ﬃ ö",
+          "by_revision": {
+            "1": "ﬃ ö",
+            "2": "ffi ö"
+          }
+        }
+      ],
+      "calibration": [
+        {
+          "payload": "Ｚ é ⑵",
+          "by_revision": {
+            "1": "Ｚ é ⑵",
+            "2": "Z é (2)"
+          }
+        }
+      ],
+      "test": [
+        {
+          "payload": "Ｔ ü ﬃ",
+          "by_revision": {
+            "1": "Ｔ ü ﬃ",
+            "2": "T ü ffi"
+          }
+        },
+        {
+          "payload": "① ñ ²",
+          "by_revision": {
+            "1": "① ñ ²",
+            "2": "1 ñ 2"
+          }
+        }
+      ]
+    }
+  },
+  "cobalt": {
+    "queries": {
+      "train": [
+        "Process the attached input using cobalt's rule.",
+        "Apply the operation configured for project cobalt.",
+        "Cobalt defines how this payload should be transformed; follow it.",
+        "Use the current cobalt project configuration on this document.",
+        "Return the data-processing result requested by cobalt's policy.",
+        "Handle this batch according to the recorded cobalt setting."
+      ],
+      "calibration": [
+        "The present cobalt binding determines this transformation; perform it.",
+        "Run this input through cobalt's active project operation."
+      ],
+      "test": [
+        "For this cobalt request, produce the output dictated by its latest stored convention.",
+        "Execute the currently assigned cobalt processing rule against the supplied payload.",
+        "Cobalt is the project responsible for this input. Apply its current choice.",
+        "Follow the most recent cobalt configuration to derive the requested result."
+      ]
+    },
+    "goldens": {
+      "train": [
+        {
+          "payload": " { \"x\" : 1 } ",
+          "by_revision": {
+            "1": {
+              "x": 1
+            },
+            "2": "{\"x\":1}"
+          }
+        },
+        {
+          "payload": "[ true, null, 2 ]",
+          "by_revision": {
+            "1": [
+              true,
+              null,
+              2
+            ],
+            "2": "[true,null,2]"
+          }
+        }
+      ],
+      "calibration": [
+        {
+          "payload": " { \"ok\" : false, \"n\" : 5 } ",
+          "by_revision": {
+            "1": {
+              "ok": false,
+              "n": 5
+            },
+            "2": "{\"ok\":false,\"n\":5}"
+          }
+        }
+      ],
+      "test": [
+        {
+          "payload": " { \"word\" : \"two spaces\", \"a\" : [ 4, 2 ] } ",
+          "by_revision": {
+            "1": {
+              "word": "two spaces",
+              "a": [
+                4,
+                2
+              ]
+            },
+            "2": "{\"word\":\"two spaces\",\"a\":[4,2]}"
+          }
+        },
+        {
+          "payload": "[ \"Café\", null, { \"z\" : true } ]",
+          "by_revision": {
+            "1": [
+              "Café",
+              null,
+              {
+                "z": true
+              }
+            ],
+            "2": "[\"Café\",null,{\"z\":true}]"
+          }
+        }
+      ]
+    }
+  }
+}

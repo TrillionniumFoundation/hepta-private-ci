@@ -1,0 +1,1548 @@
+{
+  "bm25": {
+    "correct": 11,
+    "evaluated": 12,
+    "learned_planning_claim": false,
+    "outputs": [
+      {
+        "correct": true,
+        "id": "compose01",
+        "output": "fi strasse 1",
+        "trace": [
+          {
+            "error": null,
+            "output": "FI Straße 1",
+            "prediction": "normalize_nfkc"
+          },
+          {
+            "error": null,
+            "output": "fi strasse 1",
+            "prediction": "casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose02",
+        "output": "ffi a café",
+        "trace": [
+          {
+            "error": null,
+            "output": "ffi A Café",
+            "prediction": "normalize_nfkc"
+          },
+          {
+            "error": null,
+            "output": "ffi a café",
+            "prediction": "casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose03",
+        "output": [
+          "beta",
+          "alpha",
+          "gamma"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "beta",
+              "alpha",
+              "beta",
+              "gamma"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "beta",
+              "alpha",
+              "gamma"
+            ],
+            "prediction": "unique_stable"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose04",
+        "output": [
+          "-1",
+          "2",
+          "2",
+          "10"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "10",
+              "2",
+              "-1",
+              "2"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "-1",
+              "2",
+              "2",
+              "10"
+            ],
+            "prediction": "sort_numeric"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose05",
+        "output": {
+          "a": 3,
+          "b": 2
+        },
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "a",
+              "b",
+              "a",
+              "b",
+              "a"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": {
+              "a": 3,
+              "b": 2
+            },
+            "prediction": "count_items"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose06",
+        "output": [
+          "Apple",
+          "apple",
+          "Beta",
+          "z"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "z",
+              "Apple",
+              "apple",
+              "Beta"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "Apple",
+              "apple",
+              "Beta",
+              "z"
+            ],
+            "prediction": "sort_casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose07",
+        "output": "a,b\n\"c,d\",e\n",
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              [
+                "a",
+                "b"
+              ],
+              [
+                "c,d",
+                "e"
+              ]
+            ],
+            "prediction": "csv_parse"
+          },
+          {
+            "error": null,
+            "output": "a,b\n\"c,d\",e\n",
+            "prediction": "csv_write"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose08",
+        "output": [
+          [
+            "a,b",
+            "\"q\""
+          ],
+          [
+            "line\nbreak",
+            "z"
+          ]
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": "\"a,b\",\"\"\"q\"\"\"\n\"line\nbreak\",z\n",
+            "prediction": "csv_write"
+          },
+          {
+            "error": null,
+            "output": [
+              [
+                "a,b",
+                "\"q\""
+              ],
+              [
+                "line\nbreak",
+                "z"
+              ]
+            ],
+            "prediction": "csv_parse"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose09",
+        "output": "Café ① FIN",
+        "trace": [
+          {
+            "error": null,
+            "output": "  Café\t①\nFIN  ",
+            "prediction": "normalize_nfc"
+          },
+          {
+            "error": null,
+            "output": "Café ① FIN",
+            "prediction": "collapse_whitespace"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose10",
+        "output": "strasse ω end",
+        "trace": [
+          {
+            "error": null,
+            "output": "  strasse\tω\n end  ",
+            "prediction": "casefold"
+          },
+          {
+            "error": null,
+            "output": "strasse ω end",
+            "prediction": "collapse_whitespace"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose11",
+        "output": [
+          "-3",
+          "2",
+          "10"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "10",
+              "2",
+              "-3"
+            ],
+            "prediction": "unique_stable"
+          },
+          {
+            "error": null,
+            "output": [
+              "-3",
+              "2",
+              "10"
+            ],
+            "prediction": "sort_numeric"
+          }
+        ]
+      },
+      {
+        "correct": false,
+        "id": "compose12",
+        "output": null,
+        "trace": [
+          {
+            "error": "InvalidOperation",
+            "prediction": "sort_numeric"
+          }
+        ]
+      }
+    ],
+    "public_step_decomposition": true
+  },
+  "nearest": {
+    "correct": 12,
+    "evaluated": 12,
+    "learned_planning_claim": false,
+    "outputs": [
+      {
+        "correct": true,
+        "id": "compose01",
+        "output": "fi strasse 1",
+        "trace": [
+          {
+            "error": null,
+            "output": "FI Straße 1",
+            "prediction": "normalize_nfkc"
+          },
+          {
+            "error": null,
+            "output": "fi strasse 1",
+            "prediction": "casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose02",
+        "output": "ffi a café",
+        "trace": [
+          {
+            "error": null,
+            "output": "ffi A Café",
+            "prediction": "normalize_nfkc"
+          },
+          {
+            "error": null,
+            "output": "ffi a café",
+            "prediction": "casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose03",
+        "output": [
+          "beta",
+          "alpha",
+          "gamma"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "beta",
+              "alpha",
+              "beta",
+              "gamma"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "beta",
+              "alpha",
+              "gamma"
+            ],
+            "prediction": "unique_stable"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose04",
+        "output": [
+          "-1",
+          "2",
+          "2",
+          "10"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "10",
+              "2",
+              "-1",
+              "2"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "-1",
+              "2",
+              "2",
+              "10"
+            ],
+            "prediction": "sort_numeric"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose05",
+        "output": {
+          "a": 3,
+          "b": 2
+        },
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "a",
+              "b",
+              "a",
+              "b",
+              "a"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": {
+              "a": 3,
+              "b": 2
+            },
+            "prediction": "count_items"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose06",
+        "output": [
+          "Apple",
+          "apple",
+          "Beta",
+          "z"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "z",
+              "Apple",
+              "apple",
+              "Beta"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "Apple",
+              "apple",
+              "Beta",
+              "z"
+            ],
+            "prediction": "sort_casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose07",
+        "output": "a,b\n\"c,d\",e\n",
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              [
+                "a",
+                "b"
+              ],
+              [
+                "c,d",
+                "e"
+              ]
+            ],
+            "prediction": "csv_parse"
+          },
+          {
+            "error": null,
+            "output": "a,b\n\"c,d\",e\n",
+            "prediction": "csv_write"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose08",
+        "output": [
+          [
+            "a,b",
+            "\"q\""
+          ],
+          [
+            "line\nbreak",
+            "z"
+          ]
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": "\"a,b\",\"\"\"q\"\"\"\n\"line\nbreak\",z\n",
+            "prediction": "csv_write"
+          },
+          {
+            "error": null,
+            "output": [
+              [
+                "a,b",
+                "\"q\""
+              ],
+              [
+                "line\nbreak",
+                "z"
+              ]
+            ],
+            "prediction": "csv_parse"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose09",
+        "output": "Café ① FIN",
+        "trace": [
+          {
+            "error": null,
+            "output": "  Café\t①\nFIN  ",
+            "prediction": "normalize_nfc"
+          },
+          {
+            "error": null,
+            "output": "Café ① FIN",
+            "prediction": "collapse_whitespace"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose10",
+        "output": "strasse ω end",
+        "trace": [
+          {
+            "error": null,
+            "output": "  strasse\tω\n end  ",
+            "prediction": "casefold"
+          },
+          {
+            "error": null,
+            "output": "strasse ω end",
+            "prediction": "collapse_whitespace"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose11",
+        "output": [
+          "-3",
+          "2",
+          "10"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "10",
+              "2",
+              "-3"
+            ],
+            "prediction": "unique_stable"
+          },
+          {
+            "error": null,
+            "output": [
+              "-3",
+              "2",
+              "10"
+            ],
+            "prediction": "sort_numeric"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose12",
+        "output": [
+          "A",
+          "a",
+          "z"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "A",
+              "a",
+              "A",
+              "z",
+              "z"
+            ],
+            "prediction": "sort_casefold"
+          },
+          {
+            "error": null,
+            "output": [
+              "A",
+              "a",
+              "z"
+            ],
+            "prediction": "unique_stable"
+          }
+        ]
+      }
+    ],
+    "public_step_decomposition": true
+  },
+  "random": {
+    "correct": 10,
+    "evaluated": 12,
+    "learned_planning_claim": false,
+    "outputs": [
+      {
+        "correct": true,
+        "id": "compose01",
+        "output": "fi strasse 1",
+        "trace": [
+          {
+            "error": null,
+            "output": "FI Straße 1",
+            "prediction": "normalize_nfkc"
+          },
+          {
+            "error": null,
+            "output": "fi strasse 1",
+            "prediction": "casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose02",
+        "output": "ffi a café",
+        "trace": [
+          {
+            "error": null,
+            "output": "ffi A Café",
+            "prediction": "normalize_nfkc"
+          },
+          {
+            "error": null,
+            "output": "ffi a café",
+            "prediction": "casefold"
+          }
+        ]
+      },
+      {
+        "correct": false,
+        "id": "compose03",
+        "output": null,
+        "trace": [
+          {
+            "error": null,
+            "output": "[\"beta\",\"alpha\",\"beta\",\"gamma\"]",
+            "prediction": "json_compact"
+          },
+          {
+            "error": "TypeError",
+            "prediction": "unique_stable"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose04",
+        "output": [
+          "-1",
+          "2",
+          "2",
+          "10"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "10",
+              "2",
+              "-1",
+              "2"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "-1",
+              "2",
+              "2",
+              "10"
+            ],
+            "prediction": "sort_numeric"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose05",
+        "output": {
+          "a": 3,
+          "b": 2
+        },
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "a",
+              "b",
+              "a",
+              "b",
+              "a"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": {
+              "a": 3,
+              "b": 2
+            },
+            "prediction": "count_items"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose06",
+        "output": [
+          "Apple",
+          "apple",
+          "Beta",
+          "z"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "z",
+              "Apple",
+              "apple",
+              "Beta"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "Apple",
+              "apple",
+              "Beta",
+              "z"
+            ],
+            "prediction": "sort_casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose07",
+        "output": "a,b\n\"c,d\",e\n",
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              [
+                "a",
+                "b"
+              ],
+              [
+                "c,d",
+                "e"
+              ]
+            ],
+            "prediction": "csv_parse"
+          },
+          {
+            "error": null,
+            "output": "a,b\n\"c,d\",e\n",
+            "prediction": "csv_write"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose08",
+        "output": [
+          [
+            "a,b",
+            "\"q\""
+          ],
+          [
+            "line\nbreak",
+            "z"
+          ]
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": "\"a,b\",\"\"\"q\"\"\"\n\"line\nbreak\",z\n",
+            "prediction": "csv_write"
+          },
+          {
+            "error": null,
+            "output": [
+              [
+                "a,b",
+                "\"q\""
+              ],
+              [
+                "line\nbreak",
+                "z"
+              ]
+            ],
+            "prediction": "csv_parse"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose09",
+        "output": "Café ① FIN",
+        "trace": [
+          {
+            "error": null,
+            "output": "  Café\t①\nFIN  ",
+            "prediction": "normalize_nfc"
+          },
+          {
+            "error": null,
+            "output": "Café ① FIN",
+            "prediction": "collapse_whitespace"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose10",
+        "output": "strasse ω end",
+        "trace": [
+          {
+            "error": null,
+            "output": "  strasse\tω\n end  ",
+            "prediction": "casefold"
+          },
+          {
+            "error": null,
+            "output": "strasse ω end",
+            "prediction": "collapse_whitespace"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose11",
+        "output": [
+          "-3",
+          "2",
+          "10"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "10",
+              "2",
+              "-3"
+            ],
+            "prediction": "unique_stable"
+          },
+          {
+            "error": null,
+            "output": [
+              "-3",
+              "2",
+              "10"
+            ],
+            "prediction": "sort_numeric"
+          }
+        ]
+      },
+      {
+        "correct": false,
+        "id": "compose12",
+        "output": null,
+        "trace": [
+          {
+            "error": "InvalidOperation",
+            "prediction": "sort_numeric"
+          }
+        ]
+      }
+    ],
+    "public_step_decomposition": true
+  },
+  "ridge": {
+    "correct": 11,
+    "evaluated": 12,
+    "learned_planning_claim": false,
+    "outputs": [
+      {
+        "correct": true,
+        "id": "compose01",
+        "output": "fi strasse 1",
+        "trace": [
+          {
+            "error": null,
+            "output": "FI Straße 1",
+            "prediction": "normalize_nfkc"
+          },
+          {
+            "error": null,
+            "output": "fi strasse 1",
+            "prediction": "casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose02",
+        "output": "ffi a café",
+        "trace": [
+          {
+            "error": null,
+            "output": "ffi A Café",
+            "prediction": "normalize_nfkc"
+          },
+          {
+            "error": null,
+            "output": "ffi a café",
+            "prediction": "casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose03",
+        "output": [
+          "beta",
+          "alpha",
+          "gamma"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "beta",
+              "alpha",
+              "beta",
+              "gamma"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "beta",
+              "alpha",
+              "gamma"
+            ],
+            "prediction": "unique_stable"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose04",
+        "output": [
+          "-1",
+          "2",
+          "2",
+          "10"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "10",
+              "2",
+              "-1",
+              "2"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "-1",
+              "2",
+              "2",
+              "10"
+            ],
+            "prediction": "sort_numeric"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose05",
+        "output": {
+          "a": 3,
+          "b": 2
+        },
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "a",
+              "b",
+              "a",
+              "b",
+              "a"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": {
+              "a": 3,
+              "b": 2
+            },
+            "prediction": "count_items"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose06",
+        "output": [
+          "Apple",
+          "apple",
+          "Beta",
+          "z"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "z",
+              "Apple",
+              "apple",
+              "Beta"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "Apple",
+              "apple",
+              "Beta",
+              "z"
+            ],
+            "prediction": "sort_casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose07",
+        "output": "a,b\n\"c,d\",e\n",
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              [
+                "a",
+                "b"
+              ],
+              [
+                "c,d",
+                "e"
+              ]
+            ],
+            "prediction": "csv_parse"
+          },
+          {
+            "error": null,
+            "output": "a,b\n\"c,d\",e\n",
+            "prediction": "csv_write"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose08",
+        "output": [
+          [
+            "a,b",
+            "\"q\""
+          ],
+          [
+            "line\nbreak",
+            "z"
+          ]
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": "\"a,b\",\"\"\"q\"\"\"\n\"line\nbreak\",z\n",
+            "prediction": "csv_write"
+          },
+          {
+            "error": null,
+            "output": [
+              [
+                "a,b",
+                "\"q\""
+              ],
+              [
+                "line\nbreak",
+                "z"
+              ]
+            ],
+            "prediction": "csv_parse"
+          }
+        ]
+      },
+      {
+        "correct": false,
+        "id": "compose09",
+        "output": "Café 1 FIN",
+        "trace": [
+          {
+            "error": null,
+            "output": "  Café\t1\nFIN  ",
+            "prediction": "normalize_nfkc"
+          },
+          {
+            "error": null,
+            "output": "Café 1 FIN",
+            "prediction": "collapse_whitespace"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose10",
+        "output": "strasse ω end",
+        "trace": [
+          {
+            "error": null,
+            "output": "  strasse\tω\n end  ",
+            "prediction": "casefold"
+          },
+          {
+            "error": null,
+            "output": "strasse ω end",
+            "prediction": "collapse_whitespace"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose11",
+        "output": [
+          "-3",
+          "2",
+          "10"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "10",
+              "2",
+              "-3"
+            ],
+            "prediction": "unique_stable"
+          },
+          {
+            "error": null,
+            "output": [
+              "-3",
+              "2",
+              "10"
+            ],
+            "prediction": "sort_numeric"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose12",
+        "output": [
+          "A",
+          "a",
+          "z"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "A",
+              "a",
+              "A",
+              "z",
+              "z"
+            ],
+            "prediction": "sort_casefold"
+          },
+          {
+            "error": null,
+            "output": [
+              "A",
+              "a",
+              "z"
+            ],
+            "prediction": "unique_stable"
+          }
+        ]
+      }
+    ],
+    "public_step_decomposition": true
+  },
+  "single": {
+    "correct": 12,
+    "evaluated": 12,
+    "learned_planning_claim": false,
+    "outputs": [
+      {
+        "correct": true,
+        "id": "compose01",
+        "output": "fi strasse 1",
+        "trace": [
+          {
+            "error": null,
+            "output": "FI Straße 1",
+            "prediction": "normalize_nfkc"
+          },
+          {
+            "error": null,
+            "output": "fi strasse 1",
+            "prediction": "casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose02",
+        "output": "ffi a café",
+        "trace": [
+          {
+            "error": null,
+            "output": "ffi A Café",
+            "prediction": "normalize_nfkc"
+          },
+          {
+            "error": null,
+            "output": "ffi a café",
+            "prediction": "casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose03",
+        "output": [
+          "beta",
+          "alpha",
+          "gamma"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "beta",
+              "alpha",
+              "beta",
+              "gamma"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "beta",
+              "alpha",
+              "gamma"
+            ],
+            "prediction": "unique_stable"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose04",
+        "output": [
+          "-1",
+          "2",
+          "2",
+          "10"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "10",
+              "2",
+              "-1",
+              "2"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "-1",
+              "2",
+              "2",
+              "10"
+            ],
+            "prediction": "sort_numeric"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose05",
+        "output": {
+          "a": 3,
+          "b": 2
+        },
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "a",
+              "b",
+              "a",
+              "b",
+              "a"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": {
+              "a": 3,
+              "b": 2
+            },
+            "prediction": "count_items"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose06",
+        "output": [
+          "Apple",
+          "apple",
+          "Beta",
+          "z"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "z",
+              "Apple",
+              "apple",
+              "Beta"
+            ],
+            "prediction": "json_parse"
+          },
+          {
+            "error": null,
+            "output": [
+              "Apple",
+              "apple",
+              "Beta",
+              "z"
+            ],
+            "prediction": "sort_casefold"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose07",
+        "output": "a,b\n\"c,d\",e\n",
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              [
+                "a",
+                "b"
+              ],
+              [
+                "c,d",
+                "e"
+              ]
+            ],
+            "prediction": "csv_parse"
+          },
+          {
+            "error": null,
+            "output": "a,b\n\"c,d\",e\n",
+            "prediction": "csv_write"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose08",
+        "output": [
+          [
+            "a,b",
+            "\"q\""
+          ],
+          [
+            "line\nbreak",
+            "z"
+          ]
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": "\"a,b\",\"\"\"q\"\"\"\n\"line\nbreak\",z\n",
+            "prediction": "csv_write"
+          },
+          {
+            "error": null,
+            "output": [
+              [
+                "a,b",
+                "\"q\""
+              ],
+              [
+                "line\nbreak",
+                "z"
+              ]
+            ],
+            "prediction": "csv_parse"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose09",
+        "output": "Café ① FIN",
+        "trace": [
+          {
+            "error": null,
+            "output": "  Café\t①\nFIN  ",
+            "prediction": "normalize_nfc"
+          },
+          {
+            "error": null,
+            "output": "Café ① FIN",
+            "prediction": "collapse_whitespace"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose10",
+        "output": "strasse ω end",
+        "trace": [
+          {
+            "error": null,
+            "output": "  strasse\tω\n end  ",
+            "prediction": "casefold"
+          },
+          {
+            "error": null,
+            "output": "strasse ω end",
+            "prediction": "collapse_whitespace"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose11",
+        "output": [
+          "-3",
+          "2",
+          "10"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "10",
+              "2",
+              "-3"
+            ],
+            "prediction": "unique_stable"
+          },
+          {
+            "error": null,
+            "output": [
+              "-3",
+              "2",
+              "10"
+            ],
+            "prediction": "sort_numeric"
+          }
+        ]
+      },
+      {
+        "correct": true,
+        "id": "compose12",
+        "output": [
+          "A",
+          "a",
+          "z"
+        ],
+        "trace": [
+          {
+            "error": null,
+            "output": [
+              "A",
+              "a",
+              "A",
+              "z",
+              "z"
+            ],
+            "prediction": "sort_casefold"
+          },
+          {
+            "error": null,
+            "output": [
+              "A",
+              "a",
+              "z"
+            ],
+            "prediction": "unique_stable"
+          }
+        ]
+      }
+    ],
+    "public_step_decomposition": true
+  }
+}

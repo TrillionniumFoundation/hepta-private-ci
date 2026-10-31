@@ -1,0 +1,270 @@
+[
+  {
+    "domain": "sequence",
+    "expected": [
+      "-5",
+      "3",
+      "20",
+      "20"
+    ],
+    "fixture_id": "amber:test:0",
+    "frontier": 4,
+    "id": "21304b4d3af34e5d619625bf66315eb80ea91c2b2aa85b41b40c81d48e56a904",
+    "label": 1,
+    "payload": [
+      "20",
+      "3",
+      "20",
+      "-5"
+    ],
+    "project": "amber",
+    "query": "Amber owns this input. Carry out the operation specified by its latest project record.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "source_digest": "e7e5f5ccb467e6c7e9f2eea4f712f58c11a83bddd0c45880425ee49e3602762c",
+    "source_revision": 2,
+    "split": "test",
+    "text": "Amber owns this input. Carry out the operation specified by its latest project record."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "-0.5",
+      "1.05",
+      "1.5",
+      "1.5"
+    ],
+    "fixture_id": "amber:test:1",
+    "frontier": 4,
+    "id": "b9abb6378ff43a46fbb66f4555e8a7ccb2e77826d596f3e2711c163e5086899f",
+    "label": 1,
+    "payload": [
+      "1.5",
+      "1.05",
+      "1.5",
+      "-0.5"
+    ],
+    "project": "amber",
+    "query": "What result does this payload produce under the current amber convention?",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "source_digest": "e7e5f5ccb467e6c7e9f2eea4f712f58c11a83bddd0c45880425ee49e3602762c",
+    "source_revision": 2,
+    "split": "test",
+    "text": "What result does this payload produce under the current amber convention?"
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "-5",
+      "3",
+      "20",
+      "20"
+    ],
+    "fixture_id": "amber:test:0",
+    "frontier": 4,
+    "id": "7a223d3c7005c4137079fc5e5326e461f05e9b7d2466a69de27dd8b65828154b",
+    "label": 1,
+    "payload": [
+      "20",
+      "3",
+      "20",
+      "-5"
+    ],
+    "project": "amber",
+    "query": "Handle the attached values according to the standing rule assigned to amber.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "source_digest": "e7e5f5ccb467e6c7e9f2eea4f712f58c11a83bddd0c45880425ee49e3602762c",
+    "source_revision": 2,
+    "split": "test",
+    "text": "Handle the attached values according to the standing rule assigned to amber."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "-0.5",
+      "1.05",
+      "1.5",
+      "1.5"
+    ],
+    "fixture_id": "amber:test:1",
+    "frontier": 4,
+    "id": "aa69db7d6c4fe928de9e63e289086c2c2760f2799627df03bc4ebcd3bcf7d2be",
+    "label": 1,
+    "payload": [
+      "1.5",
+      "1.05",
+      "1.5",
+      "-0.5"
+    ],
+    "project": "amber",
+    "query": "Use amber's active project setting to process this data.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "source_digest": "e7e5f5ccb467e6c7e9f2eea4f712f58c11a83bddd0c45880425ee49e3602762c",
+    "source_revision": 2,
+    "split": "test",
+    "text": "Use amber's active project setting to process this data."
+  },
+  {
+    "domain": "text",
+    "expected": "Ｔ ü ﬃ",
+    "fixture_id": "birch:test:0",
+    "frontier": 4,
+    "id": "cf1cc6c4b83caab83d94122456f50243d6c72f465196e44dd89f40b3df4c4ef3",
+    "label": 4,
+    "payload": "Ｔ ü ﬃ",
+    "project": "birch",
+    "query": "Consult the binding learned for birch and process the attached payload accordingly.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "split": "test",
+    "text": "Consult the binding learned for birch and process the attached payload accordingly."
+  },
+  {
+    "domain": "text",
+    "expected": "① ñ ²",
+    "fixture_id": "birch:test:1",
+    "frontier": 4,
+    "id": "2a42591e8c2adef9ae77286f417321a1caa2280ca638ffd3fead1c1cc9959b5a",
+    "label": 4,
+    "payload": "① ñ ²",
+    "project": "birch",
+    "query": "This request is for birch. Return the result its current project convention requires.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "split": "test",
+    "text": "This request is for birch. Return the result its current project convention requires."
+  },
+  {
+    "domain": "text",
+    "expected": "Ｔ ü ﬃ",
+    "fixture_id": "birch:test:0",
+    "frontier": 4,
+    "id": "81438b44d1377d3e1dcf318d281d076f423f0ffddd2df191046dd186e914309e",
+    "label": 4,
+    "payload": "Ｔ ü ﬃ",
+    "project": "birch",
+    "query": "The owning project is birch; execute its active data-processing choice.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "split": "test",
+    "text": "The owning project is birch; execute its active data-processing choice."
+  },
+  {
+    "domain": "text",
+    "expected": "① ñ ²",
+    "fixture_id": "birch:test:1",
+    "frontier": 4,
+    "id": "dfafc44adc1d271e88ef732ba067ba7b43a973b7b989b49e57a45ca7b3933ff8",
+    "label": 4,
+    "payload": "① ñ ²",
+    "project": "birch",
+    "query": "Carry out birch's latest recorded transformation on the input provided.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "split": "test",
+    "text": "Carry out birch's latest recorded transformation on the input provided."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "a": [
+        4,
+        2
+      ],
+      "word": "two spaces"
+    },
+    "fixture_id": "cobalt:test:0",
+    "frontier": 4,
+    "id": "f7c27bf9af154118a5dd64ffdee8ba6760b3f4eee6f5b14b9a7b9bedbd8caac6",
+    "label": 10,
+    "payload": " { \"word\" : \"two spaces\", \"a\" : [ 4, 2 ] } ",
+    "project": "cobalt",
+    "query": "For this cobalt request, produce the output dictated by its latest stored convention.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "test",
+    "text": "For this cobalt request, produce the output dictated by its latest stored convention."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      "Café",
+      null,
+      {
+        "z": true
+      }
+    ],
+    "fixture_id": "cobalt:test:1",
+    "frontier": 4,
+    "id": "83a80a580528ae8bdee47fc28b8170193dd28964ff3fe568d4cd2db29f1afa12",
+    "label": 10,
+    "payload": "[ \"Café\", null, { \"z\" : true } ]",
+    "project": "cobalt",
+    "query": "Execute the currently assigned cobalt processing rule against the supplied payload.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "test",
+    "text": "Execute the currently assigned cobalt processing rule against the supplied payload."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "a": [
+        4,
+        2
+      ],
+      "word": "two spaces"
+    },
+    "fixture_id": "cobalt:test:0",
+    "frontier": 4,
+    "id": "477f6ca54af855c338b21a32f65d5c762130e55ff6393960f4cc3346e6ec165a",
+    "label": 10,
+    "payload": " { \"word\" : \"two spaces\", \"a\" : [ 4, 2 ] } ",
+    "project": "cobalt",
+    "query": "Cobalt is the project responsible for this input. Apply its current choice.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "test",
+    "text": "Cobalt is the project responsible for this input. Apply its current choice."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      "Café",
+      null,
+      {
+        "z": true
+      }
+    ],
+    "fixture_id": "cobalt:test:1",
+    "frontier": 4,
+    "id": "67147aca694964c5162b8fb2afa66c15e14ba415667d425caf79e25ee5f65abe",
+    "label": 10,
+    "payload": "[ \"Café\", null, { \"z\" : true } ]",
+    "project": "cobalt",
+    "query": "Follow the most recent cobalt configuration to derive the requested result.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "test",
+    "text": "Follow the most recent cobalt configuration to derive the requested result."
+  }
+]

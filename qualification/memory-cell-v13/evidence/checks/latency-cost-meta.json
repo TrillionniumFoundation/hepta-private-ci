@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "qualification/memory-cell-v13/latency_cost.py",
+    "--model-dir",
+    "/workspace/scratch/c7f5fb7f221c/memory-runtime/model",
+    "--inputs",
+    "qualification/memory-cell-v13/evidence/inputs",
+    "--results",
+    "qualification/memory-cell-v13/evidence/run"
+  ],
+  "exit_code": 0,
+  "log_sha256": "ea084e35de240032f77d35601e3edd894ec42d8d6e37ce83cda44bbe0fd9b970",
+  "raw_log": "qualification/memory-cell-v13/evidence/checks/latency-cost.log",
+  "thread_settings": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_CORETYPE": "NEHALEM",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "wall_seconds": 7.135734349998529
+}

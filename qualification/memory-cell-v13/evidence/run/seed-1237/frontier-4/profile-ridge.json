@@ -1,0 +1,243 @@
+{
+  "accepted": 12,
+  "correct": 12,
+  "encoder_cost_included": false,
+  "evaluated": 12,
+  "label_correct": 12,
+  "predictions": [
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-5",
+        "3",
+        "20",
+        "20"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "21304b4d3af34e5d619625bf66315eb80ea91c2b2aa85b41b40c81d48e56a904",
+      "label_correct": true,
+      "output": [
+        "-5",
+        "3",
+        "20",
+        "20"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Amber owns this input. Carry out the operation specified by its latest project record."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-0.5",
+        "1.05",
+        "1.5",
+        "1.5"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "b9abb6378ff43a46fbb66f4555e8a7ccb2e77826d596f3e2711c163e5086899f",
+      "label_correct": true,
+      "output": [
+        "-0.5",
+        "1.05",
+        "1.5",
+        "1.5"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "What result does this payload produce under the current amber convention?"
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-5",
+        "3",
+        "20",
+        "20"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "7a223d3c7005c4137079fc5e5326e461f05e9b7d2466a69de27dd8b65828154b",
+      "label_correct": true,
+      "output": [
+        "-5",
+        "3",
+        "20",
+        "20"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Handle the attached values according to the standing rule assigned to amber."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-0.5",
+        "1.05",
+        "1.5",
+        "1.5"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "aa69db7d6c4fe928de9e63e289086c2c2760f2799627df03bc4ebcd3bcf7d2be",
+      "label_correct": true,
+      "output": [
+        "-0.5",
+        "1.05",
+        "1.5",
+        "1.5"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Use amber's active project setting to process this data."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "Ｔ ü ﬃ",
+      "expected_skill": "normalize_nfc",
+      "id": "cf1cc6c4b83caab83d94122456f50243d6c72f465196e44dd89f40b3df4c4ef3",
+      "label_correct": true,
+      "output": "Ｔ ü ﬃ",
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "Consult the binding learned for birch and process the attached payload accordingly."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "① ñ ²",
+      "expected_skill": "normalize_nfc",
+      "id": "2a42591e8c2adef9ae77286f417321a1caa2280ca638ffd3fead1c1cc9959b5a",
+      "label_correct": true,
+      "output": "① ñ ²",
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "This request is for birch. Return the result its current project convention requires."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "Ｔ ü ﬃ",
+      "expected_skill": "normalize_nfc",
+      "id": "81438b44d1377d3e1dcf318d281d076f423f0ffddd2df191046dd186e914309e",
+      "label_correct": true,
+      "output": "Ｔ ü ﬃ",
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "The owning project is birch; execute its active data-processing choice."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "① ñ ²",
+      "expected_skill": "normalize_nfc",
+      "id": "dfafc44adc1d271e88ef732ba067ba7b43a973b7b989b49e57a45ca7b3933ff8",
+      "label_correct": true,
+      "output": "① ñ ²",
+      "predicted_skill": "normalize_nfc",
+      "prediction": 4,
+      "query": "Carry out birch's latest recorded transformation on the input provided."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "a": [
+          4,
+          2
+        ],
+        "word": "two spaces"
+      },
+      "expected_skill": "json_parse",
+      "id": "f7c27bf9af154118a5dd64ffdee8ba6760b3f4eee6f5b14b9a7b9bedbd8caac6",
+      "label_correct": true,
+      "output": {
+        "a": [
+          4,
+          2
+        ],
+        "word": "two spaces"
+      },
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "For this cobalt request, produce the output dictated by its latest stored convention."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "Café",
+        null,
+        {
+          "z": true
+        }
+      ],
+      "expected_skill": "json_parse",
+      "id": "83a80a580528ae8bdee47fc28b8170193dd28964ff3fe568d4cd2db29f1afa12",
+      "label_correct": true,
+      "output": [
+        "Café",
+        null,
+        {
+          "z": true
+        }
+      ],
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Execute the currently assigned cobalt processing rule against the supplied payload."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "a": [
+          4,
+          2
+        ],
+        "word": "two spaces"
+      },
+      "expected_skill": "json_parse",
+      "id": "477f6ca54af855c338b21a32f65d5c762130e55ff6393960f4cc3346e6ec165a",
+      "label_correct": true,
+      "output": {
+        "a": [
+          4,
+          2
+        ],
+        "word": "two spaces"
+      },
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Cobalt is the project responsible for this input. Apply its current choice."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "Café",
+        null,
+        {
+          "z": true
+        }
+      ],
+      "expected_skill": "json_parse",
+      "id": "67147aca694964c5162b8fb2afa66c15e14ba415667d425caf79e25ee5f65abe",
+      "label_correct": true,
+      "output": [
+        "Café",
+        null,
+        {
+          "z": true
+        }
+      ],
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Follow the most recent cobalt configuration to derive the requested result."
+    }
+  ],
+  "scoring_cpu_seconds": 0.00019518000000040558,
+  "scoring_wall_seconds": 0.000196615990716964
+}

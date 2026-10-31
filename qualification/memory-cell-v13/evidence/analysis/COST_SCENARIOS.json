@@ -1,0 +1,140 @@
+{
+  "bm25": {
+    "assumptions": "serial warm requests drawn from the observed task distribution; one model generation",
+    "component_seconds_at_reads": {
+      "100": 0.05561114870888141,
+      "1000": 0.5500441820422147,
+      "10000": 5.494374515375548,
+      "100000": 54.93767784870888
+    },
+    "is_complete_economic_cost": false,
+    "measured_startup_build_components_seconds": 0.0006741450051777065,
+    "observed_mean_request_seconds": 0.000549370037037037,
+    "omitted_costs": [
+      "source ingestion",
+      "checkpoint serialization",
+      "updates and failed candidates",
+      "RAM pricing",
+      "network",
+      "queueing",
+      "recovery",
+      "energy"
+    ],
+    "quality_correct_of_72": 42
+  },
+  "centroid": {
+    "assumptions": "serial warm requests drawn from the observed task distribution; one model generation",
+    "component_seconds_at_reads": {
+      "100": 1.670930627063357,
+      "1000": 7.435548068730024,
+      "10000": 65.0817224853967,
+      "100000": 641.5434666520633
+    },
+    "is_complete_economic_cost": false,
+    "measured_startup_build_components_seconds": 1.030417577989283,
+    "observed_mean_request_seconds": 0.006405130490740741,
+    "omitted_costs": [
+      "source ingestion",
+      "checkpoint serialization",
+      "updates and failed candidates",
+      "RAM pricing",
+      "network",
+      "queueing",
+      "recovery",
+      "energy"
+    ],
+    "quality_correct_of_72": 60
+  },
+  "exact_store": {
+    "assumptions": "serial warm requests drawn from the observed task distribution; one model generation",
+    "component_seconds_at_reads": {
+      "100": 0.0020302124153807203,
+      "1000": 0.018751604082047384,
+      "10000": 0.18596552074871403,
+      "100000": 1.8581046874153804
+    },
+    "is_complete_economic_cost": false,
+    "measured_startup_build_components_seconds": 0.00017228000797331333,
+    "observed_mean_request_seconds": 1.857932407407407e-05,
+    "omitted_costs": [
+      "source ingestion",
+      "checkpoint serialization",
+      "updates and failed candidates",
+      "RAM pricing",
+      "network",
+      "queueing",
+      "recovery",
+      "energy"
+    ],
+    "quality_correct_of_72": 0
+  },
+  "nearest": {
+    "assumptions": "serial warm requests drawn from the observed task distribution; one model generation",
+    "component_seconds_at_reads": {
+      "100": 1.673135422497209,
+      "1000": 7.491555434997208,
+      "10000": 65.6757555599972,
+      "100000": 647.5177568099971
+    },
+    "is_complete_economic_cost": false,
+    "measured_startup_build_components_seconds": 1.0266443099972093,
+    "observed_mean_request_seconds": 0.0064649111249999985,
+    "omitted_costs": [
+      "source ingestion",
+      "checkpoint serialization",
+      "updates and failed candidates",
+      "RAM pricing",
+      "network",
+      "queueing",
+      "recovery",
+      "energy"
+    ],
+    "quality_correct_of_72": 58
+  },
+  "ridge": {
+    "assumptions": "serial warm requests drawn from the observed task distribution; one model generation",
+    "component_seconds_at_reads": {
+      "100": 1.6704793426170885,
+      "1000": 7.4577349301170885,
+      "10000": 65.33029080511709,
+      "100000": 644.0558495551171
+    },
+    "is_complete_economic_cost": false,
+    "measured_startup_build_components_seconds": 1.0274509440059774,
+    "observed_mean_request_seconds": 0.006430283986111111,
+    "omitted_costs": [
+      "source ingestion",
+      "checkpoint serialization",
+      "updates and failed candidates",
+      "RAM pricing",
+      "network",
+      "queueing",
+      "recovery",
+      "energy"
+    ],
+    "quality_correct_of_72": 61
+  },
+  "single_adapter": {
+    "assumptions": "serial warm requests drawn from the observed task distribution; one model generation",
+    "component_seconds_at_reads": {
+      "100": 1.7421758568942112,
+      "1000": 7.536303811060878,
+      "10000": 65.47758335272755,
+      "100000": 644.8903787693943
+    },
+    "is_complete_economic_cost": false,
+    "measured_startup_build_components_seconds": 1.0983838619868038,
+    "observed_mean_request_seconds": 0.006437919949074075,
+    "omitted_costs": [
+      "source ingestion",
+      "checkpoint serialization",
+      "updates and failed candidates",
+      "RAM pricing",
+      "network",
+      "queueing",
+      "recovery",
+      "energy"
+    ],
+    "quality_correct_of_72": 59
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "version": "memory-cell-v13-tasks-1",
+  "scope": "Finite constructed instruction-to-registered-Python-operation and arbitrary project-binding memory benchmark. Actual payload execution, not observed production traffic, general code synthesis, or proof of a universal memory system.",
+  "operation_classes": 12,
+  "domains": {"sequence": 4, "text": 4, "serialization": 4},
+  "skill_requests_per_class": {"train": 10, "calibration": 4, "test": 6},
+  "skill_request_totals": {"train": 120, "calibration": 48, "test": 72},
+  "payload_pools_per_class": {"train": 3, "calibration": 2, "test": 3},
+  "payload_assignment": "Within each skill and split, pair authored request number i with raw payload i modulo payload-pool size. Repeated payload IDs must not be counted as independent raw workloads.",
+  "language_provenance": "240 complete English requests authored independently by the coding assistant. No entity-slot template expansion and no external model-generated paraphrases. Syntactic variation is deliberate, but this single-author constructed corpus is not a population sample or proof of semantic independence.",
+  "wording_audit": "Report exact case/whitespace-normalized matches and nearest training token-Jaccard overlap for every calibration/test request. Audit only; never change splits or discard requests after seeing model results.",
+  "public_registry": "skill_catalog exposes the same 12 natural-language operation descriptions to all methods. If registry descriptions are used as additional training/index rows, all relevant comparisons must admit them and count them. They are separate from the 120 authored training requests.",
+  "inference_information": "public_input returns only text and raw payload. Pure parametric classification uses text, not label, skill_id, domain, expected output, fixture ID, source digest, or the test-row position. The public executor receives only the predicted operation and actual payload.",
+  "executor": {
+    "domain": "Bounded JSON-compatible values; strings and list-of-string contracts as declared in tasks.execute.",
+    "payload_byte_limit": 16384,
+    "numeric_order": "Finite decimal-value ascending ordering of strings, stable ties, original spellings preserved.",
+    "text": "NFC and NFKC are separate; casefold is not normalization; whitespace collapse preserves token content.",
+    "csv": "Comma-delimited, double-quote escaping, read returns nested string lists, write uses minimal quotation and LF after every record.",
+    "json": "Parse returns a structured value; compact returns text with no optional separator spaces, original key insertion order, and Unicode preserved.",
+    "oracle": "Raw expected outputs are separately hand-authored fixture constants. The scoring function never computes expected output by invoking the gold operation. Execution mismatch, type error, unknown operation, or abstention counts as failure.",
+    "metrics": ["predicted_operation_accuracy", "exact_executed_output_accuracy", "coverage", "conditional_accuracy_on_covered", "errors", "latency", "stored_bytes", "training_cost"],
+    "metric_caution": "Two operations can coincide on a payload, so report label and output correctness separately. JSON type and string bytes matter; dictionary key order is immaterial for structured outputs but serialized string order is material."
+  },
+  "composition": {
+    "cases": 12,
+    "steps_per_case": 2,
+    "input": "Public natural-language steps and initial_payload. All arms select and execute each step on its predecessor's actual output.",
+    "oracle": "Separate handwritten final expected output. No gold intermediate skill IDs are supplied to inference.",
+    "limitation": "Step decomposition is given. This is compositional skill selection, not autonomous planning. The 12 cases are evaluation-only and must not tune router, split criteria, adapters, or thresholds."
+  },
+  "project_binding_memory": {
+    "projects": ["amber", "birch", "cobalt"],
+    "frontiers": [3, 4, 5, 6],
+    "requests_per_project": {"train": 6, "calibration": 2, "test": 4},
+    "requests_per_frontier": {"train": 18, "calibration": 6, "test": 12},
+    "source": "Six ordered constructed journal observations: three initial bindings and three later corrections. Each observation includes source, revision, natural-language policy, explicit operation_id, and a digest. These are authored benchmark events, not actual project history.",
+    "pure_parametric_input": "Independent requests name the project and payload only; policy text, operation ID, and source metadata never reach inference. Training labels are derived solely from legal observations at or before the frontier. Thus the new arbitrary bindings must be learned, not answered from pretrained factual knowledge.",
+    "hybrid_control": "profile_input intentionally supplies the current source policy as text. Report this as runtime source reading, separately from parameter learning.",
+    "strong_lookup_control": "ProfileExactStore recognizes the explicitly named project and reads its operation ID from the same current journal frontier. Charge its source storage and read cost. Do not present exact request matching's low coverage as a victory over this directly addressable memory baseline.",
+    "updates": "Continue the selected parameter instance through frontiers; replay only still-current bindings and original skill training examples. Report corrected-project success, unchanged-project retention, original-skill retention, physical update cost, and actual source revision. Future journal revisions are unavailable at earlier frontiers.",
+    "statistical_caution": "Frontiers reuse the same request identities and projects. Count them as repeated measures; training seeds do not create independent tasks. Small explicit mappings are expected to be highly competitive for exact KV storage."
+  },
+  "baselines": {
+    "BM25": "Standard k1=1.5, b=0.75 over all permitted training requests; highest scoring example. Ranking scores are not calibrated probabilities.",
+    "NearestExample": "Cosine nearest admitted training embedding under the same frozen pretrained encoder.",
+    "Centroid": "Cosine similarity to normalized per-class mean embeddings under that same encoder.",
+    "ExactStore": "Normalized exact-request dictionary with explicit abstention on absent or conflicting keys; coverage control only.",
+    "ProfileExactStore": "Strong exact project-key lookup over current permitted source bindings.",
+    "ordinary_parametric_control": "The integration experiment may add ridge or linear softmax on the same encoder features and samples; tune only on calibration and charge fitting costs."
+  },
+  "freeze_and_selection": {
+    "required_before_model_holdout": ["hash tasks.py, baselines.py, all fixture JSON and this protocol", "freeze train/calibration/test identities", "freeze candidate and baseline hyperparameter grids", "record pretrained encoder revision and digests"],
+    "training_admission": "Baselines reject rows not marked train or registry. Training routines receive the selected training matrices only; loading evaluation fixtures for structural validation does not permit fitting to them.",
+    "selection": "Only calibration may select model variants, routing thresholds, or split proposals. Test and composition results are read once under the frozen method; failures remain in results.",
+    "no_claim": ["universal memory", "production efficacy", "compression superiority", "automatic improvement from more cells", "test queries are independent merely because wording differs"]
+  },
+  "primary_semantic_references": [
+    "https://docs.python.org/3/library/unicodedata.html#unicodedata.normalize",
+    "https://docs.python.org/3/library/stdtypes.html#str.casefold",
+    "https://docs.python.org/3/library/stdtypes.html#str.split",
+    "https://docs.python.org/3/library/csv.html",
+    "https://docs.python.org/3/library/json.html",
+    "https://docs.python.org/3/library/decimal.html",
+    "https://docs.python.org/3/howto/sorting.html"
+  ]
+}

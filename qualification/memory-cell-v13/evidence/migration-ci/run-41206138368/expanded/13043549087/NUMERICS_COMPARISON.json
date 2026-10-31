@@ -1,0 +1,39 @@
+{
+  "differing_fields": [],
+  "errors": [],
+  "passed": true,
+  "profiles": [
+    {
+      "boot_id": "7ae41f16-70c9-48e3-92dc-22b1e00aa5c6",
+      "comparable_sha256": "82afc78979e4617c3ac9d0afcb06b845c35ddb3b6b5e98243c28b67e32f77f5a",
+      "path": "/home/runner/work/_temp/v13-input/source/NUMERICS.json",
+      "profile_file": {
+        "bytes": 6321,
+        "sha256": "e728a719f2756388f4bcdf57422388827c27240af4f454cfbbd6e70b0f5f2872"
+      },
+      "role": "prepare"
+    },
+    {
+      "boot_id": "c49f95d4-a4ad-4671-bf20-3d73b67297d5",
+      "comparable_sha256": "82afc78979e4617c3ac9d0afcb06b845c35ddb3b6b5e98243c28b67e32f77f5a",
+      "path": "/home/runner/work/_temp/v13-input/resumed/NUMERICS.json",
+      "profile_file": {
+        "bytes": 6179,
+        "sha256": "52560e8467c3e42cec5e00eb0084e082d724b07f30a993d17ab2e2aa3e5e36ce"
+      },
+      "role": "resume"
+    },
+    {
+      "boot_id": "07e7e471-ef75-49da-833e-09ba0ab94f9f",
+      "comparable_sha256": "82afc78979e4617c3ac9d0afcb06b845c35ddb3b6b5e98243c28b67e32f77f5a",
+      "path": "/home/runner/work/_temp/v13-verify/NUMERICS.json",
+      "profile_file": {
+        "bytes": 6179,
+        "sha256": "fab63d285c8a1693ca470410eb5ff3bac815c291eb5c5c1ded42c4108671f656"
+      },
+      "role": "verify"
+    }
+  ],
+  "schema": "hepta.memory.numerics-profile.v13.comparison",
+  "scope": "Effective numerical profile only; unchanged migration.py must independently pass bit-exact state checks."
+}

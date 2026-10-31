@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.memory-cell-v13.publication-integration.v1",
+  "numerical_profile_patch": {
+    "remote_sha": "8ae2d91947203a868f880312df823004b7289f25",
+    "tree_sha": "b1b399ae4819bb6c4cee9fe720fe4227bd12bfa1",
+    "parent_sha": "f3069e82ebd98b3d22c33bee32096f5217783e79",
+    "local_integration_sha": "7326f55291c4f6038f0866b5d494e83e96709d14",
+    "local_integration_tree": "61ee36403424fc8a82b3bddb640cb72e3cd906c6",
+    "files": [
+      {
+        "path": "qualification/memory-cell-v13/numerics_profile.py",
+        "sha": "cb710bb0804f18208e5d4376f08c28502f01a63b"
+      },
+      {
+        "path": ".github/workflows/memory-cell-v13-research.yml",
+        "sha": "43e1ee44f783bf936efae0c9f7d3d31bf68d0e98"
+      }
+    ]
+  },
+  "integration": {
+    "local_sha": "7326f55291c4f6038f0866b5d494e83e96709d14",
+    "remote_sha": "a66c893469adf62362aa7559183a9cf72b748eac",
+    "tree_sha": "61ee36403424fc8a82b3bddb640cb72e3cd906c6",
+    "parents": [
+      "099431809d7ba0121896ec1556211a940beec2bf",
+      "8ae2d91947203a868f880312df823004b7289f25"
+    ]
+  },
+  "note": "Git data API commits differ in author/committer metadata from local commits. Every equivalent-tree mapping was checked by full Git tree SHA. The numerical patch was exercised independently before the complete experiment evidence was integrated."
+}

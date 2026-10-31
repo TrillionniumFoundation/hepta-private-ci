@@ -1,0 +1,209 @@
+{
+  "comparable": {
+    "capture_script": {
+      "bytes": 7154,
+      "sha256": "db7c1e783e4b3e0e624ab2c57fa14a50ca9b5e8203aea9126dbf1a080588819a"
+    },
+    "compiled_baseline": [
+      "SSE",
+      "SSE2",
+      "SSE3"
+    ],
+    "compiled_dispatch": [
+      "SSSE3",
+      "SSE41",
+      "POPCNT",
+      "SSE42",
+      "AVX",
+      "F16C",
+      "FMA3",
+      "AVX2",
+      "AVX512F",
+      "AVX512CD",
+      "AVX512_KNL",
+      "AVX512_KNM",
+      "AVX512_SKX",
+      "AVX512_CLX",
+      "AVX512_CNL",
+      "AVX512_ICL",
+      "AVX512_SPR"
+    ],
+    "effective_baseline": {
+      "SSE": true,
+      "SSE2": true,
+      "SSE3": true
+    },
+    "effective_dispatch": {
+      "AVX": false,
+      "AVX2": false,
+      "AVX512CD": false,
+      "AVX512F": false,
+      "AVX512_CLX": false,
+      "AVX512_CNL": false,
+      "AVX512_ICL": false,
+      "AVX512_KNL": false,
+      "AVX512_KNM": false,
+      "AVX512_SKX": false,
+      "AVX512_SPR": false,
+      "F16C": false,
+      "FMA3": false,
+      "POPCNT": false,
+      "SSE41": false,
+      "SSE42": false,
+      "SSSE3": false
+    },
+    "enabled_dispatch": [],
+    "environment": {
+      "NPY_DISABLE_CPU_FEATURES": "SSSE3,SSE41,POPCNT,SSE42,AVX,F16C,FMA3,AVX2,AVX512F,AVX512CD,AVX512_KNL,AVX512_KNM,AVX512_SKX,AVX512_CLX,AVX512_CNL,AVX512_ICL,AVX512_SPR",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_CORETYPE": "NEHALEM",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "float64_kernels": {
+      "add": {
+        "ddd": {
+          "available": "AVX2 baseline(SSE SSE2 SSE3)",
+          "current": "baseline(SSE SSE2 SSE3)"
+        }
+      },
+      "divide": {
+        "ddd": {
+          "available": "AVX2 baseline(SSE SSE2 SSE3)",
+          "current": "baseline(SSE SSE2 SSE3)"
+        }
+      },
+      "exp": {
+        "dd": {
+          "available": "AVX512_SKX AVX512F AVX2 baseline(SSE SSE2 SSE3)",
+          "current": "baseline(SSE SSE2 SSE3)"
+        }
+      },
+      "multiply": {
+        "ddd": {
+          "available": "AVX2 baseline(SSE SSE2 SSE3)",
+          "current": "baseline(SSE SSE2 SSE3)"
+        }
+      },
+      "sqrt": {
+        "dd": {
+          "available": "SSE41 baseline(SSE SSE2 SSE3)",
+          "current": "baseline(SSE SSE2 SSE3)"
+        }
+      },
+      "subtract": {
+        "ddd": {
+          "available": "AVX2 baseline(SSE SSE2 SSE3)",
+          "current": "baseline(SSE SSE2 SSE3)"
+        }
+      },
+      "tanh": {
+        "dd": {
+          "available": "AVX512_SKX AVX2 baseline(SSE SSE2 SSE3)",
+          "current": "baseline(SSE SSE2 SSE3)"
+        }
+      }
+    },
+    "libc": [
+      "glibc",
+      "2.39"
+    ],
+    "machine": "x86_64",
+    "numpy": "2.3.5",
+    "numpy_core": {
+      "bytes": 10808937,
+      "sha256": "ba96467ae494babaf7c3458b09cc03c4200c2e10010860d80e452ffb8b01c8cd"
+    },
+    "openblas_libraries": {
+      "libscipy_openblas64_-fdde5778.so": {
+        "bytes": 25034001,
+        "sha256": "ee2039cf13a45e1e89f04d0cea9585657d93ffaa425594e1935161013fdf4e12"
+      }
+    },
+    "python": "3.12.14",
+    "python_compiler": "Clang 22.1.3 ",
+    "python_implementation": "CPython",
+    "run_attempt": null,
+    "run_id": null,
+    "source_commit": null,
+    "system": "Linux"
+  },
+  "comparable_sha256": "a9f21b4e460b637ba577f84b3d0d35729730f6df6224493513fa116679c8e415",
+  "errors": [],
+  "observed": {
+    "boot_id": "a89234ad-736c-40da-9707-6b421b087b2f",
+    "cpu": {
+      "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid extd_apicid tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx512_bf16 clzero xsaveerptr arat npt nrip_save tsc_scale vmcb_clean flushbyasid pausefilter pfthreshold v_vmsave_vmload avx512vbmi umip avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid fsrm arch_capabilities",
+      "model name": "AMD EPYC 9V74 80-Core Processor",
+      "vendor_id": "AuthenticAMD"
+    },
+    "cpu_features": {
+      "ASIMD": false,
+      "ASIMDDP": false,
+      "ASIMDFHM": false,
+      "ASIMDHP": false,
+      "AVX": false,
+      "AVX2": false,
+      "AVX5124FMAPS": false,
+      "AVX5124VNNIW": false,
+      "AVX512BITALG": true,
+      "AVX512BW": true,
+      "AVX512CD": false,
+      "AVX512DQ": true,
+      "AVX512ER": false,
+      "AVX512F": false,
+      "AVX512FP16": false,
+      "AVX512IFMA": true,
+      "AVX512PF": false,
+      "AVX512VBMI": true,
+      "AVX512VBMI2": true,
+      "AVX512VL": true,
+      "AVX512VNNI": true,
+      "AVX512VPOPCNTDQ": true,
+      "AVX512_CLX": false,
+      "AVX512_CNL": false,
+      "AVX512_ICL": false,
+      "AVX512_KNL": false,
+      "AVX512_KNM": false,
+      "AVX512_SKX": false,
+      "AVX512_SPR": false,
+      "F16C": false,
+      "FMA3": false,
+      "FMA4": false,
+      "FPHP": false,
+      "LSX": false,
+      "MMX": true,
+      "NEON": false,
+      "NEON_FP16": false,
+      "NEON_VFPV4": false,
+      "POPCNT": false,
+      "RVV": false,
+      "SSE": true,
+      "SSE2": true,
+      "SSE3": true,
+      "SSE41": false,
+      "SSE42": false,
+      "SSSE3": false,
+      "SVE": false,
+      "VSX": false,
+      "VSX2": false,
+      "VSX3": false,
+      "VSX4": false,
+      "VX": false,
+      "VXE": false,
+      "VXE2": false,
+      "XOP": false
+    },
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "hostname": "c18e87a619ae",
+    "job": null,
+    "numpy_core_path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy/_core/_multiarray_umath.cpython-312-x86_64-linux-gnu.so",
+    "openblas_paths": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-fdde5778.so"
+    ],
+    "pid": 6,
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+  },
+  "passed": true,
+  "role": "prepare",
+  "schema": "hepta.memory.numerics-profile.v13"
+}

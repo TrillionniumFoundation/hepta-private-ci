@@ -1,0 +1,130 @@
+[
+  {
+    "domain": "sequence",
+    "expected": [
+      "-1",
+      "4",
+      "8",
+      "8"
+    ],
+    "fixture_id": "amber:calibration:0",
+    "frontier": 5,
+    "id": "64027012bc0e7e27f9ff5d717922a37b32707c3c2931c91665b6fa115bff048f",
+    "label": 1,
+    "payload": [
+      "8",
+      "4",
+      "8",
+      "-1"
+    ],
+    "project": "amber",
+    "query": "Follow amber's present configuration when handling the supplied data.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "source_digest": "e7e5f5ccb467e6c7e9f2eea4f712f58c11a83bddd0c45880425ee49e3602762c",
+    "source_revision": 2,
+    "split": "calibration",
+    "text": "Follow amber's present configuration when handling the supplied data."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "-1",
+      "4",
+      "8",
+      "8"
+    ],
+    "fixture_id": "amber:calibration:0",
+    "frontier": 5,
+    "id": "eea362fd4de67f7b0c2336b383f133b61e0c01f36254625b4d00ce129c8e3a69",
+    "label": 1,
+    "payload": [
+      "8",
+      "4",
+      "8",
+      "-1"
+    ],
+    "project": "amber",
+    "query": "The project is amber; produce its configured output for this batch.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "source_digest": "e7e5f5ccb467e6c7e9f2eea4f712f58c11a83bddd0c45880425ee49e3602762c",
+    "source_revision": 2,
+    "split": "calibration",
+    "text": "The project is amber; produce its configured output for this batch."
+  },
+  {
+    "domain": "text",
+    "expected": "Z é (2)",
+    "fixture_id": "birch:calibration:0",
+    "frontier": 5,
+    "id": "063837df7bc7e9648f97a8bc5ebc515d3ddf1795dc15867ee0132b0bd7bd451b",
+    "label": 5,
+    "payload": "Ｚ é ⑵",
+    "project": "birch",
+    "query": "Take this payload through the operation currently assigned to birch.",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "source_digest": "49f379e09fd3360130bc29b51c86ffe440a102061dd17352aa1cb682f50c32c6",
+    "source_revision": 2,
+    "split": "calibration",
+    "text": "Take this payload through the operation currently assigned to birch."
+  },
+  {
+    "domain": "text",
+    "expected": "Z é (2)",
+    "fixture_id": "birch:calibration:0",
+    "frontier": 5,
+    "id": "5e3720d0d4a9822d4004fc25df07b750b1853f75b5f3b00bf00aa8947e62f539",
+    "label": 5,
+    "payload": "Ｚ é ⑵",
+    "project": "birch",
+    "query": "Which output follows from using birch's present rule on this input?",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "source_digest": "49f379e09fd3360130bc29b51c86ffe440a102061dd17352aa1cb682f50c32c6",
+    "source_revision": 2,
+    "split": "calibration",
+    "text": "Which output follows from using birch's present rule on this input?"
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "n": 5,
+      "ok": false
+    },
+    "fixture_id": "cobalt:calibration:0",
+    "frontier": 5,
+    "id": "09713e631e8bcee1d2b317a889a6b85f4cdd7b1540336b389b77aae032d030ea",
+    "label": 10,
+    "payload": " { \"ok\" : false, \"n\" : 5 } ",
+    "project": "cobalt",
+    "query": "The present cobalt binding determines this transformation; perform it.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "calibration",
+    "text": "The present cobalt binding determines this transformation; perform it."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "n": 5,
+      "ok": false
+    },
+    "fixture_id": "cobalt:calibration:0",
+    "frontier": 5,
+    "id": "607897e83beca63b0db0e50b29ad73fb30b1a9352d706649b751c6d522de7329",
+    "label": 10,
+    "payload": " { \"ok\" : false, \"n\" : 5 } ",
+    "project": "cobalt",
+    "query": "Run this input through cobalt's active project operation.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "split": "calibration",
+    "text": "Run this input through cobalt's active project operation."
+  }
+]

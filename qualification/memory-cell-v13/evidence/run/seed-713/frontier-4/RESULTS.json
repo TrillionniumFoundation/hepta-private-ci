@@ -1,0 +1,139 @@
+{
+  "frontier": 4,
+  "no_replay_means_no_original_skill_replay": true,
+  "profile": {
+    "bm25": {
+      "accepted": 12,
+      "correct": 7,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 7,
+      "scoring_cpu_seconds": 0.006072237000000147,
+      "scoring_wall_seconds": 0.006083949992898852
+    },
+    "centroid": {
+      "accepted": 12,
+      "correct": 12,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 12,
+      "scoring_cpu_seconds": 0.00032420099999996843,
+      "scoring_wall_seconds": 0.00032569099857937545
+    },
+    "exact_store": {
+      "accepted": 0,
+      "correct": 0,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 0,
+      "scoring_cpu_seconds": 2.9623999999950357e-05,
+      "scoring_wall_seconds": 3.2117997761815786e-05
+    },
+    "frozen": {
+      "accepted": 12,
+      "correct": 0,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 0,
+      "scoring_cpu_seconds": 0.00023718200000000245,
+      "scoring_wall_seconds": 0.0002384890103712678
+    },
+    "nearest": {
+      "accepted": 12,
+      "correct": 12,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 12,
+      "scoring_cpu_seconds": 0.0007559330000002085,
+      "scoring_wall_seconds": 0.0007576700008939952
+    },
+    "no_replay": {
+      "accepted": 12,
+      "correct": 12,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 12,
+      "scoring_cpu_seconds": 0.0002823790000001658,
+      "scoring_wall_seconds": 0.0002841480018105358
+    },
+    "profile_exact": {
+      "accepted": 12,
+      "correct": 12,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 12,
+      "scoring_cpu_seconds": 0.00016836999999991775,
+      "scoring_wall_seconds": 0.000169414997799322
+    },
+    "replay": {
+      "accepted": 12,
+      "correct": 11,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 11,
+      "scoring_cpu_seconds": 0.0003098509999999166,
+      "scoring_wall_seconds": 0.00031304199364967644
+    },
+    "ridge": {
+      "accepted": 12,
+      "correct": 12,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 12,
+      "scoring_cpu_seconds": 0.00015436999999995926,
+      "scoring_wall_seconds": 0.00015513399557676166
+    }
+  },
+  "retention": {
+    "frozen": {
+      "accepted": 72,
+      "correct": 59,
+      "encoder_cost_included": false,
+      "evaluated": 72,
+      "label_correct": 59,
+      "scoring_cpu_seconds": 0.0009192349999997962,
+      "scoring_wall_seconds": 0.0009221780055668205
+    },
+    "no_replay": {
+      "accepted": 72,
+      "correct": 17,
+      "encoder_cost_included": false,
+      "evaluated": 72,
+      "label_correct": 17,
+      "scoring_cpu_seconds": 0.0007864979999998578,
+      "scoring_wall_seconds": 0.0007879059994593263
+    },
+    "replay": {
+      "accepted": 72,
+      "correct": 53,
+      "encoder_cost_included": false,
+      "evaluated": 72,
+      "label_correct": 53,
+      "scoring_cpu_seconds": 0.0008489409999998809,
+      "scoring_wall_seconds": 0.0008509710023645312
+    }
+  },
+  "same_updates_not_same_examples": true,
+  "source_version": "992b13608f4b0b64807703b483a382a889e563e527f652027a0bbd3e7d7e02df",
+  "training": {
+    "no_replay": {
+      "examples": 4320,
+      "first_loss": 7.912114409756088,
+      "last_loss": 9.27418843713022e-07,
+      "mean_loss": 0.04493564810979463,
+      "seconds": 0.06373177900968585,
+      "step": 720,
+      "updates": 240
+    },
+    "replay": {
+      "examples": 4732,
+      "first_loss": 1.5636125492954398,
+      "last_loss": 0.00013005582643066702,
+      "mean_loss": 0.029954453855710318,
+      "seconds": 0.06582823800272308,
+      "step": 720,
+      "updates": 240
+    }
+  },
+  "unlearning_claim": false
+}

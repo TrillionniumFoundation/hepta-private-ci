@@ -1,0 +1,198 @@
+[
+  {
+    "id": "compose01",
+    "steps": [
+      "Simplify compatibility glyphs and compose the Unicode text.",
+      "Now fold its character case for caseless matching."
+    ],
+    "initial_payload": "ＦＩ Straße ①",
+    "expected": "fi strasse 1",
+    "payload": "ＦＩ Straße ①"
+  },
+  {
+    "id": "compose02",
+    "steps": [
+      "Convert presentation-specific Unicode forms into their compatibility equivalents.",
+      "Return the casefolded spelling of the entire result."
+    ],
+    "initial_payload": "ﬃ Ａ Café",
+    "expected": "ffi a café",
+    "payload": "ﬃ Ａ Café"
+  },
+  {
+    "id": "compose03",
+    "steps": [
+      "Load this JSON representation as a list.",
+      "Discard later repeated entries, retaining the order of first appearances."
+    ],
+    "initial_payload": "[\"beta\", \"alpha\", \"beta\", \"gamma\"]",
+    "expected": [
+      "beta",
+      "alpha",
+      "gamma"
+    ],
+    "payload": "[\"beta\", \"alpha\", \"beta\", \"gamma\"]"
+  },
+  {
+    "id": "compose04",
+    "steps": [
+      "Deserialize the JSON document into data.",
+      "Order the numeric strings from least quantity to greatest."
+    ],
+    "initial_payload": "[\"10\", \"2\", \"-1\", \"2\"]",
+    "expected": [
+      "-1",
+      "2",
+      "2",
+      "10"
+    ],
+    "payload": "[\"10\", \"2\", \"-1\", \"2\"]"
+  },
+  {
+    "id": "compose05",
+    "steps": [
+      "Decode the JSON text into its structured value.",
+      "Give the multiplicity of each exact string in that list."
+    ],
+    "initial_payload": "[\"a\", \"b\", \"a\", \"b\", \"a\"]",
+    "expected": {
+      "a": 3,
+      "b": 2
+    },
+    "payload": "[\"a\", \"b\", \"a\", \"b\", \"a\"]"
+  },
+  {
+    "id": "compose06",
+    "steps": [
+      "Read the JSON string as a structured array.",
+      "Alphabetize its entries without regard to capitalization."
+    ],
+    "initial_payload": "[\"z\", \"Apple\", \"apple\", \"Beta\"]",
+    "expected": [
+      "Apple",
+      "apple",
+      "Beta",
+      "z"
+    ],
+    "payload": "[\"z\", \"Apple\", \"apple\", \"Beta\"]"
+  },
+  {
+    "id": "compose07",
+    "steps": [
+      "Read the comma-delimited document into rows using CSV quoting rules.",
+      "Serialize those rows back to CSV with a newline at the end of each record."
+    ],
+    "initial_payload": "\"a\",b\r\n\"c,d\",e\r\n",
+    "expected": "a,b\n\"c,d\",e\n",
+    "payload": "\"a\",b\r\n\"c,d\",e\r\n"
+  },
+  {
+    "id": "compose08",
+    "steps": [
+      "Encode these existing row lists as CSV text with appropriate escaping.",
+      "Recover the rows of fields from that CSV document."
+    ],
+    "initial_payload": [
+      [
+        "a,b",
+        "\"q\""
+      ],
+      [
+        "line\nbreak",
+        "z"
+      ]
+    ],
+    "expected": [
+      [
+        "a,b",
+        "\"q\""
+      ],
+      [
+        "line\nbreak",
+        "z"
+      ]
+    ],
+    "payload": [
+      [
+        "a,b",
+        "\"q\""
+      ],
+      [
+        "line\nbreak",
+        "z"
+      ]
+    ]
+  },
+  {
+    "id": "compose09",
+    "steps": [
+      "Compose canonically equivalent Unicode sequences without changing compatibility variants.",
+      "Replace all whitespace runs with single spaces and trim the edges."
+    ],
+    "initial_payload": "  Café\t①\nFIN  ",
+    "expected": "Café ① FIN",
+    "payload": "  Café\t①\nFIN  "
+  },
+  {
+    "id": "compose10",
+    "steps": [
+      "Remove letter-case distinctions through Unicode case folding.",
+      "Rebuild the text with one ordinary space between whitespace-separated tokens."
+    ],
+    "initial_payload": "  Straße\tΩ\n END  ",
+    "expected": "strasse ω end",
+    "payload": "  Straße\tΩ\n END  "
+  },
+  {
+    "id": "compose11",
+    "steps": [
+      "Keep the earliest copy of each listed string and discard repetitions.",
+      "Sort the remaining textual numbers by increasing numerical value."
+    ],
+    "initial_payload": [
+      "10",
+      "2",
+      "10",
+      "-3",
+      "2"
+    ],
+    "expected": [
+      "-3",
+      "2",
+      "10"
+    ],
+    "payload": [
+      "10",
+      "2",
+      "10",
+      "-3",
+      "2"
+    ]
+  },
+  {
+    "id": "compose12",
+    "steps": [
+      "Make a caseless alphabetical ordering of these original strings.",
+      "Keep only the first occurrence of each exact string in the resulting list."
+    ],
+    "initial_payload": [
+      "z",
+      "A",
+      "a",
+      "z",
+      "A"
+    ],
+    "expected": [
+      "A",
+      "a",
+      "z"
+    ],
+    "payload": [
+      "z",
+      "A",
+      "a",
+      "z",
+      "A"
+    ]
+  }
+]

@@ -1,0 +1,203 @@
+[
+  {
+    "as_of": 3,
+    "expected": [
+      "8",
+      "2",
+      "-1"
+    ],
+    "id": "profile:3:amber",
+    "original_text": "Process this payload under the current amber project rule.",
+    "payload": [
+      "8",
+      "2",
+      "8",
+      "-1"
+    ],
+    "project": "amber",
+    "skill": "unique_stable",
+    "source_digest": "acee00f99636e96a91a2c707961fb154c173b34a5f0c741b87bcf594f37ca334",
+    "source_revision": 1,
+    "text": "Current project rule: Keep just the first occurrence of each listed item.\nRequest: Process this payload under the current amber project rule."
+  },
+  {
+    "as_of": 3,
+    "expected": "Ａ Café ①",
+    "id": "profile:3:birch",
+    "original_text": "Process this payload under the current birch project rule.",
+    "payload": "Ａ Café ①",
+    "project": "birch",
+    "skill": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "text": "Current project rule: Compose canonical Unicode sequences while preserving compatibility characters.\nRequest: Process this payload under the current birch project rule."
+  },
+  {
+    "as_of": 3,
+    "expected": {
+      "ok": true,
+      "values": [
+        3,
+        1
+      ]
+    },
+    "id": "profile:3:cobalt",
+    "original_text": "Process this payload under the current cobalt project rule.",
+    "payload": "{ \"ok\" : true, \"values\" : [ 3, 1 ] }",
+    "project": "cobalt",
+    "skill": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "text": "Current project rule: Decode the JSON document into structured values.\nRequest: Process this payload under the current cobalt project rule."
+  },
+  {
+    "as_of": 4,
+    "expected": [
+      "-1",
+      "2",
+      "8",
+      "8"
+    ],
+    "id": "profile:4:amber",
+    "original_text": "Process this payload under the current amber project rule.",
+    "payload": [
+      "8",
+      "2",
+      "8",
+      "-1"
+    ],
+    "project": "amber",
+    "skill": "sort_numeric",
+    "source_digest": "e7e5f5ccb467e6c7e9f2eea4f712f58c11a83bddd0c45880425ee49e3602762c",
+    "source_revision": 2,
+    "text": "Current project rule: Order the textual numbers from the smallest value to the largest.\nRequest: Process this payload under the current amber project rule."
+  },
+  {
+    "as_of": 4,
+    "expected": "Ａ Café ①",
+    "id": "profile:4:birch",
+    "original_text": "Process this payload under the current birch project rule.",
+    "payload": "Ａ Café ①",
+    "project": "birch",
+    "skill": "normalize_nfc",
+    "source_digest": "698371bc4f2089907c24184ec5419111af7c64b307197d75ad6af5c99f3aab62",
+    "source_revision": 1,
+    "text": "Current project rule: Compose canonical Unicode sequences while preserving compatibility characters.\nRequest: Process this payload under the current birch project rule."
+  },
+  {
+    "as_of": 4,
+    "expected": {
+      "ok": true,
+      "values": [
+        3,
+        1
+      ]
+    },
+    "id": "profile:4:cobalt",
+    "original_text": "Process this payload under the current cobalt project rule.",
+    "payload": "{ \"ok\" : true, \"values\" : [ 3, 1 ] }",
+    "project": "cobalt",
+    "skill": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "text": "Current project rule: Decode the JSON document into structured values.\nRequest: Process this payload under the current cobalt project rule."
+  },
+  {
+    "as_of": 5,
+    "expected": [
+      "-1",
+      "2",
+      "8",
+      "8"
+    ],
+    "id": "profile:5:amber",
+    "original_text": "Process this payload under the current amber project rule.",
+    "payload": [
+      "8",
+      "2",
+      "8",
+      "-1"
+    ],
+    "project": "amber",
+    "skill": "sort_numeric",
+    "source_digest": "e7e5f5ccb467e6c7e9f2eea4f712f58c11a83bddd0c45880425ee49e3602762c",
+    "source_revision": 2,
+    "text": "Current project rule: Order the textual numbers from the smallest value to the largest.\nRequest: Process this payload under the current amber project rule."
+  },
+  {
+    "as_of": 5,
+    "expected": "A Café 1",
+    "id": "profile:5:birch",
+    "original_text": "Process this payload under the current birch project rule.",
+    "payload": "Ａ Café ①",
+    "project": "birch",
+    "skill": "normalize_nfkc",
+    "source_digest": "49f379e09fd3360130bc29b51c86ffe440a102061dd17352aa1cb682f50c32c6",
+    "source_revision": 2,
+    "text": "Current project rule: Fold compatibility Unicode forms and compose the result.\nRequest: Process this payload under the current birch project rule."
+  },
+  {
+    "as_of": 5,
+    "expected": {
+      "ok": true,
+      "values": [
+        3,
+        1
+      ]
+    },
+    "id": "profile:5:cobalt",
+    "original_text": "Process this payload under the current cobalt project rule.",
+    "payload": "{ \"ok\" : true, \"values\" : [ 3, 1 ] }",
+    "project": "cobalt",
+    "skill": "json_parse",
+    "source_digest": "db522da04c3b22b3bebcdd6f273af8904ec330b44b1513a7b1e2cd4505601e7c",
+    "source_revision": 1,
+    "text": "Current project rule: Decode the JSON document into structured values.\nRequest: Process this payload under the current cobalt project rule."
+  },
+  {
+    "as_of": 6,
+    "expected": [
+      "-1",
+      "2",
+      "8",
+      "8"
+    ],
+    "id": "profile:6:amber",
+    "original_text": "Process this payload under the current amber project rule.",
+    "payload": [
+      "8",
+      "2",
+      "8",
+      "-1"
+    ],
+    "project": "amber",
+    "skill": "sort_numeric",
+    "source_digest": "e7e5f5ccb467e6c7e9f2eea4f712f58c11a83bddd0c45880425ee49e3602762c",
+    "source_revision": 2,
+    "text": "Current project rule: Order the textual numbers from the smallest value to the largest.\nRequest: Process this payload under the current amber project rule."
+  },
+  {
+    "as_of": 6,
+    "expected": "A Café 1",
+    "id": "profile:6:birch",
+    "original_text": "Process this payload under the current birch project rule.",
+    "payload": "Ａ Café ①",
+    "project": "birch",
+    "skill": "normalize_nfkc",
+    "source_digest": "49f379e09fd3360130bc29b51c86ffe440a102061dd17352aa1cb682f50c32c6",
+    "source_revision": 2,
+    "text": "Current project rule: Fold compatibility Unicode forms and compose the result.\nRequest: Process this payload under the current birch project rule."
+  },
+  {
+    "as_of": 6,
+    "expected": "{\"ok\":true,\"values\":[3,1]}",
+    "id": "profile:6:cobalt",
+    "original_text": "Process this payload under the current cobalt project rule.",
+    "payload": "{ \"ok\" : true, \"values\" : [ 3, 1 ] }",
+    "project": "cobalt",
+    "skill": "json_compact",
+    "source_digest": "ef76d53b64a78aa5a13c01a6b8a7ef1af85afe151dda03ae8bf743fea88b396f",
+    "source_revision": 2,
+    "text": "Current project rule: Return compact JSON text without optional formatting whitespace.\nRequest: Process this payload under the current cobalt project rule."
+  }
+]

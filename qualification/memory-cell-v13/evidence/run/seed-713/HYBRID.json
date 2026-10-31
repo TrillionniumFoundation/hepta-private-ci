@@ -1,0 +1,51 @@
+{
+  "pure_parametric_memory_claim": false,
+  "results": {
+    "bm25": {
+      "accepted": 12,
+      "correct": 12,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 12,
+      "scoring_cpu_seconds": 0.009256445999999974,
+      "scoring_wall_seconds": 0.009258439007680863
+    },
+    "fixed": {
+      "accepted": 12,
+      "correct": 10,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 10,
+      "scoring_cpu_seconds": 0.0005414940000001423,
+      "scoring_wall_seconds": 0.000543237998499535
+    },
+    "nearest": {
+      "accepted": 12,
+      "correct": 10,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 10,
+      "scoring_cpu_seconds": 0.0005190310000000586,
+      "scoring_wall_seconds": 0.0005206740024732426
+    },
+    "ridge": {
+      "accepted": 12,
+      "correct": 10,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 10,
+      "scoring_cpu_seconds": 0.00018836899999996604,
+      "scoring_wall_seconds": 0.00018971599638462067
+    },
+    "single": {
+      "accepted": 12,
+      "correct": 10,
+      "encoder_cost_included": false,
+      "evaluated": 12,
+      "label_correct": 10,
+      "scoring_cpu_seconds": 0.00025985600000000275,
+      "scoring_wall_seconds": 0.0002616540004964918
+    }
+  },
+  "source_reading": true
+}

@@ -1,0 +1,50 @@
+{
+  "differing_fields": [
+    "effective_dispatch",
+    "enabled_dispatch",
+    "environment",
+    "float64_kernels"
+  ],
+  "errors": [
+    "resume: capture did not pass",
+    "resume: nonbaseline CPU dispatch remains enabled or baseline is unavailable",
+    "resume: disabled features do not exactly cover this wheel's dispatch list",
+    "resume: required float64 ufunc kernels are not all baseline",
+    "numerical profiles differ: effective_dispatch, enabled_dispatch, environment, float64_kernels"
+  ],
+  "passed": false,
+  "profiles": [
+    {
+      "boot_id": "a89234ad-736c-40da-9707-6b421b087b2f",
+      "comparable_sha256": "a9f21b4e460b637ba577f84b3d0d35729730f6df6224493513fa116679c8e415",
+      "path": "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/BASELINE.json",
+      "profile_file": {
+        "bytes": 6347,
+        "sha256": "3c8302e58ce56ca89ec4a2561f9da7c474691bc207adeae0d4d212353ae5bd0c"
+      },
+      "role": "prepare"
+    },
+    {
+      "boot_id": "a89234ad-736c-40da-9707-6b421b087b2f",
+      "comparable_sha256": "4d1cfecd2133edeea52434a5b4fe2d78f7a5c8747455eb9c4c9624760e4c91ec",
+      "path": "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/DEFAULT_REJECTED.json",
+      "profile_file": {
+        "bytes": 6506,
+        "sha256": "e7b264b1a12dfd2e501cd89735f53e1988c4f2ef65ff65b319e998f8bac7534e"
+      },
+      "role": "resume"
+    },
+    {
+      "boot_id": "a89234ad-736c-40da-9707-6b421b087b2f",
+      "comparable_sha256": "a9f21b4e460b637ba577f84b3d0d35729730f6df6224493513fa116679c8e415",
+      "path": "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/verify_fixture.json",
+      "profile_file": {
+        "bytes": 6231,
+        "sha256": "1b424c527524befac86784b66ce0af8c8aa3d09fef3925ae3e52c86f79007654"
+      },
+      "role": "verify"
+    }
+  ],
+  "schema": "hepta.memory.numerics-profile.v13.comparison",
+  "scope": "Effective numerical profile only; unchanged migration.py must independently pass bit-exact state checks."
+}

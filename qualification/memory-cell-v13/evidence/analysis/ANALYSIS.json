@@ -1,0 +1,708 @@
+{
+  "claims": {
+    "beneficial_learned_split_demonstrated": false,
+    "complete_cost_positive_task_found": false,
+    "finite_parametric_binding_demonstrated": true,
+    "general_memory_emergence_demonstrated": false,
+    "old_skill_retention_preserved": false,
+    "specialized_cells_exclusive_advantage": false
+  },
+  "cross_node_result": "See migration-local and migration-ci receipts; not inferred from local analysis.",
+  "held_requests": 72,
+  "repeated_seeds_do_not_multiply_sample_size": true,
+  "schema": "hepta.memory-cell-v13.postrun-analysis.v1",
+  "seeds": [
+    {
+      "calibration_correct": {
+        "bm25": 18,
+        "centroid": 42,
+        "continue": 41,
+        "exact_store": 0,
+        "fixed": 40,
+        "interference": 36,
+        "learned": 40,
+        "nearest": 37,
+        "random": 39,
+        "ridge": 38,
+        "single": 41,
+        "wide": 36
+      },
+      "corrected_project_profiles": [
+        {
+          "exact_kv": 12,
+          "frontier": 3,
+          "frozen": 1,
+          "no_replay": 12,
+          "replay": 12,
+          "retention_no_replay": 27,
+          "retention_replay": 52
+        },
+        {
+          "exact_kv": 12,
+          "frontier": 4,
+          "frozen": 0,
+          "no_replay": 12,
+          "replay": 11,
+          "retention_no_replay": 17,
+          "retention_replay": 53
+        },
+        {
+          "exact_kv": 12,
+          "frontier": 5,
+          "frozen": 2,
+          "no_replay": 12,
+          "replay": 12,
+          "retention_no_replay": 13,
+          "retention_replay": 55
+        },
+        {
+          "exact_kv": 12,
+          "frontier": 6,
+          "frozen": 2,
+          "no_replay": 12,
+          "replay": 12,
+          "retention_no_replay": 9,
+          "retention_replay": 52
+        }
+      ],
+      "final_retention_paired": {
+        "both_correct": 51,
+        "both_incorrect": 12,
+        "left_only_correct": 8,
+        "requests": 72,
+        "right_only_correct": 1
+      },
+      "paired_vs_single": {
+        "centroid": {
+          "both_correct": 55,
+          "both_incorrect": 8,
+          "left_only_correct": 5,
+          "requests": 72,
+          "right_only_correct": 4
+        },
+        "continue": {
+          "both_correct": 59,
+          "both_incorrect": 13,
+          "left_only_correct": 0,
+          "requests": 72,
+          "right_only_correct": 0
+        },
+        "fixed": {
+          "both_correct": 57,
+          "both_incorrect": 11,
+          "left_only_correct": 2,
+          "requests": 72,
+          "right_only_correct": 2
+        },
+        "interference": {
+          "both_correct": 51,
+          "both_incorrect": 12,
+          "left_only_correct": 1,
+          "requests": 72,
+          "right_only_correct": 8
+        },
+        "learned": {
+          "both_correct": 56,
+          "both_incorrect": 12,
+          "left_only_correct": 1,
+          "requests": 72,
+          "right_only_correct": 3
+        },
+        "nearest": {
+          "both_correct": 56,
+          "both_incorrect": 11,
+          "left_only_correct": 2,
+          "requests": 72,
+          "right_only_correct": 3
+        },
+        "random": {
+          "both_correct": 53,
+          "both_incorrect": 12,
+          "left_only_correct": 1,
+          "requests": 72,
+          "right_only_correct": 6
+        },
+        "ridge": {
+          "both_correct": 57,
+          "both_incorrect": 9,
+          "left_only_correct": 4,
+          "requests": 72,
+          "right_only_correct": 2
+        },
+        "wide": {
+          "both_correct": 52,
+          "both_incorrect": 11,
+          "left_only_correct": 2,
+          "requests": 72,
+          "right_only_correct": 7
+        }
+      },
+      "retention_by_skill": {
+        "casefold": {
+          "after": 4,
+          "before": 5,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "collapse_whitespace": {
+          "after": 5,
+          "before": 5,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "count_items": {
+          "after": 4,
+          "before": 6,
+          "gained": 0,
+          "lost": 2,
+          "total": 6
+        },
+        "csv_parse": {
+          "after": 3,
+          "before": 4,
+          "gained": 1,
+          "lost": 2,
+          "total": 6
+        },
+        "csv_write": {
+          "after": 5,
+          "before": 5,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "json_compact": {
+          "after": 3,
+          "before": 4,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "json_parse": {
+          "after": 6,
+          "before": 6,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "normalize_nfc": {
+          "after": 2,
+          "before": 3,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "normalize_nfkc": {
+          "after": 6,
+          "before": 6,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "sort_casefold": {
+          "after": 5,
+          "before": 5,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "sort_numeric": {
+          "after": 3,
+          "before": 4,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "unique_stable": {
+          "after": 6,
+          "before": 6,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        }
+      },
+      "seed": 713,
+      "selected": "single",
+      "test_correct": {
+        "bm25": 42,
+        "centroid": 60,
+        "continue": 59,
+        "exact_store": 0,
+        "fixed": 59,
+        "interference": 52,
+        "learned": 57,
+        "nearest": 58,
+        "random": 54,
+        "ridge": 61,
+        "single": 59,
+        "wide": 54
+      }
+    },
+    {
+      "calibration_correct": {
+        "bm25": 18,
+        "centroid": 42,
+        "continue": 41,
+        "exact_store": 0,
+        "fixed": 40,
+        "interference": 36,
+        "learned": 41,
+        "nearest": 37,
+        "random": 32,
+        "ridge": 38,
+        "single": 41,
+        "wide": 41
+      },
+      "corrected_project_profiles": [
+        {
+          "exact_kv": 12,
+          "frontier": 3,
+          "frozen": 1,
+          "no_replay": 12,
+          "replay": 12,
+          "retention_no_replay": 26,
+          "retention_replay": 52
+        },
+        {
+          "exact_kv": 12,
+          "frontier": 4,
+          "frozen": 0,
+          "no_replay": 12,
+          "replay": 11,
+          "retention_no_replay": 12,
+          "retention_replay": 53
+        },
+        {
+          "exact_kv": 12,
+          "frontier": 5,
+          "frozen": 2,
+          "no_replay": 12,
+          "replay": 12,
+          "retention_no_replay": 10,
+          "retention_replay": 53
+        },
+        {
+          "exact_kv": 12,
+          "frontier": 6,
+          "frozen": 2,
+          "no_replay": 12,
+          "replay": 12,
+          "retention_no_replay": 9,
+          "retention_replay": 55
+        }
+      ],
+      "final_retention_paired": {
+        "both_correct": 55,
+        "both_incorrect": 11,
+        "left_only_correct": 6,
+        "requests": 72,
+        "right_only_correct": 0
+      },
+      "paired_vs_single": {
+        "centroid": {
+          "both_correct": 56,
+          "both_incorrect": 7,
+          "left_only_correct": 4,
+          "requests": 72,
+          "right_only_correct": 5
+        },
+        "continue": {
+          "both_correct": 61,
+          "both_incorrect": 11,
+          "left_only_correct": 0,
+          "requests": 72,
+          "right_only_correct": 0
+        },
+        "fixed": {
+          "both_correct": 58,
+          "both_incorrect": 10,
+          "left_only_correct": 1,
+          "requests": 72,
+          "right_only_correct": 3
+        },
+        "interference": {
+          "both_correct": 53,
+          "both_incorrect": 8,
+          "left_only_correct": 3,
+          "requests": 72,
+          "right_only_correct": 8
+        },
+        "learned": {
+          "both_correct": 60,
+          "both_incorrect": 11,
+          "left_only_correct": 0,
+          "requests": 72,
+          "right_only_correct": 1
+        },
+        "nearest": {
+          "both_correct": 57,
+          "both_incorrect": 10,
+          "left_only_correct": 1,
+          "requests": 72,
+          "right_only_correct": 4
+        },
+        "random": {
+          "both_correct": 50,
+          "both_incorrect": 9,
+          "left_only_correct": 2,
+          "requests": 72,
+          "right_only_correct": 11
+        },
+        "ridge": {
+          "both_correct": 59,
+          "both_incorrect": 9,
+          "left_only_correct": 2,
+          "requests": 72,
+          "right_only_correct": 2
+        },
+        "wide": {
+          "both_correct": 53,
+          "both_incorrect": 9,
+          "left_only_correct": 2,
+          "requests": 72,
+          "right_only_correct": 8
+        }
+      },
+      "retention_by_skill": {
+        "casefold": {
+          "after": 5,
+          "before": 5,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "collapse_whitespace": {
+          "after": 5,
+          "before": 5,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "count_items": {
+          "after": 5,
+          "before": 6,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "csv_parse": {
+          "after": 4,
+          "before": 4,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "csv_write": {
+          "after": 4,
+          "before": 5,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "json_compact": {
+          "after": 4,
+          "before": 4,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "json_parse": {
+          "after": 6,
+          "before": 6,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "normalize_nfc": {
+          "after": 2,
+          "before": 3,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "normalize_nfkc": {
+          "after": 6,
+          "before": 6,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "sort_casefold": {
+          "after": 5,
+          "before": 6,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "sort_numeric": {
+          "after": 5,
+          "before": 5,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "unique_stable": {
+          "after": 4,
+          "before": 6,
+          "gained": 0,
+          "lost": 2,
+          "total": 6
+        }
+      },
+      "seed": 971,
+      "selected": "single",
+      "test_correct": {
+        "bm25": 42,
+        "centroid": 60,
+        "continue": 61,
+        "exact_store": 0,
+        "fixed": 59,
+        "interference": 56,
+        "learned": 60,
+        "nearest": 58,
+        "random": 52,
+        "ridge": 61,
+        "single": 61,
+        "wide": 55
+      }
+    },
+    {
+      "calibration_correct": {
+        "bm25": 18,
+        "centroid": 42,
+        "continue": 38,
+        "exact_store": 0,
+        "fixed": 38,
+        "interference": 37,
+        "learned": 38,
+        "nearest": 37,
+        "random": 41,
+        "ridge": 38,
+        "single": 39,
+        "wide": 34
+      },
+      "corrected_project_profiles": [
+        {
+          "exact_kv": 12,
+          "frontier": 3,
+          "frozen": 0,
+          "no_replay": 12,
+          "replay": 12,
+          "retention_no_replay": 31,
+          "retention_replay": 54
+        },
+        {
+          "exact_kv": 12,
+          "frontier": 4,
+          "frozen": 0,
+          "no_replay": 12,
+          "replay": 12,
+          "retention_no_replay": 15,
+          "retention_replay": 54
+        },
+        {
+          "exact_kv": 12,
+          "frontier": 5,
+          "frozen": 4,
+          "no_replay": 12,
+          "replay": 12,
+          "retention_no_replay": 15,
+          "retention_replay": 51
+        },
+        {
+          "exact_kv": 12,
+          "frontier": 6,
+          "frozen": 4,
+          "no_replay": 12,
+          "replay": 12,
+          "retention_no_replay": 11,
+          "retention_replay": 48
+        }
+      ],
+      "final_retention_paired": {
+        "both_correct": 47,
+        "both_incorrect": 10,
+        "left_only_correct": 14,
+        "requests": 72,
+        "right_only_correct": 1
+      },
+      "paired_vs_single": {
+        "centroid": {
+          "both_correct": 55,
+          "both_incorrect": 6,
+          "left_only_correct": 5,
+          "requests": 72,
+          "right_only_correct": 6
+        },
+        "continue": {
+          "both_correct": 61,
+          "both_incorrect": 11,
+          "left_only_correct": 0,
+          "requests": 72,
+          "right_only_correct": 0
+        },
+        "fixed": {
+          "both_correct": 58,
+          "both_incorrect": 10,
+          "left_only_correct": 1,
+          "requests": 72,
+          "right_only_correct": 3
+        },
+        "interference": {
+          "both_correct": 54,
+          "both_incorrect": 9,
+          "left_only_correct": 2,
+          "requests": 72,
+          "right_only_correct": 7
+        },
+        "learned": {
+          "both_correct": 58,
+          "both_incorrect": 11,
+          "left_only_correct": 0,
+          "requests": 72,
+          "right_only_correct": 3
+        },
+        "nearest": {
+          "both_correct": 55,
+          "both_incorrect": 8,
+          "left_only_correct": 3,
+          "requests": 72,
+          "right_only_correct": 6
+        },
+        "random": {
+          "both_correct": 47,
+          "both_incorrect": 8,
+          "left_only_correct": 3,
+          "requests": 72,
+          "right_only_correct": 14
+        },
+        "ridge": {
+          "both_correct": 58,
+          "both_incorrect": 8,
+          "left_only_correct": 3,
+          "requests": 72,
+          "right_only_correct": 3
+        },
+        "wide": {
+          "both_correct": 53,
+          "both_incorrect": 9,
+          "left_only_correct": 2,
+          "requests": 72,
+          "right_only_correct": 8
+        }
+      },
+      "retention_by_skill": {
+        "casefold": {
+          "after": 4,
+          "before": 5,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "collapse_whitespace": {
+          "after": 5,
+          "before": 5,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "count_items": {
+          "after": 2,
+          "before": 6,
+          "gained": 0,
+          "lost": 4,
+          "total": 6
+        },
+        "csv_parse": {
+          "after": 4,
+          "before": 4,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "csv_write": {
+          "after": 4,
+          "before": 5,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "json_compact": {
+          "after": 3,
+          "before": 4,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "json_parse": {
+          "after": 4,
+          "before": 6,
+          "gained": 0,
+          "lost": 2,
+          "total": 6
+        },
+        "normalize_nfc": {
+          "after": 4,
+          "before": 4,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "normalize_nfkc": {
+          "after": 5,
+          "before": 6,
+          "gained": 0,
+          "lost": 1,
+          "total": 6
+        },
+        "sort_casefold": {
+          "after": 5,
+          "before": 5,
+          "gained": 0,
+          "lost": 0,
+          "total": 6
+        },
+        "sort_numeric": {
+          "after": 4,
+          "before": 5,
+          "gained": 1,
+          "lost": 2,
+          "total": 6
+        },
+        "unique_stable": {
+          "after": 4,
+          "before": 6,
+          "gained": 0,
+          "lost": 2,
+          "total": 6
+        }
+      },
+      "seed": 1237,
+      "selected": "random",
+      "test_correct": {
+        "bm25": 42,
+        "centroid": 60,
+        "continue": 61,
+        "exact_store": 0,
+        "fixed": 59,
+        "interference": 56,
+        "learned": 58,
+        "nearest": 58,
+        "random": 50,
+        "ridge": 61,
+        "single": 61,
+        "wide": 55
+      }
+    }
+  ],
+  "source_sha256": "4149a7502a278035092d7038d68fa7306ee98f4149825a0c1b40ca7c4375ae3f",
+  "wording_summary": {
+    "exact_normalized_matches": 0,
+    "interpretation": "Authored independent wording; overlap is not an independence proof. No data selection uses this audit.",
+    "maximum_token_jaccard": 0.38461538461538464,
+    "mean_maximum_token_jaccard": 0.2044533101556955,
+    "query_count": 72
+  }
+}

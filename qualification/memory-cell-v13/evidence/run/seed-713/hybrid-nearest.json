@@ -1,0 +1,229 @@
+{
+  "accepted": 12,
+  "correct": 10,
+  "encoder_cost_included": false,
+  "evaluated": 12,
+  "label_correct": 10,
+  "predictions": [
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "8",
+        "2",
+        "-1"
+      ],
+      "expected_skill": "unique_stable",
+      "id": "profile:3:amber",
+      "label_correct": true,
+      "output": [
+        "8",
+        "2",
+        "-1"
+      ],
+      "predicted_skill": "unique_stable",
+      "prediction": 0,
+      "query": "Current project rule: Keep just the first occurrence of each listed item.\nRequest: Process this payload under the current amber project rule."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "Ａ Café ①",
+      "expected_skill": "normalize_nfc",
+      "id": "profile:3:birch",
+      "label_correct": false,
+      "output": "A Café 1",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Current project rule: Compose canonical Unicode sequences while preserving compatibility characters.\nRequest: Process this payload under the current birch project rule."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "ok": true,
+        "values": [
+          3,
+          1
+        ]
+      },
+      "expected_skill": "json_parse",
+      "id": "profile:3:cobalt",
+      "label_correct": true,
+      "output": {
+        "ok": true,
+        "values": [
+          3,
+          1
+        ]
+      },
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Current project rule: Decode the JSON document into structured values.\nRequest: Process this payload under the current cobalt project rule."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-1",
+        "2",
+        "8",
+        "8"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "profile:4:amber",
+      "label_correct": true,
+      "output": [
+        "-1",
+        "2",
+        "8",
+        "8"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Current project rule: Order the textual numbers from the smallest value to the largest.\nRequest: Process this payload under the current amber project rule."
+    },
+    {
+      "correct": false,
+      "error": null,
+      "expected_output": "Ａ Café ①",
+      "expected_skill": "normalize_nfc",
+      "id": "profile:4:birch",
+      "label_correct": false,
+      "output": "A Café 1",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Current project rule: Compose canonical Unicode sequences while preserving compatibility characters.\nRequest: Process this payload under the current birch project rule."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "ok": true,
+        "values": [
+          3,
+          1
+        ]
+      },
+      "expected_skill": "json_parse",
+      "id": "profile:4:cobalt",
+      "label_correct": true,
+      "output": {
+        "ok": true,
+        "values": [
+          3,
+          1
+        ]
+      },
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Current project rule: Decode the JSON document into structured values.\nRequest: Process this payload under the current cobalt project rule."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-1",
+        "2",
+        "8",
+        "8"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "profile:5:amber",
+      "label_correct": true,
+      "output": [
+        "-1",
+        "2",
+        "8",
+        "8"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Current project rule: Order the textual numbers from the smallest value to the largest.\nRequest: Process this payload under the current amber project rule."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "A Café 1",
+      "expected_skill": "normalize_nfkc",
+      "id": "profile:5:birch",
+      "label_correct": true,
+      "output": "A Café 1",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Current project rule: Fold compatibility Unicode forms and compose the result.\nRequest: Process this payload under the current birch project rule."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": {
+        "ok": true,
+        "values": [
+          3,
+          1
+        ]
+      },
+      "expected_skill": "json_parse",
+      "id": "profile:5:cobalt",
+      "label_correct": true,
+      "output": {
+        "ok": true,
+        "values": [
+          3,
+          1
+        ]
+      },
+      "predicted_skill": "json_parse",
+      "prediction": 10,
+      "query": "Current project rule: Decode the JSON document into structured values.\nRequest: Process this payload under the current cobalt project rule."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": [
+        "-1",
+        "2",
+        "8",
+        "8"
+      ],
+      "expected_skill": "sort_numeric",
+      "id": "profile:6:amber",
+      "label_correct": true,
+      "output": [
+        "-1",
+        "2",
+        "8",
+        "8"
+      ],
+      "predicted_skill": "sort_numeric",
+      "prediction": 1,
+      "query": "Current project rule: Order the textual numbers from the smallest value to the largest.\nRequest: Process this payload under the current amber project rule."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "A Café 1",
+      "expected_skill": "normalize_nfkc",
+      "id": "profile:6:birch",
+      "label_correct": true,
+      "output": "A Café 1",
+      "predicted_skill": "normalize_nfkc",
+      "prediction": 5,
+      "query": "Current project rule: Fold compatibility Unicode forms and compose the result.\nRequest: Process this payload under the current birch project rule."
+    },
+    {
+      "correct": true,
+      "error": null,
+      "expected_output": "{\"ok\":true,\"values\":[3,1]}",
+      "expected_skill": "json_compact",
+      "id": "profile:6:cobalt",
+      "label_correct": true,
+      "output": "{\"ok\":true,\"values\":[3,1]}",
+      "predicted_skill": "json_compact",
+      "prediction": 11,
+      "query": "Current project rule: Return compact JSON text without optional formatting whitespace.\nRequest: Process this payload under the current cobalt project rule."
+    }
+  ],
+  "scoring_cpu_seconds": 0.0005190310000000586,
+  "scoring_wall_seconds": 0.0005206740024732426
+}

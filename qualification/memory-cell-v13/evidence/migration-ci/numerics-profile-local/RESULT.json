@@ -1,0 +1,116 @@
+{
+  "baseline_enabled_dispatch": [],
+  "baseline_kernels": {
+    "add": {
+      "ddd": {
+        "available": "AVX2 baseline(SSE SSE2 SSE3)",
+        "current": "baseline(SSE SSE2 SSE3)"
+      }
+    },
+    "divide": {
+      "ddd": {
+        "available": "AVX2 baseline(SSE SSE2 SSE3)",
+        "current": "baseline(SSE SSE2 SSE3)"
+      }
+    },
+    "exp": {
+      "dd": {
+        "available": "AVX512_SKX AVX512F AVX2 baseline(SSE SSE2 SSE3)",
+        "current": "baseline(SSE SSE2 SSE3)"
+      }
+    },
+    "multiply": {
+      "ddd": {
+        "available": "AVX2 baseline(SSE SSE2 SSE3)",
+        "current": "baseline(SSE SSE2 SSE3)"
+      }
+    },
+    "sqrt": {
+      "dd": {
+        "available": "SSE41 baseline(SSE SSE2 SSE3)",
+        "current": "baseline(SSE SSE2 SSE3)"
+      }
+    },
+    "subtract": {
+      "ddd": {
+        "available": "AVX2 baseline(SSE SSE2 SSE3)",
+        "current": "baseline(SSE SSE2 SSE3)"
+      }
+    },
+    "tanh": {
+      "dd": {
+        "available": "AVX512_SKX AVX2 baseline(SSE SSE2 SSE3)",
+        "current": "baseline(SSE SSE2 SSE3)"
+      }
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "qualification/memory-cell-v13/numerics_profile.py",
+        "capture",
+        "--role",
+        "prepare",
+        "--out",
+        "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/BASELINE.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "label": "baseline",
+      "wall_seconds": 0.1353849269944476
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "qualification/memory-cell-v13/numerics_profile.py",
+        "capture",
+        "--role",
+        "resume",
+        "--out",
+        "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/DEFAULT_REJECTED.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "label": "default",
+      "wall_seconds": 0.1422286390006775
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "qualification/memory-cell-v13/numerics_profile.py",
+        "compare",
+        "--profiles",
+        "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/BASELINE.json",
+        "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/resume_fixture.json",
+        "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/verify_fixture.json",
+        "--out",
+        "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/COMPARE_EQUAL.json"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "label": "compare-equal",
+      "wall_seconds": 0.09983275400009006
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "qualification/memory-cell-v13/numerics_profile.py",
+        "compare",
+        "--profiles",
+        "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/BASELINE.json",
+        "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/DEFAULT_REJECTED.json",
+        "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/verify_fixture.json",
+        "--out",
+        "qualification/memory-cell-v13/evidence/migration-ci/numerics-profile-local/COMPARE_DEFAULT_REJECTED.json"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "label": "compare-default-rejected",
+      "wall_seconds": 0.11575403199822176
+    }
+  ],
+  "frozen_sources_unchanged": true,
+  "helper_sha256": "db7c1e783e4b3e0e624ab2c57fa14a50ca9b5e8203aea9126dbf1a080588819a",
+  "scope": "Local helper qualification only: one genuine baseline capture, one genuine default-dispatch capture; role copies are explicitly synthetic comparison fixtures, not separate nodes. No adapter training or original test suite was executed."
+}
