@@ -348,6 +348,33 @@ impl CodexResponsesMetadata {
         headers
     }
 
+    /// Bind the stable context of a reusable WebSocket connection.
+    ///
+    /// Request kind, turn lineage, and extra client metadata travel on each
+    /// response.create frame. They may change after startup prewarm or between
+    /// turns without replacing the connection. Recovery still binds those
+    /// values through the separate, complete request projection below.
+    pub(crate) fn websocket_connection_compatibility_projection(
+        &self,
+    ) -> WebsocketConnectionCompatibilityProjection<'_> {
+        WebsocketConnectionCompatibilityProjection {
+            schema: "websocket-connection-compatibility:v1",
+            agent_name: self.agent_name.as_deref(),
+            forked_from_thread_id: self.forked_from_thread_id,
+            parent_thread_id: self.parent_thread_id,
+            subagent_header: self.subagent_header.as_deref(),
+            subagent_kind: self.subagent_kind.as_deref(),
+            thread_source: self.thread_source.as_ref(),
+            sandbox: self.sandbox.as_deref(),
+            sandbox_mode: self.sandbox_mode.as_deref(),
+            auto_review_enabled: self.auto_review_enabled,
+            node_repl_auto_review_required: self.node_repl_auto_review_required,
+            node_repl_disabled: self.node_repl_disabled,
+            workspaces: &self.workspaces,
+            tool_namespaces_info: self.tool_namespaces_info.as_ref(),
+        }
+    }
+
     /// Returns the transport-neutral, behavior-affecting compatibility
     /// projection used to bind a recoverable provider request. Request IDs,
     /// session/window identity, and wall-clock fields are deliberately absent:
@@ -441,6 +468,26 @@ impl CodexResponsesMetadata {
             extra: &self.extra,
         }
     }
+}
+
+/// Security and thread context that must match before reusing a connection.
+/// Per-frame turn identity and client metadata are deliberately absent.
+#[derive(Serialize)]
+pub(crate) struct WebsocketConnectionCompatibilityProjection<'a> {
+    schema: &'static str,
+    agent_name: Option<&'a str>,
+    forked_from_thread_id: Option<ThreadId>,
+    parent_thread_id: Option<ThreadId>,
+    subagent_header: Option<&'a str>,
+    subagent_kind: Option<&'a str>,
+    thread_source: Option<&'a ThreadSource>,
+    sandbox: Option<&'a str>,
+    sandbox_mode: Option<&'a str>,
+    auto_review_enabled: Option<bool>,
+    node_repl_auto_review_required: Option<bool>,
+    node_repl_disabled: Option<bool>,
+    workspaces: &'a BTreeMap<String, TurnMetadataWorkspace>,
+    tool_namespaces_info: Option<&'a TurnToolNamespacesInfo>,
 }
 
 /// Stable compatibility fields shared by HTTP and WebSocket turn sends.
