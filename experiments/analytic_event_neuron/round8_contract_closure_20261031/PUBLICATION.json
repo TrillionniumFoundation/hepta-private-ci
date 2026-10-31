@@ -1,0 +1,75 @@
+{
+  "base_branch": "research/analytic-event-joint-value-20261030-r7",
+  "base_commit": "1bbf9712140ec388f7fb7967fa7b22244386441d",
+  "branch": "research/analytic-event-contract-closure-20261031",
+  "created_utc": "2026-10-31T09:01:04.097566+00:00",
+  "freeze_commits": {
+    "joint_candidates": "f53e4891b0a66f831c32b6b989367c73f715a62a",
+    "joint_registration": "385a9621410e4d6dea4214510db804ae6bcba2b3",
+    "primary": "96270fb1c3d153f0fe48c996d6f7b0b4cede34ef"
+  },
+  "manifest_sha256": {
+    "FREEZE.json": "f4edffc4451697fd543bdf0e10dc7242297c13f38f8c96d21bc8d7c68355988e",
+    "evidence/full_joint_v1/CANDIDATES.json": "b7d55711a1c5bcfb025bafbe8379b7a90515eb6bedf6528ab541de018abb91c1",
+    "evidence/full_joint_v1/REGISTRATION.json": "606530930a5033a84e1af7c7cd0cf22b3d6d92f7ac35a6a51d66812dd2fddb7e"
+  },
+  "native_bundle": {
+    "archive_sha256": "9ecbb1856ccd660c4fd83d20a0b95cbe17b3207152140abcde42ba14b1994eeb",
+    "executable_sha256": "185b4071bc8b60097eb3ca089054f4a5bb814417c8f78a82273c0456ec8d2830",
+    "kernel": "r7-finite-v1",
+    "members": 14,
+    "parts": 3,
+    "portable_restore_smoke_verified": true
+  },
+  "primary_raw_archive": {
+    "clean_restore_verified": true,
+    "files": 8724,
+    "parts": 99,
+    "sha256": "a6251c22d42956146a69af03612144bbeca5ccbcdaa48ac0d136dfdb9a8841e2"
+  },
+  "pull_request": {
+    "draft": true,
+    "merged": false,
+    "number": 4502,
+    "state": "open",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4502"
+  },
+  "readback": {
+    "blob_mismatches": [],
+    "broken_relative_links": [],
+    "data_commit": "c77a8268daf53c88fe548b56626df2e31e2fc11b",
+    "documentation_links_checked": 46,
+    "joint_files_missing_remote": [],
+    "namespace_tree": "e2aca7a28e9b97cff6d0c987177ba00db7775959",
+    "python_sources_missing_remote": [],
+    "scope_checks": [
+      {
+        "level": "root",
+        "new_tree": "37709c0531216e09bef4c6da601b9df58466320a",
+        "old_tree": "221501262a2a3f490af56d27de8d68669e6a5b23",
+        "only_changed_entry": "experiments",
+        "other_entries_unchanged": true
+      },
+      {
+        "level": "experiments",
+        "new_tree": "44054a982360742fb6312026da96b1ebfac6a777",
+        "old_tree": "68ac7fe282478d20818f2170c6197e17980d2c99",
+        "only_changed_entry": "analytic_event_neuron",
+        "other_entries_unchanged": true
+      },
+      {
+        "level": "analytic_event_neuron",
+        "new_tree": "fb1a4527a8d97cb1521270ac17a8350288f75a99",
+        "old_tree": "5e9c85c95cafab62a33a92df7060aaf0da0b5871",
+        "only_changed_entry": "round8_contract_closure_20261031",
+        "other_entries_unchanged": true
+      }
+    ],
+    "verified_bytes": 71666145,
+    "verified_remote_blobs": 436
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.round8-publication.v1",
+  "scope": "This receipt describes the complete data_commit above. It is appended after that readback and is not one of those 436 blobs.",
+  "validation_scope": "Local recorded CPU experiments, independent audits, original just/nextest workflow with the recorded cached-artifact Rust build. No assertion of a fresh dependency build or remote CI success."
+}
