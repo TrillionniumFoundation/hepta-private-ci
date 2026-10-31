@@ -1,0 +1,67 @@
+{
+  "schema": "hcsn_analysis_portability_replay_check.v1",
+  "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python -m experiments.hcsn_mechanism_content_v2.analyze_mechanism --jobs experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs --meter experiments/hcsn_mechanism_content_v2/results/mechanism001/meter --output experiments/hcsn_mechanism_content_v2/results/analysis_replay_check001 --repository-root . --bootstrap 10000",
+  "original_analysis_source_sha256": "f21a0ca0577b029ccdb7e935ac0499ef9995edaada74c36012340c184c6dbfd1",
+  "new_analysis_source_sha256": "ffd0805f28297764010eb089be0e720d39cb4ac5e7a1a794c5450a3cbb046427",
+  "original_results_sha256": "539895b9f6f5fa1502b12acfcac2bd53bb20582954b763d158353015f3f21fe1",
+  "recomputed_results_sha256": "b79ede290447d3df24a699a45f26b7194a32d6a82dfda5033745fbaef26b79d0",
+  "changed_result_fields": [
+    "analysis_source_sha256"
+  ],
+  "all_substantive_json_fields_exactly_equal": true,
+  "raw_recomputed_files": [
+    {
+      "file": "episode_metrics.jsonl",
+      "sha256": "ec6141f0040b897d76737f07c68f2cf8c3174ef718eceac07807e3d369883585",
+      "byte_identical": true,
+      "bytes": 3848819
+    },
+    {
+      "file": "first_divergences.jsonl",
+      "sha256": "800374a7194250890756db72dc2bc8d37f2c392fb7750713dd8e05340044696f",
+      "byte_identical": true,
+      "bytes": 8148030
+    },
+    {
+      "file": "diagnostic_metrics.jsonl",
+      "sha256": "6fbefd8d269ff0c6af856e8ca9210fd83c814d2d7c906e4771cf4e0b1d7cb406",
+      "byte_identical": true,
+      "bytes": 1262667
+    },
+    {
+      "file": "internal_timings.jsonl",
+      "sha256": "61e579fc25bf7210d397112369cb9ed56333b5a71ca52ece710b3fd180e5bcf9",
+      "byte_identical": true,
+      "bytes": 3108440
+    }
+  ],
+  "stale_recorded_root_default_raises_file_not_found": true,
+  "stale_recorded_root_with_override_matches_original_costs": true,
+  "frozen_source_hashes_unchanged": [
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/__init__.py",
+      "sha256": "9d7409cd830465f83202846e2d68976fb1cc33bf619e40115287555f38ead365"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/renewal.py",
+      "sha256": "aa6bedde8d15d473d0b8beef36805955447fa88cc906846ee48be927ecab0cb6"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/mechanism.py",
+      "sha256": "65754d240a34c5acf5eaac68a4aa3be1acbcfb96e07d735c5fcf6d4ca24e7fc0"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/mechanism_diagnostics.py",
+      "sha256": "f5a60de69b1cd2dac310974892ed62bc594445b6749e88a3e0a691820a82cac3"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/study.py",
+      "sha256": "55a6c0c75008e36789763b93db3d1c71fe09696926a333f670ad8dd550bfea58"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/protocol_mechanism.py",
+      "sha256": "75e883a01cde77dd6032f682dbda3297af398f01612b705d0ec1874d866652e6"
+    }
+  ],
+  "original_plan_and_results_not_modified": true
+}
