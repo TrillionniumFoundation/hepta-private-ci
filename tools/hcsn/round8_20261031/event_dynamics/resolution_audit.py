@@ -1,4 +1,4 @@
-"""Separate spatial-refinement audit; existing event kernels remain frozen.
+"""Separate spatial-refinement audit for explicitly hashed event kernels.
 
 The grid represents Brownian motion on (-4*b,b), starting at its exact zero
 node. Moving b in a derivative moves both endpoints at fixed ratio. Explicit
@@ -231,7 +231,7 @@ def audit():
                 limitations=["Empirical refinement at one fixed regular parameter group is not a uniform convergence theorem.",
                     "Boundary derivatives rescale both endpoints; the separate image bound controls the lower-boundary effect.",
                     "The sparse matrix exponential has numerical, not interval-certified, error.",
-                    "No frozen event kernel, prior evidence, checkpoint, or protocol was changed."])
+                    "This audit does not change prior evidence, learned checkpoints, or its fixed resolution protocol."])
 
 
 def main():
