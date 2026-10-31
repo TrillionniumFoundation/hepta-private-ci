@@ -1,0 +1,685 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope_directories": [
+    "qualification/memory-cell-v13/evidence/run",
+    "qualification/memory-cell-v13/evidence/cooperation",
+    "qualification/memory-cell-v13/evidence/cooperation-repeat",
+    "qualification/memory-cell-v13/evidence/provenance",
+    "qualification/memory-cell-v13/evidence/migration-local"
+  ],
+  "extensions": [
+    ".npz",
+    ".npy",
+    ".sqlite"
+  ],
+  "inputs_excluded": true,
+  "path_count": 110,
+  "total_bytes": 22055254,
+  "unique_local_blob_count": 90,
+  "verified_remote_blob_count": 90,
+  "status": "Every unique local blob has a successful GitHub creation receipt with identical SHA; the published integration tree is byte-identical to its recorded local Git tree.",
+  "files": [
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/continue.npz",
+      "bytes": 249905,
+      "localsha": "6a4766e24b724c19752a50fe23d993ba3b9c0b1d",
+      "remote_sha": "6a4766e24b724c19752a50fe23d993ba3b9c0b1d"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/fixed/expert-0.npz",
+      "bytes": 179225,
+      "localsha": "04874d3d6f65495202e540e7d7fcf3522884fce5",
+      "remote_sha": "04874d3d6f65495202e540e7d7fcf3522884fce5"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/fixed/expert-1.npz",
+      "bytes": 179170,
+      "localsha": "d53868582cb72b60d5008f8c008a16680fd87959",
+      "remote_sha": "d53868582cb72b60d5008f8c008a16680fd87959"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/fixed/expert-2.npz",
+      "bytes": 179283,
+      "localsha": "9c666a7016b5870a6c7276a209726b2547fbbea7",
+      "remote_sha": "9c666a7016b5870a6c7276a209726b2547fbbea7"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/fixed/router.npy",
+      "bytes": 9368,
+      "localsha": "0c55b86d15fe5b451fb39d0602887b807acb72c1",
+      "remote_sha": "0c55b86d15fe5b451fb39d0602887b807acb72c1"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-3/frozen.npz",
+      "bytes": 250149,
+      "localsha": "054143abd5fb45e8e965d30c190d4fa262cc57e4",
+      "remote_sha": "054143abd5fb45e8e965d30c190d4fa262cc57e4"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-3/no_replay.npz",
+      "bytes": 250512,
+      "localsha": "c38b479d5b5267100fb0cd1c9e326f5ac7795575",
+      "remote_sha": "c38b479d5b5267100fb0cd1c9e326f5ac7795575"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-3/replay.npz",
+      "bytes": 249999,
+      "localsha": "34892110128654166a4d79d0adc3d4fa9bcfaeb5",
+      "remote_sha": "34892110128654166a4d79d0adc3d4fa9bcfaeb5"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-4/frozen.npz",
+      "bytes": 250149,
+      "localsha": "054143abd5fb45e8e965d30c190d4fa262cc57e4",
+      "remote_sha": "054143abd5fb45e8e965d30c190d4fa262cc57e4"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-4/no_replay.npz",
+      "bytes": 250692,
+      "localsha": "b8eb4920771a711c658cbe5e3d98a63d4c509ea3",
+      "remote_sha": "b8eb4920771a711c658cbe5e3d98a63d4c509ea3"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-4/replay.npz",
+      "bytes": 249954,
+      "localsha": "6c63aac826b49ce3d1cbc2f5fdd3b27d6ba58ee6",
+      "remote_sha": "6c63aac826b49ce3d1cbc2f5fdd3b27d6ba58ee6"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-5/frozen.npz",
+      "bytes": 250149,
+      "localsha": "054143abd5fb45e8e965d30c190d4fa262cc57e4",
+      "remote_sha": "054143abd5fb45e8e965d30c190d4fa262cc57e4"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-5/no_replay.npz",
+      "bytes": 250992,
+      "localsha": "aa7f9d2f0b19502284a7cdffb9d5c04232e0244c",
+      "remote_sha": "aa7f9d2f0b19502284a7cdffb9d5c04232e0244c"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-5/replay.npz",
+      "bytes": 249952,
+      "localsha": "97c9efac9cb405b5f45b4506cec5b31a191f43e1",
+      "remote_sha": "97c9efac9cb405b5f45b4506cec5b31a191f43e1"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-6/frozen.npz",
+      "bytes": 250149,
+      "localsha": "054143abd5fb45e8e965d30c190d4fa262cc57e4",
+      "remote_sha": "054143abd5fb45e8e965d30c190d4fa262cc57e4"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-6/no_replay.npz",
+      "bytes": 251380,
+      "localsha": "538805d5ac29f0d0ed833e8865aac3f79e05a8a5",
+      "remote_sha": "538805d5ac29f0d0ed833e8865aac3f79e05a8a5"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/frontier-6/replay.npz",
+      "bytes": 250272,
+      "localsha": "ae0ab7ca7fccdf451aff119f1271f256f078fb8b",
+      "remote_sha": "ae0ab7ca7fccdf451aff119f1271f256f078fb8b"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/interference/expert-0.npz",
+      "bytes": 179244,
+      "localsha": "1f7eaa56dd6483623838441610ed899b842340cb",
+      "remote_sha": "1f7eaa56dd6483623838441610ed899b842340cb"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/interference/expert-1.npz",
+      "bytes": 179158,
+      "localsha": "4fd01166060abd98fc5d0d469d4bbb2683c911bc",
+      "remote_sha": "4fd01166060abd98fc5d0d469d4bbb2683c911bc"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/interference/expert-2.npz",
+      "bytes": 179151,
+      "localsha": "de7e26aaa737ec0579c5081fe0fdd56f4d9d401d",
+      "remote_sha": "de7e26aaa737ec0579c5081fe0fdd56f4d9d401d"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/interference/router.npy",
+      "bytes": 9368,
+      "localsha": "c8b5c63e4b0825b731e2c4afabaa32036dcec4a0",
+      "remote_sha": "c8b5c63e4b0825b731e2c4afabaa32036dcec4a0"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/learned/expert-0.npz",
+      "bytes": 179170,
+      "localsha": "34561cbdcd740abb61f927dd11d41ab539b5020e",
+      "remote_sha": "34561cbdcd740abb61f927dd11d41ab539b5020e"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/learned/expert-1.npz",
+      "bytes": 179282,
+      "localsha": "c7c225ceaec36a3bba6c53e41c7bddd1a454f8eb",
+      "remote_sha": "c7c225ceaec36a3bba6c53e41c7bddd1a454f8eb"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/learned/expert-2.npz",
+      "bytes": 179182,
+      "localsha": "3fffde0066a30c01a012f606af1c8af94f22be9b",
+      "remote_sha": "3fffde0066a30c01a012f606af1c8af94f22be9b"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/learned/router.npy",
+      "bytes": 9368,
+      "localsha": "f0a8ed95cce8a091e5a9fa3ea2337d26332d4db8",
+      "remote_sha": "f0a8ed95cce8a091e5a9fa3ea2337d26332d4db8"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/random/expert-0.npz",
+      "bytes": 179236,
+      "localsha": "3ab2c078e072483f555c256a33f5a16ddb55563e",
+      "remote_sha": "3ab2c078e072483f555c256a33f5a16ddb55563e"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/random/expert-1.npz",
+      "bytes": 179306,
+      "localsha": "87384bb357a40f382b57c03e93ce3a0b58bfa6d9",
+      "remote_sha": "87384bb357a40f382b57c03e93ce3a0b58bfa6d9"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/random/expert-2.npz",
+      "bytes": 179262,
+      "localsha": "7fc041cf5e4497f2de0c9983fbcc26796e50c80e",
+      "remote_sha": "7fc041cf5e4497f2de0c9983fbcc26796e50c80e"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/random/router.npy",
+      "bytes": 9368,
+      "localsha": "3f51d23d7b643d55fdc9950112df9dfb82a68112",
+      "remote_sha": "3f51d23d7b643d55fdc9950112df9dfb82a68112"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/ridge.npy",
+      "bytes": 37088,
+      "localsha": "3319fefbce85212f5ea819e04cc588270ddef5bc",
+      "remote_sha": "3319fefbce85212f5ea819e04cc588270ddef5bc"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/single.npz",
+      "bytes": 250149,
+      "localsha": "054143abd5fb45e8e965d30c190d4fa262cc57e4",
+      "remote_sha": "054143abd5fb45e8e965d30c190d4fa262cc57e4"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-1237/wide.npz",
+      "bytes": 531857,
+      "localsha": "f6224a20f77d77774d92e7e4775abd9dacb1eaf9",
+      "remote_sha": "f6224a20f77d77774d92e7e4775abd9dacb1eaf9"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/continue.npz",
+      "bytes": 249861,
+      "localsha": "f075c72abf65fc8f86a29161e7f896fe6aa5e4df",
+      "remote_sha": "f075c72abf65fc8f86a29161e7f896fe6aa5e4df"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/fixed/expert-0.npz",
+      "bytes": 179207,
+      "localsha": "a8cf9911968045812394083a615f6d3f983fad5c",
+      "remote_sha": "a8cf9911968045812394083a615f6d3f983fad5c"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/fixed/expert-1.npz",
+      "bytes": 179140,
+      "localsha": "253e5197dc4cd5852d528c295a4baac3cced8e50",
+      "remote_sha": "253e5197dc4cd5852d528c295a4baac3cced8e50"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/fixed/expert-2.npz",
+      "bytes": 179151,
+      "localsha": "466715026abbaeeac4b057f8853906429f555da2",
+      "remote_sha": "466715026abbaeeac4b057f8853906429f555da2"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/fixed/router.npy",
+      "bytes": 9368,
+      "localsha": "0c55b86d15fe5b451fb39d0602887b807acb72c1",
+      "remote_sha": "0c55b86d15fe5b451fb39d0602887b807acb72c1"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-3/frozen.npz",
+      "bytes": 250047,
+      "localsha": "b404c9cdeeb2c0ffa902a8fc16f6ff37f98fca1c",
+      "remote_sha": "b404c9cdeeb2c0ffa902a8fc16f6ff37f98fca1c"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-3/no_replay.npz",
+      "bytes": 250639,
+      "localsha": "c2d73b2c4e7739608c332af2d681482771e9d2e2",
+      "remote_sha": "c2d73b2c4e7739608c332af2d681482771e9d2e2"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-3/replay.npz",
+      "bytes": 249912,
+      "localsha": "ebfd6888ced42e61f1c0d01f761fabab83f316e3",
+      "remote_sha": "ebfd6888ced42e61f1c0d01f761fabab83f316e3"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-4/frozen.npz",
+      "bytes": 250047,
+      "localsha": "b404c9cdeeb2c0ffa902a8fc16f6ff37f98fca1c",
+      "remote_sha": "b404c9cdeeb2c0ffa902a8fc16f6ff37f98fca1c"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-4/no_replay.npz",
+      "bytes": 250930,
+      "localsha": "b0f327c61eebcd58ef07921b1c8fb407abf2db84",
+      "remote_sha": "b0f327c61eebcd58ef07921b1c8fb407abf2db84"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-4/replay.npz",
+      "bytes": 249855,
+      "localsha": "57616623c3ba8ee2884eb222d2e7d7d2d0677a1a",
+      "remote_sha": "57616623c3ba8ee2884eb222d2e7d7d2d0677a1a"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-5/frozen.npz",
+      "bytes": 250047,
+      "localsha": "b404c9cdeeb2c0ffa902a8fc16f6ff37f98fca1c",
+      "remote_sha": "b404c9cdeeb2c0ffa902a8fc16f6ff37f98fca1c"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-5/no_replay.npz",
+      "bytes": 251918,
+      "localsha": "1786e4692ff64e723e9e9999e6b8574a0b0acb20",
+      "remote_sha": "1786e4692ff64e723e9e9999e6b8574a0b0acb20"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-5/replay.npz",
+      "bytes": 249907,
+      "localsha": "27ac756c32fef64aa29980eff7b8bef969a6b86b",
+      "remote_sha": "27ac756c32fef64aa29980eff7b8bef969a6b86b"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-6/frozen.npz",
+      "bytes": 250047,
+      "localsha": "b404c9cdeeb2c0ffa902a8fc16f6ff37f98fca1c",
+      "remote_sha": "b404c9cdeeb2c0ffa902a8fc16f6ff37f98fca1c"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-6/no_replay.npz",
+      "bytes": 252067,
+      "localsha": "d6122816a057f49d4802671f145a0040d7667018",
+      "remote_sha": "d6122816a057f49d4802671f145a0040d7667018"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/frontier-6/replay.npz",
+      "bytes": 249952,
+      "localsha": "a5237db8e79ddd9b2308f7c63eb6bf04f3691204",
+      "remote_sha": "a5237db8e79ddd9b2308f7c63eb6bf04f3691204"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/interference/expert-0.npz",
+      "bytes": 179097,
+      "localsha": "5f3788931ce3e678d785afe8748e8124c3404f27",
+      "remote_sha": "5f3788931ce3e678d785afe8748e8124c3404f27"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/interference/expert-1.npz",
+      "bytes": 179161,
+      "localsha": "b591be7ada6f9774eb32924ad7e77c8f44ef7ac9",
+      "remote_sha": "b591be7ada6f9774eb32924ad7e77c8f44ef7ac9"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/interference/expert-2.npz",
+      "bytes": 179155,
+      "localsha": "4b06a412ac0e7abb821afec1d6fda88b662cb285",
+      "remote_sha": "4b06a412ac0e7abb821afec1d6fda88b662cb285"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/interference/router.npy",
+      "bytes": 9368,
+      "localsha": "94f7a8e5aae6fb98e1f69e91d1925f85a1db9528",
+      "remote_sha": "94f7a8e5aae6fb98e1f69e91d1925f85a1db9528"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/learned/expert-0.npz",
+      "bytes": 179176,
+      "localsha": "0a0bae6a12b7613934893eb3aba90f9d98d3a1d4",
+      "remote_sha": "0a0bae6a12b7613934893eb3aba90f9d98d3a1d4"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/learned/expert-1.npz",
+      "bytes": 179150,
+      "localsha": "3f7c923d35da51697f33efe965186e989d156fd1",
+      "remote_sha": "3f7c923d35da51697f33efe965186e989d156fd1"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/learned/expert-2.npz",
+      "bytes": 179188,
+      "localsha": "7ba6664fe3d1e9134d5d03c6c1a0d476ddff6a00",
+      "remote_sha": "7ba6664fe3d1e9134d5d03c6c1a0d476ddff6a00"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/learned/router.npy",
+      "bytes": 9368,
+      "localsha": "f0a8ed95cce8a091e5a9fa3ea2337d26332d4db8",
+      "remote_sha": "f0a8ed95cce8a091e5a9fa3ea2337d26332d4db8"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/random/expert-0.npz",
+      "bytes": 179146,
+      "localsha": "4cb8f4ead1f2bffe52d2c2cd9bd1af038a3dffc6",
+      "remote_sha": "4cb8f4ead1f2bffe52d2c2cd9bd1af038a3dffc6"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/random/expert-1.npz",
+      "bytes": 179123,
+      "localsha": "a8d3db83f735e319be3deb13cf35693bff2dd354",
+      "remote_sha": "a8d3db83f735e319be3deb13cf35693bff2dd354"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/random/expert-2.npz",
+      "bytes": 179178,
+      "localsha": "68a0c39fadd6a883cae163dc608effbd1795518b",
+      "remote_sha": "68a0c39fadd6a883cae163dc608effbd1795518b"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/random/router.npy",
+      "bytes": 9368,
+      "localsha": "a23715207d7ec5a7def8352110d529cf3285c509",
+      "remote_sha": "a23715207d7ec5a7def8352110d529cf3285c509"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/ridge.npy",
+      "bytes": 37088,
+      "localsha": "3319fefbce85212f5ea819e04cc588270ddef5bc",
+      "remote_sha": "3319fefbce85212f5ea819e04cc588270ddef5bc"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/single.npz",
+      "bytes": 250047,
+      "localsha": "b404c9cdeeb2c0ffa902a8fc16f6ff37f98fca1c",
+      "remote_sha": "b404c9cdeeb2c0ffa902a8fc16f6ff37f98fca1c"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-713/wide.npz",
+      "bytes": 531953,
+      "localsha": "f6f94180849cc2c1f549418c1898b7963d92b9eb",
+      "remote_sha": "f6f94180849cc2c1f549418c1898b7963d92b9eb"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/continue.npz",
+      "bytes": 249822,
+      "localsha": "2ab0fbf1c3f7230c78bd811cf6770ae637b14632",
+      "remote_sha": "2ab0fbf1c3f7230c78bd811cf6770ae637b14632"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/fixed/expert-0.npz",
+      "bytes": 179161,
+      "localsha": "1fdbb41b409c28568be29c81278c7dcc63068ce1",
+      "remote_sha": "1fdbb41b409c28568be29c81278c7dcc63068ce1"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/fixed/expert-1.npz",
+      "bytes": 179213,
+      "localsha": "be197ba91cfe9ee7dc2da7b09d01388218a66952",
+      "remote_sha": "be197ba91cfe9ee7dc2da7b09d01388218a66952"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/fixed/expert-2.npz",
+      "bytes": 179178,
+      "localsha": "57ab7d2a86e0e3801bca6f8f37b1fd8d4dc2317a",
+      "remote_sha": "57ab7d2a86e0e3801bca6f8f37b1fd8d4dc2317a"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/fixed/router.npy",
+      "bytes": 9368,
+      "localsha": "0c55b86d15fe5b451fb39d0602887b807acb72c1",
+      "remote_sha": "0c55b86d15fe5b451fb39d0602887b807acb72c1"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-3/frozen.npz",
+      "bytes": 249933,
+      "localsha": "a04d0c89b7b9e0622cae0beed7b0b5b80ce8dae4",
+      "remote_sha": "a04d0c89b7b9e0622cae0beed7b0b5b80ce8dae4"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-3/no_replay.npz",
+      "bytes": 250410,
+      "localsha": "de3e07f0a55630ed7116a1c470463e40637e6d4d",
+      "remote_sha": "de3e07f0a55630ed7116a1c470463e40637e6d4d"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-3/replay.npz",
+      "bytes": 249941,
+      "localsha": "efcfb37c4720eab63f9f1440323ef785fcf4ce04",
+      "remote_sha": "efcfb37c4720eab63f9f1440323ef785fcf4ce04"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-4/frozen.npz",
+      "bytes": 249933,
+      "localsha": "a04d0c89b7b9e0622cae0beed7b0b5b80ce8dae4",
+      "remote_sha": "a04d0c89b7b9e0622cae0beed7b0b5b80ce8dae4"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-4/no_replay.npz",
+      "bytes": 250513,
+      "localsha": "544109bc6cf56ebc0bb8da8e9ab470260b4722b6",
+      "remote_sha": "544109bc6cf56ebc0bb8da8e9ab470260b4722b6"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-4/replay.npz",
+      "bytes": 249871,
+      "localsha": "cba62080207ed1074294bb118afc43fc990f5d2e",
+      "remote_sha": "cba62080207ed1074294bb118afc43fc990f5d2e"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-5/frozen.npz",
+      "bytes": 249933,
+      "localsha": "a04d0c89b7b9e0622cae0beed7b0b5b80ce8dae4",
+      "remote_sha": "a04d0c89b7b9e0622cae0beed7b0b5b80ce8dae4"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-5/no_replay.npz",
+      "bytes": 251087,
+      "localsha": "06d737b394baf95877bf9ea4fdaa647c309f957f",
+      "remote_sha": "06d737b394baf95877bf9ea4fdaa647c309f957f"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-5/replay.npz",
+      "bytes": 249904,
+      "localsha": "11e49e0f1bb9bb56ded46a5622073b223c89e469",
+      "remote_sha": "11e49e0f1bb9bb56ded46a5622073b223c89e469"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-6/frozen.npz",
+      "bytes": 249933,
+      "localsha": "a04d0c89b7b9e0622cae0beed7b0b5b80ce8dae4",
+      "remote_sha": "a04d0c89b7b9e0622cae0beed7b0b5b80ce8dae4"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-6/no_replay.npz",
+      "bytes": 251732,
+      "localsha": "b8fc8bc8c6780e77430b353ca65720d8e9492f7e",
+      "remote_sha": "b8fc8bc8c6780e77430b353ca65720d8e9492f7e"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/frontier-6/replay.npz",
+      "bytes": 249928,
+      "localsha": "0942eace8bad35714626a1b98ba70c233a9fda35",
+      "remote_sha": "0942eace8bad35714626a1b98ba70c233a9fda35"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/interference/expert-0.npz",
+      "bytes": 179208,
+      "localsha": "c9f5d7a13bb76e039318426e948697a3c9e3d108",
+      "remote_sha": "c9f5d7a13bb76e039318426e948697a3c9e3d108"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/interference/expert-1.npz",
+      "bytes": 179162,
+      "localsha": "944091008451f9289d1129bb9d53541edc9c3065",
+      "remote_sha": "944091008451f9289d1129bb9d53541edc9c3065"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/interference/expert-2.npz",
+      "bytes": 179186,
+      "localsha": "159967846c2fcbbd496692349972f92f2f3a58fb",
+      "remote_sha": "159967846c2fcbbd496692349972f92f2f3a58fb"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/interference/router.npy",
+      "bytes": 9368,
+      "localsha": "0236cbac3db6eed31b73a74d61adbfe6b551ebbc",
+      "remote_sha": "0236cbac3db6eed31b73a74d61adbfe6b551ebbc"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/learned/expert-0.npz",
+      "bytes": 179227,
+      "localsha": "44b82b5d687911499d5b0973c59f1806961ff25a",
+      "remote_sha": "44b82b5d687911499d5b0973c59f1806961ff25a"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/learned/expert-1.npz",
+      "bytes": 179177,
+      "localsha": "8220e8aca875f47262c66cc6a2ad211b56c77951",
+      "remote_sha": "8220e8aca875f47262c66cc6a2ad211b56c77951"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/learned/expert-2.npz",
+      "bytes": 179183,
+      "localsha": "46d92cb6148bbbed91ff66b801189b28a8c83edd",
+      "remote_sha": "46d92cb6148bbbed91ff66b801189b28a8c83edd"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/learned/router.npy",
+      "bytes": 9368,
+      "localsha": "f0a8ed95cce8a091e5a9fa3ea2337d26332d4db8",
+      "remote_sha": "f0a8ed95cce8a091e5a9fa3ea2337d26332d4db8"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/random/expert-0.npz",
+      "bytes": 179247,
+      "localsha": "6cabd09425b5a82f5bdcaaba2735378a5365ad6b",
+      "remote_sha": "6cabd09425b5a82f5bdcaaba2735378a5365ad6b"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/random/expert-1.npz",
+      "bytes": 179171,
+      "localsha": "450d98e2d16806d85d91b1ea7154507059688dd3",
+      "remote_sha": "450d98e2d16806d85d91b1ea7154507059688dd3"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/random/expert-2.npz",
+      "bytes": 179121,
+      "localsha": "1424c73690b828cf5b5d9514dd395a7ab9fc1080",
+      "remote_sha": "1424c73690b828cf5b5d9514dd395a7ab9fc1080"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/random/router.npy",
+      "bytes": 9368,
+      "localsha": "384395904475c32d55f9f3a522b39f4a2cb4a1aa",
+      "remote_sha": "384395904475c32d55f9f3a522b39f4a2cb4a1aa"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/ridge.npy",
+      "bytes": 37088,
+      "localsha": "3319fefbce85212f5ea819e04cc588270ddef5bc",
+      "remote_sha": "3319fefbce85212f5ea819e04cc588270ddef5bc"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/single.npz",
+      "bytes": 249933,
+      "localsha": "a04d0c89b7b9e0622cae0beed7b0b5b80ce8dae4",
+      "remote_sha": "a04d0c89b7b9e0622cae0beed7b0b5b80ce8dae4"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/run/seed-971/wide.npz",
+      "bytes": 531279,
+      "localsha": "c345c3747dbb24a7b7bde811dd1d15cef5010be9",
+      "remote_sha": "c345c3747dbb24a7b7bde811dd1d15cef5010be9"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/provenance/owner/artifacts/1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455/model.npz",
+      "bytes": 250077,
+      "localsha": "ed8f8d91186d86d021f04c91d470cf4e36add830",
+      "remote_sha": "ed8f8d91186d86d021f04c91d470cf4e36add830"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/provenance/owner/artifacts/4bb8a3898d0afffc1bf59a5065b1c7cbe9a3cb702f8ca58be755e2ee93e19ae7/model.npz",
+      "bytes": 249932,
+      "localsha": "3070eb05d4a3e9b19bdfc3b1e2993baac06255cb",
+      "remote_sha": "3070eb05d4a3e9b19bdfc3b1e2993baac06255cb"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/provenance/owner/artifacts/4bcc743b3cea08fa18b05a689dac535c2e9f610e0f901769a0b2b4c017cda815/model.npz",
+      "bytes": 249879,
+      "localsha": "d2b522259d00e3b4078864b9098d79ee2ea47770",
+      "remote_sha": "d2b522259d00e3b4078864b9098d79ee2ea47770"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/provenance/owner/artifacts/d75aca803f6a46c6715d7a2eee46a9c293f93972a61149a05c05b11cd6238cf9/model.npz",
+      "bytes": 249935,
+      "localsha": "4244635ae9cc38df9f1eedf75a8cc5cca6012247",
+      "remote_sha": "4244635ae9cc38df9f1eedf75a8cc5cca6012247"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/provenance/owner/artifacts/dfb9437f8cf2bc623ee514fbf02a390e08f22d9bd3fe75478a21ef809a79e079/model.npz",
+      "bytes": 249978,
+      "localsha": "0cf76974719d153e714276aaccde66d6953d2715",
+      "remote_sha": "0cf76974719d153e714276aaccde66d6953d2715"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/provenance/owner/sources.sqlite",
+      "bytes": 98304,
+      "localsha": "9c0eddc39e5ee9d465e515219a6de982526b4f58",
+      "remote_sha": "9c0eddc39e5ee9d465e515219a6de982526b4f58"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/migration-local/negative-adam/resume/resumed.npz",
+      "bytes": 250539,
+      "localsha": "328bc50a562fe3bfe220d4abcfec4abcf0c3e787",
+      "remote_sha": "328bc50a562fe3bfe220d4abcfec4abcf0c3e787"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/migration-local/negative-adam/verify/verified_plus.npz",
+      "bytes": 250713,
+      "localsha": "53bcd807caed66bb20e6ae0aaf6f2f26a3c011c0",
+      "remote_sha": "53bcd807caed66bb20e6ae0aaf6f2f26a3c011c0"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/migration-local/prepare/handoff/features.npz",
+      "bytes": 171337,
+      "localsha": "23a1a819818bb719b33863b31850d7afdad5ce5c",
+      "remote_sha": "23a1a819818bb719b33863b31850d7afdad5ce5c"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/migration-local/prepare/handoff/prefix.npz",
+      "bytes": 249934,
+      "localsha": "84c4ba29027e625034903cb55b235fe598a0e288",
+      "remote_sha": "84c4ba29027e625034903cb55b235fe598a0e288"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/migration-local/prepare/reference/expected.npz",
+      "bytes": 250539,
+      "localsha": "e749098bfe32d934f5e2ef2a3519e15093ab7b21",
+      "remote_sha": "e749098bfe32d934f5e2ef2a3519e15093ab7b21"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/migration-local/prepare/reference/expected_plus.npz",
+      "bytes": 250726,
+      "localsha": "26ec4ec6d6068f6e52bb153a81c8f3258e52f198",
+      "remote_sha": "26ec4ec6d6068f6e52bb153a81c8f3258e52f198"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/migration-local/resume/resumed.npz",
+      "bytes": 250539,
+      "localsha": "e749098bfe32d934f5e2ef2a3519e15093ab7b21",
+      "remote_sha": "e749098bfe32d934f5e2ef2a3519e15093ab7b21"
+    },
+    {
+      "path": "qualification/memory-cell-v13/evidence/migration-local/verify/verified_plus.npz",
+      "bytes": 250726,
+      "localsha": "26ec4ec6d6068f6e52bb153a81c8f3258e52f198",
+      "remote_sha": "26ec4ec6d6068f6e52bb153a81c8f3258e52f198"
+    }
+  ],
+  "verification_commit": "a66c893469adf62362aa7559183a9cf72b748eac",
+  "verification_tree": "61ee36403424fc8a82b3bddb640cb72e3cd906c6"
+}

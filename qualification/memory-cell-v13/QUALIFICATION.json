@@ -1,0 +1,200 @@
+{
+  "schema": "hepta.memory-cell-v13.qualification.v1",
+  "overall": "research_mechanisms_executed_scientific_acceptance_not_passed",
+  "production_activation": false,
+  "scope": "fixed pretrained encoder, residual feature adapter, finite operation selection and constructed project bindings",
+  "not_claimed": [
+    "Transformer LoRA",
+    "open-ended generative knowledge memory",
+    "new algorithms learned inside procedure weights",
+    "general memory emergence",
+    "production traffic generalization",
+    "semantic machine unlearning",
+    "complete system cost superiority"
+  ],
+  "frozen_protocol": "EXPERIMENT_PROTOCOL.json",
+  "source_freeze": "evidence/inputs/FREEZE.json",
+  "same_requests_reused_across_seeds": true,
+  "stages": {
+    "1_single_cell": {
+      "implementation": "executed",
+      "acceptance": "partial_learning_passed_retention_not_preserved",
+      "pure_parametric_skill_correct_of_72": [
+        59,
+        61,
+        61
+      ],
+      "final_project_binding_correct_of_12": [
+        12,
+        12,
+        12
+      ],
+      "final_replay_skill_correct_of_72": [
+        52,
+        55,
+        48
+      ],
+      "final_no_replay_skill_correct_of_72": [
+        9,
+        9,
+        11
+      ],
+      "sources_and_versions_exercised_with_real_training": true,
+      "provenance_published_frontiers": [
+        0,
+        3,
+        4
+      ],
+      "provenance_refused_frontiers": [
+        5,
+        6
+      ],
+      "provenance_unavailable_reads_at_each_refused_frontier": 84,
+      "evidence": [
+        "evidence/run/RESULTS.json",
+        "evidence/provenance/RESULTS.json",
+        "evidence/analysis/ANALYSIS.json"
+      ]
+    },
+    "2_baselines_and_cost": {
+      "implementation": "executed_controls_and_component_accounting",
+      "acceptance": "not_passed",
+      "complete_cost_positive_task_found": false,
+      "ridge_correct_of_72": 61,
+      "centroid_correct_of_72": 60,
+      "nearest_correct_of_72": 58,
+      "bm25_correct_of_72": 42,
+      "strong_exact_project_kv_correct_of_12": 12,
+      "real_query_encoder_calls_in_main_profiler": 864,
+      "main_latency_trials": 1296,
+      "all_costs_measured": false,
+      "unmeasured": [
+        "isolated_method_peak_RAM",
+        "energy",
+        "queueing",
+        "source_ingestion",
+        "complete_recovery_lifecycle",
+        "infrastructure_pricing",
+        "per_request_SourceOwner_validation_in_the_warm_profiler"
+      ],
+      "evidence": [
+        "evidence/run/LATENCY_COST.json",
+        "evidence/AUDIT_COST.md",
+        "evidence/analysis/COST_SCENARIOS.json"
+      ]
+    },
+    "3_fixed_cooperation": {
+      "implementation": "executed_and_repeated_in_independent_process",
+      "acceptance": "functional_dependency_and_repeatability_passed",
+      "exclusive_specialization_advantage": false,
+      "composition_correct_of_12": 11,
+      "composition_disable_three_experts_correct_of_12": [
+        5,
+        8,
+        5
+      ],
+      "nearest_substitute_correct_of_12": 12,
+      "generic_procedure_preserves_every_full_output": true,
+      "repeat_semantic_traces_identical_of_288": 288,
+      "public_step_decomposition_supplied": true,
+      "hybrid_memory_is_explicit_current_source_read": true,
+      "evidence": [
+        "evidence/cooperation/RESULTS.json",
+        "evidence/cooperation/REPEAT_CHECK.json",
+        "evidence/cooperation/PREDICTIONS.jsonl",
+        "evidence/cooperation-repeat/PREDICTIONS.jsonl"
+      ]
+    },
+    "4_learned_routing_and_splitting": {
+      "implementation": "executed_training_only_grouping_real_top2_routing_and_candidate_selection",
+      "acceptance": "not_passed",
+      "interference_candidate_correct_of_72": [
+        52,
+        56,
+        56
+      ],
+      "continue_correct_of_72": [
+        59,
+        61,
+        61
+      ],
+      "fixed_group_correct_of_72": [
+        59,
+        59,
+        59
+      ],
+      "wide_correct_of_72": [
+        54,
+        55,
+        55
+      ],
+      "selected_by_calibration": [
+        "single",
+        "single",
+        "random"
+      ],
+      "family_selection_excludes_nonparametric_controls": true,
+      "body_parameters_matched_wide_and_all_children": 23052,
+      "additional_router_parameters": 1155,
+      "additional_training_presentations_per_arm": 7200,
+      "equal_flops_claim": false,
+      "beneficial_split_demonstrated": false,
+      "oracle_diagnostic_uses_gold_labels_and_is_not_deployable": true,
+      "evidence": [
+        "evidence/run/RESULTS.json",
+        "evidence/analysis/ROUTING_DIAGNOSTIC.json",
+        "evidence/AUDIT_METHOD.md"
+      ]
+    },
+    "5_cross_node": {
+      "implementation": "executed_local_controls_and_two_actual_three_vm_runs_with_full_backend_restoration",
+      "acceptance": "strict_continuation_passed_under_recorded_numerical_profile_network_economic_gain_not_established",
+      "local_three_process_is_not_cross_vm": true,
+      "local_prefix_steps": 35,
+      "resumed_steps": 55,
+      "comparison_step": 90,
+      "further_continuation_steps": 7,
+      "local_complete_state_and_future_state_exact": true,
+      "adam_corruption_preserves_current_predictions_but_fails_verifier": true,
+      "network_economic_gain_demonstrated": false,
+      "evidence": [
+        "evidence/migration-local/RUN.json",
+        "MIGRATION_RESULTS.md",
+        "evidence/migration-ci/SUMMARY.json",
+        "evidence/migration-ci/run-41205095256/QUALIFICATION.json",
+        "evidence/migration-ci/run-41206138368/QUALIFICATION.json"
+      ],
+      "strict_cross_vm_continuation_accepted": true,
+      "first_strict_failure_retained": true,
+      "first_run_id": 41205095256,
+      "qualified_run_id": 41206138368,
+      "qualified_head_sha": "8ae2d91947203a868f880312df823004b7289f25",
+      "distinct_ci_boots": 3,
+      "strict_checks_passed_of_13": 13,
+      "independent_profile_binding_checks_passed_of_8": 8,
+      "independent_90_and_97_step_all_arrays_and_metadata_raw_bytes_identical": true,
+      "target_reconstructed_official_pinned_backend_and_reencoded_120_training_texts": true,
+      "all_seven_original_scientific_source_and_dependency_files_unchanged": true,
+      "exact_thresholds_unchanged": true,
+      "numerical_profile_sha256": "82afc78979e4617c3ac9d0afcb06b845c35ddb3b6b5e98243c28b67e32f77f5a",
+      "qualified_cpu_models": [
+        "AMD EPYC 9V74",
+        "AMD EPYC 7763"
+      ],
+      "arbitrary_hardware_bit_exact_guarantee": false,
+      "first_failure_specific_simd_cause_proven": false,
+      "successful_run_known_ci_payload_bytes_lower_bound": 94852964,
+      "successful_run_complete_runtime_restore_seconds_excluding_pip_and_imports": 4.637609,
+      "successful_run_job_wall_seconds_sum": 68,
+      "successful_run_start_to_last_job_seconds": 89
+    }
+  },
+  "verification": {
+    "scoped_behavior_tests_passed": 24,
+    "actual_SIGKILL_publication_boundaries": 2,
+    "independent_gradient_checks": true,
+    "format_command": "just --justfile ../justfile fmt --base 0209aaa10c2a1c57f7f9e38fbd8c0cf6bb3e0190",
+    "format_result": "No changed files need formatting; qualification Python not owned by the repository formatter"
+  },
+  "unseen_wording_scope": "absent from supervised training split; encoder pretraining-corpus overlap not audited"
+}
