@@ -1,0 +1,488 @@
+{
+  "accounting": {
+    "amortization": "ordinary fit billed once per training seed, not once per reported arm or condition",
+    "complete_worker": "fresh interpreter through evidence serialization, Linux wait4 CPU/RSS",
+    "energy_joules": null,
+    "inclusive": "controller time includes core calls; do not add their inclusive timings",
+    "monetary_reward": "READ tariff only; actual compute is a separate measured axis",
+    "raw_media_or_network": false
+  },
+  "development": "Separate development seeds and kernel fixtures; no formal test episodes opened before this freeze",
+  "frozen_at_utc": "2026-10-31T10:17:59.465599+00:00",
+  "frozen_files": [
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/__init__.py",
+      "sha256": "9d7409cd830465f83202846e2d68976fb1cc33bf619e40115287555f38ead365"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/renewal.py",
+      "sha256": "aa6bedde8d15d473d0b8beef36805955447fa88cc906846ee48be927ecab0cb6"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/mechanism.py",
+      "sha256": "65754d240a34c5acf5eaac68a4aa3be1acbcfb96e07d735c5fcf6d4ca24e7fc0"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/mechanism_diagnostics.py",
+      "sha256": "f5a60de69b1cd2dac310974892ed62bc594445b6749e88a3e0a691820a82cac3"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/study.py",
+      "sha256": "55a6c0c75008e36789763b93db3d1c71fe09696926a333f670ad8dd550bfea58"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/protocol_mechanism.py",
+      "sha256": "75e883a01cde77dd6032f682dbda3297af398f01612b705d0ec1874d866652e6"
+    }
+  ],
+  "jobs": [
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism",
+        "fit",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1701",
+        "--seed",
+        "1701",
+        "--train-size",
+        "8192",
+        "--epochs",
+        "80",
+        "--width",
+        "128",
+        "--cap",
+        "32"
+      ],
+      "id": "fit_s1701",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1701/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1701/training.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1701/training.npz",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1701/ordinary.pt"
+      ]
+    },
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism",
+        "run",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_matched",
+        "--checkpoint",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1701/ordinary.pt",
+        "--split",
+        "test",
+        "--seed",
+        "4101",
+        "--episodes",
+        "256",
+        "--particles",
+        "4",
+        "--read-cost",
+        "0.04",
+        "--light-threshold",
+        "0.28",
+        "--condition",
+        "matched"
+      ],
+      "depends": [
+        "fit_s1701"
+      ],
+      "id": "test_s1701_matched",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_matched/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_matched/selection.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_matched/summary.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_matched/trace.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_matched/access.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_matched/predictions.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_matched/episodes.jsonl"
+      ]
+    },
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism",
+        "run",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_hidden_refractory_mismatch",
+        "--checkpoint",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1701/ordinary.pt",
+        "--split",
+        "test",
+        "--seed",
+        "4101",
+        "--episodes",
+        "256",
+        "--particles",
+        "4",
+        "--read-cost",
+        "0.04",
+        "--light-threshold",
+        "0.28",
+        "--condition",
+        "hidden_refractory_mismatch"
+      ],
+      "depends": [
+        "fit_s1701"
+      ],
+      "id": "test_s1701_hidden_refractory_mismatch",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_hidden_refractory_mismatch/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_hidden_refractory_mismatch/selection.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_hidden_refractory_mismatch/summary.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_hidden_refractory_mismatch/trace.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_hidden_refractory_mismatch/access.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_hidden_refractory_mismatch/predictions.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1701_hidden_refractory_mismatch/episodes.jsonl"
+      ]
+    },
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism_diagnostics",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1701",
+        "--checkpoint",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1701/ordinary.pt",
+        "--seed",
+        "6101",
+        "--cases",
+        "128",
+        "--samples-per-case",
+        "256",
+        "--repeats",
+        "3"
+      ],
+      "depends": [
+        "fit_s1701"
+      ],
+      "id": "diagnostics_s1701",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1701/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1701/selection.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1701/summary.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1701/cases.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1701/predictions.jsonl"
+      ]
+    },
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism",
+        "fit",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1801",
+        "--seed",
+        "1801",
+        "--train-size",
+        "8192",
+        "--epochs",
+        "80",
+        "--width",
+        "128",
+        "--cap",
+        "32"
+      ],
+      "id": "fit_s1801",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1801/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1801/training.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1801/training.npz",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1801/ordinary.pt"
+      ]
+    },
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism",
+        "run",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_matched",
+        "--checkpoint",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1801/ordinary.pt",
+        "--split",
+        "test",
+        "--seed",
+        "4201",
+        "--episodes",
+        "256",
+        "--particles",
+        "4",
+        "--read-cost",
+        "0.04",
+        "--light-threshold",
+        "0.28",
+        "--condition",
+        "matched"
+      ],
+      "depends": [
+        "fit_s1801"
+      ],
+      "id": "test_s1801_matched",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_matched/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_matched/selection.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_matched/summary.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_matched/trace.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_matched/access.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_matched/predictions.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_matched/episodes.jsonl"
+      ]
+    },
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism",
+        "run",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_hidden_refractory_mismatch",
+        "--checkpoint",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1801/ordinary.pt",
+        "--split",
+        "test",
+        "--seed",
+        "4201",
+        "--episodes",
+        "256",
+        "--particles",
+        "4",
+        "--read-cost",
+        "0.04",
+        "--light-threshold",
+        "0.28",
+        "--condition",
+        "hidden_refractory_mismatch"
+      ],
+      "depends": [
+        "fit_s1801"
+      ],
+      "id": "test_s1801_hidden_refractory_mismatch",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_hidden_refractory_mismatch/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_hidden_refractory_mismatch/selection.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_hidden_refractory_mismatch/summary.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_hidden_refractory_mismatch/trace.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_hidden_refractory_mismatch/access.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_hidden_refractory_mismatch/predictions.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1801_hidden_refractory_mismatch/episodes.jsonl"
+      ]
+    },
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism_diagnostics",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1801",
+        "--checkpoint",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1801/ordinary.pt",
+        "--seed",
+        "6201",
+        "--cases",
+        "128",
+        "--samples-per-case",
+        "256",
+        "--repeats",
+        "3"
+      ],
+      "depends": [
+        "fit_s1801"
+      ],
+      "id": "diagnostics_s1801",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1801/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1801/selection.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1801/summary.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1801/cases.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1801/predictions.jsonl"
+      ]
+    },
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism",
+        "fit",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1901",
+        "--seed",
+        "1901",
+        "--train-size",
+        "8192",
+        "--epochs",
+        "80",
+        "--width",
+        "128",
+        "--cap",
+        "32"
+      ],
+      "id": "fit_s1901",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1901/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1901/training.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1901/training.npz",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1901/ordinary.pt"
+      ]
+    },
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism",
+        "run",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_matched",
+        "--checkpoint",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1901/ordinary.pt",
+        "--split",
+        "test",
+        "--seed",
+        "4301",
+        "--episodes",
+        "256",
+        "--particles",
+        "4",
+        "--read-cost",
+        "0.04",
+        "--light-threshold",
+        "0.28",
+        "--condition",
+        "matched"
+      ],
+      "depends": [
+        "fit_s1901"
+      ],
+      "id": "test_s1901_matched",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_matched/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_matched/selection.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_matched/summary.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_matched/trace.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_matched/access.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_matched/predictions.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_matched/episodes.jsonl"
+      ]
+    },
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism",
+        "run",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_hidden_refractory_mismatch",
+        "--checkpoint",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1901/ordinary.pt",
+        "--split",
+        "test",
+        "--seed",
+        "4301",
+        "--episodes",
+        "256",
+        "--particles",
+        "4",
+        "--read-cost",
+        "0.04",
+        "--light-threshold",
+        "0.28",
+        "--condition",
+        "hidden_refractory_mismatch"
+      ],
+      "depends": [
+        "fit_s1901"
+      ],
+      "id": "test_s1901_hidden_refractory_mismatch",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_hidden_refractory_mismatch/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_hidden_refractory_mismatch/selection.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_hidden_refractory_mismatch/summary.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_hidden_refractory_mismatch/trace.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_hidden_refractory_mismatch/access.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_hidden_refractory_mismatch/predictions.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/test_s1901_hidden_refractory_mismatch/episodes.jsonl"
+      ]
+    },
+    {
+      "argv": [
+        "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+        "-m",
+        "experiments.hcsn_mechanism_content_v2.mechanism_diagnostics",
+        "--output",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1901",
+        "--checkpoint",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/fit_s1901/ordinary.pt",
+        "--seed",
+        "6301",
+        "--cases",
+        "128",
+        "--samples-per-case",
+        "256",
+        "--repeats",
+        "3"
+      ],
+      "depends": [
+        "fit_s1901"
+      ],
+      "id": "diagnostics_s1901",
+      "outputs": [
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1901/job.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1901/selection.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1901/summary.json",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1901/cases.jsonl",
+        "experiments/hcsn_mechanism_content_v2/results/mechanism001/jobs/diagnostics_s1901/predictions.jsonl"
+      ]
+    }
+  ],
+  "limits": [
+    "known stationary renewal structure favors the correct analytic inductive prior",
+    "ordinary baseline is a gated feedforward propagator, not an SSM or foundation model",
+    "same observed information and content matrix, unequal core parameter counts reported",
+    "receding one-planned-read heuristic is not a globally optimal QVI controller",
+    "three fits are not sufficient to claim general neural architecture superiority"
+  ],
+  "primary": {
+    "condition": "matched",
+    "contrast": "analytic/task_value minus ordinary_gated/task_value",
+    "metric": "accuracy_minus_0.04_per_READ",
+    "scoring": "four mandatory content outputs; STOP disables future reads but does not remove outputs",
+    "success": "primary interval above zero; complete computation cost must still be reported separately",
+    "uncertainty": "paired episodes, hierarchical bootstrap over 3 fitted seeds and episodes; descriptive 95% interval"
+  },
+  "repository_root": "/workspace/scratch/355ce93c7251/hepta-hcsn-fourtrack",
+  "schema": "hcsn-fourtrack-mechanism-protocol.v1",
+  "secondary": {
+    "alias_test": "equal first two moments but different full gap posteriors",
+    "contrasts": [
+      "B-A",
+      "D-C",
+      "C-A",
+      "(D-C)-(B-A)"
+    ],
+    "interventions": [
+      "forecast-risk suppression in policy only",
+      "ordinary on analytic action schedule",
+      "frozen content on analytic action schedule"
+    ],
+    "kernel_precision": "analytic and independent density quadrature max count-probability error <=1e-8",
+    "kernel_work": "CDF terms and density-integrand evaluations; neither is called neural network updates",
+    "metrics": [
+      "accuracy",
+      "nll",
+      "brier",
+      "reads",
+      "arm_wall_seconds",
+      "core_calls"
+    ],
+    "mismatch": "episode-constant true refractory is nominal times .65 or 1.45; no dynamic-drift claim"
+  },
+  "source_base_commit": "9709af902dc029efc007e4122425c6a72f0559b9"
+}
