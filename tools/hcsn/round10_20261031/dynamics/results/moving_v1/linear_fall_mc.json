@@ -1,0 +1,190 @@
+{
+  "case": {
+    "name": "linear_fall",
+    "times": [
+      0.0,
+      2.0
+    ],
+    "boundaries": [
+      1.15,
+      0.7
+    ],
+    "mu": 0.3,
+    "sigma": 0.75,
+    "reset": -0.25,
+    "refractory": 0.31,
+    "initial": 0.1
+  },
+  "metrics": {
+    "events": {
+      "value": 0.804625,
+      "standard_error": 0.003298349922640153
+    },
+    "ever": {
+      "value": 0.66815,
+      "standard_error": 0.0023544167047170063
+    },
+    "refractory": {
+      "value": 0.138475,
+      "standard_error": 0.0017270108348054994
+    },
+    "mean": {
+      "value": -0.2942471381013574,
+      "standard_error": 0.002518678900899121
+    },
+    "second_moment": {
+      "value": 0.34032477077080947,
+      "standard_error": 0.0034782673421507974
+    },
+    "variance": {
+      "value": 0.2537433924899702,
+      "standard_error": 0.002488408561777406
+    }
+  },
+  "count_histogram": [
+    13274,
+    21367,
+    5259,
+    100
+  ],
+  "traces": [
+    {
+      "index": 0,
+      "events": [],
+      "final_position": -1.0369562308285358,
+      "final_refractory": false
+    },
+    {
+      "index": 1,
+      "events": [
+        {
+          "hit": 0.5174807023865797,
+          "release": 0.8274807023865798,
+          "boundary": 1.0335668419630195,
+          "absolute_reset": -0.25
+        }
+      ],
+      "final_position": 0.14705148148282354,
+      "final_refractory": false
+    },
+    {
+      "index": 2,
+      "events": [
+        {
+          "hit": 0.45622499325080135,
+          "release": 0.7662249932508014,
+          "boundary": 1.0473493765185695,
+          "absolute_reset": -0.25
+        }
+      ],
+      "final_position": -2.171098523378032,
+      "final_refractory": false
+    },
+    {
+      "index": 3,
+      "events": [],
+      "final_position": 0.16786070600262326,
+      "final_refractory": false
+    },
+    {
+      "index": 4,
+      "events": [
+        {
+          "hit": 1.3933038158053246,
+          "release": 1.7033038158053246,
+          "boundary": 0.8365066414438019,
+          "absolute_reset": -0.25
+        }
+      ],
+      "final_position": 0.4176686083159252,
+      "final_refractory": false
+    },
+    {
+      "index": 5,
+      "events": [
+        {
+          "hit": 1.5019815149043616,
+          "release": 1.8119815149043617,
+          "boundary": 0.8120541591465186,
+          "absolute_reset": -0.25
+        }
+      ],
+      "final_position": -0.6412966645134883,
+      "final_refractory": false
+    },
+    {
+      "index": 6,
+      "events": [
+        {
+          "hit": 1.2126982884274158,
+          "release": 1.5226982884274158,
+          "boundary": 0.8771428851038314,
+          "absolute_reset": -0.25
+        }
+      ],
+      "final_position": 0.15707739131501808,
+      "final_refractory": false
+    },
+    {
+      "index": 7,
+      "events": [],
+      "final_position": -1.0737959844095224,
+      "final_refractory": false
+    },
+    {
+      "index": 8,
+      "events": [],
+      "final_position": -0.34299666059678424,
+      "final_refractory": false
+    },
+    {
+      "index": 9,
+      "events": [
+        {
+          "hit": 1.9921543127635286,
+          "release": 2.3021543127635287,
+          "boundary": 0.701765279628206,
+          "absolute_reset": -0.25
+        }
+      ],
+      "final_position": -0.25,
+      "final_refractory": true
+    },
+    {
+      "index": 10,
+      "events": [
+        {
+          "hit": 0.7064514613858477,
+          "release": 1.0164514613858477,
+          "boundary": 0.9910484211881843,
+          "absolute_reset": -0.25
+        }
+      ],
+      "final_position": -1.8927233008743476,
+      "final_refractory": false
+    },
+    {
+      "index": 11,
+      "events": [
+        {
+          "hit": 0.44774971423784105,
+          "release": 0.7577497142378411,
+          "boundary": 1.0492563142964857,
+          "absolute_reset": -0.25
+        },
+        {
+          "hit": 1.2637492393126062,
+          "release": 1.5737492393126062,
+          "boundary": 0.8656564211546636,
+          "absolute_reset": -0.25
+        }
+      ],
+      "final_position": 0.6150661597875864,
+      "final_refractory": false
+    }
+  ],
+  "survivor_proposals": 67265,
+  "seed": 2026103121,
+  "bit_generator": "PCG64",
+  "samples": 40000
+}

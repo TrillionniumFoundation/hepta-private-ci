@@ -1,0 +1,210 @@
+{
+  "case": {
+    "name": "linear_rise",
+    "times": [
+      0.0,
+      2.0
+    ],
+    "boundaries": [
+      0.75,
+      1.1
+    ],
+    "mu": 0.6,
+    "sigma": 0.65,
+    "reset": -0.2,
+    "refractory": 0.27,
+    "initial": 0.05
+  },
+  "metrics": {
+    "events": {
+      "value": 0.921075,
+      "standard_error": 0.003220466642353226
+    },
+    "ever": {
+      "value": 0.752775,
+      "standard_error": 0.0021570202369895768
+    },
+    "refractory": {
+      "value": 0.10225,
+      "standard_error": 0.0015149029047335902
+    },
+    "mean": {
+      "value": 0.08275638690404066,
+      "standard_error": 0.0023334531758353173
+    },
+    "second_moment": {
+      "value": 0.22464332352232458,
+      "standard_error": 0.0015799892882726976
+    },
+    "variance": {
+      "value": 0.21779470394891332,
+      "standard_error": 0.0015988908795166099
+    }
+  },
+  "count_histogram": [
+    9889,
+    23490,
+    6510,
+    111
+  ],
+  "traces": [
+    {
+      "index": 0,
+      "events": [],
+      "final_position": 0.9040702869022552,
+      "final_refractory": false
+    },
+    {
+      "index": 1,
+      "events": [
+        {
+          "hit": 0.7491649564474627,
+          "release": 1.0191649564474627,
+          "boundary": 0.881103867378306,
+          "absolute_reset": -0.2
+        }
+      ],
+      "final_position": 1.0208571419917654,
+      "final_refractory": false
+    },
+    {
+      "index": 2,
+      "events": [
+        {
+          "hit": 1.7257803998998738,
+          "release": 1.9957803998998738,
+          "boundary": 1.052011569982478,
+          "absolute_reset": -0.2
+        }
+      ],
+      "final_position": -0.23409235234919135,
+      "final_refractory": false
+    },
+    {
+      "index": 3,
+      "events": [],
+      "final_position": -0.18030444991302552,
+      "final_refractory": false
+    },
+    {
+      "index": 4,
+      "events": [
+        {
+          "hit": 1.706306141482686,
+          "release": 1.976306141482686,
+          "boundary": 1.0486035747594702,
+          "absolute_reset": -0.2
+        }
+      ],
+      "final_position": -0.3144849193020345,
+      "final_refractory": false
+    },
+    {
+      "index": 5,
+      "events": [
+        {
+          "hit": 0.5038562959481346,
+          "release": 0.7738562959481347,
+          "boundary": 0.8381748517909235,
+          "absolute_reset": -0.2
+        }
+      ],
+      "final_position": -0.17455583724033108,
+      "final_refractory": false
+    },
+    {
+      "index": 6,
+      "events": [
+        {
+          "hit": 0.7288319575862079,
+          "release": 0.9988319575862079,
+          "boundary": 0.8775455925775864,
+          "absolute_reset": -0.2
+        }
+      ],
+      "final_position": 0.5765904355707919,
+      "final_refractory": false
+    },
+    {
+      "index": 7,
+      "events": [
+        {
+          "hit": 0.2879820696773923,
+          "release": 0.5579820696773923,
+          "boundary": 0.8003968621935437,
+          "absolute_reset": -0.2
+        }
+      ],
+      "final_position": -0.5263193783249531,
+      "final_refractory": false
+    },
+    {
+      "index": 8,
+      "events": [
+        {
+          "hit": 0.2474317702944562,
+          "release": 0.5174317702944562,
+          "boundary": 0.7933005598015298,
+          "absolute_reset": -0.2
+        }
+      ],
+      "final_position": 0.7252111246714019,
+      "final_refractory": false
+    },
+    {
+      "index": 9,
+      "events": [
+        {
+          "hit": 0.25166989340965457,
+          "release": 0.5216698934096546,
+          "boundary": 0.7940422313466896,
+          "absolute_reset": -0.2
+        },
+        {
+          "hit": 1.5077362521095843,
+          "release": 1.7777362521095843,
+          "boundary": 1.0138538441191773,
+          "absolute_reset": -0.2
+        }
+      ],
+      "final_position": -0.3368545413787136,
+      "final_refractory": false
+    },
+    {
+      "index": 10,
+      "events": [
+        {
+          "hit": 0.26479961551484527,
+          "release": 0.5347996155148453,
+          "boundary": 0.796339932715098,
+          "absolute_reset": -0.2
+        },
+        {
+          "hit": 1.9537755704255577,
+          "release": 2.2237755704255577,
+          "boundary": 1.0919107248244728,
+          "absolute_reset": -0.2
+        }
+      ],
+      "final_position": -0.2,
+      "final_refractory": true
+    },
+    {
+      "index": 11,
+      "events": [
+        {
+          "hit": 1.4986823694815703,
+          "release": 1.7686823694815703,
+          "boundary": 1.0122694146592748,
+          "absolute_reset": -0.2
+        }
+      ],
+      "final_position": -0.7112837747990115,
+      "final_refractory": false
+    }
+  ],
+  "survivor_proposals": 72416,
+  "seed": 2026103120,
+  "bit_generator": "PCG64",
+  "samples": 40000
+}

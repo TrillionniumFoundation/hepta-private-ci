@@ -1,0 +1,435 @@
+{
+  "schema": "hcsn.round10.moving.result.v1",
+  "cases": [
+    {
+      "case": "linear_rise",
+      "monte_carlo": {
+        "events": {
+          "value": 0.921075,
+          "standard_error": 0.003220466642353226
+        },
+        "ever": {
+          "value": 0.752775,
+          "standard_error": 0.0021570202369895768
+        },
+        "refractory": {
+          "value": 0.10225,
+          "standard_error": 0.0015149029047335902
+        },
+        "mean": {
+          "value": 0.08275638690404066,
+          "standard_error": 0.0023334531758353173
+        },
+        "second_moment": {
+          "value": 0.22464332352232458,
+          "standard_error": 0.0015799892882726976
+        },
+        "variance": {
+          "value": 0.21779470394891332,
+          "standard_error": 0.0015988908795166099
+        }
+      },
+      "resolutions": [
+        {
+          "cells": 24,
+          "stages": 6,
+          "steps": 32,
+          "metrics": {
+            "events": 0.9871018322442427,
+            "ever": 0.7554276911166296,
+            "refractory": 0.1053586562184676,
+            "mean": -0.016101849374276875,
+            "second_moment": 0.2869490437455904,
+            "variance": 0.2866897741923185
+          },
+          "absolute_mc_differences": {
+            "events": 0.06602683224424277,
+            "ever": 0.0026526911166295797,
+            "refractory": 0.0031086562184676064,
+            "mean": 0.09885823627831754,
+            "variance": 0.06889507024340519
+          },
+          "scaled_difference_score": 4.110176489318633,
+          "max_mass_error": 1.7763568394002505e-15,
+          "max_killed_subset_error": 0.0
+        },
+        {
+          "cells": 48,
+          "stages": 12,
+          "steps": 64,
+          "metrics": {
+            "events": 0.9628746106884977,
+            "ever": 0.7575165536471182,
+            "refractory": 0.10417627908763888,
+            "mean": 0.02791927508700401,
+            "second_moment": 0.25122859500651656,
+            "variance": 0.25044910908513274
+          },
+          "absolute_mc_differences": {
+            "events": 0.04179961068849769,
+            "ever": 0.004741553647118257,
+            "refractory": 0.0019262790876388852,
+            "mean": 0.054837111817036654,
+            "variance": 0.03265440513621942
+          },
+          "scaled_difference_score": 2.3963140281462416,
+          "max_mass_error": 6.328271240363392e-15,
+          "max_killed_subset_error": 2.0816681711721685e-17
+        },
+        {
+          "cells": 96,
+          "stages": 24,
+          "steps": 128,
+          "metrics": {
+            "events": 0.9437780796206925,
+            "ever": 0.75617474054381,
+            "refractory": 0.10332902251229324,
+            "mean": 0.05373544841957785,
+            "second_moment": 0.2373540702240877,
+            "variance": 0.23446657180723457
+          },
+          "absolute_mc_differences": {
+            "events": 0.022703079620692512,
+            "ever": 0.0033997405438099815,
+            "refractory": 0.0010790225122932484,
+            "mean": 0.029020938484462813,
+            "variance": 0.016671867858321254
+          },
+          "scaled_difference_score": 1.286544537365374,
+          "max_mass_error": 1.609823385706477e-14,
+          "max_killed_subset_error": 5.551115123125783e-17
+        },
+        {
+          "cells": 192,
+          "stages": 48,
+          "steps": 256,
+          "metrics": {
+            "events": 0.9320528735491423,
+            "ever": 0.7546385442358462,
+            "refractory": 0.10273076672589335,
+            "mean": 0.06784034029129807,
+            "second_moment": 0.2317684634506578,
+            "variance": 0.22716615167981868
+          },
+          "absolute_mc_differences": {
+            "events": 0.01097787354914237,
+            "ever": 0.0018635442358462262,
+            "refractory": 0.0004807667258933529,
+            "mean": 0.014916046612742595,
+            "variance": 0.009371447730905369
+          },
+          "scaled_difference_score": 0.6471743206990767,
+          "max_mass_error": 3.108624468950438e-14,
+          "max_killed_subset_error": 5.551115123125783e-17
+        }
+      ],
+      "finest_metric_acceptance": {
+        "events": true,
+        "ever": true,
+        "refractory": true,
+        "mean": true,
+        "variance": true
+      },
+      "finest_accepted": true,
+      "coupled_refinement_reduced_scaled_difference": true,
+      "fixed_delay_lower_domain_coupling_bound": 7.133665361836325e-10,
+      "repeat_events_minus_first_event_probability": 0.1683
+    },
+    {
+      "case": "linear_fall",
+      "monte_carlo": {
+        "events": {
+          "value": 0.804625,
+          "standard_error": 0.003298349922640153
+        },
+        "ever": {
+          "value": 0.66815,
+          "standard_error": 0.0023544167047170063
+        },
+        "refractory": {
+          "value": 0.138475,
+          "standard_error": 0.0017270108348054994
+        },
+        "mean": {
+          "value": -0.2942471381013574,
+          "standard_error": 0.002518678900899121
+        },
+        "second_moment": {
+          "value": 0.34032477077080947,
+          "standard_error": 0.0034782673421507974
+        },
+        "variance": {
+          "value": 0.2537433924899702,
+          "standard_error": 0.002488408561777406
+        }
+      },
+      "resolutions": [
+        {
+          "cells": 24,
+          "stages": 6,
+          "steps": 32,
+          "metrics": {
+            "events": 0.831642522356868,
+            "ever": 0.6701066907337423,
+            "refractory": 0.1376227772607747,
+            "mean": -0.3506491639679601,
+            "second_moment": 0.43314718423364096,
+            "variance": 0.31019234804221163
+          },
+          "absolute_mc_differences": {
+            "events": 0.02701752235686794,
+            "ever": 0.0019566907337422723,
+            "refractory": 0.0008522227392252779,
+            "mean": 0.0564020258666027,
+            "variance": 0.05644895555224144
+          },
+          "scaled_difference_score": 2.2473949699362183,
+          "max_mass_error": 1.9984014443252818e-15,
+          "max_killed_subset_error": 0.0
+        },
+        {
+          "cells": 48,
+          "stages": 12,
+          "steps": 64,
+          "metrics": {
+            "events": 0.8227460405266931,
+            "ever": 0.6722398581732012,
+            "refractory": 0.1376070798411061,
+            "mean": -0.3249460387515064,
+            "second_moment": 0.38640250578462615,
+            "variance": 0.28081257768433066
+          },
+          "absolute_mc_differences": {
+            "events": 0.018121040526693055,
+            "ever": 0.004089858173201177,
+            "refractory": 0.0008679201588938923,
+            "mean": 0.03069890065014902,
+            "variance": 0.027069185194360468
+          },
+          "scaled_difference_score": 1.2773083983052058,
+          "max_mass_error": 2.4424906541753444e-15,
+          "max_killed_subset_error": 8.326672684688674e-17
+        },
+        {
+          "cells": 96,
+          "stages": 24,
+          "steps": 128,
+          "metrics": {
+            "events": 0.8149087658587885,
+            "ever": 0.6715709601583139,
+            "refractory": 0.1373664806815142,
+            "mean": -0.31082115588726617,
+            "second_moment": 0.3637020294203192,
+            "variance": 0.267092238473223
+          },
+          "absolute_mc_differences": {
+            "events": 0.01028376585878843,
+            "ever": 0.003420960158313835,
+            "refractory": 0.0011085193184857955,
+            "mean": 0.01657401778590878,
+            "variance": 0.01334884598325281
+          },
+          "scaled_difference_score": 0.7050239694907767,
+          "max_mass_error": 1.0325074129013956e-14,
+          "max_killed_subset_error": 1.1102230246251565e-16
+        },
+        {
+          "cells": 192,
+          "stages": 48,
+          "steps": 256,
+          "metrics": {
+            "events": 0.8100097210062542,
+            "ever": 0.6706647168709772,
+            "refractory": 0.137129012947501,
+            "mean": -0.30345120789115676,
+            "second_moment": 0.3526831066711405,
+            "variance": 0.26060047110053847
+          },
+          "absolute_mc_differences": {
+            "events": 0.005384721006254201,
+            "ever": 0.0025147168709771517,
+            "refractory": 0.001345987052498998,
+            "mean": 0.009204069789799374,
+            "variance": 0.006857078610568279
+          },
+          "scaled_difference_score": 0.39331144087798164,
+          "max_mass_error": 3.941291737419306e-14,
+          "max_killed_subset_error": 8.326672684688674e-17
+        }
+      ],
+      "finest_metric_acceptance": {
+        "events": true,
+        "ever": true,
+        "refractory": true,
+        "mean": true,
+        "variance": true
+      },
+      "finest_accepted": true,
+      "coupled_refinement_reduced_scaled_difference": true,
+      "fixed_delay_lower_domain_coupling_bound": 3.6957839168136403e-06,
+      "repeat_events_minus_first_event_probability": 0.136475
+    },
+    {
+      "case": "turning_boundary",
+      "monte_carlo": {
+        "events": {
+          "value": 1.282975,
+          "standard_error": 0.003004409991389309
+        },
+        "ever": {
+          "value": 0.93045,
+          "standard_error": 0.001271951407880663
+        },
+        "refractory": {
+          "value": 0.101975,
+          "standard_error": 0.0015130960712618424
+        },
+        "mean": {
+          "value": 0.09784879593408193,
+          "standard_error": 0.0015834354634754436
+        },
+        "second_moment": {
+          "value": 0.10986259427755031,
+          "standard_error": 0.0007088788498353409
+        },
+        "variance": {
+          "value": 0.10028820741180072,
+          "standard_error": 0.0006610113564444564
+        }
+      },
+      "resolutions": [
+        {
+          "cells": 24,
+          "stages": 6,
+          "steps": 32,
+          "metrics": {
+            "events": 1.326217298670965,
+            "ever": 0.8829924040365307,
+            "refractory": 0.11203295025599475,
+            "mean": -0.023847282335552472,
+            "second_moment": 0.1580803261580666,
+            "variance": 0.15751163328327505
+          },
+          "absolute_mc_differences": {
+            "events": 0.043242298670965074,
+            "ever": 0.04745759596346932,
+            "refractory": 0.01005795025599475,
+            "mean": 0.1216960782696344,
+            "variance": 0.05722342587147433
+          },
+          "scaled_difference_score": 4.71962393639865,
+          "max_mass_error": 4.107825191113079e-15,
+          "max_killed_subset_error": 0.0
+        },
+        {
+          "cells": 48,
+          "stages": 12,
+          "steps": 64,
+          "metrics": {
+            "events": 1.3254287619366298,
+            "ever": 0.9030480238651015,
+            "refractory": 0.10851860394672669,
+            "mean": 0.028528211927866972,
+            "second_moment": 0.12653157763007258,
+            "variance": 0.1257177187542713
+          },
+          "absolute_mc_differences": {
+            "events": 0.042453761936629864,
+            "ever": 0.027401976134898476,
+            "refractory": 0.006543603946726692,
+            "mean": 0.06932058400621495,
+            "variance": 0.025429511342470568
+          },
+          "scaled_difference_score": 3.008209760619784,
+          "max_mass_error": 3.6193270602780103e-14,
+          "max_killed_subset_error": 0.0
+        },
+        {
+          "cells": 96,
+          "stages": 24,
+          "steps": 128,
+          "metrics": {
+            "events": 1.3119021555821797,
+            "ever": 0.9148116160651355,
+            "refractory": 0.10502381502433564,
+            "mean": 0.06028039263893897,
+            "second_moment": 0.1154913820695841,
+            "variance": 0.11185765633287946
+          },
+          "absolute_mc_differences": {
+            "events": 0.02892715558217973,
+            "ever": 0.015638383934864497,
+            "refractory": 0.003048815024335641,
+            "mean": 0.03756840329514295,
+            "variance": 0.011569448921078737
+          },
+          "scaled_difference_score": 1.7830244419083816,
+          "max_mass_error": 1.9761969838327786e-14,
+          "max_killed_subset_error": 1.1102230246251565e-16
+        },
+        {
+          "cells": 192,
+          "stages": 48,
+          "steps": 256,
+          "metrics": {
+            "events": 1.2987448541134412,
+            "ever": 0.9209389627200443,
+            "refractory": 0.10274361141613589,
+            "mean": 0.07793202984479335,
+            "second_moment": 0.11180429019830196,
+            "variance": 0.1057308889225722
+          },
+          "absolute_mc_differences": {
+            "events": 0.01576985411344123,
+            "ever": 0.009511037279955725,
+            "refractory": 0.000768611416135892,
+            "mean": 0.01991676608928858,
+            "variance": 0.0054426815107714716
+          },
+          "scaled_difference_score": 0.9804056816583836,
+          "max_mass_error": 4.574118861455645e-14,
+          "max_killed_subset_error": 5.551115123125783e-17
+        }
+      ],
+      "finest_metric_acceptance": {
+        "events": true,
+        "ever": true,
+        "refractory": true,
+        "mean": true,
+        "variance": true
+      },
+      "finest_accepted": true,
+      "coupled_refinement_reduced_scaled_difference": true,
+      "fixed_delay_lower_domain_coupling_bound": 6.737904292027119e-19,
+      "repeat_events_minus_first_event_probability": 0.352525
+    }
+  ],
+  "calibration": {
+    "scope": "Calibration of the new sampler only, not new static production evidence",
+    "samples": 12000,
+    "independent_probability": 0.3581778161469661,
+    "empirical": {
+      "value": 0.3631666666666667,
+      "standard_error": 0.0043902915008416695
+    },
+    "independent_survivor_mean": -0.026541408712442528,
+    "empirical_survivor_mean": -0.019416106144828093,
+    "hit_z": 1.1363369650384683,
+    "survivor_mean_z": 1.266096954808288,
+    "passed": true
+  },
+  "passed": true,
+  "source_sha256": {
+    "brownian_reference.py": "6254be68621171f8b64643fa9812539cdba3162066faea414e3cb9561872fdfb",
+    "finite_volume_reference.py": "32e2c5e41e2a72e4770d97aff07591b5d131d46b7652223da13a0288417eb3e8",
+    "moving_audit.py": "02b6317b77259d927efb4742777ffcff300af3a0863a1d91edbc60759a5080a4"
+  },
+  "changed_sources": [],
+  "wall_seconds": 8.991607040996314,
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "scope": "Joint refinement evidence for these three schedules, not separated error certification or native implementation validation"
+}

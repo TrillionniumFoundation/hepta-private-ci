@@ -1,0 +1,100 @@
+{
+  "schema": "hcsn.round10.moving.registration.v1",
+  "cases": [
+    {
+      "name": "linear_rise",
+      "times": [
+        0.0,
+        2.0
+      ],
+      "boundaries": [
+        0.75,
+        1.1
+      ],
+      "mu": 0.6,
+      "sigma": 0.65,
+      "reset": -0.2,
+      "refractory": 0.27,
+      "initial": 0.05
+    },
+    {
+      "name": "linear_fall",
+      "times": [
+        0.0,
+        2.0
+      ],
+      "boundaries": [
+        1.15,
+        0.7
+      ],
+      "mu": 0.3,
+      "sigma": 0.75,
+      "reset": -0.25,
+      "refractory": 0.31,
+      "initial": 0.1
+    },
+    {
+      "name": "turning_boundary",
+      "times": [
+        0.0,
+        0.25,
+        0.55,
+        1.1,
+        1.7
+      ],
+      "boundaries": [
+        0.85,
+        0.55,
+        0.95,
+        0.6,
+        0.8
+      ],
+      "mu": 0.65,
+      "sigma": 0.5,
+      "reset": -0.15,
+      "refractory": 0.23,
+      "initial": 0.25
+    }
+  ],
+  "levels": [
+    [
+      24,
+      6,
+      32
+    ],
+    [
+      48,
+      12,
+      64
+    ],
+    [
+      96,
+      24,
+      128
+    ],
+    [
+      192,
+      48,
+      256
+    ]
+  ],
+  "samples_per_case": 40000,
+  "seed_base": 2026103120,
+  "absolute_fine_grid_tolerances": {
+    "events": 0.025,
+    "ever": 0.02,
+    "refractory": 0.02,
+    "mean": 0.035,
+    "variance": 0.05
+  },
+  "mc_standard_errors_allowed": 6,
+  "lower": -5.0,
+  "source_sha256": {
+    "brownian_reference.py": "6254be68621171f8b64643fa9812539cdba3162066faea414e3cb9561872fdfb",
+    "finite_volume_reference.py": "32e2c5e41e2a72e4770d97aff07591b5d131d46b7652223da13a0288417eb3e8",
+    "moving_audit.py": "02b6317b77259d927efb4742777ffcff300af3a0863a1d91edbc60759a5080a4"
+  },
+  "law": "True Brownian continuous boundary; fixed delay; frozen absolute reset during delay",
+  "numeric_law": "Finite reflecting upwind CTMC, Erlang refractory, observation-time boundary jumps",
+  "admission": "Research evidence only; not native PyTorch/owner execution or general certification"
+}

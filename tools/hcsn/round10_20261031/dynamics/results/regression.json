@@ -1,0 +1,500 @@
+{
+  "schema": "hcsn.round10.dynamics.regression.v1",
+  "sources": [
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "commit": "946ec0ed3c58c021f38c231cbb2a9d389422c68c",
+      "path": "experiments/hcsn_hx_unified_v3/moving_boundary_enclosure.py",
+      "blob_sha": "f2f2f864188f6563d0033af998d7cdec7ab95b6d",
+      "upstream_local": "vendor/upstream/moving_boundary_enclosure.py",
+      "patched_local": "vendor/patched/moving_boundary_enclosure.py",
+      "upstream_sha256": "b7442e16f113d9e87918066fee88166c9d70bf2dae4533f2c9eeb2c47996d9e7",
+      "patched_sha256": "6165bbdb36789e512df6c8aeec84d780e2f586704b16f9527f2ed8015497dee8"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "commit": "18efb4c8dbff36aa6f4450bd98122115b336aff6",
+      "path": "experiments/hcsn_distributional_v2/renewal_event_oracle.py",
+      "blob_sha": "76cdfeb363e08b052d0634994f67248a9b01f72d",
+      "upstream_local": "vendor/upstream/renewal_event_oracle.py",
+      "patched_local": "vendor/patched/renewal_event_oracle.py",
+      "upstream_sha256": "4717ef228216c06cb3f31f11b068baf1764cd54682ce763ab001607fc98204e4",
+      "patched_sha256": "a2443951f351921cbbfdb2f9b111e6b3ddf164a1c668e484d3a49987c144fd5e"
+    }
+  ],
+  "discount": {
+    "counterexamples": [
+      {
+        "sigma": "1e-40",
+        "dps": 50,
+        "q": ".2",
+        "original_G": "1.0",
+        "corrected_G": "0.8187307530779818586699355086190394243586",
+        "independent_physical_interval": [
+          0.8185670233008897,
+          0.8188945156043043
+        ],
+        "original_absolute_error_vs_zero_noise_limit": 0.18126924692201815,
+        "corrected_absolute_error_vs_zero_noise_limit": 2.968442364514108e-53,
+        "decimal_unstable_rate": "0E+55",
+        "decimal_rationalized_rate": "0.2",
+        "interval_scope": "Physical Brownian bound; not a floating-point interval certificate"
+      },
+      {
+        "sigma": "1e-40",
+        "dps": 50,
+        "q": "1.25",
+        "original_G": "1.0",
+        "corrected_G": "0.2865047968601901003248854266478376027932",
+        "independent_physical_interval": [
+          0.28614688960275325,
+          0.2868631517814303
+        ],
+        "original_absolute_error_vs_zero_noise_limit": 0.7134952031398099,
+        "corrected_absolute_error_vs_zero_noise_limit": 3.047369623639781e-52,
+        "decimal_unstable_rate": "0E+55",
+        "decimal_rationalized_rate": "1.25",
+        "interval_scope": "Physical Brownian bound; not a floating-point interval certificate"
+      },
+      {
+        "sigma": "1e-80",
+        "dps": 100,
+        "q": ".2",
+        "original_G": "1.0",
+        "corrected_G": "0.8187307530779818586699355086190394243586",
+        "independent_physical_interval": [
+          0.8185670233008897,
+          0.8188945156043043
+        ],
+        "original_absolute_error_vs_zero_noise_limit": 0.18126924692201815,
+        "corrected_absolute_error_vs_zero_noise_limit": 2.6568581635333064e-102,
+        "decimal_unstable_rate": "0E+110",
+        "decimal_rationalized_rate": "0.2",
+        "interval_scope": "Physical Brownian bound; not a floating-point interval certificate"
+      },
+      {
+        "sigma": "1e-80",
+        "dps": 100,
+        "q": "1.25",
+        "original_G": "1.0",
+        "corrected_G": "0.2865047968601901003248854266478376027932",
+        "independent_physical_interval": [
+          0.28614688960275325,
+          0.2868631517814303
+        ],
+        "original_absolute_error_vs_zero_noise_limit": 0.7134952031398099,
+        "corrected_absolute_error_vs_zero_noise_limit": 1.269585772493975e-102,
+        "decimal_unstable_rate": "0E+110",
+        "decimal_rationalized_rate": "1.25",
+        "interval_scope": "Physical Brownian bound; not a floating-point interval certificate"
+      }
+    ],
+    "ordinary_time_density_checks": [
+      {
+        "parameters": [
+          1.0,
+          -0.3,
+          0.7,
+          2.0,
+          0.2
+        ],
+        "absolute_errors": [
+          0.0,
+          5.551115123125783e-17
+        ],
+        "quadrature_estimates": [
+          8.271652998178398e-15,
+          7.204033364006987e-15
+        ]
+      },
+      {
+        "parameters": [
+          0.6,
+          0.4,
+          0.8,
+          1.3,
+          0.5
+        ],
+        "absolute_errors": [
+          5.551115123125783e-17,
+          5.551115123125783e-17
+        ],
+        "quadrature_estimates": [
+          7.237368565482353e-15,
+          6.507575201821925e-15
+        ]
+      },
+      {
+        "parameters": [
+          0.2,
+          0.0,
+          0.35,
+          0.9,
+          1.1
+        ],
+        "absolute_errors": [
+          0.0,
+          0.0
+        ],
+        "quadrature_estimates": [
+          1.8462121760334528e-14,
+          1.5880825853986233e-14
+        ]
+      },
+      {
+        "parameters": [
+          1.2,
+          -1.0,
+          0.45,
+          1.6,
+          0.3
+        ],
+        "absolute_errors": [
+          0.0,
+          1.1102230246251565e-16
+        ],
+        "quadrature_estimates": [
+          1.7099058847001447e-14,
+          1.6877585824500075e-14
+        ]
+      }
+    ],
+    "defect": "Negative-drift radical cancellation admitted G=1 despite a genuine discount"
+  },
+  "joint_state": {
+    "counterexamples": [
+      {
+        "input": {
+          "time": 1.0,
+          "active": 0.1,
+          "no_fire_active": 0.8,
+          "no_fire_refractory": 0.1,
+          "ever_fired": 0.1,
+          "expected_count": 10.0,
+          "version": 1
+        },
+        "duration": 0.0,
+        "original_output": {
+          "time": 1.0,
+          "active": 0.1,
+          "no_fire_active": 0.8,
+          "no_fire_refractory": 0.1,
+          "ever_fired": 0.1,
+          "expected_count": 10.0,
+          "version": 1
+        },
+        "corrected": "ValueError",
+        "original_active_dominance_violation": 0.7000000000000001,
+        "original_refractory_dominance_violation": -0.8
+      },
+      {
+        "input": {
+          "time": 1.0,
+          "active": 0.1,
+          "no_fire_active": 0.8,
+          "no_fire_refractory": 0.1,
+          "ever_fired": 0.1,
+          "expected_count": 10.0,
+          "version": 1
+        },
+        "duration": 0.01,
+        "original_output": {
+          "time": 1.01,
+          "active": 0.13187148490148148,
+          "no_fire_active": 0.7802188645972805,
+          "no_fire_refractory": 0.09607894391523232,
+          "ever_fired": 0.12370219148748715,
+          "expected_count": 10.003483649327936,
+          "version": 1
+        },
+        "corrected": "ValueError",
+        "original_active_dominance_violation": 0.648347379695799,
+        "original_refractory_dominance_violation": -0.7720495711832862
+      },
+      {
+        "input": {
+          "time": 1.0,
+          "active": 0.9,
+          "no_fire_active": 0.1,
+          "no_fire_refractory": 0.8,
+          "ever_fired": 0.1,
+          "expected_count": 10.0,
+          "version": 1
+        },
+        "duration": 0.0,
+        "original_output": {
+          "time": 1.0,
+          "active": 0.9,
+          "no_fire_active": 0.1,
+          "no_fire_refractory": 0.8,
+          "ever_fired": 0.1,
+          "expected_count": 10.0,
+          "version": 1
+        },
+        "corrected": "ValueError",
+        "original_active_dominance_violation": -0.8,
+        "original_refractory_dominance_violation": 0.7000000000000001
+      },
+      {
+        "input": {
+          "time": 1.0,
+          "active": 0.9,
+          "no_fire_active": 0.1,
+          "no_fire_refractory": 0.8,
+          "ever_fired": 0.1,
+          "expected_count": 10.0,
+          "version": 1
+        },
+        "duration": 0.01,
+        "original_output": {
+          "time": 1.01,
+          "active": 0.8777865408262402,
+          "no_fire_active": 0.12794405542264273,
+          "no_fire_refractory": 0.7686315513218586,
+          "ever_fired": 0.10342439325549872,
+          "expected_count": 10.02666291107447,
+          "version": 1
+        },
+        "corrected": "ValueError",
+        "original_active_dominance_violation": -0.7498424854035974,
+        "original_refractory_dominance_violation": 0.6464180921480988
+      }
+    ],
+    "independent_ctmc_checks": [
+      {
+        "initial_active": 0.0,
+        "segment": [
+          3.0,
+          4.0,
+          0.01
+        ],
+        "absolute_errors": [
+          2.7755575615628914e-17,
+          1.3877787807814457e-17,
+          0.0,
+          7.589415207398531e-19
+        ]
+      },
+      {
+        "initial_active": 0.0,
+        "segment": [
+          1.2,
+          2.3,
+          0.4
+        ],
+        "absolute_errors": [
+          0.0,
+          0.0,
+          1.1102230246251565e-16,
+          2.7755575615628914e-17
+        ]
+      },
+      {
+        "initial_active": 0.0,
+        "segment": [
+          4.3,
+          0.8,
+          0.06
+        ],
+        "absolute_errors": [
+          5.551115123125783e-17,
+          5.551115123125783e-17,
+          1.1102230246251565e-16,
+          0.0
+        ]
+      },
+      {
+        "initial_active": 0.0,
+        "segment": [
+          0.7,
+          3.2,
+          0.9
+        ],
+        "absolute_errors": [
+          1.9984014443252818e-15,
+          9.43689570931383e-16,
+          8.777700788442644e-16,
+          2.220446049250313e-16
+        ]
+      },
+      {
+        "initial_active": 0.2,
+        "segment": [
+          3.0,
+          4.0,
+          0.01
+        ],
+        "absolute_errors": [
+          0.0,
+          0.0,
+          0.0,
+          1.734723475976807e-18
+        ]
+      },
+      {
+        "initial_active": 0.2,
+        "segment": [
+          1.2,
+          2.3,
+          0.4
+        ],
+        "absolute_errors": [
+          0.0,
+          5.551115123125783e-17,
+          5.551115123125783e-17,
+          2.7755575615628914e-17
+        ]
+      },
+      {
+        "initial_active": 0.2,
+        "segment": [
+          4.3,
+          0.8,
+          0.06
+        ],
+        "absolute_errors": [
+          0.0,
+          5.551115123125783e-17,
+          5.551115123125783e-17,
+          0.0
+        ]
+      },
+      {
+        "initial_active": 0.2,
+        "segment": [
+          0.7,
+          3.2,
+          0.9
+        ],
+        "absolute_errors": [
+          1.7763568394002505e-15,
+          7.771561172376096e-16,
+          7.008282842946301e-16,
+          1.1102230246251565e-16
+        ]
+      },
+      {
+        "initial_active": 0.7,
+        "segment": [
+          3.0,
+          4.0,
+          0.01
+        ],
+        "absolute_errors": [
+          1.1102230246251565e-16,
+          0.0,
+          0.0,
+          3.469446951953614e-18
+        ]
+      },
+      {
+        "initial_active": 0.7,
+        "segment": [
+          1.2,
+          2.3,
+          0.4
+        ],
+        "absolute_errors": [
+          1.1102230246251565e-16,
+          0.0,
+          2.7755575615628914e-17,
+          5.551115123125783e-17
+        ]
+      },
+      {
+        "initial_active": 0.7,
+        "segment": [
+          4.3,
+          0.8,
+          0.06
+        ],
+        "absolute_errors": [
+          1.1102230246251565e-16,
+          0.0,
+          2.7755575615628914e-17,
+          0.0
+        ]
+      },
+      {
+        "initial_active": 0.7,
+        "segment": [
+          0.7,
+          3.2,
+          0.9
+        ],
+        "absolute_errors": [
+          1.4432899320127035e-15,
+          2.7755575615628914e-16,
+          2.636779683484747e-16,
+          2.220446049250313e-16
+        ]
+      },
+      {
+        "initial_active": 1.0,
+        "segment": [
+          3.0,
+          4.0,
+          0.01
+        ],
+        "absolute_errors": [
+          0.0,
+          0.0,
+          0.0,
+          3.469446951953614e-18
+        ]
+      },
+      {
+        "initial_active": 1.0,
+        "segment": [
+          1.2,
+          2.3,
+          0.4
+        ],
+        "absolute_errors": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "initial_active": 1.0,
+        "segment": [
+          4.3,
+          0.8,
+          0.06
+        ],
+        "absolute_errors": [
+          1.1102230246251565e-16,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "initial_active": 1.0,
+        "segment": [
+          0.7,
+          3.2,
+          0.9
+        ],
+        "absolute_errors": [
+          1.2212453270876722e-15,
+          5.551115123125783e-17,
+          0.0,
+          0.0
+        ]
+      }
+    ],
+    "defect": "Killed no-fire joint masses exceeded their physical parent events"
+  },
+  "passed": true,
+  "scope": "Two narrow mathematical-reference fixes; not native production validation",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "mpmath": "1.3.0"
+  },
+  "wall_seconds": 0.0732400900014909
+}

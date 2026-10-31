@@ -1,0 +1,248 @@
+{
+  "case": {
+    "name": "turning_boundary",
+    "times": [
+      0.0,
+      0.25,
+      0.55,
+      1.1,
+      1.7
+    ],
+    "boundaries": [
+      0.85,
+      0.55,
+      0.95,
+      0.6,
+      0.8
+    ],
+    "mu": 0.65,
+    "sigma": 0.5,
+    "reset": -0.15,
+    "refractory": 0.23,
+    "initial": 0.25
+  },
+  "metrics": {
+    "events": {
+      "value": 1.282975,
+      "standard_error": 0.003004409991389309
+    },
+    "ever": {
+      "value": 0.93045,
+      "standard_error": 0.001271951407880663
+    },
+    "refractory": {
+      "value": 0.101975,
+      "standard_error": 0.0015130960712618424
+    },
+    "mean": {
+      "value": 0.09784879593408193,
+      "standard_error": 0.0015834354634754436
+    },
+    "second_moment": {
+      "value": 0.10986259427755031,
+      "standard_error": 0.0007088788498353409
+    },
+    "variance": {
+      "value": 0.10028820741180072,
+      "standard_error": 0.0006610113564444564
+    }
+  },
+  "count_histogram": [
+    2782,
+    23498,
+    13339,
+    381
+  ],
+  "traces": [
+    {
+      "index": 0,
+      "events": [
+        {
+          "hit": 0.9822562286565791,
+          "release": 1.2122562286565792,
+          "boundary": 0.6749278544912678,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": 0.6989819143986951,
+      "final_refractory": false
+    },
+    {
+      "index": 1,
+      "events": [
+        {
+          "hit": 0.2784712853084858,
+          "release": 0.5084712853084858,
+          "boundary": 0.5879617137446478,
+          "absolute_reset": -0.15
+        },
+        {
+          "hit": 0.9860913271760967,
+          "release": 1.2160913271760967,
+          "boundary": 0.6724873372515748,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": 0.6027039604910756,
+      "final_refractory": false
+    },
+    {
+      "index": 2,
+      "events": [
+        {
+          "hit": 0.8648849708413995,
+          "release": 1.0948849708413995,
+          "boundary": 0.7496186549191095,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": -0.2989099297356488,
+      "final_refractory": false
+    },
+    {
+      "index": 3,
+      "events": [
+        {
+          "hit": 1.0332567275730922,
+          "release": 1.2632567275730922,
+          "boundary": 0.6424729915443959,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": 0.0359343439809483,
+      "final_refractory": false
+    },
+    {
+      "index": 4,
+      "events": [
+        {
+          "hit": 0.11279212439176066,
+          "release": 0.34279212439176066,
+          "boundary": 0.7146494507298873,
+          "absolute_reset": -0.15
+        },
+        {
+          "hit": 1.5699623356980401,
+          "release": 1.79996233569804,
+          "boundary": 0.7566541118993467,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": -0.15,
+      "final_refractory": true
+    },
+    {
+      "index": 5,
+      "events": [
+        {
+          "hit": 0.868944857318531,
+          "release": 1.098944857318531,
+          "boundary": 0.7470350907972985,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": -0.20449866239222403,
+      "final_refractory": false
+    },
+    {
+      "index": 6,
+      "events": [
+        {
+          "hit": 0.27465813012291995,
+          "release": 0.5046581301229199,
+          "boundary": 0.5828775068305599,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": 0.10296071896312198,
+      "final_refractory": false
+    },
+    {
+      "index": 7,
+      "events": [
+        {
+          "hit": 0.18063055386739008,
+          "release": 0.4106305538673901,
+          "boundary": 0.6332433353591319,
+          "absolute_reset": -0.15
+        },
+        {
+          "hit": 1.1625029817346382,
+          "release": 1.3925029817346382,
+          "boundary": 0.6208343272448793,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": -0.3417193127169946,
+      "final_refractory": false
+    },
+    {
+      "index": 8,
+      "events": [
+        {
+          "hit": 0.7237934282760868,
+          "release": 0.9537934282760868,
+          "boundary": 0.8394041820061265,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": 0.5582762936374264,
+      "final_refractory": false
+    },
+    {
+      "index": 9,
+      "events": [
+        {
+          "hit": 0.39516840557450783,
+          "release": 0.6251684055745078,
+          "boundary": 0.7435578740993437,
+          "absolute_reset": -0.15
+        },
+        {
+          "hit": 1.3034595313447543,
+          "release": 1.5334595313447543,
+          "boundary": 0.6678198437815848,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": -0.1297681755408887,
+      "final_refractory": false
+    },
+    {
+      "index": 10,
+      "events": [
+        {
+          "hit": 0.20657298991990372,
+          "release": 0.43657298991990373,
+          "boundary": 0.6021124120961155,
+          "absolute_reset": -0.15
+        },
+        {
+          "hit": 0.9900791081603699,
+          "release": 1.22007910816037,
+          "boundary": 0.669949658443401,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": -0.32010356905833537,
+      "final_refractory": false
+    },
+    {
+      "index": 11,
+      "events": [
+        {
+          "hit": 0.13989446559038896,
+          "release": 0.36989446559038897,
+          "boundary": 0.6821266412915332,
+          "absolute_reset": -0.15
+        }
+      ],
+      "final_position": -0.37163605479379913,
+      "final_refractory": false
+    }
+  ],
+  "survivor_proposals": 180100,
+  "seed": 2026103122,
+  "bit_generator": "PCG64",
+  "samples": 40000
+}
