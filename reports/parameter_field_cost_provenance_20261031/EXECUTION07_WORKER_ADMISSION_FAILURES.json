@@ -1,0 +1,182 @@
+{
+  "completed_scientific_jobs": 0,
+  "evidence_members": {
+    "failure_trace": {
+      "bytes": 1917,
+      "member": "raw/controller/A-17.log",
+      "sha256": "094dfb6fd101b32dc47fd7165a79720cc22507c10fd16ce664afd4c537a6051d"
+    },
+    "input_preparation": {
+      "bytes": 2405,
+      "member": "preparation/INPUTS_PREPARED.json",
+      "sha256": "3b337ec31bebbb162a1db12cc4dd4c7015944e61df0f518d6f7e5808c14bb36d"
+    },
+    "lifecycle_closure": {
+      "bytes": 3285,
+      "member": "execution07/pipeline_measurement/children/CLOSURE.json",
+      "sha256": "71b348c2ebb5556cd13034a84ca8c6a42f858fbb91fef49a9a60dbec864a3959"
+    },
+    "lifecycle_wait4": {
+      "bytes": 525,
+      "member": "execution07/pipeline_measurement/children/001.WAIT4.json",
+      "sha256": "2f51c71d660e3574e2c298c004b8f4a5fa0fd18a4b12e4275cfd8aee5f0da0bf"
+    },
+    "worker_wait4": {
+      "bytes": 513,
+      "member": "execution07/ops/owned_workers/A-17/001.WAIT4.json",
+      "sha256": "d20518148747c8e80bcb4d8eb990ac0ab1fe875221277f116bc0fdf9a203aa3e"
+    },
+    "wrapper_failure": {
+      "bytes": 278,
+      "member": "execution07/ops/wrapper_runs/A-17/FAILED.json",
+      "sha256": "4f1d0a812a84a0e47e0a10e053fd7776bb94ddc766ee5295cc0486537c9276f7"
+    }
+  },
+  "failure": {
+    "automatic_scientific_retry": false,
+    "complete": false,
+    "error_type": "FileNotFoundError",
+    "execution_episode": "execution07_actions_20261031",
+    "message": "[Errno 2] No such file or directory: '/work/assets/RESTORATION.json'",
+    "partial_evidence_preserved": true
+  },
+  "gradient_count_basis": "The literal failure trace terminates at the first receipt read in the frozen original asset loader, before model loading and any training loop. The complete partial RAW population contains only start/failure/controller/lock records.",
+  "gradient_microsteps_executed": 0,
+  "immutable_artifacts": [
+    {
+      "bytes": 121241,
+      "id": 13046679060,
+      "independently_downloaded_and_verified": true,
+      "sha256": "477163f816b9f8e9e69f3f7dd8845858035219fe21d6c9476ccddd16a0140d29"
+    },
+    {
+      "bytes": 10876,
+      "id": 13046679054,
+      "independently_downloaded_and_verified": true,
+      "sha256": "6b1dc1b9c7f99dc2d19ac19801c9d9c4cba70e0745799ff7e356321c3539b01c"
+    }
+  ],
+  "job_id": 124573802193,
+  "known_cost_scopes": [
+    {
+      "cpu_seconds": 0.10461349900000003,
+      "scope": "Input preparation process self CPU/wall only; excludes interpreter/runtime installation and receipt serialization.",
+      "wall_seconds": 1.2295358780000072
+    },
+    {
+      "cpu_seconds": 6.8685730000000005,
+      "exit_code": 2,
+      "peak_rss_bytes": 259866624,
+      "scope": "Inclusive actual lifecycle child and reaped descendants, including initialization, semantic admission, supervisor and failed A-17. Does not include earlier environment/input setup or later workflow delivery.",
+      "wall_seconds": 45.75128194800001
+    }
+  ],
+  "missing_cost_scopes": [
+    "container/runtime/SDK setup CPU",
+    "unmeasured launcher self CPU and final serialization",
+    "final artifact delivery CPU",
+    "provider overhead outside the recorded job interval"
+  ],
+  "nested_cost_attribution_not_added": {
+    "failed_A17": {
+      "cpu_seconds": 2.278757,
+      "exit_code": 1,
+      "identity": {
+        "parent_pid": 3202,
+        "pgid": 2951,
+        "pid": 3203,
+        "sid": 2951,
+        "start_ticks": 25646
+      },
+      "peak_rss_bytes": 259866624,
+      "pid": 3203,
+      "scientific_completion_claim": false,
+      "scope": "Direct worker and descendants it waited for; nested inside outer controller wait4.",
+      "system_cpu_seconds": 0.303233,
+      "user_cpu_seconds": 1.975524,
+      "wait_status": 256,
+      "waited_unix": 1793460043.177495,
+      "wall_seconds": 1.94611519700004
+    }
+  },
+  "no_prior_or_current_scientific_threshold_changed": true,
+  "original_asset_loader": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5ddbd40ca0ddb0e3935384dce9de124b5c150019/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/assets.py",
+  "partial_raw_inventory": [
+    {
+      "bytes": 0,
+      "member": "raw/.ops-slot-0.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "member": "raw/.ops-controller.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "member": "raw/.ops-phase.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "member": "raw/.ops-write.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 77,
+      "member": "raw/ACTIVE_WORKERS.json",
+      "sha256": "00fa4be476ca483d7ff7865506ded19e37023e87b977bd2450bf1292ba7058dc"
+    },
+    {
+      "bytes": 2052,
+      "member": "raw/controller/A-17.START.json",
+      "sha256": "edd109a11892683035b737e2f83652b567a75c54b71ce03ef26efdd061832d14"
+    },
+    {
+      "bytes": 1298,
+      "member": "raw/controller/A-17.RESULT.json",
+      "sha256": "73f89f5a1796c3af36a7d53f4b81f4eea50f13d44ceeba94af35745bd3bd314a"
+    },
+    {
+      "bytes": 1917,
+      "member": "raw/controller/A-17.log",
+      "sha256": "094dfb6fd101b32dc47fd7165a79720cc22507c10fd16ce664afd4c537a6051d"
+    },
+    {
+      "bytes": 1026,
+      "member": "raw/controller/START.json",
+      "sha256": "fbe0390e6ed0af484155f9d577fd15d4d68bca8b03eebfd76cde7ddfb2f10c01"
+    },
+    {
+      "bytes": 1512,
+      "member": "raw/operations/A-seed-17.FAILED.json",
+      "sha256": "747515f7454b0e687225ec540a98f4cbd569ffe0e8dd1f61a3b9e071c015d820"
+    },
+    {
+      "bytes": 1390,
+      "member": "raw/operations/A-seed-17.START.json",
+      "sha256": "eb780d4056adeb3813801719b3264529720a23212eb7c4d975ecf1f22dd3d507"
+    }
+  ],
+  "prior_eight_failure_report_unchanged": true,
+  "provider_job": {
+    "completed_at": "2026-10-31T15:20:55Z",
+    "elapsed_seconds": 131.0,
+    "scope": "Complete provider job interval including setup and delivery, excluding queue wait. This is wall time, not CPU time.",
+    "started_at": "2026-10-31T15:18:44Z"
+  },
+  "repair_description": "Construct and validate a fresh current-producer asset assembly record from the same nine verified input bytes; preserve the literal old restoration record only as provenance and never reuse its timing.",
+  "repair_result_included": false,
+  "repair_run_id": 41215053433,
+  "repair_source_commit": "87c96ff825128fe5e13c8228e87c83f856c7a9ed",
+  "run_attempt": 3,
+  "run_id": 41213245916,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41213245916/attempts/3",
+  "schema": "hepta.parameter-field.worker-admission-failure-review.1",
+  "scientific_workers_started": 1,
+  "scope": "One completed A-17 process admission failure, separate from the earlier eight attempts that started no scientific worker.",
+  "source_commit": "5ddbd40ca0ddb0e3935384dce9de124b5c150019",
+  "whole_attempt_cost_complete": false,
+  "whole_attempt_cpu_seconds": null,
+  "whole_attempt_wall_seconds": null
+}
