@@ -844,7 +844,12 @@ pub enum BrowserServoError {
     Authority(#[from] FinalUseError),
 }
 
-#[cfg(test)]
+// The durable final-use store deliberately refuses non-Unix platforms.
+#[cfg(all(test, not(unix)))]
+#[path = "browser_servo_unsupported_tests.rs"]
+mod unsupported_tests;
+
+#[cfg(all(test, unix))]
 mod tests {
     use std::collections::BTreeSet;
     use std::sync::Arc;

@@ -170,6 +170,20 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
     codex_uds::prepare_private_socket_directory(parent)
         .await
         .map_err(|error| io_context("prepare agentd control socket directory", parent, error))?;
+    // Windows reports ConnectionRefused for a never-created AF_UNIX path.
+    // Inspect the rendezvous entry itself before interpreting a failed probe;
+    // following metadata would also hide a dangling link or reparse point.
+    match tokio::fs::symlink_metadata(socket_path).await {
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
+        Err(error) => {
+            return Err(io_context(
+                "inspect agentd control socket path",
+                socket_path,
+                error,
+            ));
+        }
+        Ok(_) => {}
+    }
     match UnixStream::connect(socket_path).await {
         Ok(_) => {
             return Err(AgentdError::Io(std::io::Error::new(
@@ -182,7 +196,6 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
         }
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
         Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_error) if !socket_path.exists() => return Ok(()),
         Err(error) => {
             return Err(io_context(
                 /* operation */ "probe existing agentd control socket",
@@ -230,3 +243,7 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "control_socket_tests.rs"]
+mod socket_tests;
