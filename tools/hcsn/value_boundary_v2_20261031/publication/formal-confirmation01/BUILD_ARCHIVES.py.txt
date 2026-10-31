@@ -1,0 +1,189 @@
+"""Publication packaging only; no candidate modification, fitting or execution."""
+from pathlib import Path
+import copy
+import gzip
+import hashlib
+import io
+import json
+import re
+import shutil
+import tarfile
+import time
+
+RAM = Path('/dev/shm/hepta-value-boundary-v2-20261031')
+FORMAL = RAM/'formal_confirmation01'
+PROCESS = RAM/'process01'
+OUT = Path(__file__).resolve().parent
+START_WALL, START_CPU = time.perf_counter(), time.process_time()
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def save(name, value):
+    with (OUT/name).open('x') as target:
+        json.dump(value, target, indent=2, sort_keys=True, allow_nan=False)
+        target.write('\n')
+
+
+original_manifest_bytes = (FORMAL/'EVIDENCE_MANIFEST.json').read_bytes()
+manifest = json.loads(original_manifest_bytes)
+summary = json.loads((FORMAL/'SUMMARY.json').read_bytes())
+process = json.loads((PROCESS/'PROCESS.json').read_bytes())
+assert process['returncode'] == 0 and summary['qualified']
+assert summary['actual_sessions'] == 5120 and summary['actual_rollouts'] == 25600
+assert summary['source_unchanged'] and not summary['failures'] and not summary['null_failures']
+assert digest((PROCESS/'OUTPUT.log').read_bytes()) == process['output_sha256']
+
+expected = {'formal_confirmation01/'+relative: value for relative, value in manifest['artifacts'].items()}
+expected['formal_confirmation01/EVIDENCE_MANIFEST.json'] = digest(original_manifest_bytes)
+for path in PROCESS.iterdir():
+    if path.is_file():
+        expected['process01/'+path.name] = digest(path.read_bytes())
+covered, archives = set(), []
+
+
+def make_archive(name, paths):
+    target = OUT/name
+    members = {}
+    with target.open('xb') as raw:
+        with gzip.GzipFile(fileobj=raw, mode='wb', filename='', mtime=0) as zipped:
+            with tarfile.open(fileobj=zipped, mode='w|') as tar:
+                for path in sorted(paths):
+                    relative = str(path.relative_to(RAM))
+                    data = path.read_bytes()
+                    actual = digest(data)
+                    assert actual == expected[relative], relative
+                    assert relative not in covered, relative
+                    members[relative] = actual
+                    info = tar.gettarinfo(str(path), arcname=relative)
+                    info.uid = info.gid = 0
+                    info.uname = info.gname = ''
+                    info.mtime = 0
+                    tar.addfile(info, io.BytesIO(data))
+    reconstructed = {}
+    with tarfile.open(target, 'r|gz') as tar:
+        for member in tar:
+            assert member.isfile()
+            reconstructed[member.name] = digest(tar.extractfile(member).read())
+    assert reconstructed == members
+    covered.update(members)
+    record = dict(path=name, bytes=target.stat().st_size, sha256=digest(target.read_bytes()),
+                  file_members=len(members), all_members_match_original_manifest=True,
+                  stream_roundtrip_verified=True)
+    assert record['bytes'] <= 5*1024*1024, record
+    archives.append(record)
+    print(json.dumps(record), flush=True)
+
+
+for contract in range(8):
+    paths = []
+    for episode in (FORMAL/'episodes').glob(f'contract{contract}_*'):
+        paths.extend(path for path in episode.rglob('*') if path.is_file())
+    paths.extend(FORMAL.glob(f'contract{contract}_fit*_RAW.json.gz'))
+    make_archive(f'contract-{contract}.tar.gz', paths)
+
+common = [path for path in FORMAL.rglob('*') if path.is_file()
+          and 'episodes' not in path.relative_to(FORMAL).parts
+          and not path.name.endswith('_RAW.json.gz')
+          and path.name != 'EVIDENCE_MANIFEST.json']
+common.extend(path for path in PROCESS.iterdir() if path.is_file())
+make_archive('common.tar.gz', common)
+manifest_target = OUT/'EVIDENCE_MANIFEST.json.gz'
+with manifest_target.open('xb') as target:
+    target.write(gzip.compress(original_manifest_bytes, mtime=0))
+assert gzip.decompress(manifest_target.read_bytes()) == original_manifest_bytes
+covered.add('formal_confirmation01/EVIDENCE_MANIFEST.json')
+assert covered == set(expected), (len(covered), len(expected), set(expected)-covered)
+
+
+def semantic(result):
+    events = copy.deepcopy(result['events'])
+    for event in events:
+        if 'decoded' in event:
+            event['decoded'] = {key:event['decoded'][key] for key in
+                                ('observation', 'logits', 'payload_sha256', 'payload_bytes')}
+    return dict(score=result['score'], counts=result['counts'], events=events,
+                elapsed=result['task_elapsed'])
+
+
+identifiers, seeds = set(), set()
+decoder_receipts, generator_files = 0, 0
+ordinary_equal, hard_qvi_equal, soft_hard_different = 0, 0, 0
+for path in sorted(FORMAL.glob('*_RAW.json.gz')):
+    contract, fit = map(int, re.fullmatch(r'contract(\d+)_fit(\d+)_RAW.json.gz', path.name).groups())
+    raw = json.loads(gzip.decompress(path.read_bytes()))
+    assert len(raw['episodes']) == 128
+    for index, row in enumerate(raw['episodes']):
+        episode, results = row['episode'], row['results']
+        assert episode['seed'] == 587103100+contract*100000+fit*1000+index
+        assert episode['id'] == f'contract{contract}_fit{fit}_session{index:03d}'
+        assert episode['id'] not in identifiers and episode['seed'] not in seeds
+        identifiers.add(episode['id'])
+        seeds.add(episode['seed'])
+        assert len(results) == 5
+        for filename, value in episode['files'].items():
+            key = f'formal_confirmation01/episodes/{episode["id"]}/{filename}'
+            assert expected[key] == value, key
+            generator_files += 1
+        for result in results.values():
+            assert not result['failure']
+            for event in result['events']:
+                if 'decoded' in event:
+                    assert event['decoded']['payload_sha256'] == episode['files'][event['packet']]
+                    decoder_receipts += 1
+        ordinary_equal += semantic(results['qvi_ordinary']) == semantic(results['qvi_analytic'])
+        hard_qvi_equal += semantic(results['direct_hard_analytic']) == semantic(results['qvi_analytic'])
+        soft_hard_different += semantic(results['direct_hard_analytic']) != semantic(results['direct_soft_analytic'])
+assert len(identifiers) == 5120 and ordinary_equal == 5120
+
+pooled = {}
+for policy in summary['reports'][0]['sampled_means']:
+    rows = [report['sampled_means'][policy] for report in summary['reports']]
+    values = {key:sum(row[key] for row in rows)/8 for key in
+              ('utility', 'correct_fraction', 'error_fraction', 'completion_fraction',
+               'cpu_seconds', 'cdf_cpu_seconds', 'decoder_cpu_seconds', 'support_check_cpu_seconds')}
+    values['accuracy_among_submitted'] = values['correct_fraction']/values['completion_fraction']
+    pooled[policy] = values
+
+audit = dict(schema='hcsn.regenerative-evidence.confirmation-integrity.v1',
+    unique_episodes=len(identifiers), unique_episode_seeds=len(seeds), paired_rollouts=25600,
+    generator_file_hashes_reconciled=generator_files,
+    actual_decoder_receipt_hashes_reconciled=decoder_receipts,
+    ordinary_analytic_semantic_equal=ordinary_equal,
+    direct_hard_qvi_semantic_equal=hard_qvi_equal,
+    soft_hard_semantic_different=soft_hard_different,
+    archived_original_files=len(expected), archive_coverage_exact=True,
+    source_unchanged=summary['source_unchanged'], candidate_modified=False,
+    freeze_reference=summary['freeze_reference'], freeze_sha256=summary['freeze_sha256'],
+    summary_sha256=digest((FORMAL/'SUMMARY.json').read_bytes()),
+    process_sha256=digest((PROCESS/'PROCESS.json').read_bytes()))
+save('INTEGRITY_AUDIT.json', audit)
+save('QUALITY_AND_COST.json', dict(pooled_descriptive=pooled,
+    primary_task=summary['primary_equal_weight_aggregate'], primary_net=summary['primary_net_aggregate'],
+    important_limitations=[
+        'Fixed-policy accuracy 91.23948% versus hard/QVI 87.21497%; correct and completed counts increase together with error counts.',
+        'nominal_2 fit-cluster interval crosses zero; this is not an all-contract or future-contract guarantee.',
+        'Ordinary QVI has identical task paths with lower mean execution CPU in this implementation.',
+        'Stress-4 sampled hard-soft utility gap interval crosses zero; no soft-hard equivalence is inferred.',
+        'Finite verified payload support and per-contract model-based replanning; no natural-content or amortized OOD claim.'
+    ], main_enrollment=False, quality_noninferiority_claim=False,
+    independent_analytic_task_gain=False))
+for filename in ('SUMMARY.json', 'CONFIRM_STAGE_RECEIPT.json', 'CONFIRMATION_START.json'):
+    shutil.copyfile(FORMAL/filename, OUT/filename)
+for filename in ('PROCESS.json', 'OUTPUT.log'):
+    shutil.copyfile(PROCESS/filename, OUT/filename)
+save('ARCHIVE_INDEX.json', dict(archives=archives,
+    original_evidence_manifest=dict(path='EVIDENCE_MANIFEST.json.gz', bytes=manifest_target.stat().st_size,
+        sha256=digest(manifest_target.read_bytes()), original_sha256=digest(original_manifest_bytes)),
+    complete_original_file_coverage=len(expected), all_original_files_preserved=True,
+    archive_total_bytes=sum(row['bytes'] for row in archives)+manifest_target.stat().st_size,
+    freeze_reference=summary['freeze_reference'], freeze_sha256=summary['freeze_sha256'],
+    packaging_cpu_seconds=time.process_time()-START_CPU,
+    packaging_wall_seconds=time.perf_counter()-START_WALL,
+    scope='Publication-only packaging and integrity reconciliation; separate from experimental CPU and deployment accounting'))
+paths = sorted(path.name for path in OUT.iterdir() if path.is_file())+['PUBLISH_ALLOWLIST.json']
+save('PUBLISH_ALLOWLIST.json', dict(directory=str(OUT), paths=paths,
+    note='Publish these compact artifacts; do not expand the 69,173 original files into repository paths.'))
+print(json.dumps(dict(complete=True, audit=audit, files_to_publish=len(paths))), flush=True)

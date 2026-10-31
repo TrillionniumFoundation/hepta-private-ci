@@ -1,0 +1,31 @@
+{
+  "schema": "hcsn.experiment.stage-process.v1",
+  "command": [
+    "python",
+    "-m",
+    "tools.hcsn.value_boundary_v2_20261031.campaign",
+    "confirm",
+    "--prepared",
+    "tools/hcsn/value_boundary_v2_20261031/prepared-v2",
+    "--out",
+    "/dev/shm/hepta-value-boundary-v2-20261031/formal_confirmation01",
+    "--freeze-sha256",
+    "d91df0ef83c9431777b17ec6f1071bd611e0ab3698e9efd86aef9db8a39ef356",
+    "--freeze-reference",
+    "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/a37c99a87a25fe8417ec29ddbebb1c035d356a53"
+  ],
+  "started_at": "2026-10-31T02:43:32.935202+00:00",
+  "finished_at": "2026-10-31T02:49:06.723826+00:00",
+  "returncode": 0,
+  "child_pid": 991363,
+  "user_cpu_seconds": 328.585579,
+  "system_cpu_seconds": 4.921934,
+  "total_cpu_seconds": 333.507513,
+  "wall_seconds": 333.788579155007,
+  "peak_rss_bytes": 227594240,
+  "voluntary_context_switches": 229,
+  "involuntary_context_switches": 2871,
+  "output_sha256": "46f47e7ef6d61dfb33c210721caae5409b7f74f89928ed7c23e3ca6f65ed1fdc",
+  "measurement": "Linux wait4 on this exact stage process; retain nested subprocess records separately, do not add nested and enclosing totals",
+  "runner_sha256": "254086e7e92e9e71b96e65a3ebc55cfa60c796b4bc9183d399803e9101eebaa6"
+}
