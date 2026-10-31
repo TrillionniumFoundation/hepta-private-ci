@@ -51,3 +51,19 @@ Executed source/test/runner Git blob identities, each checked locally and remote
 **P0 OPEN:** requires full coupled financial fixed point and globally admissible obstacle, certified *all-node* continuum/time/space/tail/roundoff equity error, near-boundary active-set and true FP32/BF16 financial implicit gradients. **P1 OPEN:** 12-seed matched training fails multiplicity correction and structural rank-one mechanism identifiability remains. **P2 OPEN:** repeated-event OOD memory and actual durable host recovery. **P3 OPEN:** four real distinct encoder modalities and paired OOD alignment. **P4 OPEN:** Rust/GPU native kernels, 64/256/1024/4096 real cell CPU/RSS/p95/p99/Joules/recovery. **P5 BLOCKED:** do not scale without matched strong-backbone utility/cost superiority.
 
 `production_activation=false`, `all_scientific_blockers_closed=false`, `global_continuum_certified=false`; leave this Draft/unmerged. Do not discard the #4524 actual-debt 1e-6 refusal or #4528 identity failure witness.
+
+## Complete evidence publication and timing-independent integrity audit
+
+The **original full** six-case exploratory record (including all six exact Fraction endpoints and uncalibrated per-solver process CPU receipts) is preserved losslessly in `RANNACHER_DEBT_PANEL_20261031.json.gz.b64`, deterministic gzip mtime=0. Remote Git blob `2dd355693650610e8a6259353758ad9a805bc35c`; decompressed original JSON SHA256 `1414777137c3bb7d407c23adf9767f371fc224874b9cd0f33915ddc9cbc4ac64`. This is an archival identity, **not** an origin signature.
+
+A separately implemented `rannacher_scientific_seal.py` removes **only** nonreproducible single-run CPU measurements from the scientific digest, validates the six physical combinations and rational proof inequalities, and refuses missing cases, duplicate IDs, forged promotion flags and invalid intervals. Its timing-independent canonical digest is `1a68b70d7e3807697a6a72cb4b32131c90c1b6528f58633dfedd67dc9d025539` (see `RANNACHER_SCIENCE_RECEIPT_20261031.json`). This audit does **not** independently prove the upstream first-hit oracle itself sound and must not be used as a standalone scientific certificate.
+
+**Updated local total: 13/13 focused unit-test methods PASS, 0 skips**, completed together in 24.090 s, with the same reconstructed HX subset limitation described above. Three new tests require the actual lossless archive and verify timing perturbation does not alter scientific hash, a scientific-value mutation does alter it, and fabricated/missing claims REFUSE. Remote SHA readback matches the exact locally tested source/test bytes `a1304b10965617d691aa4e3c10e25950bc2d0f06` / `3a6f3f0169c148253f8bccf6f38e252599de2f47`.
+
+```sh
+python -m unittest -v experiments.hcsn_hx_unified_v3.test_rannacher_scientific_seal
+# Recover full raw data (research only):
+python -c 'import base64,gzip,pathlib; p=pathlib.Path("experiments/hcsn_hx_unified_v3/RANNACHER_DEBT_PANEL_20261031.json.gz.b64"); print(gzip.decompress(base64.b64decode(p.read_text())).decode())'
+```
+
+No scientific gate was upgraded. Specifically, the selected-node rational proof **cannot** replace a certified all-node continuum error budget, and CPU/GPU/native energy/performance remain unmeasured here.
