@@ -1,0 +1,50 @@
+{
+  "clips": 48,
+  "completed": true,
+  "cpu_seconds_including_reaped_decoders": 13.463281,
+  "direct_energy_joules": null,
+  "dt_unit": "seconds",
+  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "fresh_confirmation": false,
+  "gpu_used": false,
+  "input_dim": 40,
+  "manifest_sha256": "cad552f54212064d5d7620369f98f50f37c8f5b040c5b3bd49b3b216cb5447be",
+  "maximum_prefix_error": 0.0,
+  "numpy_version": "1.26.4",
+  "old_heldout_previously_observed": true,
+  "prefix_checks": 48,
+  "prefix_checks_passed": 48,
+  "retained_npz_bytes": 3442630,
+  "retained_raw_media_bytes": 0,
+  "schema": "hcsn-async-frontend-result.v1",
+  "scope": "Causal features of decoded presentation observations, not measured codec/network latency or live sensor capture",
+  "source_media_bytes": 13411707,
+  "source_sha256": "82650e912388cfe5e7534676024e3133841061324537ee2fbe36cd04fc06788c",
+  "splits": {
+    "test": {
+      "bytes": 609231,
+      "clips": 12,
+      "events": 3313,
+      "maximum_length": 343,
+      "minimum_length": 201,
+      "sha256": "5400fc44408c4ecfd54483af4d0b0778af88b7cf74314e6475af8280b6141705"
+    },
+    "train": {
+      "bytes": 1266790,
+      "clips": 24,
+      "events": 6913,
+      "maximum_length": 462,
+      "minimum_length": 218,
+      "sha256": "cc53d3185720157590fa47fd7b93103fe92b0186b587ec4ea763c61ee7de6da1"
+    },
+    "validation": {
+      "bytes": 644564,
+      "clips": 12,
+      "events": 3497,
+      "maximum_length": 387,
+      "minimum_length": 245,
+      "sha256": "e3c74e378df33592b0d40014deeb213e3639395ff0e0ecf3956dff57e7f39b2f"
+    }
+  },
+  "wall_seconds": 28.767468609003117
+}
