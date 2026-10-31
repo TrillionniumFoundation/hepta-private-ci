@@ -1,6 +1,8 @@
 """Lifecycle ordering/failure fixtures; no registered scientific entrypoint runs."""
 
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -9,6 +11,27 @@ from . import bootstrap, common as c
 
 
 class BootstrapTests(unittest.TestCase):
+    def test_direct_script_search_path_preserves_standard_library_queue(self):
+        program = "\n".join(
+            [
+                "import sys",
+                "sys.path[:0] = sys.argv[1:]",
+                "import queue",
+                "item = queue.Queue()",
+                "item.put('standard library')",
+                "assert item.get() == 'standard library'",
+            ]
+        )
+        with tempfile.TemporaryDirectory() as name:
+            result = subprocess.run(
+                [sys.executable, "-B", "-c", program, str(c.SOURCE), str(c.OWN)],
+                cwd=name,
+                text=True,
+                capture_output=True,
+                timeout=15,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def exercise(self, root, fail=False, semantic_fail=False):
         calls = []
         closure = {"synthetic_source": "a" * 64}

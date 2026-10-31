@@ -154,12 +154,27 @@ def destination_runtime(contract, probe_directory, commit):
         "Original resource admission failed before runtime import",
     )
     runtime = module.runtime_probe(contract["runtime_expected"])
-    c.need(
+    matches = (
         runtime.get("exact_match") is True
         and runtime.get("runtime_sha256")
         == contract["runtime_expected"]["runtime_sha256"]
         and runtime.get("model_created") is False
-        and runtime.get("scientific_inputs_opened") is False,
+        and runtime.get("scientific_inputs_opened") is False
+    )
+    if not matches:
+        c.write_new(
+            probe_directory / "REJECTED_RUNTIME.json",
+            {
+                "source_commit": commit,
+                "expected_runtime_sha256": contract["runtime_expected"][
+                    "runtime_sha256"
+                ],
+                "observed": runtime,
+                "science_started": False,
+            },
+        )
+    c.need(
+        matches,
         "Actual destination runtime differs from the original descriptor",
     )
     samples = []

@@ -29,7 +29,7 @@ from operational.parameter_field_recovery07.process import (  # noqa: E402
     run_owned,
     write,
 )
-from operational.parameter_field_recovery07.queue import (  # noqa: E402
+from operational.parameter_field_recovery07.job_queue import (  # noqa: E402
     ORDER,
     accept_ack,
     activate,

@@ -11,7 +11,8 @@ from types import SimpleNamespace
 import unittest
 from unittest import mock
 
-from . import controller, process, queue, supervisor, terminal, worker
+from . import controller, process, supervisor, terminal, worker
+from . import job_queue as queue
 
 
 class ExecutionTests(unittest.TestCase):

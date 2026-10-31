@@ -26,7 +26,7 @@ from operational.parameter_field_recovery07.process import (  # noqa: E402
     source_check,
     write,
 )
-from operational.parameter_field_recovery07.queue import LABELS, ORDER  # noqa: E402
+from operational.parameter_field_recovery07.job_queue import LABELS, ORDER  # noqa: E402
 
 RUN = Path("/work/execution07")
 CONFIG = RUN / "ops/registrations/initial/PIPELINE_CONFIG.json"

@@ -8,7 +8,7 @@ import time
 from types import SimpleNamespace
 
 from .process import EPISODE, PREFIX, descriptor, read, require, run_owned
-from .queue import ORDER
+from .job_queue import ORDER
 
 
 class Controller:

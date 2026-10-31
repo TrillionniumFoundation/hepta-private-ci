@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from operational.parameter_field_recovery07 import common as c  # noqa: E402
-from operational.parameter_field_recovery07.queue import LABELS  # noqa: E402
+from operational.parameter_field_recovery07.job_queue import LABELS  # noqa: E402
 
 SCHEMA = "hepta.execution07.postseal-review.1"
 

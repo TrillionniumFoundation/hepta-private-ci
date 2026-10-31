@@ -21,7 +21,7 @@ from operational.parameter_field_recovery07.process import (  # noqa: E402
     require,
     write,
 )
-from operational.parameter_field_recovery07.queue import ORDER, canonical  # noqa: E402
+from operational.parameter_field_recovery07.job_queue import ORDER, canonical  # noqa: E402
 
 
 def validate_initial(config, item):
