@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.r10.value.protocol.v1",
+  "families": [
+    "ordinary",
+    "matched_c1",
+    "analytic"
+  ],
+  "training_seeds": [
+    17,
+    29,
+    43
+  ],
+  "hidden_width": 24,
+  "steps": 1800,
+  "batch_size": 256,
+  "train_configs": 128,
+  "validation_configs": 32,
+  "test_id_configs": 48,
+  "test_ood_configs": 48,
+  "configuration_seeds": {
+    "train": 3101,
+    "validation": 3102,
+    "test_id": 3103,
+    "test_ood": 3104
+  },
+  "selection": "lowest validation action-advantage MSE at 100-update checkpoints",
+  "primary": "held-out expected utility difference analytic minus ordinary, paired by configuration and fit seed",
+  "secondary": "analytic minus matched_c1; regret against exact Bellman optimum; strong fixed-rule comparison",
+  "uncertainty": "paired bootstrap of task configurations and training seeds, 2000 resamples",
+  "test_adaptation": false,
+  "energy": "unmeasured; never inferred from event count or CPU time",
+  "contract": "native/task_contract.json; monetary task costs are declared units, not measured joules",
+  "kernel_scope": "zero-drift Brownian first-passage gate as a differentiable feature; no claim of exact FullHX stochastic process"
+}

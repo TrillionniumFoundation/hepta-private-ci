@@ -1,0 +1,7288 @@
+{
+  "train": [
+    {
+      "deadline": 8,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.08355391993544864,
+      "latency_cost": 0.01696427166217508,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6982733481750198,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6037726332106416,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7031208037646184,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.03509369499354964,
+      "latency_cost": 0.012023957869285815,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8415358591554958,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6040697858555126,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7590380673428722,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.0360502091950147,
+      "latency_cost": 0.010095164209444044,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.730465343081302,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6698207173648436,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8030996054900996,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.02679239788270424,
+      "latency_cost": 0.009582358815616136,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6629029260505982,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7608728221987368,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8070925168019789,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.05903590301033364,
+      "latency_cost": 0.017364101930645803,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6078553965137324,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7597186906065914,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.850174855241973,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.08780016509089587,
+      "latency_cost": 0.008112908439529129,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6202808107537505,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6091893298127494,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.06518869404395529,
+      "latency_cost": 0.013450689043750503,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8212562539146838,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.9008515701482567,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 4,
+      "prior": 0.5,
+      "read_cost": 0.01545229688680456,
+      "latency_cost": 0.008977343882812674,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7562985481300181,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8542906787200146,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8696370493776129,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6404432267383742,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.05240854118085535,
+      "latency_cost": 0.008479235060769412,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7461893837011236,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8576044764551893,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.777495821746073,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.9267098554557565,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.03487547582707797,
+      "latency_cost": 0.00476521108466517,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7100313670785057,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7076192362292903,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7781759469092393,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7867482529642325,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.057383019855775555,
+      "latency_cost": 0.014667449581088541,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9049438348705972,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7216315278432597,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 4,
+      "prior": 0.3,
+      "read_cost": 0.018918176183652654,
+      "latency_cost": 0.008356581213123803,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6534052943207275,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8541293848559741,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6655254604961871,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7890445742866485,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.07026717495728975,
+      "latency_cost": 0.0030601845807330203,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8315510934018405,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7266449311241495,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6097121779021084,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7477849014330519,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.07441795250719817,
+      "latency_cost": 0.010751995251198142,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8687122231342801,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6216177052449604,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.01643917770178637,
+      "latency_cost": 0.012384737906754758,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8193201190778463,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8269656544005068,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.06282443355597787,
+      "latency_cost": 0.015454104771560404,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6094687691013729,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6151589845535835,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7793155147165737,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6460503336530674,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.08848109172890192,
+      "latency_cost": 0.017227684791964896,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9143717746669018,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6034111524201589,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7953714740797416,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.03516830038912896,
+      "latency_cost": 0.016836304109356524,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7464237520699507,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6650391087379822,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8258746291611374,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6525466301000399,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.07136330628157052,
+      "latency_cost": 0.009496251704998147,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.868318692400819,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8202452797005318,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7246983202457893,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.08005140974062398,
+      "latency_cost": 0.0071750334904240615,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8590452029700006,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7398769750376863,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 4,
+      "prior": 0.5,
+      "read_cost": 0.045847386446345686,
+      "latency_cost": 0.015289675008840924,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7544434326451332,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7557606756254616,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6396063881542945,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.777769664248752,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.06133185768141318,
+      "latency_cost": 0.012321616467595943,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.621633752836533,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8454987894303378,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8774323512526041,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8009163927632201,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.08523945638254593,
+      "latency_cost": 0.013434673461697369,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8320754356044354,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8455198387070106,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.9031585581470691,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8627859294316398,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 4,
+      "prior": 0.5,
+      "read_cost": 0.020952771908749772,
+      "latency_cost": 0.013612342469330605,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.823053021824143,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7352531013107072,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.851267342839409,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7413966770021907,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.033298773427593034,
+      "latency_cost": 0.011981127459741626,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.759864841537031,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6226315488362284,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7308976446625655,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 4,
+      "prior": 0.7,
+      "read_cost": 0.07962694273798483,
+      "latency_cost": 0.01705976613472031,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6260789047924558,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8116519425252179,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8961120616866647,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7293248499245736,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.012988533466192925,
+      "latency_cost": 0.01779072633761264,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6547231411189623,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7290073345469904,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.0812538904399175,
+      "latency_cost": 0.005210417800103532,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8248700413215538,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7958175920270711,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.824508236074998,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.08259733601090419,
+      "latency_cost": 0.009106323786970117,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6680779401382885,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8421402563943761,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8998256762685761,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 4,
+      "prior": 0.5,
+      "read_cost": 0.07686641061273614,
+      "latency_cost": 0.0031806090393406592,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.890225306637286,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.9125309403475106,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.840495962744444,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7176250061988861,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.07557593213745556,
+      "latency_cost": 0.015724445732737763,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6376202249742764,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8078850743217139,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.03816663869061902,
+      "latency_cost": 0.014681572078133349,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6955509365348446,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7468679952455013,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.705016851954781,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8425420847159191,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 4,
+      "prior": 0.7,
+      "read_cost": 0.05785353616107593,
+      "latency_cost": 0.0060499710052023675,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8431608085084054,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.9178944618587639,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8323358850973893,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.866666583295101,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.08654531267859432,
+      "latency_cost": 0.0172009877473061,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6423875945430245,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8140095408523635,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.08815747317462712,
+      "latency_cost": 0.0035656709575819434,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8198448652162883,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8923707679184902,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8054318915368273,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8614881287560111,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.043889758185764474,
+      "latency_cost": 0.007608637103121316,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6667278039463169,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7296121819760631,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6412487832196166,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.07418655764015675,
+      "latency_cost": 0.016346250806060145,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7900398536783285,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7491354196920761,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6850784731947411,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.019084791545445942,
+      "latency_cost": 0.005687343917130995,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7570682117340577,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7067811061522782,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.026328439308628764,
+      "latency_cost": 0.009899664058787448,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6728157361236211,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.70795691166169,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8218610483228648,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.014948111441109413,
+      "latency_cost": 0.0023079421408057073,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7682326511171113,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.667264921037309,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7434266325226533,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.02639553276459102,
+      "latency_cost": 0.004925482440499948,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7644427923041953,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8503203939608882,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8793075706631882,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6133587502701863,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.07895273784729705,
+      "latency_cost": 0.00887291841071422,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8134962363961187,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6554510744524813,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6446635776470194,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.026245472175625652,
+      "latency_cost": 0.007055124533712697,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6405531861213549,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8718065281687586,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8596383609413414,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6629806951486342,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.017699939280089203,
+      "latency_cost": 0.004449734435892631,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6922004116578737,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6262410852496908,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6436115189633985,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.06600116706162208,
+      "latency_cost": 0.0036509667811626375,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7139340405025755,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8383171781820942,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.029579398535728534,
+      "latency_cost": 0.0060386330860317744,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7116481284389361,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6995361217205878,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7620238916498399,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7167280518007543,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.08051775468024684,
+      "latency_cost": 0.0126475507436738,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8164526129333538,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8606377472078041,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8494077188508733,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 4,
+      "prior": 0.5,
+      "read_cost": 0.01732216613313069,
+      "latency_cost": 0.007497075277732918,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.924799624281578,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8676882254985155,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6306454769144813,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8473412062676826,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.02800127383713406,
+      "latency_cost": 0.008996010130362383,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9223498377548356,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.815375050380523,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7722666668760401,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.03780071717899761,
+      "latency_cost": 0.01587572174669195,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8538793787048977,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6267705330992164,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.03722408219004775,
+      "latency_cost": 0.01785229445183277,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8541676911949432,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7592136631719644,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.0397765373136745,
+      "latency_cost": 0.012845151372516775,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8612130812067231,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7488526481405025,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.03038992661160918,
+      "latency_cost": 0.012251689643160337,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8995942668583641,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7820005154415962,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6773084275384262,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.064305174628087,
+      "latency_cost": 0.00951620599602928,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7109320303225002,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8609701972748548,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8446121320913313,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.016753000576375857,
+      "latency_cost": 0.003899671041869398,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7611549428490175,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8393133119959777,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8797659329033318,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6849653859534354,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.019389567059227245,
+      "latency_cost": 0.01369315355718093,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6110890998440418,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8120159852527795,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.023678746958001942,
+      "latency_cost": 0.009931362595583164,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8955336307548009,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8730624212423319,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.063986376529322,
+      "latency_cost": 0.006401192568300987,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8946417187199154,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6402908397896766,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8155690982165136,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.06441600868399797,
+      "latency_cost": 0.004856431296162596,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6169043441546906,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6421008107921261,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8903113636838065,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.025897249621894006,
+      "latency_cost": 0.010302762158619621,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6048775990357715,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7341071725726638,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 4,
+      "prior": 0.7,
+      "read_cost": 0.03791508566458264,
+      "latency_cost": 0.007933998795373275,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8292048131162288,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8733484212052127,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7535459150100974,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7059093310074354,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.015852075193087924,
+      "latency_cost": 0.002224238676487898,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8165363315012728,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8656055889090282,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7672111656461824,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.06620952050826363,
+      "latency_cost": 0.011222516960459438,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8011747123587034,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8778127134491813,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8932358637535752,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.035029040936572164,
+      "latency_cost": 0.017822563538531677,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7708602859260762,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8786786523867121,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8248565624242049,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.07192157990472155,
+      "latency_cost": 0.014903595859771641,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8514117491953179,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6607831422751976,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8893462771411422,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.08840873146984071,
+      "latency_cost": 0.008567419080814504,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7987597387493726,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7429411140579647,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6433358771948219,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.04073849591036069,
+      "latency_cost": 0.003769900116083175,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7201317043385151,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6033172255008307,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8366523712959637,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6490045242828821,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.03943674271387681,
+      "latency_cost": 0.011369884878917665,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7328305956323806,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6591583787555235,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6491305704289333,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6039592270112314,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.07223629009923019,
+      "latency_cost": 0.007744817254790134,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7561695016937001,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.881500633492583,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.045994029159962854,
+      "latency_cost": 0.012167661104385788,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6365647716444288,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8440451321503185,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.074858775299864,
+      "latency_cost": 0.01291413947684315,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.910049867043992,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7923588653227315,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8272059231210213,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.07865447185005996,
+      "latency_cost": 0.016875554080316026,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8324621696490362,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7368786010914138,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.02028225161930225,
+      "latency_cost": 0.0030891665883424385,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7656173332386191,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6488304059853999,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6940404226965625,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.0401467338441727,
+      "latency_cost": 0.003436423895624774,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7380490915795741,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.722724591003211,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6443745652588196,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.05484568214631316,
+      "latency_cost": 0.0030656551989751506,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8408231132339054,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8975930791798505,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8847255346250192,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8236657253733544,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.04741084818936339,
+      "latency_cost": 0.004731491353659568,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7473403232579737,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.794417350220461,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.679122461608353,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7152197415019995,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.05534703964015003,
+      "latency_cost": 0.011175692119198563,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8007396835726208,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8535863539918025,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.062184696008710905,
+      "latency_cost": 0.0032178521790700663,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7337145824677445,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6972691161096526,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6691939991078859,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.08707885267877642,
+      "latency_cost": 0.01187639324969087,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6946652079956122,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6087203502278296,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8998560246162814,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7595888757316744,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.046611903281563075,
+      "latency_cost": 0.013777410877912049,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6771260514849899,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7175242034383256,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.038300910814314075,
+      "latency_cost": 0.016783796280031148,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6819662720290057,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.9087660136484386,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8622756752381521,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.04262259587738841,
+      "latency_cost": 0.0054469997770568105,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8645926927577334,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7891997325933677,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6126746593110551,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.05415368637435894,
+      "latency_cost": 0.009386331060601879,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7543647480769227,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.678580905359487,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.015308817763551568,
+      "latency_cost": 0.0074156421432874375,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8181430625876994,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8293500711273784,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.04565399112551152,
+      "latency_cost": 0.006982774495578561,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8161680815183993,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7711027472578026,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7973282959904997,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8266496700536019,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.0763745402311422,
+      "latency_cost": 0.011258303847310235,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7590520526508826,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6322015619066492,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.0678001971418172,
+      "latency_cost": 0.011216210474722554,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8129366032672452,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8098743614961414,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.9081499511432704,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7720907210966628,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 4,
+      "prior": 0.3,
+      "read_cost": 0.03319207451561852,
+      "latency_cost": 0.015091621003525027,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.647106228155851,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.631432755745477,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.9114791584390457,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.9290132176399435,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.06867064509604962,
+      "latency_cost": 0.01797771978414625,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6345283322987574,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6334524006019883,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.06725871675267393,
+      "latency_cost": 0.005389158897807471,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7729001551335105,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7496821622053645,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.03564914427635439,
+      "latency_cost": 0.007237243087082403,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6782861684686159,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7720111168934691,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6454192958984551,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.9039199729466209,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.0626126760954103,
+      "latency_cost": 0.013464483663743159,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9260020276397227,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7534202482044694,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.07469515285426344,
+      "latency_cost": 0.013818982702395908,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8827573002002032,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8970795173699435,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7465526936486099,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.06347008348403649,
+      "latency_cost": 0.0066902983225077895,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7789683290417668,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7070997873680467,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.74298927314307,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.0378905320350927,
+      "latency_cost": 0.004509961317492779,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8947306009424887,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8166580522789699,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8731829079143072,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.0389834837614452,
+      "latency_cost": 0.005893471173869387,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8366911514142856,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8164530338272384,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7407126376509863,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6988771183665472,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.07398721877483423,
+      "latency_cost": 0.00472942226179088,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7045930828099805,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8088025573354648,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8353819719403335,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.013769768909312415,
+      "latency_cost": 0.009227045613659514,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8645058469116487,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7716569314829936,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7769086428645762,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.07114197305300297,
+      "latency_cost": 0.005384742988050727,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6019747298955362,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7439526619279102,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6836870111863703,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 4,
+      "prior": 0.3,
+      "read_cost": 0.08991664188142197,
+      "latency_cost": 0.010600694947177509,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.811193439409487,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7946466474128401,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6608484162931105,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8634006543394395,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.02943040873353709,
+      "latency_cost": 0.01748602512776554,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7198752583530317,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6843511608092365,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7522850697860064,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.06080465581558871,
+      "latency_cost": 0.012738372507930707,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7788009461669803,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.9091149344599971,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.04679252209604516,
+      "latency_cost": 0.0022836564360588286,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7720032892724207,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.9117145708184435,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7465084778922586,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.023304155674060814,
+      "latency_cost": 0.0038427343889772684,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8272980736817108,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8521922693167463,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7317186957396145,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7836679105899813,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.04506887481037443,
+      "latency_cost": 0.01253748398211113,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7189953587048793,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8079594408694835,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.9205641163616951,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.08773912040465442,
+      "latency_cost": 0.008289236591138224,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6755761045409092,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6530881654835303,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 4,
+      "prior": 0.7,
+      "read_cost": 0.0480721752702931,
+      "latency_cost": 0.012334663091146742,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6624600976684747,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8950301418570653,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.802718661165606,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6777150313593245,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.03934354272871441,
+      "latency_cost": 0.007988502682709522,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.868328559623096,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6066922771693924,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6925267828024305,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.029951530952478173,
+      "latency_cost": 0.009686928828746378,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.682084315999312,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8032000426977617,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6315841686303504,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6102139332933241,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.013254657520292337,
+      "latency_cost": 0.009025623749139074,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.918317219862685,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7537803538283494,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.04957435258538949,
+      "latency_cost": 0.014134183145446634,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.683804775525524,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6753279435186227,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6896239387599968,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.04533995764028059,
+      "latency_cost": 0.011503438859087842,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7906334213220931,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6825305420232701,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8322818167060166,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8944492877259385,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.08398010281873713,
+      "latency_cost": 0.012277214484721822,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9115585721236275,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7968138283097773,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.041368041809940706,
+      "latency_cost": 0.016595001395740577,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6927560340039396,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.801085024196961,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6244263595614649,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.041426819918683404,
+      "latency_cost": 0.013282901611906128,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8056639258129848,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8218673609478124,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6643527800735463,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7398851550184341,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 4,
+      "prior": 0.3,
+      "read_cost": 0.035291363239949886,
+      "latency_cost": 0.002148004052969794,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7261984362237606,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6737121596088818,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6370140458691005,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8860500381995612,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.01384302509509819,
+      "latency_cost": 0.01080691704670555,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7619681890654078,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.831972876487499,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6422676201180576,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7873812126042699,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.023375264977832468,
+      "latency_cost": 0.016486688853692782,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7890461211568716,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7964495776903371,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7127668729990269,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.058884012532804134,
+      "latency_cost": 0.015792409066427683,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6803435920157733,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8449428228898012,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8117922674316052,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.0554761356780958,
+      "latency_cost": 0.011197838861180632,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7173500881986606,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7622225261320402,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7190864080227846,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.08214484282979248,
+      "latency_cost": 0.0064808072455419695,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8111195642467115,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8616361630409755,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.817742783198851,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.04308300989929771,
+      "latency_cost": 0.006212861681625434,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7979153140275042,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6698214163165677,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6603223450596606,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.916259143043355,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.021967286052499896,
+      "latency_cost": 0.017839437013616267,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9053296641048854,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.704148311997365,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8041075469872903,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6371764125596788,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.05047944473900176,
+      "latency_cost": 0.011888739729151025,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8615479489184092,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.9267263803514227,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7080870783447986,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6581048221195649,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.014083538896864208,
+      "latency_cost": 0.0129386670685918,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6634443578532595,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8357186504269494,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8915397412852837,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8935272613628727,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.08312244134225617,
+      "latency_cost": 0.013433014838338276,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.803534259480905,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6540439153687898,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.03621761038028651,
+      "latency_cost": 0.013177604897815075,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6934080178553752,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7267341686030866,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.9025611129822643,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8678447549518893,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.0518081684251363,
+      "latency_cost": 0.013178420895912585,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7709624113514372,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7797255808397479,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6397013079846612,
+          "failure_probability": 0.08
+        }
+      ]
+    }
+  ],
+  "validation": [
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.06582419334400336,
+      "latency_cost": 0.0038131011242792906,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.67555278362819,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6421226957904383,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7818483408949606,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6224659542362521,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.021886745685321014,
+      "latency_cost": 0.0037169100472362352,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6051791268925009,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7123315494124418,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.71131345613583,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8148530849165263,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.08907635412839682,
+      "latency_cost": 0.011824179025132716,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8485551133992343,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6029629906640753,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.0832189316299139,
+      "latency_cost": 0.003994742292376962,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8268615591737862,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7175242184159467,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8648244917672745,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.06454793607722817,
+      "latency_cost": 0.010139603549918715,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8784479653707721,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8491388112014285,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7101749036376762,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6851678449085763,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.04700360695642382,
+      "latency_cost": 0.013148324692165316,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8122333293881516,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7397105961080426,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7110520405458098,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6841888518303544,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.0446778863256614,
+      "latency_cost": 0.006478784054484496,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6324872052127329,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.9298825386644651,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8524021425838784,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.777917948414421,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.07484592505951858,
+      "latency_cost": 0.010018686026701433,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7875627033496572,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7624819589187478,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.921546479791011,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8860553218997531,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.05582429422024722,
+      "latency_cost": 0.014865609536188006,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7905568431330354,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6533758119751449,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.753788625233307,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.0868916222994576,
+      "latency_cost": 0.005680710531322301,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6706618812395005,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6774330992825853,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.038441052211837495,
+      "latency_cost": 0.012162587160793582,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8247875269036931,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6180452300902826,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.05608693357121952,
+      "latency_cost": 0.012699906405341552,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8728253028303569,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7196401508519172,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6573735193670154,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.06432459515282161,
+      "latency_cost": 0.00685556962309515,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9042172073047472,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.851107081776872,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8943074343095956,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.03041610478644867,
+      "latency_cost": 0.009747109113955505,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8618399092550089,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6070003875939994,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.028868435657156594,
+      "latency_cost": 0.010451137268009236,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7732093737661591,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6942662918527347,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8530567460846986,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.031823655040476184,
+      "latency_cost": 0.009891773230287355,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7419429693199064,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8812248542512486,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.050024397296372286,
+      "latency_cost": 0.0044861303740488905,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6561386467885337,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8299464267534733,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.895046702921841,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.9119155439185216,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.03644147918663143,
+      "latency_cost": 0.016952368435905977,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7073613468292167,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8343243160821225,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8316013070247751,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.9156939990215026,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 4,
+      "prior": 0.3,
+      "read_cost": 0.08624842169254346,
+      "latency_cost": 0.01655835920488579,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6279898952751263,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6763074139879859,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8137460180294681,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6143249535204174,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.06878213364315404,
+      "latency_cost": 0.01614841917251013,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9125923705000831,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.646808266125693,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6754377624478813,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7367337377858927,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.04403724003193919,
+      "latency_cost": 0.008239183273356798,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6995884183903956,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8710009080557953,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.04646864112985394,
+      "latency_cost": 0.012088819308998727,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9040999919838566,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6454426236891514,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6766679680067327,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.04039537010580643,
+      "latency_cost": 0.013186149337947779,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6915525306955908,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6874307103843637,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 4,
+      "prior": 0.5,
+      "read_cost": 0.034884579414405016,
+      "latency_cost": 0.010158608131140008,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8080933479492022,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6112373816432195,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8589590608934685,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7354333606502237,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.018159201176566546,
+      "latency_cost": 0.010465410892948439,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.713660330961954,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7791193982478504,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8168919280285544,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6719196493807852,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.08397375725519308,
+      "latency_cost": 0.011275565939814547,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.85679628536429,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8100763704618315,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6108102914586889,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.02972025465372524,
+      "latency_cost": 0.007951352342164208,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7998317509615342,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8400839335581618,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 4,
+      "prior": 0.3,
+      "read_cost": 0.06244361176577476,
+      "latency_cost": 0.003105331416503921,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8904072702824881,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7229740651993535,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6383094974711172,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7593910489671245,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.08604176874189677,
+      "latency_cost": 0.013345366548173903,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7749166135594234,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7182506472526962,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8867076030454744,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.08353176056827005,
+      "latency_cost": 0.006355855266757789,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.818136619006091,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6683639678657013,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.05597459023513966,
+      "latency_cost": 0.006827032028462796,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7098610714489797,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7113907365661565,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.0494039742554082,
+      "latency_cost": 0.009023600496171468,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6957806581295555,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7713263185169563,
+          "failure_probability": 0.0
+        }
+      ]
+    }
+  ],
+  "test_id": [
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.060139969345220104,
+      "latency_cost": 0.016266291744130627,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6044250156411057,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6889775300303045,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7130114669652959,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.0841985719087446,
+      "latency_cost": 0.01281005298937312,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8638246599212238,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8473316309852621,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.04566173366260162,
+      "latency_cost": 0.008363168488867884,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7214550204055008,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6187915817744722,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.07708070447078912,
+      "latency_cost": 0.012855822568509102,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6236274608904077,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7543266925869152,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.759709334591059,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.08581860258529846,
+      "latency_cost": 0.017016908544686356,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6533578930339421,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6175520737624004,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8161871857993479,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.08737329830397339,
+      "latency_cost": 0.012907464511450159,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8376965847225322,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6052832298477121,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6620123934181247,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7861492431588132,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.015307127695074207,
+      "latency_cost": 0.014313331947805832,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9079660280860956,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8974084660207997,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.03520658220081839,
+      "latency_cost": 0.010092352926121092,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8848602470027588,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.841185924916857,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.013399457163006124,
+      "latency_cost": 0.009015024017363487,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7504423408993102,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.881100531436348,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8008177725062524,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.05713007520699116,
+      "latency_cost": 0.0167865536029171,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6448592438051044,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8542832043483874,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6934739605321742,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.734782972396813,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.0720542582884307,
+      "latency_cost": 0.01443487414982225,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6121658988128954,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6382844979250066,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.687735612688928,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.01667822578902912,
+      "latency_cost": 0.013228624654489986,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8149316219798219,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.9261151945311199,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.9261550039671471,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.06612921712015148,
+      "latency_cost": 0.00881271367447906,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7947161912501024,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7955541318164231,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6688340719894583,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.08834375522267274,
+      "latency_cost": 0.006571996678636539,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8075355468688713,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6814132243893519,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.601362627245685,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.03170384182214621,
+      "latency_cost": 0.011797234242755972,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8054234463404419,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8772012734871173,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8704056558937338,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7000735586036997,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.08374776516280322,
+      "latency_cost": 0.006843707557286846,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7493704593291809,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7955435915446214,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6776269959150046,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8660852371297761,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 4,
+      "prior": 0.5,
+      "read_cost": 0.06606239706958032,
+      "latency_cost": 0.010167057396472015,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.770195187225629,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8293142475525795,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6091641629062036,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6712774442334661,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 4,
+      "prior": 0.5,
+      "read_cost": 0.05706802472814228,
+      "latency_cost": 0.008202833263468587,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7425820757796903,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.9162957947686514,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7105232049114686,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8951314652522917,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 4,
+      "prior": 0.5,
+      "read_cost": 0.037060305066504394,
+      "latency_cost": 0.014114415270473153,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8337855501351975,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.863292330890608,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8055486343883503,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6804733409915638,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.06226795020663846,
+      "latency_cost": 0.002255558499058706,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8707614448615792,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.9148281101512133,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7457038620893566,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.042129585684891224,
+      "latency_cost": 0.004962511335477345,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8320349033235233,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8338411706554935,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6565493072650088,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7349591341776655,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.08271406022270321,
+      "latency_cost": 0.012963520037238465,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8013743598466618,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.884425677366596,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8495874938930795,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.018283039542475024,
+      "latency_cost": 0.0024890037806279716,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7719882490865754,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8318901672348886,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 4,
+      "prior": 0.5,
+      "read_cost": 0.08425944129033738,
+      "latency_cost": 0.009803898104907635,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8169322229408218,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6740724909725089,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6548104379632841,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8988716190852053,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.08388171358460324,
+      "latency_cost": 0.00898213550788464,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8612957414382165,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.9172898829011942,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.811756469432375,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6381062425845299,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.0473308923442166,
+      "latency_cost": 0.016112033499518605,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8635579730725624,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8342813926297434,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7382624870021164,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.08715324998764724,
+      "latency_cost": 0.003277093895927052,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.640752679158943,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.9023024021255797,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.029918231845527787,
+      "latency_cost": 0.012435590432878106,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8823462010309518,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8734141690293955,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.9185793719210806,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.023665713118628195,
+      "latency_cost": 0.010652743705657372,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7049218756857214,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8837762221492292,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7795964491359031,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.918069408548394,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.052718277059804114,
+      "latency_cost": 0.004872630664348101,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6769307569786435,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7165085865063703,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.054878974583128445,
+      "latency_cost": 0.0034952538647188636,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9181173150269526,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6352383522530339,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.08624486888101981,
+      "latency_cost": 0.006472796689982092,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6294433080371739,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6435646508008991,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.04198473451808238,
+      "latency_cost": 0.00658169148128367,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8998620677346991,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7326651476826573,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7422461592642795,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 4,
+      "prior": 0.3,
+      "read_cost": 0.04685827484623112,
+      "latency_cost": 0.0036939473518864665,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8408655571341652,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8756894840008947,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7907043776678764,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7187072850741765,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.01825305311472047,
+      "latency_cost": 0.0027936295197504533,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6030822784145231,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8337786790917316,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6383496721058598,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.07881416512795181,
+      "latency_cost": 0.004068811734947416,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8433637616063865,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.9274465296663952,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6977417439810288,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.07243080739122305,
+      "latency_cost": 0.004592166397912878,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6500985038693549,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6841555184222996,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8663090480722596,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6232916089244578,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 4,
+      "prior": 0.7,
+      "read_cost": 0.027723568592762385,
+      "latency_cost": 0.008654468028017226,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8678724654812455,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6976854205449395,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6592722633083398,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6994898020393325,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.05865744599607027,
+      "latency_cost": 0.009308032257920953,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8456942726396823,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8611804471519677,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8417054820045713,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.029507564861103713,
+      "latency_cost": 0.004314594281900662,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7345569832213766,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8199173231259971,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.018008670444319946,
+      "latency_cost": 0.003947656747289889,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7462648560883948,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.769968289017613,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.036691263358260146,
+      "latency_cost": 0.0031614303882581537,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8896134587344134,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.752472375020396,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.846132014882158,
+          "failure_probability": 0.16
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.07870202944764224,
+      "latency_cost": 0.0033752789357726627,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8174996152812637,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8303349597073543,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.0648057649264,
+      "latency_cost": 0.013211393545867221,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8975731212935327,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6766990249920608,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.034479392083650216,
+      "latency_cost": 0.0037087157941075688,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.774914529224559,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7296566470366087,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6512167015954136,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.037405996928293925,
+      "latency_cost": 0.00740451071140031,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6791372663591096,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7390124099552793,
+          "failure_probability": 0.0
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7287992585689635,
+          "failure_probability": 0.0
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.03140897451400923,
+      "latency_cost": 0.01076732577718135,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6171596551775057,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8777902110412612,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7348369184191468,
+          "failure_probability": 0.08
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7695031081767636,
+          "failure_probability": 0.08
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.03895635676043455,
+      "latency_cost": 0.01224964975308395,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8103752430827456,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.881453901565177,
+          "failure_probability": 0.16
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8479638408267163,
+          "failure_probability": 0.16
+        }
+      ]
+    }
+  ],
+  "test_ood": [
+    {
+      "deadline": 5,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.12665177002860278,
+      "latency_cost": 0.006683346036459922,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.876456365588126,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8214814893073249,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6731763635404222,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.11795858259570662,
+      "latency_cost": 0.017749269206756728,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8764451363207082,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6106202407289554,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6640556202024728,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.12436192061584823,
+      "latency_cost": 0.014527062392714982,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6634420784826746,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7272915203832226,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6750486613261707,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.14889056960738667,
+      "latency_cost": 0.009162691256573999,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7772602013982355,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6286040516089809,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.16992852340754622,
+      "latency_cost": 0.01355375638312101,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7603711409532028,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6510675438698851,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8836638612281689,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.1801474743501926,
+      "latency_cost": 0.016322187981344632,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8911203220069239,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8035509822347484,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6410157127425492,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.13587370224188292,
+      "latency_cost": 0.007377532861173085,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6906225574654316,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7578502478763409,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 4,
+      "prior": 0.5,
+      "read_cost": 0.13601668092247404,
+      "latency_cost": 0.006891348782503285,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6518747508494663,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6556420848667897,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.771277096367704,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8788475467576149,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.17307474756490648,
+      "latency_cost": 0.015401060793424445,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.883878140652229,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8267145920176769,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7894344879120194,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.678947269116133,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.12040030685109943,
+      "latency_cost": 0.0069330676300948255,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7267036128355235,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6588115617266225,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8158103699774316,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6091598126447778,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.10717569106459199,
+      "latency_cost": 0.007708474646731908,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6459809070614613,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8696426295446029,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7046927952779015,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.12933447583004182,
+      "latency_cost": 0.012872808844728745,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9084542630607659,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7124046742685294,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6976392187697086,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8916760893756004,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.16022565425715976,
+      "latency_cost": 0.015241824648071427,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6556087081987968,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.6567881265059075,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8535055952108452,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7435069173576832,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.1638615014822994,
+      "latency_cost": 0.0022447437587831552,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7820326350982707,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8701076408797745,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8280160055058559,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7734884632115724,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.19636747013379385,
+      "latency_cost": 0.004375144803447221,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8669246407552049,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6308320444253503,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6839280677267826,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.15374408105114842,
+      "latency_cost": 0.011490274321644386,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7628595175473342,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.9296968844108862,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.13993299187413813,
+      "latency_cost": 0.006704271636457479,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7133520899067488,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7448339981670608,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.12116669962034611,
+      "latency_cost": 0.010409083353959799,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7351087615454037,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6526142329775433,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.14801414051629094,
+      "latency_cost": 0.013755236230314763,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6321707080286754,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7205146492458671,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7052143370250835,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8858400145071924,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.10506585926671524,
+      "latency_cost": 0.017859400873022208,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6924694630172996,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7508720616766364,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.9151953394642969,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.17450540070417836,
+      "latency_cost": 0.016598242112439703,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6364274402641292,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7838237386699368,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.1403774492698871,
+      "latency_cost": 0.012346726262406463,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.68966407322839,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8891818770365361,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.706530064454514,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7305972914301643,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.1613452694872568,
+      "latency_cost": 0.008166049990090428,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7091950582809796,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7194407986515419,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6624545815142618,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6684325091635496,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.11750817491122931,
+      "latency_cost": 0.01466390139446295,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6158099366292991,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6368487080191612,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.14857340995555418,
+      "latency_cost": 0.003849386847500572,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8609620777901389,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6088833024418207,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.9273613326401172,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6703012978685576,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.13294957858233852,
+      "latency_cost": 0.0036625580802971333,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.928725963146813,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.9050015165148199,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.17823588664695234,
+      "latency_cost": 0.011758155353621347,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6648772633790814,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.67336103297251,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6113035877136515,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7894668106124785,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.16344975872287681,
+      "latency_cost": 0.008197665175074368,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8529158425179051,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7725907243936406,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.851721743553453,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.11118795508281831,
+      "latency_cost": 0.0025978838073619083,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9175055476687617,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6081520250414683,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6294608575969325,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8289001945565576,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.5,
+      "read_cost": 0.1425150412668704,
+      "latency_cost": 0.009996101666463511,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7811409353686817,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8115102421813752,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.6960908492977305,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6418306088564737,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 1,
+      "prior": 0.3,
+      "read_cost": 0.15295418146521989,
+      "latency_cost": 0.0061671684436551116,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.838783135340183,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.7114434530964876,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.12749728519064657,
+      "latency_cost": 0.01568127171143164,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.9082589593912647,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7431807199060151,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.6668299781498701,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8632286745351563,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.15336109223234634,
+      "latency_cost": 0.01283166289480881,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6662902243851989,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.9262243078589442,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 4,
+      "prior": 0.3,
+      "read_cost": 0.10370708688122929,
+      "latency_cost": 0.011350838840486573,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6679520175719033,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8547033626959752,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6973009682024203,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6004218295378726,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 3,
+      "prior": 0.7,
+      "read_cost": 0.1517658230112986,
+      "latency_cost": 0.013194355861733214,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8835408040205941,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.840243478898963,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8657937817687205,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.8387780851210376,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.10882196402472692,
+      "latency_cost": 0.01732809493972458,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.812174797362496,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 1,
+          "reliability": 0.8704482574758502,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8810260229327129,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6819743502813919,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 7,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.19310432200661726,
+      "latency_cost": 0.008633185939050715,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.638984949543219,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7495251112417755,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.13759073529788196,
+      "latency_cost": 0.008516518302687036,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6514273597304572,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.751415338831752,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.8630210292572951,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 1,
+      "prior": 0.7,
+      "read_cost": 0.10116361219272263,
+      "latency_cost": 0.015469245545603895,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.8240533541652992,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7435308225463316,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 3,
+      "prior": 0.3,
+      "read_cost": 0.1913532184781767,
+      "latency_cost": 0.014599736162015839,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6818626847344111,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8811703749483764,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7952589618380066,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.6880491299293074,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.1345924226706079,
+      "latency_cost": 0.0073353868671334685,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7734906097814529,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 2,
+          "reliability": 0.7932634792519364,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 6,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.17055970528919392,
+      "latency_cost": 0.006918236971681116,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.741113399307431,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7402491664402503,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 4,
+      "prior": 0.7,
+      "read_cost": 0.12106582822251806,
+      "latency_cost": 0.011296610347253759,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6054209932500845,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.8259192803341362,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.9279846099605902,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6606562217548663,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.7,
+      "read_cost": 0.1633442825248093,
+      "latency_cost": 0.007406040624498313,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 0,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7533196772951442,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.8789427458085834,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 8,
+      "budget": 2,
+      "prior": 0.5,
+      "read_cost": 0.10578834829948029,
+      "latency_cost": 0.006622035902418952,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 1,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.6015614594060634,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.9038366917019622,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 4,
+      "budget": 2,
+      "prior": 0.3,
+      "read_cost": 0.10239420047208686,
+      "latency_cost": 0.004046142313926198,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7827641165462506,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6578404760918879,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6519496670466441,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7887898577709774,
+          "failure_probability": 0.35
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 4,
+      "prior": 0.3,
+      "read_cost": 0.19098526511641858,
+      "latency_cost": 0.008511338879422068,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.7066275136244995,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 0,
+          "reliability": 0.7272000929073564,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.9021586305296856,
+          "failure_probability": 0.2
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.6106280991350371,
+          "failure_probability": 0.2
+        }
+      ]
+    },
+    {
+      "deadline": 5,
+      "budget": 1,
+      "prior": 0.5,
+      "read_cost": 0.15552345553709201,
+      "latency_cost": 0.011899575976318166,
+      "stop_cost": 0.002,
+      "failure_cost": 0.025,
+      "invalid_cost": 0.03,
+      "refractory_ticks": 2,
+      "packets": [
+        {
+          "arrival": 0,
+          "reliability": 0.800115905161029,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 3,
+          "reliability": 0.7898949880213806,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7775826767654376,
+          "failure_probability": 0.35
+        },
+        {
+          "arrival": 4,
+          "reliability": 0.7208410915214851,
+          "failure_probability": 0.35
+        }
+      ]
+    }
+  ]
+}
