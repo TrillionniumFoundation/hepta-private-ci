@@ -29,7 +29,9 @@ class OneShotResolutionTests(unittest.TestCase):
             one_shot_boundary(p)
 
     def test_finite_boundary_but_nonfinite_immediate_reward_must_refuse(self):
-        p = Stop(1e292, 1., .1, -1e308, -1.2e308, 0.)
+        # Keep the overflow witness reachable through a boundary whose
+        # displacement remains well-resolved under the new f64 cost ULP gate.
+        p = Stop(5e306, 1., .1, -1e308, -1.2e308, 0.)
         b = one_shot_boundary(p)
         self.assertTrue(math.isfinite(b))
         self.assertTrue(b > p.cost)
