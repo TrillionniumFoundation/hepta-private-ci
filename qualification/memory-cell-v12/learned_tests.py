@@ -35,6 +35,18 @@ class LearnedTests(unittest.TestCase):
         self.assertEqual(a.receipt["initial_optimizer_step"], 40)
         self.assertEqual(a.receipt["optimizer_step"], 90)
 
+    def test_corrupt_optimizer_cannot_enter_continuation(self):
+        model = train_mlp(np.eye(2, dtype=np.float32), np.eye(2, dtype=np.float32),
+                          hidden=4, steps=3, seed=19)
+        payload = model.export(include_optimizer=True)
+        payload["optimizer"]["step"] = -1
+        with self.assertRaisesRegex(ValueError, "optimizer step"):
+            MLP.from_export(payload)
+        payload = model.export(include_optimizer=True)
+        payload["optimizer"]["moments"]["head.bias"]["v"] = np.array([-1, 0], dtype="<f4").tobytes().hex()
+        with self.assertRaisesRegex(ValueError, "optimizer bytes"):
+            MLP.from_export(payload)
+
 
 if __name__ == "__main__":
     unittest.main()

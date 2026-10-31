@@ -110,12 +110,17 @@ class MLP:
         optimizer = None
         if "optimizer" in payload:
             saved = payload["optimizer"]
-            optimizer = {"step": int(saved["step"]), "moments": {}}
+            step = saved["step"]
+            if type(step) is not int or not 0 <= step <= 100000000:
+                raise ValueError("invalid optimizer step")
+            if set(saved["moments"]) != set(ARRAY_NAMES):
+                raise ValueError("invalid optimizer inventory")
+            optimizer = {"step": step, "moments": {}}
             for name, shape in shapes.items():
                 optimizer["moments"][name] = {}
                 for key in ("m", "v"):
                     value = np.frombuffer(bytes.fromhex(saved["moments"][name][key]), dtype="<f4")
-                    if value.size != int(np.prod(shape)) or not np.isfinite(value).all():
+                    if value.size != int(np.prod(shape)) or not np.isfinite(value).all() or (key == "v" and (value < 0).any()):
                         raise ValueError("invalid optimizer bytes")
                     optimizer["moments"][name][key] = value.reshape(shape).copy()
         return cls(arrays, payload.get("receipt"), optimizer)
