@@ -1,0 +1,52 @@
+{
+  "note": "The original 576-grid upwind error remains failed; the separately registered 1152-grid extension passes the unchanged threshold.",
+  "original_upwind_failure_preserved": true,
+  "records": [
+    {
+      "failed_gates": [],
+      "file": "tail_regression_continuation.json",
+      "gate_count": 4,
+      "passed": true,
+      "sha256": "5a8f88c2f94341e6a170913d9a6234d751ed3b50d2017d435c9cb6eb4e1f52bd",
+      "source_match": true
+    },
+    {
+      "failed_gates": [],
+      "file": "event_audit_continuation.json",
+      "gate_count": 13,
+      "passed": true,
+      "sha256": "9330f405a06502fd1b591a81684dd2d61d09abab290791272a2c5ecc0bd7ffee",
+      "source_match": true
+    },
+    {
+      "failed_gates": [],
+      "file": "spatial_resolution_continuation.json",
+      "gate_count": 9,
+      "passed": true,
+      "sha256": "b7ec9f219ea2ce06083009094334c1961a6ba7ff499a38edf1d7940555c66ceb",
+      "source_match": true
+    },
+    {
+      "failed_gates": [
+        "upwind_final_accuracy"
+      ],
+      "file": "renewal_resolution_continuation.json",
+      "gate_count": 9,
+      "passed": false,
+      "sha256": "f00597f3f02ed2d2c434f80881310bb7b3e16ca69a8b95f1ed48ea793a200e8c",
+      "source_match": true
+    },
+    {
+      "failed_gates": [],
+      "file": "renewal_resolution_extension.json",
+      "gate_count": 3,
+      "passed": true,
+      "sha256": "0cb6d03fb26711dda7e6817f0bc0526e34853d6ce65123c4544e8d58563de22b",
+      "source_match": true
+    }
+  ],
+  "schema": "hcsn_event_continuation_verification_v1",
+  "tests_log_sha256": "8a7d303986f869520df62f1089dbfa9945972d7bbf99b47169ab924340332e98",
+  "unit_tests": 11,
+  "unit_tests_pass": true
+}

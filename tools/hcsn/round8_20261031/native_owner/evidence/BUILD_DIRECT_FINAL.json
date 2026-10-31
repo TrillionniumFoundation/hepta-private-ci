@@ -1,0 +1,546 @@
+{
+  "schema": "hcsn.native-event-owner-direct-build.v1",
+  "success": true,
+  "source_digest": "f5da6285977fa92438d5118123a62a155d7bcb11bda972c960837a6df0ca66a8",
+  "source_files": {
+    "codex-rs/hepta-neuron/src/deletion.rs": "3df225977b194e17909a73127f298d84a983e074f3a8aef950dfdabf8c88d417",
+    "codex-rs/hepta-neuron/src/deletion_tests.rs": "71a50fc119072b8fe2a36e8431bc4bcbbda9dd5debf6ee24999caba188049745",
+    "codex-rs/hepta-neuron/src/inference_control.rs": "f7e89f69319e86d97d506bc3a656b6b061639470fb6475feb62d6f1694e8f4cd",
+    "codex-rs/hepta-neuron/src/inference_control_tests.rs": "121b4974d95688843b4962a74a7759c4d275ab504909d8d26dca7308246f8128",
+    "codex-rs/hepta-neuron/src/journal.rs": "d8bf3aa2183cec3773be8134117166df440a8e0220de33d318e4800a21d5ea1f",
+    "codex-rs/hepta-neuron/src/journal_anchor_tests.rs": "6630ce721c6cb875cdb95805a804f62338971afd3df7c4a22762186839dc7928",
+    "codex-rs/hepta-neuron/src/journal_lock.rs": "1162918fde01466d9d7b7abb33fd502dca289b970e84b37168ad4e2ca0692252",
+    "codex-rs/hepta-neuron/src/journal_segment_tests.rs": "d889a32c0a56dc36842acb1889abfe0e2fa03c8839ab4500ab7d2487a1ea0540",
+    "codex-rs/hepta-neuron/src/journal_tests.rs": "6fe8271500c11fd6e5e445d238e636a9de4edd17e08318ee38bf9b5189f7bab8",
+    "codex-rs/hepta-neuron/src/lib.rs": "dc441b025b4ddbc8fa1b5622c7f3092406c5a5067c9c1fd886d02578c9d01c37",
+    "codex-rs/hepta-neuron/src/lib_tests.rs": "add9642dfff13e663d4127d9d119ad6ff7dd19f0e3c8935b9de19f2b0c9a962e",
+    "codex-rs/hepta-neuron/src/plasticity.rs": "114cfb3367d01612e684021a8961cb7f4d742f8855f90dd792db108081eaa471",
+    "codex-rs/hepta-neuron/src/plasticity_tests.rs": "3d2175a990711873320ba65166aaa77cb45b328214b9356c35cff30ddd2a638b",
+    "codex-rs/hepta-neuron/src/population_v2.rs": "c397c867dac6877f6f9b24569798057e988b1c5aed0befbb6d8f2b1f59446b60",
+    "codex-rs/hepta-neuron/src/population_v2_tests.rs": "a7de122f8fd2d24118f3d894ceeca56c940113992ab972bf8e4f914cfa3f805e",
+    "codex-rs/hepta-neuron/src/protocol.rs": "240a3ae18713aea814dad483c9470c34212a1d4d50a9aae84007e8f3dbc6bf35",
+    "codex-rs/hepta-neuron/src/protocol_tests.rs": "5787899890bcd16aaea9042b5924583fa71a3d9f755debf6bc1b05bfa626ee69",
+    "codex-rs/hepta-neuron/src/qualification.rs": "b425d7a58aec3c4b29b18875141bcc2d1a6ec1c743ac941ff3cff48694fa4520",
+    "codex-rs/hepta-neuron/src/qualification_tests.rs": "c732fb1b35fad52b5108ebc4aa7dd2a4f007ae6ba4d48ac1352e02f91f3876cb",
+    "codex-rs/hepta-neuron/src/runtime.rs": "bace4a3c36a2a4199a975aeac73041011ed487b2d308c75c4e062b25e6451fad",
+    "codex-rs/hepta-neuron/src/runtime_tests.rs": "320be5a7bdb7b997844da3ca168536f9458b046151e5dbe3d675fe19ed564f9a",
+    "codex-rs/hepta-neuron/src/runtime_types.rs": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b",
+    "codex-rs/hepta-neuron/src/sparse.rs": "bc5a1f64ddfda4e603e590d62b0ed01fa5b0b3cd54f1d1d4407477af5bed2810",
+    "codex-rs/hepta-neuron/src/sparse_body_scope_tests.rs": "055790ef7be81f8db53fb270d82fd845c3d530f2bb62d4fe220526dc8eb97bce",
+    "codex-rs/hepta-neuron/src/sparse_tests.rs": "40069dacc61797df327402da7a9f74e7838db5757a124587eaf3f158e6998a8b",
+    "codex-rs/hepta-neuron/src/witness.rs": "69bca85b5d839db1fb0552bd521515645045b04a2e696828c30efbce77f57213",
+    "codex-rs/hepta-neuron/src/witness_tests.rs": "fcd257565eb0017aebbfbbabb6b0d2c59367e044ba0330b018bb52ce976074ac",
+    "codex-rs/hepta-infer-core/src/durable_control.rs": "2cb7407a89d8ad4839e81abee4814b4a41af98435486308b705f365db264d99e",
+    "codex-rs/hepta-infer-core/src/durable_control_tests.rs": "f67623dae2e833d2fa4e27183ebb63be2ff838a6d3b87a0d833b296b4e345f0d",
+    "codex-rs/hepta-infer-core/src/durable_history_tests.rs": "2ed6f5f02e069824e72c2975661c92d9d850e7d9bab4ab24dd525abb315bd11c",
+    "codex-rs/hepta-infer-core/src/lib.rs": "85c8c13691909f22d864ac43ea322c5fc6d2a504b5a46e4c207d8574f12d73fb",
+    "codex-rs/hepta-infer-core/src/lib_tests.rs": "706c64c84039d9a043b4d3735403787400525575e16bc840c5f65e04a2b70dc8",
+    "codex-rs/hepta-infer-core/src/native_control.rs": "bdee48d7589675b597bb734850c08bb18fa94483029657612bee4e71650bd849",
+    "codex-rs/hepta-infer-core/src/native_control_tests.rs": "8a703e5b4c87e50a60c941a54dfb95365c550dccbc8394d039365406dd8f59ca",
+    "codex-rs/hepta-infer-core/src/neuron_feature.rs": "32fc64ae461621b4f6a8f20d3ff4e17ded53c6a00d9338fd8594c1539423e72b",
+    "codex-rs/hepta-infer-core/src/neuron_feature_tests.rs": "4119b9ca64eef5b6c283ffacc418b6e64d016a99e3ca63fc22cd0d0c164e0561",
+    "codex-rs/hepta-types/src/bounded.rs": "5907602ef8128b3237991e737e2fc687eb5ac9c716505cc7d884eed9523ea2a9",
+    "codex-rs/hepta-types/src/bounded_tests.rs": "3145c56c2882e91420bc994dd93f3375e1b532b03331826868d0ecfc019077bc",
+    "codex-rs/hepta-types/src/canonical_digest.rs": "d7df2b3581046fec4d7350747b1a8053a549c6feb33e462802107a4eb4acd391",
+    "codex-rs/hepta-types/src/canonical_digest_tests.rs": "9985f3ac27b0f357653206f4788cb366b623548c53502d277cd81f1a0f3d8fbe",
+    "codex-rs/hepta-types/src/digest.rs": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2",
+    "codex-rs/hepta-types/src/digest_stream_tests.rs": "9ff87ab6ffb17f27c2a23762893f641bb55edaff33f8bfb307729d9be8295a6c",
+    "codex-rs/hepta-types/src/digest_tests.rs": "838dc12e305735321c1028dabb7c5dd4e363f1bced8126d2c50eb7527febe37c",
+    "codex-rs/hepta-types/src/fixed.rs": "38de891c6a9dd6a2889c0d6a83fd0bcecf6ed17e2b7090739df8d2effe0b2cff",
+    "codex-rs/hepta-types/src/fixed_tests.rs": "cfa86da0bc63fa273c3124bbd0988fd6bd22383a0338b15ac2a944c80aa5544b",
+    "codex-rs/hepta-types/src/identity.rs": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3",
+    "codex-rs/hepta-types/src/identity_tests.rs": "c3bba7041a11ead1ccb655fb6491c5835a3020c3f26d4deb22edc94a4f8e34be",
+    "codex-rs/hepta-types/src/lib.rs": "6793a05230b404884f1e2aed89a4369c52ad9a7f7adbb52a39a3ff1bf0ef5283",
+    "codex-rs/hepta-types/src/numeric_conversion.rs": "d183cfb5f6981cb9d767a0d8a90cb895153f932ebc3c635ceb4f0b86e090cbfd",
+    "codex-rs/hepta-types/src/numeric_conversion_tests.rs": "554d51398fdef4cd69ccc43b3f0d4a002a2a8eed20552a8228770bfde364883a",
+    "codex-rs/hepta-types/src/numeric_profile.rs": "d656fa38fea5a18105da911107caae4d326a653854df0c5baed10d4ab3c6bbe9",
+    "codex-rs/hepta-types/src/numeric_profile_tests.rs": "fab0d6bd469412e77191e43cb17dde7f9638b07292ea5e2df5ad242cf616ea1a",
+    "codex-rs/hepta-types/src/prompt_delivery.rs": "f01b741add536a597bf9c87664f83909fd77989d19ff4e2fc2c752d98cfbf593",
+    "codex-rs/hepta-types/src/prompt_delivery_tests.rs": "1ad1075b9433c1a31629ba3df0509ce16ae7c70060797d2ea08f21b5a2c63f1a",
+    "codex-rs/hepta-types/src/registry.rs": "ad15fac503e3988c3fc5d8892136f91c45bb41a12266de5e037a31a6a690b005",
+    "codex-rs/hepta-types/src/registry_tests.rs": "d964bd53b636362da367fc9edf053c72272d62416ef231b632ee3dda6a5ec59a",
+    "codex-rs/hepta-types/src/topology.rs": "e1888c64c8682491837c907a91a960327530251450ecb38e70a60df792adba22",
+    "codex-rs/hepta-neuron/Cargo.toml": "1ebe7dcf2b82b8143aa298059afff3ea17ee76f7c6140aae41d099bed5031c48",
+    "codex-rs/hepta-infer-core/Cargo.toml": "7ca860f039344b7629db786ccb069d150ee87838ff8f1211e9a89935da00c16e",
+    "codex-rs/hepta-types/Cargo.toml": "0df592ec8d8b63b9c8e7f9ca9f74feca802ffbd3b71dd0959c4127b4ad3109b0"
+  },
+  "owned_files": {
+    "cell.rs": "6637e464b902514be5a6da90a51fd61c86fc63fe531ba3032afe384bd3211fa7",
+    "main.rs": "1ab0f102ffaf6772235d9c38a3dcff79c0341d3be74480702301aff8aac760ad",
+    "native.rs": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+    "owner.rs": "15e72d8c660deab1caa0382d7bc8a908ec3ddd91ea82d45b10b33643a23e066d",
+    "tests.rs": "a6f0ff43e018243d08b315afba464264f0fddffb63ea7eb6ee37cb46f4c1459f"
+  },
+  "binary": "/tmp/hepta-r8-native-owner-build/native-owner-final",
+  "binary_sha256": "f105b55060673de98d2e6c04a180f3a143dbc4763ef14da200c9f5ba70356777",
+  "test_binary_sha256": "3b07e6fc0930e05c8cfbd7dd1766d85ed28e15c49d3ed738fa7768ada0230b97",
+  "prior_cargo_build": {
+    "path": "tools/hcsn/round8_20261031/native_owner/evidence/BUILD_ATTEMPT_05.json",
+    "sha256": "34855346944f8fcf54b41eb3f9b59eb5e22c77ad1d86502bb5028c3aa39c2cd2",
+    "source_digest": "36be0cdaa9746c39390aabbc5025b2524d47e1d24dca82f9a26e12b30f99dda2",
+    "binary_sha256": "02041e7c954e5ef343025e170694388f9b662cc8afd8c6a305983d9d19949679"
+  },
+  "prior_fingerprint": {
+    "path": "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/.fingerprint/codex-native-event-owner-r8-a4d96abc5f2365f4/bin-codex-native-event-owner-r8.json",
+    "sha256": "1cb76d8f0f50378d0b03e5b87575cb788cee7aa2ef51dd5c393e5672bfc77c73",
+    "record": {
+      "rustc": 16696009966390864400,
+      "features": "[]",
+      "declared_features": "[]",
+      "target": 4999167134611394037,
+      "profile": 8378823585564974145,
+      "path": 10342174541123142561,
+      "deps": [
+        [
+          5330460842384404171,
+          "serde_json",
+          false,
+          17152873536821693960
+        ],
+        [
+          6557439603276904804,
+          "serde",
+          false,
+          12751212407372399674
+        ],
+        [
+          7098700569944897890,
+          "libc",
+          false,
+          10068182640407181735
+        ],
+        [
+          15300758679299875469,
+          "codex_hepta_types",
+          false,
+          14194101955070561185
+        ],
+        [
+          18107272800121610327,
+          "codex_hepta_neuron",
+          false,
+          15586505926624927235
+        ]
+      ],
+      "local": [
+        {
+          "CheckDepInfo": {
+            "dep_info": "debug/.fingerprint/codex-native-event-owner-r8-a4d96abc5f2365f4/dep-bin-codex-native-event-owner-r8",
+            "checksum": false
+          }
+        }
+      ],
+      "rustflags": [],
+      "config": 8247474407144887393,
+      "compile_kind": 0
+    }
+  },
+  "selected_dependencies": {
+    "serde_json": {
+      "artifact": "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde_json-7edb3e0ae4a1c7d3.rlib",
+      "sha256": "e28484a7332096456a738c116fcb4ea3192201a183651e1e89ad06ad9a178386",
+      "cargo_fingerprint": "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/.fingerprint/serde_json-7edb3e0ae4a1c7d3/lib-serde_json",
+      "fingerprint": "088e74179a3f0bee",
+      "dependency_record": {
+        "rustc": 16696009966390864400,
+        "features": "[\"default\", \"std\"]",
+        "declared_features": "[\"alloc\", \"arbitrary_precision\", \"default\", \"float_roundtrip\", \"indexmap\", \"preserve_order\", \"raw_value\", \"std\", \"unbounded_depth\"]",
+        "target": 9592559880233824070,
+        "profile": 8378823585564974145,
+        "path": 7659267982621541213,
+        "deps": [
+          [
+            1878358664874549836,
+            "memchr",
+            false,
+            17870388831388663635
+          ],
+          [
+            5330460842384404171,
+            "build_script_build",
+            false,
+            10368630430962677236
+          ],
+          [
+            9938278000850417404,
+            "itoa",
+            false,
+            6755392678633204598
+          ],
+          [
+            11029742160753049355,
+            "serde_core",
+            false,
+            1074083987848571280
+          ],
+          [
+            16112764869430360191,
+            "zmij",
+            false,
+            13969544536451113182
+          ]
+        ],
+        "local": [
+          {
+            "CheckDepInfo": {
+              "dep_info": "debug/.fingerprint/serde_json-7edb3e0ae4a1c7d3/dep-lib-serde_json",
+              "checksum": false
+            }
+          }
+        ],
+        "rustflags": [],
+        "config": 8247474407144887393,
+        "compile_kind": 0
+      }
+    },
+    "serde": {
+      "artifact": "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde-bfcf8cec93355638.rlib",
+      "sha256": "3b813aafbf75ed517a4a702d8266990b80f091d8543d206126873c5515769bb5",
+      "cargo_fingerprint": "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/.fingerprint/serde-bfcf8cec93355638/lib-serde",
+      "fingerprint": "3a44fc2c2068f5b0",
+      "dependency_record": {
+        "rustc": 16696009966390864400,
+        "features": "[\"default\", \"derive\", \"rc\", \"serde_derive\", \"std\"]",
+        "declared_features": "[\"alloc\", \"default\", \"derive\", \"rc\", \"serde_derive\", \"std\", \"unstable\"]",
+        "target": 11327258112168116673,
+        "profile": 8378823585564974145,
+        "path": 2949510892239528257,
+        "deps": [
+          [
+            6557439603276904804,
+            "build_script_build",
+            false,
+            11375449036897193562
+          ],
+          [
+            11029742160753049355,
+            "serde_core",
+            false,
+            1074083987848571280
+          ],
+          [
+            13312204359551525516,
+            "serde_derive",
+            false,
+            16204792318567881221
+          ]
+        ],
+        "local": [
+          {
+            "CheckDepInfo": {
+              "dep_info": "debug/.fingerprint/serde-bfcf8cec93355638/dep-lib-serde",
+              "checksum": false
+            }
+          }
+        ],
+        "rustflags": [],
+        "config": 8247474407144887393,
+        "compile_kind": 0
+      }
+    },
+    "libc": {
+      "artifact": "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/liblibc-4b918b506f2dcce2.rlib",
+      "sha256": "2b4a60c6c88ed25c5b4657f5790320e3fe26c02f4540db7867f95312f0f870c0",
+      "cargo_fingerprint": "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/.fingerprint/libc-4b918b506f2dcce2/lib-libc",
+      "fingerprint": "a7793997c45eb98b",
+      "dependency_record": {
+        "rustc": 16696009966390864400,
+        "features": "[\"default\", \"std\"]",
+        "declared_features": "[\"align\", \"const-extern-fn\", \"default\", \"extra_traits\", \"rustc-dep-of-std\", \"rustc-std-workspace-core\", \"std\", \"use_std\"]",
+        "target": 17682796336736096309,
+        "profile": 14791721823019127099,
+        "path": 11069940009130906035,
+        "deps": [
+          [
+            7098700569944897890,
+            "build_script_build",
+            false,
+            8130533262108346432
+          ]
+        ],
+        "local": [
+          {
+            "CheckDepInfo": {
+              "dep_info": "debug/.fingerprint/libc-4b918b506f2dcce2/dep-lib-libc",
+              "checksum": false
+            }
+          }
+        ],
+        "rustflags": [],
+        "config": 8247474407144887393,
+        "compile_kind": 0
+      }
+    },
+    "codex_hepta_types": {
+      "artifact": "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_types-98d5407e73972209.rlib",
+      "sha256": "32273107310bb355203b0324cc1e5fe06ab048e5e99d5c3be5287b6db939f20c",
+      "cargo_fingerprint": "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/.fingerprint/codex-hepta-types-98d5407e73972209/lib-codex_hepta_types",
+      "fingerprint": "a18ba8498694fbc4",
+      "dependency_record": {
+        "rustc": 16696009966390864400,
+        "features": "[]",
+        "declared_features": "[]",
+        "target": 10266621015517725781,
+        "profile": 8378823585564974145,
+        "path": 2281913593480137334,
+        "deps": [
+          [
+            9857275760291862238,
+            "sha2",
+            false,
+            11395025580810774823
+          ]
+        ],
+        "local": [
+          {
+            "CheckDepInfo": {
+              "dep_info": "debug/.fingerprint/codex-hepta-types-98d5407e73972209/dep-lib-codex_hepta_types",
+              "checksum": false
+            }
+          }
+        ],
+        "rustflags": [],
+        "config": 8247474407144887393,
+        "compile_kind": 0
+      }
+    },
+    "codex_hepta_neuron": {
+      "artifact": "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_neuron-2c5f19fa52c64db3.rlib",
+      "sha256": "c4656ad2e8db6b4ab0f26483af4aa3ec9460b2bd81964723a8ab81126685c7e8",
+      "cargo_fingerprint": "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/.fingerprint/codex-hepta-neuron-2c5f19fa52c64db3/lib-codex_hepta_neuron",
+      "fingerprint": "03deff358f644ed8",
+      "dependency_record": {
+        "rustc": 16696009966390864400,
+        "features": "[]",
+        "declared_features": "[]",
+        "target": 6196179518152652598,
+        "profile": 8378823585564974145,
+        "path": 3275277715648985644,
+        "deps": [
+          [
+            5330460842384404171,
+            "serde_json",
+            false,
+            17152873536821693960
+          ],
+          [
+            5941731114979810687,
+            "codex_hepta_infer_core",
+            false,
+            12321537529139306331
+          ],
+          [
+            6557439603276904804,
+            "serde",
+            false,
+            12751212407372399674
+          ],
+          [
+            15300758679299875469,
+            "codex_hepta_types",
+            false,
+            14194101955070561185
+          ]
+        ],
+        "local": [
+          {
+            "CheckDepInfo": {
+              "dep_info": "debug/.fingerprint/codex-hepta-neuron-2c5f19fa52c64db3/dep-lib-codex_hepta_neuron",
+              "checksum": false
+            }
+          }
+        ],
+        "rustflags": [],
+        "config": 8247474407144887393,
+        "compile_kind": 0
+      }
+    }
+  },
+  "dependency_artifact_sha256": {
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libblock_buffer-55ffb902ca4f289d.rlib": "c9be9db32b4c718f42fbf6cc430bb5bff6313d441f3ee0c272adfd3a9c1e61ff",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libblock_buffer-55ffb902ca4f289d.rmeta": "5b3e9191efe11f1f45c33e6e114010ea903f0aa36770b58d9837a4ddce423672",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libblock_buffer-9643235e9dbcc4cb.rlib": "16c89d38dea8cfa930bb335e9c9a8b48bde09b7f3b37ca408d2d3a68ba4bc86e",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libblock_buffer-9643235e9dbcc4cb.rmeta": "dd0f9e0d474c61c04b0dacc8924583c1212041b5833b919ba2550d2364b28398",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcfg_if-399af26c62b64035.rlib": "c10ba1dba62963a8a275db3ff0d44577df50428bd9f515d7d7fdcd2712b3a1bf",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcfg_if-399af26c62b64035.rmeta": "0e09b8f993e9b8b1ceb5985f615837b26f7190937b82ce6c4c27737223dc5026",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcfg_if-b9f863d2a7a34542.rlib": "ee0b28ca613e694702f9fdbadfab13f80073981d5686207d51e3602cb75cc067",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcfg_if-b9f863d2a7a34542.rmeta": "a639a502313d5f9829b6ec95b63063905c7f8c480259bf4ae6887a3f06ac161f",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_infer_core-053f056f1b5dad6a.rlib": "c47a1b018c327332231d4a687d8ce3fe5d8dca987724f89fad45f2d8a63b72d0",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_infer_core-053f056f1b5dad6a.rmeta": "3118fbf171ed8ac3b8cf24e71ada6f0d938f6acd8a88048536de14d24d51204a",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_infer_core-8c84e649d07fa213.rlib": "ec9ad7abad37936276bd73031879a0b3727c1c18b201135cbb6a11031393fe5d",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_infer_core-8c84e649d07fa213.rmeta": "4ae7c69259b43f370be936340604288c991373c919a4f11a266f72a2ed6b75b9",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_neuron-2014be7ed55df720.rlib": "2530a6887f727dc8cd109d581e57cf350d0d5d628b3cfcc7f5d3c951daa9b461",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_neuron-2014be7ed55df720.rmeta": "c608ba790c85df87b136513fb3025e0a7bcb7380598ffafa1ab3fc3aba0f2ebd",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_neuron-2c5f19fa52c64db3.rlib": "c4656ad2e8db6b4ab0f26483af4aa3ec9460b2bd81964723a8ab81126685c7e8",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_neuron-2c5f19fa52c64db3.rmeta": "b0f6eaa6d664e409265ec1d6ebaea70c069bf2cc7a12b2eaa968c3a9790a463b",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_types-847f444be4acc52d.rlib": "2f9271419640796c19983ec3e349c9e001a567fda809b9037590401d37cd3089",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_types-847f444be4acc52d.rmeta": "2b6443fe80c24d0884d615c31eef11f8c7517f56df5275e2797f14e4ff59a122",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_types-98d5407e73972209.rlib": "32273107310bb355203b0324cc1e5fe06ab048e5e99d5c3be5287b6db939f20c",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_types-98d5407e73972209.rmeta": "306f2f715cf1df5f6f907b967d2e122ba6178ed8d9de238a88436db6e32809f7",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcpufeatures-d51c359646be97f4.rlib": "bbecb91a67d54afd17ec6e549cfcece603ca474fd5c1b1dadd4e222841e6b76d",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcpufeatures-d51c359646be97f4.rmeta": "91cb64aed551e8db44b6fbd60a2b268731624502815682b045e278867659e605",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcrypto_common-2e6ea35cb5c7c685.rlib": "65c4f9c1d46cd35195e30f28fdb9128332b43341a487d8df59a40b87652a8768",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcrypto_common-2e6ea35cb5c7c685.rmeta": "7967560645475d84c5a6d2b6e98b7c08719d0eb08b4546fb3fd79b89203eed39",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcrypto_common-41851afb36b60c9c.rlib": "35017a97f5613dbf89edfe79fa7c835fc3107566f0ee84ac7e0bbe7ffcdd4850",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcrypto_common-41851afb36b60c9c.rmeta": "299db610ee5c35b8c02cdeb4d0eb3929da477f0f86e251187735aa9b35e48f52",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libdigest-4ec129f6e756e784.rlib": "b7e45defde3bd80d73d7327c7417f119bf51a01af7e76df8a5e1d785640dc1e3",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libdigest-4ec129f6e756e784.rmeta": "acd196fb67c4f16d938d0e4d9a0fc02b379fa01c2e88e70ea6e924eb5261e4c1",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libdigest-d6472ec549d4cb43.rlib": "fa58d5b359548ca807f3b4af56721fd3253d21c78bc0620ecd08cf4709c9e8a4",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libdigest-d6472ec549d4cb43.rmeta": "ddc6866a951f51237acdda9f86b3ebbaec9f31c153559109ae2a22b550708f1a",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libgeneric_array-834a579225096827.rlib": "804194b2a5d4b05092b5a1157f6c9f082429128bdd005ea1b2e8c1996a8b4b22",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libgeneric_array-834a579225096827.rmeta": "4fc19c3617999838f15e11c4d1312494b16ca0b4af87b95d69d187c064d7682b",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libgeneric_array-e6cf82172f09f0cc.rlib": "fe35f3a8c1fa2c7e71efeb040bc375db28b5c6983e4af6c84aec36a2dec374da",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libgeneric_array-e6cf82172f09f0cc.rmeta": "14a021ccacba847f07ac1e8181156b759e3a3c1d1dab8931c05071fcdaf108c2",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libitoa-49744a344a63c80c.rlib": "ee0c02c749fa5cea5e8022df8b6e07bb9006e1ea0ebcce45e91361d62636dfaf",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libitoa-49744a344a63c80c.rmeta": "f43622647b8f47caac5dbe3bd0fe776557e28c9d458a455456d7a7cdd48b72f0",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libitoa-6356df150e95bbba.rlib": "660eadee4815afb41e062bc58eb984005069aed3da025833374dd6ad05119a76",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libitoa-6356df150e95bbba.rmeta": "4343fe99e7e3fc16d944c4451314e868e302af2c85ffdd785ad93b2897a5d42b",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/liblibc-4b918b506f2dcce2.rlib": "2b4a60c6c88ed25c5b4657f5790320e3fe26c02f4540db7867f95312f0f870c0",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/liblibc-4b918b506f2dcce2.rmeta": "eea92d27997ca7f1347f783d291fc75ac58c4cf11767ca346edd9c93ede4d91a",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libmemchr-6106c823e3217bf7.rlib": "aaba4de3336428a5d0657bd28b5f6b1ef5ee200a13c30c01a2286b0032b0e503",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libmemchr-6106c823e3217bf7.rmeta": "ea873189908c2961023015763ac8856ed607686d5e2eb8c4e6df9239697db7d2",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libmemchr-f53d58ac54be3331.rlib": "2b672a5765ff4c26386caf463d0ea6c12a2be346d40fd3c3fb33a679cccf169d",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libmemchr-f53d58ac54be3331.rmeta": "2c5b9bc92ab26af3cd6f13389e989269b582d19570658a820a5a1992030a455d",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libproc_macro2-2ce9427730fef964.rlib": "7cae2ff54626d3f09840da6c199811e19b0be19c9763319cb755c2ce86dec030",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libproc_macro2-2ce9427730fef964.rmeta": "2c57c58ed08c5220d6b6d11b43f851af2f84f01a878de992018054719a43ea49",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libproc_macro2-4dc0208559af9e22.rlib": "86bbc66cc6b36ef683ddf5ac41e71899766a59003669b1b0777158953984a7d6",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libproc_macro2-4dc0208559af9e22.rmeta": "0aa5f38d71550bc5a5e905adfa0004bed829485a0edbe0d87a85ad2814531ca3",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libquote-08468ba341f08b31.rlib": "15dd92bb118b580939aa56d65ba1a864579db86133083c33d60d717080a52023",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libquote-08468ba341f08b31.rmeta": "7003469a96d04b00cbd7228b478995a4712ed1e761090396bbdb6eef53f805e4",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libquote-ba41e0c99ea4798f.rlib": "324b18b273c4b4ce0279f6a81125fffcc16e2c9e786c4494044d27d1696e7474",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libquote-ba41e0c99ea4798f.rmeta": "c92a1844e9edca355f5cf9140b6ba048f45fbc9a44bb4c24a219e1dd93c6753f",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde-5f69989b66837c62.rlib": "3b1c79c5b006ea7b1b439f1da19a73e995156e5a5be7d905a5f80cf049c37686",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde-5f69989b66837c62.rmeta": "896d5670cbf44a76f7e174c6f5c8702c26c34496ce54ce8f43e91a6fc6d3cb72",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde-bfcf8cec93355638.rlib": "3b813aafbf75ed517a4a702d8266990b80f091d8543d206126873c5515769bb5",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde-bfcf8cec93355638.rmeta": "b88595e51c3a209040799ac5baf9b06b0186ad9ac9da2ead5970036410de443b",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde_core-d52d7d4348ea8bce.rlib": "d1ade887e6f5a1315475d8bc77c1ba9660b74039a08a146ee30d27e088808a99",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde_core-d52d7d4348ea8bce.rmeta": "1952001848d387239bb4b5a04fc7fc6d1813848ecc6a18354d1ed2ce2d773812",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde_derive-77c162ab0f97fbb8.so": "9b44f5bd42c569e026fc45ee6b2b0a690b243b2a6938ac3c32d0de3035a474b2",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde_derive-c4c9910bf2b980e0.so": "3e238d605f1c72a82eec9e671c17d80e1c21cfe60cc12c4c4e3b385d5142db2c",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde_json-7edb3e0ae4a1c7d3.rlib": "e28484a7332096456a738c116fcb4ea3192201a183651e1e89ad06ad9a178386",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde_json-7edb3e0ae4a1c7d3.rmeta": "83dbe4b07fa9ee9e77e698e332e94c19794290b6068ca30519f3cda2f2a21d0e",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde_json-c7e02ea9b3aa1dd9.rlib": "6b9130740eece2f5a4c85c8ec7ead73dd6a9fe3388855e8e66886d4580ae6e5d",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde_json-c7e02ea9b3aa1dd9.rmeta": "743b8a76a9789e21ca85b244c06f597b81f47aa9960fa465405c1e967ab71e97",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libsha2-2f14efe8982cb5df.rlib": "2b203078331b7a78cd05e62f0bb12070a336a0e36c51b433d3e7e3262b4ab225",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libsha2-2f14efe8982cb5df.rmeta": "a5980520fc4a21669ab67761eaa258d48f8f2390a47962e53696d25bacd794d9",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libsha2-bc2d3e96cab5754f.rlib": "c956535f95d81bc9e2de5ebccf257e96853ece104f0a97a43691ab09633785a2",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libsha2-bc2d3e96cab5754f.rmeta": "61c79b743e46445314e2d3dc86746cbd53fb7f638b13d215d0d8e9361cf26e09",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libsyn-217fc20aa9464db9.rlib": "2e9277b485ac9914e1341b2c6024c2691652bb4515a8916f951c9f2c201fd142",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libsyn-217fc20aa9464db9.rmeta": "497598d9b7482e3409f93ab7670241975626101401cf4e3f3606fe3d4599f034",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libsyn-f22cef6aa7cfa7ba.rlib": "4670618b23b148ae20667966b1b0834671de68f99525628c92cedbc0cf0e594f",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libsyn-f22cef6aa7cfa7ba.rmeta": "1bd3638bdfbf4e3f5cabef875c2dc1a32e127df1ea525f6f1ab230275e25af7c",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libtypenum-3f5ded072409d7fe.rlib": "c368e6aa28a39bae366dac19346240bf0f88789f843494cabd0b79f7b81a4579",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libtypenum-3f5ded072409d7fe.rmeta": "c65575d4164d0565c0376bb6a9a535229b7c6c3e503994fd85dd7df27d597825",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libtypenum-4bea8710874c1283.rlib": "bc11a40bcaecdaadfc993380186f9bc400cd0eecb89f756582764d4076947474",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libtypenum-4bea8710874c1283.rmeta": "74b58ff474dde25715c452a4bee134444e8719163c082214e9eda1b915c96093",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libunicode_ident-7b9e89bf4b31946b.rlib": "b3f0d580d6ee4f500c0b9f9095a1936de9cfd5dae3ab7ca04b23d44554b0d874",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libunicode_ident-7b9e89bf4b31946b.rmeta": "c3467eb858a6227344dcf593ae2b57807ad1401ef9041df50d966a06ed4f8427",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libunicode_ident-7f03ac2426574b98.rlib": "e56b8636ae1133d19600e76a030840c3d50351e1955d9877a2ea6014bc19bf2c",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libunicode_ident-7f03ac2426574b98.rmeta": "a4dadfa691f7b2bb9701fbaeb1e37edb6ecb3be5b89952fc1069218b169a1d06",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libversion_check-16088b8abec924db.rlib": "646cd690e4b02653fec2e53267312281ba5d0caa6972311340f1ceebbe2e3d08",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libversion_check-16088b8abec924db.rmeta": "02991e22568fc0148aa1bf3bc358a2bdf3a8b3f9821c1e6e7493b53278615dfe",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libzmij-fa24069f0f25abe2.rlib": "cba7dd4b2cd62af714b306cc7481eb59eee581f15997cc254967b78bdd03ba62",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libzmij-fa24069f0f25abe2.rmeta": "093074864eefd62cacffb4df6c3dd2edbb65851dd79c13fb0328cfcd36cfa8ef",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libzmij-fe7b40f5adaf8250.rlib": "d7b239362a982ce4b3620b6903e69082a3d9bc7fca9bc5c17c5ba008532bd79b",
+    "/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libzmij-fe7b40f5adaf8250.rmeta": "58b73395658ee685addea0dafe66333a0e16a56047608e6a66852cc4482caaff"
+  },
+  "dependency_artifacts_unchanged_during_build": true,
+  "manifest": "[package]\nname = \"codex-native-event-owner-r8\"\nversion = \"0.1.0\"\nedition = \"2024\"\n[workspace]\nmembers = [\".\"]\n[workspace.package]\nversion = \"0.0.0\"\nedition = \"2024\"\nlicense = \"Apache-2.0\"\n[workspace.dependencies]\nserde = { version = \"=1.0.229\", features = [\"rc\"] }\nserde_json = \"=1.0.151\"\nsha2 = \"=0.10.9\"\npretty_assertions = \"1.4.1\"\n[workspace.lints]\nrust = {}\n[[bin]]\nname = \"codex-native-event-owner-r8\"\npath = \"main.rs\"\n[dependencies]\ncodex-hepta-neuron = { path = \"/tmp/hepta-native-task-v2-c135db76929c/build/upstream/codex-rs/hepta-neuron\" }\ncodex-hepta-types = { path = \"/tmp/hepta-native-task-v2-c135db76929c/build/upstream/codex-rs/hepta-types\" }\nserde = { version = \"=1.0.229\", features = [\"derive\"] }\nserde_json = \"=1.0.151\"\nlibc = \"=0.2.186\"\n[profile.dev]\ndebug = 0\nincremental = false\n",
+  "prior_cargo_lock": "# This file is automatically @generated by Cargo.\n# It is not intended for manual editing.\nversion = 4\n\n[[package]]\nname = \"block-buffer\"\nversion = \"0.10.4\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"3078c7629b62d3f0439517fa394996acacc5cbc91c5a20d8c658e77abd503a71\"\ndependencies = [\n \"generic-array\",\n]\n\n[[package]]\nname = \"cfg-if\"\nversion = \"1.0.4\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801\"\n\n[[package]]\nname = \"codex-hepta-infer-core\"\nversion = \"0.0.0\"\ndependencies = [\n \"codex-hepta-types\",\n \"serde\",\n \"serde_json\",\n]\n\n[[package]]\nname = \"codex-hepta-neuron\"\nversion = \"0.0.0\"\ndependencies = [\n \"codex-hepta-infer-core\",\n \"codex-hepta-types\",\n \"serde\",\n \"serde_json\",\n]\n\n[[package]]\nname = \"codex-hepta-types\"\nversion = \"0.0.0\"\ndependencies = [\n \"sha2\",\n]\n\n[[package]]\nname = \"codex-native-event-owner-r8\"\nversion = \"0.1.0\"\ndependencies = [\n \"codex-hepta-neuron\",\n \"codex-hepta-types\",\n \"libc\",\n \"serde\",\n \"serde_json\",\n]\n\n[[package]]\nname = \"cpufeatures\"\nversion = \"0.2.17\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"59ed5838eebb26a2bb2e58f6d5b5316989ae9d08bab10e0e6d103e656d1b0280\"\ndependencies = [\n \"libc\",\n]\n\n[[package]]\nname = \"crypto-common\"\nversion = \"0.1.7\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"78c8292055d1c1df0cce5d180393dc8cce0abec0a7102adb6c7b1eef6016d60a\"\ndependencies = [\n \"generic-array\",\n \"typenum\",\n]\n\n[[package]]\nname = \"digest\"\nversion = \"0.10.7\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"9ed9a281f7bc9b7576e61468ba615a66a5c8cfdff42420a70aa82701a3b1e292\"\ndependencies = [\n \"block-buffer\",\n \"crypto-common\",\n]\n\n[[package]]\nname = \"generic-array\"\nversion = \"0.14.7\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"85649ca51fd72272d7821adaf274ad91c288277713d9c18820d8499a7ff69e9a\"\ndependencies = [\n \"typenum\",\n \"version_check\",\n]\n\n[[package]]\nname = \"itoa\"\nversion = \"1.0.17\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"92ecc6618181def0457392ccd0ee51198e065e016d1d527a7ac1b6dc7c1f09d2\"\n\n[[package]]\nname = \"libc\"\nversion = \"0.2.186\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66\"\n\n[[package]]\nname = \"memchr\"\nversion = \"2.8.1\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"6b947ae49db0d222b1dbc6b113ce7248a3fc3a6ca21b696717bfc000ba4484d8\"\n\n[[package]]\nname = \"proc-macro2\"\nversion = \"1.0.106\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"8fd00f0bb2e90d81d1044c2b32617f68fcb9fa3bb7640c23e9c748e53fb30934\"\ndependencies = [\n \"unicode-ident\",\n]\n\n[[package]]\nname = \"quote\"\nversion = \"1.0.45\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"41f2619966050689382d2b44f664f4bc593e129785a36d6ee376ddf37259b924\"\ndependencies = [\n \"proc-macro2\",\n]\n\n[[package]]\nname = \"serde\"\nversion = \"1.0.229\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba\"\ndependencies = [\n \"serde_core\",\n \"serde_derive\",\n]\n\n[[package]]\nname = \"serde_core\"\nversion = \"1.0.229\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48\"\ndependencies = [\n \"serde_derive\",\n]\n\n[[package]]\nname = \"serde_derive\"\nversion = \"1.0.229\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"e7a5d71263a5a7d47b41f6b3f06ba276f10cc18b0931f1799f710578e2309348\"\ndependencies = [\n \"proc-macro2\",\n \"quote\",\n \"syn\",\n]\n\n[[package]]\nname = \"serde_json\"\nversion = \"1.0.151\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"c841b55ecdae098c80dcae9cf767f6f8a0c2cdb3416bbef72181df4d0fe73f14\"\ndependencies = [\n \"itoa\",\n \"memchr\",\n \"serde\",\n \"serde_core\",\n \"zmij\",\n]\n\n[[package]]\nname = \"sha2\"\nversion = \"0.10.9\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"a7507d819769d01a365ab707794a4084392c824f54a7a6a7862f8c3d0892b283\"\ndependencies = [\n \"cfg-if\",\n \"cpufeatures\",\n \"digest\",\n]\n\n[[package]]\nname = \"syn\"\nversion = \"3.0.3\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"53e9bae58849f64dfa4f5d5ae372c8341f7305f82a3868709269343628b659a3\"\ndependencies = [\n \"proc-macro2\",\n \"quote\",\n \"unicode-ident\",\n]\n\n[[package]]\nname = \"typenum\"\nversion = \"1.20.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"40ce102ab67701b8526c123c1bab5cbe42d7040ccfd0f64af1a385808d2f43de\"\n\n[[package]]\nname = \"unicode-ident\"\nversion = \"1.0.22\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"9312f7c4f6ff9069b165498234ce8be658059c6728633667c526e27dc2cf1df5\"\n\n[[package]]\nname = \"version_check\"\nversion = \"0.9.5\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a\"\n\n[[package]]\nname = \"zmij\"\nversion = \"1.0.19\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"3ff05f8caa9038894637571ae6b9e29466c1f4f829d26c9b28f869a29cbe3445\"\n",
+  "commands": [
+    {
+      "command": [
+        "/tmp/pq-r3-rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "cwd": "/tmp/hepta-r8-native-owner-build",
+      "returncode": 0,
+      "stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+      "stderr": "",
+      "wall_seconds": 0.01049526099814102
+    },
+    {
+      "command": [
+        "/tmp/pq-r3-rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--edition=2024",
+        "--crate-name",
+        "codex_native_event_owner_r8",
+        "-C",
+        "debuginfo=0",
+        "-C",
+        "opt-level=0",
+        "-L",
+        "dependency=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps",
+        "--extern",
+        "serde_json=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde_json-7edb3e0ae4a1c7d3.rlib",
+        "--extern",
+        "serde=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde-bfcf8cec93355638.rlib",
+        "--extern",
+        "libc=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/liblibc-4b918b506f2dcce2.rlib",
+        "--extern",
+        "codex_hepta_types=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_types-98d5407e73972209.rlib",
+        "--extern",
+        "codex_hepta_neuron=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_neuron-2c5f19fa52c64db3.rlib",
+        "main.rs",
+        "-o",
+        "/tmp/hepta-r8-native-owner-build/native-owner-final"
+      ],
+      "cwd": "/tmp/hepta-r8-native-owner-build",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "wall_seconds": 0.4490607170009753
+    },
+    {
+      "command": [
+        "/tmp/pq-r3-rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--edition=2024",
+        "--crate-name",
+        "codex_native_event_owner_r8",
+        "-C",
+        "debuginfo=0",
+        "-C",
+        "opt-level=0",
+        "-L",
+        "dependency=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps",
+        "--extern",
+        "serde_json=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde_json-7edb3e0ae4a1c7d3.rlib",
+        "--extern",
+        "serde=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libserde-bfcf8cec93355638.rlib",
+        "--extern",
+        "libc=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/liblibc-4b918b506f2dcce2.rlib",
+        "--extern",
+        "codex_hepta_types=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_types-98d5407e73972209.rlib",
+        "--extern",
+        "codex_hepta_neuron=/tmp/hepta-native-task-v2-c135db76929c/build/target/debug/deps/libcodex_hepta_neuron-2c5f19fa52c64db3.rlib",
+        "--test",
+        "main.rs",
+        "-o",
+        "/tmp/hepta-r8-native-owner-build/native-owner-tests-final"
+      ],
+      "cwd": "/tmp/hepta-r8-native-owner-build",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "wall_seconds": 0.44657658600772265
+    },
+    {
+      "command": [
+        "/tmp/hepta-r8-native-owner-build/native-owner-tests-final",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "cwd": "/tmp/hepta-r8-native-owner-build",
+      "returncode": 0,
+      "stdout": "\nrunning 8 tests\ntest tests::acknowledged_physics_tamper_and_native_loss_rejected ... ok\ntest tests::distribution_and_ordinary_semigroup ... ok\ntest tests::interrupted_pair_publication_fails_closed ... ok\ntest tests::native_model_and_exclusive_owner_are_bound ... ok\ntest tests::real_runtime_restart_restores_physics_and_signal ... ok\ntest tests::rejection_consumes_neither_physics_rng_nor_journal ... ok\ntest tests::sampled_split_keeps_path_and_hazard ... ok\ntest tests::snapshot_exact_resume_and_read_only_query ... ok\n\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n",
+      "stderr": "",
+      "wall_seconds": 0.029385263012954965
+    }
+  ],
+  "fresh_cargo_archive_verification": false,
+  "final_source_just_test_rerun": false,
+  "final_source_rustc_tests_run": true,
+  "scope": "Exact current sources compiled and tested with rustc against preserved Cargo-built rlibs; original Cargo/just gate retained separately",
+  "production_activation": false
+}

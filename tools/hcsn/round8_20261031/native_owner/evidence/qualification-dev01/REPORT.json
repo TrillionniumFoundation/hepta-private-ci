@@ -1,0 +1,421 @@
+{
+  "schema": "hcsn.native-event-owner-qualification.v1",
+  "passed": true,
+  "source_build_sha256": "36be0cdaa9746c39390aabbc5025b2524d47e1d24dca82f9a26e12b30f99dda2",
+  "binary_sha256": "02041e7c954e5ef343025e170694388f9b662cc8afd8c6a305983d9d19949679",
+  "protocol": {
+    "seeds": [
+      173,
+      271,
+      419,
+      587
+    ],
+    "families": [
+      "ordinary",
+      "distribution",
+      "sampled"
+    ],
+    "dense_subdivisions": 16,
+    "intervals": 12,
+    "duration_micros": 2000000,
+    "horizon_micros": 750000,
+    "numeric_tolerance": 2e-10,
+    "ensemble_samples": 20000,
+    "ensemble_sigma_gate": 6,
+    "claim": "native finite-law correctness and measured implementation cost; no task efficacy"
+  },
+  "max_independent_reference_error": 3.552713678800501e-15,
+  "max_event_count_error": 3.552713678800501e-15,
+  "max_mass_error": 3.885780586188048e-15,
+  "paired": [
+    {
+      "family": "ordinary",
+      "seed": 173,
+      "feature_error": 3.3306690738754696e-16,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    },
+    {
+      "family": "ordinary",
+      "seed": 271,
+      "feature_error": 3.885780586188048e-16,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    },
+    {
+      "family": "ordinary",
+      "seed": 419,
+      "feature_error": 3.3306690738754696e-16,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    },
+    {
+      "family": "ordinary",
+      "seed": 587,
+      "feature_error": 3.3306690738754696e-16,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    },
+    {
+      "family": "distribution",
+      "seed": 173,
+      "feature_error": 1.7763568394002505e-15,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    },
+    {
+      "family": "distribution",
+      "seed": 271,
+      "feature_error": 2.55351295663786e-15,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    },
+    {
+      "family": "distribution",
+      "seed": 419,
+      "feature_error": 1.2212453270876722e-15,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    },
+    {
+      "family": "distribution",
+      "seed": 587,
+      "feature_error": 9.992007221626409e-16,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    },
+    {
+      "family": "sampled",
+      "seed": 173,
+      "feature_error": 0.0,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    },
+    {
+      "family": "sampled",
+      "seed": 271,
+      "feature_error": 0.0,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    },
+    {
+      "family": "sampled",
+      "seed": 419,
+      "feature_error": 0.0,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    },
+    {
+      "family": "sampled",
+      "seed": 587,
+      "feature_error": 0.0,
+      "signals_equal": true,
+      "sampled_events_equal": true,
+      "event_intervals": 12,
+      "dense_intervals": 192
+    }
+  ],
+  "ensemble": {
+    "contract": "pure-physics-ensemble;driver=0.3;duration=4s;seeds=0..n",
+    "counts": [
+      2949,
+      7372,
+      6152,
+      1812,
+      1715
+    ],
+    "event_mean": 1.1012,
+    "event_second_moment": 1.7916,
+    "native_owner_used": false,
+    "samples": 20000,
+    "reference_probability": [
+      0.1489497978733201,
+      0.36830639431602596,
+      0.3101021232591708,
+      0.08631928787774011,
+      0.0863223966737425
+    ],
+    "reference_expected_count": 1.089948431639596,
+    "probability_gate": true,
+    "count_gate": true
+  },
+  "costs": [
+    {
+      "family": "distribution",
+      "seed": 271,
+      "dense": false,
+      "complete_cpu_seconds": 0.02197784299999994,
+      "complete_wall_seconds": 0.03632625499449205,
+      "owner_durable_record_bytes": 14171,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "ordinary",
+      "seed": 173,
+      "dense": false,
+      "complete_cpu_seconds": 0.01801760699999999,
+      "complete_wall_seconds": 0.03250327800924424,
+      "owner_durable_record_bytes": 14123,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "sampled",
+      "seed": 587,
+      "dense": true,
+      "complete_cpu_seconds": 0.21003640599999995,
+      "complete_wall_seconds": 0.4562939520110376,
+      "owner_durable_record_bytes": 226153,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "ordinary",
+      "seed": 587,
+      "dense": true,
+      "complete_cpu_seconds": 0.2290924299999999,
+      "complete_wall_seconds": 0.5096016640018206,
+      "owner_durable_record_bytes": 226174,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "distribution",
+      "seed": 173,
+      "dense": false,
+      "complete_cpu_seconds": 0.022205438000000077,
+      "complete_wall_seconds": 0.04485979200399015,
+      "owner_durable_record_bytes": 14171,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "ordinary",
+      "seed": 587,
+      "dense": false,
+      "complete_cpu_seconds": 0.019593184999999957,
+      "complete_wall_seconds": 0.04020524400402792,
+      "owner_durable_record_bytes": 14123,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "sampled",
+      "seed": 173,
+      "dense": false,
+      "complete_cpu_seconds": 0.01796161499999993,
+      "complete_wall_seconds": 0.04040273200371303,
+      "owner_durable_record_bytes": 14123,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "ordinary",
+      "seed": 419,
+      "dense": true,
+      "complete_cpu_seconds": 0.19868480099999997,
+      "complete_wall_seconds": 0.46086690299853217,
+      "owner_durable_record_bytes": 226174,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "sampled",
+      "seed": 173,
+      "dense": true,
+      "complete_cpu_seconds": 0.19505406700000005,
+      "complete_wall_seconds": 0.4636047889944166,
+      "owner_durable_record_bytes": 226160,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "distribution",
+      "seed": 587,
+      "dense": false,
+      "complete_cpu_seconds": 0.017342290999999843,
+      "complete_wall_seconds": 0.04422923899255693,
+      "owner_durable_record_bytes": 14171,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "distribution",
+      "seed": 419,
+      "dense": true,
+      "complete_cpu_seconds": 0.20505922200000004,
+      "complete_wall_seconds": 0.4350844479922671,
+      "owner_durable_record_bytes": 226942,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "sampled",
+      "seed": 271,
+      "dense": false,
+      "complete_cpu_seconds": 0.015267071999999882,
+      "complete_wall_seconds": 0.03187458700267598,
+      "owner_durable_record_bytes": 14122,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "distribution",
+      "seed": 271,
+      "dense": true,
+      "complete_cpu_seconds": 0.2057280629999998,
+      "complete_wall_seconds": 0.4560726249910658,
+      "owner_durable_record_bytes": 226942,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "distribution",
+      "seed": 587,
+      "dense": true,
+      "complete_cpu_seconds": 0.22347525099999999,
+      "complete_wall_seconds": 0.4671118149999529,
+      "owner_durable_record_bytes": 226942,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "sampled",
+      "seed": 419,
+      "dense": false,
+      "complete_cpu_seconds": 0.016717725000000128,
+      "complete_wall_seconds": 0.03082997900492046,
+      "owner_durable_record_bytes": 14122,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "ordinary",
+      "seed": 419,
+      "dense": false,
+      "complete_cpu_seconds": 0.015017086999999929,
+      "complete_wall_seconds": 0.029164881008910015,
+      "owner_durable_record_bytes": 14123,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "sampled",
+      "seed": 419,
+      "dense": true,
+      "complete_cpu_seconds": 0.1766262139999999,
+      "complete_wall_seconds": 0.38218802100163884,
+      "owner_durable_record_bytes": 226150,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "sampled",
+      "seed": 587,
+      "dense": false,
+      "complete_cpu_seconds": 0.016344243000000036,
+      "complete_wall_seconds": 0.0316626220010221,
+      "owner_durable_record_bytes": 14122,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "distribution",
+      "seed": 173,
+      "dense": true,
+      "complete_cpu_seconds": 0.2006370179999999,
+      "complete_wall_seconds": 0.41594444200745784,
+      "owner_durable_record_bytes": 226942,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "ordinary",
+      "seed": 271,
+      "dense": true,
+      "complete_cpu_seconds": 0.19635596300000002,
+      "complete_wall_seconds": 0.4079035689937882,
+      "owner_durable_record_bytes": 226174,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "distribution",
+      "seed": 419,
+      "dense": false,
+      "complete_cpu_seconds": 0.019160181000000165,
+      "complete_wall_seconds": 0.034310133996768855,
+      "owner_durable_record_bytes": 14171,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "ordinary",
+      "seed": 173,
+      "dense": true,
+      "complete_cpu_seconds": 0.20869059099999987,
+      "complete_wall_seconds": 0.4419964120024815,
+      "owner_durable_record_bytes": 226174,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "sampled",
+      "seed": 271,
+      "dense": true,
+      "complete_cpu_seconds": 0.20424315299999996,
+      "complete_wall_seconds": 0.4436820159899071,
+      "owner_durable_record_bytes": 226154,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    },
+    {
+      "family": "ordinary",
+      "seed": 271,
+      "dense": false,
+      "complete_cpu_seconds": 0.018105645000000115,
+      "complete_wall_seconds": 0.03301632001239341,
+      "owner_durable_record_bytes": 14123,
+      "includes": "startup, model parse, physics, signal, IPC, journal, witness, cell checkpoint, receipt retention, one restart, shutdown"
+    }
+  ],
+  "cost_means": {
+    "ordinary/event": {
+      "cpu_seconds": 0.017683380999999998,
+      "wall_seconds": 0.033722430758643895
+    },
+    "ordinary/dense": {
+      "cpu_seconds": 0.20820594624999994,
+      "wall_seconds": 0.4550921369991556
+    },
+    "distribution/event": {
+      "cpu_seconds": 0.020171438250000007,
+      "wall_seconds": 0.039931354996951995
+    },
+    "distribution/dense": {
+      "cpu_seconds": 0.20872488849999993,
+      "wall_seconds": 0.4435533324976859
+    },
+    "sampled/event": {
+      "cpu_seconds": 0.016572663749999994,
+      "wall_seconds": 0.03369248000308289
+    },
+    "sampled/dense": {
+      "cpu_seconds": 0.19648995999999996,
+      "wall_seconds": 0.43644219449925004
+    }
+  },
+  "native_physics_executed": true,
+  "continuum_exact": false,
+  "task_utility_superiority_established": false,
+  "energy_saving_established": false,
+  "production_activation": false,
+  "authority": "DENY_ALL",
+  "limitations": [
+    "Finite 5-state CTMC law, not continuum He-Xiong exactness",
+    "Debug build; measured CPU is not hardware energy",
+    "No new task policy or value-head benefit is inferred",
+    "Arbitrary interruption between two commits is detected and blocked, not automatically repaired",
+    "SplitMix64 samples are a distinct explicit RNG contract, not PCG64 path parity"
+  ]
+}

@@ -118,4 +118,6 @@ def sample_counts(initial_gap, reset_gap, drift, sigma, time, recovery_mean, pha
         counts[live] += 1
         clock[live] += rng.gamma(phases, recovery_mean / phases, size=len(live))
         clock[live] += hit_times(reset_gap, len(live))
+    if not np.any(clock <= time):
+        return counts
     raise DomainError("Sample path exceeded the explicit event budget")

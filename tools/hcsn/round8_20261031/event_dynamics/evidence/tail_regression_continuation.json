@@ -1,0 +1,263 @@
+{
+  "decimal_reference_precision": 90,
+  "density_tail_cases": [
+    {
+      "absolute_log_error": 0.0,
+      "drift": 1.0,
+      "log_actual": -36.33075024006338,
+      "log_reference": -36.33075024006338,
+      "reference_relative_quadrature_estimate": 5.571475512591044e-14
+    },
+    {
+      "absolute_log_error": 0.0,
+      "drift": 10.0,
+      "log_actual": -89.39875125047307,
+      "log_reference": -89.39875125047307,
+      "reference_relative_quadrature_estimate": 1.9913263740628748e-13
+    },
+    {
+      "absolute_log_error": 0.0,
+      "drift": 40.0,
+      "log_actual": -842.1441975709707,
+      "log_reference": -842.1441975709707,
+      "reference_relative_quadrature_estimate": 1.4580315446907938e-13
+    },
+    {
+      "absolute_log_error": 0.0,
+      "drift": 1000.0,
+      "log_actual": -500048.5800813055,
+      "log_reference": -500048.5800813055,
+      "reference_relative_quadrature_estimate": 1.4674560904299813e-13
+    }
+  ],
+  "environment": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "frozen_source_commit": "3a0e62c61b595576f16313c9b6016ec62cf8088b",
+  "gates": [
+    {
+      "criterion": "15 near-boundary cases agree with 90-digit Decimal survival within 3e-12 relative",
+      "name": "small_gap_positive_and_negative_drift",
+      "passed": true
+    },
+    {
+      "criterion": "4 independent time-density tails agree within 2e-10 absolute log error",
+      "name": "positive_drift_time_density_tail",
+      "passed": true
+    },
+    {
+      "criterion": "dimensionless gaps through 1e-400 retain survival logs, including ratio underflow",
+      "name": "very_small_survival_log",
+      "passed": true
+    },
+    {
+      "criterion": "five exact paths ending after one event accept max_events=1",
+      "name": "event_budget_is_inclusive",
+      "passed": true
+    }
+  ],
+  "inclusive_budget_samples": [
+    [
+      1
+    ],
+    [
+      1
+    ],
+    [
+      1
+    ],
+    [
+      1
+    ],
+    [
+      1
+    ]
+  ],
+  "limitations": [
+    "This diagnostic is not a uniform float64 or interval-arithmetic proof.",
+    "Quadrature error estimates do not bound floating-point roundoff."
+  ],
+  "passed": true,
+  "schema": "hcsn_round8_tail_regression_v1",
+  "small_gap_cases": [
+    {
+      "actual": 9.999999606923284e-08,
+      "distance": 1e-08,
+      "drift": -5.0,
+      "legacy": 9.999999606923319e-08,
+      "legacy_relative_error": 3.9704670963243343e-16,
+      "log_actual": -16.118095690265992,
+      "log_reference": -16.11809569026599,
+      "reference": 9.999999606923322e-08,
+      "relative_error": 3.838118193113523e-15
+    },
+    {
+      "actual": 2.1666309195090577e-08,
+      "distance": 1e-08,
+      "drift": -1.0,
+      "legacy": 2.1666309127560577e-08,
+      "legacy_relative_error": 3.116823227485967e-09,
+      "log_actual": -17.647507354543116,
+      "log_reference": -17.647507354543112,
+      "reference": 2.1666309195090633e-08,
+      "relative_error": 2.596117370389562e-15
+    },
+    {
+      "actual": 7.978845608028645e-09,
+      "distance": 1e-08,
+      "drift": 0.0,
+      "legacy": 7.978845917300241e-09,
+      "legacy_relative_error": 3.876144535037613e-08,
+      "log_actual": -18.646472096597094,
+      "log_reference": -18.646472096597094,
+      "reference": 7.978845608028653e-09,
+      "relative_error": 1.036717155826005e-15
+    },
+    {
+      "actual": 1.6663094284168174e-09,
+      "distance": 1e-08,
+      "drift": 1.0,
+      "legacy": 1.6663093692063085e-09,
+      "legacy_relative_error": 3.553392339810564e-08,
+      "log_actual": -20.212654579105063,
+      "log_reference": -20.212654579105063,
+      "reference": 1.66630942841682e-09,
+      "relative_error": 1.6133480042488627e-15
+    },
+    {
+      "actual": 1.069233160228218e-15,
+      "distance": 1e-08,
+      "drift": 5.0,
+      "legacy": 1.069233164236782e-15,
+      "legacy_relative_error": 3.749006786859844e-09,
+      "log_actual": -34.47183467605341,
+      "log_reference": -34.47183467605341,
+      "reference": 1.0692331602282197e-15,
+      "relative_error": 1.475563861211778e-15
+    },
+    {
+      "actual": 1.0000000106923311e-14,
+      "distance": 1e-15,
+      "drift": -5.0,
+      "legacy": 9.999999869675934e-15,
+      "legacy_relative_error": 2.372473240892808e-08,
+      "log_actual": -32.23619129122431,
+      "log_reference": -32.236191291224316,
+      "reference": 1.0000000106923261e-14,
+      "relative_error": 5.048709739432025e-15
+    },
+    {
+      "actual": 2.1666309411753752e-15,
+      "distance": 1e-15,
+      "drift": -1.0,
+      "legacy": 2.2184407332401654e-15,
+      "legacy_relative_error": 0.023912606009719735,
+      "log_actual": -33.76560299550143,
+      "log_reference": -33.76560299550143,
+      "reference": 2.1666309411753705e-15,
+      "relative_error": 2.1845739121395486e-15
+    },
+    {
+      "actual": 7.978845608028668e-16,
+      "distance": 1e-15,
+      "drift": 0.0,
+      "legacy": 1.1102230246251546e-15,
+      "legacy_relative_error": 0.39145821233588096,
+      "log_actual": -34.76456774755541,
+      "log_reference": -34.76456774755541,
+      "reference": 7.978845608028654e-16,
+      "relative_error": 1.7302084185557446e-15
+    },
+    {
+      "actual": 1.6663094117537268e-16,
+      "distance": 1e-15,
+      "drift": 1.0,
+      "legacy": 1.761427158924542e-16,
+      "legacy_relative_error": 0.057082884186980876,
+      "log_actual": -36.33075024006338,
+      "log_reference": -36.33075024006338,
+      "reference": 1.6663094117537278e-16,
+      "relative_error": 5.917725271013483e-16
+    },
+    {
+      "actual": 1.0692331067665752e-22,
+      "distance": 1e-15,
+      "drift": 5.0,
+      "legacy": null,
+      "legacy_relative_error": null,
+      "log_actual": -50.58993037701172,
+      "log_reference": -50.589930377011726,
+      "reference": 1.0692331067665684e-22,
+      "relative_error": 6.37640865366295e-15
+    },
+    {
+      "actual": 1.0000000106923394e-29,
+      "distance": 1e-30,
+      "drift": -5.0,
+      "legacy": null,
+      "legacy_relative_error": null,
+      "log_actual": -66.77496768613499,
+      "log_reference": -66.774967686135,
+      "reference": 1.0000000106923311e-29,
+      "relative_error": 8.267660851115854e-15
+    },
+    {
+      "actual": 2.166630941175393e-30,
+      "distance": 1e-30,
+      "drift": -1.0,
+      "legacy": null,
+      "legacy_relative_error": null,
+      "log_actual": -68.30437939041211,
+      "log_reference": -68.30437939041212,
+      "reference": 2.1666309411753727e-30,
+      "relative_error": 9.378075124177408e-15
+    },
+    {
+      "actual": 7.97884560802862e-31,
+      "distance": 1e-30,
+      "drift": 0.0,
+      "legacy": null,
+      "legacy_relative_error": null,
+      "log_actual": -69.3033441424661,
+      "log_reference": -69.3033441424661,
+      "reference": 7.978845608028654e-31,
+      "relative_error": 4.171134542849884e-15
+    },
+    {
+      "actual": 1.6663094117537288e-31,
+      "distance": 1e-30,
+      "drift": 1.0,
+      "legacy": 3.5228543178491e-17,
+      "legacy_relative_error": 211416576837396.3,
+      "log_actual": -70.86952663497406,
+      "log_reference": -70.86952663497406,
+      "reference": 1.6663094117537262e-31,
+      "relative_error": 1.576798763828477e-15
+    },
+    {
+      "actual": 1.0692331067665538e-37,
+      "distance": 1e-30,
+      "drift": 5.0,
+      "legacy": null,
+      "legacy_relative_error": null,
+      "log_actual": -85.12870677192242,
+      "log_reference": -85.12870677192241,
+      "reference": 1.0692331067665631e-37,
+      "relative_error": 8.788016733164364e-15
+    }
+  ],
+  "source_sha256": {
+    "event_kernel.py": "1e55b1e99bff18cf2606eefca0f35512c1813e4768995163528f48ef7eaa626c",
+    "renewal.py": "b33f7b5b4892503b4a3704ff20f47d3a025bcbabedb5bb4b25c5f19f5a18644f",
+    "tail_regression.py": "e3568bcaa46ff9eb7054b29bcae0f154bb656504543b94e5869fdfd4cc23685c"
+  },
+  "tiny_gap": {
+    "actual_log": -691.0013192508584,
+    "reference_log": -691.0013192508584,
+    "scaled_actual_log": -691.0013192508584,
+    "scaled_reference_log": -691.0013192508585,
+    "underflow_actual_log": -921.259828550263,
+    "underflow_reference_log": -921.259828550263
+  }
+}

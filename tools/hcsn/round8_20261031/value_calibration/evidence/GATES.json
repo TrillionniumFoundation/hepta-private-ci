@@ -1,0 +1,71 @@
+{
+  "all_raw_replay_pass": true,
+  "first_passage_shifted_regimes": [
+    {
+      "priced_net_positive_lower_bound": false,
+      "quality_noninferiority_lower_bound": false,
+      "regime": "drift",
+      "utility_positive_lower_bound": false
+    },
+    {
+      "priced_net_positive_lower_bound": false,
+      "quality_noninferiority_lower_bound": false,
+      "regime": "missing",
+      "utility_positive_lower_bound": false
+    },
+    {
+      "priced_net_positive_lower_bound": false,
+      "quality_noninferiority_lower_bound": true,
+      "regime": "cost_shift",
+      "utility_positive_lower_bound": false
+    }
+  ],
+  "global_architecture_superiority": false,
+  "independent_finite_reference_pass": true,
+  "matched_ordinary_superiority": [
+    {
+      "contrast": "new first_passage minus new clocked",
+      "priced_net_positive_lower_bound": false
+    },
+    {
+      "contrast": "new first_passage minus new direct",
+      "priced_net_positive_lower_bound": false
+    }
+  ],
+  "nominal": [
+    {
+      "mode": "first_passage",
+      "nominal_repair_all_gates_pass": true,
+      "nonzero_parameter_learning_every_fit": true,
+      "preset4_STOP_preset6_READ_every_fit": true,
+      "priced_net_positive_lower_bound": true,
+      "q_rmse_improves_every_fit": true,
+      "quality_noninferiority_lower_bound": true,
+      "utility_positive_lower_bound": true
+    },
+    {
+      "mode": "clocked",
+      "nominal_repair_all_gates_pass": false,
+      "nonzero_parameter_learning_every_fit": true,
+      "preset4_STOP_preset6_READ_every_fit": false,
+      "priced_net_positive_lower_bound": false,
+      "q_rmse_improves_every_fit": true,
+      "quality_noninferiority_lower_bound": true,
+      "utility_positive_lower_bound": true
+    },
+    {
+      "mode": "direct",
+      "nominal_repair_all_gates_pass": false,
+      "nonzero_parameter_learning_every_fit": true,
+      "preset4_STOP_preset6_READ_every_fit": true,
+      "priced_net_positive_lower_bound": false,
+      "q_rmse_improves_every_fit": true,
+      "quality_noninferiority_lower_bound": true,
+      "utility_positive_lower_bound": true
+    }
+  ],
+  "production_activation": false,
+  "raw_sha256": "cda448227d60d77ebe127d1ea9446c18779a32a114d47dcbd1895c5700aec65f",
+  "schema": "hepta.round8.value-gates.v1",
+  "source_unchanged": true
+}

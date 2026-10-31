@@ -1,0 +1,34 @@
+{
+  "archived_member_count": 215,
+  "cache_scope": "8 state/value volume files were read from the preserved original artifact cache after identical duplicate working copies were removed; all 12 volume blobs are in the GitHub tree.",
+  "checker_materialization": "Read-only file symlinks resolving to byte-verified working artifacts and preserved original evidence volumes; not a new network clone.",
+  "ci_asset_handling": {
+    "binary_archive_files_excluded_from_spellcheck": 12,
+    "diagnosis": "tools/hcsn/round8_20261031/CI_DIAGNOSIS.json",
+    "full_repository_ci_passed": false,
+    "global_blob_size_limit_bytes": 512000,
+    "intentional_exact_asset_paths": 13,
+    "natural_language_files_excluded": 0,
+    "unregistered_oversize_delivered_assets": 0
+  },
+  "content_commit": "2d7d2760cb2df316825688f2a3176a9dcb214497",
+  "entrypoint_document_broken_links": [],
+  "entrypoint_document_links_checked": 28,
+  "frozen_dependency_blobs_matched_to_base": 24,
+  "github_tree_files_read_back": 193,
+  "local_checker": {
+    "delivered_files": 193,
+    "errors": [],
+    "frozen_dependencies": 24,
+    "passed": true,
+    "schema": "hepta.hcsn.delivery-file-check.v1",
+    "scientific_tests_repeated": false
+  },
+  "manifest_sha256": "925c37479c64a9a24684fcc9fb3f99aa3cfa96a825177446b16d3e2f1a48a2e1",
+  "remote_blob_mismatches": 0,
+  "remote_validation": "GitHub content-addressed tree entries matched actual local/source-cache bytes, size and Git blob SHA; SHA256 retained in DELIVERY_MANIFEST.json. Uploaded volume blob identities were also checked during upload.",
+  "schema": "hepta.hcsn.remote-delivery-verification.v1",
+  "scientific_tests_repeated": false,
+  "volume_bytes": 42392087,
+  "volume_count": 12
+}

@@ -1,0 +1,90 @@
+{
+  "deployment_pricing": {
+    "primary_H": 10000,
+    "primary_kappa": 1,
+    "sensitivity_H": [
+      128,
+      1000,
+      10000,
+      100000
+    ],
+    "sensitivity_kappa": [
+      0,
+      0.1,
+      1,
+      10
+    ],
+    "unit": "utility per CPU second; illustrative, not monetary"
+  },
+  "entries": [
+    {
+      "cpu_seconds": 8.632476199,
+      "scope": "development prepare function timer; excludes interpreter imports and final summary/freeze serialization",
+      "source_sha256": "075691a4481ff8d19efce0460070eaaf64943dbe4edbc06e4adce5448cef7cf3",
+      "stage": "development01"
+    },
+    {
+      "cpu_seconds": 30.194559779,
+      "scope": "development prepare function timer; excludes interpreter imports and final summary/freeze serialization",
+      "source_sha256": "856d54e973026beec924aeb0186945d116c35e5bad6974af3e0951d5976e5ed9",
+      "stage": "development02"
+    },
+    {
+      "cpu_seconds": 413.36694117099995,
+      "scope": "one preparation function execution including graph, teachers, all fits, independent validation and fit exports; excludes interpreter imports and final summary/freeze serialization",
+      "source_sha256": "162e617440a2d657914b525f16ef7ed4144956b1b20292b4427eab1783eedb95",
+      "stage": "formal_preparation_15_fits"
+    },
+    {
+      "cpu_seconds": 73.31831017900001,
+      "scope": "one confirmation stage including model load, 122880 executions, gzip and aggregate calculation; excludes interpreter imports and final summary serialization",
+      "source_sha256": "81def1d4bf5174b0f4d5cce1aba5b5397b1dc469ff4e5d91101f6b3a6f3d4bad",
+      "stage": "frozen_confirmation"
+    },
+    {
+      "cpu_seconds": 66.591126,
+      "scope": "one full independent audit process including interpreter/imports/load/decompression/replay/report; not training or deployment cost",
+      "source_sha256": "82fbd94df2450a1f290f250d8848aaf2553d3653e18754bb2e7c28d6b8b77b2b",
+      "stage": "full_independent_audit"
+    },
+    {
+      "cpu_seconds": 24.01446,
+      "scope": "30 complete cold child processes, 3840 replayed executions; included interpreter/import/load/inference/task/gzip/report/exit",
+      "source_sha256": "c55959471b3f52a4842f2446c5a84eb9fa1d759dc237d5f628ef5a11776783b8",
+      "stage": "supplemental_pipeline_children"
+    },
+    {
+      "cpu_seconds": 3.7420874410000002,
+      "scope": "orchestration/read/aggregation timer excluding child CPU and final ledger serialization",
+      "source_sha256": "c55959471b3f52a4842f2446c5a84eb9fa1d759dc237d5f628ef5a11776783b8",
+      "stage": "supplemental_pipeline_parent"
+    }
+  ],
+  "interpretation": "A sum of measured disjoint stage scopes, not a claim that every campaign cost was measured. Do not add per-head standalone charges to this sum: they intentionally repeat common/development work only for hypothetical separate deployments.",
+  "schema": "hepta.round8.value-cost-ledger.v1",
+  "source_unchanged": true,
+  "sum_recorded_cpu_seconds": 619.8599607689999,
+  "sunk_common_original_R7_training": "excluded from incremental new-versus-same-frozen-core contrast; unknown total here",
+  "unmeasured": [
+    {
+      "cpu_seconds": null,
+      "stage": "initial parity attempt that failed JSON export"
+    },
+    {
+      "cpu_seconds": null,
+      "stage": "successful Torch forward parity and mechanism tests"
+    },
+    {
+      "cpu_seconds": null,
+      "stage": "prepared01 path bookkeeping failure before any fit"
+    },
+    {
+      "cpu_seconds": null,
+      "stage": "interpreter imports and final report/freeze serialization excluded by in-process preparation/confirmation timers"
+    },
+    {
+      "cpu_seconds": null,
+      "stage": "developer/assistant/tool service costs and physical energy"
+    }
+  ]
+}

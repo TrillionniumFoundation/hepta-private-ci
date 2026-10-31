@@ -1,0 +1,62 @@
+{
+  "backend": "NumPy float64 forward with float32-rounded inputs and frozen PyTorch float32 weights exported as JSON",
+  "batch_examples": 2048,
+  "batch_repeats": 9,
+  "created_at_utc": "2026-10-31T05:21:23.650237+00:00",
+  "environment": {
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "scipy": "1.17.0",
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "evidence_manifest_sha256": "7c6ecab6e15892cbb591ff6489fd1b5471b93fc7e23ac5d62026d0ce3c6ef57c",
+  "model_ids": [
+    "analytic_filter_17",
+    "analytic_filter_29",
+    "analytic_filter_43",
+    "sufficient_mlp_17",
+    "sufficient_mlp_29",
+    "sufficient_mlp_43",
+    "gru_17",
+    "gru_29",
+    "gru_43",
+    "memoryless_17",
+    "memoryless_29",
+    "memoryless_43",
+    "fixed_ordinary_filter"
+  ],
+  "not_measured": [
+    "energy",
+    "native durable recovery",
+    "complete Hepta application",
+    "new training",
+    "new confirmation examples"
+  ],
+  "order_seed": 2026103109,
+  "regimes": [
+    "iid",
+    "long_history",
+    "low_noise",
+    "moving_boundary"
+  ],
+  "reviewed_replay_sha256": "1d9fa3ebad9364e692ab0f73c2e3a02efda6e18aa930de2781605ec5c9c81b06",
+  "scalar_examples": 64,
+  "schedule": "Each repeat includes every model once in every regime; regime and model order are independently permuted. Each scalar index is executed once per model and regime.",
+  "schema": "hepta.r8.numpy-serving-cost-protocol.v1",
+  "separate_scope": "Checkpoint loading, fixture loading, warmup/forward checks and audit serialization are separately recorded, not hidden in serving throughput.",
+  "source_sha256": {
+    "CONFIRMATION_AMENDMENT.json": "c47fd57f832d54c352f837938c4961c4b23ae7ae53734e1e5748627ced854e2d",
+    "FREEZE.json": "fc49a9c5e1cba1aa76ec8c1ac19f29b4b8fdbce83add513a3f43f4c857c05f8c",
+    "cost_replay.py": "1afe2757f7ee9fff4a0a500cfd5cfde0ed869194053ef1d8e4ae7825665dbab1",
+    "data.py": "ec230d7f48e3ad30c10b26ab98b2e99db7d5324196f08275504fc045cc656e61",
+    "protocol.json": "d629b239450379d03a3302f83f8cd8707d2c5cd46ed0c67c773504de4284b66b",
+    "replay.py": "05f7a9573617e51a52aceb102b992cb76d4d5edafb2b557131ed4cf56929d8d6"
+  },
+  "summary": "Per-checkpoint median cost per example, then arithmetic mean across the three trained seeds; exact control has one implementation.",
+  "timed_scope": "Input array preparation, every observed feature, predictor, protective action and output JSON; scalar slicing included."
+}

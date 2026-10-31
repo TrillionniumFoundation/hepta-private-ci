@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.hcsn.five-track-delivery.v1",
+  "frozen_base_commit": "3a0e62c61b595576f16313c9b6016ec62cf8088b",
+  "production_activation": false,
+  "all_scientific_blockers_closed": false,
+  "items": [
+    {"id": "event_near_boundary_survival", "status": "fixed_and_independently_verified", "evidence": "event_dynamics/evidence/tail_regression_continuation.json"},
+    {"id": "sample_event_budget_off_by_one", "status": "fixed_and_independently_verified", "evidence": "event_dynamics/evidence/tests_continuation.log"},
+    {"id": "repeated_event_value_gradient_resolution", "status": "qualified_on_declared_regular_fixture", "original_upwind_576_failure_preserved": true, "evidence": "event_dynamics/RENEWAL_RESOLUTION.md"},
+    {"id": "low_noise_coarse_grid", "status": "rejected_unresolved_approximation", "evidence": "event_dynamics/THEORY.md"},
+    {"id": "nominal_value_calibration", "status": "passed_frozen_repair_gates", "scope": "first_passage family only; clocked and direct do not pass their complete nominal gate sets", "evidence": "value_calibration/evidence/GATES.json"},
+    {"id": "shifted_continuation_values", "status": "failed_three_shifted_regimes", "support_guard_added": true, "domain_rejection_is_business_success": false, "evidence": "value_calibration/RECOVERY_20261031.md"},
+    {"id": "analytic_spiking_irreplaceability", "status": "not_established_ordinary_equivalence_control", "evidence": "state_task/README.md"},
+    {"id": "native_finite_cell_owner", "status": "rebuilt_and_requalified", "evidence": "native_owner/REVALIDATION_20261031.md"},
+    {"id": "complete_content_service_cost", "status": "equal_outputs_and_observed_cpu_reduction_in_fixed_fixture", "intrinsic_analytic_advantage": false, "content_calls_reduced": false, "evidence": "native_owner/evidence/qualification-content-20261031/REPORT.json"},
+    {"id": "python_host_crash_recovery", "status": "not_tested", "evidence": "native_owner/REVALIDATION_20261031.md"},
+    {"id": "unified_continuous_value_native_model", "status": "open_distinct_mathematical_contracts", "evidence": "DELIVERY_REPORT_ZH.md"},
+    {"id": "killed_reset_operator_stability", "status": "conditional_bound_with_explicit_failure_cases", "evidence": "event_dynamics/THEORY.md"},
+    {"id": "high_dimensional_coupled_accuracy", "status": "bounds_require_unverified_joint_error_inputs", "evidence": "event_dynamics/HIGH_DIMENSIONAL.md"}
+  ]
+}

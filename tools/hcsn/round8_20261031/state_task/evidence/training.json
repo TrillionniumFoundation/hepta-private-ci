@@ -1,0 +1,110 @@
+[
+  {
+    "model": "analytic_filter",
+    "seed": 17,
+    "cpu_seconds": 1.67863397,
+    "wall_seconds": 1.8060626900114585,
+    "selected_step": 400,
+    "dev_mse": 2.5138038403123416e-15,
+    "sha256": "410dd8faa7d540133e17daa46eba99d12f23616c56ae9b8699e7b7728e643802"
+  },
+  {
+    "model": "analytic_filter",
+    "seed": 29,
+    "cpu_seconds": 1.0571039189999998,
+    "wall_seconds": 1.0582034880062565,
+    "selected_step": 500,
+    "dev_mse": 2.5456666786892066e-15,
+    "sha256": "9f8c34bb8715ca4a53b22440b571e627cfbd4e373da18d43263c6b6efca42de9"
+  },
+  {
+    "model": "analytic_filter",
+    "seed": 43,
+    "cpu_seconds": 1.072336871,
+    "wall_seconds": 1.0730674900114536,
+    "selected_step": 800,
+    "dev_mse": 2.4874606921362593e-15,
+    "sha256": "e1dc11c8975ed316e8657dcad8a4f212c528154561f2d96560bf553b4891e275"
+  },
+  {
+    "model": "sufficient_mlp",
+    "seed": 17,
+    "cpu_seconds": 1.2098589239999997,
+    "wall_seconds": 1.2122362500085728,
+    "selected_step": 800,
+    "dev_mse": 0.0006658211350440979,
+    "sha256": "e598187ea1948868d917e821d66af08c5e6aa9a676de47a77872cd335d4b069e"
+  },
+  {
+    "model": "sufficient_mlp",
+    "seed": 29,
+    "cpu_seconds": 1.0854048170000006,
+    "wall_seconds": 1.086076152001624,
+    "selected_step": 800,
+    "dev_mse": 0.0007737428531982005,
+    "sha256": "6fd3c86ada59162642edb20915dee4a26b2348b50345d092ce3592d21ce682b8"
+  },
+  {
+    "model": "sufficient_mlp",
+    "seed": 43,
+    "cpu_seconds": 1.1100788150000005,
+    "wall_seconds": 1.1108741439966252,
+    "selected_step": 800,
+    "dev_mse": 0.0006819298141635954,
+    "sha256": "1180eb610429a4449e75746e32961e07b615eb0053f89de81d083f22bd46febb"
+  },
+  {
+    "model": "gru",
+    "seed": 17,
+    "cpu_seconds": 6.622037283999999,
+    "wall_seconds": 6.627019275998464,
+    "selected_step": 800,
+    "dev_mse": 0.0011511010816320777,
+    "sha256": "bf40e77a5b367fe387626741420d7b8aba32a40e5bf56aa6602fbf441115e43e"
+  },
+  {
+    "model": "gru",
+    "seed": 29,
+    "cpu_seconds": 6.785978669,
+    "wall_seconds": 6.808228777998011,
+    "selected_step": 800,
+    "dev_mse": 0.0011144764721393585,
+    "sha256": "de266f7010f714bb84f9ff5d48006a8b519c3a9ce51c50865a75f98d2a02e5fb"
+  },
+  {
+    "model": "gru",
+    "seed": 43,
+    "cpu_seconds": 7.297993572999999,
+    "wall_seconds": 7.305905998000526,
+    "selected_step": 700,
+    "dev_mse": 0.001318529131822288,
+    "sha256": "947689519b9c86d3bc0190e0243a612024a27c4318b0b1d8f0e724d5d0285393"
+  },
+  {
+    "model": "memoryless",
+    "seed": 17,
+    "cpu_seconds": 1.3858231869999997,
+    "wall_seconds": 1.3866306229901966,
+    "selected_step": 600,
+    "dev_mse": 0.02677656151354313,
+    "sha256": "6ea2be0e50f03b760d49e54620fbbda2b2c01c86c1a63008ef50375a47b9cc06"
+  },
+  {
+    "model": "memoryless",
+    "seed": 29,
+    "cpu_seconds": 1.1447273699999982,
+    "wall_seconds": 1.1453823570045643,
+    "selected_step": 600,
+    "dev_mse": 0.026839518919587135,
+    "sha256": "d73de605397559a71606734db2ebf2bec5d511ff6e3e0bf5fa281f4ffbb2c9f2"
+  },
+  {
+    "model": "memoryless",
+    "seed": 43,
+    "cpu_seconds": 1.4213891779999983,
+    "wall_seconds": 1.422267647998524,
+    "selected_step": 800,
+    "dev_mse": 0.026907430961728096,
+    "sha256": "a9a8e269215542ed92cf958f043d3a9f69cb54c5f4f934c71bc9064b6e24f4f9"
+  }
+]

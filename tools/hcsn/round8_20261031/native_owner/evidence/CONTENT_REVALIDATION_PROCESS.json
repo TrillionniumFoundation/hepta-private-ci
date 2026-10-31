@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python3",
+    "qualify_content.py",
+    "--binary",
+    "/workspace/scratch/7187fe3695d3/native-r8-revalidation-build/native-owner-final",
+    "--out",
+    "evidence/qualification-content-20261031",
+    "--build-sha",
+    "58c5acd47498d5536293ae8223ed1b28ae8f87a21efd0467c801e46f4298d89b"
+  ],
+  "returncode": 0,
+  "whole_campaign_wall_seconds": 11.255300805001752,
+  "whole_campaign_cpu_seconds": 6.127609,
+  "maxrss_kib": 51428,
+  "source_sha256": "21ca5b9777379a27e6729a1073eb10ccdfb1000b3235ff25ec4d5acf76b74db0",
+  "scope": "wait4 for full Python campaign process including waited native children; includes parent imports, input generation, model setup, per-run content/control, recovery, evaluation and summaries"
+}

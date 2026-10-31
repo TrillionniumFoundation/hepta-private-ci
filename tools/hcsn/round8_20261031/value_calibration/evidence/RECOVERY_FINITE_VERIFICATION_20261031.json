@@ -1,0 +1,475 @@
+{
+  "cost_scope": "This recovery audit only; excludes imports/final serialization; original deployment timings preserved.",
+  "cpu_seconds": 17.697793998,
+  "environment": {
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "scipy": "1.17.0"
+  },
+  "fits_recomputed": 15,
+  "freeze_sha256": "da08baa4464b202a0071a2767d08009464f9b60e279c540332fc09ed042096ad",
+  "immutable_freeze_commit": "3a0e62c61b595576f16313c9b6016ec62cf8088b",
+  "passed": true,
+  "production_activation": false,
+  "public_states": 673,
+  "records": [
+    {
+      "after": {
+        "max_action_regret_all_states": 0.01769977812218626,
+        "mean_action_regret_all_states": 0.0010666611234529388,
+        "q_max_abs_error": 0.06573892738438736,
+        "q_rmse": 0.008872792585773776
+      },
+      "before": {
+        "max_action_regret_all_states": 0.457384448683342,
+        "mean_action_regret_all_states": 0.012334216311365243,
+        "q_max_abs_error": 0.5942289475079574,
+        "q_rmse": 0.23284013685897714
+      },
+      "independent_optimum_and_policy_error": 5.551115123125783e-16,
+      "mode": "first_passage",
+      "new_exact_mean": 0.6510715337615105,
+      "old_exact_mean": 0.6170422940052991,
+      "published_metrics_max_error": 0.0,
+      "seed": 11,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.017695118227648354,
+        "mean_action_regret_all_states": 0.001042103324515638,
+        "q_max_abs_error": 0.07516146053929063,
+        "q_rmse": 0.00895651397479154
+      },
+      "before": {
+        "max_action_regret_all_states": 0.45740496227475796,
+        "mean_action_regret_all_states": 0.012458269975352373,
+        "q_max_abs_error": 0.5997406826661202,
+        "q_rmse": 0.23341920658883245
+      },
+      "independent_optimum_and_policy_error": 5.551115123125783e-16,
+      "mode": "first_passage",
+      "new_exact_mean": 0.6515859171548335,
+      "old_exact_mean": 0.6331608246476187,
+      "published_metrics_max_error": 0.0,
+      "seed": 12,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.01767171971306225,
+        "mean_action_regret_all_states": 0.001353787443238078,
+        "q_max_abs_error": 0.08817078575717852,
+        "q_rmse": 0.011226355011000973
+      },
+      "before": {
+        "max_action_regret_all_states": 0.45741289848477734,
+        "mean_action_regret_all_states": 0.01308829504281796,
+        "q_max_abs_error": 0.6171640906483611,
+        "q_rmse": 0.23237817557528043
+      },
+      "independent_optimum_and_policy_error": 8.881784197001252e-16,
+      "mode": "first_passage",
+      "new_exact_mean": 0.650065532188048,
+      "old_exact_mean": 0.6335467993260733,
+      "published_metrics_max_error": 0.0,
+      "seed": 13,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.023510979287699296,
+        "mean_action_regret_all_states": 0.001129656786396441,
+        "q_max_abs_error": 0.05702872413549109,
+        "q_rmse": 0.009296442144861233
+      },
+      "before": {
+        "max_action_regret_all_states": 0.457398300962592,
+        "mean_action_regret_all_states": 0.01281452314245835,
+        "q_max_abs_error": 0.6300115542437713,
+        "q_rmse": 0.23416619714067005
+      },
+      "independent_optimum_and_policy_error": 6.661338147750939e-16,
+      "mode": "first_passage",
+      "new_exact_mean": 0.6511958543773642,
+      "old_exact_mean": 0.6333498688138858,
+      "published_metrics_max_error": 0.0,
+      "seed": 14,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.017698915294282025,
+        "mean_action_regret_all_states": 0.0006963481048928948,
+        "q_max_abs_error": 0.048086755386775315,
+        "q_rmse": 0.0065290078874543946
+      },
+      "before": {
+        "max_action_regret_all_states": 0.4573949032663152,
+        "mean_action_regret_all_states": 0.011978229149579963,
+        "q_max_abs_error": 0.6051623754555068,
+        "q_rmse": 0.2327340360374903
+      },
+      "independent_optimum_and_policy_error": 7.771561172376096e-16,
+      "mode": "first_passage",
+      "new_exact_mean": 0.652406650646504,
+      "old_exact_mean": 0.6327744913201745,
+      "published_metrics_max_error": 0.0,
+      "seed": 15,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.017699999997229043,
+        "mean_action_regret_all_states": 0.0009175934047043761,
+        "q_max_abs_error": 0.05091344123574626,
+        "q_rmse": 0.007938081546267656
+      },
+      "before": {
+        "max_action_regret_all_states": 0.45739061661064967,
+        "mean_action_regret_all_states": 0.012480438865735214,
+        "q_max_abs_error": 0.6205320470599233,
+        "q_rmse": 0.23390113169620957
+      },
+      "independent_optimum_and_policy_error": 6.661338147750939e-16,
+      "mode": "clocked",
+      "new_exact_mean": 0.6521824952640042,
+      "old_exact_mean": 0.6322081829113932,
+      "published_metrics_max_error": 0.0,
+      "seed": 11,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.017698644222923665,
+        "mean_action_regret_all_states": 0.0011314918024375828,
+        "q_max_abs_error": 0.09986920754469159,
+        "q_rmse": 0.009342685329380814
+      },
+      "before": {
+        "max_action_regret_all_states": 0.4574097384742532,
+        "mean_action_regret_all_states": 0.012247840635199186,
+        "q_max_abs_error": 0.6431818669217817,
+        "q_rmse": 0.23357333349662873
+      },
+      "independent_optimum_and_policy_error": 7.771561172376096e-16,
+      "mode": "clocked",
+      "new_exact_mean": 0.651143846709034,
+      "old_exact_mean": 0.6332273686810973,
+      "published_metrics_max_error": 0.0,
+      "seed": 12,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.01768649543748063,
+        "mean_action_regret_all_states": 0.0007464307633163001,
+        "q_max_abs_error": 0.0501710809185103,
+        "q_rmse": 0.007866801481043807
+      },
+      "before": {
+        "max_action_regret_all_states": 0.4574137806608564,
+        "mean_action_regret_all_states": 0.012360484319541,
+        "q_max_abs_error": 0.6291462155106743,
+        "q_rmse": 0.23176699898407552
+      },
+      "independent_optimum_and_policy_error": 6.661338147750939e-16,
+      "mode": "clocked",
+      "new_exact_mean": 0.6484528048951244,
+      "old_exact_mean": 0.6334793269798823,
+      "published_metrics_max_error": 0.0,
+      "seed": 13,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.04413150105360453,
+        "mean_action_regret_all_states": 0.0008625016650342631,
+        "q_max_abs_error": 0.054431988126571074,
+        "q_rmse": 0.0074363195887778046
+      },
+      "before": {
+        "max_action_regret_all_states": 0.45740028194578314,
+        "mean_action_regret_all_states": 0.012792728259851206,
+        "q_max_abs_error": 0.633311004268685,
+        "q_rmse": 0.2347351315100656
+      },
+      "independent_optimum_and_policy_error": 5.551115123125783e-16,
+      "mode": "clocked",
+      "new_exact_mean": 0.6518542102409288,
+      "old_exact_mean": 0.633453762364081,
+      "published_metrics_max_error": 0.0,
+      "seed": 14,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.017681895975694806,
+        "mean_action_regret_all_states": 0.0007735753625064545,
+        "q_max_abs_error": 0.04887864627142391,
+        "q_rmse": 0.006932907647213916
+      },
+      "before": {
+        "max_action_regret_all_states": 0.4574137930138941,
+        "mean_action_regret_all_states": 0.01144233929041225,
+        "q_max_abs_error": 0.6347967958367947,
+        "q_rmse": 0.23233420887845502
+      },
+      "independent_optimum_and_policy_error": 6.661338147750939e-16,
+      "mode": "clocked",
+      "new_exact_mean": 0.6524686404806261,
+      "old_exact_mean": 0.6328403853598101,
+      "published_metrics_max_error": 0.0,
+      "seed": 15,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.01750000000000007,
+        "mean_action_regret_all_states": 0.0009650390044576497,
+        "q_max_abs_error": 0.05177650447635207,
+        "q_rmse": 0.006756028213061394
+      },
+      "before": {
+        "max_action_regret_all_states": 0.4574137931034485,
+        "mean_action_regret_all_states": 0.012641231187418224,
+        "q_max_abs_error": 0.598323042316038,
+        "q_rmse": 0.2336351056550258
+      },
+      "independent_optimum_and_policy_error": 4.440892098500626e-16,
+      "mode": "direct",
+      "new_exact_mean": 0.651596419375,
+      "old_exact_mean": 0.6326812500000001,
+      "published_metrics_max_error": 0.0,
+      "seed": 11,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.01750000000000007,
+        "mean_action_regret_all_states": 0.0006619966567607707,
+        "q_max_abs_error": 0.043588688313577206,
+        "q_rmse": 0.005874153585148557
+      },
+      "before": {
+        "max_action_regret_all_states": 0.4574137931034485,
+        "mean_action_regret_all_states": 0.012617457041801583,
+        "q_max_abs_error": 0.589148132480777,
+        "q_rmse": 0.234079463105012
+      },
+      "independent_optimum_and_policy_error": 3.3306690738754696e-16,
+      "mode": "direct",
+      "new_exact_mean": 0.6530598125000001,
+      "old_exact_mean": 0.63368125,
+      "published_metrics_max_error": 0.0,
+      "seed": 12,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.023535000000000084,
+        "mean_action_regret_all_states": 0.000944856655886722,
+        "q_max_abs_error": 0.05355741733540109,
+        "q_rmse": 0.007320451797267391
+      },
+      "before": {
+        "max_action_regret_all_states": 0.4574137931034485,
+        "mean_action_regret_all_states": 0.013058764619810499,
+        "q_max_abs_error": 0.5957877446672135,
+        "q_rmse": 0.23283654567132053
+      },
+      "independent_optimum_and_policy_error": 4.440892098500626e-16,
+      "mode": "direct",
+      "new_exact_mean": 0.6521891225,
+      "old_exact_mean": 0.63368125,
+      "published_metrics_max_error": 0.0,
+      "seed": 13,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.017500000000000016,
+        "mean_action_regret_all_states": 0.0007163967310549761,
+        "q_max_abs_error": 0.0409624290193496,
+        "q_rmse": 0.006230336062723651
+      },
+      "before": {
+        "max_action_regret_all_states": 0.4574137931034485,
+        "mean_action_regret_all_states": 0.012631572940761462,
+        "q_max_abs_error": 0.6073953769590297,
+        "q_rmse": 0.23344682671012473
+      },
+      "independent_optimum_and_policy_error": 3.3306690738754696e-16,
+      "mode": "direct",
+      "new_exact_mean": 0.652546359375,
+      "old_exact_mean": 0.63368125,
+      "published_metrics_max_error": 0.0,
+      "seed": 14,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    },
+    {
+      "after": {
+        "max_action_regret_all_states": 0.01750000000000007,
+        "mean_action_regret_all_states": 0.0009304271916790462,
+        "q_max_abs_error": 0.039796513130627376,
+        "q_rmse": 0.006700472894938036
+      },
+      "before": {
+        "max_action_regret_all_states": 0.4574137931034485,
+        "mean_action_regret_all_states": 0.012617457041801583,
+        "q_max_abs_error": 0.5853682145785022,
+        "q_rmse": 0.23268851628600035
+      },
+      "independent_optimum_and_policy_error": 4.440892098500626e-16,
+      "mode": "direct",
+      "new_exact_mean": 0.6526081575,
+      "old_exact_mean": 0.63368125,
+      "published_metrics_max_error": 0.0,
+      "seed": 15,
+      "table_max_errors": {
+        "new_actions": 0.0,
+        "new_q": 0.0,
+        "new_value": 0.0,
+        "old_actions": 0.0,
+        "old_q": 0.0,
+        "old_value": 0.0,
+        "optimal_value": 0.0,
+        "target_q": 0.0
+      }
+    }
+  ],
+  "restored_evidence_manifest_sha256": "1b9a9112dc83770c725314a819f9fe11cea7bacee27746faaaa2cff16cce87ce",
+  "restored_original_evidence_bytes": 33734291,
+  "restored_original_evidence_files": 120,
+  "schema": "hepta.round8.value-recovery-verification.v1",
+  "source_matches_frozen": true,
+  "training_repeated": false,
+  "verification_source_sha256": "9c5aca643f299b6b882c293923178ad0e99f4db490bfee881c548c33a1ca4e39",
+  "wall_seconds": 17.70856112500769
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "hcsn.native-owner-execution-context.v1",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "qualification_env": {
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "qualification_command": [
+    "python",
+    "tools/hcsn/round8_20261031/native_owner/qualify.py",
+    "--binary",
+    "/tmp/hepta-r8-native-owner-release/native-owner-final",
+    "--out",
+    "tools/hcsn/round8_20261031/native_owner/evidence/qualification-release",
+    "--build-sha",
+    "456a78fe3ff3a8d05d63b58faaaf69dfe7e29aa611bf5fa7401eda98180d076f"
+  ],
+  "python_source_sha256": {
+    "build.py": "5d01a40417b5c0c961400ade44bc8e50701960f27b1bafc2444d0bc4a14cc7dc",
+    "reference.py": "185b023052d82008f3cbd2ca13088bd22e1721d91a98894328a33028986442cc",
+    "direct_build.py": "e5086ccb29f692e8f9e973eaa7b2edd02fb98a9909c431bdbb68469654bb17ad",
+    "qualify.py": "43839bbb4310b22afab3362d0bdbcda8513edc0fa89971484cf883974d06d5a6"
+  }
+}
