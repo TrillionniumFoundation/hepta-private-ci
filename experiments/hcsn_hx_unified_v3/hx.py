@@ -86,11 +86,18 @@ def _log_asset_ratio(asset: float, asset_boundary: float) -> float:
     """Stable log(asset / boundary) for validated positive, finite inputs.
 
     Preserve the existing quotient-based rounding in the regular domain.
+    Next to the absorbing barrier, avoid division rounding away a finite,
+    one-ULP asset displacement before computing its logarithm.
     On a finite-operand quotient overflow, subtract finite individual logs
     instead of feeding infinity into first-passage normal-tail formulae.
     """
     ratio = asset / asset_boundary
     if math.isfinite(ratio):
+        # Subtraction is exact between neighboring positive binary64 values
+        # (Sterbenz's lemma). Division followed by log can lose most of
+        # this small asset/barrier displacement before the first-hit solve.
+        if asset > asset_boundary and ratio < 1.0 + 1e-8:
+            return math.log1p((asset - asset_boundary) / asset_boundary)
         return math.log(ratio)
     v = math.log(asset) - math.log(asset_boundary)
     if not math.isfinite(v):
