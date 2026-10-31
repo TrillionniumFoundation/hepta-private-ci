@@ -29,7 +29,7 @@ An accepted run exits 0 and emits a canonical-manifest SHA-256 descriptive recei
 
 ## Executed, bounded local evidence
 
-- 16/16 unittest methods passed locally; zero skipped. Synthetic fixtures generate three temporary samples across train/val/test, with actual text, PNG, WAV and MP4 data.
+- 17/17 unittest methods passed locally; zero skipped, including CLI accept/deny exit-code testing. Synthetic fixtures generate three temporary samples across train/val/test, with actual text, PNG, WAV and MP4 data.
 - Negative tests include missing or duplicate encoder/modality, event/entity shuffle, invalid and non-overlapping times, actor/session/source/split leakage, edited bytes, disguised media, duplicate JSON keys, invalid numeric types, symlink and traversal.
 - One specific fail-open witness was independently reproduced: FFmpeg process exit 0 with no decoded frame record was accepted by the initial version. The amended framecrc gate refuses it; the negative test fails before the repair and passes after it.
 - This test suite does **not** validate real four-modal task quality, full corpus provenance, model training, native Rust/GPU execution, joules, or foundation-scale generalization.
