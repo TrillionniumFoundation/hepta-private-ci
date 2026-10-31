@@ -6,6 +6,7 @@ use std::io::Read;
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Path;
 
+use codex_hepta_agentd::NeuralCognitiveExecutionV1;
 use codex_hepta_types::Digest32;
 use sha2::Digest;
 use sha2::Sha256;
@@ -54,7 +55,21 @@ pub(super) fn open_regular(path: &Path, maximum: u64) -> Result<File, String> {
     Ok(file)
 }
 
-pub(super) fn measure(mut input: impl Read, maximum: u64) -> Result<MeasuredPayloadParts, String> {
+pub(super) fn check_execution(
+    execution: Option<&NeuralCognitiveExecutionV1>,
+) -> Result<(), String> {
+    match execution {
+        Some(execution) => execution.check(),
+        None => Ok(()), // The explicit original controlled-v1 material API.
+    }
+}
+
+pub(super) fn measure(
+    mut input: impl Read,
+    maximum: u64,
+    execution: Option<&NeuralCognitiveExecutionV1>,
+) -> Result<MeasuredPayloadParts, String> {
+    check_execution(execution)?;
     let mut scratch = vec![0; CHUNK];
     let mut whole = Sha256::new();
     let mut chunks = Vec::new();
@@ -62,7 +77,12 @@ pub(super) fn measure(mut input: impl Read, maximum: u64) -> Result<MeasuredPayl
     loop {
         let mut used = 0;
         while used < CHUNK {
-            let count = match input.read(&mut scratch[used..]) {
+            check_execution(execution)?;
+            let result = input.read(&mut scratch[used..]);
+            // Also check EOF, short reads and EINTR: an OS read may finish
+            // after expiry, but cannot turn that late result into admission.
+            check_execution(execution)?;
+            let count = match result {
                 Err(e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
                 result => result.map_err(|e| e.to_string())?,
             };
@@ -80,12 +100,15 @@ pub(super) fn measure(mut input: impl Read, maximum: u64) -> Result<MeasuredPayl
         }
         whole.update(&scratch[..used]);
         chunks.push((used as u32, Digest32::of_bytes(&scratch[..used])));
+        check_execution(execution)?;
         if used < CHUNK {
             break;
         }
     }
     need(total > 0, "empty material")?;
-    Ok((total, Digest32::from_array(whole.finalize().into()), chunks))
+    let result = (total, Digest32::from_array(whole.finalize().into()), chunks);
+    check_execution(execution)?;
+    Ok(result)
 }
 
 pub(super) fn context(family: &str, digests: [Digest32; 5]) -> Result<Vec<u8>, String> {

@@ -15,6 +15,7 @@ use std::sync::OnceLock;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::NeuralCognitiveInferencePortV1;
 use codex_hepta_agentd::NeuralCognitiveObservationV1;
+use codex_hepta_agentd::NeuralCognitivePinV1;
 use codex_hepta_agentd::NeuralCognitiveRequestV1;
 use codex_hepta_agentd::load_neural_cognitive_process_bootstrap_v1;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -24,8 +25,13 @@ use tokio_util::sync::CancellationToken;
 
 use crate::final_use_authorizer::UnixFinalUseAuthorizer;
 use crate::model_worker::ResourceGrant;
+use crate::smollm_neural_read::ControlledCellInputsV2;
+use crate::smollm_neural_read::SmolLmCellStartOwnerV1;
 use crate::smollm_neural_read::SmolLmNeuralReadConfigV1;
 use crate::smollm_neural_read::SmolLmNeuralReadPortV1;
+use crate::smollm_neural_read::SmolLmStartupExecutionV1;
+use crate::smollm_neural_read::VerifiedCellMaterialV1;
+use crate::smollm_neural_read::verify_controlled_cell_material_v2;
 
 const MAX_PARAMETER_BYTES: u64 = 2 * 1024 * 1024;
 
@@ -53,6 +59,27 @@ pub struct SmolLmCognitiveHostInputsV1 {
     pub inference_journal: PathBuf,
     pub inference_journal_capacity: usize,
     pub final_use_authorizer_config: PathBuf,
+}
+
+/// A protected host-v2 snapshot. Only the original host-file decoder constructs it.
+/// Cell qualification supplements the original selected descriptor; it cannot replace it.
+pub struct SmolLmCognitiveCellHostInputsV2 {
+    pub(crate) owner: SmolLmCognitiveHostInputsV1,
+    pub(crate) cell: ControlledCellInputsV2,
+}
+
+enum CellAdmission {
+    OriginalOwner,
+    PinnedClosure(ControlledCellInputsV2),
+}
+
+enum SelectedMaterial {
+    Original {
+        config: SmolLmNeuralReadConfigV1,
+        pin: NeuralCognitivePinV1,
+        parameters: Vec<u8>,
+    },
+    Cell(VerifiedCellMaterialV1),
 }
 
 /// Ready to pass to the original `codex_hepta_agentd::run`. Preparation has
@@ -127,13 +154,38 @@ pub async fn prepare_smollm_neural_agentd_v1(
     config: AgentdConfig,
     inputs: SmolLmCognitiveHostInputsV1,
 ) -> Result<PreparedSmolLmAgentdV1, String> {
+    prepare_with_cell_admission(config, inputs, CellAdmission::OriginalOwner).await
+}
+
+/// Consume the exact Cell byte closure after original qualification/CURRENT and
+/// before entering the original cancellable inference/FinalUse load path.
+pub async fn prepare_smollm_cell_neural_agentd_v2(
+    config: AgentdConfig,
+    inputs: SmolLmCognitiveCellHostInputsV2,
+) -> Result<PreparedSmolLmAgentdV1, String> {
+    prepare_with_cell_admission(
+        config,
+        inputs.owner,
+        CellAdmission::PinnedClosure(inputs.cell),
+    )
+    .await
+}
+
+async fn prepare_with_cell_admission(
+    config: AgentdConfig,
+    inputs: SmolLmCognitiveHostInputsV1,
+    cell: CellAdmission,
+) -> Result<PreparedSmolLmAgentdV1, String> {
     let runtime = tokio::runtime::Handle::try_current()
         .map_err(|error| format!("neural host runtime: {error}"))?;
     let worker_runtime = runtime.clone();
     let cancellation = CancellationToken::new();
     let mut pending = CancelPreparation(Some(cancellation.clone()));
+    // The original startup budget includes blocking-executor queueing and all
+    // subsequent Cell work. Neither qualification nor the loader restarts it.
+    let startup = SmolLmStartupExecutionV1::new(cancellation);
     let result = runtime
-        .spawn_blocking(move || prepare(config, inputs, worker_runtime, cancellation))
+        .spawn_blocking(move || prepare(config, inputs, cell, worker_runtime, startup))
         .await
         .map_err(|error| format!("neural composition worker: {error}"))?;
     pending.0 = None;
@@ -143,12 +195,12 @@ pub async fn prepare_smollm_neural_agentd_v1(
 fn prepare(
     config: AgentdConfig,
     inputs: SmolLmCognitiveHostInputsV1,
+    cell: CellAdmission,
     runtime: tokio::runtime::Handle,
-    cancellation: CancellationToken,
+    startup: SmolLmStartupExecutionV1,
 ) -> Result<PreparedSmolLmAgentdV1, String> {
-    if cancellation.is_cancelled() {
-        return Err("neural host preparation cancelled before qualification".to_owned());
-    }
+    let load_execution = startup.execution().clone();
+    load_execution.check()?;
     StableId::new(inputs.worker_id.clone()).map_err(|error| error.to_string())?;
     if !inputs.inference_journal.is_absolute()
         || !inputs.final_use_authorizer_config.is_absolute()
@@ -184,11 +236,30 @@ fn prepare(
         .with_evaluated_neural_cognitive_bootstrap(bootstrap)
         .map_err(|error| format!("neural qualified selection/CURRENT: {error}"))?;
 
+    // A Cell plan never supplies a selection or parameter path. Its measured
+    // bytes must match the original selected payload FD and host execution pins.
+    load_execution.check()?;
+    let selected = match cell {
+        CellAdmission::OriginalOwner => SelectedMaterial::Original {
+            config: inputs.worker,
+            pin,
+            parameters,
+        },
+        CellAdmission::PinnedClosure(cell) => SelectedMaterial::Cell(
+            verify_controlled_cell_material_v2(
+                cell,
+                inputs.worker,
+                pin,
+                parameters,
+                &load_execution,
+            )
+            .map_err(|error| format!("neural complete Cell bytes: {error}"))?,
+        ),
+    };
+
     // No inference journal is opened, resource entered, issuer called or model
     // started until the original qualification and selection factories succeed.
-    if cancellation.is_cancelled() {
-        return Err("neural host preparation cancelled before inference owners".to_owned());
-    }
+    load_execution.check()?;
     let authorizer = Arc::new(
         UnixFinalUseAuthorizer::open(&inputs.final_use_authorizer_config)
             .map_err(|error| format!("neural original FinalUse owner: {error}"))?,
@@ -197,9 +268,13 @@ fn prepare(
         DurableInferenceControl::open(inputs.inference_journal, inputs.inference_journal_capacity)
             .map_err(|error| format!("neural original inference.control: {error}"))?,
     ));
-    let port = Arc::new(
-        SmolLmNeuralReadPortV1::start_cancellable(
-            inputs.worker,
+    let port = match selected {
+        SelectedMaterial::Original {
+            config,
+            pin,
+            parameters,
+        } => SmolLmNeuralReadPortV1::start_with_execution(
+            config,
             pin,
             parameters,
             owner,
@@ -209,14 +284,26 @@ fn prepare(
             control,
             authorizer,
             runtime.clone(),
-            cancellation.clone(),
-        )
-        .map_err(|error| format!("neural original model load: {error}"))?,
-    );
-    if cancellation.is_cancelled() {
+            startup,
+        ),
+        SelectedMaterial::Cell(material) => material.start_with_execution(
+            SmolLmCellStartOwnerV1 {
+                owner_id: owner,
+                body_generation: generation,
+                worker_id: inputs.worker_id,
+                grant: inputs.resource_grant,
+                control,
+                authorizer,
+                runtime: runtime.clone(),
+            },
+            startup,
+        ),
+    };
+    let port = Arc::new(port.map_err(|error| format!("neural original model load: {error}"))?);
+    if let Err(error) = load_execution.check() {
         let cleanup = port.shutdown();
         return Err(format!(
-            "neural host preparation cancelled after load; terminal unload: {cleanup:?}"
+            "neural host preparation expired or cancelled after load: {error}; terminal unload: {cleanup:?}"
         ));
     }
     if slot.0.set(port.clone()).is_err() {

@@ -44,6 +44,7 @@ use driver::Mailbox;
 mod query;
 #[path = "smollm_neural_settled_read.rs"]
 mod settled;
+pub(crate) use driver::ControlledCellInputsV2;
 pub use driver::SmolLmCellStartOwnerV1;
 use driver::SmolLmDriver;
 pub use driver::SmolLmFirstExchangeFailureV1;
@@ -53,12 +54,17 @@ pub use driver::SmolLmMeasuredLoadV1;
 pub use driver::SmolLmNeuralReadConfigV1;
 pub use driver::VerifiedCellMaterialV1;
 pub use driver::verify_controlled_cell_material_v1;
+pub(crate) use driver::verify_controlled_cell_material_v2;
 
 #[path = "smollm_runtime_identity.rs"]
 pub(crate) mod runtime_identity;
 use runtime_identity::SmolLmRuntimeIdentityV1;
 
 static REQUEST_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+#[path = "smollm_neural_startup.rs"]
+mod startup;
+pub(crate) use startup::SmolLmStartupExecutionV1;
 
 struct ControlContext {
     control: Arc<Mutex<DurableInferenceControl>>,
@@ -338,6 +344,35 @@ impl SmolLmNeuralReadPortV1 {
         runtime: tokio::runtime::Handle,
         cancellation: CancellationToken,
     ) -> Result<Self, String> {
+        Self::start_with_execution(
+            config,
+            pin,
+            parameter_bytes,
+            owner_id,
+            body_generation,
+            worker_id,
+            grant,
+            control,
+            authorizer,
+            runtime,
+            SmolLmStartupExecutionV1::new(cancellation),
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn start_with_execution(
+        config: SmolLmNeuralReadConfigV1,
+        pin: NeuralCognitivePinV1,
+        parameter_bytes: Vec<u8>,
+        owner_id: AgentId,
+        body_generation: u64,
+        worker_id: String,
+        grant: ResourceGrant,
+        control: Arc<Mutex<DurableInferenceControl>>,
+        authorizer: Arc<dyn TurnStartAuthorizer>,
+        runtime: tokio::runtime::Handle,
+        startup: SmolLmStartupExecutionV1,
+    ) -> Result<Self, String> {
         let identity = SmolLmRuntimeIdentityV1::from(&pin);
         let scope = pin.compatibility_digest();
         Self::start_physical(
@@ -353,7 +388,7 @@ impl SmolLmNeuralReadPortV1 {
             control,
             authorizer,
             runtime,
-            cancellation,
+            startup,
         )
     }
 
@@ -386,7 +421,7 @@ impl SmolLmNeuralReadPortV1 {
             control,
             authorizer,
             runtime,
-            cancellation,
+            SmolLmStartupExecutionV1::new(cancellation),
         )
     }
 
@@ -405,11 +440,13 @@ impl SmolLmNeuralReadPortV1 {
         control: Arc<Mutex<DurableInferenceControl>>,
         authorizer: Arc<dyn TurnStartAuthorizer>,
         runtime: tokio::runtime::Handle,
-        cancellation: CancellationToken,
+        startup: SmolLmStartupExecutionV1,
     ) -> Result<Self, String> {
-        if cancellation.is_cancelled() {
-            return Err("neural worker startup cancelled before admission".to_owned());
-        }
+        let SmolLmStartupExecutionV1 {
+            execution: load_execution,
+            cancellation,
+        } = startup;
+        load_execution.check()?;
         let now = now_ms()?;
         if body_generation == 0
             || grant.maximum_models != 1
@@ -463,10 +500,6 @@ impl SmolLmNeuralReadPortV1 {
             grant: grant.clone(),
             model_digest,
         };
-        let load_execution = codex_hepta_agentd::NeuralCognitiveExecutionV1::with_deadline(
-            std::time::Instant::now() + Duration::from_secs(120),
-            cancellation.clone(),
-        );
         let mailbox = Arc::new(Mutex::new(Default::default()));
         let driver = SmolLmDriver::new(
             config,
@@ -479,6 +512,13 @@ impl SmolLmNeuralReadPortV1 {
         );
         let mut worker = InferenceWorker::new(now, worker_id, grant.generation, grant, driver)
             .map_err(|error| error.to_string())?;
+        let remaining_ms = u64::try_from(load_execution.remaining()?.as_millis())
+            .map_err(|error| error.to_string())?;
+        if remaining_ms == 0 {
+            return Err(
+                "neural startup has no complete admission millisecond remaining".to_owned(),
+            );
+        }
         let admitted = context.admit(
             Digest32::of_parts(&[
                 load_domain,
@@ -487,7 +527,7 @@ impl SmolLmNeuralReadPortV1 {
                 identity.payload_digest.as_array(),
                 identity.execution_profile_digest.as_array(),
             ]),
-            120_000,
+            remaining_ms,
         )?;
         let entered = match context.enter(&admitted, scope, &load_execution) {
             Ok(token) => token,

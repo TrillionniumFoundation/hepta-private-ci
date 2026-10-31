@@ -19,7 +19,7 @@ fn measured_bytes_reproduce_independent_native_cell_and_release_vectors() {
         [1, 2, 3, 4, 5].map(|n| Digest32::from_array([n; 32])),
     )
     .unwrap();
-    let (size, sha, chunks) = wire::measure(Cursor::new(b"pinned-cell\n"), 12).unwrap();
+    let (size, sha, chunks) = wire::measure(Cursor::new(b"pinned-cell\n"), 12, None).unwrap();
     let cell = wire::manifest(&context, size, sha, &chunks);
     assert_eq!(hex(&cell), CELL);
     let id = wire::verify(wire::ManifestKind::Cell, CELL, &cell, CELL_ID).unwrap();
@@ -83,7 +83,8 @@ fn every_wire_byte_tail_truncation_context_and_chunk_change_rejects() {
 #[test]
 fn bounded_streaming_retains_chunk_boundaries_and_refuses_excess_or_empty() {
     let payload = vec![7; 1024 * 1024 + 13];
-    let (size, sha, chunks) = wire::measure(Cursor::new(&payload), payload.len() as u64).unwrap();
+    let (size, sha, chunks) =
+        wire::measure(Cursor::new(&payload), payload.len() as u64, None).unwrap();
     assert_eq!(
         (size, sha, chunks),
         (
@@ -95,8 +96,8 @@ fn bounded_streaming_retains_chunk_boundaries_and_refuses_excess_or_empty() {
             ]
         )
     );
-    assert!(wire::measure(Cursor::new(&payload), payload.len() as u64 - 1).is_err());
-    assert!(wire::measure(Cursor::new([]), 12).is_err());
+    assert!(wire::measure(Cursor::new(&payload), payload.len() as u64 - 1, None).is_err());
+    assert!(wire::measure(Cursor::new([]), 12, None).is_err());
 }
 
 #[test]
@@ -325,4 +326,43 @@ fn a_valid_synthetic_declaration_cannot_mint_a_complete_fixed_family_byte_witnes
             .unwrap()
             .contains("family changed/profile version")
     );
+}
+
+#[test]
+fn v2_expired_material_factory_rejects_before_reading_any_source_or_starting_a_model() {
+    for cancelled in [false, true] {
+        let f = declaration_fixture();
+        let raw = serde_json::to_vec(&f.value).unwrap();
+        let token = tokio_util::sync::CancellationToken::new();
+        let deadline = if cancelled {
+            token.cancel();
+            std::time::Instant::now() + std::time::Duration::from_secs(120)
+        } else {
+            std::time::Instant::now()
+        };
+        let execution = NeuralCognitiveExecutionV1::with_deadline(deadline, token);
+        let run_directory = f.config.run_directory.clone();
+        // Force a distinguishable source error if the production v2 factory
+        // loses the original execution before delegating to material checks.
+        for path in f.config.source_pins.keys() {
+            std::fs::remove_file(path).unwrap();
+        }
+        let result = verify_controlled_cell_material_v2(
+            ControlledCellInputsV2 {
+                sidecar_digest: Digest32::of_bytes(&raw),
+                sidecar: raw,
+                dependency_wire: Vec::new(),
+                dependency_id: Digest32::of_bytes(b"rejection-only-fixture"),
+                operation_id: "original-controlled-op".to_owned(),
+            },
+            f.config,
+            f.pin,
+            f.parameters,
+            &execution,
+        );
+        assert!(
+            matches!(result, Err(ref error) if error.contains(if cancelled { "cancelled" } else { "deadline" }))
+        );
+        assert!(!run_directory.exists());
+    }
 }

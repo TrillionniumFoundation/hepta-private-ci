@@ -58,6 +58,15 @@ impl Arg0PathEntryGuard {
 }
 
 pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
+    dispatch_with_preflight(|| Ok(())).unwrap_or_else(|error| {
+        eprintln!("arg0 preflight failed: {error}");
+        std::process::exit(1)
+    })
+}
+
+fn dispatch_with_preflight(
+    preflight: impl FnOnce() -> anyhow::Result<()>,
+) -> anyhow::Result<Option<Arg0PathEntryGuard>> {
     // Determine if we were invoked via the special alias.
     let mut args = std::env::args_os();
     let argv0 = args.next().unwrap_or_default();
@@ -154,6 +163,10 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
         std::process::exit(exit_code);
     }
 
+    // Every original helper dispatch above retains priority over daemon checks.
+    // The caller can reject an unsupported daemon image before aliases or owners.
+    preflight()?;
+
     // This modifies the environment, which is not thread-safe, so do this
     // before creating any threads/the Tokio runtime.
     load_dotenv();
@@ -170,7 +183,7 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
             std::env::set_var("PATH", updated_path_env_var);
         }
     }
-    path_entry_guard
+    Ok(path_entry_guard)
 }
 
 fn prepare_path_env_var_with_aliases(
@@ -221,10 +234,24 @@ where
     F: FnOnce(Arg0DispatchPaths) -> Fut + Send + 'static,
     Fut: Future<Output = anyhow::Result<()>>,
 {
+    arg0_dispatch_or_else_with_preflight(|| Ok(()), main_fn)
+}
+
+/// Runs a daemon-specific check after original helper dispatch and before dotenv,
+/// PATH alias creation, threads or the main future. Existing dispatch callers
+/// retain the original behavior through an empty check.
+pub fn arg0_dispatch_or_else_with_preflight<F, Fut>(
+    preflight: impl FnOnce() -> anyhow::Result<()>,
+    main_fn: F,
+) -> anyhow::Result<()>
+where
+    F: FnOnce(Arg0DispatchPaths) -> Fut + Send + 'static,
+    Fut: Future<Output = anyhow::Result<()>>,
+{
     // Retain the TempDir so it exists for the lifetime of the invocation of
     // this executable. Admittedly, we could invoke `keep()` on it, but it
     // would be nice to avoid leaving temporary directories behind, if possible.
-    let path_entry_guard = arg0_dispatch();
+    let path_entry_guard = dispatch_with_preflight(preflight)?;
     let current_exe = std::env::current_exe().ok();
 
     // Regular invocation. Run the async entry point on a thread with the same

@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   effect-recovery:
-    if: github.event.pull_request.head.repo.full_name == github.repository && (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031')
+    if: github.event.pull_request.head.repo.full_name == github.repository && (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031' || github.head_ref == 'fix/hepta-pn-cell-closure-20261031')
     strategy:
       fail-fast: false
       matrix:
@@ -107,9 +107,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031') && 'c16507147b65285ea94dead22d3b93c5db7295af' || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
-      CHAIN_BASE_SHA: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031') && '1d11f875493f8125e36b9adceacb342df108e5e5' || '9fedf7ecbbe07177069c030592b4e03dcffebb81' }}
-      HEPTA_PON_CHAIN_SOURCE: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031') && (matrix.lane == 'source-head' && 'c16507147b65285ea94dead22d3b93c5db7295af' || 'd1b8ae970bb5e014b6feaa49030823e1d8228c90') || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
+      CHAIN_SOURCE_SHA: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031' || github.head_ref == 'fix/hepta-pn-cell-closure-20261031') && 'c16507147b65285ea94dead22d3b93c5db7295af' || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
+      CHAIN_BASE_SHA: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031' || github.head_ref == 'fix/hepta-pn-cell-closure-20261031') && '1d11f875493f8125e36b9adceacb342df108e5e5' || '9fedf7ecbbe07177069c030592b4e03dcffebb81' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031' || github.head_ref == 'fix/hepta-pn-cell-closure-20261031') && (matrix.lane == 'source-head' && 'c16507147b65285ea94dead22d3b93c5db7295af' || 'd1b8ae970bb5e014b6feaa49030823e1d8228c90') || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
       TRNM_FROM_ZERO_HOST_OWNER: ${{ github.run_id }}.${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -182,7 +182,7 @@ jobs:
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-bounded-process.json" --minimum-tests 26 -- python3 ../chain/formal/pon-nakamoto-v1/test_bounded_process.py -v
       - name: Require durable PQ replay ownership on the continuation pair
-        if: (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031')
+        if: (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031' || github.head_ref == 'fix/hepta-pn-cell-closure-20261031')
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-pq-owner.json" --minimum-tests 14 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib pq_authority:: -- --show-output --test-threads=1
       - name: Require complete bounded W1 collector and cross-architecture report controls
@@ -265,7 +265,7 @@ jobs:
       - name: Require complete native SQL reuse and conditional query-bound controls
         env:
           TRNM_RETAINED_DELTA_COST_PATH: ${{ runner.temp }}/pon-pair/chain-retained-delta-cost.jsonl
-          CHAIN_NATIVE_SQL_MINIMUM: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031') && '77' || '37' }}
+          CHAIN_NATIVE_SQL_MINIMUM: ${{ (github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031' || github.head_ref == 'fix/hepta-pn-cell-closure-20261031') && '77' || '37' }}
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-sql.json" --minimum-tests "$CHAIN_NATIVE_SQL_MINIMUM" -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: -- --include-ignored --show-output --test-threads=1
@@ -824,3 +824,313 @@ jobs:
           include-hidden-files: false
           if-no-files-found: error
           retention-days: 14
+
+  cell-host-scope:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      required: ${{ steps.scope.outputs.required }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select changes to the existing Cell host and its owners
+        id: scope
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          SOURCE_BRANCH: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          changed=$(git diff --name-only "$BASE_SHA...$SOURCE_SHA" -- \
+            codex-rs/hepta-infer-worker-host codex-rs/hepta-agentd \
+            codex-rs/hepta-infer-core codex-rs/hepta-contracts \
+            codex-rs/hepta-types codex-rs/hepta-authbus \
+            codex-rs/hepta-learning-artifacts codex-rs/Cargo.toml codex-rs/Cargo.lock \
+            scripts/hepta_ci_exec.py scripts/hepta_ci_candidate.py \
+            scripts/hepta_ci_installed_cell.py scripts/hepta_ci_installed_controls.py scripts/tests/test_hepta_ci_installed_cell.py \
+            scripts/hepta_ci_v8.py scripts/run-nextest.py scripts/format.py \
+            justfile AGENTS.md .github/workflows/hepta-pon-native-pair.yml)
+          required=false
+          if test "$SOURCE_BRANCH" = fix/hepta-pn-cell-closure-20261031 || test -n "$changed"; then
+            required=true
+          fi
+          printf 'required=%s\n' "$required" >> "$GITHUB_OUTPUT"
+
+  # Independent native byte/owner observations. This job does not substitute
+  # for any existing pair, pressure, product or feedback qualification.
+  cell-host-v2:
+    needs: cell-host-scope
+    if: needs.cell-host-scope.outputs.required == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        lane: [source-head, base-merge]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind the actual Cell host source and merge tree
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cell-host"
+          python3 scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" --lane "$HEPTA_CI_LANE" > "$RUNNER_TEMP/cell-host/candidate-tuple.json"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/cell-host/source-identity.txt"
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+          rustup toolchain install 1.96.0 --profile minimal --component clippy --component rustfmt --component rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose the existing buildifier launcher
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Fetch unchanged locked dependencies and retain source inputs
+        id: dependencies
+        env:
+          CARGO_NET_RETRY: "5"
+          CARGO_HTTP_TIMEOUT: "60"
+          CARGO_HTTP_MULTIPLEXING: "false"
+          SAVE_SOURCE_INPUTS: ${{ matrix.runner == 'ubuntu-24.04' && matrix.lane == 'source-head' }}
+        run: |
+          set -euo pipefail
+          if test "$SAVE_SOURCE_INPUTS" = true; then
+            mkdir -p "$RUNNER_TEMP/cell-host-inputs"
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/dependency-fetch.json" --timeout-seconds 600 -- bash -c 'cd codex-rs && cargo vendor --locked --respect-source-config --versioned-dirs "$RUNNER_TEMP/cell-host-inputs/vendor" > "$RUNNER_TEMP/cell-host-inputs/offline-config.toml"'
+            cp codex-rs/Cargo.lock "$RUNNER_TEMP/cell-host-inputs/Cargo.lock"
+            cp "$RUNNER_TEMP/cell-host/candidate-tuple.json" "$RUNNER_TEMP/cell-host-inputs/candidate-tuple.json"
+            cp "$RUNNER_TEMP/cell-host/source-identity.txt" "$RUNNER_TEMP/cell-host-inputs/source-identity.txt"
+            rustc -vV > "$RUNNER_TEMP/cell-host-inputs/rustc-version.txt"
+            git diff --exit-code -- codex-rs/Cargo.lock
+            (
+              cd "$RUNNER_TEMP/cell-host-inputs"
+              sha256sum Cargo.lock > lock.sha256
+              tar -czf dependencies.tar.gz vendor offline-config.toml Cargo.lock lock.sha256 candidate-tuple.json source-identity.txt rustc-version.txt
+              sha256sum dependencies.tar.gz > SHA256SUMS
+            )
+          else
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/dependency-fetch.json" --timeout-seconds 600 -- cargo fetch --locked --manifest-path codex-rs/Cargo.toml
+          fi
+      - name: Preserve exact source inputs before any compilation
+        if: steps.dependencies.outcome == 'success' && matrix.runner == 'ubuntu-24.04' && matrix.lane == 'source-head'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cell-host-locked-sources-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/cell-host-inputs/dependencies.tar.gz
+            ${{ runner.temp }}/cell-host-inputs/SHA256SUMS
+            ${{ runner.temp }}/cell-host-inputs/source-identity.txt
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+      - name: Resolve the original checksum-verified V8 inputs
+        id: v8
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Install the existing pinned Python formatter launcher
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+          enable-cache: false
+      - name: Check changed source formatting with the repository entry point
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/format.json" -- just fmt --check --base "$BASE_SHA"
+      - name: Execute complete Cell declaration and ordinary host controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/host-material.json" --minimum-tests 23 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(smollm_neural_read::driver::cell_material::) | test(smollm_cognitive_process::tests::) | test(smollm_cognitive_host::tests::)' --no-capture
+      - name: Execute the actual ordinary CLI subprocess controls
+        id: cell_cli
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/cli-process.json" --minimum-tests 3 -- just test --locked -p codex-hepta-infer-worker-host --test cell_host_cli --no-capture
+      - name: Retain the exact source-head x64 native image produced by those controls
+        id: cell_native
+        if: ${{ !cancelled() && steps.cell_cli.outcome == 'success' && matrix.runner == 'ubuntu-24.04' && matrix.lane == 'source-head' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/native-export.json" -- python3 scripts/hepta_ci_installed_cell.py pack --cli-receipt "$RUNNER_TEMP/cell-host/cli-process.json" --output "$RUNNER_TEMP/cell-host-native"
+      - name: Preserve the same-run source-head native image without stripping or rebuilding
+        if: ${{ !cancelled() && steps.cell_native.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cell-native-x64-source-head-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-host-native
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+      - name: Preserve original helper dispatch and alias owner controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/arg0-owner.json" --minimum-tests 1 -- just test --locked -p codex-arg0 --lib --no-capture
+      - name: Preserve original FinalUse and physical owner rejection controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/original-owner.json" --minimum-tests 40 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(final_use_authorizer::) | test(model_worker::tests::) | test(smollm_neural_read::driver::failure::tests::) | test(smollm_neural_read::driver::session::owner::tests::) | test(smollm_neural_read::tests::)' --no-capture
+      - name: Run the required scoped Clippy fix with unchanged-source enforcement
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.v8.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/cell-host/clippy-fix.json" -- just fix -p codex-hepta-infer-worker-host -p codex-arg0 --locked -- -D warnings
+      - name: Retain any formatter or Clippy changes as failed-source diagnostics
+        if: failure()
+        run: git diff --no-ext-diff --binary > "$RUNNER_TEMP/cell-host/non-qualifying-source-change.patch"
+      - name: Retain independent Cell host execution observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cell-host-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-host
+          if-no-files-found: error
+          retention-days: 14
+
+  # Separate source-head installed-image controls. The original four Cell lanes
+  # and native c165... PoN pair remain mandatory and retain their own results.
+  cell-installed-host-v3:
+    needs: [cell-host-scope, cell-host-v2]
+    if: ${{ always() && !cancelled() && needs.cell-host-scope.outputs.required == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: hepta
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: source-head
+      CHAIN_INSTALLED_SOURCE_SHA: 553db1f5ea78ebcee65ea22008dc1d8e90f8ba14
+      CHAIN_INSTALLED_TREE: 49adf498e18f8454a9c080026d618c457bc394e1
+      RUSTUP_TOOLCHAIN: "1.95.0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          path: hepta
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require an exact installed-profile source and exercise artifact rejection controls
+        run: |
+          set -euo pipefail
+          if ! [[ "$CHAIN_INSTALLED_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]] || [[ "$CHAIN_INSTALLED_SOURCE_SHA" = 0000000000000000000000000000000000000000 ]]; then
+            echo 'NOT_CONFIGURED: replace the installed-profile Chain pin with the final reviewed commit' >&2
+            exit 2
+          fi
+          mkdir "$RUNNER_TEMP/installed-cell"
+          printf 'CARGO_TARGET_DIR=%s/installed-cell-target\nTRNM_CI_RECEIPT_DIR=%s/installed-cell\n' "$RUNNER_TEMP" "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          python3 scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" --lane "$HEPTA_CI_LANE" > "$RUNNER_TEMP/installed-cell/hepta-candidate.json"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/artifact-controls.json" --minimum-tests 17 -- python3 -m unittest -v scripts.tests.test_hepta_ci_installed_cell
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          path: chain
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare the original native compiler and platform prerequisites
+        run: |
+          set -euo pipefail
+          test "$(id -u)" -ne 0
+          sudo -n apt-get update
+          sudo -n apt-get install -y build-essential pkg-config libcap-dev
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          rustc +1.95.0 -vV > "$RUNNER_TEMP/installed-cell/chain-rustc-version.txt"
+          cp ../chain/trillionnium/Cargo.lock "$RUNNER_TEMP/installed-cell/chain-Cargo.lock"
+      - name: Download only this run's exact source-head x64 native image
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: hepta-cell-native-x64-source-head-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-native-source
+      - name: Verify source tree, lockfile, command, original logs and native image before use
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/native-import.json" -- python3 scripts/hepta_ci_installed_cell.py verify --artifact "$RUNNER_TEMP/cell-native-source" --binary "$RUNNER_TEMP/installed-cell-bin/hepta-neural-agentd" --output "$RUNNER_TEMP/installed-cell/verified-native.json"
+      - name: Run the fixed Chain's original source preflight
+        working-directory: chain
+        env:
+          SOURCE_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          TESTED_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          BASE_SHA: ""
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CHAIN_INSTALLED_SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$CHAIN_INSTALLED_TREE"
+          python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/chain-preflight.json" -- bash scripts/project-preflight.sh --audit
+      - name: Prepare the Chain's original pinned PQ provider with its real smoke controls
+        working-directory: chain
+        env:
+          SOURCE_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          TESTED_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          BASE_SHA: ""
+        run: |
+          python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/chain-provider.json" -- bash scripts/ci/prepare_pq_provider.sh
+      - name: Fetch the unchanged locked Chain dependencies
+        working-directory: chain
+        env:
+          SOURCE_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          TESTED_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          BASE_SHA: ""
+          CARGO_NET_RETRY: "5"
+          CARGO_HTTP_TIMEOUT: "60"
+          CARGO_HTTP_MULTIPLEXING: "false"
+        run: |
+          python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/chain-fetch.json" --timeout-seconds 600 -- cargo +1.95.0 fetch --locked --manifest-path trillionnium/Cargo.toml
+      - name: Build the actual Cell binary with the unchanged default release profile
+        working-directory: chain
+        env:
+          SOURCE_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          TESTED_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          BASE_SHA: ""
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/chain-build.json" -- cargo +1.95.0 build --locked --release --manifest-path trillionnium/Cargo.toml -p trnm-data-availability --bin trnm-cell
+          gzip -n -c "$CARGO_TARGET_DIR/release/trnm-cell" > "$RUNNER_TEMP/installed-cell/trnm-cell.gz"
+          sha256sum "$CARGO_TARGET_DIR/release/trnm-cell" "$RUNNER_TEMP/installed-cell/trnm-cell.gz" > "$RUNNER_TEMP/installed-cell/chain-binary.sha256"
+      - name: Require all original 14 and protected-installed 8 controls with zero skips
+        run: |
+          python3 scripts/hepta_ci_installed_controls.py --chain "$GITHUB_WORKSPACE/chain" --chain-sha "$CHAIN_INSTALLED_SOURCE_SHA" --chain-tree "$CHAIN_INSTALLED_TREE" --host "$RUNNER_TEMP/installed-cell-bin/hepta-neural-agentd" --cell "$CARGO_TARGET_DIR/release/trnm-cell" --imported "$RUNNER_TEMP/installed-cell/verified-native.json" --output "$RUNNER_TEMP/installed-cell"
+      - name: Retain original failures and exact installed-profile observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cell-installed-x64-source-head-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/installed-cell
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
