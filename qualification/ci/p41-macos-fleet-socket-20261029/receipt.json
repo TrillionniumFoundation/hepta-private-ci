@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.p41-macos-fleet-socket-fixture-repair.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_before": "ba3b10df55716fc199c1d81d5fc177bf5a2d74ca",
+  "base_sha": "2f393197ec7e4e76f5405f66c3f6e478421a35f4",
+  "evidence": {
+    "run_id": 40857391845,
+    "job_id": 123392150069,
+    "platform": "macos-15-intel x86_64-apple-darwin",
+    "job_terminal": "completed/failure",
+    "original_test": "//codex-rs/hepta-agentd:hepta-agentd-two_agent_turn_recovery-test",
+    "original_test_case": "killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_stays_live",
+    "original_result": "1 passed, 1 failed, 0 ignored",
+    "failure": "agentd control socket creation/probe failed: path must be shorter than SUN_LEN",
+    "observed_long_path": "/private/var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmpzXECNG/fleet/run/aaghu64s7r56mdd2v36p3hkrmci.ctl",
+    "observed_path_utf8_bytes": 109
+  },
+  "change": {
+    "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+    "scope": "macOS-only test support FleetHarness temporary directory parent",
+    "behavior": "retain tempfile private random directory and canonical identity; create beneath /tmp instead of long macOS TMPDIR",
+    "production_code_changed": false,
+    "original_assertions_modified": false,
+    "cross_agent_permissions_changed": false
+  },
+  "validation": {
+    "source_inspection": "exact original fixture source read from source_before",
+    "owning_macos_test": "PENDING_NEW_HEAD_NATIVE_RUN",
+    "all_required_ci": "OPEN",
+    "claim": "source-only repair candidate, not macOS test success"
+  },
+  "research_status": "P39 frozen scope remains CLOSED; no cohort, plan, threshold or weights changed",
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "promotion": "HOLD_NO_GO"
+}

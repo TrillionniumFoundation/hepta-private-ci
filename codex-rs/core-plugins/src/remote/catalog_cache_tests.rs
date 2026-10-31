@@ -163,3 +163,53 @@ fn header_auth_does_not_cache_private_catalogs_without_a_stable_identity() {
         assert!(load_cached_directory_plugins(codex_home.path(), &config, &auth, scope).is_none());
     }
 }
+
+#[cfg(windows)]
+#[test]
+fn windows_catalog_publication_retries_transient_destination_lock() {
+    use std::os::windows::fs::OpenOptionsExt;
+
+    let codex_home = tempfile::tempdir().expect("create codex home");
+    let config = RemotePluginServiceConfig::new(
+        "https://chatgpt.com/backend-api".to_string(),
+        crate::test_support::test_http_client_factory(),
+    );
+    let auth = CodexAuth::Headers(AuthHeaders::new(http::HeaderMap::new()));
+    let key = RemotePluginCatalogCacheKey::new(&config, &auth, RemotePluginScope::Global)
+        .expect("global cache identity");
+    let destination = cache_path(codex_home.path(), &key);
+    write_cached_directory_plugins(
+        codex_home.path(),
+        &config,
+        &auth,
+        RemotePluginScope::Global,
+        &[],
+    )
+    .expect("publish initial cache");
+    let original_bytes = std::fs::read(&destination).expect("read initial cache");
+
+    // A reader without FILE_SHARE_DELETE temporarily prevents Windows from
+    // replacing the cache path. The writer must remain atomic and eventually
+    // publish once the reader has released its handle.
+    let reader = std::fs::OpenOptions::new()
+        .read(true)
+        .share_mode(0)
+        .open(&destination)
+        .expect("lock destination against replacement");
+    let release = std::thread::spawn(move || {
+        std::thread::sleep(Duration::from_millis(50));
+        drop(reader);
+    });
+    let publication = write_cached_directory_plugins(
+        codex_home.path(),
+        &config,
+        &auth,
+        RemotePluginScope::Global,
+        &[],
+    );
+    release.join().expect("release reader");
+    publication.expect("publish atomically after a transient sharing denial");
+
+    let published_bytes = std::fs::read(destination).expect("read refreshed cache");
+    assert_ne!(published_bytes, original_bytes);
+}

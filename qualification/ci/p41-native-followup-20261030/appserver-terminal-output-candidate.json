@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.native-app-server-terminal-output-fix-candidate.v1",
+  "parent_head": "70724f1cb769f03a86a460264ccc6fe36ae615ba",
+  "base_sha": "2f393197ec7e4e76f5405f66c3f6e478421a35f4",
+  "original_run_id": 41129462127,
+  "original_job_ids": [
+    124316948954,
+    124316948922
+  ],
+  "original_failure": "assertion failed: accepted.output.contains(\"fresh context accepted\")",
+  "code_root_cause": "observe_event accumulates AgentMessageDelta only while AppServer TurnCompleted transports its final AgentMessage via Summary view; mock fixture emits a completed assistant message without delta.",
+  "corroborating_sources": [
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs:1420-1490",
+    "codex-rs/app-server/src/bespoke_event_handling.rs:1300-1318",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs:442-448"
+  ],
+  "change_scope": "Bounded Summary/Full final text reconciliation; fail closed on conflicting stream/terminal or oversized output; original positive/negative FinalUse tests kept.",
+  "regressions_added": [
+    "terminal_summary_recovers_final_agent_text_without_delta_and_fences_conflicts"
+  ],
+  "validation": {
+    "source_anchor_checked": true,
+    "original_assertions_preserved": true,
+    "rust_dependencies_changed": false,
+    "local_owning_rust_executed": false,
+    "new_exact_head_ci": "PENDING"
+  },
+  "authority": {
+    "mode": "SHADOW_ONLY",
+    "permission": "DENY_ALL",
+    "promotion": "HOLD_NO_GO"
+  }
+}

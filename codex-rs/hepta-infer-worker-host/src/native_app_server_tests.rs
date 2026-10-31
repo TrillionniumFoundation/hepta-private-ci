@@ -183,6 +183,62 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
 }
 
 #[test]
+fn terminal_summary_recovers_final_agent_text_without_delta_and_fences_conflicts() {
+    let summary = |text: String| {
+        let mut event = terminal("thread-a", "turn-a", TurnStatus::Completed);
+        if let ServerNotification::TurnCompleted(notification) = &mut event {
+            notification.turn.items_view = TurnItemsView::Summary;
+            notification.turn.items = vec![ThreadItem::AgentMessage {
+                id: "item-final".to_string(),
+                text,
+                phase: None,
+                memory_citation: None,
+                delivery: None,
+            }];
+        }
+        event
+    };
+
+    let mut without_delta = output();
+    assert!(
+        observe_for_test(
+            &mut without_delta,
+            summary("fresh context accepted".to_string())
+        )
+        .unwrap()
+    );
+    assert_eq!(without_delta.output, "fresh context accepted");
+    assert!(without_delta.terminal_observed);
+
+    let mut partial = output();
+    observe_for_test(
+        &mut partial,
+        ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            item_id: "item-final".to_string(),
+            delta: "fresh context".to_string(),
+        }),
+    )
+    .unwrap();
+    assert!(observe_for_test(&mut partial, summary("fresh context accepted".to_string())).unwrap());
+    assert_eq!(partial.output, "fresh context accepted");
+
+    let mut conflict = output();
+    conflict.output = "forged delta".to_string();
+    assert!(
+        observe_for_test(&mut conflict, summary("fresh context accepted".to_string())).is_err()
+    );
+    assert_eq!(conflict.output, "forged delta");
+    assert!(!conflict.terminal_observed);
+
+    let mut oversized = output();
+    assert!(observe_for_test(&mut oversized, summary("x".repeat(MAX_OUTPUT_BYTES + 1))).is_err());
+    assert!(oversized.output.is_empty());
+    assert!(!oversized.terminal_observed);
+}
+
+#[test]
 fn in_progress_is_not_a_terminal_observation() {
     let mut output = output();
     assert!(
@@ -448,10 +504,24 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let response_mock = responses::mount_sse_once(&server, response).await;
 
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    // A canonical macOS per-user temp path can exceed SUN_LEN after fleet/run
+    // and the agent socket name are appended. Keep this private test fixture
+    // under the canonical short /tmp root; retain all production fences.
+    let short_fixture = tempfile::Builder::new().prefix("hcn-").tempdir_in("/tmp")?;
+    let root = short_fixture.path().canonicalize()?;
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // Bazel binds the genuine Codex CLI as an executable runfile. The
+    // libtest harness cannot serve as codex_self_exe for helper re-exec.
+    let codex_cli = std::env::var_os("CARGO_BIN_EXE_codex")
+        .ok_or("real Codex CLI runfile missing for cognitive App Server E2E")?;
+    let host = CognitiveTestHost::start_with_codex_cli(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        std::path::PathBuf::from(codex_cli),
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;

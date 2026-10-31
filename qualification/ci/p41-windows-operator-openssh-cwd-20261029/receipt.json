@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.windows-operator-openssh-cwd-diagnostic.v1",
+  "observed_at_utc": "2026-10-29T08:47:14Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_before_patch": "03fb8ae20c9c135624aa1a7bc6156d718cc33664",
+  "workflow_run_id": 40781313483,
+  "workflow_attempt": 2,
+  "job_id": 123305905477,
+  "job_final_conclusion": "cancelled",
+  "native_observations": {
+    "target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+    "test_result": "30 passed; 13 failed; 0 ignored",
+    "failure": "All 13 failures panic in test-only OpenSSH helper; Windows OpenSSH ssh-keygen.exe -f operator-key exited 255 with empty stdout/stderr while working directory was a canonical Windows verbatim \\\\?\\D:\\tmp\\.tmp... path",
+    "additional_failures": "Six core-all-test Windows shards failed twice; complete per-shard native logs not available from the cancelled job",
+    "full_suite_finished": false,
+    "final_required_pass": false
+  },
+  "change_scope": "Only test-only Windows OpenSSH subprocess cwd is converted from an already canonicalized verbatim local-drive path into an ordinary drive-letter path after re-canonicalization matches the original identity; all production trust and G5 assertions remain unchanged",
+  "original_positive_negative_assertions_preserved": true,
+  "regression": "openssh_subprocess_cwd_preserves_canonical_fixture_identity",
+  "dependencies_changed": false,
+  "source_build_test_executed_in_this_run": false,
+  "owning_windows_operator_test": "PENDING_NEW_HEAD_ACTIONS",
+  "policy_learning_closed": false,
+  "device_measurements_closed": false,
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "production_admission": "HOLD_NO_GO"
+}

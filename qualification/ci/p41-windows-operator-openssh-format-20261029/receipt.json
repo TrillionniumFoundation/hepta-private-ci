@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.p41.operator-openssh-rustfmt-native-failure.v1",
+  "observed_date_utc": "2026-10-29",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "isolated_draft_pr": 4184,
+  "base_sha": "2f393197ec7e4e76f5405f66c3f6e478421a35f4",
+  "source_sha": "b4fe92da25902905d1a3662f9acdf2d7728adfd0",
+  "source_file": "codex-rs/hepta-operator-acceptance/src/test_support.rs",
+  "source_blob_sha": "30343bdd699b6147c5989c2b9ebe40256b110411",
+  "run_id": 40846045779,
+  "job_id": 123354083177,
+  "source_workflow": "repo-checks / build-test",
+  "failed_step": "Check formatting (run `just fmt` to fix)",
+  "command": "cargo fmt -- --config imports_granularity=Item --check",
+  "diagnostic": "CI emitted exactly four `Diff in .../test_support.rs` hunks at source lines 47,58,80,87; changed only those four formatting hunks.",
+  "fix_type": "Rustfmt exact output, test-only helper; no behavior, tests, thresholds, locks or production privileges changed",
+  "local_rustfmt_rerun": false,
+  "local_rust_or_owning_execution": false,
+  "ci_required": "Fresh exact-head formatting and Windows owning, plus all applicable required gates must pass",
+  "policy": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO",
+  "pass_claimed": false
+}

@@ -106,6 +106,13 @@ jobs:
             --test_verbose_timeout_warnings
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
           )
+          # Native aarch64 macOS Bazel test hit the host native-thread limit
+          # during full-graph analysis (run 40979942686, job 123817643778).
+          # Limit scheduling, not test selection, sandboxing, or assertions.
+          # The x86_64 macOS/Linux matrices keep their existing budgets.
+          if [[ "${{ matrix.target }}" == "aarch64-apple-darwin" ]]; then
+            bazel_test_args+=(--jobs=24 --local_test_jobs=2)
+          fi
           ./.github/scripts/run-bazel-ci.sh \
             "${bazel_wrapper_args[@]}" \
             -- \

@@ -421,6 +421,28 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         MatrixdControlError::Invalid("matrixd control socket has no parent directory".to_string())
     })?;
     codex_uds::prepare_private_socket_directory(parent).await?;
+    // On macOS, connecting to an existing regular file can return NotSocket
+    // before the stale-socket check. Classify the owned directory entry first:
+    // never connect through or unlink a non-socket (including a symlink).
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::FileTypeExt;
+
+        match tokio::fs::symlink_metadata(socket_path).await {
+            Ok(metadata) if !metadata.file_type().is_socket() => {
+                return Err(MatrixdControlError::Io(std::io::Error::new(
+                    ErrorKind::AlreadyExists,
+                    format!(
+                        "matrixd control path is not a socket: {}",
+                        socket_path.display()
+                    ),
+                )));
+            }
+            Ok(_) => {}
+            Err(error) if error.kind() == ErrorKind::NotFound => {}
+            Err(error) => return Err(error.into()),
+        }
+    }
     match UnixStream::connect(socket_path).await {
         Ok(_) => {
             return Err(MatrixdControlError::Io(std::io::Error::new(

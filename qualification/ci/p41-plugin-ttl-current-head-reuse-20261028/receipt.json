@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.p41-plugin-ttl-windows-atomic-publication-isolated-reuse.v1",
+  "observed_date_utc": "2026-10-28",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent_draft_pr": 4184,
+  "exact_parent_source_sha": "33b6c52fdda35c0f5f6969535ddabb007ce9b74d",
+  "exact_parent_source_tree": "3ac3eb3d1929f62ddb119bfd8f150a98ce1caafe",
+  "source_files_reused_from_prior_isolated_candidate": {
+    "pr": 3993,
+    "source_head": "93bc8c0529e8b73bbdb3dffff8c929c26f4081a2",
+    "codex-rs/core-plugins/src/remote/catalog_cache.rs": "ecb8974ceabd78fbc289a1de13f88c22c45c9ca4",
+    "codex-rs/core-plugins/src/remote/catalog_cache_tests.rs": "c7a25eb30353bcfc95ca779a86aa71bd77b324e5"
+  },
+  "exact_parent_native_observation": {
+    "run": 40740300342,
+    "job": 123003023051,
+    "native_windows_original_ttl": "FAIL",
+    "expected_ps_plugins_list_requests": 1,
+    "observed_ps_plugins_list_requests": 2,
+    "cache_publish_error": "PermissionDenied / OS error 5",
+    "exclusive_root_cause_proven": false,
+    "other_failures": "Windows outside-root DELETE 3, Memory recovery 4, Agentd H7, AppServer WebSocket; cargo-deny five advisories"
+  },
+  "prior_candidate_native_observation": {
+    "run": 40265347558,
+    "job": 121399704555,
+    "source_sha": "93bc8c0529e8b73bbdb3dffff8c929c26f4081a2",
+    "original_app_server_ttl_test_success_occurrences": 2,
+    "entire_windows_job_success": false,
+    "qualifies_current_combined_source": false,
+    "cache_retry_unit_test_success_not_asserted": true
+  },
+  "patch_scope": "Windows-only bounded 8 total atomic cache publication attempts with 25ms backoff on OS errors 5/32 only when existing regular file; new Windows read-handle regression; all other OS one attempt.",
+  "policy": {
+    "unchanged_original_appserver_ttl_test": true,
+    "unchanged_windows_delete_negatives": true,
+    "unchanged_cached_catalog_permission_negative_tests": true,
+    "unchanged_production_authority": true,
+    "changed_dependencies_or_locks": false,
+    "changed_required_gates": false
+  },
+  "current_source_owning_validation": "PENDING_NEW_EXACT_HEAD_ACTIONS",
+  "current_source_final_ci": "OPEN",
+  "auth_mode_and_inflight_dedupe": "UNCHANGED_IN_THIS_PATCH",
+  "research_p39_original_frozen_source_pairing": "CLOSED_FOR_DECLARED_SOURCE_PAIRING_RESEARCH_TASK",
+  "full_policy_learning": "OPEN_REAL_OWNER_EPISODES_MISSING",
+  "target_device": "OPEN_NO_NEW_DEVICE_RUN_OR_ENERGY_EVIDENCE",
+  "promotion": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO",
+  "note": "Exact earlier candidate native TTL PASS is evidence only for its own SHA, not current SHA. This is a source candidate; do not claim Windows security or final integration closure without fresh native and required checks."
+}

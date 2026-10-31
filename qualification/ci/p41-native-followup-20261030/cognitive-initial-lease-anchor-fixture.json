@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.p41-cognitive-recovery-preexisting-authorized-lease-fixture.v1",
+  "observed_at_utc": "2026-10-30",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4184,
+  "parent_head": "afc38f8a3066a5b81a6a704fe8b27acf1762649f",
+  "trigger": {
+    "run_id": 41117759545,
+    "workflow": "blocking-ci",
+    "jobs": [
+      124277010259,
+      124277010482
+    ],
+    "native_target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test",
+    "test": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation",
+    "test_location": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs:186",
+    "result": "FAIL",
+    "failure": "recovery succeeded but recovered_anchor != expected; profile/owner/schema matched; state_digest differed",
+    "observed_before_rebind_state_digest": "318b315686d6d16917d00b36280ac043cc228f78f95031203fb11b73dbd1f922",
+    "observed_after_rebind_state_digest": "22568b0fb5b1ff8a4ef4c2cd7e87e6c6286c50d538c51e0617269fb20744cd13"
+  },
+  "source_trace": {
+    "anchor_covers": "all registered logical tables, including local writer lease",
+    "implementation": "hepta-memory/src/cognitive_store_recovery.rs::capture",
+    "writer_behavior": "ProductionDurableWriter::open acquires a new host-bound lease if none exists, changing the logical current cut",
+    "code": "hepta-memory/src/production_writer.rs::open",
+    "recovery_behavior": "open_with_recovery checks exact expected prior to writer lease acquisition"
+  },
+  "minimal_fix": {
+    "file": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+    "scope": "test-fixture-only",
+    "description": "Bootstrap the identical authorized lease on original store using original verifier; capture exact expected anchor after bootstrap; explicitly close writer and SQLx pool; recover and re-open same lease, preserving post-recovery exact-cut equality.",
+    "production_semantics_changed": false,
+    "existing_assertions_preserved": true,
+    "previous_pool_drain_preserved": true,
+    "dependencies_changed": false
+  },
+  "validation": {
+    "static_source_check": "original anchor assertion retained; original negative and positive assertions untouched",
+    "local_rust_bazel": "NOT_RUN_NO_TOOLCHAIN",
+    "current_head_owning_ci": "PENDING_REQUIRES_NEW_EXACT_HEAD_RUN",
+    "scientific_research": "UNCHANGED",
+    "production_qualification": "NOT_CLAIMED"
+  },
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "status": "HOLD_NO_GO"
+}

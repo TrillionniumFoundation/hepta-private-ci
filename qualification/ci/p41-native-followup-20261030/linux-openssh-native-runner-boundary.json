@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.p41-native-followup.openssh-execution-boundary.v1",
+  "observed_utc": "2026-10-30",
+  "pr": 4184,
+  "original_head_sha": "a78d20814ede39d274d5739e8099342dcbc4474e",
+  "base_sha": "2f393197ec7e4e76f5405f66c3f6e478421a35f4",
+  "run_id": 41013915718,
+  "observed_jobs": [
+    {
+      "job_id": 123926400910,
+      "platform": "x86_64-unknown-linux-gnu",
+      "test_target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+      "result": "FAILED",
+      "tests_passed": 22,
+      "tests_failed": 13,
+      "ignored": 0,
+      "stdout_error": "start test-only OpenSSH /usr/bin/ssh-keygen: No such file or directory (os error 2)"
+    },
+    {
+      "job_id": 123926400952,
+      "platform": "x86_64-unknown-linux-musl",
+      "test_target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+      "result": "FAILED",
+      "tests_passed": 22,
+      "tests_failed": 13,
+      "ignored": 0,
+      "stdout_error": "start test-only OpenSSH /usr/bin/ssh-keygen: No such file or directory (os error 2)"
+    }
+  ],
+  "source_identity": [
+    "codex-rs/hepta-operator-acceptance/src/test_support.rs: ssh_keygen() invokes absolute /usr/bin/ssh-keygen on Unix",
+    "codex-rs/hepta-operator-acceptance/BUILD.bazel: rust_test hepta-operator-acceptance-tests currently permits remote execution"
+  ],
+  "scope": "Only one Bazel rust_test scheduling tag in isolated Draft; all 35 tests continue executing, with original positive/negative assertions, signing, trust, and revocation checks unchanged.",
+  "patch": "tags=[no-remote] on hepta-operator-acceptance-tests to execute host-OpenSSH-dependent tests on the native CI runner instead of a remote image without ssh-keygen.",
+  "not_claimed": [
+    "No new owning CI or current-head PASS yet",
+    "Host OpenSSH presence and actual local execution require native verification",
+    "Other Linux/Bazel failures, Windows outside-root DELETE, plugin TTL, cargo-deny, owner-policy and device performance remain open",
+    "No production permission change, security rejection bypass, lockfile change or CI gate weakening"
+  ],
+  "qualification_mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "production_gate": "HOLD_NO_GO",
+  "close_when": "Exact new-head native Windows/macOS/Linux Bazel test and all applicable required gates succeed with real job logs and artifacts."
+}

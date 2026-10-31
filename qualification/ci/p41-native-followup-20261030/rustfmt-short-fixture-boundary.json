@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.p41-native-followup-rustfmt-remediation.v1",
+  "date_utc": "2026-10-30",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4184,
+  "parent_commit": "10aa307289364abb452b065a5a5134aa046c55f3",
+  "parent_tree": "49e0bf5591f551a2c63dba4b6ad0da181c537ec2",
+  "base_commit": "2f393197ec7e4e76f5405f66c3f6e478421a35f4",
+  "source_path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+  "observed_run": 41004618817,
+  "observed_job": 123897260598,
+  "observed_job_conclusion": "failure",
+  "observed_step": "Check formatting (run `just fmt` to fix)",
+  "command": "cargo fmt -- --config imports_granularity=Item --check",
+  "diagnostic": "Rustfmt emitted a single Diff in native_app_server_tests.rs:451: fold tempfile::Builder().prefix().tempdir_in() to a one-line chain.",
+  "change": "Only line wrapping of the private /tmp fixture builder; all assertions, production safety fences, tokens and functional code unchanged.",
+  "claims": {
+    "exact_reported_rustfmt_diff_applied": true,
+    "owning_rustfmt_pass_on_new_head": false,
+    "owning_macos_test_pass_on_new_head": false,
+    "required_gates_closed": false,
+    "production_qualification": false
+  },
+  "verification": "Await exact new HEAD owning rustfmt and macOS checks; no Rust toolchain available in local execution container.",
+  "safety": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO"
+}

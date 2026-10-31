@@ -137,7 +137,26 @@ pub(crate) fn write_cached_directory_plugins(
         plugins: plugins.to_vec(),
     })
     .map_err(std::io::Error::other)?;
-    codex_utils_path::write_atomically(&cache_path, &contents)
+    // A Windows reader may temporarily deny replacement of an existing file
+    // without FILE_SHARE_DELETE. Retry only that transient error class while
+    // preserving atomic publication and propagating persistent failures.
+    let mut attempts_left = if cfg!(windows) { 8 } else { 1 };
+    loop {
+        match codex_utils_path::write_atomically(&cache_path, &contents) {
+            Ok(()) => return Ok(()),
+            Err(error) => {
+                attempts_left -= 1;
+                if attempts_left == 0
+                    || !cfg!(windows)
+                    || !matches!(error.raw_os_error(), Some(5) | Some(32))
+                    || !cache_path.is_file()
+                {
+                    return Err(error);
+                }
+                std::thread::sleep(Duration::from_millis(25));
+            }
+        }
+    }
 }
 
 pub(crate) fn remove_cached_directory_plugins(

@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.p41.native-test-fixture-followup.v1",
+  "evidence_type": "owning_native_failure_and_unverified_source_candidate",
+  "source_before": "3cc4c34fee7ce3a7aac2ff79d152c61815344e2c",
+  "observation_date_utc": "2026-10-29",
+  "original_run_id": 40930035354,
+  "original_job_id": 123646730106,
+  "failures": [
+    {
+      "test": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+      "source": "codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+      "observed_error": "AuthBus text: external replay checkpoint parent must be canonical and symlink-free",
+      "source_blob_before": "762d9ea401669a88d50d266b74ce96cbd25b277f"
+    },
+    {
+      "tests": [
+        "signed_recovery_frontier_allows_exact_current_database",
+        "signed_recovery_frontier_rejects_valid_older_database_image"
+      ],
+      "source": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "observed_error": "kernel.evidence recovery: recovery frontier files must be canonical and outside the Agent home rollback domain",
+      "source_blob_before": "a3e546830527f214c08b6a367c0f708b26a3e9d2"
+    }
+  ],
+  "scope": "Only existing test fixture external TempDir path construction; preserve independent private directory ownership, real daemon guard, all original assertions and exact trust checks. No production check, fixture labels, acceptance thresholds, dependencies, or security permissions changed.",
+  "cause_boundary": "macOS /var alias is a plausible cause, not independently demonstrated. Native owning pass on new exact-head macOS test required; no pass is claimed.",
+  "state": "PENDING_OWNING_NATIVE_RESULT",
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "admission": "HOLD_NO_GO",
+  "device_execution": false
+}

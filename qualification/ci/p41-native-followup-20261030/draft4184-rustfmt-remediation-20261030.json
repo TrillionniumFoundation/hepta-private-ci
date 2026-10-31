@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.draft4184-format-only-repair.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4184,
+  "parent_sha": "6caef1360a3795179743efc1530fd1ac559bdcd2",
+  "parent_tree": "eecf4192a02d9823ea97bed66adbd85076057042",
+  "base_sha": "2f393197ec7e4e76f5405f66c3f6e478421a35f4",
+  "branch": "audit/p41-4152-rollback-completed-turn-fence-20261028-v1",
+  "diagnosis": {
+    "workflow_run": 41137043665,
+    "job_id": 124342508120,
+    "job_conclusion": "failure",
+    "step": "Check formatting (run `just fmt` to fix)",
+    "check": "cargo fmt -- --config imports_granularity=Item --check",
+    "diff_paths": [
+      "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
+    ],
+    "changes": [
+      "reorder one import exactly as rustfmt output",
+      "collapse two assert! expressions exactly as rustfmt output"
+    ]
+  },
+  "code_scope": {
+    "source_only": true,
+    "logic_changed": false,
+    "safety_assertions_changed": false,
+    "dependency_changed": false,
+    "locks_changed": false
+  },
+  "prior_current_source_results": {
+    "architecture": {
+      "run": 41137043560,
+      "source_head_job": 124341949288,
+      "base_merge_job": 124341949523,
+      "required_job": 124353385316,
+      "conclusion": "success"
+    },
+    "v8": {
+      "run": 41137043644,
+      "metadata_job": 124341949377,
+      "metadata": "success",
+      "build": "skipped"
+    },
+    "blocking_ci": {
+      "run": 41137043665,
+      "status": "in_progress",
+      "owning_appserver_success_unverified": true,
+      "win_msvc_link_failures": true,
+      "rustsec_still_failing": true,
+      "clippy_still_failing": true
+    }
+  },
+  "verification": {
+    "git_blob_content_matches_original_except_exact_formatter_diff": true,
+    "local_rustfmt_executed": false,
+    "owning_tests_executed_after_patch": false,
+    "post_commit_ci_terminal_success": false
+  },
+  "gates": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO",
+  "limitations": "This is formatter-only remediation from native CI diff. No new owning check is claimed; all other blockers remain open."
+}

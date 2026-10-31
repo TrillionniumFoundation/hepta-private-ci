@@ -32,6 +32,10 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
+    # Only test execution needs the native runner for host OpenSSH. The
+    # exclusive test scheduler runs this target locally, but still permits
+    # its Rust compile actions to run on Linux RBE cross-toolchains.
+    tags = ["exclusive"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",

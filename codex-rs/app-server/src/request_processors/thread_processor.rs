@@ -29,6 +29,7 @@ const CODEX_TUI_CLIENT_NAME: &str = "codex-tui";
 const THREAD_HARD_DELETE_STARTUP_DRAIN_TIMEOUT: Duration = Duration::from_secs(10);
 const THREAD_ROLLBACK_DEPRECATION_SUMMARY: &str =
     "thread/rollback is deprecated and will be removed soon";
+const THREAD_ROLLBACK_FENCE_OBSERVATION_BUDGET: Duration = Duration::from_secs(5);
 
 enum ThreadRemovalAuthority<T> {
     /// Core has fenced the ID and returned all pre-fence startup barriers. The complete
@@ -2565,6 +2566,24 @@ impl ThreadRequestProcessor {
                 "paginated threads do not support thread/rollback",
             ));
         }
+
+        // A turn/completed notification may arrive before Core has retired the
+        // preceding turn's owner-controlled admission fences. Observe those
+        // fences outside Core routing, without cancelling their owner or
+        // granting permission to roll back an actually running turn.
+        thread
+            .observe_admission_fences_until(
+                tokio::time::Instant::now() + THREAD_ROLLBACK_FENCE_OBSERVATION_BUDGET,
+            )
+            .await
+            .map_err(|err| {
+                internal_error(format!(
+                    "failed to observe prior turn retirement for rollback: {err}"
+                ))
+            })?;
+        // The observation is not authority. Revalidate before the ordinary
+        // rollback submission, which still rejects an active turn.
+        ensure_direct_input_allowed(thread.as_ref()).await?;
 
         let request = request_id.clone();
 

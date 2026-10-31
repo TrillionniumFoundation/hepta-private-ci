@@ -633,7 +633,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         .duration_since(UNIX_EPOCH)
         .expect("clock")
         .as_secs()
-        + 1;
+        + 15;
     let old = LogicalTurnAttemptRequest::new(
         "seed-terminal-attempt",
         "seed-terminal-lease",
@@ -747,7 +747,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     drop(binding);
     drop(executor);
     drop(lease);
-    tokio::time::sleep(Duration::from_secs(2)).await;
+    tokio::time::sleep(Duration::from_secs(20)).await;
 
     let result = prepare_qualification_turn_writer_input(
         Arc::clone(&fixture.state),

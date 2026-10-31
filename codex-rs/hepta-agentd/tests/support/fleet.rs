@@ -51,6 +51,14 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
+        // The macOS runner's long per-user TMPDIR can overflow AF_UNIX's
+        // socket-path limit once the fleet/run/Agent control suffix is added.
+        // Keep TempDir's private, random ownership; shorten only its parent.
+        #[cfg(target_os = "macos")]
+        let temp = tempfile::Builder::new()
+            .prefix("hepta-fleet-")
+            .tempdir_in("/tmp")?;
+        #[cfg(not(target_os = "macos"))]
         let temp = tempfile::tempdir()?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;

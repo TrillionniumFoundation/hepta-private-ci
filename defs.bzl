@@ -209,6 +209,7 @@ def codex_rust_crate(
         test_tags = [],
         test_threads = 0,
         unit_test_timeout = None,
+        unit_test_extra_binaries = [],
         extra_binaries = [],
         extra_binaries_non_windows = [],
         run_tests_with_wine_exec = False):
@@ -255,6 +256,8 @@ def codex_rust_crate(
         integration_test_timeout: Optional Bazel timeout for integration test
             targets generated from `tests/*.rs`.
         test_data_extra: Extra runtime data for tests.
+        unit_test_extra_binaries: Executable unit-test runfiles exposed via
+            absolute CARGO_BIN_EXE_* paths, with empty default for other crates.
         test_shard_counts: Mapping from generated test target name to Bazel
             shard count. Matching tests use native Bazel sharding on the outer
             workspace-root launcher, not rules_rust's inner sharding wrapper.
@@ -385,7 +388,7 @@ def codex_rust_crate(
                 "--remap-path-prefix=codex-rs=",
             ],
             rustc_env = rustc_env,
-            data = test_data_extra,
+            data = test_data_extra + unit_test_extra_binaries,
             tags = test_tags + ["manual"],
         )
 
@@ -401,6 +404,10 @@ def codex_rust_crate(
         workspace_root_test(
             name = unit_test_name,
             env = test_env,
+            runfile_env = {
+                binary: "CARGO_BIN_EXE_" + Label(binary).name
+                for binary in unit_test_extra_binaries
+            },
             test_bin = ":" + unit_test_binary,
             workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
             tags = test_tags,

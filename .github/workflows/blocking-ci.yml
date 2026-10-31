@@ -16,7 +16,7 @@ jobs:
   scope:
     name: Select blocking CI scope
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 5
+    timeout-minutes: 15
     outputs:
       inference: ${{ steps.scope.outputs.inference }}
       effects: ${{ steps.scope.outputs.effects }}

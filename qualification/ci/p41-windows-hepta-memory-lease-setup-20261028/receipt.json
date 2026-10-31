@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.p41-windows-hepta-memory-bound-lease-fixture-v1",
+  "observed_utc": "2026-10-28",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "isolated_draft_pr": 4184,
+  "exact_failing_source_sha": "b96eef7ff2d9eef68632ce8e20cbc4521fc7442e",
+  "failing_run_id": 40758719119,
+  "failing_job_id": 123066077144,
+  "failing_test": "local_compact_executor_tests::terminal_bound_lease_transitions_audit_compact_journal_atomically",
+  "observed_error": "bound executor: Lease(StaleFence(\"local lease has expired\"))",
+  "failing_source_location": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs:136",
+  "root_cause_scope": "Test setup only: the expiry branch supplied a one-second lease before opening the bound SQLite executor; on Windows CI it expired before the setup completed. The test is supposed to exercise journal-corruption denial on release/rollback/expire after a valid bound intent exists.",
+  "source_fix_commit": "148eccede2eac56ac023f47a743b0bcd1ab85fe4",
+  "source_path": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+  "changed_fixture": {
+    "expiry_branch_seconds_before": 1,
+    "expiry_branch_seconds_after": 15,
+    "expiry_poll_iterations_before": 120,
+    "expiry_poll_iterations_after": 800,
+    "poll_interval_milliseconds": 25
+  },
+  "unchanged": [
+    "all original journal-corruption fail-closed assertions",
+    "actual source runtime lease expiry and stale-fence refusal",
+    "release/rollback/explicit expire checks",
+    "original other negative and positive tests",
+    "production permissions",
+    "Rust dependencies and lockfiles",
+    "required CI gates"
+  ],
+  "test_execution": {
+    "in_current_execution_environment": "Rust cargo/rustc not installed; no owning Rust test executed locally",
+    "new_exact_head_github_windows_owning": "PENDING",
+    "claims_current_test_passed": false
+  },
+  "research_p39_original_screen": "CLOSED_FOR_DECLARED_SOURCE_PAIRING_RESEARCH_TASK",
+  "remaining_blockers": [
+    "full composed CI",
+    "Windows outside-root DELETE / Memory Recovery / AppServer plugin TTL / WebSocket and relevant native regressions",
+    "five RustSec cargo-deny advisories",
+    "authentic owner-backed full policy episodes",
+    "target device p95/p99 and energy"
+  ],
+  "promotion": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO"
+}
