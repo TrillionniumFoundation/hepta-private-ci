@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
 use codex_hepta_cognitive_types::MemoryInventoryKindV1;
+use codex_hepta_cognitive_types::MemoryInventoryPolicyV1;
+use codex_hepta_cognitive_types::MemoryInventoryValueV1;
 use codex_hepta_cognitive_types::MemoryOperationV1;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::MemoryCellWriteModeV1;
@@ -22,6 +24,70 @@ use super::test_support::request;
 use super::test_support::snapshot;
 use crate::MemoryCellCandidateV11;
 use crate::MemoryCellCandidateV12;
+
+#[path = "memory_mlp_v12_python_fixture.rs"]
+mod python_fixture;
+
+#[tokio::test]
+async fn memory_v12_python_trained_bytes_match_native_reader() {
+    let payload = python_fixture::PAYLOAD.as_bytes();
+    let expected_digest = "87be8189b400654b7567db575a4485a791109abc3042cbfe299c8eb34587ba47"
+        .parse::<Digest32>().expect("pinned Python export digest");
+    let model = crate::memory_mlp_v12::MemoryMlpCellV12::from_bytes(payload, expected_digest)
+        .expect("actual Python-trained float32 tensors");
+    let rows = [("item:a", [11, 3, 14]), ("item:b", [7, 2, 12])];
+    for (index, (key, values)) in rows.iter().enumerate() {
+        let prediction = model.predict(key).expect("native matrix inference");
+        assert_eq!(prediction.value, Some(MemoryInventoryValueV1::Semantic(MemoryInventoryPolicyV1 {
+            reserve: values[0], pack: values[1], limit: values[2],
+        })));
+        assert_eq!(prediction.abstain, None);
+        assert_eq!(prediction.logits.len(), python_fixture::EXPECTED[index].len());
+        for (actual, expected) in prediction.logits.iter().zip(python_fixture::EXPECTED[index]) {
+            assert!((actual - expected).abs() <= 1e-8, "native/Python logit differs: {actual} versus {expected}");
+        }
+    }
+    let unknown = model.predict("item:never-written").expect("bounded unknown query");
+    assert_eq!(unknown, codex_hepta_neuron::MemoryResidualPredictionV1 {
+        kind: codex_hepta_cognitive_types::MemoryCellKindV1::Semantic,
+        value: None, logits: Vec::new(), minimum_margin: 0.0, source_ids: Vec::new(),
+        artifact_digest: expected_digest.to_string(), parameter_digest: model.parameters_digest.to_string(),
+        abstain: Some(codex_hepta_neuron::MemoryResidualAbstentionV1::OutsideWrittenSupport),
+    });
+    let mut changed: serde_json::Value = serde_json::from_slice(payload).expect("Python DTO");
+    let mut weights = changed["arrays"]["hidden.weight"]["f32le_hex"].as_str().expect("weights").as_bytes().to_vec();
+    weights[0] = if weights[0] == b'0' { b'1' } else { b'0' };
+    changed["arrays"]["hidden.weight"]["f32le_hex"] = json!(String::from_utf8(weights).expect("hex"));
+    let changed = serde_json::to_vec(&changed).expect("changed tensor bytes");
+    assert!(crate::memory_mlp_v12::MemoryMlpCellV12::from_bytes(&changed, Digest32::of_bytes(&changed)).is_err());
+
+    // This is an explicit integration-only provenance rebinding, not a claim
+    // that the Python fixture was trained against this newly created SQLite DB.
+    // Verify both original declared training labels and actual owner values
+    // before replacing source identities. All learned tensors stay unchanged.
+    let (_root, store, access) = owner_fixture().await;
+    let owner = snapshot(&store, &access).await;
+    let projection = owner.training_projection_v11(&MemoryTrainingSelectorV11 {
+        cell_id: key("cell:python-trained"), kind: MemoryInventoryKindV1::Semantic,
+        keys: vec![key("item:a"), key("item:b")],
+    }).expect("authenticated owner projection");
+    let mut rebound: serde_json::Value = serde_json::from_slice(payload).expect("original Python DTO");
+    let mut lineage = Vec::new();
+    for (source, (key, values)) in projection.records().iter().zip(rows) {
+        assert_eq!(source.record.key.as_str(), key);
+        assert_eq!(source.record.value, json!({"reserve":values[0],"pack":values[1],"limit":values[2]}));
+        let address = Digest32::of_bytes(key.as_bytes()).to_string();
+        let labels = serde_json::to_vec(&(key, values)).expect("original Python training row");
+        assert_eq!(rebound["supports"][&address], json!([Digest32::of_bytes(&labels).to_string()]));
+        rebound["supports"][&address] = json!([source.source_id.to_string()]);
+        lineage.push(source.source_id.to_string());
+    }
+    lineage.sort();
+    rebound["lineage_sources"] = json!(lineage);
+    rebound["owner_cut_sha256"] = json!(projection.acquisition_cut_digest());
+    MemoryCellCandidateV12::from_projection(&projection, generation(1), &serde_json::to_vec(&rebound).expect("rebound metadata"))
+        .expect("unchanged trained parameters bind to exactly matching owner records");
+}
 
 #[tokio::test]
 async fn memory_v12_trained_payload_rejects_version_and_parameter_substitution() {

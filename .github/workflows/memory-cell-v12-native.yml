@@ -215,6 +215,7 @@ jobs:
               cases = ET.parse(report).getroot().findall(".//testcase")
               ran = [case for case in cases if case.find("skipped") is None]
               expected = {
+                  "memory_v12_python_trained_bytes_match_native_reader",
                   "memory_v12_trained_payload_rejects_version_and_parameter_substitution",
                   "memory_v12_trained_cells_publish_read_restart_correct_and_forget",
                   "memory_v11_candidate_binds_the_complete_owner_partition_and_acquisition_cut",
