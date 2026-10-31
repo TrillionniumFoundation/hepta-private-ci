@@ -114,11 +114,14 @@ def advance(state: RenewalState, lam: float, gamma: float, dt: float) -> Renewal
     s=lam+gamma
     if not math.isfinite(s):
         raise ArithmeticError('Renewal rates sum unresolved in f64')
-    decay=math.exp(-s*dt)
-    eq=gamma/s
-    active=math.fsum((eq,(state.active-eq)*decay))
     x=s*dt
+    decay=math.exp(-x)
+    eq=gamma/s
     if x <= .05:
+        # Form the new active probability from nonnegative populations.
+        # eq+(active-eq)*exp(-x) subtracts O(1) terms and silently drops
+        # tiny recovered active mass when exp(-x) rounds to exactly one.
+        active=math.fsum((state.active*decay,eq*(-math.expm1(-x))))
         # E[N] integrates active occupancy. Starting refractory, the
         # occupation is O(dt^2): subtracting eq*dt - eq*(-expm1(-x))/s
         # cancels its leading O(dt) terms and can round a real event
@@ -133,6 +136,7 @@ def advance(state: RenewalState, lam: float, gamma: float, dt: float) -> Renewal
         occupation=math.fsum((state.active*dt*(1-d_ratio),
                               eq*dt*d_ratio))
     else:
+        active=math.fsum((eq,(state.active-eq)*decay))
         occupation=math.fsum((eq*dt,(state.active-eq)*(-math.expm1(-x))/s))
     increment=lam*occupation
     if not math.isfinite(increment) or increment <= 0:
