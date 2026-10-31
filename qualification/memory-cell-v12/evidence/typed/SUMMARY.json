@@ -1,0 +1,6038 @@
+{
+  "corpus_sha256": "ea519ba0a0d3e1973409e862f205f3e7c943e7d1370d3d1ead667369c7c4f82a",
+  "cpu_seconds": 41.074525721,
+  "documents": 40,
+  "evidence_bytes_before_summary": 21948339,
+  "limitations": [
+    "authored document tasks, not production logs",
+    "only actually numbered source procedures",
+    "bounded checklist simulation, not execution of real-world effects",
+    "event scenarios are partial ingestion, full-source correction, and withdrawal",
+    "semantic/procedure/event readers are exact typed caches, not trained generative models",
+    "Same-repository method development, not independent confirmation. Deterministic typed readers are not learned generative memory. Zero ablation loss is an admissible result. No compression, production, general understanding or spontaneous emergence claim.",
+    "All raw sources retained; typed cache timings do not establish a general capability advantage."
+  ],
+  "peak_rss_kib": 102056,
+  "real_procedure_blocks": 5,
+  "records": 640,
+  "runs": [
+    {
+      "address_artifact": {
+        "bytes": 702788,
+        "decoded_bytes": 2993241,
+        "path": "address.json.gz",
+        "sha256": "4302333e0e581c5c8e3abbf979650422a796b4c2e46e31df9ff75e2cf4a77b15"
+      },
+      "paired": {
+        "bm25_generic": {
+          "control_only": 2,
+          "count": 96,
+          "full_minus_control": -0.020833333333333332,
+          "full_only": 0
+        },
+        "history_generic": {
+          "control_only": 2,
+          "count": 96,
+          "full_minus_control": -0.020833333333333332,
+          "full_only": 0
+        },
+        "single_generic": {
+          "control_only": 0,
+          "count": 96,
+          "full_minus_control": 0.020833333333333332,
+          "full_only": 2
+        },
+        "without_event": {
+          "control_only": 0,
+          "count": 96,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_meta": {
+          "control_only": 2,
+          "count": 96,
+          "full_minus_control": -0.020833333333333332,
+          "full_only": 0
+        },
+        "without_procedure": {
+          "control_only": 0,
+          "count": 96,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_semantic": {
+          "control_only": 0,
+          "count": 96,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        }
+      },
+      "phase": 0,
+      "results": {
+        "bm25_generic": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.012674842997512314,
+            "test_address_seconds": 0.043339640003978275
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.9791666666666666,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 1.0
+              },
+              "1": {
+                "count": 4,
+                "success": 1.0
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 1.0,
+            "threshold": 0.9084470868110657,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 36,
+              "evidence_reads": 184,
+              "parse_bytes": 205573,
+              "parse_calls": 130,
+              "read_bytes": 298922,
+              "wall_seconds": 0.01909603004605742
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.00043527600064408034,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "full_typed": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.016718661005143076,
+            "test_address_seconds": 0.020521325001027435
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.6437578201293945,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 270486,
+              "wall_seconds": 0.03568111999629764
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1025268,
+            "prepare_wall_seconds": 0.01572980199853191,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "history_generic": {
+          "address_mode": "history",
+          "address_runtime": {
+            "calibration_seconds": 0.05833942200115416,
+            "test_address_seconds": 0.08299233699653996
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 1.0
+              },
+              "1": {
+                "count": 4,
+                "success": 1.0
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 1.0,
+            "threshold": 0.4522568881511688,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 36,
+              "evidence_reads": 98,
+              "parse_bytes": 170592,
+              "parse_calls": 104,
+              "read_bytes": 163024,
+              "wall_seconds": 0.01456055101880338
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0004140129967709072,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "single_generic": {
+          "address_mode": "single",
+          "address_runtime": {
+            "calibration_seconds": 0.03515817200241145,
+            "test_address_seconds": 0.06749291299638571
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.9375,
+            "answerable_success": 0.9375,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.5
+              },
+              "1": {
+                "count": 4,
+                "success": 0.5
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9583333333333334,
+            "threshold": 0.6308410167694092,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 18,
+              "evidence_reads": 178,
+              "parse_bytes": 182897,
+              "parse_calls": 118,
+              "read_bytes": 253455,
+              "wall_seconds": 0.019457876012893394
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0030403479977394454,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_event": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.016718661005143076,
+            "test_address_seconds": 0.020521325001027435
+          },
+          "enabled_types": [
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.6437578201293945,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 27,
+              "evidence_reads": 183,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 270486,
+              "wall_seconds": 0.0591140069955145
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 36438,
+            "prepare_wall_seconds": 0.021496834997378755,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_meta": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.012674842997512314,
+            "test_address_seconds": 0.043339640003978275
+          },
+          "enabled_types": [
+            "event",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.9791666666666666,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 1.0
+              },
+              "1": {
+                "count": 4,
+                "success": 1.0
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 1.0,
+            "threshold": 0.9084470868110657,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 184,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 298922,
+              "wall_seconds": 0.033484772946394514
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1025268,
+            "prepare_wall_seconds": 0.00985407499683788,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_procedure": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.016718661005143076,
+            "test_address_seconds": 0.020521325001027435
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.6437578201293945,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 9386,
+              "parse_calls": 9,
+              "read_bytes": 270486,
+              "wall_seconds": 0.027646592970995698
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1006728,
+            "prepare_wall_seconds": 0.009971641993615776,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_semantic": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.016718661005143076,
+            "test_address_seconds": 0.020521325001027435
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.6437578201293945,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 188604,
+              "parse_calls": 117,
+              "read_bytes": 270486,
+              "wall_seconds": 0.023682470025960356
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1007380,
+            "prepare_wall_seconds": 0.004942100000334904,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        }
+      },
+      "scope": "initial within-phase diagnostic",
+      "seed": 31031,
+      "shared_address_resources": {
+        "bm25_index_bytes": 350281,
+        "excluded_stale_queries": [],
+        "feature_bytes": 1875968,
+        "fit_cpu_seconds": 1.3668419399999998,
+        "fit_wall_seconds": 1.3686608989955857,
+        "heading_target_bytes": 58624,
+        "history_index_bytes": 996608,
+        "index_build_seconds": 0.030153272004099563,
+        "models": {
+          "learned": {
+            "batch_size": 32,
+            "final_parameter_sha256": "7a58149f5b5da0f03627dac922ead45124d132875486ae5ea9ef82b9d5d499d9",
+            "fit_cpu_seconds": 0.06408100100000036,
+            "fit_wall_seconds": 0.08018851600354537,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "7217ddb6348f499fabea18a24c1c81fc4e4c4c7c72b8810253d50571f0911321",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.2247045338153839,
+              "head.weight": 0.46049854159355164,
+              "hidden.bias": 0.2952338457107544,
+              "hidden.weight": 0.2731300890445709
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 916,
+            "optimizer_bytes": 70016,
+            "optimizer_step": 240,
+            "parameter_bytes": 35008,
+            "parameter_change_norm": {
+              "head.bias": 0.35493704676628113,
+              "head.weight": 10.263641357421875,
+              "hidden.bias": 1.2608393430709839,
+              "hidden.weight": 31.636659622192383
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "246c2107a82258d5c3c2e614e21238a4e46e3f661798a88dc9ee87ed71c3a778",
+            "seed": 31031,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 2.771559476852417,
+                "step": 1
+              },
+              {
+                "loss": 0.041869040578603745,
+                "step": 100
+              },
+              {
+                "loss": 0.027477126568555832,
+                "step": 200
+              },
+              {
+                "loss": 0.011198364198207855,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 8752
+          },
+          "single": {
+            "batch_size": 32,
+            "final_parameter_sha256": "3d6202216391dbc565fa1948224a1e20dfed3e8dd48ea1271f4f538acf417332",
+            "fit_cpu_seconds": 0.3940696640000003,
+            "fit_wall_seconds": 0.2606242679976276,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "0ddc64761a6448c5d9e67a54ef66535af9244873be075901d4c2ea0447002b88",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.2045682668685913,
+              "head.weight": 0.9946935772895813,
+              "hidden.bias": 0.33796748518943787,
+              "hidden.weight": 0.27992770075798035
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 916,
+            "optimizer_bytes": 234752,
+            "optimizer_step": 240,
+            "parameter_bytes": 117376,
+            "parameter_change_norm": {
+              "head.bias": 7.650861740112305,
+              "head.weight": 83.12796783447266,
+              "hidden.bias": 2.5049173831939697,
+              "hidden.weight": 47.67530822753906
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "e27ab06406d6e19d2494a837c8fbd8d713c02febda5f5b4a9114cdb8cac5fd20",
+            "seed": 31031,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 6.440057277679443,
+                "step": 1
+              },
+              {
+                "loss": 2.480647563934326,
+                "step": 100
+              },
+              {
+                "loss": 0.4026135206222534,
+                "step": 200
+              },
+              {
+                "loss": 0.15620166063308716,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 29344
+          }
+        },
+        "registry_bytes": 29099,
+        "source_target_bytes": 2344960,
+        "source_text_bytes": 300924,
+        "training_rows": 916
+      },
+      "test_queries": 96
+    },
+    {
+      "address_artifact": {
+        "bytes": 881358,
+        "decoded_bytes": 4664590,
+        "path": "address.json.gz",
+        "sha256": "a891d73f93985347934437789b22abec1b099b52811f702efe88f5ca28006bfb"
+      },
+      "paired": {
+        "bm25_generic": {
+          "control_only": 4,
+          "count": 102,
+          "full_minus_control": -0.0196078431372549,
+          "full_only": 2
+        },
+        "history_generic": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.0392156862745098,
+          "full_only": 4
+        },
+        "single_generic": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.22549019607843138,
+          "full_only": 23
+        },
+        "without_event": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_meta": {
+          "control_only": 4,
+          "count": 102,
+          "full_minus_control": -0.0196078431372549,
+          "full_only": 2
+        },
+        "without_procedure": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_semantic": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        }
+      },
+      "phase": 1,
+      "results": {
+        "bm25_generic": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.015531202996498905,
+            "test_address_seconds": 0.02604555199650349
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.8333333333333334,
+            "answerable_success": 0.8529411764705882,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.375
+              },
+              "1": {
+                "count": 8,
+                "success": 0.375
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9019607843137255,
+            "threshold": 0.9124709367752075,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 27,
+              "evidence_reads": 191,
+              "parse_bytes": 263480,
+              "parse_calls": 152,
+              "read_bytes": 388142,
+              "wall_seconds": 0.013394564972259104
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0006400639977073297,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "full_typed": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.018251558001793455,
+            "test_address_seconds": 0.023665680004341993
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8235294117647058,
+            "answerable_success": 0.8235294117647058,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.25
+              },
+              "1": {
+                "count": 8,
+                "success": 0.25
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.8823529411764706,
+            "threshold": 0.9084652066230774,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 178,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 280578,
+              "wall_seconds": 0.011160716006997973
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 2033700,
+            "prepare_wall_seconds": 0.014634988001489546,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "history_generic": {
+          "address_mode": "history",
+          "address_runtime": {
+            "calibration_seconds": 0.022539744000823703,
+            "test_address_seconds": 0.03754047899565194
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.7647058823529411,
+            "answerable_success": 0.7647058823529411,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.0
+              },
+              "1": {
+                "count": 8,
+                "success": 0.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.8431372549019608,
+            "threshold": 0.4522568881511688,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 90,
+              "parse_bytes": 144348,
+              "parse_calls": 90,
+              "read_bytes": 144348,
+              "wall_seconds": 0.012980889012396801
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0006050310039427131,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "single_generic": {
+          "address_mode": "single",
+          "address_runtime": {
+            "calibration_seconds": 0.021318574996257666,
+            "test_address_seconds": 0.047566492001351435
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.4803921568627451,
+            "answerable_success": 0.4852941176470588,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 78,
+                "success": 0.7051282051282052
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.25
+              },
+              "1": {
+                "count": 8,
+                "success": 0.25
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.6568627450980392,
+            "threshold": 0.531014621257782,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 18,
+              "evidence_reads": 144,
+              "parse_bytes": 217154,
+              "parse_calls": 134,
+              "read_bytes": 215014,
+              "wall_seconds": 0.01535708599112695
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0009685090044513345,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_event": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.018251558001793455,
+            "test_address_seconds": 0.023665680004341993
+          },
+          "enabled_types": [
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8235294117647058,
+            "answerable_success": 0.8235294117647058,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.25
+              },
+              "1": {
+                "count": 8,
+                "success": 0.25
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.8823529411764706,
+            "threshold": 0.9084652066230774,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 21,
+              "evidence_reads": 178,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 280578,
+              "wall_seconds": 0.015483479997783434
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 74215,
+            "prepare_wall_seconds": 0.022949320999032352,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_meta": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.015531202996498905,
+            "test_address_seconds": 0.02604555199650349
+          },
+          "enabled_types": [
+            "event",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8333333333333334,
+            "answerable_success": 0.8529411764705882,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.375
+              },
+              "1": {
+                "count": 8,
+                "success": 0.375
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9019607843137255,
+            "threshold": 0.9124709367752075,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 191,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 388142,
+              "wall_seconds": 0.010963174980133772
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 2033700,
+            "prepare_wall_seconds": 0.011186140996869653,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_procedure": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.018251558001793455,
+            "test_address_seconds": 0.023665680004341993
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8235294117647058,
+            "answerable_success": 0.8235294117647058,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.25
+              },
+              "1": {
+                "count": 8,
+                "success": 0.25
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.8823529411764706,
+            "threshold": 0.9084652066230774,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 178,
+              "parse_bytes": 24929,
+              "parse_calls": 18,
+              "read_bytes": 280578,
+              "wall_seconds": 0.011386800011678133
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1994055,
+            "prepare_wall_seconds": 0.006972126997425221,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_semantic": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.018251558001793455,
+            "test_address_seconds": 0.023665680004341993
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure"
+          ],
+          "metrics": {
+            "address_coverage": 0.8235294117647058,
+            "answerable_success": 0.8235294117647058,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.25
+              },
+              "1": {
+                "count": 8,
+                "success": 0.25
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.8823529411764706,
+            "threshold": 0.9084652066230774,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 178,
+              "parse_bytes": 196549,
+              "parse_calls": 110,
+              "read_bytes": 280578,
+              "wall_seconds": 0.012931715995364357
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1999140,
+            "prepare_wall_seconds": 0.005110874997626524,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        }
+      },
+      "scope": "future document-arrival tasks",
+      "seed": 31031,
+      "shared_address_resources": {
+        "bm25_index_bytes": 658300,
+        "excluded_stale_queries": [],
+        "feature_bytes": 3387392,
+        "fit_cpu_seconds": 2.0184308819999996,
+        "fit_wall_seconds": 1.9095238549998612,
+        "heading_target_bytes": 105856,
+        "history_index_bytes": 1799552,
+        "index_build_seconds": 0.034376690004137345,
+        "models": {
+          "learned": {
+            "batch_size": 32,
+            "final_parameter_sha256": "03f9419e0898f3fc1883131816b8d360ef6874b1d453f0ee32f6bcf08db85e68",
+            "fit_cpu_seconds": 0.07627002199999922,
+            "fit_wall_seconds": 0.08708362700417638,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "7217ddb6348f499fabea18a24c1c81fc4e4c4c7c72b8810253d50571f0911321",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.2649269104003906,
+              "head.weight": 0.4731494188308716,
+              "hidden.bias": 0.28837117552757263,
+              "hidden.weight": 0.26564300060272217
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 1654,
+            "optimizer_bytes": 70016,
+            "optimizer_step": 240,
+            "parameter_bytes": 35008,
+            "parameter_change_norm": {
+              "head.bias": 0.2747920751571655,
+              "head.weight": 11.113272666931152,
+              "hidden.bias": 1.372151494026184,
+              "hidden.weight": 33.86064529418945
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "ba4c06f9d557afeb7f2b4a541fd0c64f3138d25586283aae3fbf0d5bf390970b",
+            "seed": 31031,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 2.7593791484832764,
+                "step": 1
+              },
+              {
+                "loss": 0.09562696516513824,
+                "step": 100
+              },
+              {
+                "loss": 0.03075382485985756,
+                "step": 200
+              },
+              {
+                "loss": 0.06488212943077087,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 8752
+          },
+          "single": {
+            "batch_size": 32,
+            "final_parameter_sha256": "24a81f55ad9534cccbcd4542600f2aea3993679afa29724a111df848fdf282e2",
+            "fit_cpu_seconds": 0.3447835379999997,
+            "fit_wall_seconds": 0.18517505699855974,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "0ddc64761a6448c5d9e67a54ef66535af9244873be075901d4c2ea0447002b88",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.1997443288564682,
+              "head.weight": 0.7297600507736206,
+              "hidden.bias": 0.34012076258659363,
+              "hidden.weight": 0.31562209129333496
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 1654,
+            "optimizer_bytes": 234752,
+            "optimizer_step": 240,
+            "parameter_bytes": 117376,
+            "parameter_change_norm": {
+              "head.bias": 8.01537036895752,
+              "head.weight": 111.57453918457031,
+              "hidden.bias": 2.227731227874756,
+              "hidden.weight": 42.542808532714844
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "0928ea9150cc9bbe0c1d3d7ee3198acd600a0daceb76e6d0a57603f4afed0b95",
+            "seed": 31031,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 6.45473051071167,
+                "step": 1
+              },
+              {
+                "loss": 4.713696002960205,
+                "step": 100
+              },
+              {
+                "loss": 1.7072007656097412,
+                "step": 200
+              },
+              {
+                "loss": 0.5891240239143372,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 29344
+          }
+        },
+        "registry_bytes": 56154,
+        "source_target_bytes": 4234240,
+        "source_text_bytes": 599809,
+        "training_rows": 1654
+      },
+      "test_queries": 102
+    },
+    {
+      "address_artifact": {
+        "bytes": 1147250,
+        "decoded_bytes": 7735576,
+        "path": "address.json.gz",
+        "sha256": "426a189e81713b3a80fe0dd0fd0040cd0d92981cca8d03959fb47dd189a75a96"
+      },
+      "paired": {
+        "bm25_generic": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.019230769230769232,
+          "full_only": 2
+        },
+        "history_generic": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.07692307692307693,
+          "full_only": 8
+        },
+        "single_generic": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.5961538461538461,
+          "full_only": 62
+        },
+        "without_event": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_meta": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.019230769230769232,
+          "full_only": 2
+        },
+        "without_procedure": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_semantic": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        }
+      },
+      "phase": 2,
+      "results": {
+        "bm25_generic": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.040907630995207,
+            "test_address_seconds": 0.06005110299884109
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.9711538461538461,
+            "answerable_success": 0.9705882352941176,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.8333333333333334
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.875
+              },
+              "1": {
+                "count": 8,
+                "success": 0.875
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9807692307692307,
+            "threshold": 0.901131272315979,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 63,
+              "evidence_reads": 197,
+              "parse_bytes": 256122,
+              "parse_calls": 151,
+              "read_bytes": 346799,
+              "wall_seconds": 0.02023998104414204
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0008940560001065023,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "full_typed": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.03159890499955509,
+            "test_address_seconds": 0.03398666100110859
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 1.0
+              },
+              "1": {
+                "count": 8,
+                "success": 1.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 1.0,
+            "threshold": 0.5085474848747253,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 196,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 342474,
+              "wall_seconds": 0.01706865402229596
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 3057113,
+            "prepare_wall_seconds": 0.0368389040013426,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "history_generic": {
+          "address_mode": "history",
+          "address_runtime": {
+            "calibration_seconds": 0.0501086829972337,
+            "test_address_seconds": 0.06070057099714177
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.8846153846153846,
+            "answerable_success": 0.8823529411764706,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.5
+              },
+              "1": {
+                "count": 8,
+                "success": 0.5
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9230769230769231,
+            "threshold": 0.4467710554599762,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 36,
+              "evidence_reads": 98,
+              "parse_bytes": 172340,
+              "parse_calls": 104,
+              "read_bytes": 166684,
+              "wall_seconds": 0.019765293996897526
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0014516450028168038,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "single_generic": {
+          "address_mode": "single",
+          "address_runtime": {
+            "calibration_seconds": 0.05983452600048622,
+            "test_address_seconds": 0.06199987700529164
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.10576923076923077,
+            "answerable_success": 0.08823529411764706,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 80,
+                "success": 0.375
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.25
+              },
+              "1": {
+                "count": 8,
+                "success": 0.25
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.40384615384615385,
+            "threshold": 0.5371561050415039,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 48,
+              "evidence_reads": 104,
+              "parse_bytes": 153135,
+              "parse_calls": 112,
+              "read_bytes": 144393,
+              "wall_seconds": 0.025765523001609836
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0017394189999322407,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_event": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.03159890499955509,
+            "test_address_seconds": 0.03398666100110859
+          },
+          "enabled_types": [
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 1.0
+              },
+              "1": {
+                "count": 8,
+                "success": 1.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 1.0,
+            "threshold": 0.5085474848747253,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 75,
+              "evidence_reads": 196,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 342474,
+              "wall_seconds": 0.0199451570151723
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 117717,
+            "prepare_wall_seconds": 0.024346276004507672,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_meta": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.040907630995207,
+            "test_address_seconds": 0.06005110299884109
+          },
+          "enabled_types": [
+            "event",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.9711538461538461,
+            "answerable_success": 0.9705882352941176,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.8333333333333334
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.875
+              },
+              "1": {
+                "count": 8,
+                "success": 0.875
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9807692307692307,
+            "threshold": 0.901131272315979,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 197,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 346799,
+              "wall_seconds": 0.013342077989364043
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 3057113,
+            "prepare_wall_seconds": 0.021402653997938614,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_procedure": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.03159890499955509,
+            "test_address_seconds": 0.03398666100110859
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 1.0
+              },
+              "1": {
+                "count": 8,
+                "success": 1.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 1.0,
+            "threshold": 0.5085474848747253,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 196,
+              "parse_bytes": 66014,
+              "parse_calls": 32,
+              "read_bytes": 342474,
+              "wall_seconds": 0.015470584985450841
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 2990627,
+            "prepare_wall_seconds": 0.031131410993111786,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_semantic": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.03159890499955509,
+            "test_address_seconds": 0.03398666100110859
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure"
+          ],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 1.0
+              },
+              "1": {
+                "count": 8,
+                "success": 1.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 1.0,
+            "threshold": 0.5085474848747253,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 196,
+              "parse_bytes": 224412,
+              "parse_calls": 116,
+              "read_bytes": 342474,
+              "wall_seconds": 0.015767143020639196
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 3005892,
+            "prepare_wall_seconds": 0.00918574100069236,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        }
+      },
+      "scope": "future document-arrival tasks",
+      "seed": 31031,
+      "shared_address_resources": {
+        "bm25_index_bytes": 959047,
+        "excluded_stale_queries": [],
+        "feature_bytes": 6176768,
+        "fit_cpu_seconds": 3.0650619379999995,
+        "fit_wall_seconds": 3.054210818998399,
+        "heading_target_bytes": 193024,
+        "history_index_bytes": 3281408,
+        "index_build_seconds": 0.04170052100380417,
+        "models": {
+          "learned": {
+            "batch_size": 32,
+            "final_parameter_sha256": "bc89952766499d4994a3af3214756d2d2f88af0bfb778bd687a7d2ac54327cf1",
+            "fit_cpu_seconds": 0.06026130699999932,
+            "fit_wall_seconds": 0.06151070899795741,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "7217ddb6348f499fabea18a24c1c81fc4e4c4c7c72b8810253d50571f0911321",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.2507937550544739,
+              "head.weight": 0.44557836651802063,
+              "hidden.bias": 0.30616945028305054,
+              "hidden.weight": 0.25591838359832764
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 3016,
+            "optimizer_bytes": 70016,
+            "optimizer_step": 240,
+            "parameter_bytes": 35008,
+            "parameter_change_norm": {
+              "head.bias": 0.29009002447128296,
+              "head.weight": 11.176679611206055,
+              "hidden.bias": 1.340888500213623,
+              "hidden.weight": 33.95463562011719
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "3ba2a0ada01787cac6066dc398981cfab04978ddb2e4f5d2fbcc9d876c6ac2f5",
+            "seed": 31031,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 2.774669885635376,
+                "step": 1
+              },
+              {
+                "loss": 0.17306505143642426,
+                "step": 100
+              },
+              {
+                "loss": 0.008741997182369232,
+                "step": 200
+              },
+              {
+                "loss": 0.06173230707645416,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 8752
+          },
+          "single": {
+            "batch_size": 32,
+            "final_parameter_sha256": "85adf20c08ccb9eee1adb1ec83ed9dc8e75e3f753f55804695840aeac07f238b",
+            "fit_cpu_seconds": 0.2585479030000002,
+            "fit_wall_seconds": 0.13682151299872203,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "0ddc64761a6448c5d9e67a54ef66535af9244873be075901d4c2ea0447002b88",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.19378970563411713,
+              "head.weight": 0.7643159627914429,
+              "hidden.bias": 0.4933507442474365,
+              "hidden.weight": 0.3564874827861786
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 3016,
+            "optimizer_bytes": 234752,
+            "optimizer_step": 240,
+            "parameter_bytes": 117376,
+            "parameter_change_norm": {
+              "head.bias": 6.280682563781738,
+              "head.weight": 134.23851013183594,
+              "hidden.bias": 2.0048136711120605,
+              "hidden.weight": 39.338043212890625
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "3e8b50660504eb3cdb439b237c06d5a2db556cfe2c91acb3bc9728fd916414cb",
+            "seed": 31031,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 6.454003810882568,
+                "step": 1
+              },
+              {
+                "loss": 5.584441184997559,
+                "step": 100
+              },
+              {
+                "loss": 2.691453695297241,
+                "step": 200
+              },
+              {
+                "loss": 1.2504507303237915,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 29344
+          }
+        },
+        "registry_bytes": 83113,
+        "source_target_bytes": 7720960,
+        "source_text_bytes": 903831,
+        "training_rows": 3016
+      },
+      "test_queries": 104
+    },
+    {
+      "address_artifact": {
+        "bytes": 700618,
+        "decoded_bytes": 2993234,
+        "path": "address.json.gz",
+        "sha256": "ce066cd5686b84c3f53d8069df1817ad9362364de0299d6a79ce8404e4ce00c0"
+      },
+      "paired": {
+        "bm25_generic": {
+          "control_only": 2,
+          "count": 96,
+          "full_minus_control": -0.020833333333333332,
+          "full_only": 0
+        },
+        "history_generic": {
+          "control_only": 2,
+          "count": 96,
+          "full_minus_control": -0.020833333333333332,
+          "full_only": 0
+        },
+        "single_generic": {
+          "control_only": 2,
+          "count": 96,
+          "full_minus_control": -0.020833333333333332,
+          "full_only": 0
+        },
+        "without_event": {
+          "control_only": 0,
+          "count": 96,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_meta": {
+          "control_only": 2,
+          "count": 96,
+          "full_minus_control": -0.020833333333333332,
+          "full_only": 0
+        },
+        "without_procedure": {
+          "control_only": 0,
+          "count": 96,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_semantic": {
+          "control_only": 0,
+          "count": 96,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        }
+      },
+      "phase": 0,
+      "results": {
+        "bm25_generic": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.01257862400234444,
+            "test_address_seconds": 0.013893046001612674
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.9791666666666666,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 1.0
+              },
+              "1": {
+                "count": 4,
+                "success": 1.0
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 1.0,
+            "threshold": 0.9084470868110657,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 36,
+              "evidence_reads": 184,
+              "parse_bytes": 205573,
+              "parse_calls": 130,
+              "read_bytes": 298922,
+              "wall_seconds": 0.008956204001151491
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.00030561000312445685,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "full_typed": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.010929775999102276,
+            "test_address_seconds": 0.013563330998294987
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.6642912030220032,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 254646,
+              "wall_seconds": 0.012609566969331354
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1025268,
+            "prepare_wall_seconds": 0.007692901999689639,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "history_generic": {
+          "address_mode": "history",
+          "address_runtime": {
+            "calibration_seconds": 0.019189872000424657,
+            "test_address_seconds": 0.02416975100641139
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 1.0
+              },
+              "1": {
+                "count": 4,
+                "success": 1.0
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 1.0,
+            "threshold": 0.4522568881511688,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 36,
+              "evidence_reads": 98,
+              "parse_bytes": 170592,
+              "parse_calls": 104,
+              "read_bytes": 163024,
+              "wall_seconds": 0.008942646010837052
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.00041436400351813063,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "single_generic": {
+          "address_mode": "single",
+          "address_runtime": {
+            "calibration_seconds": 0.012268441001651809,
+            "test_address_seconds": 0.015922041995509062
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 1.0
+              },
+              "1": {
+                "count": 4,
+                "success": 1.0
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 1.0,
+            "threshold": 0.706781268119812,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 45,
+              "evidence_reads": 188,
+              "parse_bytes": 218573,
+              "parse_calls": 134,
+              "read_bytes": 311872,
+              "wall_seconds": 0.009233785007381812
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.00028175400075269863,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_event": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.010929775999102276,
+            "test_address_seconds": 0.013563330998294987
+          },
+          "enabled_types": [
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.6642912030220032,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 27,
+              "evidence_reads": 183,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 254646,
+              "wall_seconds": 0.01421236403984949
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 36438,
+            "prepare_wall_seconds": 0.00790156600123737,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_meta": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.01257862400234444,
+            "test_address_seconds": 0.013893046001612674
+          },
+          "enabled_types": [
+            "event",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.9791666666666666,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 1.0
+              },
+              "1": {
+                "count": 4,
+                "success": 1.0
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 1.0,
+            "threshold": 0.9084470868110657,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 184,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 298922,
+              "wall_seconds": 0.009405023032741155
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1025268,
+            "prepare_wall_seconds": 0.009149033998255618,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_procedure": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.010929775999102276,
+            "test_address_seconds": 0.013563330998294987
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.6642912030220032,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 11304,
+              "parse_calls": 9,
+              "read_bytes": 254646,
+              "wall_seconds": 0.012296742970647756
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1006728,
+            "prepare_wall_seconds": 0.003465768000751268,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_semantic": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.010929775999102276,
+            "test_address_seconds": 0.013563330998294987
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.6642912030220032,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 183474,
+              "parse_calls": 117,
+              "read_bytes": 254646,
+              "wall_seconds": 0.008216262031055521
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1007380,
+            "prepare_wall_seconds": 0.0032420110001112334,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        }
+      },
+      "scope": "initial within-phase diagnostic",
+      "seed": 41033,
+      "shared_address_resources": {
+        "bm25_index_bytes": 350281,
+        "excluded_stale_queries": [],
+        "feature_bytes": 1875968,
+        "fit_cpu_seconds": 1.0390185490000015,
+        "fit_wall_seconds": 1.063817828995525,
+        "heading_target_bytes": 58624,
+        "history_index_bytes": 996608,
+        "index_build_seconds": 0.059969740999804344,
+        "models": {
+          "learned": {
+            "batch_size": 32,
+            "final_parameter_sha256": "48d4bbcb78c881b688c3d3501073dabdc702309fc0234fa76e15bcf6be96cb34",
+            "fit_cpu_seconds": 0.06021472699999819,
+            "fit_wall_seconds": 0.060299094999209046,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "5b9e1c9ccbcf6cfcfb47d9f4167824e0ba477fa52f2e54d2fb618267e5dd8806",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.22698844969272614,
+              "head.weight": 0.4224565923213959,
+              "hidden.bias": 0.2932794690132141,
+              "hidden.weight": 0.2780395746231079
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 916,
+            "optimizer_bytes": 70016,
+            "optimizer_step": 240,
+            "parameter_bytes": 35008,
+            "parameter_change_norm": {
+              "head.bias": 0.41702350974082947,
+              "head.weight": 10.121143341064453,
+              "hidden.bias": 1.215123176574707,
+              "hidden.weight": 31.194852828979492
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "dd57c1ce4dfc4de594d7e7424fad9a6a02a4c420db6a91dc7ceb180dcdd1744f",
+            "seed": 41033,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 2.7822937965393066,
+                "step": 1
+              },
+              {
+                "loss": 0.04651688039302826,
+                "step": 100
+              },
+              {
+                "loss": 0.008052989840507507,
+                "step": 200
+              },
+              {
+                "loss": 0.029185377061367035,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 8752
+          },
+          "single": {
+            "batch_size": 32,
+            "final_parameter_sha256": "23ecd0a70fa3b3d8b15356c7bb00541f11de481c789d319704e2f55f0ba83586",
+            "fit_cpu_seconds": 0.27480330300000233,
+            "fit_wall_seconds": 0.1499535500042839,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "39bf0223e7feac3f77289677e0115f0b7637cea076938ffca490e1f61b08adf5",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.197798952460289,
+              "head.weight": 0.9621198177337646,
+              "hidden.bias": 0.3299197852611542,
+              "hidden.weight": 0.2669186592102051
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 916,
+            "optimizer_bytes": 234752,
+            "optimizer_step": 240,
+            "parameter_bytes": 117376,
+            "parameter_change_norm": {
+              "head.bias": 7.820580005645752,
+              "head.weight": 85.64311218261719,
+              "hidden.bias": 2.41931414604187,
+              "hidden.weight": 47.78239822387695
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "f40258a6026e86b4cd7ca7443c85f424a34cdd948f40d154c7c076a9930f1b08",
+            "seed": 41033,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 6.473882675170898,
+                "step": 1
+              },
+              {
+                "loss": 2.520787477493286,
+                "step": 100
+              },
+              {
+                "loss": 0.34447354078292847,
+                "step": 200
+              },
+              {
+                "loss": 0.30438607931137085,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 29344
+          }
+        },
+        "registry_bytes": 29099,
+        "source_target_bytes": 2344960,
+        "source_text_bytes": 300924,
+        "training_rows": 916
+      },
+      "test_queries": 96
+    },
+    {
+      "address_artifact": {
+        "bytes": 881737,
+        "decoded_bytes": 4664579,
+        "path": "address.json.gz",
+        "sha256": "49d04ab4b83b87fa4bf4ff6c4b9c37f5856f5fdd486b0c93d3c61fd9eb4bed6b"
+      },
+      "paired": {
+        "bm25_generic": {
+          "control_only": 4,
+          "count": 102,
+          "full_minus_control": 0.0196078431372549,
+          "full_only": 6
+        },
+        "history_generic": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.0784313725490196,
+          "full_only": 8
+        },
+        "single_generic": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.29411764705882354,
+          "full_only": 30
+        },
+        "without_event": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_meta": {
+          "control_only": 4,
+          "count": 102,
+          "full_minus_control": 0.0196078431372549,
+          "full_only": 6
+        },
+        "without_procedure": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_semantic": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        }
+      },
+      "phase": 1,
+      "results": {
+        "bm25_generic": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.016595803994277958,
+            "test_address_seconds": 0.028518512001028284
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.8333333333333334,
+            "answerable_success": 0.8529411764705882,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.375
+              },
+              "1": {
+                "count": 8,
+                "success": 0.375
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9019607843137255,
+            "threshold": 0.9124709367752075,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 27,
+              "evidence_reads": 191,
+              "parse_bytes": 263480,
+              "parse_calls": 152,
+              "read_bytes": 388142,
+              "wall_seconds": 0.012998703008634038
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0006891270022606477,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "full_typed": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.014216611998563167,
+            "test_address_seconds": 0.03245563899690751
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8823529411764706,
+            "answerable_success": 0.8823529411764706,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.5
+              },
+              "1": {
+                "count": 8,
+                "success": 0.5
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9215686274509803,
+            "threshold": 0.5012041330337524,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 188,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 287063,
+              "wall_seconds": 0.01716309796756832
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 2033700,
+            "prepare_wall_seconds": 0.02133877299638698,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "history_generic": {
+          "address_mode": "history",
+          "address_runtime": {
+            "calibration_seconds": 0.024049584004387725,
+            "test_address_seconds": 0.03766765500040492
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.7647058823529411,
+            "answerable_success": 0.7647058823529411,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.0
+              },
+              "1": {
+                "count": 8,
+                "success": 0.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.8431372549019608,
+            "threshold": 0.4522568881511688,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 90,
+              "parse_bytes": 144348,
+              "parse_calls": 90,
+              "read_bytes": 144348,
+              "wall_seconds": 0.013271999014250468
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0006262830065679736,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "single_generic": {
+          "address_mode": "single",
+          "address_runtime": {
+            "calibration_seconds": 0.021414787996036466,
+            "test_address_seconds": 0.04565182499936782
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.45098039215686275,
+            "answerable_success": 0.4411764705882353,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 78,
+                "success": 0.717948717948718
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.0
+              },
+              "1": {
+                "count": 8,
+                "success": 0.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.6274509803921569,
+            "threshold": 0.4743928015232086,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 176,
+              "parse_bytes": 260753,
+              "parse_calls": 166,
+              "read_bytes": 275484,
+              "wall_seconds": 0.015106563965673558
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.000687475003360305,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_event": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.014216611998563167,
+            "test_address_seconds": 0.03245563899690751
+          },
+          "enabled_types": [
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8823529411764706,
+            "answerable_success": 0.8823529411764706,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.5
+              },
+              "1": {
+                "count": 8,
+                "success": 0.5
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9215686274509803,
+            "threshold": 0.5012041330337524,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 36,
+              "evidence_reads": 188,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 287063,
+              "wall_seconds": 0.010884970019105822
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 74215,
+            "prepare_wall_seconds": 0.020109642995521426,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_meta": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.016595803994277958,
+            "test_address_seconds": 0.028518512001028284
+          },
+          "enabled_types": [
+            "event",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8333333333333334,
+            "answerable_success": 0.8529411764705882,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.375
+              },
+              "1": {
+                "count": 8,
+                "success": 0.375
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9019607843137255,
+            "threshold": 0.9124709367752075,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 191,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 388142,
+              "wall_seconds": 0.011386099002265837
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 2033700,
+            "prepare_wall_seconds": 0.011223155997868162,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_procedure": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.014216611998563167,
+            "test_address_seconds": 0.03245563899690751
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8823529411764706,
+            "answerable_success": 0.8823529411764706,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.5
+              },
+              "1": {
+                "count": 8,
+                "success": 0.5
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9215686274509803,
+            "threshold": 0.5012041330337524,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 188,
+              "parse_bytes": 45064,
+              "parse_calls": 28,
+              "read_bytes": 287063,
+              "wall_seconds": 0.011979872957454063
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1994055,
+            "prepare_wall_seconds": 0.006897553997987416,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_semantic": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.014216611998563167,
+            "test_address_seconds": 0.03245563899690751
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure"
+          ],
+          "metrics": {
+            "address_coverage": 0.8823529411764706,
+            "answerable_success": 0.8823529411764706,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.5
+              },
+              "1": {
+                "count": 8,
+                "success": 0.5
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9215686274509803,
+            "threshold": 0.5012041330337524,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 188,
+              "parse_bytes": 209269,
+              "parse_calls": 116,
+              "read_bytes": 287063,
+              "wall_seconds": 0.012191775960673112
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1999140,
+            "prepare_wall_seconds": 0.005211915995460004,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        }
+      },
+      "scope": "future document-arrival tasks",
+      "seed": 41033,
+      "shared_address_resources": {
+        "bm25_index_bytes": 658300,
+        "excluded_stale_queries": [],
+        "feature_bytes": 3387392,
+        "fit_cpu_seconds": 1.791212024,
+        "fit_wall_seconds": 1.6825933150030323,
+        "heading_target_bytes": 105856,
+        "history_index_bytes": 1799552,
+        "index_build_seconds": 0.033022620002157055,
+        "models": {
+          "learned": {
+            "batch_size": 32,
+            "final_parameter_sha256": "a9d09bd4ace4ab6bea9eb78cc32c5bd20a415814f022d8f50bbb9f50c131ee70",
+            "fit_cpu_seconds": 0.05936602699999938,
+            "fit_wall_seconds": 0.05942088200390572,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "5b9e1c9ccbcf6cfcfb47d9f4167824e0ba477fa52f2e54d2fb618267e5dd8806",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.25019940733909607,
+              "head.weight": 0.5095168352127075,
+              "hidden.bias": 0.32009977102279663,
+              "hidden.weight": 0.2793451249599457
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 1654,
+            "optimizer_bytes": 70016,
+            "optimizer_step": 240,
+            "parameter_bytes": 35008,
+            "parameter_change_norm": {
+              "head.bias": 0.32935062050819397,
+              "head.weight": 11.182230949401855,
+              "hidden.bias": 1.301424264907837,
+              "hidden.weight": 33.58269119262695
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "18c882ba6697d6ca1b654f4fdda27a6597e18bb300ff04e7c285fcc066ab16c6",
+            "seed": 41033,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 2.7795374393463135,
+                "step": 1
+              },
+              {
+                "loss": 0.1803358793258667,
+                "step": 100
+              },
+              {
+                "loss": 0.05963995307683945,
+                "step": 200
+              },
+              {
+                "loss": 0.03422632813453674,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 8752
+          },
+          "single": {
+            "batch_size": 32,
+            "final_parameter_sha256": "e4563e848fefd9712abe535cf3f3492d1e57e185f265656b0a108af3a9385a26",
+            "fit_cpu_seconds": 0.2306075000000014,
+            "fit_wall_seconds": 0.12392478100082371,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "39bf0223e7feac3f77289677e0115f0b7637cea076938ffca490e1f61b08adf5",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.1941581517457962,
+              "head.weight": 0.7767965197563171,
+              "hidden.bias": 0.3540319502353668,
+              "hidden.weight": 0.29413095116615295
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 1654,
+            "optimizer_bytes": 234752,
+            "optimizer_step": 240,
+            "parameter_bytes": 117376,
+            "parameter_change_norm": {
+              "head.bias": 8.079161643981934,
+              "head.weight": 99.3740234375,
+              "hidden.bias": 2.2112724781036377,
+              "hidden.weight": 42.230682373046875
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "2410480e8d18e3c01075bffd3a3dfbaaee59f0427aa96c5947e149b1268987de",
+            "seed": 41033,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 6.470081806182861,
+                "step": 1
+              },
+              {
+                "loss": 4.0607380867004395,
+                "step": 100
+              },
+              {
+                "loss": 1.1831542253494263,
+                "step": 200
+              },
+              {
+                "loss": 1.0790352821350098,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 29344
+          }
+        },
+        "registry_bytes": 56154,
+        "source_target_bytes": 4234240,
+        "source_text_bytes": 599809,
+        "training_rows": 1654
+      },
+      "test_queries": 102
+    },
+    {
+      "address_artifact": {
+        "bytes": 1147247,
+        "decoded_bytes": 7735572,
+        "path": "address.json.gz",
+        "sha256": "bca4a5285fce3256e1e5d92bb6d300e02e403ad97ee918257566331db7de100c"
+      },
+      "paired": {
+        "bm25_generic": {
+          "control_only": 6,
+          "count": 104,
+          "full_minus_control": -0.038461538461538464,
+          "full_only": 2
+        },
+        "history_generic": {
+          "control_only": 4,
+          "count": 104,
+          "full_minus_control": 0.019230769230769232,
+          "full_only": 6
+        },
+        "single_generic": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.3269230769230769,
+          "full_only": 34
+        },
+        "without_event": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_meta": {
+          "control_only": 6,
+          "count": 104,
+          "full_minus_control": -0.038461538461538464,
+          "full_only": 2
+        },
+        "without_procedure": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_semantic": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        }
+      },
+      "phase": 2,
+      "results": {
+        "bm25_generic": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.032235247002972756,
+            "test_address_seconds": 0.029325185998459347
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.9711538461538461,
+            "answerable_success": 0.9705882352941176,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.8333333333333334
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.875
+              },
+              "1": {
+                "count": 8,
+                "success": 0.875
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9807692307692307,
+            "threshold": 0.901131272315979,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 63,
+              "evidence_reads": 197,
+              "parse_bytes": 256122,
+              "parse_calls": 151,
+              "read_bytes": 346799,
+              "wall_seconds": 0.023779889997967985
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.00183614699926693,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "full_typed": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.028821507999964524,
+            "test_address_seconds": 0.03433531900373055
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.9134615384615384,
+            "answerable_success": 0.9117647058823529,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.625
+              },
+              "1": {
+                "count": 8,
+                "success": 0.625
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9423076923076923,
+            "threshold": 0.5797704458236694,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 181,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 320174,
+              "wall_seconds": 0.016849668994836975
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 3057113,
+            "prepare_wall_seconds": 0.06314795299840625,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "history_generic": {
+          "address_mode": "history",
+          "address_runtime": {
+            "calibration_seconds": 0.05059020900080213,
+            "test_address_seconds": 0.05089874300028896
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.8846153846153846,
+            "answerable_success": 0.8823529411764706,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.5
+              },
+              "1": {
+                "count": 8,
+                "success": 0.5
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9230769230769231,
+            "threshold": 0.4467710554599762,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 36,
+              "evidence_reads": 98,
+              "parse_bytes": 172340,
+              "parse_calls": 104,
+              "read_bytes": 166684,
+              "wall_seconds": 0.021461282995005604
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.00157373100228142,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "single_generic": {
+          "address_mode": "single",
+          "address_runtime": {
+            "calibration_seconds": 0.04520444099762244,
+            "test_address_seconds": 0.038604624998697545
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.40384615384615385,
+            "answerable_success": 0.4117647058823529,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 80,
+                "success": 0.7
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.0
+              },
+              "1": {
+                "count": 8,
+                "success": 0.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.6153846153846154,
+            "threshold": 0.5785583853721619,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 9,
+              "evidence_reads": 135,
+              "parse_bytes": 178407,
+              "parse_calls": 120,
+              "read_bytes": 186544,
+              "wall_seconds": 0.022089433987275697
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0018153260025428608,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_event": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.028821507999964524,
+            "test_address_seconds": 0.03433531900373055
+          },
+          "enabled_types": [
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.9134615384615384,
+            "answerable_success": 0.9117647058823529,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.625
+              },
+              "1": {
+                "count": 8,
+                "success": 0.625
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9423076923076923,
+            "threshold": 0.5797704458236694,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 51,
+              "evidence_reads": 181,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 320174,
+              "wall_seconds": 0.04050978999293875
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 117717,
+            "prepare_wall_seconds": 0.018167899994296022,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_meta": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.032235247002972756,
+            "test_address_seconds": 0.029325185998459347
+          },
+          "enabled_types": [
+            "event",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.9711538461538461,
+            "answerable_success": 0.9705882352941176,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.8333333333333334
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.875
+              },
+              "1": {
+                "count": 8,
+                "success": 0.875
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9807692307692307,
+            "threshold": 0.901131272315979,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 197,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 346799,
+              "wall_seconds": 0.02896290797070833
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 3057113,
+            "prepare_wall_seconds": 0.03541943999880459,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_procedure": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.028821507999964524,
+            "test_address_seconds": 0.03433531900373055
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.9134615384615384,
+            "answerable_success": 0.9117647058823529,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.625
+              },
+              "1": {
+                "count": 8,
+                "success": 0.625
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9423076923076923,
+            "threshold": 0.5797704458236694,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 181,
+              "parse_bytes": 39612,
+              "parse_calls": 17,
+              "read_bytes": 320174,
+              "wall_seconds": 0.03671971699077403
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 2990627,
+            "prepare_wall_seconds": 0.02024703899951419,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_semantic": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.028821507999964524,
+            "test_address_seconds": 0.03433531900373055
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure"
+          ],
+          "metrics": {
+            "address_coverage": 0.9134615384615384,
+            "answerable_success": 0.9117647058823529,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.625
+              },
+              "1": {
+                "count": 8,
+                "success": 0.625
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9423076923076923,
+            "threshold": 0.5797704458236694,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 181,
+              "parse_bytes": 236609,
+              "parse_calls": 107,
+              "read_bytes": 320174,
+              "wall_seconds": 0.019724425990716554
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 3005892,
+            "prepare_wall_seconds": 0.019951033005781937,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        }
+      },
+      "scope": "future document-arrival tasks",
+      "seed": 41033,
+      "shared_address_resources": {
+        "bm25_index_bytes": 959047,
+        "excluded_stale_queries": [],
+        "feature_bytes": 6176768,
+        "fit_cpu_seconds": 2.7443197700000006,
+        "fit_wall_seconds": 4.120041629998013,
+        "heading_target_bytes": 193024,
+        "history_index_bytes": 3281408,
+        "index_build_seconds": 0.04552835800132016,
+        "models": {
+          "learned": {
+            "batch_size": 32,
+            "final_parameter_sha256": "f2275225bcaf8c4b62c5ac6c838719620a03a23574e74b975e8c645f6cc33985",
+            "fit_cpu_seconds": 0.04711698799999908,
+            "fit_wall_seconds": 0.05146244199568173,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "5b9e1c9ccbcf6cfcfb47d9f4167824e0ba477fa52f2e54d2fb618267e5dd8806",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.24566975235939026,
+              "head.weight": 0.4395119249820709,
+              "hidden.bias": 0.3242999315261841,
+              "hidden.weight": 0.27792298793792725
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 3016,
+            "optimizer_bytes": 70016,
+            "optimizer_step": 240,
+            "parameter_bytes": 35008,
+            "parameter_change_norm": {
+              "head.bias": 0.32373228669166565,
+              "head.weight": 11.265878677368164,
+              "hidden.bias": 1.3107538223266602,
+              "hidden.weight": 33.683258056640625
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "c1c1bc713385a45806287fe81be81090a95a84c146eb728446df9c68dec79f35",
+            "seed": 41033,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 2.7618579864501953,
+                "step": 1
+              },
+              {
+                "loss": 0.17307105660438538,
+                "step": 100
+              },
+              {
+                "loss": 0.04721106216311455,
+                "step": 200
+              },
+              {
+                "loss": 0.03743203729391098,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 8752
+          },
+          "single": {
+            "batch_size": 32,
+            "final_parameter_sha256": "8cad937fe41721eef9fdd63790c416c9d3e06a4a1e5fffc161e2ce6ed927d691",
+            "fit_cpu_seconds": 0.3299940029999995,
+            "fit_wall_seconds": 0.22644348799803993,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "39bf0223e7feac3f77289677e0115f0b7637cea076938ffca490e1f61b08adf5",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.1962360292673111,
+              "head.weight": 0.7288914918899536,
+              "hidden.bias": 0.44915637373924255,
+              "hidden.weight": 0.3636973202228546
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 3016,
+            "optimizer_bytes": 234752,
+            "optimizer_step": 240,
+            "parameter_bytes": 117376,
+            "parameter_change_norm": {
+              "head.bias": 6.383368968963623,
+              "head.weight": 135.1181640625,
+              "hidden.bias": 1.952289342880249,
+              "hidden.weight": 39.983551025390625
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "658b0d0f6db3091c6de4ecfc444b25ecbebb58ac88dd82dd54fff7fc689d7fb5",
+            "seed": 41033,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 6.4755449295043945,
+                "step": 1
+              },
+              {
+                "loss": 4.996134281158447,
+                "step": 100
+              },
+              {
+                "loss": 1.6639710664749146,
+                "step": 200
+              },
+              {
+                "loss": 2.1349644660949707,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 29344
+          }
+        },
+        "registry_bytes": 83113,
+        "source_target_bytes": 7720960,
+        "source_text_bytes": 903831,
+        "training_rows": 3016
+      },
+      "test_queries": 104
+    },
+    {
+      "address_artifact": {
+        "bytes": 703671,
+        "decoded_bytes": 2993238,
+        "path": "address.json.gz",
+        "sha256": "adf346e28f545647f85996c36b2b43c9b62f48b591e013e60a120690bf0faa9f"
+      },
+      "paired": {
+        "bm25_generic": {
+          "control_only": 2,
+          "count": 96,
+          "full_minus_control": -0.020833333333333332,
+          "full_only": 0
+        },
+        "history_generic": {
+          "control_only": 2,
+          "count": 96,
+          "full_minus_control": -0.020833333333333332,
+          "full_only": 0
+        },
+        "single_generic": {
+          "control_only": 0,
+          "count": 96,
+          "full_minus_control": 0.020833333333333332,
+          "full_only": 2
+        },
+        "without_event": {
+          "control_only": 0,
+          "count": 96,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_meta": {
+          "control_only": 2,
+          "count": 96,
+          "full_minus_control": -0.020833333333333332,
+          "full_only": 0
+        },
+        "without_procedure": {
+          "control_only": 0,
+          "count": 96,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_semantic": {
+          "control_only": 0,
+          "count": 96,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        }
+      },
+      "phase": 0,
+      "results": {
+        "bm25_generic": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.018660895999346394,
+            "test_address_seconds": 0.032695155998226255
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.9791666666666666,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 1.0
+              },
+              "1": {
+                "count": 4,
+                "success": 1.0
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 1.0,
+            "threshold": 0.9084470868110657,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 36,
+              "evidence_reads": 184,
+              "parse_bytes": 205573,
+              "parse_calls": 130,
+              "read_bytes": 298922,
+              "wall_seconds": 0.014470412032096647
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0005511400013347156,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "full_typed": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.016928997996728867,
+            "test_address_seconds": 0.04251950699836016
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.583422839641571,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 263022,
+              "wall_seconds": 0.014421778971154708
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1025268,
+            "prepare_wall_seconds": 0.008546586999727879,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "history_generic": {
+          "address_mode": "history",
+          "address_runtime": {
+            "calibration_seconds": 0.027013310995243955,
+            "test_address_seconds": 0.03300567299447721
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 1.0
+              },
+              "1": {
+                "count": 4,
+                "success": 1.0
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 1.0,
+            "threshold": 0.4522568881511688,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 36,
+              "evidence_reads": 98,
+              "parse_bytes": 170592,
+              "parse_calls": 104,
+              "read_bytes": 163024,
+              "wall_seconds": 0.013771764017292298
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0006295480052358471,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "single_generic": {
+          "address_mode": "single",
+          "address_runtime": {
+            "calibration_seconds": 0.029533624998293817,
+            "test_address_seconds": 0.05892169199796626
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.9375,
+            "answerable_success": 0.9375,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.5
+              },
+              "1": {
+                "count": 4,
+                "success": 0.5
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9583333333333334,
+            "threshold": 0.6428223252296448,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 36,
+              "evidence_reads": 178,
+              "parse_bytes": 182713,
+              "parse_calls": 118,
+              "read_bytes": 251618,
+              "wall_seconds": 0.014674901023681741
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0006393830044544302,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_event": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.016928997996728867,
+            "test_address_seconds": 0.04251950699836016
+          },
+          "enabled_types": [
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.583422839641571,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 27,
+              "evidence_reads": 183,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 263022,
+              "wall_seconds": 0.011725479962478857
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 36438,
+            "prepare_wall_seconds": 0.009225590001733508,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_meta": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.018660895999346394,
+            "test_address_seconds": 0.032695155998226255
+          },
+          "enabled_types": [
+            "event",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.9791666666666666,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 1.0
+              },
+              "1": {
+                "count": 4,
+                "success": 1.0
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 1.0,
+            "threshold": 0.9084470868110657,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 184,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 298922,
+              "wall_seconds": 0.012718014048004989
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1025268,
+            "prepare_wall_seconds": 0.007750669006782118,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_procedure": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.016928997996728867,
+            "test_address_seconds": 0.04251950699836016
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.583422839641571,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 10654,
+              "parse_calls": 9,
+              "read_bytes": 263022,
+              "wall_seconds": 0.012559339047584217
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1006728,
+            "prepare_wall_seconds": 0.006174627000291366,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        },
+        "without_semantic": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.016928997996728867,
+            "test_address_seconds": 0.04251950699836016
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure"
+          ],
+          "metrics": {
+            "address_coverage": 0.96875,
+            "answerable_success": 0.96875,
+            "by_operation": {
+              "checklist": {
+                "count": 6,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 6,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 84,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 4,
+                "success": 0.75
+              },
+              "1": {
+                "count": 4,
+                "success": 0.75
+              },
+              "2": {
+                "count": 4,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 96,
+            "success": 0.9791666666666666,
+            "threshold": 0.583422839641571,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 177336,
+              "parse_calls": 117,
+              "read_bytes": 263022,
+              "wall_seconds": 0.01317785100400215
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1007380,
+            "prepare_wall_seconds": 0.004222155999741517,
+            "shared_event_bytes": 18300,
+            "source_text_bytes": 300924
+          }
+        }
+      },
+      "scope": "initial within-phase diagnostic",
+      "seed": 51047,
+      "shared_address_resources": {
+        "bm25_index_bytes": 350281,
+        "excluded_stale_queries": [],
+        "feature_bytes": 1875968,
+        "fit_cpu_seconds": 1.4109559019999978,
+        "fit_wall_seconds": 1.4362384129999555,
+        "heading_target_bytes": 58624,
+        "history_index_bytes": 996608,
+        "index_build_seconds": 0.02314255199598847,
+        "models": {
+          "learned": {
+            "batch_size": 32,
+            "final_parameter_sha256": "0e779508f005884fd5b500b4a73aee8067e2f134bda82ec4270934bf6082b661",
+            "fit_cpu_seconds": 0.0578906979999978,
+            "fit_wall_seconds": 0.062265393004054204,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "f0da147a2a6f6c67cbd07f9fc570df0eb9517f8d1a4e0e0f9c54b0aab9eb326f",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.24812902510166168,
+              "head.weight": 0.39207419753074646,
+              "hidden.bias": 0.2818772792816162,
+              "hidden.weight": 0.24707409739494324
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 916,
+            "optimizer_bytes": 70016,
+            "optimizer_step": 240,
+            "parameter_bytes": 35008,
+            "parameter_change_norm": {
+              "head.bias": 0.29091039299964905,
+              "head.weight": 10.629563331604004,
+              "hidden.bias": 1.1967064142227173,
+              "hidden.weight": 32.109649658203125
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "dc36df2a8997cc1120b24bcac5134dda5031bf5041e54470d24c7865952e31ce",
+            "seed": 51047,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 2.790526866912842,
+                "step": 1
+              },
+              {
+                "loss": 0.03152220696210861,
+                "step": 100
+              },
+              {
+                "loss": 0.028454139828681946,
+                "step": 200
+              },
+              {
+                "loss": 0.04740730673074722,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 8752
+          },
+          "single": {
+            "batch_size": 32,
+            "final_parameter_sha256": "aefc7b1f1c3646533d5ad42f26afd8c1b289c0229ff3e9ec5041e8a0f99c43d6",
+            "fit_cpu_seconds": 0.5297604480000011,
+            "fit_wall_seconds": 0.5242671839951072,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "737a296e4270a86a98774d7b1ccca8850e59c54378776142b6af253ec1cde02a",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.22496342658996582,
+              "head.weight": 0.9856616854667664,
+              "hidden.bias": 0.36022108793258667,
+              "hidden.weight": 0.27376407384872437
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 916,
+            "optimizer_bytes": 234752,
+            "optimizer_step": 240,
+            "parameter_bytes": 117376,
+            "parameter_change_norm": {
+              "head.bias": 8.033613204956055,
+              "head.weight": 85.8063735961914,
+              "hidden.bias": 2.4235785007476807,
+              "hidden.weight": 47.6470832824707
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "2a43797187ef24121fcae7eff7908a3b9d1de301d04864c48cc731da7db635d6",
+            "seed": 51047,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 6.484000205993652,
+                "step": 1
+              },
+              {
+                "loss": 3.032288074493408,
+                "step": 100
+              },
+              {
+                "loss": 0.5113096237182617,
+                "step": 200
+              },
+              {
+                "loss": 0.33219021558761597,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 29344
+          }
+        },
+        "registry_bytes": 29099,
+        "source_target_bytes": 2344960,
+        "source_text_bytes": 300924,
+        "training_rows": 916
+      },
+      "test_queries": 96
+    },
+    {
+      "address_artifact": {
+        "bytes": 882473,
+        "decoded_bytes": 4664603,
+        "path": "address.json.gz",
+        "sha256": "13b8f8ab89b6abef7044a815f61bd070197bfd714bbbef8917f5716adf1e1ba9"
+      },
+      "paired": {
+        "bm25_generic": {
+          "control_only": 4,
+          "count": 102,
+          "full_minus_control": 0.0,
+          "full_only": 4
+        },
+        "history_generic": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.058823529411764705,
+          "full_only": 6
+        },
+        "single_generic": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.3333333333333333,
+          "full_only": 34
+        },
+        "without_event": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_meta": {
+          "control_only": 4,
+          "count": 102,
+          "full_minus_control": 0.0,
+          "full_only": 4
+        },
+        "without_procedure": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_semantic": {
+          "control_only": 0,
+          "count": 102,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        }
+      },
+      "phase": 1,
+      "results": {
+        "bm25_generic": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.013384821999352425,
+            "test_address_seconds": 0.021605018999252934
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.8333333333333334,
+            "answerable_success": 0.8529411764705882,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.375
+              },
+              "1": {
+                "count": 8,
+                "success": 0.375
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9019607843137255,
+            "threshold": 0.9124709367752075,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 27,
+              "evidence_reads": 191,
+              "parse_bytes": 263480,
+              "parse_calls": 152,
+              "read_bytes": 388142,
+              "wall_seconds": 0.012053801976435352
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0006678249992546625,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "full_typed": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.020353674997750204,
+            "test_address_seconds": 0.042958848003763705
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8529411764705882,
+            "answerable_success": 0.8529411764705882,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.375
+              },
+              "1": {
+                "count": 8,
+                "success": 0.375
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9019607843137255,
+            "threshold": 0.6521431803703308,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 269920,
+              "wall_seconds": 0.011834668977826368
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 2033700,
+            "prepare_wall_seconds": 0.0107879029965261,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "history_generic": {
+          "address_mode": "history",
+          "address_runtime": {
+            "calibration_seconds": 0.027718883997295052,
+            "test_address_seconds": 0.03724031800084049
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.7647058823529411,
+            "answerable_success": 0.7647058823529411,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.0
+              },
+              "1": {
+                "count": 8,
+                "success": 0.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.8431372549019608,
+            "threshold": 0.4522568881511688,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 90,
+              "parse_bytes": 144348,
+              "parse_calls": 90,
+              "read_bytes": 144348,
+              "wall_seconds": 0.01686856999003794
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0007147560027078725,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "single_generic": {
+          "address_mode": "single",
+          "address_runtime": {
+            "calibration_seconds": 0.025102204002905637,
+            "test_address_seconds": 0.04835644499689806
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.35294117647058826,
+            "answerable_success": 0.35294117647058826,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 78,
+                "success": 0.6410256410256411
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.0
+              },
+              "1": {
+                "count": 8,
+                "success": 0.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.5686274509803921,
+            "threshold": 0.5062257051467896,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 138,
+              "parse_bytes": 225830,
+              "parse_calls": 132,
+              "read_bytes": 217835,
+              "wall_seconds": 0.012372490025882144
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.000785932999860961,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_event": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.020353674997750204,
+            "test_address_seconds": 0.042958848003763705
+          },
+          "enabled_types": [
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8529411764705882,
+            "answerable_success": 0.8529411764705882,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.375
+              },
+              "1": {
+                "count": 8,
+                "success": 0.375
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9019607843137255,
+            "threshold": 0.6521431803703308,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 33,
+              "evidence_reads": 183,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 269920,
+              "wall_seconds": 0.010176470976148266
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 74215,
+            "prepare_wall_seconds": 0.009376426998642273,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_meta": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.013384821999352425,
+            "test_address_seconds": 0.021605018999252934
+          },
+          "enabled_types": [
+            "event",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8333333333333334,
+            "answerable_success": 0.8529411764705882,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.375
+              },
+              "1": {
+                "count": 8,
+                "success": 0.375
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9019607843137255,
+            "threshold": 0.9124709367752075,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 191,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 388142,
+              "wall_seconds": 0.010373624034400564
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 2033700,
+            "prepare_wall_seconds": 0.010285876000125427,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_procedure": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.020353674997750204,
+            "test_address_seconds": 0.042958848003763705
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.8529411764705882,
+            "answerable_success": 0.8529411764705882,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.375
+              },
+              "1": {
+                "count": 8,
+                "success": 0.375
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9019607843137255,
+            "threshold": 0.6521431803703308,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 29628,
+              "parse_calls": 21,
+              "read_bytes": 269920,
+              "wall_seconds": 0.0105915969616035
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1994055,
+            "prepare_wall_seconds": 0.005941846000496298,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        },
+        "without_semantic": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.020353674997750204,
+            "test_address_seconds": 0.042958848003763705
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure"
+          ],
+          "metrics": {
+            "address_coverage": 0.8529411764705882,
+            "answerable_success": 0.8529411764705882,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.5
+              },
+              "lookup": {
+                "count": 78,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.375
+              },
+              "1": {
+                "count": 8,
+                "success": 0.375
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 102,
+            "success": 0.9019607843137255,
+            "threshold": 0.6521431803703308,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 183,
+              "parse_bytes": 183320,
+              "parse_calls": 115,
+              "read_bytes": 269920,
+              "wall_seconds": 0.01083682903117733
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 1999140,
+            "prepare_wall_seconds": 0.004871725002885796,
+            "shared_event_bytes": 39472,
+            "source_text_bytes": 599809
+          }
+        }
+      },
+      "scope": "future document-arrival tasks",
+      "seed": 51047,
+      "shared_address_resources": {
+        "bm25_index_bytes": 658300,
+        "excluded_stale_queries": [],
+        "feature_bytes": 3387392,
+        "fit_cpu_seconds": 1.7788300439999958,
+        "fit_wall_seconds": 1.7260012820042903,
+        "heading_target_bytes": 105856,
+        "history_index_bytes": 1799552,
+        "index_build_seconds": 0.04425999800150748,
+        "models": {
+          "learned": {
+            "batch_size": 32,
+            "final_parameter_sha256": "64a939a199e57cf2fac2f13e13320c89cdaea20bee9f9b805dd4da97c0edcd99",
+            "fit_cpu_seconds": 0.04825724299999479,
+            "fit_wall_seconds": 0.04836804299702635,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "f0da147a2a6f6c67cbd07f9fc570df0eb9517f8d1a4e0e0f9c54b0aab9eb326f",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.22503508627414703,
+              "head.weight": 0.45586517453193665,
+              "hidden.bias": 0.3233763873577118,
+              "hidden.weight": 0.25849390029907227
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 1654,
+            "optimizer_bytes": 70016,
+            "optimizer_step": 240,
+            "parameter_bytes": 35008,
+            "parameter_change_norm": {
+              "head.bias": 0.36075910925865173,
+              "head.weight": 11.189641952514648,
+              "hidden.bias": 1.2289916276931763,
+              "hidden.weight": 34.086151123046875
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "b8fad4e3dd92ccfd72b53cb80530964a635b0d7f326c96d6567478d0adc4e7fd",
+            "seed": 51047,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 2.772400379180908,
+                "step": 1
+              },
+              {
+                "loss": 0.2148570418357849,
+                "step": 100
+              },
+              {
+                "loss": 0.023229938000440598,
+                "step": 200
+              },
+              {
+                "loss": 0.0072046369314193726,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 8752
+          },
+          "single": {
+            "batch_size": 32,
+            "final_parameter_sha256": "0122ec786ad4957e287ad2e5b26da9c0579161b87293b858c624c2e2d032bece",
+            "fit_cpu_seconds": 0.25000752000000404,
+            "fit_wall_seconds": 0.14395934399362886,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "737a296e4270a86a98774d7b1ccca8850e59c54378776142b6af253ec1cde02a",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.21373172104358673,
+              "head.weight": 0.7702671885490417,
+              "hidden.bias": 0.35807108879089355,
+              "hidden.weight": 0.31124305725097656
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 1654,
+            "optimizer_bytes": 234752,
+            "optimizer_step": 240,
+            "parameter_bytes": 117376,
+            "parameter_change_norm": {
+              "head.bias": 8.164819717407227,
+              "head.weight": 104.74085998535156,
+              "hidden.bias": 2.17543363571167,
+              "hidden.weight": 42.06829833984375
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "ac08550ca158abc635aafdcd40137d1ccf377b2237fd3467dd77da937de86a79",
+            "seed": 51047,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 6.456502914428711,
+                "step": 1
+              },
+              {
+                "loss": 4.838924884796143,
+                "step": 100
+              },
+              {
+                "loss": 1.9208852052688599,
+                "step": 200
+              },
+              {
+                "loss": 1.3115719556808472,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 29344
+          }
+        },
+        "registry_bytes": 56154,
+        "source_target_bytes": 4234240,
+        "source_text_bytes": 599809,
+        "training_rows": 1654
+      },
+      "test_queries": 102
+    },
+    {
+      "address_artifact": {
+        "bytes": 1147830,
+        "decoded_bytes": 7735578,
+        "path": "address.json.gz",
+        "sha256": "a0973974a78a3e798d0498ac18e44068558c25ec825fc5920649219f0876378e"
+      },
+      "paired": {
+        "bm25_generic": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.019230769230769232,
+          "full_only": 2
+        },
+        "history_generic": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.07692307692307693,
+          "full_only": 8
+        },
+        "single_generic": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.5,
+          "full_only": 52
+        },
+        "without_event": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_meta": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.019230769230769232,
+          "full_only": 2
+        },
+        "without_procedure": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        },
+        "without_semantic": {
+          "control_only": 0,
+          "count": 104,
+          "full_minus_control": 0.0,
+          "full_only": 0
+        }
+      },
+      "phase": 2,
+      "results": {
+        "bm25_generic": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.033699216997774784,
+            "test_address_seconds": 0.042226936006045435
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.9711538461538461,
+            "answerable_success": 0.9705882352941176,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.8333333333333334
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.875
+              },
+              "1": {
+                "count": 8,
+                "success": 0.875
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9807692307692307,
+            "threshold": 0.901131272315979,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 63,
+              "evidence_reads": 197,
+              "parse_bytes": 256122,
+              "parse_calls": 151,
+              "read_bytes": 346799,
+              "wall_seconds": 0.0183756980477483
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0010702209983719513,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "full_typed": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.030763376998947933,
+            "test_address_seconds": 0.05726667999988422
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 1.0
+              },
+              "1": {
+                "count": 8,
+                "success": 1.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 1.0,
+            "threshold": 0.5302239656448364,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 196,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 309022,
+              "wall_seconds": 0.012630723940674216
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 3057113,
+            "prepare_wall_seconds": 0.015799296998011414,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "history_generic": {
+          "address_mode": "history",
+          "address_runtime": {
+            "calibration_seconds": 0.06432905400288291,
+            "test_address_seconds": 0.04365082000003895
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.8846153846153846,
+            "answerable_success": 0.8823529411764706,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.6666666666666666
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.5
+              },
+              "1": {
+                "count": 8,
+                "success": 0.5
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9230769230769231,
+            "threshold": 0.4467710554599762,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 36,
+              "evidence_reads": 98,
+              "parse_bytes": 172340,
+              "parse_calls": 104,
+              "read_bytes": 166684,
+              "wall_seconds": 0.015380217009806074
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0010885489973588847,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "single_generic": {
+          "address_mode": "single",
+          "address_runtime": {
+            "calibration_seconds": 0.06960981299926061,
+            "test_address_seconds": 0.032262024004012346
+          },
+          "enabled_types": [],
+          "metrics": {
+            "address_coverage": 0.25,
+            "answerable_success": 0.23529411764705882,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "compose": {
+                "count": 12,
+                "success": 0.3333333333333333
+              },
+              "lookup": {
+                "count": 80,
+                "success": 0.55
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.0
+              },
+              "1": {
+                "count": 8,
+                "success": 0.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.5,
+            "threshold": 0.5147062540054321,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 18,
+              "evidence_reads": 132,
+              "parse_bytes": 232990,
+              "parse_calls": 138,
+              "read_bytes": 227856,
+              "wall_seconds": 0.014785777042561676
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 10,
+            "prepare_wall_seconds": 0.0009941169992089272,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_event": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.030763376998947933,
+            "test_address_seconds": 0.05726667999988422
+          },
+          "enabled_types": [
+            "meta",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 1.0
+              },
+              "1": {
+                "count": 8,
+                "success": 1.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 1.0,
+            "threshold": 0.5302239656448364,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 72,
+              "evidence_reads": 196,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 309022,
+              "wall_seconds": 0.013015844015171751
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 117717,
+            "prepare_wall_seconds": 0.014159598002152052,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_meta": {
+          "address_mode": "bm25",
+          "address_runtime": {
+            "calibration_seconds": 0.033699216997774784,
+            "test_address_seconds": 0.042226936006045435
+          },
+          "enabled_types": [
+            "event",
+            "procedure",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 0.9711538461538461,
+            "answerable_success": 0.9705882352941176,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 0.8333333333333334
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 0.875
+              },
+              "1": {
+                "count": 8,
+                "success": 0.875
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 0.9807692307692307,
+            "threshold": 0.901131272315979,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 197,
+              "parse_bytes": 0,
+              "parse_calls": 0,
+              "read_bytes": 346799,
+              "wall_seconds": 0.013024240972299594
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 3057113,
+            "prepare_wall_seconds": 0.016458220001368318,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_procedure": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.030763376998947933,
+            "test_address_seconds": 0.05726667999988422
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "semantic"
+          ],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 1.0
+              },
+              "1": {
+                "count": 8,
+                "success": 1.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 1.0,
+            "threshold": 0.5302239656448364,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 196,
+              "parse_bytes": 54198,
+              "parse_calls": 26,
+              "read_bytes": 309022,
+              "wall_seconds": 0.01355742200394161
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 2990627,
+            "prepare_wall_seconds": 0.010619557993777562,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        },
+        "without_semantic": {
+          "address_mode": "learned",
+          "address_runtime": {
+            "calibration_seconds": 0.030763376998947933,
+            "test_address_seconds": 0.05726667999988422
+          },
+          "enabled_types": [
+            "event",
+            "meta",
+            "procedure"
+          ],
+          "metrics": {
+            "address_coverage": 1.0,
+            "answerable_success": 1.0,
+            "by_operation": {
+              "checklist": {
+                "count": 12,
+                "success": 1.0
+              },
+              "compose": {
+                "count": 12,
+                "success": 1.0
+              },
+              "lookup": {
+                "count": 80,
+                "success": 1.0
+              }
+            },
+            "by_procedure_state": {
+              "0": {
+                "count": 8,
+                "success": 1.0
+              },
+              "1": {
+                "count": 8,
+                "success": 1.0
+              },
+              "2": {
+                "count": 8,
+                "success": 1.0
+              }
+            },
+            "correct_given_address": 1.0,
+            "queries": 104,
+            "success": 1.0,
+            "threshold": 0.5302239656448364,
+            "unavailable_rejection": 1.0,
+            "work": {
+              "event_rows_examined": 0,
+              "evidence_reads": 196,
+              "parse_bytes": 209737,
+              "parse_calls": 122,
+              "read_bytes": 309022,
+              "wall_seconds": 0.013550223979109433
+            }
+          },
+          "reader_resources": {
+            "cache_serialized_bytes": 3005892,
+            "prepare_wall_seconds": 0.007661994997761212,
+            "shared_event_bytes": 65364,
+            "source_text_bytes": 903831
+          }
+        }
+      },
+      "scope": "future document-arrival tasks",
+      "seed": 51047,
+      "shared_address_resources": {
+        "bm25_index_bytes": 959047,
+        "excluded_stale_queries": [],
+        "feature_bytes": 6176768,
+        "fit_cpu_seconds": 2.945285351999999,
+        "fit_wall_seconds": 3.1435490250005387,
+        "heading_target_bytes": 193024,
+        "history_index_bytes": 3281408,
+        "index_build_seconds": 0.04238905099919066,
+        "models": {
+          "learned": {
+            "batch_size": 32,
+            "final_parameter_sha256": "2d156f938a52b325c7a3cea882d0243eb5f0e6673a024383c06bfc684a9b9b63",
+            "fit_cpu_seconds": 0.04576659399999983,
+            "fit_wall_seconds": 0.04576719699980458,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "f0da147a2a6f6c67cbd07f9fc570df0eb9517f8d1a4e0e0f9c54b0aab9eb326f",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.2254766970872879,
+              "head.weight": 0.4442538619041443,
+              "hidden.bias": 0.31223738193511963,
+              "hidden.weight": 0.2578970789909363
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 3016,
+            "optimizer_bytes": 70016,
+            "optimizer_step": 240,
+            "parameter_bytes": 35008,
+            "parameter_change_norm": {
+              "head.bias": 0.36434119939804077,
+              "head.weight": 11.188823699951172,
+              "hidden.bias": 1.2545576095581055,
+              "hidden.weight": 34.05965805053711
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "ce067394a4f4227c82c7eca8e8393b88441f2cee35dadef1fd7392bced7d359a",
+            "seed": 51047,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 2.7823128700256348,
+                "step": 1
+              },
+              {
+                "loss": 0.11500263214111328,
+                "step": 100
+              },
+              {
+                "loss": 0.03813036531209946,
+                "step": 200
+              },
+              {
+                "loss": 0.033163558691740036,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 8752
+          },
+          "single": {
+            "batch_size": 32,
+            "final_parameter_sha256": "64fc5bab9f4285295086cae2e35a9ef10d8ebae11824a766d91e59d2d1a12c8b",
+            "fit_cpu_seconds": 0.2620615740000005,
+            "fit_wall_seconds": 0.15331681299721822,
+            "ignored_empty_target_rows": 0,
+            "initial_optimizer_step": 0,
+            "initial_parameter_sha256": "737a296e4270a86a98774d7b1ccca8850e59c54378776142b6af253ec1cde02a",
+            "learning_rate": 0.01,
+            "max_gradient_norm": {
+              "head.bias": 0.2098507434129715,
+              "head.weight": 0.7337985634803772,
+              "hidden.bias": 0.4095176160335541,
+              "hidden.weight": 0.34444108605384827
+            },
+            "objective": "softmax_cross_entropy",
+            "observations": 3016,
+            "optimizer_bytes": 234752,
+            "optimizer_step": 240,
+            "parameter_bytes": 117376,
+            "parameter_change_norm": {
+              "head.bias": 6.178858757019043,
+              "head.weight": 127.58259582519531,
+              "hidden.bias": 2.0388288497924805,
+              "hidden.weight": 39.086544036865234
+            },
+            "sample_presentations": 7680,
+            "schedule_sha256": "8c704664aeb960f8215d06bd4cb373140c1a36fb44b88ce9c1ef9b7463c41752",
+            "seed": 51047,
+            "steps": 240,
+            "trace": [
+              {
+                "loss": 6.464641094207764,
+                "step": 1
+              },
+              {
+                "loss": 4.961468696594238,
+                "step": 100
+              },
+              {
+                "loss": 1.8844432830810547,
+                "step": 200
+              },
+              {
+                "loss": 1.4774823188781738,
+                "step": 240
+              }
+            ],
+            "trainable_parameters": 29344
+          }
+        },
+        "registry_bytes": 83113,
+        "source_target_bytes": 7720960,
+        "source_text_bytes": 903831,
+        "training_rows": 3016
+      },
+      "test_queries": 104
+    }
+  ],
+  "schema": "hepta.memory.typed-results.v12",
+  "source_identity": {
+    "TYPED_PROTOCOL.json": "52a522721ebb8f63d479d8fc5e7da3ab104357e4487c0aae09101aac738c05b9",
+    "categorical.py": "b58e8e37b93e71b37e6be5bfcafdb91b98e322a579148b45ac3c0eaf61a12868",
+    "corpus.py": "a46039cbb371e8d2bf99f8658909744c2f8819c31fa84870a242ed58a90d17b2",
+    "factorized.py": "eeab9f11985cedb2a2a8bbafd4bb98006f7bdec5ce78cb9ab21cd9f1e3f3fd3c",
+    "learned.py": "e0de71fc1bbb4f85f155826b87031ea404eead3557d0cbcbebde522e2b089b09",
+    "network.py": "0779dc8a0e32eb1c1f1348f62080e5734db25c6f9a4b0013968d5c6a9ba24601",
+    "typed.py": "56139b66ffe5f71084d8835ef06736c3cf1f39f7ce5a94afc32b41952ba5b15a",
+    "typed_experiment.py": "819f83d4ee7ee1ac7f60bce74189ce4219bb25e99774d5a8afcda6237667cf26",
+    "typed_tests.py": "bbc38914bf3d87b5191681b0f61a327c66a326b8c557ae6de95985416801ce74"
+  },
+  "tasks": 604,
+  "tasks_sha256": "e378f5219017482ce127775c8002842dbb5b596bbc17e5e188c87d18623222a9",
+  "wall_seconds": 33.87219269400521
+}

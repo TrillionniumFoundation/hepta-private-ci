@@ -1,0 +1,316 @@
+{
+  "analysis_source_sha256": "d9452a3928317f8e701430c41902a3d0b896e2c86bdee4e556d91f85dc87577c",
+  "arms": {
+    "bm25_generic": {
+      "between_seed_std": 0.0,
+      "by_seed": {
+        "31031": {
+          "correct": 194,
+          "evaluated": 206,
+          "success": 0.941747572815534
+        },
+        "41033": {
+          "correct": 194,
+          "evaluated": 206,
+          "success": 0.941747572815534
+        },
+        "51047": {
+          "correct": 194,
+          "evaluated": 206,
+          "success": 0.941747572815534
+        }
+      },
+      "correct": 582,
+      "evaluated": 618,
+      "full_minus_control": 0.0,
+      "outputs_identical_to_full": 582,
+      "paired_with_full": {
+        "control_only": 18,
+        "full_only": 18
+      },
+      "success": 0.941747572815534,
+      "work": {
+        "event_rows_examined": 270,
+        "evidence_reads": 1164,
+        "parse_bytes": 1558806,
+        "parse_calls": 909,
+        "read_bytes": 2204823,
+        "wall_seconds": 0.10084263904718682
+      }
+    },
+    "full_typed": {
+      "between_seed_std": 0.009708737864077666,
+      "by_seed": {
+        "31031": {
+          "correct": 194,
+          "evaluated": 206,
+          "success": 0.941747572815534
+        },
+        "41033": {
+          "correct": 192,
+          "evaluated": 206,
+          "success": 0.9320388349514563
+        },
+        "51047": {
+          "correct": 196,
+          "evaluated": 206,
+          "success": 0.9514563106796117
+        }
+      },
+      "correct": 582,
+      "evaluated": 618,
+      "full_minus_control": 0.0,
+      "outputs_identical_to_full": 618,
+      "paired_with_full": {
+        "control_only": 0,
+        "full_only": 0
+      },
+      "success": 0.941747572815534,
+      "work": {
+        "event_rows_examined": 0,
+        "evidence_reads": 1122,
+        "parse_bytes": 0,
+        "parse_calls": 0,
+        "read_bytes": 1809231,
+        "wall_seconds": 0.08670752991019981
+      }
+    },
+    "history_generic": {
+      "between_seed_std": 0.0,
+      "by_seed": {
+        "31031": {
+          "correct": 182,
+          "evaluated": 206,
+          "success": 0.883495145631068
+        },
+        "41033": {
+          "correct": 182,
+          "evaluated": 206,
+          "success": 0.883495145631068
+        },
+        "51047": {
+          "correct": 182,
+          "evaluated": 206,
+          "success": 0.883495145631068
+        }
+      },
+      "correct": 546,
+      "evaluated": 618,
+      "full_minus_control": 0.058252427184465994,
+      "outputs_identical_to_full": 574,
+      "paired_with_full": {
+        "control_only": 4,
+        "full_only": 40
+      },
+      "success": 0.883495145631068,
+      "work": {
+        "event_rows_examined": 108,
+        "evidence_reads": 564,
+        "parse_bytes": 950064,
+        "parse_calls": 582,
+        "read_bytes": 933096,
+        "wall_seconds": 0.09972825201839441
+      }
+    },
+    "single_generic": {
+      "between_seed_std": 0.051906197192056414,
+      "by_seed": {
+        "31031": {
+          "correct": 109,
+          "evaluated": 206,
+          "success": 0.529126213592233
+        },
+        "41033": {
+          "correct": 128,
+          "evaluated": 206,
+          "success": 0.6213592233009708
+        },
+        "51047": {
+          "correct": 110,
+          "evaluated": 206,
+          "success": 0.5339805825242718
+        }
+      },
+      "correct": 347,
+      "evaluated": 618,
+      "full_minus_control": 0.3802588996763754,
+      "outputs_identical_to_full": 383,
+      "paired_with_full": {
+        "control_only": 0,
+        "full_only": 235
+      },
+      "success": 0.5614886731391586,
+      "work": {
+        "event_rows_examined": 93,
+        "evidence_reads": 829,
+        "parse_bytes": 1268269,
+        "parse_calls": 802,
+        "read_bytes": 1267126,
+        "wall_seconds": 0.10547687401412986
+      }
+    },
+    "without_event": {
+      "between_seed_std": 0.009708737864077666,
+      "by_seed": {
+        "31031": {
+          "correct": 194,
+          "evaluated": 206,
+          "success": 0.941747572815534
+        },
+        "41033": {
+          "correct": 192,
+          "evaluated": 206,
+          "success": 0.9320388349514563
+        },
+        "51047": {
+          "correct": 196,
+          "evaluated": 206,
+          "success": 0.9514563106796117
+        }
+      },
+      "correct": 582,
+      "evaluated": 618,
+      "full_minus_control": 0.0,
+      "outputs_identical_to_full": 618,
+      "paired_with_full": {
+        "control_only": 0,
+        "full_only": 0
+      },
+      "success": 0.941747572815534,
+      "work": {
+        "event_rows_examined": 288,
+        "evidence_reads": 1122,
+        "parse_bytes": 0,
+        "parse_calls": 0,
+        "read_bytes": 1809231,
+        "wall_seconds": 0.11001571201632032
+      }
+    },
+    "without_meta": {
+      "between_seed_std": 0.0,
+      "by_seed": {
+        "31031": {
+          "correct": 194,
+          "evaluated": 206,
+          "success": 0.941747572815534
+        },
+        "41033": {
+          "correct": 194,
+          "evaluated": 206,
+          "success": 0.941747572815534
+        },
+        "51047": {
+          "correct": 194,
+          "evaluated": 206,
+          "success": 0.941747572815534
+        }
+      },
+      "correct": 582,
+      "evaluated": 618,
+      "full_minus_control": 0.0,
+      "outputs_identical_to_full": 582,
+      "paired_with_full": {
+        "control_only": 18,
+        "full_only": 18
+      },
+      "success": 0.941747572815534,
+      "work": {
+        "event_rows_examined": 0,
+        "evidence_reads": 1164,
+        "parse_bytes": 0,
+        "parse_calls": 0,
+        "read_bytes": 2204823,
+        "wall_seconds": 0.08805212494917214
+      }
+    },
+    "without_procedure": {
+      "between_seed_std": 0.009708737864077666,
+      "by_seed": {
+        "31031": {
+          "correct": 194,
+          "evaluated": 206,
+          "success": 0.941747572815534
+        },
+        "41033": {
+          "correct": 192,
+          "evaluated": 206,
+          "success": 0.9320388349514563
+        },
+        "51047": {
+          "correct": 196,
+          "evaluated": 206,
+          "success": 0.9514563106796117
+        }
+      },
+      "correct": 582,
+      "evaluated": 618,
+      "full_minus_control": 0.0,
+      "outputs_identical_to_full": 618,
+      "paired_with_full": {
+        "control_only": 0,
+        "full_only": 0
+      },
+      "success": 0.941747572815534,
+      "work": {
+        "event_rows_examined": 0,
+        "evidence_reads": 1122,
+        "parse_bytes": 259445,
+        "parse_calls": 142,
+        "read_bytes": 1809231,
+        "wall_seconds": 0.09970599391090218
+      }
+    },
+    "without_semantic": {
+      "between_seed_std": 0.009708737864077666,
+      "by_seed": {
+        "31031": {
+          "correct": 194,
+          "evaluated": 206,
+          "success": 0.941747572815534
+        },
+        "41033": {
+          "correct": 192,
+          "evaluated": 206,
+          "success": 0.9320388349514563
+        },
+        "51047": {
+          "correct": 196,
+          "evaluated": 206,
+          "success": 0.9514563106796117
+        }
+      },
+      "correct": 582,
+      "evaluated": 618,
+      "full_minus_control": 0.0,
+      "outputs_identical_to_full": 618,
+      "paired_with_full": {
+        "control_only": 0,
+        "full_only": 0
+      },
+      "success": 0.941747572815534,
+      "work": {
+        "event_rows_examined": 0,
+        "evidence_reads": 1122,
+        "parse_bytes": 1259896,
+        "parse_calls": 686,
+        "read_bytes": 1809231,
+        "wall_seconds": 0.08500211397767998
+      }
+    }
+  },
+  "interpretation": [
+    "Seeds rerun the same authored tasks; their 618 outputs are not 618 independent tasks.",
+    "Event/semantic/procedure output equality: True",
+    "Full minus BM25 aggregate success: 0.0",
+    "Observed gains against the single classifier or history control concern addressing, not a demonstrated need for four reader types.",
+    "Typed caches exchange retained representation/setup work for query parsing; tiny wall-time differences do not establish a general efficiency gain."
+  ],
+  "phases": [
+    1,
+    2
+  ],
+  "repeated_seed_evaluations": 618,
+  "schema": "hepta.memory.typed-analysis.v12",
+  "summary_sha256": "36de5c13c0020cdf7fda5282823340e4fde3898c975e26ddf6a9eea40b8091e0",
+  "unique_future_queries": 206
+}

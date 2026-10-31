@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.memory.v12.content.protocol.v1",
+  "source_commit": "527218f9b823540830907f861a309310b71d38c9",
+  "task": "Predict the source-declared owner, deputy and lifecycle jointly; targets are field values, not record identifiers.",
+  "sizes": [10, 20, 40],
+  "seeds": [17041, 17042, 17043],
+  "execution_sizes": [40, 10, 20],
+  "fixed_migration_selection": {"size": 40, "seed": 17041, "arm": "single", "selected_using_held_results": false},
+  "encoding": {"owner_bits": 5, "deputy_bits": 4, "lifecycle_bits": 1, "bit_order": "least-significant-first", "codebook": "sorted vocabulary from all 40 pinned documents; label strings are shared taxonomy, not per-module mappings"},
+  "dimension": 256,
+  "single": {"hidden": 64, "steps": 600, "batch_size": 32},
+  "sharded": {"cells": 4, "hidden_each": 16, "steps_each": 150, "batch_size": 32, "routing": "public sorted module-name ordinal modulo four; fixed control, not learned or emergent topology"},
+  "training_presentations_each_arm": 19200,
+  "learning_rate": 0.01,
+  "thresholds": [0.0, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 0.99, 1.000000001],
+  "calibration": "maximize accepted-correct calibration examples subject to zero wrong accepts; ties choose lower threshold; no test-based selection",
+  "scope": "explicit independent resolver uses public module names and requested-field vocabulary; unknown rejection is not attributed to model learning",
+  "baselines": ["zlib9 exact registry", "lzma6 exact registry", "source document structured field parsing"],
+  "costs": "persist actual model/optimizer/probe/prediction bytes; count codebook, address index, sources and provenance; report feature/training/inference/compression CPU separately; interpreter and NumPy installation measured separately, not silently free",
+  "limitations": ["one real source corpus; three seeds are not three independent datasets", "nested alphabetical module subsets", "authored paraphrases rather than production query logs", "source declarations do not establish deployed ownership", "finite fixed training budget does not establish model capacity exhaustion", "approximate model service is not equivalent to exact registry service when errors remain", "no compression or general-memory superiority is presumed"]
+}

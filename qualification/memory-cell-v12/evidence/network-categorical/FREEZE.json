@@ -1,0 +1,74 @@
+{
+  "corpus_sha256": "cbad82b9e82da96a26e3f8382a68816367a43c1d5827d35afa53494c6c3cadc1",
+  "protocol": {
+    "batch_size": 32,
+    "calibration": "Select thresholds only from earlier-phase calibration confidence breakpoints, maximizing balanced known-source coverage and unsupported rejection; no finite-sample generalization guarantee.",
+    "controls": [
+      "full_text_bm25",
+      "dense_source_retrieval",
+      "single_mlp",
+      "fixed_typed",
+      "learned_sparse",
+      "continued_parent",
+      "equal_capacity_single",
+      "same_partition_fixed_experts"
+    ],
+    "cost_contract": "Actual source/index/model/optimizer/checkpoint bytes, fit wall/CPU, presentations, feature time, calibration and read time, selected-cell reads, all failed and successful candidate work. Shared resources and candidate exploration are separately visible; no equal-FLOPs claim.",
+    "diagnostics": "Training/canonical ranks, ridge affine positive control lambda 0.001, and nearest canonical prototype. No held targets select diagnostics or hyperparameters.",
+    "dimension": 256,
+    "evidence_limit": 3,
+    "hidden": 32,
+    "integrity": "The runner writes a local protocol/corpus/source commitment before model fitting, rejects existing output directories, and stores all predictions and selection decisions. No test result selects a threshold, hyperparameter, or topology.",
+    "interpretation": "Same-corpus method development after disclosed BCE failures; not independent confirmation.",
+    "objective": "categorical",
+    "prices": {
+      "active_weight_mib": 0.01,
+      "checkpoint_mib": 0.002,
+      "decision_second": 0.001,
+      "training_second_per_1000_queries": 0.001
+    },
+    "schema": "hepta.memory.network-followup-protocol.v12",
+    "scope": "Executable research on real technical-document sections with authored prompts; no claim of production tasks, pretrained semantics, native activation, or parametric content compression.",
+    "seeds": [
+      31031,
+      41033,
+      51047
+    ],
+    "sparse_top_k": 1,
+    "steps": 240,
+    "structure": {
+      "actions": [
+        "split",
+        "merge",
+        "sleep",
+        "wake"
+      ],
+      "later_use_phase": 2,
+      "max_active_cells": 4,
+      "max_candidate_wall_seconds": 120,
+      "max_checkpoint_bytes": 16000000,
+      "max_parameter_bytes": 2000000,
+      "minimum_lower_gain": 0.005,
+      "normal_lower_bound_z": 3.2,
+      "proposal_phase": 1,
+      "validation_status": "Exploratory paired normal bounds on authored tasks; no population or sequential-testing guarantee. All candidate selection precedes the next-phase test."
+    },
+    "time_contract": {
+      "meaning": "Document-arrival curriculum, not historical production chronology.",
+      "phase_0": "Initialization: phase-0 sources and train prompts; calibration separate; phase-0 test is an in-phase diagnostic.",
+      "phase_1_2": "Current sources arrive before maintenance; only earlier-phase query labels train the learner or router. Calibration comes from earlier phases. The new phase test is evaluated once after selection; its labels become available only for later phases."
+    },
+    "training_change": "Normalize each nonempty source-target row; stable softmax cross entropy. Empty target rows are excluded from categorical fitting, not mislabelled as source distributions; past negative calibration remains shared.",
+    "training_diagnostics": true
+  },
+  "scope": "local commitment before fitting",
+  "source_sha256": {
+    "NETWORK_FOLLOWUP_PROTOCOL.json": "17b918dbdba29c0131c1ab838aa6e588a3fba6265757bba91a5f0f5f7efb7d0e",
+    "NETWORK_PROTOCOL.json": "7f0b6dd903a4358a46e4d573d43c3a7cac38c49742f3afa3063710a042f8da6c",
+    "categorical.py": "b58e8e37b93e71b37e6be5bfcafdb91b98e322a579148b45ac3c0eaf61a12868",
+    "corpus.py": "a46039cbb371e8d2bf99f8658909744c2f8819c31fa84870a242ed58a90d17b2",
+    "learned.py": "e0de71fc1bbb4f85f155826b87031ea404eead3557d0cbcbebde522e2b089b09",
+    "network.py": "cb8fd12d9f6c96dccaa6faee8fca7d63bf3101dae9d0189be1034ab7411ee581",
+    "network_experiment.py": "0164a6fb6aeb886b02970c4f9e31b330a1cac811ef00315d2ba0dbc6ceb085a3"
+  }
+}

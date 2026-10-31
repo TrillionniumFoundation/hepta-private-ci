@@ -1,0 +1,167 @@
+{
+  "schema": "hepta.memory.v12.native-ci-receipt.v1",
+  "passed": false,
+  "tests_command_started": true,
+  "tests_executed": true,
+  "final_fix_executed": true,
+  "formatter_executed": true,
+  "tests_executed_after_fix_or_format": false,
+  "production_activation_allowed": false,
+  "trained_quality_claimed": false,
+  "baseline_commit": "527218f9b823540830907f861a309310b71d38c9",
+  "commands": [
+    {
+      "name": "rustc-version",
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.6883417120000104
+    },
+    {
+      "name": "cargo-version",
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.02030574200000501
+    },
+    {
+      "name": "nextest-version",
+      "command": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.026716218000018443
+    },
+    {
+      "name": "just-version",
+      "command": [
+        "just",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.0010580880000077286
+    },
+    {
+      "name": "same-source-app-server",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 350.669665433
+    },
+    {
+      "name": "scoped-native-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "--retries",
+        "0",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 214.79220486400004
+    },
+    {
+      "name": "final-scoped-fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 169.454779799
+    },
+    {
+      "name": "final-format",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "527218f9b823540830907f861a309310b71d38c9"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.41017992599995523
+    }
+  ],
+  "github": {
+    "GITHUB_SHA": "465aa2077076254a4fa75de7e85521e2bd8d117a",
+    "GITHUB_REF": "refs/heads/research/memory-cell-v12-20261030",
+    "GITHUB_RUN_ID": "41157391884",
+    "GITHUB_RUN_ATTEMPT": "1",
+    "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci"
+  },
+  "resource_settings": {
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2"
+  },
+  "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+  "disk_before": {
+    "total": 154894188544,
+    "used": 69878386688,
+    "free": 84999024640
+  },
+  "source_commit": "465aa2077076254a4fa75de7e85521e2bd8d117a",
+  "source_tree": "1443344622136a268e90a5b037d3ea6d85c5263c",
+  "initial_changed_tree": false,
+  "source_inventory_sha256": "65d8cf0482528dab101b0bc209bce120c969e31457cb36944b465e3d1cb51c7b",
+  "junit_source": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml",
+  "app_server": {
+    "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex-app-server",
+    "sha256": "a554234e7cc2b30e4b4b9fb2abfe3796796ccc12f3ba444eb2011164cd3f8a6b",
+    "bytes": 444006728,
+    "source_commit": "465aa2077076254a4fa75de7e85521e2bd8d117a"
+  },
+  "executed_cases": 520,
+  "v12_cases": [
+    "memory_v12_python_trained_bytes_match_native_reader",
+    "memory_v12_trained_cells_publish_read_restart_correct_and_forget",
+    "memory_v12_trained_payload_rejects_version_and_parameter_substitution"
+  ],
+  "after_tests_changed_tree": false,
+  "after_fix_changed_tree": false,
+  "after_format_changed_tree": true,
+  "error_type": "RuntimeError",
+  "error": "Final fix or format changed the tested source tree; review the saved patch",
+  "junit_skipped_cases": 0,
+  "failed_cases": [],
+  "nextest_summary": "Summary [  35.557s] 520 tests run: 520 passed, 24 skipped",
+  "nextest_reported_skipped_cases": 24,
+  "final_changed_tree": true,
+  "wall_seconds": 736.708377219,
+  "disk_after": {
+    "total": 154894188544,
+    "used": 78346104832,
+    "free": 76531306496
+  }
+}

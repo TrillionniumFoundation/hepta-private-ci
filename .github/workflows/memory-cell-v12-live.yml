@@ -1,0 +1,151 @@
+name: Memory cell V12 concurrent live workers across three VMs
+
+on:
+  push:
+    branches: [research/memory-cell-v12-20261030]
+    paths:
+      - 'qualification/memory-cell-v12/federation*.py'
+      - 'qualification/memory-cell-v12/evidence/content/model.json'
+      - 'qualification/memory-cell-v12/evidence/content/probes.json'
+      - '.github/workflows/memory-cell-v12-live.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  PYTHONUNBUFFERED: '1'
+
+# No needs edges: owner/controller and both replicas must remain alive together.
+# Rerun all jobs, never mix artifact messages from different run attempts.
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v12
+      - name: Check the live process protocol locally without claiming multiple VMs
+        run: python3 qualification/memory-cell-v12/federation_live.py selftest
+      - name: Create authority and keep the old-owner process alive
+        run: python3 qualification/memory-cell-v12/federation_live.py bootstrap --state "$RUNNER_TEMP/live-state" --out "$RUNNER_TEMP/live-bootstrap"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-live-bootstrap-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/live-bootstrap
+          if-no-files-found: error
+          retention-days: 30
+      - name: Wait for live prepared replicas, migrate and publish epoch 2
+        run: python3 qualification/memory-cell-v12/federation_live.py migrate --state "$RUNNER_TEMP/live-state" --out "$RUNNER_TEMP/live-epoch2"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-live-epoch2-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/live-epoch2
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Verify readback from the same processes and revoke while all workers live
+        run: python3 qualification/memory-cell-v12/federation_live.py revoke --state "$RUNNER_TEMP/live-state" --out "$RUNNER_TEMP/live-revoked"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-live-revoked-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/live-revoked
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Deny actual post-revocation requests and stop the still-live old owner
+        run: python3 qualification/memory-cell-v12/federation_live.py finish --state "$RUNNER_TEMP/live-state" --out "$RUNNER_TEMP/live-final"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-live-final-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/live-final
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Stop only this qualification's worker
+        if: always()
+        run: python3 qualification/memory-cell-v12/federation_live.py cleanup --state "$RUNNER_TEMP/live-state"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-live-source-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/live-state/*.json
+            ${{ runner.temp }}/live-state/*.sqlite
+            ${{ runner.temp }}/live-state/worker/*.json
+            ${{ runner.temp }}/live-state/worker/*.jsonl
+            ${{ runner.temp }}/live-state/worker/worker.log
+          if-no-files-found: ignore
+          retention-days: 30
+
+  replicas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [replica-a, replica-b]
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v12
+      - name: Await bootstrap and keep this prepared worker process alive
+        run: python3 qualification/memory-cell-v12/federation_live.py prepare --state "$RUNNER_TEMP/live-state" --out "$RUNNER_TEMP/live-prepared" --node '${{ matrix.node }}'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-live-prepared-${{ matrix.node }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/live-prepared
+          if-no-files-found: error
+          retention-days: 30
+      - name: Read activated checkpoint in the same PID and kernel boot
+        run: python3 qualification/memory-cell-v12/federation_live.py readback --state "$RUNNER_TEMP/live-state" --out "$RUNNER_TEMP/live-readback" --node '${{ matrix.node }}'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-live-readback-${{ matrix.node }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/live-readback
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: After observing revocation submit a fresh read request from this live process
+        run: python3 qualification/memory-cell-v12/federation_live.py request --state "$RUNNER_TEMP/live-state" --out "$RUNNER_TEMP/live-request" --node '${{ matrix.node }}'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-live-request-${{ matrix.node }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/live-request
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Check this request's authority denial before stopping the same worker
+        run: python3 qualification/memory-cell-v12/federation_live.py ack --state "$RUNNER_TEMP/live-state" --out "$RUNNER_TEMP/live-completed" --node '${{ matrix.node }}'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-live-completed-${{ matrix.node }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/live-completed
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Stop only this qualification's worker
+        if: always()
+        run: python3 qualification/memory-cell-v12/federation_live.py cleanup --state "$RUNNER_TEMP/live-state"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v12-live-diagnostics-${{ matrix.node }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/live-state/*.json
+            ${{ runner.temp }}/live-state/worker/*.json
+            ${{ runner.temp }}/live-state/worker/*.jsonl
+            ${{ runner.temp }}/live-state/worker/worker.log
+          if-no-files-found: ignore
+          retention-days: 30

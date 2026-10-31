@@ -1,0 +1,3018 @@
+{
+  "corpus_sha256": "cbad82b9e82da96a26e3f8382a68816367a43c1d5827d35afa53494c6c3cadc1",
+  "cpu_seconds": 66.80478200399999,
+  "elapsed_seconds": 46.27331653299916,
+  "evidence_bytes_before_summary": 61406521,
+  "feature_bytes": 4507648,
+  "feature_seconds": 1.0987378139980137,
+  "limitations": [
+    "authored template paraphrases",
+    "document-arrival phases are not historical chronology",
+    "technical guides describe targets as well as existing implementations",
+    "answers concern what a document says, not verified deployment behavior",
+    "lexical hash features; no pretrained language semantics",
+    "single prespecified evolution cycle at phase 1; phase 2 measures later use",
+    "all source evidence retained; no parametric compression claim",
+    "research snapshot filtering, not native Rust source authority"
+  ],
+  "peak_rss_kib": 225064,
+  "runs": [
+    {
+      "admitted": [],
+      "phase": 0,
+      "records": 210,
+      "results": {
+        "dense_source_retrieval": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.03571428571428571
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.11989795918367346
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 0.5714285714285714
+            }
+          },
+          "cpu_seconds": 0.18491848900000019,
+          "feature_seconds": 0.06534402899706038,
+          "known": 434,
+          "known_mrr": 0.21921574819952286,
+          "known_success": 0.11059907834101383,
+          "queries": 448,
+          "resources": {
+            "fit_wall_seconds": 0.2754132819973165,
+            "index_bytes": 588529
+          },
+          "score_sha256": "3737012dc0ab8c80344fd9d8a7ccdd78c4a8710c09b4a1e6596216a8279b8e42",
+          "selected_cell_reads": 0,
+          "success": 0.125,
+          "threshold": 0.38239189982414246,
+          "unsupported": 14,
+          "unsupported_rejection": 0.5714285714285714,
+          "wall_seconds": 0.12695707000239054
+        },
+        "fixed_typed": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.16278784500000043,
+          "feature_seconds": 0.05878154699894367,
+          "known": 434,
+          "known_mrr": 0.08765386964421781,
+          "known_success": 0.0,
+          "queries": 448,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 717797,
+              "path": "arm-fixed_typed.json.gz",
+              "raw_serialized_bytes": 1354975,
+              "sha256": "1605eef459a8ed8e266471087bb8a503244eaa5ee29820ee39dda93aaa6fc29c"
+            },
+            "fit_cpu_seconds": 0.24146530500000019,
+            "fit_wall_seconds": 0.12158774800627725,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 1356019,
+            "source_dependencies": 14
+          },
+          "score_sha256": "a459a6f208a5b35fee7e9c5f741d7d18738b9f7e4bef3835ef4867c6f577cd51",
+          "selected_cell_reads": 896,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.11211790700326674
+        },
+        "full_text_bm25": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.17857142857142858
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.2372448979591837
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 0.6428571428571429
+            }
+          },
+          "cpu_seconds": 0.3120655480000005,
+          "feature_seconds": 1.1019947123713791e-06,
+          "known": 434,
+          "known_mrr": 0.27913469272224706,
+          "known_success": 0.22580645161290322,
+          "queries": 448,
+          "resources": {
+            "fit_wall_seconds": 0.2526496700011194,
+            "index_bytes": 588529
+          },
+          "score_sha256": "95f48eb90c78bfdd8d01dd696a8459a1a456d518a18100c8a0c8c4f575e8f4b0",
+          "selected_cell_reads": 0,
+          "success": 0.23883928571428573,
+          "threshold": 0.914116382598877,
+          "unsupported": 14,
+          "unsupported_rejection": 0.6428571428571429,
+          "wall_seconds": 0.2718889659954584
+        },
+        "learned_sparse": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1687176259999994,
+          "feature_seconds": 0.05535691099794349,
+          "known": 434,
+          "known_mrr": 0.0473929639168982,
+          "known_success": 0.0,
+          "queries": 448,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 723595,
+              "path": "arm-learned_sparse.json.gz",
+              "raw_serialized_bytes": 1367028,
+              "sha256": "6fa23dadcace5a61efff71cbb1f3abae7b2e5c7aad2069627bbf468feb80e41c"
+            },
+            "fit_cpu_seconds": 0.24146530500000019,
+            "fit_wall_seconds": 0.12158774800627725,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 2056,
+            "serialized_bytes": 1368598,
+            "source_dependencies": 14
+          },
+          "score_sha256": "0647493250d4b9d7b4d83cba0caf0d021f1604af0f7a10c1631aec881e184860",
+          "selected_cell_reads": 448,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.11315483799990034
+        },
+        "selected_evolution": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.20435348599999958,
+          "feature_seconds": 0.07099536799796624,
+          "known": 434,
+          "known_mrr": 0.04931508500954677,
+          "known_success": 0.0,
+          "queries": 448,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 364182,
+              "path": "arm-selected_evolution.json.gz",
+              "raw_serialized_bytes": 678666,
+              "sha256": "e2404801d5bd8fd00f90ad5ad974bd7cf676ed11ec5715291234266da72a0810"
+            },
+            "fit_cpu_seconds": 0.2144313849999997,
+            "fit_wall_seconds": 0.11546687300142366,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 7680,
+            "router_bytes": 0,
+            "serialized_bytes": 679492,
+            "source_dependencies": 14
+          },
+          "score_sha256": "6b5d40a8dabfcb1bc4eaeec875f8a69e58010c01441f8272dec6fb70a3d87c04",
+          "selected_cell_reads": 448,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.13809437999589136
+        },
+        "single_mlp": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.18416195600000052,
+          "feature_seconds": 0.08541646899539046,
+          "known": 434,
+          "known_mrr": 0.04931508500954677,
+          "known_success": 0.0,
+          "queries": 448,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 364174,
+              "path": "arm-single_mlp.json.gz",
+              "raw_serialized_bytes": 678666,
+              "sha256": "6c883f85a7eac84f6e4ffddeaae7f2c9270a5cdd2adfe939e2cbdc0bae39b400"
+            },
+            "fit_cpu_seconds": 0.2144313849999997,
+            "fit_wall_seconds": 0.11546687300142366,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 7680,
+            "router_bytes": 0,
+            "serialized_bytes": 679492,
+            "source_dependencies": 14
+          },
+          "score_sha256": "6b5d40a8dabfcb1bc4eaeec875f8a69e58010c01441f8272dec6fb70a3d87c04",
+          "selected_cell_reads": 448,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.13561628299794393
+        }
+      },
+      "seed": 31031
+    },
+    {
+      "admitted": [],
+      "phase": 1,
+      "records": 405,
+      "results": {
+        "continued_parent": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.14973587799999777,
+          "feature_seconds": 0.040291110999532975,
+          "known": 403,
+          "known_mrr": 0.010441560719407172,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 366651,
+              "path": "arm-continued_parent.json.gz",
+              "raw_serialized_bytes": 681716,
+              "sha256": "25bd99e58156cbe4c9e126ed782e125ba4dd447d6490d10e37c393dea1428312"
+            },
+            "fit_cpu_seconds": 0.6064033080000004,
+            "fit_wall_seconds": 0.31151848900481127,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 682689,
+            "source_dependencies": 27
+          },
+          "score_sha256": "31b16a237290d48c0a076a8bda0c75cd61f7e2e8912bd8f9dffacb0313fa1ab0",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 0.6056057810783386,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.09548140500555746
+        },
+        "dense_source_retrieval": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.11263736263736264
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 0.5384615384615384
+            }
+          },
+          "cpu_seconds": 0.1541769720000019,
+          "feature_seconds": 0.04071984700567555,
+          "known": 403,
+          "known_mrr": 0.18103966970118082,
+          "known_success": 0.10173697270471464,
+          "queries": 416,
+          "resources": {
+            "fit_wall_seconds": 0.5936311000041314,
+            "index_bytes": 1122429
+          },
+          "score_sha256": "3a4f3e19307454d2cc3b86e579e7509512cac43d4973aaf09c38c6fb77541c4e",
+          "selected_cell_reads": 0,
+          "success": 0.11538461538461539,
+          "threshold": 0.39385348558425903,
+          "unsupported": 13,
+          "unsupported_rejection": 0.5384615384615384,
+          "wall_seconds": 0.09939179199864157
+        },
+        "equal_capacity_single": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.17624210900000037,
+          "feature_seconds": 0.04378115000145044,
+          "known": 403,
+          "known_mrr": 0.02127239303654574,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 718165,
+              "path": "arm-equal_capacity_single.json.gz",
+              "raw_serialized_bytes": 1338125,
+              "sha256": "b342561c3227b598bc46491ed8dcfbc09f1565104769ae7adf2a433b52cb4d4a"
+            },
+            "fit_cpu_seconds": 0.9856806670000005,
+            "fit_wall_seconds": 0.49402764499973273,
+            "optimizer_bytes": 443584,
+            "parameter_bytes": 221792,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 1339004,
+            "source_dependencies": 27
+          },
+          "score_sha256": "06cc268a412ede3228f26b38756e9ee18eb3814ec0ca1f2ef8d7d4c648a92a94",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 0.5944896936416626,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.11086391299613751
+        },
+        "fixed_typed": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1567072060000001,
+          "feature_seconds": 0.04153786799724912,
+          "known": 403,
+          "known_mrr": 0.004502472630673134,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 723976,
+              "path": "arm-fixed_typed.json.gz",
+              "raw_serialized_bytes": 1356715,
+              "sha256": "5c79ef192406d4b3bf834a937c53a38539da1eb0cb97149c496dd1589d2b70f4"
+            },
+            "fit_cpu_seconds": 0.4571717150000003,
+            "fit_wall_seconds": 0.23616394300188404,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 1357785,
+            "source_dependencies": 27
+          },
+          "score_sha256": "267550682bd6efb28b4f7716ff1d8665542ff2323f1567679b4bdf6ca247f689",
+          "selected_cell_reads": 832,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10120540199568495
+        },
+        "full_text_bm25": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.07692307692307693
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.06043956043956044
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 0.9230769230769231
+            }
+          },
+          "cpu_seconds": 0.3401586250000008,
+          "feature_seconds": 8.310016710311174e-07,
+          "known": 403,
+          "known_mrr": 0.19759941810747617,
+          "known_success": 0.05707196029776675,
+          "queries": 416,
+          "resources": {
+            "fit_wall_seconds": 0.7264174119991367,
+            "index_bytes": 1122429
+          },
+          "score_sha256": "173bc667b174c69081f18006d00993b828e236a7ff2cf7565c12f3f6d4496f5c",
+          "selected_cell_reads": 0,
+          "success": 0.08413461538461539,
+          "threshold": 0.9326093196868896,
+          "unsupported": 13,
+          "unsupported_rejection": 0.9230769230769231,
+          "wall_seconds": 0.2989168519998202
+        },
+        "learned_sparse": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.13732256400000153,
+          "feature_seconds": 0.03837270299845841,
+          "known": 403,
+          "known_mrr": 0.008204106488278146,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 729698,
+              "path": "arm-learned_sparse.json.gz",
+              "raw_serialized_bytes": 1368735,
+              "sha256": "69c76b99c328d3704c05c292160c5d0e2a352899a8cd9d624b0c8a59c2243337"
+            },
+            "fit_cpu_seconds": 0.4571717150000003,
+            "fit_wall_seconds": 0.23616394300188404,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 2056,
+            "serialized_bytes": 1370331,
+            "source_dependencies": 27
+          },
+          "score_sha256": "7477bc2349a4bf2c397562a9d3cb05efb4431540dbe7843486f27020d9fdd7ef",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.08994927599997027
+        },
+        "same_partition_fixed_experts": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.15016557599999913,
+          "feature_seconds": 0.040393975999904796,
+          "known": 403,
+          "known_mrr": 0.0052036330225702756,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 733915,
+              "path": "arm-same_partition_fixed_experts.json.gz",
+              "raw_serialized_bytes": 1371053,
+              "sha256": "620d0c2f5fe9c70d891b5c8cd23c2bac0d28992ffcb2a81829db4c267c4dc5b3"
+            },
+            "fit_cpu_seconds": 0.578004202999999,
+            "fit_wall_seconds": 0.29007685700344155,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 23040,
+            "router_bytes": 2056,
+            "serialized_bytes": 1373265,
+            "source_dependencies": 27
+          },
+          "score_sha256": "171963f21c6efe1f7be039af7836f1f8c490852a8169785c548066893b951aec",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.09577621900098165
+        },
+        "selected_evolution": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.14483231599999868,
+          "feature_seconds": 0.040321929001947865,
+          "known": 403,
+          "known_mrr": 0.006014596368679235,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 366021,
+              "path": "arm-selected_evolution.json.gz",
+              "raw_serialized_bytes": 680626,
+              "sha256": "70bd13ab1ddce6444df03e877f1f4519847addf5b6097f39fff1b692a0247466"
+            },
+            "fit_cpu_seconds": 0.4471195319999999,
+            "fit_wall_seconds": 0.23223174700251548,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 681532,
+            "source_dependencies": 27
+          },
+          "score_sha256": "88a6abd8a4dac16384a226e085ca1406d7df426e7fba3dd52386eb0fff155db7",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 0.1843235045671463,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.09473529100068845
+        },
+        "single_mlp": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.19756688699999714,
+          "feature_seconds": 0.05187559200567193,
+          "known": 403,
+          "known_mrr": 0.006014596368679235,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 366013,
+              "path": "arm-single_mlp.json.gz",
+              "raw_serialized_bytes": 680626,
+              "sha256": "0ff62e2750202e227d85a6d9d3f15e61418dccf2b50d01b00d88846ff350d566"
+            },
+            "fit_cpu_seconds": 0.4471195319999999,
+            "fit_wall_seconds": 0.23223174700251548,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 681532,
+            "source_dependencies": 27
+          },
+          "score_sha256": "88a6abd8a4dac16384a226e085ca1406d7df426e7fba3dd52386eb0fff155db7",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 0.1843235045671463,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.12619594799616607
+        }
+      },
+      "seed": 31031
+    },
+    {
+      "admitted": [],
+      "phase": 2,
+      "records": 600,
+      "results": {
+        "dense_source_retrieval": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.054945054945054944
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.22463186199999896,
+          "feature_seconds": 0.04320170400023926,
+          "known": 403,
+          "known_mrr": 0.1458935288276752,
+          "known_success": 0.04962779156327544,
+          "queries": 417,
+          "resources": {
+            "fit_wall_seconds": 0.7414461570006097,
+            "index_bytes": 1645949
+          },
+          "score_sha256": "10476862a3539d76a4d68e246942e7e745ca3d2f6e2b6084b3fb0c00a956423f",
+          "selected_cell_reads": 0,
+          "success": 0.0815347721822542,
+          "threshold": 0.46396586298942566,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.13517156700254418
+        },
+        "fixed_typed": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.18026562400000046,
+          "feature_seconds": 0.038550181001483,
+          "known": 403,
+          "known_mrr": 0.0031928164804508317,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 726188,
+              "path": "arm-fixed_typed.json.gz",
+              "raw_serialized_bytes": 1358463,
+              "sha256": "b1e1795f09b0ccfbd4728f59a14c772eb6683fdda95dc21dfcd75af3dcb64586"
+            },
+            "fit_cpu_seconds": 0.29828701499999966,
+            "fit_wall_seconds": 0.15043210799922235,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 1359559,
+            "source_dependencies": 40
+          },
+          "score_sha256": "7f3542462747f23430198e73190f104f2661f450f20eec24d100872bf5a81d12",
+          "selected_cell_reads": 834,
+          "success": 0.03357314148681055,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10989810099999886
+        },
+        "full_text_bm25": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.038461538461538464
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.03296703296703297
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 0.9285714285714286
+            }
+          },
+          "cpu_seconds": 0.5373161519999989,
+          "feature_seconds": 5.609981599263847e-07,
+          "known": 403,
+          "known_mrr": 0.18792835135361302,
+          "known_success": 0.03225806451612903,
+          "queries": 417,
+          "resources": {
+            "fit_wall_seconds": 0.7507475310048903,
+            "index_bytes": 1645949
+          },
+          "score_sha256": "2cf9450f0f71247a8c2551b531c02d648009a3d6cf24d4eecfae2b3dba7e2a61",
+          "selected_cell_reads": 0,
+          "success": 0.06235011990407674,
+          "threshold": 0.93768709897995,
+          "unsupported": 14,
+          "unsupported_rejection": 0.9285714285714286,
+          "wall_seconds": 0.539042562006216
+        },
+        "learned_sparse": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.2165516409999988,
+          "feature_seconds": 0.04109796099510277,
+          "known": 403,
+          "known_mrr": 0.005701323401255047,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 731863,
+              "path": "arm-learned_sparse.json.gz",
+              "raw_serialized_bytes": 1370603,
+              "sha256": "450d588da926b74ac9efa546277258c2ede9038a3865f74683320c4f54809d0a"
+            },
+            "fit_cpu_seconds": 0.29828701499999966,
+            "fit_wall_seconds": 0.15043210799922235,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 2056,
+            "serialized_bytes": 1372225,
+            "source_dependencies": 40
+          },
+          "score_sha256": "62f1644927e086a85799400b49e5872960d783aaa023a9ba405885b355504f8d",
+          "selected_cell_reads": 417,
+          "success": 0.03357314148681055,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.1310192799937795
+        },
+        "selected_evolution": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1836338679999976,
+          "feature_seconds": 0.041159349006193224,
+          "known": 403,
+          "known_mrr": 0.0037598223595011566,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 367184,
+              "path": "arm-selected_evolution.json.gz",
+              "raw_serialized_bytes": 682585,
+              "sha256": "2c98488829663db4461e36dddb89091e555474def480440124e6e768be012009"
+            },
+            "fit_cpu_seconds": 0.6004620949999988,
+            "fit_wall_seconds": 0.30957687600312056,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 683571,
+            "source_dependencies": 40
+          },
+          "score_sha256": "4012cf558b399a6fb3f4c0f82834d4ed5b400fb81e08ca24107ecd59907934fb",
+          "selected_cell_reads": 417,
+          "success": 0.03357314148681055,
+          "threshold": 0.4391261339187622,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.11434200200164923
+        },
+        "single_mlp": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.19282350199999954,
+          "feature_seconds": 0.05473994500061963,
+          "known": 403,
+          "known_mrr": 0.0037598223595011566,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 367176,
+              "path": "arm-single_mlp.json.gz",
+              "raw_serialized_bytes": 682585,
+              "sha256": "b3e4d2b0fea7ae4c5503822fb60af86a6bc8059c855c50c62da3684f5fee3d51"
+            },
+            "fit_cpu_seconds": 0.6004620949999988,
+            "fit_wall_seconds": 0.30957687600312056,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 683571,
+            "source_dependencies": 40
+          },
+          "score_sha256": "4012cf558b399a6fb3f4c0f82834d4ed5b400fb81e08ca24107ecd59907934fb",
+          "selected_cell_reads": 417,
+          "success": 0.03357314148681055,
+          "threshold": 0.4391261339187622,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.1251046459947247
+        }
+      },
+      "seed": 31031
+    },
+    {
+      "admitted": [],
+      "phase": 0,
+      "records": 210,
+      "results": {
+        "dense_source_retrieval": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.03571428571428571
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.11989795918367346
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 0.5714285714285714
+            }
+          },
+          "cpu_seconds": 0.1265685449999978,
+          "feature_seconds": 0.04261369800224202,
+          "known": 434,
+          "known_mrr": 0.21921574819952286,
+          "known_success": 0.11059907834101383,
+          "queries": 448,
+          "resources": {
+            "fit_wall_seconds": 0.3078526219978812,
+            "index_bytes": 588529
+          },
+          "score_sha256": "3737012dc0ab8c80344fd9d8a7ccdd78c4a8710c09b4a1e6596216a8279b8e42",
+          "selected_cell_reads": 0,
+          "success": 0.125,
+          "threshold": 0.38239189982414246,
+          "unsupported": 14,
+          "unsupported_rejection": 0.5714285714285714,
+          "wall_seconds": 0.08587228899705224
+        },
+        "fixed_typed": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.13491006199999944,
+          "feature_seconds": 0.04378874800022459,
+          "known": 434,
+          "known_mrr": 0.0817836570628256,
+          "known_success": 0.0,
+          "queries": 448,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 721919,
+              "path": "arm-fixed_typed.json.gz",
+              "raw_serialized_bytes": 1354981,
+              "sha256": "5d462de61a3a79be10271b928051a0781d8e60d7c1e833b55187616e16f4e2d6"
+            },
+            "fit_cpu_seconds": 0.3796512990000025,
+            "fit_wall_seconds": 0.18798361399240093,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 1356025,
+            "source_dependencies": 14
+          },
+          "score_sha256": "e7dd001b552b56f14c0fc16408c372d12c788dc58c830a774aae5d64ed398d0b",
+          "selected_cell_reads": 896,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.09106462600175291
+        },
+        "full_text_bm25": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.17857142857142858
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.2372448979591837
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 0.6428571428571429
+            }
+          },
+          "cpu_seconds": 0.3053797809999992,
+          "feature_seconds": 7.609996828250587e-07,
+          "known": 434,
+          "known_mrr": 0.27913469272224706,
+          "known_success": 0.22580645161290322,
+          "queries": 448,
+          "resources": {
+            "fit_wall_seconds": 0.26854216100036865,
+            "index_bytes": 588529
+          },
+          "score_sha256": "95f48eb90c78bfdd8d01dd696a8459a1a456d518a18100c8a0c8c4f575e8f4b0",
+          "selected_cell_reads": 0,
+          "success": 0.23883928571428573,
+          "threshold": 0.914116382598877,
+          "unsupported": 14,
+          "unsupported_rejection": 0.6428571428571429,
+          "wall_seconds": 0.2487786209967453
+        },
+        "learned_sparse": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.12346625800000055,
+          "feature_seconds": 0.046404925000388175,
+          "known": 434,
+          "known_mrr": 0.0826293771081512,
+          "known_success": 0.0,
+          "queries": 448,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 727723,
+              "path": "arm-learned_sparse.json.gz",
+              "raw_serialized_bytes": 1366996,
+              "sha256": "beb91d99d9e25454710904749d67df3fbaca09c5d9a343a3dbd8afbf8a46a633"
+            },
+            "fit_cpu_seconds": 0.3796512990000025,
+            "fit_wall_seconds": 0.18798361399240093,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 2056,
+            "serialized_bytes": 1368566,
+            "source_dependencies": 14
+          },
+          "score_sha256": "45a30a491ee9ee2602851c59ba0cd811e9c30c5a2e72d36397e7c88ef3b5f790",
+          "selected_cell_reads": 448,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.08638627999607706
+        },
+        "selected_evolution": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.15510233699999887,
+          "feature_seconds": 0.04545891199813923,
+          "known": 434,
+          "known_mrr": 0.042657258025570216,
+          "known_success": 0.0,
+          "queries": 448,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 364543,
+              "path": "arm-selected_evolution.json.gz",
+              "raw_serialized_bytes": 678664,
+              "sha256": "c5c5e279cc19764aa59470112daaac2ca8dbacce240395046285ffa1cd92e8ec"
+            },
+            "fit_cpu_seconds": 0.16826059699999973,
+            "fit_wall_seconds": 0.08504589299991494,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 7680,
+            "router_bytes": 0,
+            "serialized_bytes": 679490,
+            "source_dependencies": 14
+          },
+          "score_sha256": "550a12d1f2666c330427db034198bdafa4707907c4eaef036610808ef1ef8024",
+          "selected_cell_reads": 448,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10141970500262687
+        },
+        "single_mlp": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.13537790599999866,
+          "feature_seconds": 0.044094357996073086,
+          "known": 434,
+          "known_mrr": 0.042657258025570216,
+          "known_success": 0.0,
+          "queries": 448,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 364535,
+              "path": "arm-single_mlp.json.gz",
+              "raw_serialized_bytes": 678664,
+              "sha256": "5fc80cd64c6170c6713d55c80a2e0680afac52759c2015bf7600b7334b28b545"
+            },
+            "fit_cpu_seconds": 0.16826059699999973,
+            "fit_wall_seconds": 0.08504589299991494,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 7680,
+            "router_bytes": 0,
+            "serialized_bytes": 679490,
+            "source_dependencies": 14
+          },
+          "score_sha256": "550a12d1f2666c330427db034198bdafa4707907c4eaef036610808ef1ef8024",
+          "selected_cell_reads": 448,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.09167607600102201
+        }
+      },
+      "seed": 41033
+    },
+    {
+      "admitted": [],
+      "phase": 1,
+      "records": 405,
+      "results": {
+        "continued_parent": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.17527504399999572,
+          "feature_seconds": 0.04320644099789206,
+          "known": 403,
+          "known_mrr": 0.010823601746581389,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 366646,
+              "path": "arm-continued_parent.json.gz",
+              "raw_serialized_bytes": 681718,
+              "sha256": "d760b091595ee2d7b842bb27c0564cc2ee2f068dd0a64d8d6c56dfdbd94bedb6"
+            },
+            "fit_cpu_seconds": 0.5426294499999997,
+            "fit_wall_seconds": 0.27147503699961817,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 682691,
+            "source_dependencies": 27
+          },
+          "score_sha256": "22d9aea595be239e96ad1aa85ad51263d99695071901b02b13a99da28a95d806",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 0.7094624042510986,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.11053497999819228
+        },
+        "dense_source_retrieval": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.11263736263736264
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 0.5384615384615384
+            }
+          },
+          "cpu_seconds": 0.1668296550000008,
+          "feature_seconds": 0.04601920599816367,
+          "known": 403,
+          "known_mrr": 0.18103966970118082,
+          "known_success": 0.10173697270471464,
+          "queries": 416,
+          "resources": {
+            "fit_wall_seconds": 0.5440308390025166,
+            "index_bytes": 1122429
+          },
+          "score_sha256": "3a4f3e19307454d2cc3b86e579e7509512cac43d4973aaf09c38c6fb77541c4e",
+          "selected_cell_reads": 0,
+          "success": 0.11538461538461539,
+          "threshold": 0.39385348558425903,
+          "unsupported": 13,
+          "unsupported_rejection": 0.5384615384615384,
+          "wall_seconds": 0.109386750998965
+        },
+        "equal_capacity_single": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.16057339700000028,
+          "feature_seconds": 0.04802168600144796,
+          "known": 403,
+          "known_mrr": 0.03952455818020053,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 720407,
+              "path": "arm-equal_capacity_single.json.gz",
+              "raw_serialized_bytes": 1338115,
+              "sha256": "721f988e5a3c8f0866805322f81af45e3b603a4607f7ed92f34db0b065588ec8"
+            },
+            "fit_cpu_seconds": 0.9753982049999976,
+            "fit_wall_seconds": 0.4877827480013366,
+            "optimizer_bytes": 443584,
+            "parameter_bytes": 221792,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 1338994,
+            "source_dependencies": 27
+          },
+          "score_sha256": "dd226f901f86ca9519f0536dec6373d210d5d2e96176628415d1e66d5c96a1c5",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 0.9089428186416626,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.1052708490024088
+        },
+        "fixed_typed": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.18657960099999826,
+          "feature_seconds": 0.04355801000201609,
+          "known": 403,
+          "known_mrr": 0.004723394721726173,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 726506,
+              "path": "arm-fixed_typed.json.gz",
+              "raw_serialized_bytes": 1356713,
+              "sha256": "e58f557117f05cc42257ba4c725f6703ed89398c4010b9d43f0d8f613d197d85"
+            },
+            "fit_cpu_seconds": 0.3763019000000014,
+            "fit_wall_seconds": 0.18836607199773425,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 1357783,
+            "source_dependencies": 27
+          },
+          "score_sha256": "b1baa02b022eb72ca404c72d65ebcf8f3820dfcbedad85df7c49a9e563b13b7e",
+          "selected_cell_reads": 832,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.11621291900519282
+        },
+        "full_text_bm25": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.07692307692307693
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.06043956043956044
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 0.9230769230769231
+            }
+          },
+          "cpu_seconds": 0.3549714330000029,
+          "feature_seconds": 5.510009941644967e-07,
+          "known": 403,
+          "known_mrr": 0.19759941810747617,
+          "known_success": 0.05707196029776675,
+          "queries": 416,
+          "resources": {
+            "fit_wall_seconds": 0.519201545001124,
+            "index_bytes": 1122429
+          },
+          "score_sha256": "173bc667b174c69081f18006d00993b828e236a7ff2cf7565c12f3f6d4496f5c",
+          "selected_cell_reads": 0,
+          "success": 0.08413461538461539,
+          "threshold": 0.9326093196868896,
+          "unsupported": 13,
+          "unsupported_rejection": 0.9230769230769231,
+          "wall_seconds": 0.3341434309986653
+        },
+        "learned_sparse": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1735800249999997,
+          "feature_seconds": 0.039993352998862974,
+          "known": 403,
+          "known_mrr": 0.008114270596377957,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 732146,
+              "path": "arm-learned_sparse.json.gz",
+              "raw_serialized_bytes": 1368740,
+              "sha256": "0eb9e667c6ede5a4aec520cbcbfd5132dd5482052b3a9cabd8770b5788b3c748"
+            },
+            "fit_cpu_seconds": 0.3763019000000014,
+            "fit_wall_seconds": 0.18836607199773425,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 2056,
+            "serialized_bytes": 1370336,
+            "source_dependencies": 27
+          },
+          "score_sha256": "abf5b07596cfc21838ec2414d94d2af6c1edb1f986bd3c60f0c15a4a935f6838",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10755421200155979
+        },
+        "same_partition_fixed_experts": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.15605001400000162,
+          "feature_seconds": 0.038643710999167524,
+          "known": 403,
+          "known_mrr": 0.007581712750094536,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 735344,
+              "path": "arm-same_partition_fixed_experts.json.gz",
+              "raw_serialized_bytes": 1371135,
+              "sha256": "30732f9027edbc4c92a286dacb64776d08eeac5df116a8bc4a8c73fa1af10f54"
+            },
+            "fit_cpu_seconds": 0.5118735469999969,
+            "fit_wall_seconds": 0.2565177840006072,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 23040,
+            "router_bytes": 2056,
+            "serialized_bytes": 1373347,
+            "source_dependencies": 27
+          },
+          "score_sha256": "272c09a41ee71cef016f8fca22c3cdb392b424f58e685665dbc95984ac240fba",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 0.49303731322288513,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10010660800617188
+        },
+        "selected_evolution": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1662785729999996,
+          "feature_seconds": 0.04957785199803766,
+          "known": 403,
+          "known_mrr": 0.004776491132179797,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 366463,
+              "path": "arm-selected_evolution.json.gz",
+              "raw_serialized_bytes": 680631,
+              "sha256": "0231e00f81ed3a4d5e1d49b928f55cbaa53f1c0d18d68c31da0f448d14f4fd4a"
+            },
+            "fit_cpu_seconds": 0.3286902600000019,
+            "fit_wall_seconds": 0.16552084399882006,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 681537,
+            "source_dependencies": 27
+          },
+          "score_sha256": "443dda7b1498a8e4b6422105efd604ba4e2a117b7b96e8b2079db99823a5dd0b",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10836217799806036
+        },
+        "single_mlp": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.268098044999995,
+          "feature_seconds": 0.04031141200539423,
+          "known": 403,
+          "known_mrr": 0.004776491132179797,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 366455,
+              "path": "arm-single_mlp.json.gz",
+              "raw_serialized_bytes": 680631,
+              "sha256": "e56194e3e25d5b867c246cdfe2f91e5ef027b3919f9845f6e8355f3da309defa"
+            },
+            "fit_cpu_seconds": 0.3286902600000019,
+            "fit_wall_seconds": 0.16552084399882006,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 681537,
+            "source_dependencies": 27
+          },
+          "score_sha256": "443dda7b1498a8e4b6422105efd604ba4e2a117b7b96e8b2079db99823a5dd0b",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.1654560280003352
+        }
+      },
+      "seed": 41033
+    },
+    {
+      "admitted": [],
+      "phase": 2,
+      "records": 600,
+      "results": {
+        "dense_source_retrieval": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.054945054945054944
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1766672510000049,
+          "feature_seconds": 0.040201275995059405,
+          "known": 403,
+          "known_mrr": 0.1458935288276752,
+          "known_success": 0.04962779156327544,
+          "queries": 417,
+          "resources": {
+            "fit_wall_seconds": 0.7499256209994201,
+            "index_bytes": 1645949
+          },
+          "score_sha256": "10476862a3539d76a4d68e246942e7e745ca3d2f6e2b6084b3fb0c00a956423f",
+          "selected_cell_reads": 0,
+          "success": 0.0815347721822542,
+          "threshold": 0.46396586298942566,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10905761600588448
+        },
+        "fixed_typed": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1889616169999968,
+          "feature_seconds": 0.04274884200276574,
+          "known": 403,
+          "known_mrr": 0.00249554359821623,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 727943,
+              "path": "arm-fixed_typed.json.gz",
+              "raw_serialized_bytes": 1358453,
+              "sha256": "11b069e0b3c9fbb2f12e3b7323881bf6aeda384420d52844d0813e4bcf68f213"
+            },
+            "fit_cpu_seconds": 0.33498759700000846,
+            "fit_wall_seconds": 0.1672803949986701,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 1359549,
+            "source_dependencies": 40
+          },
+          "score_sha256": "741ce30c950081e2f0cafc769df9bc4a7339808a6338f763a69081480273286a",
+          "selected_cell_reads": 834,
+          "success": 0.03357314148681055,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.11659492299804697
+        },
+        "full_text_bm25": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.038461538461538464
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.03296703296703297
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 0.9285714285714286
+            }
+          },
+          "cpu_seconds": 0.5124519230000004,
+          "feature_seconds": 5.90996933169663e-07,
+          "known": 403,
+          "known_mrr": 0.18792835135361302,
+          "known_success": 0.03225806451612903,
+          "queries": 417,
+          "resources": {
+            "fit_wall_seconds": 0.7668531560047995,
+            "index_bytes": 1645949
+          },
+          "score_sha256": "2cf9450f0f71247a8c2551b531c02d648009a3d6cf24d4eecfae2b3dba7e2a61",
+          "selected_cell_reads": 0,
+          "success": 0.06235011990407674,
+          "threshold": 0.93768709897995,
+          "unsupported": 14,
+          "unsupported_rejection": 0.9285714285714286,
+          "wall_seconds": 0.4852354549948359
+        },
+        "learned_sparse": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.16506257799999702,
+          "feature_seconds": 0.040771694999421015,
+          "known": 403,
+          "known_mrr": 0.005634601385940285,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 733562,
+              "path": "arm-learned_sparse.json.gz",
+              "raw_serialized_bytes": 1370536,
+              "sha256": "ce1a74163504ecae5a31f5b87c6b9b79e4ea327310e365e07477f778c12fd26d"
+            },
+            "fit_cpu_seconds": 0.33498759700000846,
+            "fit_wall_seconds": 0.1672803949986701,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 2056,
+            "serialized_bytes": 1372158,
+            "source_dependencies": 40
+          },
+          "score_sha256": "b7b12fc9f18f28ed38f3adbc9b24cae09a490d5c4ae993d0319c876f7190b1a9",
+          "selected_cell_reads": 417,
+          "success": 0.03357314148681055,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10386704100528732
+        },
+        "selected_evolution": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.17517660699999738,
+          "feature_seconds": 0.040131211004336365,
+          "known": 403,
+          "known_mrr": 0.0033478241052392462,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 367447,
+              "path": "arm-selected_evolution.json.gz",
+              "raw_serialized_bytes": 682589,
+              "sha256": "130a732ad977076b8a102de3afbc50646fd3826da1c6dec38c0bd7032f996166"
+            },
+            "fit_cpu_seconds": 0.4955119640000021,
+            "fit_wall_seconds": 0.24862818400288234,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 683575,
+            "source_dependencies": 40
+          },
+          "score_sha256": "53c775bd58c9e159cfff0ccd4075fd213480a383c05f20402abba32fbbd8d6e8",
+          "selected_cell_reads": 417,
+          "success": 0.03357314148681055,
+          "threshold": 0.3495049476623535,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10895523200451862
+        },
+        "single_mlp": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.176903712000005,
+          "feature_seconds": 0.039059176997398026,
+          "known": 403,
+          "known_mrr": 0.0033478241052392462,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 367439,
+              "path": "arm-single_mlp.json.gz",
+              "raw_serialized_bytes": 682589,
+              "sha256": "dded4463241d41d32cb77984f7477c33a828ea2c30ad506b2ba551a3a343ccc2"
+            },
+            "fit_cpu_seconds": 0.4955119640000021,
+            "fit_wall_seconds": 0.24862818400288234,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 683575,
+            "source_dependencies": 40
+          },
+          "score_sha256": "53c775bd58c9e159cfff0ccd4075fd213480a383c05f20402abba32fbbd8d6e8",
+          "selected_cell_reads": 417,
+          "success": 0.03357314148681055,
+          "threshold": 0.3495049476623535,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10967688800155884
+        }
+      },
+      "seed": 41033
+    },
+    {
+      "admitted": [],
+      "phase": 0,
+      "records": 210,
+      "results": {
+        "dense_source_retrieval": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.03571428571428571
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.11989795918367346
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 0.5714285714285714
+            }
+          },
+          "cpu_seconds": 0.1208371730000053,
+          "feature_seconds": 0.04202644399629207,
+          "known": 434,
+          "known_mrr": 0.21921574819952286,
+          "known_success": 0.11059907834101383,
+          "queries": 448,
+          "resources": {
+            "fit_wall_seconds": 0.2889850130013656,
+            "index_bytes": 588529
+          },
+          "score_sha256": "3737012dc0ab8c80344fd9d8a7ccdd78c4a8710c09b4a1e6596216a8279b8e42",
+          "selected_cell_reads": 0,
+          "success": 0.125,
+          "threshold": 0.38239189982414246,
+          "unsupported": 14,
+          "unsupported_rejection": 0.5714285714285714,
+          "wall_seconds": 0.08344158899853937
+        },
+        "fixed_typed": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.10714285714285714
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 0.7857142857142857
+            }
+          },
+          "cpu_seconds": 0.13770908700000462,
+          "feature_seconds": 0.04611834500246914,
+          "known": 434,
+          "known_mrr": 0.09064541597043614,
+          "known_success": 0.0069124423963133645,
+          "queries": 448,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 721394,
+              "path": "arm-fixed_typed.json.gz",
+              "raw_serialized_bytes": 1354969,
+              "sha256": "acfddb3d369619eae73a178ce200fb248a96d5ee5597881d567960ab53864e4f"
+            },
+            "fit_cpu_seconds": 0.30306990400000444,
+            "fit_wall_seconds": 0.15165026300383033,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 1356013,
+            "source_dependencies": 14
+          },
+          "score_sha256": "8d04a4a1c7acdd0b80c26504d96735fa4bde2c3ae0b793802d54757822f94943",
+          "selected_cell_reads": 896,
+          "success": 0.03125,
+          "threshold": 0.43880540132522583,
+          "unsupported": 14,
+          "unsupported_rejection": 0.7857142857142857,
+          "wall_seconds": 0.09362428000167711
+        },
+        "full_text_bm25": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.17857142857142858
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.2372448979591837
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 0.6428571428571429
+            }
+          },
+          "cpu_seconds": 0.20787711799999897,
+          "feature_seconds": 8.110000635497272e-07,
+          "known": 434,
+          "known_mrr": 0.27913469272224706,
+          "known_success": 0.22580645161290322,
+          "queries": 448,
+          "resources": {
+            "fit_wall_seconds": 0.3275664660031907,
+            "index_bytes": 588529
+          },
+          "score_sha256": "95f48eb90c78bfdd8d01dd696a8459a1a456d518a18100c8a0c8c4f575e8f4b0",
+          "selected_cell_reads": 0,
+          "success": 0.23883928571428573,
+          "threshold": 0.914116382598877,
+          "unsupported": 14,
+          "unsupported_rejection": 0.6428571428571429,
+          "wall_seconds": 0.18708333000540733
+        },
+        "learned_sparse": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 0.7857142857142857
+            }
+          },
+          "cpu_seconds": 0.2263700540000002,
+          "feature_seconds": 0.07312521700077923,
+          "known": 434,
+          "known_mrr": 0.07327845320692014,
+          "known_success": 0.0,
+          "queries": 448,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 727198,
+              "path": "arm-learned_sparse.json.gz",
+              "raw_serialized_bytes": 1366908,
+              "sha256": "cf2ffafa12687b7bc42abf8187f8d0301aa5cb138b4a0d5e5fc87b2f6b6db760"
+            },
+            "fit_cpu_seconds": 0.30306990400000444,
+            "fit_wall_seconds": 0.15165026300383033,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 2056,
+            "serialized_bytes": 1368478,
+            "source_dependencies": 14
+          },
+          "score_sha256": "98372544269e43aae67c94d918aeb63eb2dd13b84a3385ce0d407859212c8e71",
+          "selected_cell_reads": 448,
+          "success": 0.024553571428571428,
+          "threshold": 0.8776108026504517,
+          "unsupported": 14,
+          "unsupported_rejection": 0.7857142857142857,
+          "wall_seconds": 0.15026589400076773
+        },
+        "selected_evolution": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.13204843199999772,
+          "feature_seconds": 0.04296434600109933,
+          "known": 434,
+          "known_mrr": 0.05817003782651353,
+          "known_success": 0.0,
+          "queries": 448,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 365500,
+              "path": "arm-selected_evolution.json.gz",
+              "raw_serialized_bytes": 678658,
+              "sha256": "7f3743c72104a8fdc73988a48762b1db12bb90d9184581ffa4c452e3f1b1466e"
+            },
+            "fit_cpu_seconds": 0.15828382100000482,
+            "fit_wall_seconds": 0.078281820002303,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 7680,
+            "router_bytes": 0,
+            "serialized_bytes": 679484,
+            "source_dependencies": 14
+          },
+          "score_sha256": "4eaad1ed9789e8f593f7f24f71adfc91ee4a74ed82ed7f62d48d0face8cf7847",
+          "selected_cell_reads": 448,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.08841576800477924
+        },
+        "single_mlp": {
+          "by_kind": {
+            "procedure": {
+              "count": 28,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 14,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 392,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.13373744999999815,
+          "feature_seconds": 0.04776701800437877,
+          "known": 434,
+          "known_mrr": 0.05817003782651353,
+          "known_success": 0.0,
+          "queries": 448,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 365492,
+              "path": "arm-single_mlp.json.gz",
+              "raw_serialized_bytes": 678658,
+              "sha256": "e7a063d9da2a2efbdfa76aaf80ac970f8ef2be1429a27ae65cd6b14c053c4f7f"
+            },
+            "fit_cpu_seconds": 0.15828382100000482,
+            "fit_wall_seconds": 0.078281820002303,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 7680,
+            "router_bytes": 0,
+            "serialized_bytes": 679484,
+            "source_dependencies": 14
+          },
+          "score_sha256": "4eaad1ed9789e8f593f7f24f71adfc91ee4a74ed82ed7f62d48d0face8cf7847",
+          "selected_cell_reads": 448,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.0922138360037934
+        }
+      },
+      "seed": 51047
+    },
+    {
+      "admitted": [],
+      "phase": 1,
+      "records": 405,
+      "results": {
+        "continued_parent": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.15133510199999733,
+          "feature_seconds": 0.03973366100399289,
+          "known": 403,
+          "known_mrr": 0.014993041952665244,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 368400,
+              "path": "arm-continued_parent.json.gz",
+              "raw_serialized_bytes": 681710,
+              "sha256": "805c96a5f43a73fa78906658779a8810921cbe4cb6d4fb65d5a646cbbb37f2fa"
+            },
+            "fit_cpu_seconds": 0.43283971700000734,
+            "fit_wall_seconds": 0.2168650660023559,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 682683,
+            "source_dependencies": 27
+          },
+          "score_sha256": "fa5ae8f3eb9718b80a7bad66fd89fae0851c6cc24026824872cf9f296cb98ca5",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 0.673669695854187,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.09585604600579245
+        },
+        "dense_source_retrieval": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.11263736263736264
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 0.5384615384615384
+            }
+          },
+          "cpu_seconds": 0.1429489590000017,
+          "feature_seconds": 0.03853960400010692,
+          "known": 403,
+          "known_mrr": 0.18103966970118082,
+          "known_success": 0.10173697270471464,
+          "queries": 416,
+          "resources": {
+            "fit_wall_seconds": 0.5234187550013303,
+            "index_bytes": 1122429
+          },
+          "score_sha256": "3a4f3e19307454d2cc3b86e579e7509512cac43d4973aaf09c38c6fb77541c4e",
+          "selected_cell_reads": 0,
+          "success": 0.11538461538461539,
+          "threshold": 0.39385348558425903,
+          "unsupported": 13,
+          "unsupported_rejection": 0.5384615384615384,
+          "wall_seconds": 0.09273390500311507
+        },
+        "equal_capacity_single": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1463008979999998,
+          "feature_seconds": 0.03862910799944075,
+          "known": 403,
+          "known_mrr": 0.032629937272697446,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 719358,
+              "path": "arm-equal_capacity_single.json.gz",
+              "raw_serialized_bytes": 1338125,
+              "sha256": "0295daa1b0a66760554f5ad8065925c7fb859a1966a315104921df5f04383b61"
+            },
+            "fit_cpu_seconds": 0.9932955620000001,
+            "fit_wall_seconds": 0.49805921399820363,
+            "optimizer_bytes": 443584,
+            "parameter_bytes": 221792,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 1339004,
+            "source_dependencies": 27
+          },
+          "score_sha256": "81fcb24f6c1b0f9ab503d47e2f7fecb81c0e8a56485d7d49633dc40c33b2717a",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 0.6926299929618835,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.09357563300000038
+        },
+        "fixed_typed": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1487156119999966,
+          "feature_seconds": 0.038208744997973554,
+          "known": 403,
+          "known_mrr": 0.004492985079589499,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 723139,
+              "path": "arm-fixed_typed.json.gz",
+              "raw_serialized_bytes": 1356727,
+              "sha256": "7b9b6f97c42896f949010bb96212db639915373c7254a0da14b6209395283848"
+            },
+            "fit_cpu_seconds": 0.32377855699999714,
+            "fit_wall_seconds": 0.15978410500247264,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 1357797,
+            "source_dependencies": 27
+          },
+          "score_sha256": "8f79556e578aaf576930c163057d754a206b8892309b46fd9af453151f7f76c1",
+          "selected_cell_reads": 832,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.09538790200167568
+        },
+        "full_text_bm25": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.07692307692307693
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.06043956043956044
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 0.9230769230769231
+            }
+          },
+          "cpu_seconds": 0.3391114219999949,
+          "feature_seconds": 8.010028977878392e-07,
+          "known": 403,
+          "known_mrr": 0.19759941810747617,
+          "known_success": 0.05707196029776675,
+          "queries": 416,
+          "resources": {
+            "fit_wall_seconds": 0.5190286919969367,
+            "index_bytes": 1122429
+          },
+          "score_sha256": "173bc667b174c69081f18006d00993b828e236a7ff2cf7565c12f3f6d4496f5c",
+          "selected_cell_reads": 0,
+          "success": 0.08413461538461539,
+          "threshold": 0.9326093196868896,
+          "unsupported": 13,
+          "unsupported_rejection": 0.9230769230769231,
+          "wall_seconds": 0.2979902700026287
+        },
+        "learned_sparse": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.13801057700000285,
+          "feature_seconds": 0.039475072000641376,
+          "known": 403,
+          "known_mrr": 0.007972990886463829,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 728918,
+              "path": "arm-learned_sparse.json.gz",
+              "raw_serialized_bytes": 1368783,
+              "sha256": "17232ffc5546c8d11703f8fcf46db72cf1338d12d9663270e096933d5aedca90"
+            },
+            "fit_cpu_seconds": 0.32377855699999714,
+            "fit_wall_seconds": 0.15978410500247264,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 2056,
+            "serialized_bytes": 1370379,
+            "source_dependencies": 27
+          },
+          "score_sha256": "dcd42cc62b825fcb08502dc69b19e21fa3bbef4a90338df7b92d605db7b34afd",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.09045908100233646
+        },
+        "same_partition_fixed_experts": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 0.7692307692307693
+            }
+          },
+          "cpu_seconds": 0.15327281999999798,
+          "feature_seconds": 0.04111139500309946,
+          "known": 403,
+          "known_mrr": 0.005080924042273403,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 736130,
+              "path": "arm-same_partition_fixed_experts.json.gz",
+              "raw_serialized_bytes": 1370985,
+              "sha256": "ffcf6bb69160dc8ebab4f98208c2da7c19299fd5d699f9042b1eb86ff877cb91"
+            },
+            "fit_cpu_seconds": 0.5098445289999987,
+            "fit_wall_seconds": 0.25434362800297095,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 23040,
+            "router_bytes": 2056,
+            "serialized_bytes": 1373197,
+            "source_dependencies": 27
+          },
+          "score_sha256": "41362d9b004018bb84db54b2cc53dc895d3e4afffabb1605912a14639a3072d5",
+          "selected_cell_reads": 416,
+          "success": 0.02403846153846154,
+          "threshold": 0.2216755449771881,
+          "unsupported": 13,
+          "unsupported_rejection": 0.7692307692307693,
+          "wall_seconds": 0.0975301770013175
+        },
+        "selected_evolution": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1605648840000029,
+          "feature_seconds": 0.03952186200331198,
+          "known": 403,
+          "known_mrr": 0.005435857710443326,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 367535,
+              "path": "arm-selected_evolution.json.gz",
+              "raw_serialized_bytes": 680634,
+              "sha256": "156440edd056cdcc91633357ef2486c014123db05f9040099c47d5a1249c7406"
+            },
+            "fit_cpu_seconds": 0.27900162700000664,
+            "fit_wall_seconds": 0.13900099800230237,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 681540,
+            "source_dependencies": 27
+          },
+          "score_sha256": "a7ae3fea0651e6e749977b09e1ad2400bb901ceb34079f5d94c3b2eb48ce4b13",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10086859299917705
+        },
+        "single_mlp": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 13,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1465607829999982,
+          "feature_seconds": 0.03849711899965769,
+          "known": 403,
+          "known_mrr": 0.005435857710443326,
+          "known_success": 0.0,
+          "queries": 416,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 367527,
+              "path": "arm-single_mlp.json.gz",
+              "raw_serialized_bytes": 680634,
+              "sha256": "5a8a0f00d2785d208ffe950cbe684f76c1a2bc086d7df75d7a091ce4f71b4c9d"
+            },
+            "fit_cpu_seconds": 0.27900162700000664,
+            "fit_wall_seconds": 0.13900099800230237,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 681540,
+            "source_dependencies": 27
+          },
+          "score_sha256": "a7ae3fea0651e6e749977b09e1ad2400bb901ceb34079f5d94c3b2eb48ce4b13",
+          "selected_cell_reads": 416,
+          "success": 0.03125,
+          "threshold": 1.0000009536743164,
+          "unsupported": 13,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.09315783400234068
+        }
+      },
+      "seed": 51047
+    },
+    {
+      "admitted": [],
+      "phase": 2,
+      "records": 600,
+      "results": {
+        "dense_source_retrieval": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.054945054945054944
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.18882293800000127,
+          "feature_seconds": 0.037490283997613005,
+          "known": 403,
+          "known_mrr": 0.1458935288276752,
+          "known_success": 0.04962779156327544,
+          "queries": 417,
+          "resources": {
+            "fit_wall_seconds": 0.7490500999992946,
+            "index_bytes": 1645949
+          },
+          "score_sha256": "10476862a3539d76a4d68e246942e7e745ca3d2f6e2b6084b3fb0c00a956423f",
+          "selected_cell_reads": 0,
+          "success": 0.0815347721822542,
+          "threshold": 0.46396586298942566,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.11469085900171194
+        },
+        "fixed_typed": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.1805514889999955,
+          "feature_seconds": 0.044256981993385125,
+          "known": 403,
+          "known_mrr": 0.0025358340563758435,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 727886,
+              "path": "arm-fixed_typed.json.gz",
+              "raw_serialized_bytes": 1358461,
+              "sha256": "cbda01194e985e417cf056999b2ac13e18b753c6f401df99187fa0f08fd9f326"
+            },
+            "fit_cpu_seconds": 0.26589294699999755,
+            "fit_wall_seconds": 0.13401030900422484,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 0,
+            "serialized_bytes": 1359557,
+            "source_dependencies": 40
+          },
+          "score_sha256": "e31e728562eb2563eafe0842addede9c439790684bcefd365af4a806207b414a",
+          "selected_cell_reads": 834,
+          "success": 0.03357314148681055,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.1144894109966117
+        },
+        "full_text_bm25": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.038461538461538464
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.03296703296703297
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 0.9285714285714286
+            }
+          },
+          "cpu_seconds": 0.47410756200000037,
+          "feature_seconds": 3.9999576983973384e-07,
+          "known": 403,
+          "known_mrr": 0.18792835135361302,
+          "known_success": 0.03225806451612903,
+          "queries": 417,
+          "resources": {
+            "fit_wall_seconds": 0.7699822989961831,
+            "index_bytes": 1645949
+          },
+          "score_sha256": "2cf9450f0f71247a8c2551b531c02d648009a3d6cf24d4eecfae2b3dba7e2a61",
+          "selected_cell_reads": 0,
+          "success": 0.06235011990407674,
+          "threshold": 0.93768709897995,
+          "unsupported": 14,
+          "unsupported_rejection": 0.9285714285714286,
+          "wall_seconds": 0.444000182003947
+        },
+        "learned_sparse": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.15868645899999478,
+          "feature_seconds": 0.03891532000125153,
+          "known": 403,
+          "known_mrr": 0.005527693478502168,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 2,
+            "artifact": {
+              "bytes": 733551,
+              "path": "arm-learned_sparse.json.gz",
+              "raw_serialized_bytes": 1370601,
+              "sha256": "3e3c809145b4259e7f8a29d5569497d89818066eb9c0c277c48f0ab28e677f90"
+            },
+            "fit_cpu_seconds": 0.26589294699999755,
+            "fit_wall_seconds": 0.13401030900422484,
+            "optimizer_bytes": 448384,
+            "parameter_bytes": 224192,
+            "presentations": 15360,
+            "router_bytes": 2056,
+            "serialized_bytes": 1372223,
+            "source_dependencies": 40
+          },
+          "score_sha256": "2826c49272c5de30c24c21cd5f6496939e7b906bc3a034bec44b750ff04912cd",
+          "selected_cell_reads": 417,
+          "success": 0.03357314148681055,
+          "threshold": 1.0000009536743164,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.10020704899943667
+        },
+        "selected_evolution": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.19886037200001283,
+          "feature_seconds": 0.03801564600144047,
+          "known": 403,
+          "known_mrr": 0.0039966254760142456,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 369074,
+              "path": "arm-selected_evolution.json.gz",
+              "raw_serialized_bytes": 682581,
+              "sha256": "253ebadb239b028851d7dafd1dccad8e8c1441168411a1326a616813002c1f4c"
+            },
+            "fit_cpu_seconds": 0.4018112190000096,
+            "fit_wall_seconds": 0.20112876400526147,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 683567,
+            "source_dependencies": 40
+          },
+          "score_sha256": "b88b1beb11a11837d6c78089c0bc19d451124cd9c25032fe0ec27d31069694df",
+          "selected_cell_reads": 417,
+          "success": 0.03357314148681055,
+          "threshold": 0.5585075616836548,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.11949384600302437
+        },
+        "single_mlp": {
+          "by_kind": {
+            "procedure": {
+              "count": 26,
+              "success": 0.0
+            },
+            "procedure+semantic": {
+              "count": 13,
+              "success": 0.0
+            },
+            "semantic": {
+              "count": 364,
+              "success": 0.0
+            },
+            "unsupported": {
+              "count": 14,
+              "success": 1.0
+            }
+          },
+          "cpu_seconds": 0.17651602499999797,
+          "feature_seconds": 0.03839398400305072,
+          "known": 403,
+          "known_mrr": 0.0039966254760142456,
+          "known_success": 0.0,
+          "queries": 417,
+          "resources": {
+            "active_cells": 1,
+            "artifact": {
+              "bytes": 369066,
+              "path": "arm-single_mlp.json.gz",
+              "raw_serialized_bytes": 682581,
+              "sha256": "3248b3c76ac66bcbccde729165388428c4571f8c02db4ff5acaeb5d6684c1001"
+            },
+            "fit_cpu_seconds": 0.4018112190000096,
+            "fit_wall_seconds": 0.20112876400526147,
+            "optimizer_bytes": 224192,
+            "parameter_bytes": 112096,
+            "presentations": 23040,
+            "router_bytes": 0,
+            "serialized_bytes": 683567,
+            "source_dependencies": 40
+          },
+          "score_sha256": "b88b1beb11a11837d6c78089c0bc19d451124cd9c25032fe0ec27d31069694df",
+          "selected_cell_reads": 417,
+          "success": 0.03357314148681055,
+          "threshold": 0.5585075616836548,
+          "unsupported": 14,
+          "unsupported_rejection": 1.0,
+          "wall_seconds": 0.1094473699995433
+        }
+      },
+      "seed": 51047
+    }
+  ],
+  "schema": "hepta.memory.network-results.v12",
+  "source_identity": {
+    "NETWORK_PROTOCOL.json": "7f0b6dd903a4358a46e4d573d43c3a7cac38c49742f3afa3063710a042f8da6c",
+    "corpus.py": "a46039cbb371e8d2bf99f8658909744c2f8819c31fa84870a242ed58a90d17b2",
+    "learned.py": "125425be5e368e3c4ce3dcae382acbd1fca91b2a816ddeb7b7bf7b4aa8605336",
+    "network.py": "bdce4313b87427fadc5f377ecc422c9f2985b154b7584f674fbd6bbf7b2df3a7",
+    "network_experiment.py": "a44a9edb7bc68f93cba1e06f365eb07e913b428a9dcf9780cd87633e94a273f2"
+  },
+  "source_text_bytes": 834524
+}

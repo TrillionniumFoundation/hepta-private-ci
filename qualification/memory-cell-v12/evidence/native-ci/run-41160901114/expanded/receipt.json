@@ -1,0 +1,165 @@
+{
+  "schema": "hepta.memory.v12.native-ci-receipt.v1",
+  "passed": true,
+  "tests_command_started": true,
+  "tests_executed": true,
+  "final_fix_executed": true,
+  "formatter_executed": true,
+  "tests_executed_after_fix_or_format": false,
+  "production_activation_allowed": false,
+  "trained_quality_claimed": false,
+  "baseline_commit": "527218f9b823540830907f861a309310b71d38c9",
+  "commands": [
+    {
+      "name": "rustc-version",
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.9237489779999919
+    },
+    {
+      "name": "cargo-version",
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.030736832000002323
+    },
+    {
+      "name": "nextest-version",
+      "command": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.04041614999999865
+    },
+    {
+      "name": "just-version",
+      "command": [
+        "just",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.0013040629999920839
+    },
+    {
+      "name": "same-source-app-server",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 507.659804966
+    },
+    {
+      "name": "scoped-native-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "--retries",
+        "0",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 306.195002734
+    },
+    {
+      "name": "final-scoped-fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 257.486846818
+    },
+    {
+      "name": "final-format",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "527218f9b823540830907f861a309310b71d38c9"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.5670084910000242
+    }
+  ],
+  "github": {
+    "GITHUB_SHA": "40330d860ac4202b04927f0d69e74348c6d7f8c4",
+    "GITHUB_REF": "refs/heads/research/memory-cell-v12-20261030",
+    "GITHUB_RUN_ID": "41160901114",
+    "GITHUB_RUN_ATTEMPT": "1",
+    "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci"
+  },
+  "resource_settings": {
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2"
+  },
+  "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+  "disk_before": {
+    "total": 154894188544,
+    "used": 70018445312,
+    "free": 84858966016
+  },
+  "source_commit": "40330d860ac4202b04927f0d69e74348c6d7f8c4",
+  "source_tree": "766041d519a1ce23a2cb3b53f6f525d74cfa114c",
+  "initial_changed_tree": false,
+  "source_inventory_sha256": "97af7195a71eb440992767f3cd38605358a3129c85a15027817392b0af0fc848",
+  "junit_source": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml",
+  "app_server": {
+    "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex-app-server",
+    "sha256": "6cbef25bf4dfa66573643cc97d0b435d8f76d2173a6907e6faf7cf9ce15d47c5",
+    "bytes": 444006728,
+    "source_commit": "40330d860ac4202b04927f0d69e74348c6d7f8c4"
+  },
+  "executed_cases": 520,
+  "v12_cases": [
+    "memory_v12_python_trained_bytes_match_native_reader",
+    "memory_v12_trained_cells_publish_read_restart_correct_and_forget",
+    "memory_v12_trained_payload_rejects_version_and_parameter_substitution"
+  ],
+  "after_tests_changed_tree": false,
+  "after_fix_changed_tree": false,
+  "after_format_changed_tree": false,
+  "junit_skipped_cases": 0,
+  "failed_cases": [],
+  "nextest_summary": "Summary [  50.619s] 520 tests run: 520 passed, 24 skipped",
+  "nextest_reported_skipped_cases": 24,
+  "final_changed_tree": false,
+  "wall_seconds": 1074.0155590269999,
+  "disk_after": {
+    "total": 154894188544,
+    "used": 78485831680,
+    "free": 76391579648
+  }
+}

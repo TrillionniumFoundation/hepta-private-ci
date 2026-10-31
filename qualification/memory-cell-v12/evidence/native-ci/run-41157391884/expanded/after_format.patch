@@ -1,0 +1,1204 @@
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index 47ff694eb8f448881eec97df222a71e0d05b1200..db4312b0fb2a7cf83b62b851f7470fad8bf6fdd9 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -63,7 +63,6 @@ mod memory_cell_training_tests;
+ mod memory_cell_v9_continual_tests;
+ mod memory_independent_cell_v11;
+ mod memory_independent_model_v12;
+-mod memory_mlp_v12;
+ #[cfg(all(test, unix))]
+ mod memory_inventory_actual_tests;
+ mod memory_inventory_bundle;
+@@ -77,6 +76,7 @@ mod memory_inventory_runtime;
+ mod memory_inventory_test_support;
+ #[cfg(test)]
+ mod memory_inventory_withdrawal_test_support;
++mod memory_mlp_v12;
+ mod memory_serving_plan_v11;
+ mod neuron_runtime;
+ mod objective_runtime;
+diff --git a/codex-rs/hepta-agentd/src/memory_independent_cell_v11.rs b/codex-rs/hepta-agentd/src/memory_independent_cell_v11.rs
+index df8afa976b9dae25f0a58cb22c78332c58c160c1..b62a9cf8989b0c9819e9f2bc5284599067d08f88 100644
+--- a/codex-rs/hepta-agentd/src/memory_independent_cell_v11.rs
++++ b/codex-rs/hepta-agentd/src/memory_independent_cell_v11.rs
+@@ -38,9 +38,9 @@ use serde::Serialize;
+ 
+ use crate::memory_cell_release::core::MemoryReleaseBundle;
+ use crate::memory_cell_release::core::MemoryReleaseSlot;
+-use crate::memory_independent_model_v12::IndependentCellModel;
+ use crate::memory_independent_model_v12::ENVELOPE_V11;
+ use crate::memory_independent_model_v12::ENVELOPE_V12;
++use crate::memory_independent_model_v12::IndependentCellModel;
+ 
+ const MAX_BYTES: usize = 40 * 1024 * 1024;
+ 
+@@ -129,11 +129,24 @@ impl MemoryCellCandidateV12 {
+         generation: ContractGenerationV1,
+         payload: &[u8],
+     ) -> Result<Self, String> {
+-        MemoryCellCandidateV11::from_versioned_projection(projection, generation, payload, ENVELOPE_V12).map(Self)
++        MemoryCellCandidateV11::from_versioned_projection(
++            projection,
++            generation,
++            payload,
++            ENVELOPE_V12,
++        )
++        .map(Self)
+     }
+-    pub fn bytes(&self) -> &[u8] { self.0.bytes() }
+-    pub fn digest(&self) -> ContractDigestV1 { self.0.digest() }
+-    pub fn bind_manifest(&self, manifest: LearningArtifactManifestV2) -> Result<LearningArtifactManifestV2, String> {
++    pub fn bytes(&self) -> &[u8] {
++        self.0.bytes()
++    }
++    pub fn digest(&self) -> ContractDigestV1 {
++        self.0.digest()
++    }
++    pub fn bind_manifest(
++        &self,
++        manifest: LearningArtifactManifestV2,
++    ) -> Result<LearningArtifactManifestV2, String> {
+         self.0.bind_manifest(manifest)
+     }
+ }
+@@ -261,7 +274,9 @@ impl MemoryReleaseBundle for SelectedMemoryCellV11 {
+         wire.selector
+             .validate()
+             .map_err(|error| error.to_string())?;
+-        if !matches!(wire.schema.as_str(), ENVELOPE_V11 | ENVELOPE_V12) || wire.generation.get() >= 1_u64 << 53 {
++        if !matches!(wire.schema.as_str(), ENVELOPE_V11 | ENVELOPE_V12)
++            || wire.generation.get() >= 1_u64 << 53
++        {
+             return Err("V11 cell schema or generation".to_string());
+         }
+         let model = decode_model(&wire)?;
+@@ -297,7 +312,11 @@ impl MemoryReleaseBundle for SelectedMemoryCellV11 {
+ }
+ 
+ fn decode_model(wire: &CellWire) -> Result<IndependentCellModel, String> {
+-    let model = IndependentCellModel::decode(&wire.schema, wire.payload.as_bytes(), wire.payload_digest.digest())?;
++    let model = IndependentCellModel::decode(
++        &wire.schema,
++        wire.payload.as_bytes(),
++        wire.payload_digest.digest(),
++    )?;
+     let kind = match wire.selector.kind {
+         MemoryInventoryKindV1::Semantic => MemoryCellKindV1::Semantic,
+         MemoryInventoryKindV1::Procedure => MemoryCellKindV1::Procedure,
+diff --git a/codex-rs/hepta-agentd/src/memory_independent_model_v12.rs b/codex-rs/hepta-agentd/src/memory_independent_model_v12.rs
+index 283dfcb7127430ebf1cc52849cac19071a857d67..c9da707ecf55e1cb4c6b605abad699f2d794c5ec 100644
+--- a/codex-rs/hepta-agentd/src/memory_independent_model_v12.rs
++++ b/codex-rs/hepta-agentd/src/memory_independent_model_v12.rs
+@@ -23,23 +23,36 @@ impl IndependentCellModel {
+     pub fn decode(schema: &str, payload: &[u8], expected: Digest32) -> Result<Self, String> {
+         match schema {
+             ENVELOPE_V11 => MemoryResidualCellV1::from_bytes(payload, expected)
+-                .map(Self::Residual).map_err(|error| error.to_string()),
++                .map(Self::Residual)
++                .map_err(|error| error.to_string()),
+             ENVELOPE_V12 => MemoryMlpCellV12::from_bytes(payload, expected).map(Self::Mlp),
+             _ => Err("independent memory cell envelope version unsupported".to_string()),
+         }
+     }
+ 
+     pub fn kind(&self) -> MemoryCellKindV1 {
+-        match self { Self::Residual(model) => model.kind(), Self::Mlp(model) => model.kind() }
++        match self {
++            Self::Residual(model) => model.kind(),
++            Self::Mlp(model) => model.kind(),
++        }
+     }
+     pub fn owner_cut_digest(&self) -> Digest32 {
+-        match self { Self::Residual(model) => model.owner_cut_digest(), Self::Mlp(model) => model.owner_cut_digest }
++        match self {
++            Self::Residual(model) => model.owner_cut_digest(),
++            Self::Mlp(model) => model.owner_cut_digest,
++        }
+     }
+     pub fn supports(&self) -> &BTreeMap<String, Vec<String>> {
+-        match self { Self::Residual(model) => model.supports(), Self::Mlp(model) => model.supports() }
++        match self {
++            Self::Residual(model) => model.supports(),
++            Self::Mlp(model) => model.supports(),
++        }
+     }
+     pub fn lineage_sources(&self) -> &[String] {
+-        match self { Self::Residual(model) => model.lineage_sources(), Self::Mlp(model) => model.lineage_sources() }
++        match self {
++            Self::Residual(model) => model.lineage_sources(),
++            Self::Mlp(model) => model.lineage_sources(),
++        }
+     }
+     pub fn predict(&self, key: &str) -> Result<MemoryResidualPredictionV1, String> {
+         match self {
+@@ -49,19 +62,46 @@ impl IndependentCellModel {
+     }
+     pub fn bind_manifest(&self, manifest: &mut LearningArtifactManifestV2) -> Result<(), String> {
+         let (artifact, parameters, head, encoder, output, numeric, address) = match self {
+-            Self::Residual(model) => (model.digest(), model.parameters_digest(), model.head_digest(),
+-                model.encoder_digest(), model.output_profile(), model.numeric_profile(), model.address_profile()),
+-            Self::Mlp(model) => (model.digest, model.parameters_digest, model.head_digest,
+-                model.encoder_digest, model.output_profile(), model.numeric_profile(), model.address_profile()),
++            Self::Residual(model) => (
++                model.digest(),
++                model.parameters_digest(),
++                model.head_digest(),
++                model.encoder_digest(),
++                model.output_profile(),
++                model.numeric_profile(),
++                model.address_profile(),
++            ),
++            Self::Mlp(model) => (
++                model.digest,
++                model.parameters_digest,
++                model.head_digest,
++                model.encoder_digest,
++                model.output_profile(),
++                model.numeric_profile(),
++                model.address_profile(),
++            ),
+         };
+-        manifest.lineage_digests = self.lineage_sources().iter().map(|source|
+-            source.parse::<Digest32>().map_err(|error| error.to_string())
+-        ).collect::<Result<_, _>>()?;
+-        let tuple = serde_json::to_vec(&(artifact.to_string(), parameters.to_string(), head.to_string(), encoder.to_string(), output))
+-            .map_err(|error| error.to_string())?;
++        manifest.lineage_digests = self
++            .lineage_sources()
++            .iter()
++            .map(|source| {
++                source
++                    .parse::<Digest32>()
++                    .map_err(|error| error.to_string())
++            })
++            .collect::<Result<_, _>>()?;
++        let tuple = serde_json::to_vec(&(
++            artifact.to_string(),
++            parameters.to_string(),
++            head.to_string(),
++            encoder.to_string(),
++            output,
++        ))
++        .map_err(|error| error.to_string())?;
+         manifest.runtime_tuple_digest = Digest32::of_bytes(&tuple);
+         manifest.compatibility_digest = Digest32::of_bytes(numeric.as_bytes());
+-        let normalization = serde_json::to_vec(&(address, encoder.to_string())).map_err(|error| error.to_string())?;
++        let normalization = serde_json::to_vec(&(address, encoder.to_string()))
++            .map_err(|error| error.to_string())?;
+         manifest.normalization_digest = Digest32::of_bytes(&normalization);
+         Ok(())
+     }
+diff --git a/codex-rs/hepta-agentd/src/memory_mlp_v12.rs b/codex-rs/hepta-agentd/src/memory_mlp_v12.rs
+index aa5534a5daf89707abb7f4c40b7c2c0c0d428850..19bddb0e199455d30e9f15d5162716c2e7d57e5e 100644
+--- a/codex-rs/hepta-agentd/src/memory_mlp_v12.rs
++++ b/codex-rs/hepta-agentd/src/memory_mlp_v12.rs
+@@ -85,13 +85,19 @@ impl MemoryMlpCellV12 {
+             MemoryCellKindV1::Procedure => (28, "hepta.memory.inventory-program.ops4x7.v1"),
+             MemoryCellKindV1::Event => return Err("V12 event prediction forbidden".to_string()),
+         };
+-        if wire.schema != SCHEMA || wire.address_profile != ADDRESS || wire.numeric_profile != NUMERIC
+-            || wire.output_profile != profile || !(1..=384).contains(&wire.dimension)
+-            || !(1..=256).contains(&wire.hidden) || wire.arrays.len() != 4
++        if wire.schema != SCHEMA
++            || wire.address_profile != ADDRESS
++            || wire.numeric_profile != NUMERIC
++            || wire.output_profile != profile
++            || !(1..=384).contains(&wire.dimension)
++            || !(1..=256).contains(&wire.hidden)
++            || wire.arrays.len() != 4
+             || !(1..=4096).contains(&wire.supports.len())
+             || !wire.features.keys().eq(wire.supports.keys())
+-            || !wire.minimum_margin.is_finite() || !(0.0..=1_000_000.0).contains(&wire.minimum_margin)
+-            || wire.minimum_margin == 0.0 || !valid_sources(&wire.lineage_sources)
++            || !wire.minimum_margin.is_finite()
++            || !(0.0..=1_000_000.0).contains(&wire.minimum_margin)
++            || wire.minimum_margin == 0.0
++            || !valid_sources(&wire.lineage_sources)
+         {
+             return Err("V12 MLP profile, dimensions or dependencies invalid".to_string());
+         }
+@@ -101,8 +107,11 @@ impl MemoryMlpCellV12 {
+         digest(&wire.training_receipt_sha256)?;
+         for (key, sources) in &wire.supports {
+             digest(key)?;
+-            if sources.len() != 1 || !valid_sources(sources)
+-                || sources.iter().any(|source| wire.lineage_sources.binary_search(source).is_err())
++            if sources.len() != 1
++                || !valid_sources(sources)
++                || sources
++                    .iter()
++                    .any(|source| wire.lineage_sources.binary_search(source).is_err())
+             {
+                 return Err("V12 MLP invalid support lineage".to_string());
+             }
+@@ -117,9 +126,12 @@ impl MemoryMlpCellV12 {
+             ("hidden.weight", vec![wire.hidden, wire.dimension]),
+         ] {
+             let tensor = wire.arrays.get(name).ok_or("V12 MLP tensor missing")?;
+-            if tensor.shape != shape { return Err("V12 MLP tensor shape differs".to_string()); }
++            if tensor.shape != shape {
++                return Err("V12 MLP tensor shape differs".to_string());
++            }
+             let (values, raw) = decode(&tensor.f32le_hex, shape.iter().product())?;
+-            let header = serde_json::to_vec(&(name, &shape, "float32")).map_err(|error| error.to_string())?;
++            let header = serde_json::to_vec(&(name, &shape, "float32"))
++                .map_err(|error| error.to_string())?;
+             parameters.extend_from_slice(&header);
+             parameters.extend_from_slice(&raw);
+             if name.starts_with("head.") {
+@@ -148,41 +160,85 @@ impl MemoryMlpCellV12 {
+         wire.arrays.clear();
+         wire.features.clear();
+         Ok(Self {
+-            wire, digest: expected, parameters_digest, encoder_digest, owner_cut_digest,
+-            head_digest: Digest32::of_parts(&[b"hepta.memory.mlp-head.v12", profile.as_bytes(), encoder_digest.as_array(), &head]),
+-            arrays, features,
++            wire,
++            digest: expected,
++            parameters_digest,
++            encoder_digest,
++            owner_cut_digest,
++            head_digest: Digest32::of_parts(&[
++                b"hepta.memory.mlp-head.v12",
++                profile.as_bytes(),
++                encoder_digest.as_array(),
++                &head,
++            ]),
++            arrays,
++            features,
+         })
+     }
+ 
+-    pub fn kind(&self) -> MemoryCellKindV1 { self.wire.kind }
+-    pub fn supports(&self) -> &BTreeMap<String, Vec<String>> { &self.wire.supports }
+-    pub fn lineage_sources(&self) -> &[String] { &self.wire.lineage_sources }
+-    pub fn output_profile(&self) -> &str { &self.wire.output_profile }
+-    pub fn numeric_profile(&self) -> &str { NUMERIC }
+-    pub fn address_profile(&self) -> &str { ADDRESS }
++    pub fn kind(&self) -> MemoryCellKindV1 {
++        self.wire.kind
++    }
++    pub fn supports(&self) -> &BTreeMap<String, Vec<String>> {
++        &self.wire.supports
++    }
++    pub fn lineage_sources(&self) -> &[String] {
++        &self.wire.lineage_sources
++    }
++    pub fn output_profile(&self) -> &str {
++        &self.wire.output_profile
++    }
++    pub fn numeric_profile(&self) -> &str {
++        NUMERIC
++    }
++    pub fn address_profile(&self) -> &str {
++        ADDRESS
++    }
+ 
+     pub fn predict(&self, key: &str) -> Result<MemoryResidualPredictionV1, String> {
+-        if key.is_empty() || key.len() > 4096 { return Err("V12 MLP query bound".to_string()); }
++        if key.is_empty() || key.len() > 4096 {
++            return Err("V12 MLP query bound".to_string());
++        }
+         let mut result = MemoryResidualPredictionV1 {
+-            kind: self.kind(), value: None, logits: Vec::new(), minimum_margin: 0.0,
+-            source_ids: Vec::new(), artifact_digest: self.digest.to_string(),
++            kind: self.kind(),
++            value: None,
++            logits: Vec::new(),
++            minimum_margin: 0.0,
++            source_ids: Vec::new(),
++            artifact_digest: self.digest.to_string(),
+             parameter_digest: self.parameters_digest.to_string(),
+             abstain: Some(MemoryResidualAbstentionV1::OutsideWrittenSupport),
+         };
+         let address = Digest32::of_bytes(key.as_bytes()).to_string();
+-        let Some(sources) = self.supports().get(&address) else { return Ok(result); };
+-        let features = self.features.get(&address).ok_or("V12 MLP missing features")?;
+-        let mut hidden: Vec<f64> = self.arrays["hidden.bias"].iter().copied().map(f64::from).collect();
++        let Some(sources) = self.supports().get(&address) else {
++            return Ok(result);
++        };
++        let features = self
++            .features
++            .get(&address)
++            .ok_or("V12 MLP missing features")?;
++        let mut hidden: Vec<f64> = self.arrays["hidden.bias"]
++            .iter()
++            .copied()
++            .map(f64::from)
++            .collect();
+         for (row, value) in hidden.iter_mut().enumerate() {
+             for (column, feature) in features.iter().enumerate() {
+-                *value += f64::from(self.arrays["hidden.weight"][row * self.wire.dimension + column]) * f64::from(*feature);
++                *value +=
++                    f64::from(self.arrays["hidden.weight"][row * self.wire.dimension + column])
++                        * f64::from(*feature);
+             }
+             *value = value.max(0.0);
+         }
+-        result.logits = self.arrays["head.bias"].iter().copied().map(f64::from).collect();
++        result.logits = self.arrays["head.bias"]
++            .iter()
++            .copied()
++            .map(f64::from)
++            .collect();
+         for (row, value) in result.logits.iter_mut().enumerate() {
+             for (column, feature) in hidden.iter().enumerate() {
+-                *value += f64::from(self.arrays["head.weight"][row * self.wire.hidden + column]) * feature;
++                *value += f64::from(self.arrays["head.weight"][row * self.wire.hidden + column])
++                    * feature;
+             }
+         }
+         if result.logits.iter().any(|value| !value.is_finite()) {
+@@ -190,14 +246,24 @@ impl MemoryMlpCellV12 {
+         }
+         let value = match self.kind() {
+             MemoryCellKindV1::Semantic => {
+-                result.minimum_margin = result.logits.iter().map(|value| value.abs()).fold(f64::INFINITY, f64::min);
++                result.minimum_margin = result
++                    .logits
++                    .iter()
++                    .map(|value| value.abs())
++                    .fold(f64::INFINITY, f64::min);
+                 let mut values = [0_u8; 3];
+                 for (group, value) in values.iter_mut().enumerate() {
+                     for bit in 0..4 {
+-                        if result.logits[4 * group + bit] >= 0.0 { *value |= 1 << bit; }
++                        if result.logits[4 * group + bit] >= 0.0 {
++                            *value |= 1 << bit;
++                        }
+                     }
+                 }
+-                MemoryInventoryValueV1::Semantic(MemoryInventoryPolicyV1 { reserve: values[0], pack: values[1], limit: values[2] })
++                MemoryInventoryValueV1::Semantic(MemoryInventoryPolicyV1 {
++                    reserve: values[0],
++                    pack: values[1],
++                    limit: values[2],
++                })
+             }
+             MemoryCellKindV1::Procedure => {
+                 let mut opcodes = [0_u8; 4];
+@@ -205,8 +271,17 @@ impl MemoryMlpCellV12 {
+                 for (group, opcode) in opcodes.iter_mut().enumerate() {
+                     let scores = &result.logits[7 * group..7 * (group + 1)];
+                     let mut winner = 0;
+-                    for index in 1..7 { if scores[index] > scores[winner] { winner = index; } }
+-                    let runner = scores.iter().enumerate().filter(|(index, _)| *index != winner).map(|(_, value)| *value).fold(f64::NEG_INFINITY, f64::max);
++                    for index in 1..7 {
++                        if scores[index] > scores[winner] {
++                            winner = index;
++                        }
++                    }
++                    let runner = scores
++                        .iter()
++                        .enumerate()
++                        .filter(|(index, _)| *index != winner)
++                        .map(|(_, value)| *value)
++                        .fold(f64::NEG_INFINITY, f64::max);
+                     result.minimum_margin = result.minimum_margin.min(scores[winner] - runner);
+                     *opcode = winner as u8;
+                 }
+@@ -225,37 +300,59 @@ impl MemoryMlpCellV12 {
+ }
+ 
+ fn decode(hex: &str, count: usize) -> Result<(Vec<f32>, Vec<u8>), String> {
+-    if Some(hex.len()) != count.checked_mul(8) { return Err("V12 MLP tensor byte count".to_string()); }
++    if Some(hex.len()) != count.checked_mul(8) {
++        return Err("V12 MLP tensor byte count".to_string());
++    }
+     let mut raw = Vec::with_capacity(count * 4);
+     for pair in hex.as_bytes().chunks_exact(2) {
+         let mut byte = 0;
+         for nibble in pair {
+-            byte = byte * 16 + match nibble {
+-                b'0'..=b'9' => nibble - b'0', b'a'..=b'f' => nibble - b'a' + 10,
+-                _ => return Err("V12 MLP hex encoding".to_string()),
+-            };
++            byte = byte * 16
++                + match nibble {
++                    b'0'..=b'9' => nibble - b'0',
++                    b'a'..=b'f' => nibble - b'a' + 10,
++                    _ => return Err("V12 MLP hex encoding".to_string()),
++                };
+         }
+         raw.push(byte);
+     }
+-    let values: Vec<f32> = raw.chunks_exact(4).map(|bytes| f32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])).collect();
+-    if values.iter().any(|value| !value.is_finite()) { return Err("V12 MLP nonfinite parameters".to_string()); }
++    let values: Vec<f32> = raw
++        .chunks_exact(4)
++        .map(|bytes| f32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
++        .collect();
++    if values.iter().any(|value| !value.is_finite()) {
++        return Err("V12 MLP nonfinite parameters".to_string());
++    }
+     Ok((values, raw))
+ }
+ 
+ fn digest(value: &str) -> Result<Digest32, String> {
+-    if value.len() != 64 || value.bytes().any(|byte| !matches!(byte, b'0'..=b'9' | b'a'..=b'f')) {
++    if value.len() != 64
++        || value
++            .bytes()
++            .any(|byte| !matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
++    {
+         return Err("V12 MLP digest encoding".to_string());
+     }
+-    value.parse::<Digest32>().ok().filter(|digest| !digest.is_zero()).ok_or_else(|| "V12 MLP empty digest".to_string())
++    value
++        .parse::<Digest32>()
++        .ok()
++        .filter(|digest| !digest.is_zero())
++        .ok_or_else(|| "V12 MLP empty digest".to_string())
+ }
+ 
+ fn valid_sources(values: &[String]) -> bool {
+-    !values.is_empty() && values.len() <= 4096 && values.iter().all(|value| digest(value).is_ok())
++    !values.is_empty()
++        && values.len() <= 4096
++        && values.iter().all(|value| digest(value).is_ok())
+         && values.windows(2).all(|pair| pair[0] < pair[1])
+ }
+ 
+ fn unique_map<'de, D, T>(deserializer: D) -> Result<BTreeMap<String, T>, D::Error>
+-where D: Deserializer<'de>, T: Deserialize<'de> {
++where
++    D: Deserializer<'de>,
++    T: Deserialize<'de>,
++{
+     struct Unique<T>(PhantomData<T>);
+     impl<'de, T: Deserialize<'de>> Visitor<'de> for Unique<T> {
+         type Value = BTreeMap<String, T>;
+@@ -265,7 +362,9 @@ where D: Deserializer<'de>, T: Deserialize<'de> {
+         fn visit_map<M: MapAccess<'de>>(self, mut map: M) -> Result<Self::Value, M::Error> {
+             let mut values = BTreeMap::new();
+             while let Some((key, value)) = map.next_entry::<String, T>()? {
+-                if values.insert(key, value).is_some() { return Err(serde::de::Error::custom("duplicate MLP map key")); }
++                if values.insert(key, value).is_some() {
++                    return Err(serde::de::Error::custom("duplicate MLP map key"));
++                }
+             }
+             Ok(values)
+         }
+diff --git a/codex-rs/hepta-agentd/src/memory_mlp_v12_python_fixture.rs b/codex-rs/hepta-agentd/src/memory_mlp_v12_python_fixture.rs
+index b8e112c435e8cfe125dcb53e5bcb11a9e6d9ee68..2fcc1ace0e636767bcd4c552e3229ca680ad01e1 100644
+--- a/codex-rs/hepta-agentd/src/memory_mlp_v12_python_fixture.rs
++++ b/codex-rs/hepta-agentd/src/memory_mlp_v12_python_fixture.rs
+@@ -2,4 +2,33 @@
+ //! Actual Python-trained bytes; bounded synthetic inventory regression only.
+ 
+ pub const PAYLOAD: &str = r#"{"address_profile":"hepta.memory.frozen-feature-cache.v12","arrays":{"head.bias":{"f32le_hex":"3188d83ed749c53e3bbb29bebb47983e2c76223e7de5bc3e7598c6beefddd3bef86cbebeb261453efcf2b03e9fd7c73e","shape":[12]},"head.weight":{"f32le_hex":"eefc783fbc79283f889d083f60dfb03d0236e4be369d303f58128c3e11c9843f9558e13d2c0ea5bd914342be9734303e3e60b93d93a8f0bdcbcce73df6561bbb3adcdd3e4969263f786e863f6ca59ebcfebdff3dc8df4a3f90c06fbc02eaa63e7a00cc3eef2b18be27cbe2be3c8f4b3fa66754be0624a03e2b1377bd642d3abcbdcdc1bf78a4053f2d1d9fbfb6928d3d4b21dd3e0e7ac93f8c0a863df5b8ab3f3ccd07beea3a893e8087983d51d763bfc7129dbc1fa2993ed905a73e3bf7aabccd89b23fb008aabec456e83fd870abbd3212b73cbed6bdbf708a7cbd031eb1bfb3626ebda5198dbe3f711fbed34cc73e816a67bc1449743e5137b03e7335823ef3eec33f1a2317bf0ce0b43f6b7ed63db797f6bc9014ccbf17ca0d3e144aadbfc00cb7bdbf56223d229f93bdc63b5e3f02d1cebe01bcd1be4707753d4e973f3ea44ac33eb1413b3f7e3a353f61cf6b3eac081f3ef07a953f8ee531be07f00c3f1e02cc3d1b04283e3ea52ebe06b1343fbf6653be8373e73d9636823ef7d3a23dd03d2bbe378903bf75f442bfc15530be5989ffbc8a7798bf8235bdbe6e3c71bf3cfa07bee819bd3eb0a9c13eec3943bf64f010be0978a63dc34aa73eb5e4bcbed29282bfec9c86bf6d2cefbe14527dbeb809bf3e36d5a5bef7ac633e626fe2be6450bd3e08135f3b2764553e2e9a13bf8c9eea3e27999c3df7ad073f0219d5bebb263abf7d3f48bf1033f9be1796a63ed89fb2be1ceb2abfa40ee5bddff32fbf891459beda02c53ec095da3dc27832bf738995be8fb6253e3a477e3ee371213e4413d93f237a27bf12ba753fed8da0becd2db4befeb4e4bff2b66b3e16cfa9bfff7f25be9915fabb105940be33a5963fe997ccbe70d4363e1c9c2f3e51e6ac3e0d1d583f2caae13ee238523fc0be2fbead26a2bdc1d2393f8d43923e9e45263fb29e9d3dd3a23b3d9d702ebe1afe4a3f3c15803ed26ff33c5f081fbd0831e73e915af93ea0400b3f39cf583f9818ccbd2c06d2bdbb8b913f3a265a3ec59cbf3e25d8cfbeae8d96bd5c5eb0be545b303f398442be7a66f93d8b26973ca38e77be","shape":[12,16]},"hidden.bias":{"f32le_hex":"936e4e3f17ff243f8473543f31fc75bd00000000c740103f0000000088dff03e00000000000000000000000048f62a3f00000000000000000000000000000000","shape":[16]},"hidden.weight":{"f32le_hex":"07a1dabe874def3e60164b3f186410bf48c4e93e4ea103c09184b43ee5ef72bda109e5beeeb30fbe293f0ac0d56fc53e470012be16c7693eb8c5e63ffd34563e6910003f4116393e82a581be23746a3ff07a88bf65539abe6cf220be139f733bcda6783feddf3d3fc27f183fb1fe35bfd90e993fbf79b1bf39a613bf8b56ed3e7b4fb2bee0fa0e3edb2c6ebebab919bef9de273f650ab1bf2449febe5cbda7bc4ab330be4a2357bf1170f6bf47d4353e05a1283eb2addf3e7a24dc3fbd10b73c460495bec49fd7be146230bd833031bee0a3543dfb41793dfb19edbc2d799abe5704393f282f953e13ec61bcb8d527bf3a8245bffe003b3d491109be6b8f253de26c1dbf608b5bbdf5d5e7be6c31da3cf9f06bbe74069f3ee0b72d3dff1316bf0179243e8eb61dbdfb92583d32ed8b3d71d4b1be210de83e110adcbe24c9923d63fc85beefe36fbefdbc223f39b0d33f19d7b0bf02ee7a3f779e113fefcb1f3d282da93f098db43f144521409894a5bf1a67d93f02c305c07cc8ccbf1628703e4741db3da5f2d13e2110a93e3129df3e4a7c2b3f3b20dfbda2dcf7bdc930083e3e93febef7b9ebbd3281ae3dffd2523e2ee48e3ea1714cbe53afa73e70c5ecbe0604123eff82213e45e053beaed2bb3f7ad0debf34b7643f82ddb63ea40ac7be27fc0640e037583fa76a993f155984bfe4c2b83f70fe73bf943f71bf2fd44f3dd3d2af3e86f9a03e3a8b3c3bae7750be74048abe1dba19bd4d32383ebad1bd3dd3efebbdc14925be21df5a3fdfb1bcbe3ce77b3d97f9303fa944a1be994ae83d04c2a2bd8202e93eddd79b3d120196bdce4cedbeb54bd53d30a1a3bd2925243dab9eccbdc0f5353e2c1aacbeae7d223f39c023bf7e66073cf61dcbbe6e141abea6ca563d3692b8be599cac3e6ea621be653de83e40c382bd79fda83d8657403f76e3853e3a4508bf86b1c13de033c63db55961bb3d51403eb934863e6797f83e137fa73e3e30cdbd6a81efbd97cc023e7f1216bf1844b7bfd43fc0beb3cb573ded95df3e22f1b3bee37214c05634b5be2db2573f4af156bf8dbba23f267c843e0c7900bea5373f3fdce028bfed1582bf7bb8813e1346493e28f448bd70b2b2bebaf8ab3e030cbc3d2110113ea4feb83e9622c33e33b262bebac53dbccf690cbffc442d3edc02003e3629bebed131fd3cb135ab3ebbce153f2ebca0be23244ebeb3f50ebfee7234bda0bbaf3ebf00fabeb17827bf7053fe3eee1704bc1dbd32be689d83beb5e3dd3dd3fdad3d4555ffbde1b6323e05b9d53d059a6ebec37a4ebebddbb23d4b6eb63ea283f5be2f485b3e137532bd7ffbd7be38bdf8bed494aa3ef3093d3de846cbbe7e4d43bf0bf838be3b7b0cbf4c03a63e773ceb3ee153113f04a0d43d0805083e440b043f1057f3beb8c020bf681d9b3ea5d8433df3c533bd","shape":[16,16]}},"checkpoint_sha256":"2ce011ddf949a7993c31808547102e87621b9b6a7725da6a4ae1e27ea3436e79","dimension":16,"encoder_sha256":"45cc64ba0846da8048d393f23cf10f1f2c920505b95d35bc0c57b91455c52976","features":{"25415c03cd94d5b126457081d8a1e26f86e100616fd9ba4e3268e347d3cbc68d":{"canonical_text_sha256":"9427bde1ec7fd763d2d7bd610948079966a0bd4f3af772a99941730b5411ce50","f32le_hex":"0000000000000000000000002549123f254912bfb76ddbbe00000000000000002549123e2549123e00000000254912be2549923e254912be0000000000000000","feature_sha256":"eefded72626c9abde34862c91c6696f91274e593dcaacf9b3917a275693e7922"},"59a86c27e75796c1311380a86356886410328f7b77cff9117f66ac8bff3ff03a":{"canonical_text_sha256":"43e213e7444e9260d0f6a49924daa724f704df6a3f4f157023b1d2c07b9adc91","f32le_hex":"0000000000000000000000008c2eba3e8c2ebabe8c2e3abf00000000000000008c2eba3d8c2eba3d8c2ebabe8c2ebabd8c2e3a3e8c2ebabd8c2eba3d00000000","feature_sha256":"6d9b1ed16959b69e091ca86ec1f8e0dc5a732a66f2111b0f4b7eee3710c6e95c"}},"hidden":16,"kind":"semantic","lineage_sources":["4300e41f2584ed6b509f331d22907f7caca5a8bc8ffeda82e8071660b286ad84","68f0faf7cf361ab4ec353782d0439ab8df1707d18f84be9963081ad5ebf6bf3a"],"minimum_margin":0.25,"numeric_profile":"hepta.memory.f32-f64-relu-mlp.v12","output_profile":"hepta.memory.inventory-policy.bits12.v1","owner_cut_sha256":"3836a4dde7fc29a5d553ce5c27ccb8e3788a56d31d5c05714b41b308d7ad71eb","parameter_sha256":"7ec0a7be5d0541cca9cb1f0b4bb2bd75168e6822c88fa23df6e2f053a77b7210","schema":"hepta.memory.mlp-native.v12","supports":{"25415c03cd94d5b126457081d8a1e26f86e100616fd9ba4e3268e347d3cbc68d":["68f0faf7cf361ab4ec353782d0439ab8df1707d18f84be9963081ad5ebf6bf3a"],"59a86c27e75796c1311380a86356886410328f7b77cff9117f66ac8bff3ff03a":["4300e41f2584ed6b509f331d22907f7caca5a8bc8ffeda82e8071660b286ad84"]},"training_receipt_sha256":"4be4afcbbd90b8c8d0a9017937545f699c820aecd9c28c2e87e95a44cf97572e"}"#;
+-pub const EXPECTED: [[f64; 12]; 2] = [[7.841239507671454, 8.718706640552334, -6.250766944937298, 6.135254399502134, 6.448894593615693, 8.195026481720296, -7.999693985243304, -8.865704187310245, -8.492341239155024, 6.656238153590632, 9.214424342815555, 8.185966749152916], [9.292160419037517, 8.638734075553135, 6.2671165860631834, -6.158901103183075, -6.467462413196921, 10.24606659409702, -10.893911818453704, -8.23399723514275, -9.305782686232202, -6.703898135479768, 8.966104518844366, 9.27497842415852]];
++pub const EXPECTED: [[f64; 12]; 2] = [
++    [
++        7.841239507671454,
++        8.718706640552334,
++        -6.250766944937298,
++        6.135254399502134,
++        6.448894593615693,
++        8.195026481720296,
++        -7.999693985243304,
++        -8.865704187310245,
++        -8.492341239155024,
++        6.656238153590632,
++        9.214424342815555,
++        8.185966749152916,
++    ],
++    [
++        9.292160419037517,
++        8.638734075553135,
++        6.2671165860631834,
++        -6.158901103183075,
++        -6.467462413196921,
++        10.24606659409702,
++        -10.893911818453704,
++        -8.23399723514275,
++        -9.305782686232202,
++        -6.703898135479768,
++        8.966104518844366,
++        9.27497842415852,
++    ],
++];
+diff --git a/codex-rs/hepta-agentd/src/memory_mlp_v12_tests.rs b/codex-rs/hepta-agentd/src/memory_mlp_v12_tests.rs
+index ed708d1d54a1c0bcd6d491c7a7795c2f3207a2bf..518895ed6612d85de40f9ad93e5c018b0a5f3b8b 100644
+--- a/codex-rs/hepta-agentd/src/memory_mlp_v12_tests.rs
++++ b/codex-rs/hepta-agentd/src/memory_mlp_v12_tests.rs
+@@ -32,34 +32,67 @@ mod python_fixture;
+ async fn memory_v12_python_trained_bytes_match_native_reader() {
+     let payload = python_fixture::PAYLOAD.as_bytes();
+     let expected_digest = "87be8189b400654b7567db575a4485a791109abc3042cbfe299c8eb34587ba47"
+-        .parse::<Digest32>().expect("pinned Python export digest");
++        .parse::<Digest32>()
++        .expect("pinned Python export digest");
+     let model = crate::memory_mlp_v12::MemoryMlpCellV12::from_bytes(payload, expected_digest)
+         .expect("actual Python-trained float32 tensors");
+     let rows = [("item:a", [11, 3, 14]), ("item:b", [7, 2, 12])];
+     for (index, (key, values)) in rows.iter().enumerate() {
+         let prediction = model.predict(key).expect("native matrix inference");
+-        assert_eq!(prediction.value, Some(MemoryInventoryValueV1::Semantic(MemoryInventoryPolicyV1 {
+-            reserve: values[0], pack: values[1], limit: values[2],
+-        })));
++        assert_eq!(
++            prediction.value,
++            Some(MemoryInventoryValueV1::Semantic(MemoryInventoryPolicyV1 {
++                reserve: values[0],
++                pack: values[1],
++                limit: values[2],
++            }))
++        );
+         assert_eq!(prediction.abstain, None);
+-        assert_eq!(prediction.logits.len(), python_fixture::EXPECTED[index].len());
+-        for (actual, expected) in prediction.logits.iter().zip(python_fixture::EXPECTED[index]) {
+-            assert!((actual - expected).abs() <= 1e-8, "native/Python logit differs: {actual} versus {expected}");
++        assert_eq!(
++            prediction.logits.len(),
++            python_fixture::EXPECTED[index].len()
++        );
++        for (actual, expected) in prediction
++            .logits
++            .iter()
++            .zip(python_fixture::EXPECTED[index])
++        {
++            assert!(
++                (actual - expected).abs() <= 1e-8,
++                "native/Python logit differs: {actual} versus {expected}"
++            );
+         }
+     }
+-    let unknown = model.predict("item:never-written").expect("bounded unknown query");
+-    assert_eq!(unknown, codex_hepta_neuron::MemoryResidualPredictionV1 {
+-        kind: codex_hepta_cognitive_types::MemoryCellKindV1::Semantic,
+-        value: None, logits: Vec::new(), minimum_margin: 0.0, source_ids: Vec::new(),
+-        artifact_digest: expected_digest.to_string(), parameter_digest: model.parameters_digest.to_string(),
+-        abstain: Some(codex_hepta_neuron::MemoryResidualAbstentionV1::OutsideWrittenSupport),
+-    });
++    let unknown = model
++        .predict("item:never-written")
++        .expect("bounded unknown query");
++    assert_eq!(
++        unknown,
++        codex_hepta_neuron::MemoryResidualPredictionV1 {
++            kind: codex_hepta_cognitive_types::MemoryCellKindV1::Semantic,
++            value: None,
++            logits: Vec::new(),
++            minimum_margin: 0.0,
++            source_ids: Vec::new(),
++            artifact_digest: expected_digest.to_string(),
++            parameter_digest: model.parameters_digest.to_string(),
++            abstain: Some(codex_hepta_neuron::MemoryResidualAbstentionV1::OutsideWrittenSupport),
++        }
++    );
+     let mut changed: serde_json::Value = serde_json::from_slice(payload).expect("Python DTO");
+-    let mut weights = changed["arrays"]["hidden.weight"]["f32le_hex"].as_str().expect("weights").as_bytes().to_vec();
++    let mut weights = changed["arrays"]["hidden.weight"]["f32le_hex"]
++        .as_str()
++        .expect("weights")
++        .as_bytes()
++        .to_vec();
+     weights[0] = if weights[0] == b'0' { b'1' } else { b'0' };
+-    changed["arrays"]["hidden.weight"]["f32le_hex"] = json!(String::from_utf8(weights).expect("hex"));
++    changed["arrays"]["hidden.weight"]["f32le_hex"] =
++        json!(String::from_utf8(weights).expect("hex"));
+     let changed = serde_json::to_vec(&changed).expect("changed tensor bytes");
+-    assert!(crate::memory_mlp_v12::MemoryMlpCellV12::from_bytes(&changed, Digest32::of_bytes(&changed)).is_err());
++    assert!(
++        crate::memory_mlp_v12::MemoryMlpCellV12::from_bytes(&changed, Digest32::of_bytes(&changed))
++            .is_err()
++    );
+ 
+     // This is an explicit integration-only provenance rebinding, not a claim
+     // that the Python fixture was trained against this newly created SQLite DB.
+@@ -67,52 +100,105 @@ async fn memory_v12_python_trained_bytes_match_native_reader() {
+     // before replacing source identities. All learned tensors stay unchanged.
+     let (_root, store, access) = owner_fixture().await;
+     let owner = snapshot(&store, &access).await;
+-    let projection = owner.training_projection_v11(&MemoryTrainingSelectorV11 {
+-        cell_id: key("cell:python-trained"), kind: MemoryInventoryKindV1::Semantic,
+-        keys: vec![key("item:a"), key("item:b")],
+-    }).expect("authenticated owner projection");
+-    let mut rebound: serde_json::Value = serde_json::from_slice(payload).expect("original Python DTO");
++    let projection = owner
++        .training_projection_v11(&MemoryTrainingSelectorV11 {
++            cell_id: key("cell:python-trained"),
++            kind: MemoryInventoryKindV1::Semantic,
++            keys: vec![key("item:a"), key("item:b")],
++        })
++        .expect("authenticated owner projection");
++    let mut rebound: serde_json::Value =
++        serde_json::from_slice(payload).expect("original Python DTO");
+     let mut lineage = Vec::new();
+     for (source, (key, values)) in projection.records().iter().zip(rows) {
+         assert_eq!(source.record.key.as_str(), key);
+-        assert_eq!(source.record.value, json!({"reserve":values[0],"pack":values[1],"limit":values[2]}));
++        assert_eq!(
++            source.record.value,
++            json!({"reserve":values[0],"pack":values[1],"limit":values[2]})
++        );
+         let address = Digest32::of_bytes(key.as_bytes()).to_string();
+         let labels = serde_json::to_vec(&(key, values)).expect("original Python training row");
+-        assert_eq!(rebound["supports"][&address], json!([Digest32::of_bytes(&labels).to_string()]));
++        assert_eq!(
++            rebound["supports"][&address],
++            json!([Digest32::of_bytes(&labels).to_string()])
++        );
+         rebound["supports"][&address] = json!([source.source_id.to_string()]);
+         lineage.push(source.source_id.to_string());
+     }
+     lineage.sort();
+     rebound["lineage_sources"] = json!(lineage);
+     rebound["owner_cut_sha256"] = json!(projection.acquisition_cut_digest());
+-    MemoryCellCandidateV12::from_projection(&projection, generation(1), &serde_json::to_vec(&rebound).expect("rebound metadata"))
+-        .expect("unchanged trained parameters bind to exactly matching owner records");
++    MemoryCellCandidateV12::from_projection(
++        &projection,
++        generation(1),
++        &serde_json::to_vec(&rebound).expect("rebound metadata"),
++    )
++    .expect("unchanged trained parameters bind to exactly matching owner records");
+ }
+ 
+ #[tokio::test]
+ async fn memory_v12_trained_payload_rejects_version_and_parameter_substitution() {
+     let (_root, store, access) = owner_fixture().await;
+     let owner = snapshot(&store, &access).await;
+-    let projection = owner.training_projection_v11(&MemoryTrainingSelectorV11 {
+-        cell_id: key("cell:learned"), kind: MemoryInventoryKindV1::Semantic,
+-        keys: vec![key("item:a"), key("item:b")],
+-    }).expect("owner projection");
++    let projection = owner
++        .training_projection_v11(&MemoryTrainingSelectorV11 {
++            cell_id: key("cell:learned"),
++            kind: MemoryInventoryKindV1::Semantic,
++            keys: vec![key("item:a"), key("item:b")],
++        })
++        .expect("owner projection");
+     let payload = train(&projection);
+     MemoryCellCandidateV12::from_projection(&projection, generation(1), &payload).expect("V12");
+     assert!(MemoryCellCandidateV11::from_projection(&projection, generation(1), &payload).is_err());
+     let mut changed: serde_json::Value = serde_json::from_slice(&payload).expect("payload");
+     changed["parameter_sha256"] = json!(Digest32::of_bytes(b"other-parameters").to_string());
+-    assert!(MemoryCellCandidateV12::from_projection(&projection, generation(1), &serde_json::to_vec(&changed).expect("JSON")).is_err());
++    assert!(
++        MemoryCellCandidateV12::from_projection(
++            &projection,
++            generation(1),
++            &serde_json::to_vec(&changed).expect("JSON")
++        )
++        .is_err()
++    );
+     let mut changed: serde_json::Value = serde_json::from_slice(&payload).expect("payload");
+     changed["owner_cut_sha256"] = json!(Digest32::of_bytes(b"other-owner-cut").to_string());
+-    assert!(MemoryCellCandidateV12::from_projection(&projection, generation(1), &serde_json::to_vec(&changed).expect("JSON")).is_err());
++    assert!(
++        MemoryCellCandidateV12::from_projection(
++            &projection,
++            generation(1),
++            &serde_json::to_vec(&changed).expect("JSON")
++        )
++        .is_err()
++    );
+     let mut changed: serde_json::Value = serde_json::from_slice(&payload).expect("payload");
+-    let omitted = changed["supports"].as_object().expect("supports").keys().next().expect("support").clone();
++    let omitted = changed["supports"]
++        .as_object()
++        .expect("supports")
++        .keys()
++        .next()
++        .expect("support")
++        .clone();
+     let source = changed["supports"][&omitted][0].clone();
+-    changed["supports"].as_object_mut().expect("supports").remove(&omitted);
+-    changed["features"].as_object_mut().expect("features").remove(&omitted);
+-    changed["lineage_sources"].as_array_mut().expect("lineage").retain(|item| *item != source);
+-    assert!(MemoryCellCandidateV12::from_projection(&projection, generation(1), &serde_json::to_vec(&changed).expect("JSON")).is_err());
++    changed["supports"]
++        .as_object_mut()
++        .expect("supports")
++        .remove(&omitted);
++    changed["features"]
++        .as_object_mut()
++        .expect("features")
++        .remove(&omitted);
++    changed["lineage_sources"]
++        .as_array_mut()
++        .expect("lineage")
++        .retain(|item| *item != source);
++    assert!(
++        MemoryCellCandidateV12::from_projection(
++            &projection,
++            generation(1),
++            &serde_json::to_vec(&changed).expect("JSON")
++        )
++        .is_err()
++    );
+ }
+ 
+ #[tokio::test]
+@@ -122,46 +208,167 @@ async fn memory_v12_trained_cells_publish_read_restart_correct_and_forget() {
+     use MemoryInventoryKindV1::Semantic;
+     let (root, store, access) = owner_fixture().await;
+     let owner = snapshot(&store, &access).await;
+-    let mut semantic = CellFixture::new(root.path().join("semantic"), &owner, "cell:semantic", Semantic, "item:a");
+-    let mut procedure = CellFixture::new(root.path().join("procedure"), &owner, "cell:procedure", Procedure, "flow:a");
+-    let previous_manifest = semantic.publication.admission.validated_manifest.manifest.clone();
++    let mut semantic = CellFixture::new(
++        root.path().join("semantic"),
++        &owner,
++        "cell:semantic",
++        Semantic,
++        "item:a",
++    );
++    let mut procedure = CellFixture::new(
++        root.path().join("procedure"),
++        &owner,
++        "cell:procedure",
++        Procedure,
++        "flow:a",
++    );
++    let previous_manifest = semantic
++        .publication
++        .admission
++        .validated_manifest
++        .manifest
++        .clone();
+     semantic.selector.keys.push(key("item:b"));
+     publish_trained(&mut semantic, &owner);
+     publish_trained(&mut procedure, &owner);
+     let learned_manifest = &semantic.publication.admission.validated_manifest.manifest;
+-    assert_eq!(learned_manifest.objective_class_digest, previous_manifest.objective_class_digest);
+-    assert_ne!(learned_manifest.schema_profile_digest, previous_manifest.schema_profile_digest);
+-    assert_ne!(learned_manifest.compatibility_digest, previous_manifest.compatibility_digest);
+-    let plan = MemoryServingPlanV11::prepare(&owner, generation(2), vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)]).expect("learned plan");
++    assert_eq!(
++        learned_manifest.objective_class_digest,
++        previous_manifest.objective_class_digest
++    );
++    assert_ne!(
++        learned_manifest.schema_profile_digest,
++        previous_manifest.schema_profile_digest
++    );
++    assert_ne!(
++        learned_manifest.compatibility_digest,
++        previous_manifest.compatibility_digest
++    );
++    let plan = MemoryServingPlanV11::prepare(
++        &owner,
++        generation(2),
++        vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)],
++    )
++    .expect("learned plan");
+     let scope = CognitiveScope::AgentPrivate;
+     let query = request(&owner);
+-    let first = plan.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.expect("learned composition");
++    let first = plan
++        .read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
++        .await
++        .expect("learned composition");
+     assert_eq!(first.value["value"], json!(14));
+     let mut other = query.clone();
+     other.entity_key = key("item:b");
+-    assert_eq!(plan.read(&store, &access, &scope, &other, MemoryOperationV1::Semantic).await.expect("second learned address").value,
+-        json!({"reserve":7,"pack":2,"limit":12}));
+-    semantic.host.sleep_selected().expect("evict decoded tensors");
+-    assert_eq!(plan.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.expect("wake tensors").value, first.value);
++    assert_eq!(
++        plan.read(&store, &access, &scope, &other, MemoryOperationV1::Semantic)
++            .await
++            .expect("second learned address")
++            .value,
++        json!({"reserve":7,"pack":2,"limit":12})
++    );
++    semantic
++        .host
++        .sleep_selected()
++        .expect("evict decoded tensors");
++    assert_eq!(
++        plan.read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
++            .await
++            .expect("wake tensors")
++            .value,
++        first.value
++    );
+     let saved = plan.checkpoint().expect("checkpoint");
+     drop(plan);
+     let mut semantic = semantic.reopen();
+     let procedure = procedure.reopen();
+-    let restored = MemoryServingPlanV11::restore(&saved, &owner, vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)]).expect("authenticate recovered learned bytes");
++    let restored = MemoryServingPlanV11::restore(
++        &saved,
++        &owner,
++        vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)],
++    )
++    .expect("authenticate recovered learned bytes");
+     let sibling = procedure.host.load_current().expect("sibling");
+-    store.write_memory_inventory(&access, &scope, &record("item:a", Event, json!(9)), MemoryCellWriteModeV1::Correct { expected_revision: 1 }).await.expect("unrelated source");
+-    let fresh = restored.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.expect("same learned weights fresh source");
++    store
++        .write_memory_inventory(
++            &access,
++            &scope,
++            &record("item:a", Event, json!(9)),
++            MemoryCellWriteModeV1::Correct {
++                expected_revision: 1,
++            },
++        )
++        .await
++        .expect("unrelated source");
++    let fresh = restored
++        .read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
++        .await
++        .expect("same learned weights fresh source");
+     assert_eq!(fresh.value["value"], json!(6));
+     assert_eq!(fresh.cells, first.cells);
+     assert_ne!(fresh.query_cut_digest, first.query_cut_digest);
+-    store.write_memory_inventory(&access, &scope, &record("item:a", Semantic, json!({"reserve":14,"pack":2,"limit":15})), MemoryCellWriteModeV1::Correct { expected_revision: 1 }).await.expect("relevant correction");
+-    assert!(restored.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.is_err());
++    store
++        .write_memory_inventory(
++            &access,
++            &scope,
++            &record(
++                "item:a",
++                Semantic,
++                json!({"reserve":14,"pack":2,"limit":15}),
++            ),
++            MemoryCellWriteModeV1::Correct {
++                expected_revision: 1,
++            },
++        )
++        .await
++        .expect("relevant correction");
++    assert!(
++        restored
++            .read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
++            .await
++            .is_err()
++    );
+     let corrected = snapshot(&store, &access).await;
+     publish_trained(&mut semantic, &corrected);
+-    assert!(Arc::ptr_eq(&sibling, &procedure.host.load_current().expect("unchanged sibling")));
+-    let next = MemoryServingPlanV11::prepare(&corrected, generation(3), vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)]).expect("retrained semantic plan");
+-    assert_eq!(next.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.expect("fresh learned source").value["value"], json!(10));
+-    assert!(MemoryServingPlanV11::restore(&saved, &corrected, vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)]).is_err());
+-    store.forget_memory_inventory(&access, &scope, &record("item:b", Semantic, json!(null)).address(), /*expected_revision*/ 1, "withdraw fitted dependency", now()).await.expect("tombstone");
+-    assert!(next.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.is_err(), "even an unqueried trained dependency must invalidate its model");
++    assert!(Arc::ptr_eq(
++        &sibling,
++        &procedure.host.load_current().expect("unchanged sibling")
++    ));
++    let next = MemoryServingPlanV11::prepare(
++        &corrected,
++        generation(3),
++        vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)],
++    )
++    .expect("retrained semantic plan");
++    assert_eq!(
++        next.read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
++            .await
++            .expect("fresh learned source")
++            .value["value"],
++        json!(10)
++    );
++    assert!(
++        MemoryServingPlanV11::restore(
++            &saved,
++            &corrected,
++            vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)]
++        )
++        .is_err()
++    );
++    store
++        .forget_memory_inventory(
++            &access,
++            &scope,
++            &record("item:b", Semantic, json!(null)).address(),
++            /*expected_revision*/ 1,
++            "withdraw fitted dependency",
++            now(),
++        )
++        .await
++        .expect("tombstone");
++    assert!(
++        next.read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
++            .await
++            .is_err(),
++        "even an unqueried trained dependency must invalidate its model"
++    );
+ }
+diff --git a/codex-rs/hepta-agentd/src/memory_mlp_v12_training_test_support.rs b/codex-rs/hepta-agentd/src/memory_mlp_v12_training_test_support.rs
+index 17a793002a7becfa3473619c55eeb5f7b37c0a24..3576c34c9603d8b3f8168c1f0a1c152556245951 100644
+--- a/codex-rs/hepta-agentd/src/memory_mlp_v12_training_test_support.rs
++++ b/codex-rs/hepta-agentd/src/memory_mlp_v12_training_test_support.rs
+@@ -22,35 +22,100 @@ pub fn train(projection: &MemoryTrainingProjectionV11) -> Vec<u8> {
+     let dimension = projection.records().len();
+     let hidden = 4;
+     let (kind, output, targets): (_, _, Vec<Vec<f64>>) = match projection.selector().kind {
+-        MemoryInventoryKindV1::Semantic => ("semantic", "hepta.memory.inventory-policy.bits12.v1",
+-            projection.records().iter().map(|row| ["reserve", "pack", "limit"].iter().flat_map(|name|
+-                (0..4).map(move |bit| if row.record.value[*name].as_u64().expect("value") & (1 << bit) != 0 { 1.0 } else { -1.0 })
+-            ).collect()).collect()),
+-        MemoryInventoryKindV1::Procedure => ("procedure", "hepta.memory.inventory-program.ops4x7.v1",
+-            projection.records().iter().map(|row| row.record.value["opcodes"].as_array().expect("program").iter().flat_map(|opcode|
+-                (0..7).map(move |index| if opcode.as_u64() == Some(index) { 1.0 } else { -1.0 })
+-            ).collect()).collect()),
+-        MemoryInventoryKindV1::Event | MemoryInventoryKindV1::Hold => panic!("not a parameter task"),
++        MemoryInventoryKindV1::Semantic => (
++            "semantic",
++            "hepta.memory.inventory-policy.bits12.v1",
++            projection
++                .records()
++                .iter()
++                .map(|row| {
++                    ["reserve", "pack", "limit"]
++                        .iter()
++                        .flat_map(|name| {
++                            (0..4).map(move |bit| {
++                                if row.record.value[*name].as_u64().expect("value") & (1 << bit)
++                                    != 0
++                                {
++                                    1.0
++                                } else {
++                                    -1.0
++                                }
++                            })
++                        })
++                        .collect()
++                })
++                .collect(),
++        ),
++        MemoryInventoryKindV1::Procedure => (
++            "procedure",
++            "hepta.memory.inventory-program.ops4x7.v1",
++            projection
++                .records()
++                .iter()
++                .map(|row| {
++                    row.record.value["opcodes"]
++                        .as_array()
++                        .expect("program")
++                        .iter()
++                        .flat_map(|opcode| {
++                            (0..7).map(move |index| {
++                                if opcode.as_u64() == Some(index) {
++                                    1.0
++                                } else {
++                                    -1.0
++                                }
++                            })
++                        })
++                        .collect()
++                })
++                .collect(),
++        ),
++        MemoryInventoryKindV1::Event | MemoryInventoryKindV1::Hold => {
++            panic!("not a parameter task")
++        }
+     };
+     let width = targets[0].len();
+-    let mut w1: Vec<f64> = (0..hidden * dimension).map(|index| ((index * 7 % 11) as f64 - 5.0) * 0.05).collect();
++    let mut w1: Vec<f64> = (0..hidden * dimension)
++        .map(|index| ((index * 7 % 11) as f64 - 5.0) * 0.05)
++        .collect();
+     let mut b1 = vec![0.15_f64; hidden];
+-    let mut w2: Vec<f64> = (0..width * hidden).map(|index| ((index * 13 % 17) as f64 - 8.0) * 0.02).collect();
++    let mut w2: Vec<f64> = (0..width * hidden)
++        .map(|index| ((index * 13 % 17) as f64 - 8.0) * 0.02)
++        .collect();
+     let mut b2 = vec![0.0_f64; width];
+     let original_w1 = w1.clone();
+     let original_w2 = w2.clone();
+     for _ in 0..4000 {
+         for (address, target) in targets.iter().enumerate() {
+             // One-hot canonical input, independent of the output labels.
+-            let activation: Vec<f64> = (0..hidden).map(|row| (w1[row * dimension + address] + b1[row]).max(0.0)).collect();
+-            let error: Vec<f64> = (0..width).map(|row|
+-                (b2[row] + (0..hidden).map(|column| w2[row * hidden + column] * activation[column]).sum::<f64>() - target[row]) / width as f64
+-            ).collect();
+-            let hidden_error: Vec<f64> = (0..hidden).map(|column| if activation[column] > 0.0 {
+-                (0..width).map(|row| w2[row * hidden + column] * error[row]).sum()
+-            } else { 0.0 }).collect();
++            let activation: Vec<f64> = (0..hidden)
++                .map(|row| (w1[row * dimension + address] + b1[row]).max(0.0))
++                .collect();
++            let error: Vec<f64> = (0..width)
++                .map(|row| {
++                    (b2[row]
++                        + (0..hidden)
++                            .map(|column| w2[row * hidden + column] * activation[column])
++                            .sum::<f64>()
++                        - target[row])
++                        / width as f64
++                })
++                .collect();
++            let hidden_error: Vec<f64> = (0..hidden)
++                .map(|column| {
++                    if activation[column] > 0.0 {
++                        (0..width)
++                            .map(|row| w2[row * hidden + column] * error[row])
++                            .sum()
++                    } else {
++                        0.0
++                    }
++                })
++                .collect();
+             for (row, delta) in error.iter().enumerate() {
+-                for column in 0..hidden { w2[row * hidden + column] -= 0.1 * delta * activation[column]; }
++                for column in 0..hidden {
++                    w2[row * hidden + column] -= 0.1 * delta * activation[column];
++                }
+                 b2[row] -= 0.1 * delta;
+             }
+             for (row, delta) in hidden_error.iter().enumerate() {
+@@ -64,10 +129,15 @@ pub fn train(projection: &MemoryTrainingProjectionV11) -> Vec<u8> {
+     let mut arrays = BTreeMap::new();
+     let mut parameters = Vec::new();
+     for (name, shape, values) in [
+-        ("head.bias", vec![width], b2), ("head.weight", vec![width, hidden], w2),
+-        ("hidden.bias", vec![hidden], b1), ("hidden.weight", vec![hidden, dimension], w1),
++        ("head.bias", vec![width], b2),
++        ("head.weight", vec![width, hidden], w2),
++        ("hidden.bias", vec![hidden], b1),
++        ("hidden.weight", vec![hidden, dimension], w1),
+     ] {
+-        let raw: Vec<u8> = values.iter().flat_map(|value| (*value as f32).to_le_bytes()).collect();
++        let raw: Vec<u8> = values
++            .iter()
++            .flat_map(|value| (*value as f32).to_le_bytes())
++            .collect();
+         parameters.extend(serde_json::to_vec(&(name, &shape, "float32")).expect("header"));
+         parameters.extend_from_slice(&raw);
+         arrays.insert(name, json!({"shape":shape,"f32le_hex":hex(&raw)}));
+@@ -77,15 +147,21 @@ pub fn train(projection: &MemoryTrainingProjectionV11) -> Vec<u8> {
+     let mut lineage = BTreeSet::new();
+     for (index, row) in projection.records().iter().enumerate() {
+         let address = Digest32::of_bytes(row.record.key.as_str().as_bytes()).to_string();
+-        let raw: Vec<u8> = (0..dimension).flat_map(|column| f32::from(u8::from(column == index)).to_le_bytes()).collect();
++        let raw: Vec<u8> = (0..dimension)
++            .flat_map(|column| f32::from(u8::from(column == index)).to_le_bytes())
++            .collect();
+         supports.insert(address.clone(), vec![row.source_id.to_string()]);
+         lineage.insert(row.source_id.to_string());
+-        features.insert(address.clone(), json!({"canonical_text_sha256":address,
+-            "feature_sha256":Digest32::of_bytes(&raw).to_string(),"f32le_hex":hex(&raw)}));
++        features.insert(
++            address.clone(),
++            json!({"canonical_text_sha256":address,
++            "feature_sha256":Digest32::of_bytes(&raw).to_string(),"f32le_hex":hex(&raw)}),
++        );
+     }
+     let parameter_digest = Digest32::of_bytes(&parameters).to_string();
+     let receipt = serde_json::to_vec(&json!({"algorithm":"test-sgd-two-layer-relu-mse",
+-        "epochs":4000,"projection":projection.digest(),"parameters":parameter_digest})).expect("training receipt");
++        "epochs":4000,"projection":projection.digest(),"parameters":parameter_digest}))
++    .expect("training receipt");
+     let payload = serde_json::to_vec(&json!({"schema":"hepta.memory.mlp-native.v12","kind":kind,
+         "address_profile":"hepta.memory.frozen-feature-cache.v12","numeric_profile":"hepta.memory.f32-f64-relu-mlp.v12",
+         "output_profile":output,"dimension":dimension,"hidden":hidden,"minimum_margin":0.2,
+@@ -94,9 +170,13 @@ pub fn train(projection: &MemoryTrainingProjectionV11) -> Vec<u8> {
+         "checkpoint_sha256":Digest32::of_bytes(&parameters).to_string(),
+         "training_receipt_sha256":Digest32::of_bytes(&receipt).to_string(),
+         "supports":supports,"lineage_sources":lineage,"features":features,"arrays":arrays})).expect("trained payload");
+-    let model = crate::memory_mlp_v12::MemoryMlpCellV12::from_bytes(&payload, Digest32::of_bytes(&payload)).expect("native tensors");
++    let model =
++        crate::memory_mlp_v12::MemoryMlpCellV12::from_bytes(&payload, Digest32::of_bytes(&payload))
++            .expect("native tensors");
+     for row in projection.records() {
+-        let prediction = model.predict(row.record.key.as_str()).expect("real native forward");
++        let prediction = model
++            .predict(row.record.key.as_str())
++            .expect("real native forward");
+         assert!(prediction.abstain.is_none(), "trained output is usable");
+         assert_eq!(prediction.source_ids, vec![row.source_id.to_string()]);
+     }
+@@ -104,19 +184,53 @@ pub fn train(projection: &MemoryTrainingProjectionV11) -> Vec<u8> {
+ }
+ 
+ pub fn publish_trained(fixture: &mut CellFixture, owner: &MemoryInventoryOwnerSnapshotV1) {
+-    let revision = fixture.publication.admission.validated_manifest.manifest.generation.get() + 1;
+-    let projection = owner.training_projection_v11(&fixture.selector).expect("current sources");
++    let revision = fixture
++        .publication
++        .admission
++        .validated_manifest
++        .manifest
++        .generation
++        .get()
++        + 1;
++    let projection = owner
++        .training_projection_v11(&fixture.selector)
++        .expect("current sources");
+     let payload = train(&projection);
+-    let candidate = MemoryCellCandidateV12::from_projection(&projection, generation(revision), &payload).expect("V12 candidate");
+-    let manifest = candidate.bind_manifest(fixture_manifest_template(&fixture.config, revision,
+-        Digest32::of_bytes(b"test-sgd-two-layer-relu-mse-4000"))).expect("manifest");
+-    assert_eq!(manifest.objective_class_digest,
+-        fixture.publication.admission.validated_manifest.manifest.objective_class_digest,
+-        "same cell inventory objective across evaluator upgrades and corrections");
+-    let publication = prepare_payload_request(&fixture.service, &fixture.config, manifest, candidate.bytes().to_vec(), revision);
+-    fixture.host.publish(publication.clone(), owner).expect("independent publication");
++    let candidate =
++        MemoryCellCandidateV12::from_projection(&projection, generation(revision), &payload)
++            .expect("V12 candidate");
++    let manifest = candidate
++        .bind_manifest(fixture_manifest_template(
++            &fixture.config,
++            revision,
++            Digest32::of_bytes(b"test-sgd-two-layer-relu-mse-4000"),
++        ))
++        .expect("manifest");
++    assert_eq!(
++        manifest.objective_class_digest,
++        fixture
++            .publication
++            .admission
++            .validated_manifest
++            .manifest
++            .objective_class_digest,
++        "same cell inventory objective across evaluator upgrades and corrections"
++    );
++    let publication = prepare_payload_request(
++        &fixture.service,
++        &fixture.config,
++        manifest,
++        candidate.bytes().to_vec(),
++        revision,
++    );
++    fixture
++        .host
++        .publish(publication.clone(), owner)
++        .expect("independent publication");
+     fixture.publication = publication;
+     fixture.install();
+ }
+ 
+-fn hex(bytes: &[u8]) -> String { bytes.iter().map(|byte| format!("{byte:02x}")).collect() }
++fn hex(bytes: &[u8]) -> String {
++    bytes.iter().map(|byte| format!("{byte:02x}")).collect()
++}
+diff --git a/codex-rs/hepta-agentd/src/memory_serving_plan_v11.rs b/codex-rs/hepta-agentd/src/memory_serving_plan_v11.rs
+index d8c067b262eed9eb1a5f311cdffdd9f782c514b9..4c49ac296432fc8405159ba7ef0143cce2675cd9 100644
+--- a/codex-rs/hepta-agentd/src/memory_serving_plan_v11.rs
++++ b/codex-rs/hepta-agentd/src/memory_serving_plan_v11.rs
+@@ -347,15 +347,15 @@ impl InventoryParameters for MemoryServingPlanV11 {
+     }
+ }
+ 
+-#[cfg(test)]
+-#[path = "memory_serving_plan_v11_test_support.rs"]
+-mod test_support;
+-#[cfg(test)]
+-#[path = "memory_serving_plan_v11_tests.rs"]
+-mod tests;
+ #[cfg(test)]
+ #[path = "memory_mlp_v12_training_test_support.rs"]
+ mod learned_test_support;
+ #[cfg(test)]
+ #[path = "memory_mlp_v12_tests.rs"]
+ mod learned_tests;
++#[cfg(test)]
++#[path = "memory_serving_plan_v11_test_support.rs"]
++mod test_support;
++#[cfg(test)]
++#[path = "memory_serving_plan_v11_tests.rs"]
++mod tests;

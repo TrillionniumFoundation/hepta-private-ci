@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.memory.document-lifecycle-protocol.v1",
+  "source_commit": "527218f9b823540830907f861a309310b71d38c9",
+  "selection": "first ten pinned real modules sorted by public module name",
+  "seed": 17041,
+  "steps_per_fit": 600,
+  "hidden": 32,
+  "dimension": 128,
+  "minimum_logit_margin": 1.0,
+  "training_text": "one canonical address-and-operation question per module",
+  "unfamiliar_queries": [
+    "For {module}, name the responsible team, its alternate, and its implementation status.",
+    "I need the accountable team, backup team, and lifecycle of {module}.",
+    "Please tell me the lifecycle and identify the deputy and owner for {module}."
+  ],
+  "unknown_queries": [
+    "For {module}, provide the private telephone number of its owner.",
+    "State the owner, deputy, and lifecycle of an.unwritten.module."
+  ],
+  "correction": "change one duplicated owner value to an existing different owner value; this is an explicitly controlled source edit, not a historical repository claim",
+  "required_checks": [
+    "held wording reaches actual learned field outputs",
+    "unknown address and unsupported fields are refused",
+    "independent process reopen preserves answers and optimizer",
+    "SIGKILL before and after immutable staging rename leaves retryable artifacts without publication authority",
+    "unrelated source edit preserves cell parameters",
+    "relevant correction fences old reads and stale candidate publication",
+    "continued optimizer trains corrected fields while preserving other modules",
+    "SIGKILL before publication commit rolls back",
+    "SIGKILL after publication commit before acknowledgment preserves the new release",
+    "artifact corruption is refused",
+    "revocation of any fitted dependency fences every affected read"
+  ],
+  "limits": [
+    "address and operation support come from an explicit public parser, not learned open-language OOD detection",
+    "model is a small freshly trained ReLU MLP, not a pretrained language model",
+    "all source bodies and training optimizer bytes are retained and counted",
+    "one trusted local SQLite owner, not distributed consensus or hostile administrator rollback protection",
+    "controlled field correction and process crashes, not observed production events",
+    "no compression or universal memory quality gain is inferred"
+  ]
+}

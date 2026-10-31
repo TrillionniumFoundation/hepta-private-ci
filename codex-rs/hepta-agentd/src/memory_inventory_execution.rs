@@ -1,5 +1,5 @@
 //! Inventory composition reads event and hold evidence; values and programs
-//! come exclusively from the selected residual parameter artifacts.
+//! come exclusively from the selected immutable parameter artifacts.
 
 use std::collections::BTreeSet;
 
@@ -227,10 +227,10 @@ fn predict(
 ) -> Result<MemoryInventoryValueV1, ReadFailure> {
     let predicted = bundle
         .predict(kind, key.as_str())
-        .map_err(|_| unavailable("native residual inference failed"))?;
+        .map_err(|_| unavailable("native parameter inference failed"))?;
     let value = predicted.value.ok_or((
         MemoryReadStatusV1::Abstain,
-        "native residual model declined the key or confidence",
+        "native parameter model declined the key or confidence",
     ))?;
     let inventory_kind = match kind {
         MemoryCellKindV1::Semantic => MemoryInventoryKindV1::Semantic,
@@ -260,7 +260,7 @@ fn predict(
         ));
     }
     let artifact = ContractDigestV1::parse(&predicted.artifact_digest)
-        .map_err(|_| unavailable("native residual artifact digest is invalid"))?;
+        .map_err(|_| unavailable("native parameter artifact digest is invalid"))?;
     sources.insert(source.source_id);
     models.insert(artifact);
     Ok(value)

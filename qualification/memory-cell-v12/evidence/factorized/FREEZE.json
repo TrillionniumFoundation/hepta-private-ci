@@ -1,0 +1,49 @@
+{
+  "corpus_sha256": "cbad82b9e82da96a26e3f8382a68816367a43c1d5827d35afa53494c6c3cadc1",
+  "protocol": {
+    "budget": "At most two current source records per query. Both plans use the same scoring output and threshold; staged execution is not adaptive content-conditioned inference.",
+    "calibration": "Historical confidence breakpoints only; maximize balanced known evidence coverage and unknown rejection. No finite-sample safety guarantee.",
+    "controls": "BM25 scores the full visible source text within the same resolved module. History nearest uses the same canonical/past observations and maps their known heading targets into the current module. Single classifier sees full original query text, and its logits are normalized within the same module mask.",
+    "costs": "Actual model+Adam payloads, complete history index, common raw corpus/registry/BM25 index, shared preparation, individual fit receipts, serial query scoring, calibration, source read counts/bytes and full wall/CPU including interruption. File artifacts include all comparators, not one deployment allocation.",
+    "dimension": 256,
+    "hidden": 32,
+    "limits": [
+      "Same-corpus method development after prior BCE and categorical observations, not independent confirmation.",
+      "Three model seeds share one source corpus and fixed query sets.",
+      "Document-arrival phases are an authored curriculum, not production history.",
+      "This tests evidence addressing and source reads; all raw source content is retained and no parametric content-compression benefit is claimed.",
+      "Literal module names are explicitly present in this task; unrestricted language/entity resolution is not tested.",
+      "Top1 twice and top2 use the same frozen scores and equal two-read budget; equality verifies execution/accounting, not a distinct learned-planning advantage."
+    ],
+    "modes": [
+      "learned",
+      "single",
+      "bm25",
+      "history"
+    ],
+    "read_policies": [
+      "top2",
+      "top1_twice"
+    ],
+    "registry": "All modes share exact public module matching and latest available module/heading record versions. No query gold module, type, source ID or target count enters routing.",
+    "schema": "hepta.memory.factorized-protocol.v12",
+    "seeds": [
+      31031,
+      41033,
+      51047
+    ],
+    "steps": 240,
+    "time_contract": "Initialization uses phase-0 training queries. Later phases train only canonical newly available sources and previous-phase query observations; calibration uses earlier-phase calibration rows. Every held phase is read after thresholds and checkpoint identity are fixed.",
+    "training": "Every model gets current canonical sources plus the same observed past query targets, with 240 minibatches of 32. Shared 15-heading intent and direct 600-source classifier use their natural output contracts; equal presentations do not imply equal parameter count, per-row draw sequence or FLOPs. Unknown target rows are not categorical source labels."
+  },
+  "scope": "local pre-fit commitment; same-corpus development",
+  "source_sha256": {
+    "FACTOR_PROTOCOL.json": "e24e1b965afda6eae7e146936aa1765d9323d1c4387738072e012330ceab6a58",
+    "categorical.py": "b58e8e37b93e71b37e6be5bfcafdb91b98e322a579148b45ac3c0eaf61a12868",
+    "corpus.py": "a46039cbb371e8d2bf99f8658909744c2f8819c31fa84870a242ed58a90d17b2",
+    "factorized.py": "eeab9f11985cedb2a2a8bbafd4bb98006f7bdec5ce78cb9ab21cd9f1e3f3fd3c",
+    "factorized_experiment.py": "ddc27332bf6c1a804560a742a1308a4db7c5e9b280eef1675f21fbc87269b0bc",
+    "learned.py": "e0de71fc1bbb4f85f155826b87031ea404eead3557d0cbcbebde522e2b089b09",
+    "network.py": "0779dc8a0e32eb1c1f1348f62080e5734db25c6f9a4b0013968d5c6a9ba24601"
+  }
+}

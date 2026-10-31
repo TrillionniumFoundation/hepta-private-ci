@@ -1,0 +1,56 @@
+{
+  "commitment": "local before fitting",
+  "corpus_sha256": "ea519ba0a0d3e1973409e862f205f3e7c943e7d1370d3d1ead667369c7c4f82a",
+  "protocol": {
+    "ablation": "Missing specialists execute capable generic implementations. No ablation directly returns failure. All learned ablations share the exact same fitted address weights so accuracy changes cannot be attributed to retraining luck.",
+    "arms": [
+      "full_typed",
+      "without_event",
+      "without_semantic",
+      "without_procedure",
+      "without_meta",
+      "bm25_generic",
+      "history_generic",
+      "single_generic"
+    ],
+    "batch_size": 32,
+    "calibration": "Source coverage versus unsupported-module rejection, restricted to past calibration. Unknown requested fields and withdrawn sources remain separate final-reader checks.",
+    "controls": "All strategies receive identical current sources and permitted past labels, and have a maximum of two evidence reads. Learned heading and single-source classifiers each receive hidden=32, 240 steps, batch=32. Retrieval controls require no gradient training; their index construction and retained labeled examples are counted. No equal-FLOPs claim.",
+    "cost_contract": "Report actual model parameters, optimizer, index, source text, event/cache serialization, setup time, address runtime, actual evidence reads/bytes, parse work and event replay. Cache setup and retained source evidence are never free; microsecond timings are not general capability evidence.",
+    "dimension": 256,
+    "event_cell": "Exact current-state projection; generic fallback replays the same supplied event journal.",
+    "event_scope": "Explicit constructed scenarios: incomplete ingestion of the first three authentic steps, correction to the complete source block, then withdrawal. These are not historical document revisions or production event logs.",
+    "evidence_limit": 2,
+    "hidden": 32,
+    "interpretation": "Same-repository method development, not independent confirmation. Deterministic typed readers are not learned generative memory. Zero ablation loss is an admissible result. No compression, production, general understanding or spontaneous emergence claim.",
+    "meta_cell": "Learned heading addressing with literal module resolution; generic fallback uses full-text BM25 with the same module registry.",
+    "procedure_cell": "Exact source-bound compiled ordered checklist; generic fallback parses and executes the same checklist at query time.",
+    "schema": "hepta.memory.typed-protocol.v12",
+    "seeds": [
+      31031,
+      41033,
+      51047
+    ],
+    "semantic_cell": "Exact source-bound declaration cache; generic fallback parses the same evidence at query time.",
+    "steps": 240,
+    "task_scope": "Authored requests about actual module declarations and actual numbered procedure blocks. Procedure execution advances a bounded checklist cursor; it causes no external effect.",
+    "time_contract": "Phase 0 trains on phase-0 train prompts; later phases train on past non-calibration queries and newly available canonical sources. Threshold calibration uses past calibration prompts (phase 0 uses its own). New-phase test outputs do not select weights, thresholds or type structure."
+  },
+  "runtime": {
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  },
+  "source_sha256": {
+    "TYPED_PROTOCOL.json": "52a522721ebb8f63d479d8fc5e7da3ab104357e4487c0aae09101aac738c05b9",
+    "categorical.py": "b58e8e37b93e71b37e6be5bfcafdb91b98e322a579148b45ac3c0eaf61a12868",
+    "corpus.py": "a46039cbb371e8d2bf99f8658909744c2f8819c31fa84870a242ed58a90d17b2",
+    "factorized.py": "eeab9f11985cedb2a2a8bbafd4bb98006f7bdec5ce78cb9ab21cd9f1e3f3fd3c",
+    "learned.py": "e0de71fc1bbb4f85f155826b87031ea404eead3557d0cbcbebde522e2b089b09",
+    "network.py": "0779dc8a0e32eb1c1f1348f62080e5734db25c6f9a4b0013968d5c6a9ba24601",
+    "typed.py": "56139b66ffe5f71084d8835ef06736c3cf1f39f7ce5a94afc32b41952ba5b15a",
+    "typed_experiment.py": "819f83d4ee7ee1ac7f60bce74189ce4219bb25e99774d5a8afcda6237667cf26",
+    "typed_tests.py": "bbc38914bf3d87b5191681b0f61a327c66a326b8c557ae6de95985416801ce74"
+  },
+  "tasks_sha256": "e378f5219017482ce127775c8002842dbb5b596bbc17e5e188c87d18623222a9"
+}
