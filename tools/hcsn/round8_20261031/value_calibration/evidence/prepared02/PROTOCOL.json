@@ -1,0 +1,56 @@
+{
+  "confirmation": {
+    "cpu_price_sensitivity": [
+      0.0,
+      0.1,
+      1.0,
+      10.0
+    ],
+    "deployment_sessions_sensitivity": [
+      128,
+      1000,
+      10000,
+      100000
+    ],
+    "episodes_per_contract_fit": 128,
+    "heldout_parameter_regimes": [
+      "nominal",
+      "drift",
+      "missing",
+      "cost_shift"
+    ],
+    "primary_compute_price_cpu": 1.0,
+    "primary_contrasts": "new minus old within each of three fixed cell families",
+    "primary_interval": "five paired fit means, Student-t, Bonferroni 98.333333%",
+    "primary_regime": "nominal",
+    "primary_training_amortization_sessions": 10000,
+    "quality_noninferiority_margin": 0.02,
+    "seed_start": 83100000
+  },
+  "core_seeds": [
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "head_seed_offset": 92000,
+  "hidden": 32,
+  "iteration_cap": 2400,
+  "modes": [
+    "first_passage",
+    "clocked",
+    "direct"
+  ],
+  "not_claimed": [
+    "model-free Q learning",
+    "fresh joint cell training",
+    "continuum QVI",
+    "new unseen-state nominal generalization",
+    "production activation"
+  ],
+  "schema": "hepta.round8.value-calibration.protocol.v1",
+  "training_domain": "complete finite public/latent graph for eight known nominal contracts",
+  "training_method": "supervised finite-model Q-star distillation, exact STOP anchor, direct and action-gap MSE",
+  "upstream_commit": "1bbf9712140ec388f7fb7967fa7b22244386441d"
+}
