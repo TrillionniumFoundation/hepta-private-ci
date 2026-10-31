@@ -69,7 +69,7 @@ def regenerative_boundary(p: Stop) -> float:
     h=math.fsum((lost,delay))
     if not math.isfinite(h) or h<=0:
         raise ArithmeticError('Renewal exponent outside resolved f64 domain')
-    if h <= 1e-4:
+    if h <= 1e-3:
         # Coalescing W0/W-1 at -1/e. Use a positive series for the
         # cancellation-free inverse h=t²/2+t³/3+... .
         t=math.sqrt(2*h)
