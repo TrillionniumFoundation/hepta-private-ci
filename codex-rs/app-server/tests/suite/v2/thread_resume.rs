@@ -1200,10 +1200,14 @@ async fn cold_resume_reresolves_persisted_active_permission_profile() -> Result<
                 extends: Some(BUILT_IN_PERMISSION_PROFILE_READ_ONLY.to_string()),
             })
         );
-        assert!(
-            !runtime_workspace_roots.contains(&AbsolutePathBuf::from_absolute_path(
+        // Runtime roots preserve the thread's execution environment; they do
+        // not grant write access. The current named profile is re-resolved
+        // above to ReadOnly, independently of restoring that environment.
+        assert_eq!(
+            runtime_workspace_roots,
+            vec![AbsolutePathBuf::from_absolute_path(
                 previous_workspace_root.path(),
-            )?)
+            )?]
         );
     }
     Ok(())
