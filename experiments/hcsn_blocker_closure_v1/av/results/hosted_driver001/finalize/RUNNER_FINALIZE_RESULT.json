@@ -1,0 +1,44 @@
+{
+  "accounting": "Direct child receipts are disjoint within this stage. Do not add study worker, optimizer, analysis-body, native or resume subtotals again. Coordinator self CPU excludes children and starts at RunBook creation.",
+  "all_child_costs_known": true,
+  "coordinator_self_cpu_seconds": 0.0018326439999999944,
+  "direct_child_cpu_seconds": 3.872103,
+  "disk": {
+    "free": 88637648896,
+    "total": 154894188544,
+    "used": 66239762432
+  },
+  "mode": "finalize",
+  "result": {
+    "complete": true,
+    "positive_scientific_outcomes_not_required": true
+  },
+  "schema": "hcsn-hosted-runner-stage.v1",
+  "stage_wall_seconds": 3.8744700669999474,
+  "subprocesses": [
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_blocker_closure_v1.av.study",
+        "analyze",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_blocker_closure_v1/av/results/hosted001"
+      ],
+      "complete_child_cpu_seconds": 3.872103,
+      "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+      "ended_utc": "2026-10-31T02:30:09.906927+00:00",
+      "exit_code": 0,
+      "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/finalize/analysis.log",
+      "name": "analysis",
+      "peak_rss_bytes": 86208512,
+      "process_created": true,
+      "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+      "started_utc": "2026-10-31T02:30:06.033844+00:00",
+      "system_cpu_seconds": 0.11497299999999999,
+      "user_cpu_seconds": 3.75713,
+      "wall_seconds": 3.8730780999999297
+    }
+  ],
+  "utc": "2026-10-31T02:30:09.907994+00:00"
+}

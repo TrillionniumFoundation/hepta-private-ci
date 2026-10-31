@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "experiments.hcsn_blocker_closure_v1.av.bootstrap",
+    "restore",
+    "--transport",
+    "/__w/_temp/hcsn-fresh-av-input",
+    "--output",
+    "/__w/_temp/hcsn-fresh-av-data"
+  ],
+  "complete_child_cpu_seconds": 0.513723,
+  "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+  "ended_utc": "2026-10-31T02:11:36.747140+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/prepare/restore_data.log",
+  "name": "restore_data",
+  "peak_rss_bytes": 91045888,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-31T02:11:36.191248+00:00",
+  "system_cpu_seconds": 0.056969,
+  "user_cpu_seconds": 0.456754,
+  "wall_seconds": 0.5558911669999986
+}

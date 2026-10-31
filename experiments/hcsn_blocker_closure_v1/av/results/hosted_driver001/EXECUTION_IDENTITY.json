@@ -1,0 +1,19 @@
+{
+  "cgroup": {
+    "cpu.max": "400000 100000\n",
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0\n",
+    "memory.max": "8589934592\n",
+    "memory.swap.max": "0\n"
+  },
+  "energy_joules": null,
+  "gpu_executed": false,
+  "packages": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu"
+  },
+  "python": "3.12.14 (main, Sep 19 2026, 03:35:30) [GCC 14.2.0]",
+  "run_id": "41158089224",
+  "seal": "6469cc94a72aed214c5c9d2ff2fba14cdb146626",
+  "workers": 4
+}

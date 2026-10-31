@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "experiments.hcsn_blocker_closure_v1.av.study",
+    "lock",
+    "--output",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_blocker_closure_v1/av/results/hosted001"
+  ],
+  "complete_child_cpu_seconds": 0.25343,
+  "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+  "ended_utc": "2026-10-31T02:12:11.892865+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/train/selection_lock.log",
+  "name": "selection_lock",
+  "peak_rss_bytes": 56188928,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-31T02:12:11.638499+00:00",
+  "system_cpu_seconds": 0.031928,
+  "user_cpu_seconds": 0.22150199999999998,
+  "wall_seconds": 0.25436228500001334
+}

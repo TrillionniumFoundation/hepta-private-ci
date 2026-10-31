@@ -1,0 +1,25 @@
+{
+  "command": [
+    "git",
+    "-c",
+    "protocol.version=2",
+    "fetch",
+    "--depth=1",
+    "--filter=blob:none",
+    "origin",
+    "dca9febc8143c682077fe27d40dbeaa1137bcaa4"
+  ],
+  "complete_child_cpu_seconds": 0.11621,
+  "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+  "ended_utc": "2026-10-31T02:11:11.552886+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/prepare/fetch_data_commit.log",
+  "name": "fetch_data_commit",
+  "peak_rss_bytes": 31133696,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-31T02:11:10.887939+00:00",
+  "system_cpu_seconds": 0.058836,
+  "user_cpu_seconds": 0.057373999999999994,
+  "wall_seconds": 0.664942148999998
+}

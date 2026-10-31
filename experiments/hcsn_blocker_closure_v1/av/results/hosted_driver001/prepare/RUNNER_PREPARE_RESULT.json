@@ -1,0 +1,188 @@
+{
+  "accounting": "Direct child receipts are disjoint within this stage. Do not add study worker, optimizer, analysis-body, native or resume subtotals again. Coordinator self CPU excludes children and starts at RunBook creation.",
+  "all_child_costs_known": true,
+  "coordinator_self_cpu_seconds": 0.034924435000000004,
+  "direct_child_cpu_seconds": 11.6965,
+  "disk": {
+    "free": 88787963904,
+    "total": 154894188544,
+    "used": 66089447424
+  },
+  "mode": "prepare",
+  "result": {
+    "complete": true,
+    "test_predictions_read": false
+  },
+  "schema": "hcsn-hosted-runner-stage.v1",
+  "stage_wall_seconds": 28.565812121999983,
+  "subprocesses": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "complete_child_cpu_seconds": 0.0012749999999999999,
+      "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+      "ended_utc": "2026-10-31T02:11:08.479464+00:00",
+      "exit_code": 0,
+      "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/prepare/source_head.log",
+      "name": "source_head",
+      "peak_rss_bytes": 31133696,
+      "process_created": true,
+      "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+      "started_utc": "2026-10-31T02:11:08.477827+00:00",
+      "system_cpu_seconds": 0.0,
+      "user_cpu_seconds": 0.0012749999999999999,
+      "wall_seconds": 0.0016384869999939156
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_blocker_closure_v1.av.study",
+        "preflight",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_blocker_closure_v1/av/results/hosted_preflight001.json"
+      ],
+      "complete_child_cpu_seconds": 2.399588,
+      "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+      "ended_utc": "2026-10-31T02:11:10.887552+00:00",
+      "exit_code": 0,
+      "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/prepare/synthetic_preflight.log",
+      "name": "synthetic_preflight",
+      "peak_rss_bytes": 452546560,
+      "process_created": true,
+      "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+      "started_utc": "2026-10-31T02:11:08.487124+00:00",
+      "system_cpu_seconds": 0.306075,
+      "user_cpu_seconds": 2.093513,
+      "wall_seconds": 2.4004229359999982
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "protocol.version=2",
+        "fetch",
+        "--depth=1",
+        "--filter=blob:none",
+        "origin",
+        "dca9febc8143c682077fe27d40dbeaa1137bcaa4"
+      ],
+      "complete_child_cpu_seconds": 0.11621,
+      "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+      "ended_utc": "2026-10-31T02:11:11.552886+00:00",
+      "exit_code": 0,
+      "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/prepare/fetch_data_commit.log",
+      "name": "fetch_data_commit",
+      "peak_rss_bytes": 31133696,
+      "process_created": true,
+      "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+      "started_utc": "2026-10-31T02:11:10.887939+00:00",
+      "system_cpu_seconds": 0.058836,
+      "user_cpu_seconds": 0.057373999999999994,
+      "wall_seconds": 0.664942148999998
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "dca9febc8143c682077fe27d40dbeaa1137bcaa4:experiments/hcsn_blocker_closure_v1/av/transport_41156412198/TRANSPORT.json"
+      ],
+      "complete_child_cpu_seconds": 0.001276,
+      "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+      "ended_utc": "2026-10-31T02:11:11.554793+00:00",
+      "exit_code": 0,
+      "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/prepare/data_manifest_git_blob.log",
+      "name": "data_manifest_git_blob",
+      "peak_rss_bytes": 31133696,
+      "process_created": true,
+      "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+      "started_utc": "2026-10-31T02:11:11.553160+00:00",
+      "system_cpu_seconds": 0.000638,
+      "user_cpu_seconds": 0.000638,
+      "wall_seconds": 0.0016336400000085405
+    },
+    {
+      "command": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output=/__w/_temp/hcsn-fresh-av-input.tar",
+        "dca9febc8143c682077fe27d40dbeaa1137bcaa4",
+        "experiments/hcsn_blocker_closure_v1/av/transport_41156412198"
+      ],
+      "complete_child_cpu_seconds": 8.369859,
+      "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+      "ended_utc": "2026-10-31T02:11:36.169484+00:00",
+      "exit_code": 0,
+      "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/prepare/materialize_data_objects.log",
+      "name": "materialize_data_objects",
+      "peak_rss_bytes": 42127360,
+      "process_created": true,
+      "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+      "started_utc": "2026-10-31T02:11:11.554963+00:00",
+      "system_cpu_seconds": 2.895205,
+      "user_cpu_seconds": 5.474654,
+      "wall_seconds": 24.614515274
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_blocker_closure_v1.av.bootstrap",
+        "restore",
+        "--transport",
+        "/__w/_temp/hcsn-fresh-av-input",
+        "--output",
+        "/__w/_temp/hcsn-fresh-av-data"
+      ],
+      "complete_child_cpu_seconds": 0.513723,
+      "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+      "ended_utc": "2026-10-31T02:11:36.747140+00:00",
+      "exit_code": 0,
+      "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/prepare/restore_data.log",
+      "name": "restore_data",
+      "peak_rss_bytes": 91045888,
+      "process_created": true,
+      "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+      "started_utc": "2026-10-31T02:11:36.191248+00:00",
+      "system_cpu_seconds": 0.056969,
+      "user_cpu_seconds": 0.456754,
+      "wall_seconds": 0.5558911669999986
+    },
+    {
+      "command": [
+        "/usr/local/bin/python",
+        "-m",
+        "experiments.hcsn_blocker_closure_v1.av.study",
+        "register",
+        "--output",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_blocker_closure_v1/av/results/hosted001",
+        "--dataset",
+        "/__w/_temp/hcsn-fresh-av-data/DATASET.json",
+        "--data-commit",
+        "dca9febc8143c682077fe27d40dbeaa1137bcaa4",
+        "--data-transport-path",
+        "experiments/hcsn_blocker_closure_v1/av/transport_41156412198/TRANSPORT.json",
+        "--preflight",
+        "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_blocker_closure_v1/av/results/hosted_preflight001.json"
+      ],
+      "complete_child_cpu_seconds": 0.29456899999999997,
+      "cwd": "/__w/hepta-private-ci/hepta-private-ci",
+      "ended_utc": "2026-10-31T02:11:37.043062+00:00",
+      "exit_code": 0,
+      "log": "experiments/hcsn_blocker_closure_v1/av/results/hosted_driver001/prepare/register.log",
+      "name": "register",
+      "peak_rss_bytes": 57098240,
+      "process_created": true,
+      "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+      "started_utc": "2026-10-31T02:11:36.748176+00:00",
+      "system_cpu_seconds": 0.046009999999999995,
+      "user_cpu_seconds": 0.248559,
+      "wall_seconds": 0.2948821370000019
+    }
+  ],
+  "utc": "2026-10-31T02:11:37.043330+00:00"
+}
