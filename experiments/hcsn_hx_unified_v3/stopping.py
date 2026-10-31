@@ -30,9 +30,38 @@ class Stop:
 
     @property
     def kappa(self):
-        # Rationalized formula avoids cancellation for positive large drift.
-        scale=math.hypot(self.drift,math.sqrt(2*self.discount)*self.diffusion)
-        return 2*self.discount/(scale+self.drift) if self.drift>=0 else (scale-self.drift)/(self.diffusion**2)
+        # Positive root of .5*sigma^2*k^2 + mu*k = rho. Avoid
+        # overflowing 2*rho, (scale+mu), or sigma**2 when the root
+        # itself is finite. A finite input does not imply a resolvable
+        # binary64 root: refuse genuinely out-of-range results.
+        root_q=math.sqrt(2.)*math.sqrt(self.discount)
+        noise=root_q*self.diffusion
+        if 0.<noise<math.inf:
+            scale=math.hypot(self.drift,noise)
+            if self.drift>=0:
+                k=self.discount/(scale/2.+self.drift/2.)
+            else:
+                k=(scale/self.diffusion-self.drift/self.diffusion)/self.diffusion
+        else:
+            # Only the intermediate noise product overflowed/underflowed;
+            # normalize by sigma so that the same finite root is retained.
+            drift_scaled=self.drift/self.diffusion
+            if not math.isfinite(drift_scaled):
+                # Here mu/sigma is far larger than sqrt(2*rho), so the
+                # positive-drift root is rho/mu to sub-ULP accuracy.
+                k=self.discount/self.drift if self.drift>0 else math.nan
+            else:
+                scale_scaled=math.hypot(drift_scaled,root_q)
+                if drift_scaled>=0:
+                    if drift_scaled>root_q*1e8:
+                        k=self.discount/self.drift
+                    else:
+                        k=(root_q/self.diffusion)*(root_q/(scale_scaled+drift_scaled))
+                else:
+                    k=(scale_scaled-drift_scaled)/self.diffusion
+        if not math.isfinite(k) or k<=0:
+            raise ArithmeticError('Stopping characteristic exponent unresolved in f64')
+        return k
 
     @property
     def delay_discount(self):
