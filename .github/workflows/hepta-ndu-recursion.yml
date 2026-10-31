@@ -59,6 +59,10 @@ jobs:
       - name: Reject new legacy NDU evaluator callers
         run: python3 scripts/hepta-ndu-source-policy.py
 
+      - name: SNG-R affine and nonlinear FBSDE shadow regressions (no activation)
+        run: |
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_sngr*.py'
+
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
