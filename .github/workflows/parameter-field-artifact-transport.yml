@@ -17,6 +17,8 @@ jobs:
   synthetic-archive:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    env:
+      HEPTA_ARTIFACT_SDK_ROOT: /work/transport-sdk
     container:
       image: ubuntu:24.04@sha256:78d4744ead1f5b19b04d0df558ab182a5300903900755e515b2ca4d10eb2044d
       options: --memory=8g --memory-swap=8g
@@ -51,17 +53,25 @@ jobs:
           /opt/runtime/venv/bin/python -B tools/parameter_field_executor/diagnose.py --output /work/qualification/runtime.json
           /opt/runtime/venv/bin/python -B -c 'import json; r=json.load(open("/work/qualification/runtime.json")); assert r["three_original_joint_passes"] and r["process"]["supported"] and all(r["filesystem"].get(k) is True for k in ["fsync","flock","xattr","atomic_rename","byte_readback"])'
       - name: Install the integrity-pinned official artifact SDK
-        working-directory: operational/parameter_field_recovery07
-        run: npm ci --ignore-scripts --no-audit --no-fund
+        run: |
+          mkdir /work/transport-sdk
+          cp operational/parameter_field_recovery07/package.json operational/parameter_field_recovery07/package-lock.json /work/transport-sdk/
+          npm ci --prefix /work/transport-sdk --ignore-scripts --no-audit --no-fund
+      - name: Verify exact committed source before fixture execution
+        run: |
+          /opt/runtime/venv/bin/python -B -c 'import os; from operational.parameter_field_recovery07 import common as c; from operational.parameter_field_recovery07.synthetic_lifecycle import source_identity; pins={name:row["sha256"] for name,row in source_identity().items()}; c.committed_sources(c.SOURCE,os.environ["GITHUB_SHA"],pins); print("Committed source and ignored-file cleanliness verified",len(pins))'
       - name: Verify synthetic corruption and sequence rejection
         run: /opt/runtime/venv/bin/python -B -m unittest discover -s operational/parameter_field_recovery07 -p test_artifact_transport.py -v
       - name: Verify the actual owned-process and supervisor boundary contracts
-        run: /opt/runtime/venv/bin/python -B -m unittest discover -s operational/parameter_field_recovery07 -p test_supervisor.py -v
+        run: /opt/runtime/venv/bin/python -B -m unittest operational.parameter_field_recovery07.test_supervisor -v
       - name: Exercise fourteen owned fixture workers and seventeen archive barriers
         uses: ./operational/parameter_field_recovery07
         with:
           python: /opt/runtime/venv/bin/python
           output-directory: /work/synthetic/lifecycle
+      - name: Verify exact committed source after fixture execution
+        run: |
+          /opt/runtime/venv/bin/python -B -c 'import os; from operational.parameter_field_recovery07 import common as c; from operational.parameter_field_recovery07.synthetic_lifecycle import source_identity; pins={name:row["sha256"] for name,row in source_identity().items()}; c.committed_sources(c.SOURCE,os.environ["GITHUB_SHA"],pins); print("Committed source and ignored-file cleanliness verified",len(pins))'
       - name: Require the original exact runtime identity independently of synthetic transport
         run: /opt/runtime/venv/bin/python -B -c 'import json; r=json.load(open("/work/qualification/runtime.json")); print(json.dumps({"exact_runtime":r["runtime"]["exact_match"],"different_fields":r["runtime"].get("different_fields"),"science_admission":False})); assert r["runtime"]["exact_match"]'
       - name: Preserve synthetic verification receipts
