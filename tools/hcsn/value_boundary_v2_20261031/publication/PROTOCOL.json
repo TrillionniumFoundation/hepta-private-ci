@@ -1,0 +1,266 @@
+{
+  "analytic_attribution": "Same-policy ordinary/analytic task effects must be pathwise identical; analytic CDF work can add measured cost",
+  "complete_cost": "Record setup, generation, fit, solve, CDF, actual decoder, support validation and enclosing runtime separately; measured CPU/wall are not energy or task-clock time",
+  "confidence_level": 0.95,
+  "contract_seed_stride": 100000,
+  "contracts": [
+    {
+      "contract": {
+        "arrival_rate": [
+          2.0,
+          2.5
+        ],
+        "budget": 4,
+        "deadline_rate": 0.1,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.03,
+          0.04
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 5.0,
+        "reliability": [
+          0.8,
+          0.86
+        ],
+        "time_cost": 0.02
+      },
+      "name": "nominal_1"
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          2.5,
+          2.0
+        ],
+        "budget": 6,
+        "deadline_rate": 0.08,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.02,
+          0.04
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 6.0,
+        "reliability": [
+          0.68,
+          0.88
+        ],
+        "time_cost": 0.02
+      },
+      "name": "nominal_2"
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          1.2,
+          3.0
+        ],
+        "budget": 4,
+        "deadline_rate": 0.18,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.06,
+          0.02
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 4.0,
+        "reliability": [
+          0.88,
+          0.78
+        ],
+        "time_cost": 0.02
+      },
+      "name": "nominal_3"
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          3.0,
+          1.5
+        ],
+        "budget": 6,
+        "deadline_rate": 0.15,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.025,
+          0.05
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 3.0,
+        "reliability": [
+          0.72,
+          0.82
+        ],
+        "time_cost": 0.02
+      },
+      "name": "nominal_4"
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          0.7,
+          0.8
+        ],
+        "budget": 4,
+        "deadline_rate": 0.3,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.1,
+          0.1
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 2.0,
+        "reliability": [
+          0.62,
+          0.64
+        ],
+        "time_cost": 0.02
+      },
+      "name": "stress_1_stop_control"
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          3.5,
+          0.7
+        ],
+        "budget": 6,
+        "deadline_rate": 0.05,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.01,
+          0.1
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 8.0,
+        "reliability": [
+          0.62,
+          0.9
+        ],
+        "time_cost": 0.02
+      },
+      "name": "stress_2"
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          0.7,
+          3.5
+        ],
+        "budget": 6,
+        "deadline_rate": 0.3,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.1,
+          0.01
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 2.0,
+        "reliability": [
+          0.9,
+          0.8
+        ],
+        "time_cost": 0.02
+      },
+      "name": "stress_3"
+    },
+    {
+      "contract": {
+        "arrival_rate": [
+          3.5,
+          3.5
+        ],
+        "budget": 6,
+        "deadline_rate": 0.05,
+        "fire_cost": 0.01,
+        "minimum_confidence": 0.75,
+        "query_cost": [
+          0.1,
+          0.01
+        ],
+        "recovery_phases": 2,
+        "recovery_rate": 8.0,
+        "reliability": [
+          0.82,
+          0.64
+        ],
+        "time_cost": 0.02
+      },
+      "name": "stress_4"
+    }
+  ],
+  "cpu_accounting": {
+    "common_costs": "Shared generation, decoder/support setup and common verification recorded separately and cancel in matched alternative-policy contrasts; nested component timers are not added to enclosing CPU",
+    "deployment_sessions_sensitivity": [
+      128,
+      1000,
+      10000
+    ],
+    "formula": "paired utility difference minus kappa times paired enclosing execution CPU difference and preparation CPU difference divided by deployment sessions",
+    "kappa_sensitivity": [
+      0.0,
+      0.1,
+      1.0,
+      10.0
+    ],
+    "primary_deployment_sessions": 1000,
+    "primary_kappa": 1.0
+  },
+  "episode_seed_base": 587103100,
+  "execution_order_seed_offset": 9000000,
+  "expected_rollouts": 25600,
+  "expected_sessions": 5120,
+  "failure_policy": "Preserve every failed rollout and partial event receipt; any execution failure invalidates campaign qualification; never retry or tune on confirmation",
+  "fit_seed_stride": 1000,
+  "fit_seeds": [
+    74031,
+    74037,
+    74043,
+    74049,
+    74057
+  ],
+  "fixed_boundary_threshold": 2.0,
+  "inference": "Per-contract paired episode t intervals conditional on five frozen fits; also five-fit cluster intervals; equal-weight finite-contract aggregation",
+  "learning_rate": 1.0,
+  "matching": "Five policies share each real packet/clock tape; each contract-fit has 128 distinct episode seeds",
+  "multiplicity": "Two primary effects reported separately; intervals are unadjusted descriptive 95% intervals",
+  "negative_control": "stress_1_stop_control is declared before preparation and retained whatever its result",
+  "optimizer": "mirror",
+  "policies": [
+    "fixed_analytic",
+    "direct_hard_analytic",
+    "direct_soft_analytic",
+    "qvi_analytic",
+    "qvi_ordinary"
+  ],
+  "policy_artifacts": "Each deployable table is serialized, hashed and load-validated during preparation; confirmation loads each policy separately and charges that measured setup to its deployment alternative",
+  "primary_comparisons": [
+    "direct_hard_analytic-minus-fixed_analytic",
+    "qvi_analytic-minus-fixed_analytic"
+  ],
+  "promotion": "No automatic production enrollment, architecture-superiority claim or hardware-energy claim",
+  "quality_metrics": [
+    "correct_jobs/2",
+    "incorrect_jobs/2",
+    "completed_jobs/2",
+    "accuracy_among_submitted"
+  ],
+  "quality_noninferiority_claim": false,
+  "schema": "hcsn.regenerative-evidence.frozen-campaign.v1",
+  "secondary_comparisons": [
+    "direct_hard_analytic-minus-direct_soft_analytic",
+    "qvi_analytic-minus-qvi_ordinary"
+  ],
+  "sessions_per_contract_fit": 128,
+  "soft_policy_seed_offset": 17000000,
+  "updates": 600,
+  "workload": "Known-model per-contract replanning; nominal/stress are public parameter scenarios, not amortized IID/OOD generalization"
+}
