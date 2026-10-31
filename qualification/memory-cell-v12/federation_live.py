@@ -131,11 +131,22 @@ def wait_artifact(label, destination, timeout=600):
     raise Denied("timed out waiting for same-run artifact " + wanted)
 
 
+def source_hashes():
+    return {p: file_digest(Path(__file__).with_name(p))
+            for p in ("federation_live.py", "federation.py", "federation_experiment.py")}
+
+
+def verify_message(value, label, binding):
+    if (value["schema"] != "hepta.memory.live.v1" or value["label"] != label or
+            value["binding"] != binding or value["executed_source"] != source_hashes() or
+            value["limits"] != LIMITS):
+        raise Denied("message scope, source, or declared trust boundary mismatch")
+
+
 def message(path, label, binding, body):
     path.mkdir(parents=True, exist_ok=True)
     value = dict(schema="hepta.memory.live.v1", label=label, binding=binding, body=body,
-                 limits=LIMITS, executed_source={p: file_digest(Path(__file__).with_name(p))
-                     for p in ("federation_live.py", "federation.py", "federation_experiment.py")})
+                 limits=LIMITS, executed_source=source_hashes())
     write_json(path / "message.json", value)
     return value
 
@@ -144,8 +155,7 @@ def receive(state, label, binding):
     path = state / "received" / label
     transport = wait_artifact(label, path)
     value = read_json(path / "message.json")
-    if value["schema"] != "hepta.memory.live.v1" or value["label"] != label or value["binding"] != binding:
-        raise Denied("message scope mismatch")
+    verify_message(value, label, binding)
     return value["body"], transport, file_digest(path / "message.json")
 
 
@@ -261,8 +271,7 @@ def prepare(args):
     transport = wait_artifact("bootstrap", downloaded)
     envelope = read_json(downloaded / "message.json")
     binding = task_binding(envelope["binding"]["nonce"])
-    if envelope["binding"] != binding or envelope["label"] != "bootstrap":
-        raise Denied("bootstrap task mismatch")
+    verify_message(envelope, "bootstrap", binding)
     stage, body = read_json(downloaded / "stage.json"), envelope["body"]
     if stage["binding"] != binding or stage["checkpoint"] != body["checkpoint"]:
         raise Denied("bootstrap checkpoint mismatch")
@@ -468,6 +477,11 @@ def selftest(source):
             with zipfile.ZipFile(bad_zip, "w") as archive:
                 archive.writestr("../escape", "denied")
             rejected(checks, "zip_traversal_denied", lambda: extract_archive(bad_zip.getvalue(), root / "bad"))
+            envelope = message(root / "message", "selftest", binding, {})
+            verify_message(envelope, "selftest", binding)
+            rejected(checks, "other_task_message_denied", lambda: verify_message(envelope, "selftest", {}))
+            envelope["executed_source"]["federation_live.py"] = "0" * 64
+            rejected(checks, "different_source_message_denied", lambda: verify_message(envelope, "selftest", binding))
             print(json.dumps(dict(local_functional_only=True, checks=checks, worker_pids=[w["server"]["pid"] for w in workers.values()])))
         finally:
             control.close()
