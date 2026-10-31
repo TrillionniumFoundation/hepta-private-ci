@@ -19,7 +19,7 @@ python -m unittest -v \
  experiments.hcsn_hx_unified_v3.test_hx_financial_mesh_gate
 ~~~
 
-**9/9 new methods PASS** (zero skipped); **27/27 total targeted methods PASS** including the prior 18 inherited P0 methods, on Python 3.13.5 / NumPy / SciPy / PyTorch CPU. This is a local reconstructed HX reference subset with the tested v2 far-field correction, **not** a full byte-identical upstream checkout, complete repository CI, or GPU run. The five new GitHub source/test blobs were read back byte-identical to the tested local files.
+**10/10 new methods PASS** (zero skipped); **28/28 total targeted methods PASS** including the prior 18 inherited P0 methods, on Python 3.13.5 / NumPy / SciPy / PyTorch CPU. This is a local reconstructed HX reference subset with the tested v2 far-field correction, **not** a full byte-identical upstream checkout, complete repository CI, or GPU run. The five new GitHub source/test blobs were read back byte-identical to the tested local files.
 
 ## Numerical observations (fixed-b diagnostics only)
 
@@ -47,12 +47,16 @@ At the explicitly inconsistent default/maturity corner the convention is default
 
 - Independent bond PDE: ad6262821e9a63e5a7f1a8dd8e39e3c020d7a815
 - PDE-driven equity obstacle: 0aea5c12b2e42c6a17277071efc968a9c2981df2
-- Cross-method mesh gate: af502a4dbe11e103636fdff25b9f1df88bbf0930
+- Cross-method mesh gate: 1d51e2159e485d15be00cab1fe4bfd47868b041f
 - PDE and obstacle tests: d3538630faeae3b505c350016affe0a4558a1852
-- Mesh gate tests: 29c21dbc2530c3b0bf9ae1e89564a1784ce2228c
+- Mesh gate tests: 5322baf80263e78ab65f6e3f3f4449be7f2b993f
 
 ## Exact remaining admission status
 
 P0: **OPEN**, missing self-consistent financial free-boundary, global obstacle domain and discontinuous-case proof, interval/roundoff enclosure, real HX FP32/BF16 numerical/gradient proof. P1: **OPEN**, matched information/slope/active-parameter/total-cost and heldout Call/Risk/Margin causal gain. P2: **OPEN**, learned event memory, Selective Copy/MQAR/overwrite/long-range/irregular time and authoritative crash restore. P3: **OPEN**, true distinct paired four-modal encoders and robust heldout alignment. P4: **OPEN**, Rust/GPU, 64/256/1024/4096 Cell throughput, p95/p99 and real Joules. P5: **BLOCKED**, no same-budget net quality-and-cost advantage has been proven.
 
 production_activation=false; all_scientific_blockers_closed=false. Keep draft, unmerged and without deployment.
+
+## Follow-up: local cell endpoint tolerance correction
+
+The initial gate used the far-field log-grid asset width as an exercise-endpoint tolerance; this could be vastly too permissive near the candidate barrier. A corrective commit now tests endpoint agreement against the **actual local physical-asset cell spacing** based on max(left_stop,right_stop)*expm1(log_upper/(nodes-1)), never the far-field width. One additional regression explicitly rejects a 103-versus-200 stop boundary while accepting 103-versus-104 on the stated mesh. Re-run of all seven focused local modules: **28/28 PASS, zero skipped**. The old source and tests remain inspectable in Git history; all claims remain research-only.
