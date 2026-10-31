@@ -15,7 +15,7 @@ The **strong Markov property**, spatial translation invariance and independent i
 
 `E[sum_{spikes t_j<=T} exp(-ρ t_j)] = sum_{n>=0} exp(-ρ n h) Gρ((b-x)+n(b-r), T-nh)`.
 
-Starting at or above `b`, there is one immediate spike and the sum for `n>=1` uses distance `n(b-r)`. If only `n=0,..,N-1` have been evaluated below threshold, the **exact-model truncation remainder** is bounded by `exp(-κ(b-x))*A^N/(1-A)`; for initially active state the omitted future terms from index `N` onward are bounded by `A^N/(1-A)`. With positive refractory, no spike can occur for `n*h>T`; with `h=0`, adaptive truncation uses the same geometric upper bound. The implementation refuses an insufficient maximum-term budget.
+Starting at or above `b`, there is one immediate spike and the sum for `n>=1` uses distance `n(b-r)`. If only `n=0,..,N-1` have been evaluated below threshold, the **exact-model truncation remainder** is bounded by `exp(-κ(b-x))*A^N/(1-A)`; for initially active state the omitted future terms from index `N` onward are bounded by `A^N/(1-A)`. A tighter optional envelope follows from Markov/Chernoff: for any `a>=0`, `Gρ(d,t)<=exp(a*t-κ(ρ+a)d)`; after missing event index `N`, the series remainder is bounded by `exp(a*(T-N*h)-ρ*N*h-κ(ρ+a)*d_N) / (1-exp(-(ρ+a)*h-κ(ρ+a)*(b-r)))`. Minimize over a finite predetermined nonnegative tilt grid, including `a=0`, and refuse if none meets the tolerance. This avoids an otherwise enormous `ρ≈0` geometric bound for short finite horizons without pretending to certify floating-point roundoff. With positive refractory, no spike can occur for `n*h>T`; with `h=0`, adaptive truncation uses the same geometric upper bound. The implementation refuses an insufficient maximum-term budget.
 
 Taking `T -> infinity`, the series equals `exp(-κ(b-x))/(1-A)` below threshold. Multiplication by `(b-K)` gives the *same scalar threshold-policy value* as `stopping.regenerative_value`. Above threshold the initial payoff is `(x-K)`, **not** `(b-K)`; only future events pay `(b-K)`. This is a policy evaluation identity, not proof that an arbitrary threshold is globally optimal. Tests independently obtain the stationary threshold using Brent smooth fit.
 
@@ -27,13 +27,13 @@ From repository root (with Python, SciPy, NumPy):
 python -m unittest -v experiments.hcsn_hx_unified_v3.test_renewal_distance_series
 ```
 
-Eleven locally executed tests passed (0 skipped). The pre-submission local test environment used Python 3.13.5, SciPy 1.17.0, NumPy 2.3.5. Numerical evidence:
+Twelve locally executed tests passed (0 skipped). The pre-submission local test environment used Python 3.13.5, SciPy 1.17.0, NumPy 2.3.5. Numerical evidence:
 
 - 108 fixed-parameter first-hit cases across positive/zero/negative drift, three distances, three discount rates including zero, and three time horizons were compared against **independent integration of the positive first-hit density**; worst absolute discrepancy was `3.3306690738754696e-16`.
 - Four drift signs/regimes × three initial states were tested against the infinite-horizon stationary QVI value at horizon 120, including immediate FIRE above threshold.
 - 20,000 independent positive-drift Wald trajectories: finite-horizon analytic discounted event count `0.96942873348`, sample `0.96738451078 ± 0.00450183531` standard error.
 - 30,000 defective negative-drift trajectories, with an independently sampled Bernoulli probability of eventual hit: analytic `0.15459930123`, sample `0.15372530653 ± 0.00189782016` standard error.
-- Zero refractory, negative drift non-hit mass, horizon zero, truncation residual, physical-domain refusal and numerical-resolution refusal were covered.
+- Zero refractory, negative drift non-hit mass, horizon zero, truncation residual, physical-domain refusal and numerical-resolution refusal were covered. A tiny-discount, large-drift Chernoff-tail fixture terminates in fewer than 40 terms while the original infinite-horizon geometric envelope would remain unusably loose.
 
 These are **local** unit tests, not a full repository run, GitHub CI, directed-rounding interval arithmetic, a formal proof, GPU FP32/BF16 tests or real encoded multimodal training. The `omitted_events_upper_bound` excludes binary-floating-point and normal-CDF approximation error. Any distribution shift away from homogeneous Brownian drift/diffusion, fixed threshold, deterministic refractory, and exact reset invalidates the closed series as stated.
 
