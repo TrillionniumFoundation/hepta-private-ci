@@ -81,11 +81,16 @@ def content_figures(data, output):
            f"Equal training CPU: {data['external_positive_count']}/{len(external)} positive gates")
     fig.suptitle("HCSN content study | predeclared contrasts", x=.03, ha="left",
                  fontsize=16, fontweight="bold")
+    selected_detail = "; ".join(
+        ("Copy" if task == "selective_copy" else "MQAR") + ": "
+        + label(data["selected_equal_cpu_arms"][task][0])
+        for task in ("selective_copy", "mqar"))
     fig.text(.03, .015,
              "Bars: 95% paired-seed t intervals, conditional on fixed data. Teal: all contrast gates pass. "
              "Dashed lines: predeclared effect minima.\n"
              "Holm adjustment is separate for each mechanism family and for the 12 external contrasts. "
-             "Equal training CPU is not equal total worker cost.", fontsize=8, color="#56616b")
+             "Equal training CPU is not equal total worker cost.\n"
+             "Development-selected physical arms: " + selected_detail, fontsize=8, color="#56616b")
     fig.tight_layout(rect=[0, .075, 1, .92], w_pad=3)
     save(fig, output, "content_contrasts")
 
@@ -103,14 +108,32 @@ def content_figures(data, output):
                 y = 100 * result["evaluation"]["test"]["accuracy"]["mean"]
                 color = COLORS.get(arm, COLORS["value_jg"])
                 ax.scatter(x, y, color=color, s=42, zorder=3)
-                ax.annotate(label(arm), (x, y), xytext=(5, 5), textcoords="offset points", fontsize=8)
+                offset, align = (5, 5), "left"
+                if stage == "fixed":
+                    if arm == "two_gates":
+                        offset, align = (-10, 18), "right"
+                    elif arm == "lif_snn":
+                        offset = (10, -12)
+                    elif arm == "mamba1":
+                        offset = (12, 22)
+                elif task == "mqar" and arm == "two_gates":
+                    offset, align = (-12, -12), "right"
+                elif stage == "equal_cpu" and arm == chosen:
+                    offset = (6, 12)
+                ax.annotate(label(arm), (x, y), xytext=offset,
+                            textcoords="offset points", ha=align, fontsize=8,
+                            bbox=dict(facecolor="white", edgecolor="none", alpha=.85, pad=1),
+                            arrowprops=(dict(arrowstyle="-", color=color, linewidth=.6)
+                                        if offset != (5, 5) else None))
             ax.set_xscale("log")
             ax.set_title(("Copy" if task == "selective_copy" else "MQAR") +
                          (" | 96 updates" if stage == "fixed" else " | 60 training CPU seconds"),
                          loc="left", fontsize=11, fontweight="bold")
             ax.set_xlabel("Mean whole-worker CPU seconds (log scale)")
             ax.set_ylabel("Mean ID test accuracy (%)")
-            ax.margins(x=.3, y=.3)
+            ax.margins(x=.3)
+            ax.set_ylim(0, 108)
+            ax.set_yticks((0, 25, 50, 75, 100))
             ax.grid(alpha=.18)
             ax.spines[["top", "right"]].set_visible(False)
     fig.suptitle("Quality and measured worker cost", x=.03, ha="left", fontsize=16, fontweight="bold")

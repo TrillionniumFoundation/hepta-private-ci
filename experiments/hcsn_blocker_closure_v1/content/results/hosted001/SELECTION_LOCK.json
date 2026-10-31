@@ -1,0 +1,252 @@
+{
+  "choices": {
+    "mqar": {
+      "fixed_jg": {
+        "development_cross_entropy": 2.0734570189173067,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__fixed_jg__lr0.003/RESULT.json",
+        "result_sha256": "9151bcf19653874e918d4fd3e49ce26bc3052aa91004249aba8a597e3a7b0cb9"
+      },
+      "fixed_ordinary": {
+        "development_cross_entropy": 2.071174916627251,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__fixed_ordinary__lr0.003/RESULT.json",
+        "result_sha256": "faee2d9250f9680f7a310c2133965e30ad414c97511ea45a39c1d41592b11a75"
+      },
+      "freeze_boundary": {
+        "development_cross_entropy": 2.074949702104494,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__freeze_boundary__lr0.003/RESULT.json",
+        "result_sha256": "f7cac00bea13603ee46c958f1ef8293a1b7d80f86d74c7d841c691a78c81c6b3"
+      },
+      "freeze_content": {
+        "development_cross_entropy": 2.122559756693254,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__freeze_content__lr0.003/RESULT.json",
+        "result_sha256": "949387bf290cf40d1d87e1ac002797b11f64fb32e8e7634614a02423f440bca1"
+      },
+      "freeze_dynamics": {
+        "development_cross_entropy": 2.0763236756953383,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__freeze_dynamics__lr0.003/RESULT.json",
+        "result_sha256": "a8aaee9d85236a378b5eee036948ed1ff7f2b4f8ea80197fe5df98e339d5a573"
+      },
+      "freeze_refractory": {
+        "development_cross_entropy": 2.0749614441699418,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__freeze_refractory__lr0.003/RESULT.json",
+        "result_sha256": "897480dc4466e316c2ea1a0303352297616ab0bfeb9349c57bfe67c9f9f3777e"
+      },
+      "freeze_reset": {
+        "development_cross_entropy": 2.0749598658892054,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__freeze_reset__lr0.003/RESULT.json",
+        "result_sha256": "d194430e5a9b5db75b9e356472fd57abb36cb686771d429bdac099bac99de689"
+      },
+      "learned_jg": {
+        "development_cross_entropy": 2.0734785883491096,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__learned_jg__lr0.003/RESULT.json",
+        "result_sha256": "3ffdc290114cec99df090fa2fb560f99d3c59efc68641c22f610f40f2bd22653"
+      },
+      "learned_ordinary": {
+        "development_cross_entropy": 2.0711874660491,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__learned_ordinary__lr0.003/RESULT.json",
+        "result_sha256": "9952abce65634f33271709e1bc5cf0361ca955272252bad7bf22534a75d6543b"
+      },
+      "lif_snn": {
+        "development_cross_entropy": 2.076779435679165,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__lif_snn__lr0.003/RESULT.json",
+        "result_sha256": "203a1b78375a7be2fbdbf09b928370ed830b8821bef23fe0e138d5bf92a287f7"
+      },
+      "mamba1": {
+        "development_cross_entropy": 2.0762895229899527,
+        "learning_rate": 0.001,
+        "result_file": "development/mqar__mamba1__lr0.001/RESULT.json",
+        "result_sha256": "509a5a7c167ee441d598b07da29f9fbd693343628f161a23710ac3d092466501"
+      },
+      "transformer": {
+        "development_cross_entropy": 1.8743337369154662,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__transformer__lr0.003/RESULT.json",
+        "result_sha256": "0bba6f438e1ef3ddda551baf2cff184430b6d15dbe519254004b6639ff4c160b"
+      },
+      "two_gates": {
+        "development_cross_entropy": 2.0762877570688323,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__two_gates__lr0.003/RESULT.json",
+        "result_sha256": "374293e0aad9d2f77c81d443967acd0ef37d7b919d0fa61ca6141196bb242e9a"
+      },
+      "value_fh": {
+        "development_cross_entropy": 2.073590415391994,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__value_fh__lr0.003/RESULT.json",
+        "result_sha256": "37db1c5051a97f6117a130ea8eb894a996748e6b8b1c40fe88887e36eb9dea5e"
+      },
+      "value_g": {
+        "development_cross_entropy": 2.0697880294535413,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__value_g__lr0.003/RESULT.json",
+        "result_sha256": "8574dbb2503993c2f97b18b7ed9f597e040f84a7e5780d1a2dfa0423bdb691de"
+      },
+      "value_j": {
+        "development_cross_entropy": 2.0735461781759827,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__value_j__lr0.003/RESULT.json",
+        "result_sha256": "91e0c96e5421b5371d124c5cc98367a0141a4d39f2adf83ca39a668ebd22c6ca"
+      },
+      "value_jg": {
+        "development_cross_entropy": 2.0749582404570632,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__value_jg__lr0.003/RESULT.json",
+        "result_sha256": "5298e3b8644324bb03a02cba5a4615d072de7f08689b0049ee2e68b561086f34"
+      },
+      "value_margin": {
+        "development_cross_entropy": 2.0712743953765065,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__value_margin__lr0.003/RESULT.json",
+        "result_sha256": "b674092c62bea09d67170fd25ebbf044a8d99ea171033ca6a7f6147508df6250"
+      },
+      "value_ordinary": {
+        "development_cross_entropy": 2.069409701676825,
+        "learning_rate": 0.003,
+        "result_file": "development/mqar__value_ordinary__lr0.003/RESULT.json",
+        "result_sha256": "c520093a9ce9888c99a9cddfa5f36e1411dffbbab094810a8007d82c6b539fd1"
+      }
+    },
+    "selective_copy": {
+      "fixed_jg": {
+        "development_cross_entropy": 2.016967739660732,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__fixed_jg__lr0.003/RESULT.json",
+        "result_sha256": "80f8eae7b81b0cc166cd15370ae1037bfe24c55790422d543d0c121f994d1d5d"
+      },
+      "fixed_ordinary": {
+        "development_cross_entropy": 2.0022667242442806,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__fixed_ordinary__lr0.003/RESULT.json",
+        "result_sha256": "a88b4387b926ab84a6b2acd7843f9a675efb926d328a3cac4364e35e9994e364"
+      },
+      "freeze_boundary": {
+        "development_cross_entropy": 2.0155651230895493,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__freeze_boundary__lr0.003/RESULT.json",
+        "result_sha256": "1a95c45d1302135562f451233532d59944e6e4807557154fdc0f6b2422db1108"
+      },
+      "freeze_content": {
+        "development_cross_entropy": 2.1211737730319555,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__freeze_content__lr0.003/RESULT.json",
+        "result_sha256": "259450939d789a4f7d0c538f10d65d6302a2f3801c29a9201c1088c59614e36c"
+      },
+      "freeze_dynamics": {
+        "development_cross_entropy": 2.024391196282213,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__freeze_dynamics__lr0.003/RESULT.json",
+        "result_sha256": "c04e42d47277408ac900dadde9c0c796951bbfa06c7bc506e97d04485e2cefdf"
+      },
+      "freeze_refractory": {
+        "development_cross_entropy": 2.0155605305231226,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__freeze_refractory__lr0.003/RESULT.json",
+        "result_sha256": "4a050502927c654229effffc7c3832ae16dcd8700cc7a977471e12bee4aecbb5"
+      },
+      "freeze_reset": {
+        "development_cross_entropy": 2.015563272552294,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__freeze_reset__lr0.003/RESULT.json",
+        "result_sha256": "a2b4cce29305e68758c979f613eb5b2484725899619af845f7a3f54902335633"
+      },
+      "learned_jg": {
+        "development_cross_entropy": 2.0169307556695037,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__learned_jg__lr0.003/RESULT.json",
+        "result_sha256": "fcca493bb79ff15f34f9f689a644019d9549ce2ef0f4ae701a2a7e345b2a68a7"
+      },
+      "learned_ordinary": {
+        "development_cross_entropy": 2.002228822957407,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__learned_ordinary__lr0.003/RESULT.json",
+        "result_sha256": "3878bac64930756b96bd67de383ca2f29691379e05d30e20f3f5ed97d0816e89"
+      },
+      "lif_snn": {
+        "development_cross_entropy": 2.0787459299894366,
+        "learning_rate": 0.001,
+        "result_file": "development/selective_copy__lif_snn__lr0.001/RESULT.json",
+        "result_sha256": "360b2871b9b17e18568f674638f9be703e54669f5fda3118a8320bdcc1658a10"
+      },
+      "mamba1": {
+        "development_cross_entropy": 2.0817920203311755,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__mamba1__lr0.003/RESULT.json",
+        "result_sha256": "6c3b09417922155f3a4cfb0da8c83e4db534229485bca49630627e340d7327c2"
+      },
+      "transformer": {
+        "development_cross_entropy": 1.7691000222943853,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__transformer__lr0.003/RESULT.json",
+        "result_sha256": "cd03e2e1b18fff60abc8e1aec16ee01e40f880e684128edd8dfac48ad4f1eda3"
+      },
+      "two_gates": {
+        "development_cross_entropy": 2.0802820556619492,
+        "learning_rate": 0.001,
+        "result_file": "development/selective_copy__two_gates__lr0.001/RESULT.json",
+        "result_sha256": "0d25345e60451547c9b61ace4fa074f4ed587ab5f89ea5d3d168659304c5c0ae"
+      },
+      "value_fh": {
+        "development_cross_entropy": 2.0041332178234503,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__value_fh__lr0.003/RESULT.json",
+        "result_sha256": "34aa7349622be87fa39ca46cdb3fa9f28f3ae94843252e022bef95de2d5d67e3"
+      },
+      "value_g": {
+        "development_cross_entropy": 1.9915064400581604,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__value_g__lr0.003/RESULT.json",
+        "result_sha256": "4f014e6f160e3efc3e771ab1f3bbf27edfe1c0613427745d8c5752ed9cdfeeb6"
+      },
+      "value_j": {
+        "development_cross_entropy": 2.0075932947239856,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__value_j__lr0.003/RESULT.json",
+        "result_sha256": "4e79333d3fd5cb75ec71ec2cb1e0abbeb4224530d78b9f2260899be6e38c6bfe"
+      },
+      "value_jg": {
+        "development_cross_entropy": 2.015549386027754,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__value_jg__lr0.003/RESULT.json",
+        "result_sha256": "4b20787be141439c741257ee82d45c3248813d983ecc56e5a3ec3f92f96e7f4d"
+      },
+      "value_margin": {
+        "development_cross_entropy": 1.9999443398075432,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__value_margin__lr0.003/RESULT.json",
+        "result_sha256": "3f4789477d81d25c826d5194285b9a6be66613946e8969a0b65365ae20bcc3f5"
+      },
+      "value_ordinary": {
+        "development_cross_entropy": 1.9925656290637124,
+        "learning_rate": 0.003,
+        "result_file": "development/selective_copy__value_ordinary__lr0.003/RESULT.json",
+        "result_sha256": "31d34e0471eb74e051e5707bd6f59478cce86eac029014cd898d8646007df077"
+      }
+    }
+  },
+  "equal_cpu_arms": {
+    "mqar": [
+      "value_ordinary",
+      "two_gates",
+      "transformer",
+      "lif_snn"
+    ],
+    "selective_copy": [
+      "value_g",
+      "two_gates",
+      "transformer",
+      "lif_snn"
+    ]
+  },
+  "locked_utc": "2026-10-31T01:56:31.292178+00:00",
+  "protocol_sha256": "911067f668c94a68ca41af710e1977005806dad202fbf18f32bda580b077a27b"
+}

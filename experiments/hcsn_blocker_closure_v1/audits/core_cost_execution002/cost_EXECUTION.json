@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-m",
+    "experiments.hcsn_blocker_closure_v1.audits.core_cost_supplement",
+    "--run-receipt",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/core_completed_run.json",
+    "--jobs-receipt",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/core_completed_jobs.json",
+    "--publication",
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/PUBLICATION.json",
+    "--restored",
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829",
+    "--require-full-run",
+    "--output",
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/core_cost002.json"
+  ],
+  "complete_child_cpu_seconds": 0.114856,
+  "cwd": "/workspace/scratch/af4384a0a49b/hepta-hcsn",
+  "ended_utc": "2026-10-31T04:23:11.386710+00:00",
+  "exit_code": 0,
+  "log": "experiments/hcsn_blocker_closure_v1/audits/core_cost_execution002/cost.log",
+  "name": "cost",
+  "peak_rss_bytes": 24899584,
+  "process_created": true,
+  "scope": "Whole direct child wait4, including imports and waited descendants; nested costs are not additive",
+  "started_utc": "2026-10-31T04:23:11.264069+00:00",
+  "system_cpu_seconds": 0.016501,
+  "user_cpu_seconds": 0.098355,
+  "wall_seconds": 0.1226381640008185
+}

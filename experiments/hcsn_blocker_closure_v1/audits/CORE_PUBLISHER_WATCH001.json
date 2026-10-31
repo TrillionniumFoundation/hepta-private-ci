@@ -1,0 +1,69 @@
+{
+  "completed_cost_supplement_written": false,
+  "completed_run_receipt_written": false,
+  "cost_attempt001_preserved": true,
+  "dispatch_retry_or_cancel": false,
+  "execution_seal": "c9063043d088b6b469e740b9b6f341f3faea3928",
+  "full_run_completed": false,
+  "gpu_or_ci_polled_in_this_watch": false,
+  "note": "Publisher was still queued at the sixth and final observation. No completion is inferred from experimental-job success; no cost002 or completed-run receipt is fabricated.",
+  "observations": [
+    {
+      "file": "experiments/hcsn_blocker_closure_v1/audits/core_publisher_poll001.json",
+      "observed_utc": "2026-10-31T03:44:59.568Z",
+      "publisher_status": "queued",
+      "run_status": "queued",
+      "runner_id": 0,
+      "sha256": "4a20b6e22b31bd384d2b54c870e6b5486ed7b1e0968a0df74ffd8bb8080929fa"
+    },
+    {
+      "file": "experiments/hcsn_blocker_closure_v1/audits/core_publisher_poll002.json",
+      "observed_utc": "2026-10-31T03:46:11.010Z",
+      "publisher_status": "queued",
+      "run_status": "queued",
+      "runner_id": 0,
+      "sha256": "5305fb0025e3ddddcef2400af8acc359008aa742338f3ffacf055e03f1168cac"
+    },
+    {
+      "file": "experiments/hcsn_blocker_closure_v1/audits/core_publisher_poll003.json",
+      "observed_utc": "2026-10-31T03:46:57.453Z",
+      "publisher_status": "queued",
+      "run_status": "queued",
+      "runner_id": 0,
+      "sha256": "8d9a01b072e0a97e86280925b712652ddb090bd670d4681ee0156b8615b6f8b9"
+    },
+    {
+      "file": "experiments/hcsn_blocker_closure_v1/audits/core_publisher_poll004.json",
+      "observed_utc": "2026-10-31T03:47:44.026Z",
+      "publisher_status": "queued",
+      "run_status": "queued",
+      "runner_id": 0,
+      "sha256": "94f6da5958488fe1a37eef3ab638f88bd303d9426311917fb76e9b1dcd944e1c"
+    },
+    {
+      "file": "experiments/hcsn_blocker_closure_v1/audits/core_publisher_poll005.json",
+      "observed_utc": "2026-10-31T03:48:30.696Z",
+      "publisher_status": "queued",
+      "run_status": "queued",
+      "runner_id": 0,
+      "sha256": "0ee897e68e4963788dee8869be1525e434d96ae1ad9accffbf5e092c38a5c6bc"
+    },
+    {
+      "file": "experiments/hcsn_blocker_closure_v1/audits/core_publisher_poll006.json",
+      "observed_utc": "2026-10-31T03:49:17.285Z",
+      "publisher_status": "queued",
+      "run_status": "queued",
+      "runner_id": 0,
+      "sha256": "c46b73bcf84de8802bd4c1657239b0f0a5fccb91c846be04c7128eef0305fdaf"
+    }
+  ],
+  "polls": 6,
+  "publisher_job": 124428879276,
+  "publisher_status": "queued",
+  "quality_outcomes_opened": false,
+  "requested_wait_between_polls_seconds": 45,
+  "run_id": 41156755829,
+  "runner_assigned": false,
+  "schema": "hcsn-core-publisher-bounded-watch.v1",
+  "stopped_after_budget": true
+}

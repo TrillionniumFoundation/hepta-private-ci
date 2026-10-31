@@ -1,0 +1,75 @@
+{
+  "audit_result": {
+    "file": "experiments/hcsn_blocker_closure_v1/audits/core_cost001.json",
+    "sha256": "e4e9cbacd27f90c384b006a96db0478b7c5cd48e25581a53604b6795a478fee3"
+  },
+  "execution_run": 41156755829,
+  "execution_seal": "c9063043d088b6b469e740b9b6f341f3faea3928",
+  "formula": "Sum prepare/train/finalize [coordinator self CPU after RunBook construction + complete direct-child wait4 CPU], then add separate package process_time CPU once.",
+  "job_wall_scope": "Report occupied experiment and publisher job walls separately from queue elapsed time. Pending publisher time is unknown; completed experiment wall is6062seconds.",
+  "measured_cpu_lower_bound": 23370.491157861,
+  "nested_workers_cpu_seconds": 23263.3576,
+  "outer_cpu_seconds": 23292.648470874,
+  "packaging_cpu_seconds": 77.84268698700001,
+  "publication": {
+    "archive_member_root": "Paths are relative to experiments/hcsn_blocker_closure_v1; selected restore destination contains content/, results/, runtime/, oracle/ directly.",
+    "archive_prefix": "experiments/hcsn_blocker_closure_v1/artifacts/closure001",
+    "artifact_name": "hcsn-closure-evidence-41156755829",
+    "branch": "research/hcsn-blocker-evidence-41156755829",
+    "cost_receipts_in_archive": "results/hosted001/{prepare,train,finalize}/RUNNER_*_RESULT.json and each *_EXECUTION.json",
+    "direct_worker_ledgers": "content/results/hosted001/RUN_{development,fixed,equal_cpu}.json under publication repository prefix",
+    "index": "INDEX.json",
+    "maximum_published_file_bytes": 512000,
+    "member_shards": "members_NNNN.json; at most600 rows each",
+    "part_bytes": 327680,
+    "parts": "closure_attempt.tar.xz.partNNNN",
+    "publication": "PUBLICATION.json",
+    "quality_summary": "SUMMARY.json is extracted without checks/costs; full ANALYSIS and every raw log/checkpoint/prediction remain in the archive. Do not substitute SUMMARY for raw verification.",
+    "repository_prefix": "experiments/hcsn_blocker_closure_v1"
+  },
+  "quality_outcomes_opened": false,
+  "remaining_unmetered_cpu": [
+    "Checkout, container setup and pinned dependency installation",
+    "Launcher imports before RunBook construction and final serialization after sampling",
+    "The prepare-stage git identity subprocess, outside explicit RunBook child receipts",
+    "Artifact upload/download and publisher verification/git push",
+    "Provider and operating-system overhead outside retained process receipts"
+  ],
+  "reviewed_utc": "2026-10-31T03:38:27.200510+00:00",
+  "runtime_limits": "Native replay is an analytic task policy engineering replication, not a learned content neural kernel. Peak individual worker RSS is not aggregate concurrent memory; summed worker wall is not elapsed job wall. CPU is not Joules. Container quota is4CPU/8GiB, not proof of dedicated physical cores.",
+  "schema": "hcsn-core-cost-and-publication-source-review.v1",
+  "source_files": [
+    {
+      "file": ".github/workflows/hcsn-blocker-hosted.yml",
+      "sha256": "55a64c064009762c8433373aa93d9f7b0a4c2076ce3b88446dd6362e2c02dce5"
+    },
+    {
+      "file": "experiments/hcsn_blocker_closure_v1/hosted.py",
+      "sha256": "ac06393718ecab048bc0788c6774e6c6fbfb0061536ff20670de120691a5675f"
+    },
+    {
+      "file": "experiments/hcsn_blocker_closure_v1/evidence.py",
+      "sha256": "ae9a3be375c36b151ead24d83c8fdc018d4ec1b31f1e11dd42b5335ca00c8618"
+    },
+    {
+      "file": "experiments/hcsn_conservative_acceleration_v1/hosted/runner.py",
+      "sha256": "dbe943e9fa1553bf8ca6f32f7095ae453542b465b5cbff889a05d0a00907754b"
+    },
+    {
+      "file": "experiments/hcsn_blocker_closure_v1/content/study.py",
+      "sha256": "1e7039a7d2cbf3e4be1f009c0aeab92b31c5098b606ee55f89d6f74105d7b3d0"
+    },
+    {
+      "file": "experiments/hcsn_blocker_closure_v1/runtime/measure.py",
+      "sha256": "21375bcbd9ce8132dac72fb963ffec0cd224d9263d34fbd4d580ce9470b10abf"
+    },
+    {
+      "file": "experiments/hcsn_free_boundary_v1/archive.py",
+      "sha256": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab"
+    }
+  ],
+  "source_helper": {
+    "file": "experiments/hcsn_blocker_closure_v1/audits/core_cost_supplement.py",
+    "sha256": "cbb10aca5b3b0807fa0d0a593e274e41ba8894ab328b20d2b7c3d3f7ce155bd3"
+  }
+}

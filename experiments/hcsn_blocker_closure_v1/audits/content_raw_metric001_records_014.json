@@ -1,0 +1,2902 @@
+[
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.3877787807814457e-17,
+      "cross_entropy": 0.0,
+      "ece": 5.412337245047638e-16
+    },
+    "file": "validation_001013.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.92578125,
+      "brier": 0.1117086635277883,
+      "correct": 948,
+      "cross_entropy": 0.20554963099288437,
+      "ece": 0.04376216037963075,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.92578125,
+      "brier": 0.11170866352778829,
+      "correct": 948,
+      "cross_entropy": 0.20554963099288437,
+      "ece": 0.04376216037963021,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.734723475976807e-18,
+      "cross_entropy": 6.938893903907228e-18,
+      "ece": 2.2811613709095013e-16
+    },
+    "file": "validation_002002.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.99609375,
+      "brier": 0.0057404781501614755,
+      "correct": 1020,
+      "cross_entropy": 0.012979038843496967,
+      "ece": 0.006277554006826236,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.99609375,
+      "brier": 0.005740478150161477,
+      "correct": 1020,
+      "cross_entropy": 0.012979038843496974,
+      "ece": 0.006277554006826464,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 8.465450562766819e-16
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.9443359375,
+      "brier": 0.08319583820980592,
+      "correct": 967,
+      "cross_entropy": 0.17804467232776652,
+      "ece": 0.020147423913564683,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.9443359375,
+      "brier": 0.08319583820980592,
+      "correct": 967,
+      "cross_entropy": 0.17804467232776652,
+      "ece": 0.02014742391356553,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 5.204170427930421e-18,
+      "cross_entropy": 6.938893903907228e-18,
+      "ece": 6.323067069935462e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.994140625,
+      "brier": 0.009559364853330176,
+      "correct": 1018,
+      "cross_entropy": 0.02112644851883832,
+      "ece": 0.0045078049988150825,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.994140625,
+      "brier": 0.009559364853330171,
+      "correct": 1018,
+      "cross_entropy": 0.02112644851883831,
+      "ece": 0.00450780499881445,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 2.9070170749767588e-18,
+      "cross_entropy": 1.734723475976807e-18,
+      "ece": 2.6150956400350367e-16
+    },
+    "file": "validation_001546.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 1.0,
+      "brier": 4.2219347324164895e-05,
+      "correct": 1024,
+      "cross_entropy": 0.0016401270279428832,
+      "ece": 0.001627798051335515,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 1.0,
+      "brier": 4.22193473241678e-05,
+      "correct": 1024,
+      "cross_entropy": 0.0016401270279428814,
+      "ece": 0.0016277980513352535,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.759605068802402e-18,
+      "cross_entropy": 5.719166459861036e-18,
+      "ece": 5.551115123125783e-16
+    },
+    "file": "validation_003361.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 1.0,
+      "brier": 5.349995087487215e-07,
+      "correct": 1024,
+      "cross_entropy": 0.0001848340909129271,
+      "ece": 0.00018468474735655604,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 1.0,
+      "brier": 5.349995087504811e-07,
+      "correct": 1024,
+      "cross_entropy": 0.00018483409091292138,
+      "ece": 0.00018468474735600093,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.5178830414797062e-18,
+      "cross_entropy": 1.0408340855860843e-17,
+      "ece": 1.5178830414797062e-16
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 1.0,
+      "brier": 0.0005584985518201368,
+      "correct": 1024,
+      "cross_entropy": 0.0026340493048666682,
+      "ece": 0.0024583535165777696,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 1.0,
+      "brier": 0.0005584985518201383,
+      "correct": 1024,
+      "cross_entropy": 0.002634049304866658,
+      "ece": 0.0024583535165779214,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 3.0376719070907346e-19,
+      "cross_entropy": 5.204170427930421e-18,
+      "ece": 0.0
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 1.0,
+      "brier": 8.730370284833373e-07,
+      "correct": 1024,
+      "cross_entropy": 0.00020834129732348388,
+      "ece": 0.00020809174179092782,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 1.0,
+      "brier": 8.730370284830336e-07,
+      "correct": 1024,
+      "cross_entropy": 0.00020834129732347868,
+      "ece": 0.00020809174179092782,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 6.938893903907228e-18,
+      "cross_entropy": 0.0,
+      "ece": 8.187894806610529e-16
+    },
+    "file": "validation_001004.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.9677734375,
+      "brier": 0.060088890568057926,
+      "correct": 991,
+      "cross_entropy": 0.13055770833043936,
+      "ece": 0.055202521579221314,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.9677734375,
+      "brier": 0.06008889056805792,
+      "correct": 991,
+      "cross_entropy": 0.13055770833043936,
+      "ece": 0.055202521579220495,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 4.336808689942018e-18,
+      "cross_entropy": 3.469446951953614e-18,
+      "ece": 9.922618282587337e-16
+    },
+    "file": "validation_002008.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.998046875,
+      "brier": 0.003395833438824435,
+      "correct": 1022,
+      "cross_entropy": 0.009370899393904286,
+      "ece": 0.008041131828089867,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.998046875,
+      "brier": 0.0033958334388244395,
+      "correct": 1022,
+      "cross_entropy": 0.00937089939390429,
+      "ece": 0.00804113182809086,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.3565537582138631e-15
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.9375,
+      "brier": 0.09090041075146246,
+      "correct": 960,
+      "cross_entropy": 0.17026045350585722,
+      "ece": 0.013990135213933219,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.9375,
+      "brier": 0.09090041075146246,
+      "correct": 960,
+      "cross_entropy": 0.17026045350585722,
+      "ece": 0.013990135213934576,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 6.938893903907228e-18,
+      "cross_entropy": 3.469446951953614e-18,
+      "ece": 5.793976409762536e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.9990234375,
+      "brier": 0.0024638899056095265,
+      "correct": 1023,
+      "cross_entropy": 0.008032075509739507,
+      "ece": 0.005273717414932556,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.9990234375,
+      "brier": 0.0024638899056095335,
+      "correct": 1023,
+      "cross_entropy": 0.00803207550973951,
+      "ece": 0.005273717414933135,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 5.551115123125783e-17,
+      "ece": 1.3877787807814457e-16
+    },
+    "file": "validation_000991.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.8359375,
+      "brier": 0.23994091811346885,
+      "correct": 856,
+      "cross_entropy": 0.4346696303750484,
+      "ece": 0.05609424078149445,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.8359375,
+      "brier": 0.23994091811346885,
+      "correct": 856,
+      "cross_entropy": 0.43466963037504835,
+      "ece": 0.05609424078149431,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.734723475976807e-18,
+      "cross_entropy": 2.6020852139652106e-18,
+      "ece": 2.2551405187698492e-17
+    },
+    "file": "validation_002060.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.998046875,
+      "brier": 0.0023677318758387597,
+      "correct": 1022,
+      "cross_entropy": 0.007191919922964868,
+      "ece": 0.006311677573723142,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.998046875,
+      "brier": 0.0023677318758387614,
+      "correct": 1022,
+      "cross_entropy": 0.007191919922964866,
+      "ece": 0.006311677573723119,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.4693107841523556e-15
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.9931640625,
+      "brier": 0.014422655341001143,
+      "correct": 1017,
+      "cross_entropy": 0.03347050265021669,
+      "ece": 0.010849979646795677,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.9931640625,
+      "brier": 0.014422655341001143,
+      "correct": 1017,
+      "cross_entropy": 0.03347050265021669,
+      "ece": 0.010849979646797146,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 5.204170427930421e-18,
+      "cross_entropy": 1.734723475976807e-18,
+      "ece": 1.4051260155412137e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.99609375,
+      "brier": 0.004655872291358085,
+      "correct": 1020,
+      "cross_entropy": 0.010216809675360329,
+      "ece": 0.006083693588398937,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.99609375,
+      "brier": 0.004655872291358091,
+      "correct": 1020,
+      "cross_entropy": 0.010216809675360327,
+      "ece": 0.006083693588399077,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 2.7755575615628914e-17,
+      "ece": 3.469446951953614e-17
+    },
+    "file": "validation_001040.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.9287109375,
+      "brier": 0.11313304874107227,
+      "correct": 951,
+      "cross_entropy": 0.21371474581044075,
+      "ece": 0.03850871796895987,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.9287109375,
+      "brier": 0.11313304874107227,
+      "correct": 951,
+      "cross_entropy": 0.21371474581044073,
+      "ece": 0.0385087179689599,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.734723475976807e-18,
+      "cross_entropy": 4.336808689942018e-18,
+      "ece": 7.945033519973776e-16
+    },
+    "file": "validation_002050.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 1.0,
+      "brier": 0.0007882382495729718,
+      "correct": 1024,
+      "cross_entropy": 0.0045185055141974285,
+      "ece": 0.004232168239685781,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 1.0,
+      "brier": 0.0007882382495729735,
+      "correct": 1024,
+      "cross_entropy": 0.004518505514197424,
+      "ece": 0.004232168239684987,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 3.469446951953614e-18,
+      "cross_entropy": 1.3877787807814457e-17,
+      "ece": 4.154662724964453e-16
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.986328125,
+      "brier": 0.021751700855794635,
+      "correct": 1010,
+      "cross_entropy": 0.048112634083377986,
+      "ece": 0.0035790074241898026,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.986328125,
+      "brier": 0.02175170085579464,
+      "correct": 1010,
+      "cross_entropy": 0.048112634083378,
+      "ece": 0.003579007424190218,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 4.607859233063394e-18,
+      "cross_entropy": 3.903127820947816e-18,
+      "ece": 3.86843335142828e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 1.0,
+      "brier": 0.00041894460599396213,
+      "correct": 1024,
+      "cross_entropy": 0.003318264735199926,
+      "ece": 0.0031854679443284943,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 1.0,
+      "brier": 0.00041894460599396674,
+      "correct": 1024,
+      "cross_entropy": 0.00331826473519993,
+      "ece": 0.003185467944328881,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 5.551115123125783e-17,
+      "ece": 2.2898349882893854e-16
+    },
+    "file": "validation_001044.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.8369140625,
+      "brier": 0.23607973171203345,
+      "correct": 857,
+      "cross_entropy": 0.4110789289832941,
+      "ece": 0.040803996427807424,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.8369140625,
+      "brier": 0.23607973171203345,
+      "correct": 857,
+      "cross_entropy": 0.41107892898329407,
+      "ece": 0.040803996427807195,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 3.469446951953614e-18,
+      "cross_entropy": 6.938893903907228e-18,
+      "ece": 3.469446951953614e-17
+    },
+    "file": "validation_002061.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.982421875,
+      "brier": 0.024450972952055935,
+      "correct": 1006,
+      "cross_entropy": 0.04675899661175694,
+      "ece": 0.008567706631917745,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.982421875,
+      "brier": 0.02445097295205594,
+      "correct": 1006,
+      "cross_entropy": 0.046758996611756934,
+      "ece": 0.00856770663191778,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 5.551115123125783e-17,
+      "ece": 8.187894806610529e-16
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.8935546875,
+      "brier": 0.1661718953106709,
+      "correct": 915,
+      "cross_entropy": 0.3511502040577534,
+      "ece": 0.053280605703266905,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.8935546875,
+      "brier": 0.1661718953106709,
+      "correct": 915,
+      "cross_entropy": 0.35115020405775343,
+      "ece": 0.053280605703266086,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 3.469446951953614e-18,
+      "cross_entropy": 0.0,
+      "ece": 8.673617379884035e-17
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.9912109375,
+      "brier": 0.016349815796753972,
+      "correct": 1015,
+      "cross_entropy": 0.03590612184582688,
+      "ece": 0.01668760912794997,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.9912109375,
+      "brier": 0.016349815796753975,
+      "correct": 1015,
+      "cross_entropy": 0.03590612184582688,
+      "ece": 0.016687609127949882,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "validation_001001.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.95703125,
+      "brier": 0.07916992221037339,
+      "correct": 980,
+      "cross_entropy": 0.16700278654212222,
+      "ece": 0.07120129801349528,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.95703125,
+      "brier": 0.07916992221037339,
+      "correct": 980,
+      "cross_entropy": 0.16700278654212222,
+      "ece": 0.07120129801349523,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 6.071532165918825e-18,
+      "cross_entropy": 0.0,
+      "ece": 6.210310043996969e-16
+    },
+    "file": "validation_001919.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 1.0,
+      "brier": 0.0010067088396636156,
+      "correct": 1024,
+      "cross_entropy": 0.00548117588051264,
+      "ece": 0.00516000140191036,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 1.0,
+      "brier": 0.0010067088396636217,
+      "correct": 1024,
+      "cross_entropy": 0.00548117588051264,
+      "ece": 0.005160001401910981,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 6.938893903907228e-18,
+      "cross_entropy": 6.938893903907228e-18,
+      "ece": 4.163336342344337e-17
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.9892578125,
+      "brier": 0.02017405109741869,
+      "correct": 1013,
+      "cross_entropy": 0.04098869111846703,
+      "ece": 0.012354023624345819,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.9892578125,
+      "brier": 0.020174051097418683,
+      "correct": 1013,
+      "cross_entropy": 0.04098869111846702,
+      "ece": 0.01235402362434586,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 4.119968255444917e-18,
+      "cross_entropy": 6.071532165918825e-18,
+      "ece": 1.0928757898653885e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 1.0,
+      "brier": 0.0005157354423127893,
+      "correct": 1024,
+      "cross_entropy": 0.0037253845079810687,
+      "ece": 0.0035529687870964437,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 1.0,
+      "brier": 0.0005157354423127934,
+      "correct": 1024,
+      "cross_entropy": 0.0037253845079810626,
+      "ece": 0.003552968787096553,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 9.853229343548264e-16
+    },
+    "file": "validation_001018.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.9384765625,
+      "brier": 0.0964830228124749,
+      "correct": 961,
+      "cross_entropy": 0.19034413494742577,
+      "ece": 0.05302269513192997,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.9384765625,
+      "brier": 0.0964830228124749,
+      "correct": 961,
+      "cross_entropy": 0.19034413494742577,
+      "ece": 0.053022695131930954,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 2.6020852139652106e-18,
+      "cross_entropy": 5.204170427930421e-18,
+      "ece": 1.038232000372119e-15
+    },
+    "file": "validation_001938.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.9990234375,
+      "brier": 0.0034757305969374767,
+      "correct": 1023,
+      "cross_entropy": 0.012502872227863506,
+      "ece": 0.006750845680661078,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.9990234375,
+      "brier": 0.0034757305969374793,
+      "correct": 1023,
+      "cross_entropy": 0.0125028722278635,
+      "ece": 0.006750845680662116,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.469446951953614e-17
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.89453125,
+      "brier": 0.1585149150554327,
+      "correct": 916,
+      "cross_entropy": 0.3139180978071644,
+      "ece": 0.043716194261674515,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.89453125,
+      "brier": 0.1585149150554327,
+      "correct": 916,
+      "cross_entropy": 0.3139180978071644,
+      "ece": 0.04371619426167448,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 8.673617379884035e-19,
+      "cross_entropy": 6.071532165918825e-18,
+      "ece": 1.2299189444675562e-15
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__two_gates__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 1.0,
+      "brier": 0.0017336324403343436,
+      "correct": 1024,
+      "cross_entropy": 0.0075287458784851725,
+      "ece": 0.006964715721625434,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 1.0,
+      "brier": 0.0017336324403343427,
+      "correct": 1024,
+      "cross_entropy": 0.0075287458784851664,
+      "ece": 0.006964715721626664,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.3877787807814457e-16
+    },
+    "file": "validation_001944.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.505859375,
+      "brier": 0.6257850994162448,
+      "correct": 518,
+      "cross_entropy": 1.1656881342033998,
+      "ece": 0.0979612432638853,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.505859375,
+      "brier": 0.6257850994162448,
+      "correct": 518,
+      "cross_entropy": 1.1656881342033998,
+      "ece": 0.09796124326388544,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "validation_003946.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.443359375,
+      "brier": 0.7063044771244187,
+      "correct": 454,
+      "cross_entropy": 1.3227457986003825,
+      "ece": 0.19490243103646432,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.443359375,
+      "brier": 0.7063044771244187,
+      "correct": 454,
+      "cross_entropy": 1.3227457986003825,
+      "ece": 0.19490243103646435,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3056640625,
+      "brier": 0.8668505322741683,
+      "correct": 313,
+      "cross_entropy": 2.3528277794934236,
+      "ece": 0.19468785351456697,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3056640625,
+      "brier": 0.8668505322741683,
+      "correct": 313,
+      "cross_entropy": 2.3528277794934236,
+      "ece": 0.19468785351456694,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.5265566588595902e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.4677734375,
+      "brier": 0.6417032737722824,
+      "correct": 479,
+      "cross_entropy": 1.1738015273195388,
+      "ece": 0.12404530001786963,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.4677734375,
+      "brier": 0.6417032737722825,
+      "correct": 479,
+      "cross_entropy": 1.1738015273195388,
+      "ece": 0.12404530001786948,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "validation_001872.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.47265625,
+      "brier": 0.6345311094876536,
+      "correct": 484,
+      "cross_entropy": 1.1429102830743774,
+      "ece": 0.11076812494620866,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.47265625,
+      "brier": 0.6345311094876536,
+      "correct": 484,
+      "cross_entropy": 1.1429102830743774,
+      "ece": 0.11076812494620869,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.938893903907228e-17
+    },
+    "file": "validation_003779.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.720703125,
+      "brier": 0.3935520291503024,
+      "correct": 738,
+      "cross_entropy": 0.7541661099861872,
+      "ece": 0.09001596640318553,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.720703125,
+      "brier": 0.3935520291503024,
+      "correct": 738,
+      "cross_entropy": 0.7541661099861872,
+      "ece": 0.0900159664031856,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.220446049250313e-16
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1318359375,
+      "brier": 1.2836229663529708,
+      "correct": 135,
+      "cross_entropy": 7.544033748705152,
+      "ece": 0.5471040194261246,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1318359375,
+      "brier": 1.2836229663529708,
+      "correct": 135,
+      "cross_entropy": 7.544033748705152,
+      "ece": 0.5471040194261249,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 5.551115123125783e-17,
+      "cross_entropy": 1.1102230246251565e-16,
+      "ece": 8.326672684688674e-17
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.6875,
+      "brier": 0.43553526275160254,
+      "correct": 704,
+      "cross_entropy": 0.8270627145082894,
+      "ece": 0.12754974995608792,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.6875,
+      "brier": 0.4355352627516026,
+      "correct": 704,
+      "cross_entropy": 0.8270627145082895,
+      "ece": 0.12754974995608784,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.938893903907228e-17
+    },
+    "file": "validation_001993.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.48046875,
+      "brier": 0.6248870366462509,
+      "correct": 492,
+      "cross_entropy": 1.133662439384062,
+      "ece": 0.09814507241370365,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.48046875,
+      "brier": 0.6248870366462509,
+      "correct": 492,
+      "cross_entropy": 1.133662439384062,
+      "ece": 0.09814507241370359,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 2.220446049250313e-16,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "validation_003984.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.4638671875,
+      "brier": 0.6919204787685309,
+      "correct": 475,
+      "cross_entropy": 1.3740014437979147,
+      "ece": 0.20624342588678993,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.4638671875,
+      "brier": 0.6919204787685309,
+      "correct": 475,
+      "cross_entropy": 1.374001443797915,
+      "ece": 0.20624342588678996,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 0.0
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2509765625,
+      "brier": 0.993157628193417,
+      "correct": 257,
+      "cross_entropy": 2.6803217613603425,
+      "ece": 0.30975815659548944,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2509765625,
+      "brier": 0.993157628193417,
+      "correct": 257,
+      "cross_entropy": 2.6803217613603425,
+      "ece": 0.30975815659548944,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.4716796875,
+      "brier": 0.6256618198564119,
+      "correct": 483,
+      "cross_entropy": 1.106548203779959,
+      "ece": 0.10216065397696762,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.4716796875,
+      "brier": 0.6256618198564119,
+      "correct": 483,
+      "cross_entropy": 1.106548203779959,
+      "ece": 0.1021606539769676,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "validation_001970.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.46875,
+      "brier": 0.6425588766811652,
+      "correct": 480,
+      "cross_entropy": 1.1591926932959,
+      "ece": 0.10326834737477857,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.46875,
+      "brier": 0.6425588766811652,
+      "correct": 480,
+      "cross_entropy": 1.1591926932959,
+      "ece": 0.1032683473747786,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.608224830031759e-16
+    },
+    "file": "validation_003950.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.6376953125,
+      "brier": 0.46835342112779477,
+      "correct": 653,
+      "cross_entropy": 0.8633786180464218,
+      "ece": 0.08983683938824992,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.6376953125,
+      "brier": 0.46835342112779477,
+      "correct": 653,
+      "cross_entropy": 0.8633786180464218,
+      "ece": 0.08983683938825028,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 0.0
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1943359375,
+      "brier": 1.149135875294904,
+      "correct": 199,
+      "cross_entropy": 3.6375562670598063,
+      "ece": 0.4641611778863749,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1943359375,
+      "brier": 1.149135875294904,
+      "correct": 199,
+      "cross_entropy": 3.6375562670598063,
+      "ece": 0.4641611778863749,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.8041124150158794e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.6640625,
+      "brier": 0.4656018443818619,
+      "correct": 680,
+      "cross_entropy": 0.8430753811586817,
+      "ece": 0.08729934759341086,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.6640625,
+      "brier": 0.4656018443818619,
+      "correct": 680,
+      "cross_entropy": 0.8430753811586817,
+      "ece": 0.08729934759341104,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "validation_001969.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.4775390625,
+      "brier": 0.6319392625068803,
+      "correct": 489,
+      "cross_entropy": 1.142308213025769,
+      "ece": 0.11248847804305537,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.4775390625,
+      "brier": 0.6319392625068804,
+      "correct": 489,
+      "cross_entropy": 1.142308213025769,
+      "ece": 0.11248847804305531,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.942890293094024e-16
+    },
+    "file": "validation_003884.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.45703125,
+      "brier": 0.6764251861348318,
+      "correct": 468,
+      "cross_entropy": 1.2849477840281835,
+      "ece": 0.1873647895675042,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.45703125,
+      "brier": 0.6764251861348318,
+      "correct": 468,
+      "cross_entropy": 1.2849477840281835,
+      "ece": 0.18736478956750438,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.333984375,
+      "brier": 0.8557179368467029,
+      "correct": 342,
+      "cross_entropy": 2.167488050478184,
+      "ece": 0.2240862029767731,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.333984375,
+      "brier": 0.8557179368467029,
+      "correct": 342,
+      "cross_entropy": 2.167488050478184,
+      "ece": 0.22408620297677315,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.470703125,
+      "brier": 0.6361264036693084,
+      "correct": 482,
+      "cross_entropy": 1.1178178161950276,
+      "ece": 0.12385558014890033,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.470703125,
+      "brier": 0.6361264036693084,
+      "correct": 482,
+      "cross_entropy": 1.1178178161950276,
+      "ece": 0.1238555801489003,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.3592239273284576e-16
+    },
+    "file": "validation_001904.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.47265625,
+      "brier": 0.6436987946934588,
+      "correct": 484,
+      "cross_entropy": 1.1468771843958399,
+      "ece": 0.10980985769089682,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.47265625,
+      "brier": 0.6436987946934588,
+      "correct": 484,
+      "cross_entropy": 1.1468771843958399,
+      "ece": 0.10980985769089659,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 0.0
+    },
+    "file": "validation_003771.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.431640625,
+      "brier": 0.7100489624111657,
+      "correct": 442,
+      "cross_entropy": 1.3494253061067014,
+      "ece": 0.21008494940582112,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.431640625,
+      "brier": 0.7100489624111657,
+      "correct": 442,
+      "cross_entropy": 1.3494253061067014,
+      "ece": 0.21008494940582112,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3388671875,
+      "brier": 0.7777318447125098,
+      "correct": 347,
+      "cross_entropy": 1.6263036113020073,
+      "ece": 0.1305022205545756,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3388671875,
+      "brier": 0.7777318447125098,
+      "correct": 347,
+      "cross_entropy": 1.6263036113020073,
+      "ece": 0.13050222055457558,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.470703125,
+      "brier": 0.6355476511870037,
+      "correct": 482,
+      "cross_entropy": 1.1336213352631686,
+      "ece": 0.10695683859530515,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.470703125,
+      "brier": 0.6355476511870037,
+      "correct": 482,
+      "cross_entropy": 1.1336213352631686,
+      "ece": 0.1069568385953051,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 4.163336342344337e-17
+    },
+    "file": "validation_001944.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.474609375,
+      "brier": 0.6228226794907797,
+      "correct": 486,
+      "cross_entropy": 1.1085064865796448,
+      "ece": 0.08953476077392225,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.474609375,
+      "brier": 0.6228226794907797,
+      "correct": 486,
+      "cross_entropy": 1.1085064865796448,
+      "ece": 0.08953476077392221,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "validation_003858.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.4921875,
+      "brier": 0.6456320650955989,
+      "correct": 504,
+      "cross_entropy": 1.2267199375113547,
+      "ece": 0.16817410129621305,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.4921875,
+      "brier": 0.6456320650955989,
+      "correct": 504,
+      "cross_entropy": 1.2267199375113547,
+      "ece": 0.168174101296213,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.3877787807814457e-16
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.328125,
+      "brier": 0.8395837346514194,
+      "correct": 336,
+      "cross_entropy": 2.1620231244798287,
+      "ece": 0.17577600522067977,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.328125,
+      "brier": 0.8395837346514194,
+      "correct": 336,
+      "cross_entropy": 2.1620231244798287,
+      "ece": 0.1757760052206799,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 2.220446049250313e-16,
+      "ece": 1.3877787807814457e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.482421875,
+      "brier": 0.6265083863165786,
+      "correct": 494,
+      "cross_entropy": 1.1058533972448306,
+      "ece": 0.08754283458508276,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.482421875,
+      "brier": 0.6265083863165786,
+      "correct": 494,
+      "cross_entropy": 1.1058533972448303,
+      "ece": 0.08754283458508262,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 0.0
+    },
+    "file": "validation_001878.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.4853515625,
+      "brier": 0.6187601167721786,
+      "correct": 497,
+      "cross_entropy": 1.1070135948113093,
+      "ece": 0.06789315730520337,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.4853515625,
+      "brier": 0.6187601167721786,
+      "correct": 497,
+      "cross_entropy": 1.1070135948113093,
+      "ece": 0.06789315730520337,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.1102230246251565e-16
+    },
+    "file": "validation_003768.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.474609375,
+      "brier": 0.6785734710032123,
+      "correct": 486,
+      "cross_entropy": 1.3158829347578518,
+      "ece": 0.14868211129226322,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.474609375,
+      "brier": 0.6785734710032123,
+      "correct": 486,
+      "cross_entropy": 1.3158829347578518,
+      "ece": 0.1486821112922631,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3447265625,
+      "brier": 0.7942389230137538,
+      "correct": 353,
+      "cross_entropy": 2.0501110484998213,
+      "ece": 0.1646162012754255,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3447265625,
+      "brier": 0.7942389230137538,
+      "correct": 353,
+      "cross_entropy": 2.0501110484998213,
+      "ece": 0.16461620127542556,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.3877787807814457e-17
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__transformer__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.47265625,
+      "brier": 0.6266143817064744,
+      "correct": 484,
+      "cross_entropy": 1.1165711903929445,
+      "ece": 0.08192143882605897,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.47265625,
+      "brier": 0.6266143817064744,
+      "correct": 484,
+      "cross_entropy": 1.1165711903929445,
+      "ece": 0.08192143882605896,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 4.440892098500626e-16,
+      "ece": 5.828670879282072e-16
+    },
+    "file": "validation_000812.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1181640625,
+      "brier": 0.8756136755116474,
+      "correct": 121,
+      "cross_entropy": 2.08176976685419,
+      "ece": 0.01533273032513996,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1181640625,
+      "brier": 0.8756136755116474,
+      "correct": 121,
+      "cross_entropy": 2.0817697668541904,
+      "ece": 0.015332730325139377,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.400058012914542e-16
+    },
+    "file": "validation_001650.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1298828125,
+      "brier": 0.8777098206646547,
+      "correct": 133,
+      "cross_entropy": 2.089792568876017,
+      "ece": 0.016927014306324182,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1298828125,
+      "brier": 0.8777098206646547,
+      "correct": 133,
+      "cross_entropy": 2.089792568876017,
+      "ece": 0.016927014306323842,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 7.771561172376096e-16
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1279296875,
+      "brier": 0.875277547461323,
+      "correct": 131,
+      "cross_entropy": 2.080504830617291,
+      "ece": 0.006232563982045636,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1279296875,
+      "brier": 0.875277547461323,
+      "correct": 131,
+      "cross_entropy": 2.080504830617291,
+      "ece": 0.006232563982044859,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 5.828670879282072e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1142578125,
+      "brier": 0.8755222469741984,
+      "correct": 117,
+      "cross_entropy": 2.0814432282847584,
+      "ece": 0.01920730002184598,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1142578125,
+      "brier": 0.8755222469741986,
+      "correct": 117,
+      "cross_entropy": 2.0814432282847584,
+      "ece": 0.019207300021845397,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-16
+    },
+    "file": "validation_000832.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1201171875,
+      "brier": 0.8756605514383151,
+      "correct": 123,
+      "cross_entropy": 2.0820839211808444,
+      "ece": 0.01442553337317351,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1201171875,
+      "brier": 0.8756605514383151,
+      "correct": 123,
+      "cross_entropy": 2.0820839211808444,
+      "ece": 0.014425533373174065,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.8735013540549517e-16
+    },
+    "file": "validation_001677.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1279296875,
+      "brier": 0.8780529445236557,
+      "correct": 131,
+      "cross_entropy": 2.0929663599701085,
+      "ece": 0.01804250270445215,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1279296875,
+      "brier": 0.8780529445236558,
+      "correct": 131,
+      "cross_entropy": 2.0929663599701085,
+      "ece": 0.018042502704451964,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.0269562977782698e-15
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.115234375,
+      "brier": 0.8754490524067546,
+      "correct": 118,
+      "cross_entropy": 2.081204184439264,
+      "ece": 0.019036722578447046,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.115234375,
+      "brier": 0.8754490524067546,
+      "correct": 118,
+      "cross_entropy": 2.081204184439264,
+      "ece": 0.019036722578448073,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 4.163336342344337e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1298828125,
+      "brier": 0.8755892856756012,
+      "correct": 133,
+      "cross_entropy": 2.0818178847541677,
+      "ece": 0.00474494355787089,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1298828125,
+      "brier": 0.8755892856756011,
+      "correct": 133,
+      "cross_entropy": 2.0818178847541677,
+      "ece": 0.004744943557871306,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 2.220446049250313e-16,
+      "cross_entropy": 0.0,
+      "ece": 4.440892098500626e-16
+    },
+    "file": "validation_000962.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.10546875,
+      "brier": 0.8767074856548447,
+      "correct": 108,
+      "cross_entropy": 2.086103483593636,
+      "ece": 0.03393946967486532,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.10546875,
+      "brier": 0.8767074856548449,
+      "correct": 108,
+      "cross_entropy": 2.086103483593636,
+      "ece": 0.03393946967486577,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.036837696399289e-16
+    },
+    "file": "validation_001857.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.115234375,
+      "brier": 0.878107681930008,
+      "correct": 118,
+      "cross_entropy": 2.0923150340214747,
+      "ece": 0.03369989575141383,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.115234375,
+      "brier": 0.878107681930008,
+      "correct": 118,
+      "cross_entropy": 2.0923150340214747,
+      "ece": 0.03369989575141443,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.6653345369377348e-16
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.123046875,
+      "brier": 0.8757498017778763,
+      "correct": 126,
+      "cross_entropy": 2.0825667649759385,
+      "ece": 0.013990168750864784,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.123046875,
+      "brier": 0.8757498017778763,
+      "correct": 126,
+      "cross_entropy": 2.0825667649759385,
+      "ece": 0.01399016875086495,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 3.3133218391157016e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1279296875,
+      "brier": 0.8767233871141512,
+      "correct": 131,
+      "cross_entropy": 2.0862044558934696,
+      "ece": 0.010104359448072382,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1279296875,
+      "brier": 0.8767233871141513,
+      "correct": 131,
+      "cross_entropy": 2.0862044558934696,
+      "ece": 0.010104359448072713,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 4.440892098500626e-16,
+      "ece": 0.0
+    },
+    "file": "validation_000936.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1318359375,
+      "brier": 0.877411102949061,
+      "correct": 135,
+      "cross_entropy": 2.0896034177892724,
+      "ece": 0.027845691086193766,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1318359375,
+      "brier": 0.877411102949061,
+      "correct": 135,
+      "cross_entropy": 2.089603417789272,
+      "ece": 0.027845691086193766,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.5612511283791264e-17
+    },
+    "file": "validation_001817.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1767578125,
+      "brier": 0.8674628120625167,
+      "correct": 181,
+      "cross_entropy": 2.046402727645447,
+      "ece": 0.014726767759476546,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1767578125,
+      "brier": 0.8674628120625167,
+      "correct": 181,
+      "cross_entropy": 2.046402727645447,
+      "ece": 0.01472676775947653,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.185751579730777e-16
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.150390625,
+      "brier": 0.8777498040898073,
+      "correct": 154,
+      "cross_entropy": 2.101218989757312,
+      "ece": 0.02808013924368287,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.150390625,
+      "brier": 0.8777498040898073,
+      "correct": 154,
+      "cross_entropy": 2.101218989757312,
+      "ece": 0.028080139243683088,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.6306400674181987e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1728515625,
+      "brier": 0.8680546814333863,
+      "correct": 177,
+      "cross_entropy": 2.0496579213803154,
+      "ece": 0.01831659351989157,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1728515625,
+      "brier": 0.8680546814333862,
+      "correct": 177,
+      "cross_entropy": 2.0496579213803154,
+      "ece": 0.018316593519891733,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.661338147750939e-16
+    },
+    "file": "validation_000844.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.125,
+      "brier": 0.8753701389960862,
+      "correct": 128,
+      "cross_entropy": 2.0809367986132195,
+      "ece": 0.009882379785033119,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.125,
+      "brier": 0.8753701389960862,
+      "correct": 128,
+      "cross_entropy": 2.0809367986132195,
+      "ece": 0.009882379785033785,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.0122792321330962e-16
+    },
+    "file": "validation_001746.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1416015625,
+      "brier": 0.8773837156012535,
+      "correct": 145,
+      "cross_entropy": 2.0891851482028696,
+      "ece": 0.01616093415055333,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1416015625,
+      "brier": 0.8773837156012535,
+      "correct": 145,
+      "cross_entropy": 2.0891851482028696,
+      "ece": 0.016160934150553127,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.4155343563970746e-15
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1162109375,
+      "brier": 0.8751222280902389,
+      "correct": 119,
+      "cross_entropy": 2.0798997361191267,
+      "ece": 0.016943653430291167,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1162109375,
+      "brier": 0.8751222280902389,
+      "correct": 119,
+      "cross_entropy": 2.0798997361191267,
+      "ece": 0.016943653430292582,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1357421875,
+      "brier": 0.8753656621990055,
+      "correct": 139,
+      "cross_entropy": 2.080847956966007,
+      "ece": 0.0007641672945204459,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1357421875,
+      "brier": 0.8753656621990055,
+      "correct": 139,
+      "cross_entropy": 2.080847956966007,
+      "ece": 0.0007641672945198907,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 6.088879400678593e-16
+    },
+    "file": "validation_000971.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.12890625,
+      "brier": 0.8758172701089727,
+      "correct": 132,
+      "cross_entropy": 2.0831825213039528,
+      "ece": 0.00981789966671501,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.12890625,
+      "brier": 0.8758172701089728,
+      "correct": 132,
+      "cross_entropy": 2.0831825213039528,
+      "ece": 0.009817899666715618,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 7.632783294297951e-17
+    },
+    "file": "validation_001943.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1357421875,
+      "brier": 0.8787943911147376,
+      "correct": 139,
+      "cross_entropy": 2.09569921701724,
+      "ece": 0.015712614046296567,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1357421875,
+      "brier": 0.8787943911147376,
+      "correct": 139,
+      "cross_entropy": 2.09569921701724,
+      "ece": 0.015712614046296643,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 7.320533068622126e-16
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1328125,
+      "brier": 0.8759270427029879,
+      "correct": 136,
+      "cross_entropy": 2.0835021694873745,
+      "ece": 0.010288219749767992,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1328125,
+      "brier": 0.8759270427029879,
+      "correct": 136,
+      "cross_entropy": 2.0835021694873745,
+      "ece": 0.010288219749768724,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.74807432154978e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1318359375,
+      "brier": 0.8754780555214102,
+      "correct": 135,
+      "cross_entropy": 2.081726091663308,
+      "ece": 0.0071524498610047865,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1318359375,
+      "brier": 0.8754780555214102,
+      "correct": 135,
+      "cross_entropy": 2.081726091663308,
+      "ece": 0.007152449861005461,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 4.579669976578771e-16
+    },
+    "file": "validation_000969.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.138671875,
+      "brier": 0.8758702974052013,
+      "correct": 142,
+      "cross_entropy": 2.082872313010891,
+      "ece": 0.003320057251032047,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.138671875,
+      "brier": 0.8758702974052013,
+      "correct": 142,
+      "cross_entropy": 2.082872313010891,
+      "ece": 0.003320057251031589,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 9.71445146547012e-17
+    },
+    "file": "validation_001939.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.14453125,
+      "brier": 0.8741002446706125,
+      "correct": 148,
+      "cross_entropy": 2.075914365864926,
+      "ece": 0.03388236483747377,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.14453125,
+      "brier": 0.8741002446706125,
+      "correct": 148,
+      "cross_entropy": 2.075914365864926,
+      "ece": 0.033882364837473866,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 9.71445146547012e-17
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.12109375,
+      "brier": 0.8917169083682073,
+      "correct": 124,
+      "cross_entropy": 2.146414738431,
+      "ece": 0.07642568337301847,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.12109375,
+      "brier": 0.8917169083682073,
+      "correct": 124,
+      "cross_entropy": 2.146414738431,
+      "ece": 0.07642568337301837,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.0408340855860843e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1416015625,
+      "brier": 0.8744618788518097,
+      "correct": 145,
+      "cross_entropy": 2.0785451163057047,
+      "ece": 0.035637176020137724,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1416015625,
+      "brier": 0.8744618788518097,
+      "correct": 145,
+      "cross_entropy": 2.0785451163057047,
+      "ece": 0.03563717602013783,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.030698080332741e-16
+    },
+    "file": "validation_000865.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.115234375,
+      "brier": 0.876380823125236,
+      "correct": 118,
+      "cross_entropy": 2.084615953533665,
+      "ece": 0.023165252720984422,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.115234375,
+      "brier": 0.876380823125236,
+      "correct": 118,
+      "cross_entropy": 2.084615953533665,
+      "ece": 0.02316525272098392,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.245004513516506e-17
+    },
+    "file": "validation_001734.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.12890625,
+      "brier": 0.8789035526332234,
+      "correct": 132,
+      "cross_entropy": 2.0945716029748698,
+      "ece": 0.039143241932360726,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.12890625,
+      "brier": 0.8789035526332234,
+      "correct": 132,
+      "cross_entropy": 2.0945716029748698,
+      "ece": 0.03914324193236079,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.115427195053087e-15
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1279296875,
+      "brier": 0.8751771372299378,
+      "correct": 131,
+      "cross_entropy": 2.079889349470024,
+      "ece": 0.005875942888097268,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1279296875,
+      "brier": 0.875177137229938,
+      "correct": 131,
+      "cross_entropy": 2.079889349470024,
+      "ece": 0.0058759428880961525,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 7.7021722333370235e-16
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/selective_copy__lif_snn__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1318359375,
+      "brier": 0.8751664010043301,
+      "correct": 135,
+      "cross_entropy": 2.0802018620822667,
+      "ece": 0.008073058296242183,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1318359375,
+      "brier": 0.8751664010043301,
+      "correct": 135,
+      "cross_entropy": 2.0802018620822667,
+      "ece": 0.008073058296241413,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 4.85722573273506e-17
+    },
+    "file": "validation_000067.npz",
+    "job": "equal_cpu/mqar__value_ordinary__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2763671875,
+      "brier": 0.830770298622699,
+      "correct": 283,
+      "cross_entropy": 1.9095921683944586,
+      "ece": 0.05769549297801462,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2763671875,
+      "brier": 0.830770298622699,
+      "correct": 283,
+      "cross_entropy": 1.9095921683944586,
+      "ece": 0.05769549297801467,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.938893903907228e-17
+    },
+    "file": "validation_000133.npz",
+    "job": "equal_cpu/mqar__value_ordinary__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3896484375,
+      "brier": 0.7186713634018524,
+      "correct": 399,
+      "cross_entropy": 1.4819130897667627,
+      "ece": 0.03309316502230817,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3896484375,
+      "brier": 0.7186713634018524,
+      "correct": 399,
+      "cross_entropy": 1.4819130897667627,
+      "ece": 0.03309316502230824,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.942890293094024e-16
+    },
+    "file": "ood.npz",
+    "job": "equal_cpu/mqar__value_ordinary__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3681640625,
+      "brier": 0.7262033908895226,
+      "correct": 377,
+      "cross_entropy": 1.5083613879379514,
+      "ece": 0.03505286974664313,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3681640625,
+      "brier": 0.7262033908895226,
+      "correct": 377,
+      "cross_entropy": 1.5083613879379514,
+      "ece": 0.035052869746643324,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 2.220446049250313e-16,
+      "ece": 4.163336342344337e-17
+    },
+    "file": "test.npz",
+    "job": "equal_cpu/mqar__value_ordinary__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3837890625,
+      "brier": 0.7134781504375758,
+      "correct": 393,
+      "cross_entropy": 1.4604197854435477,
+      "ece": 0.03838550595345773,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3837890625,
+      "brier": 0.7134781504375758,
+      "correct": 393,
+      "cross_entropy": 1.4604197854435474,
+      "ece": 0.03838550595345777,
+      "positions": 1024
+    },
+    "split": "test"
+  }
+]

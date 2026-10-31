@@ -1,0 +1,281 @@
+{
+  "archive_members_are_relative_to": "experiments/hcsn_blocker_closure_v1",
+  "audit_body_cpu_seconds": 0.120261808,
+  "checks": [
+    "Exact public run and completed experimental job",
+    "Externally pinned publication, all member shards and canonical manifest",
+    "Every outer wait4 receipt, user/system identity and disjoint stage sum",
+    "444 nested worker costs and native replay costs remain nested"
+  ],
+  "complete_platform_cpu_seconds": null,
+  "complete_platform_energy_joules": null,
+  "complete_training_publication_job_wall_seconds": null,
+  "completed_jobs_occupied_wall_lower_bound": 6062.0,
+  "execution_seal": "c9063043d088b6b469e740b9b6f341f3faea3928",
+  "expected_archive_prefix": "experiments/hcsn_blocker_closure_v1/artifacts/closure001",
+  "expected_evidence_branch": "research/hcsn-blocker-evidence-41156755829",
+  "expected_publication_prefix": "experiments/hcsn_blocker_closure_v1",
+  "full_run_completed": false,
+  "input_files": {
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/core_cost_jobs_before_publication.json": {
+      "bytes": 4558,
+      "sha256": "2757bbe84c887b84b29319761ba052cd4f5c0ffa243f99c752c1c65e4f8d2754"
+    },
+    "/workspace/scratch/af4384a0a49b/hepta-hcsn/experiments/hcsn_blocker_closure_v1/audits/core_cost_run_before_publication.json": {
+      "bytes": 15004,
+      "sha256": "5ecaf54a389b3a12f4009561748b56578c97417ace7a473534666301354eb436"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/INDEX.json": {
+      "bytes": 75510,
+      "sha256": "8002a5ed5d6f3c0b30486097123432d570f67056790f72a93d707add9153ca1d"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/PUBLICATION.json": {
+      "bytes": 75534,
+      "sha256": "83856bb2ba45fe799a539769ea64b236bd151cf1d9b1a1fe0639419b7ec17bc6"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0000.json": {
+      "bytes": 124379,
+      "sha256": "f5956d63e678589bac39d15421ccb86866205e2c49a6af65f76f9df0a0f83a59"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0001.json": {
+      "bytes": 125068,
+      "sha256": "bb46450d2108cad96218b277a77820e48739d240ddd219787fce898d18579424"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0002.json": {
+      "bytes": 123096,
+      "sha256": "2c29201e257c5745917549daeb215e106248915dfb75649e0dc10aaefe314975"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0003.json": {
+      "bytes": 120055,
+      "sha256": "97e0410be96cd66d5d91d7638c4b0758a1fb1f274863cc755f37df9c97ef09ab"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0004.json": {
+      "bytes": 121127,
+      "sha256": "6eadf6a6679343d53dafd3c1e8acb3673660be08fe130fb3572a8037d9cb54a0"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0005.json": {
+      "bytes": 128513,
+      "sha256": "f09e6ce67eda4d75c46f42d7b83d200943ef5f3b6742dc36edf152823e0634c8"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0006.json": {
+      "bytes": 124769,
+      "sha256": "24d5e6ea1239fb47347b5dcb49bfc72cff2e716ed8c59615ad38c6e4a4f71bc4"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0007.json": {
+      "bytes": 122652,
+      "sha256": "9ee7d3b5d5e97ffe71a2ea8f308df1d34a840e41bef4eaaa2454464ff772a8ed"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0008.json": {
+      "bytes": 118383,
+      "sha256": "d24f6ab14bd43e90442b91a439880aa917a8c29780298fb86f6ea056d6acbaf2"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0009.json": {
+      "bytes": 129693,
+      "sha256": "0ae1a984a1929622a60b963f2f690fab0010f7e78c77bd32bc6dea57d06e6fc4"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0010.json": {
+      "bytes": 139497,
+      "sha256": "cc0cd0dbf2d0ae1a8661995930b0241c8a46de4b2768bbd4e8eca9a140519b71"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0011.json": {
+      "bytes": 139835,
+      "sha256": "a1ae3de0b9fbd8b730cf5db63c57266fe98f52971f26ec12b75a1dbe57a8d7bb"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0012.json": {
+      "bytes": 133046,
+      "sha256": "4a71e9bffda039053f173bcdc4085620328d565773f344c7a282cb70a57db80b"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0013.json": {
+      "bytes": 127729,
+      "sha256": "aab61c092a89f022c013d1fd34e8b169211007f759e7f34c2a36e8df296c0ba9"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/artifacts/closure001/members_0014.json": {
+      "bytes": 35122,
+      "sha256": "ea2589e697c4809bbe1be5b66368747fa920cbf3d84abf4e0e7d100605dbf12c"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/content/results/hosted001/RUN_development.json": {
+      "bytes": 33478,
+      "sha256": "d44def142c4dd2d33af19e191bbc2f2b3210e1419db09c0a85e6c6d6fa38e91f"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/content/results/hosted001/RUN_equal_cpu.json": {
+      "bytes": 28095,
+      "sha256": "3c51dc165c77b4fa271db1538fefa95d8ee9005fb1d6632619997fd248fa26d4"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_publication_41156755829/experiments/hcsn_blocker_closure_v1/content/results/hosted001/RUN_fixed.json": {
+      "bytes": 133208,
+      "sha256": "0aeacd9b3f92e41cd13a09afb921a1cf1792517cb6a4433a114e6561316939b6"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/EXECUTION_IDENTITY.json": {
+      "bytes": 1973,
+      "sha256": "b89823566407f4277360bb99893fa048a203e8f97e8369085876ec089b7804ba"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/finalize/RUNNER_FINALIZE_RESULT.json": {
+      "bytes": 3690,
+      "sha256": "738fe38f0a5d97a0591c5c7735938a575780c76b2325974da16c280f52d31136"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/finalize/content_analysis_EXECUTION.json": {
+      "bytes": 870,
+      "sha256": "22090cd42225d2b54b395eeb479f5e4f2d2cd09c42194983f48963009aaa7af2"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/finalize/native_restore_EXECUTION.json": {
+      "bytes": 775,
+      "sha256": "942c2e54213490d48410d3cf2ed1f215a85a79aef3b4382c417e094221ca2152"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/finalize/native_task_EXECUTION.json": {
+      "bytes": 899,
+      "sha256": "c882d37e166181872bafbb0396207448c792388940f37eb2963ef2fedd37dd57"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/prepare/RUNNER_PREPARE_RESULT.json": {
+      "bytes": 4704,
+      "sha256": "1afc4dad3497a08872c6a38b8785a0c6e3d5793ceb5a816d5cfedb5f4127feca"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/prepare/content_preflight_EXECUTION.json": {
+      "bytes": 880,
+      "sha256": "4928f7835850543dadbd05d9eb53b27ea5f3871ab040a1f556edcc417f8805e7"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/prepare/finite_qvi_EXECUTION.json": {
+      "bytes": 861,
+      "sha256": "4c9116b2bf605c071f9aa9c504b4d32d69d2b1ac00f7de5e4b6dcb01f14ccdb1"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/prepare/registration_EXECUTION.json": {
+      "bytes": 1015,
+      "sha256": "445a5a8924b1096197c0af8a0cfe1230add1e7ac0be327fa9b15a1b56e26103f"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/prepare/torch_bridge_EXECUTION.json": {
+      "bytes": 875,
+      "sha256": "8eb79e6476dfc10fcceed0e57789d91acbebf15c28522d13f717298a37ed376a"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/train/RUNNER_TRAIN_RESULT.json": {
+      "bytes": 4696,
+      "sha256": "22ca5d15eddc9f2553ec065de619b46850dc4c123d4ac6a8f4aa652a5fc80539"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/train/development_EXECUTION.json": {
+      "bytes": 922,
+      "sha256": "d87d7eab7966428e9174ada8c8b52b1aa527ca758655da896259809d3c3873a8"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/train/equal_cpu_EXECUTION.json": {
+      "bytes": 915,
+      "sha256": "050a0ee14add109fcec90a82706f5950f3ddad4a9b1c158ca53d4637a9a88fba"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/train/fixed_EXECUTION.json": {
+      "bytes": 908,
+      "sha256": "602584f68ec63f3c5a0e6503243974270c15c3596b194a6bdafdfb86b76d8632"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/results/hosted001/train/selection_lock_EXECUTION.json": {
+      "bytes": 862,
+      "sha256": "268d45339f777e949c1ad451b5fd40fef3cca621a40f559ff51952dcb3d8dce0"
+    },
+    "/workspace/scratch/af4384a0a49b/recovered_studies/core_selected_41156755829/runtime/results/hosted001/WHOLE_WORKER_COST.json": {
+      "bytes": 1134,
+      "sha256": "8705240617fafa8514a3b6e172c93022566e633153f84b79c988b7c4e008cadf"
+    }
+  },
+  "measured_nonoverlap_cpu_lower_bound": 23370.491157861,
+  "nested_costs_added_again": false,
+  "nested_native_launcher_cpu_seconds": 0.0003061919999999829,
+  "nested_native_worker_cpu_seconds": 6.1872869999999995,
+  "nested_worker_cpu_seconds": 23263.3576,
+  "nested_worker_stages": [
+    {
+      "added_to_outer_total_again": false,
+      "concurrent_stage_wall_seconds": 542.750616802,
+      "enclosing_child_cpu_seconds": 2158.693816,
+      "failed_workers": 0,
+      "includes_python_imports_serialization_exit": true,
+      "maximum_individual_worker_rss_bytes": 964378624,
+      "stage": "development",
+      "summed_worker_wall_seconds": 2168.845644194,
+      "worker_cpu_seconds": 2158.147978,
+      "workers": 76
+    },
+    {
+      "added_to_outer_total_again": false,
+      "concurrent_stage_wall_seconds": 4074.941889089,
+      "enclosing_child_cpu_seconds": 16189.307614,
+      "failed_workers": 0,
+      "includes_python_imports_serialization_exit": true,
+      "maximum_individual_worker_rss_bytes": 972386304,
+      "stage": "fixed",
+      "summed_worker_wall_seconds": 16256.135275864,
+      "worker_cpu_seconds": 16187.178104999999,
+      "workers": 304
+    },
+    {
+      "added_to_outer_total_again": false,
+      "concurrent_stage_wall_seconds": 1278.1318958350003,
+      "enclosing_child_cpu_seconds": 4918.545144,
+      "failed_workers": 0,
+      "includes_python_imports_serialization_exit": true,
+      "maximum_individual_worker_rss_bytes": 616935424,
+      "stage": "equal_cpu",
+      "summed_worker_wall_seconds": 4940.474754622997,
+      "worker_cpu_seconds": 4918.031517,
+      "workers": 64
+    }
+  ],
+  "outer_driver_cpu_lower_bound": 23292.648470874,
+  "outer_stages": [
+    {
+      "child_count": 4,
+      "coordinator_body_cpu_seconds": 0.01614306700000001,
+      "direct_children_cpu_seconds": 12.596781,
+      "nonoverlap_cpu_seconds": 12.612924067,
+      "stage": "prepare",
+      "stage_wall_seconds": 12.60780377399999
+    },
+    {
+      "child_count": 4,
+      "coordinator_body_cpu_seconds": 0.004580362999999976,
+      "direct_children_cpu_seconds": 23266.919909,
+      "nonoverlap_cpu_seconds": 23266.924489363,
+      "stage": "train",
+      "stage_wall_seconds": 5897.275468002
+    },
+    {
+      "child_count": 3,
+      "coordinator_body_cpu_seconds": 0.012302444000000023,
+      "direct_children_cpu_seconds": 13.098755,
+      "nonoverlap_cpu_seconds": 13.111057444,
+      "stage": "finalize",
+      "stage_wall_seconds": 17.14331883000068
+    }
+  ],
+  "packaging_cpu_seconds": 77.84268698700001,
+  "packaging_wall_seconds": 77.84929181700045,
+  "passed": true,
+  "platform_jobs": [
+    {
+      "completed_at": "2026-10-31T03:27:26Z",
+      "conclusion": "success",
+      "id": 124405134658,
+      "name": "experiments",
+      "occupied_runner_seconds": 6062.0,
+      "started_at": "2026-10-31T01:46:24Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": null,
+      "conclusion": null,
+      "id": 124428879276,
+      "name": "publish",
+      "occupied_runner_seconds": null,
+      "started_at": "2026-10-31T03:27:26Z",
+      "status": "queued"
+    }
+  ],
+  "quality_outcomes_opened": false,
+  "recorded_utc": "2026-10-31T03:37:45.902875+00:00",
+  "run_id": 41156755829,
+  "runtime_limitations": "Native replay is an analytic task policy engineering replication, not a learned content neural kernel. Peak individual worker RSS is not aggregate concurrent memory; summed worker wall is not elapsed job wall. CPU is not Joules. Container quota is4CPU/8GiB, not proof of dedicated physical cores.",
+  "schema": "hcsn-core-independent-cost-supplement.v1",
+  "scientific_gate_changed": false,
+  "scope": "Cost-only accounting. Outer stages include registration/data generation, oracle checks, preflight, all training workers, lock, analysis, native restore and analytic native replay. Packaging is a separate workflow step and added once. Training optimizer/inference/body CPU and worker costs are nested. No held-out quality files or scientific decisions are read.",
+  "source_sha256": "cbb10aca5b3b0807fa0d0a593e274e41ba8894ab328b20d2b7c3d3f7ce155bd3",
+  "unmetered_cpu": [
+    "Checkout, container setup and pinned dependency installation",
+    "Launcher imports before RunBook construction and final serialization after sampling",
+    "The prepare-stage git identity subprocess, outside explicit RunBook child receipts",
+    "Artifact upload/download and publisher verification/git push",
+    "Provider and operating-system overhead outside retained process receipts"
+  ]
+}

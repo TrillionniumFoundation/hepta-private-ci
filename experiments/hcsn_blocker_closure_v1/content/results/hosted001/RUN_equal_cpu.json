@@ -1,0 +1,1035 @@
+{
+  "child_cpu_seconds": 4918.031517,
+  "complete": true,
+  "coordinator_cpu_seconds": 0.495993241,
+  "coordinator_queue_cpu_seconds": 0.157243311,
+  "failed": 0,
+  "jobs": [
+    {
+      "child_cpu_seconds": 70.314208,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881102",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881102",
+        "learning_rate": 0.001,
+        "seed": 881102,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 375193600,
+      "wall_seconds": 70.56813734099978
+    },
+    {
+      "child_cpu_seconds": 70.271879,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881101",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 374255616,
+      "wall_seconds": 70.64540423999915
+    },
+    {
+      "child_cpu_seconds": 71.32098400000001,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881106",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881106",
+        "learning_rate": 0.001,
+        "seed": 881106,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 376823808,
+      "wall_seconds": 71.66171941700031
+    },
+    {
+      "child_cpu_seconds": 72.864253,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881102",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 616935424,
+      "wall_seconds": 73.24914041100055
+    },
+    {
+      "child_cpu_seconds": 71.504503,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881107",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881107",
+        "learning_rate": 0.001,
+        "seed": 881107,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 374779904,
+      "wall_seconds": 71.735833189
+    },
+    {
+      "child_cpu_seconds": 72.429101,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881107",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 605495296,
+      "wall_seconds": 72.84543487899919
+    },
+    {
+      "child_cpu_seconds": 73.787403,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881102",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 615043072,
+      "wall_seconds": 73.95533589200022
+    },
+    {
+      "child_cpu_seconds": 92.262933,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881102",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 385236992,
+      "wall_seconds": 92.84131315299965
+    },
+    {
+      "child_cpu_seconds": 73.126906,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881106",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 606420992,
+      "wall_seconds": 73.36726592000014
+    },
+    {
+      "child_cpu_seconds": 71.764456,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881102",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 374296576,
+      "wall_seconds": 72.13667370300027
+    },
+    {
+      "child_cpu_seconds": 71.75334699999999,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881107",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881107",
+        "learning_rate": 0.001,
+        "seed": 881107,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 372678656,
+      "wall_seconds": 72.08292051100034
+    },
+    {
+      "child_cpu_seconds": 71.37167600000001,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881103",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881103",
+        "learning_rate": 0.001,
+        "seed": 881103,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 373809152,
+      "wall_seconds": 71.6377943919997
+    },
+    {
+      "child_cpu_seconds": 71.294065,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881107",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 375513088,
+      "wall_seconds": 71.61001904000022
+    },
+    {
+      "child_cpu_seconds": 71.800235,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881106",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 374521856,
+      "wall_seconds": 72.32014429699939
+    },
+    {
+      "child_cpu_seconds": 90.35207799999999,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881108",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 385933312,
+      "wall_seconds": 90.86347007200038
+    },
+    {
+      "child_cpu_seconds": 70.963054,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881105",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881105",
+        "learning_rate": 0.001,
+        "seed": 881105,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 374296576,
+      "wall_seconds": 71.2736107159999
+    },
+    {
+      "child_cpu_seconds": 70.65581,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881108",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 374374400,
+      "wall_seconds": 71.00456557500002
+    },
+    {
+      "child_cpu_seconds": 73.332124,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881103",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 572993536,
+      "wall_seconds": 73.58685982000043
+    },
+    {
+      "child_cpu_seconds": 70.674042,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881101",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881101",
+        "learning_rate": 0.001,
+        "seed": 881101,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 373678080,
+      "wall_seconds": 71.07156720900002
+    },
+    {
+      "child_cpu_seconds": 71.302674,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881104",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881104",
+        "learning_rate": 0.001,
+        "seed": 881104,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 374415360,
+      "wall_seconds": 71.669707905
+    },
+    {
+      "child_cpu_seconds": 72.03591200000001,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881101",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 374382592,
+      "wall_seconds": 72.34153593500014
+    },
+    {
+      "child_cpu_seconds": 71.27040600000001,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881102",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 374108160,
+      "wall_seconds": 71.75316047300021
+    },
+    {
+      "child_cpu_seconds": 70.65579000000001,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881103",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 375648256,
+      "wall_seconds": 70.97476244599966
+    },
+    {
+      "child_cpu_seconds": 73.668081,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881105",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 605261824,
+      "wall_seconds": 73.91730061599992
+    },
+    {
+      "child_cpu_seconds": 73.180233,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881103",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 608919552,
+      "wall_seconds": 73.48376852299953
+    },
+    {
+      "child_cpu_seconds": 73.386113,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881106",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 600100864,
+      "wall_seconds": 73.71190895299969
+    },
+    {
+      "child_cpu_seconds": 89.92823000000001,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881107",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 386846720,
+      "wall_seconds": 90.28910555699986
+    },
+    {
+      "child_cpu_seconds": 92.164991,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881106",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 386510848,
+      "wall_seconds": 92.58041679300004
+    },
+    {
+      "child_cpu_seconds": 72.77766299999999,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881108",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 608387072,
+      "wall_seconds": 73.11845710299986
+    },
+    {
+      "child_cpu_seconds": 92.259949,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881104",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 386072576,
+      "wall_seconds": 92.687008461
+    },
+    {
+      "child_cpu_seconds": 72.269982,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881101",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881101",
+        "learning_rate": 0.001,
+        "seed": 881101,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 373645312,
+      "wall_seconds": 72.64439012399998
+    },
+    {
+      "child_cpu_seconds": 90.226707,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881105",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 385470464,
+      "wall_seconds": 90.59736455200073
+    },
+    {
+      "child_cpu_seconds": 72.409926,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881104",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881104",
+        "learning_rate": 0.001,
+        "seed": 881104,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 374689792,
+      "wall_seconds": 72.71869804100061
+    },
+    {
+      "child_cpu_seconds": 72.911109,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881105",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 585007104,
+      "wall_seconds": 73.23840983500031
+    },
+    {
+      "child_cpu_seconds": 92.597491,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881107",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 386576384,
+      "wall_seconds": 93.04644159800046
+    },
+    {
+      "child_cpu_seconds": 72.088003,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881103",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 373530624,
+      "wall_seconds": 72.29115908399945
+    },
+    {
+      "child_cpu_seconds": 89.521653,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881102",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881102",
+        "learning_rate": 0.003,
+        "seed": 881102,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 385044480,
+      "wall_seconds": 89.83636783400016
+    },
+    {
+      "child_cpu_seconds": 72.97533,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881108",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 613072896,
+      "wall_seconds": 73.45305620099953
+    },
+    {
+      "child_cpu_seconds": 72.320526,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881101",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 572715008,
+      "wall_seconds": 72.87743581199993
+    },
+    {
+      "child_cpu_seconds": 90.426416,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881104",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 386154496,
+      "wall_seconds": 90.8856089890005
+    },
+    {
+      "child_cpu_seconds": 72.48996,
+      "exit_code": 0,
+      "id": "mqar__value_ordinary__seed881104",
+      "job": {
+        "arm": "value_ordinary",
+        "id": "mqar__value_ordinary__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 584957952,
+      "wall_seconds": 72.84108505099994
+    },
+    {
+      "child_cpu_seconds": 91.30843800000001,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881103",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 386605056,
+      "wall_seconds": 91.58048533799956
+    },
+    {
+      "child_cpu_seconds": 72.067821,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881108",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881108",
+        "learning_rate": 0.001,
+        "seed": 881108,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 373694464,
+      "wall_seconds": 72.3695795270005
+    },
+    {
+      "child_cpu_seconds": 70.997964,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881104",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 375820288,
+      "wall_seconds": 71.35822811699927
+    },
+    {
+      "child_cpu_seconds": 71.99392,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881107",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 373821440,
+      "wall_seconds": 72.31184445799954
+    },
+    {
+      "child_cpu_seconds": 70.95991000000001,
+      "exit_code": 0,
+      "id": "selective_copy__lif_snn__seed881108",
+      "job": {
+        "arm": "lif_snn",
+        "id": "selective_copy__lif_snn__seed881108",
+        "learning_rate": 0.001,
+        "seed": 881108,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 374398976,
+      "wall_seconds": 71.25649453000005
+    },
+    {
+      "child_cpu_seconds": 71.849896,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881104",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 373346304,
+      "wall_seconds": 72.21962049800004
+    },
+    {
+      "child_cpu_seconds": 70.864773,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881106",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 373948416,
+      "wall_seconds": 71.22873433199948
+    },
+    {
+      "child_cpu_seconds": 72.146042,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881108",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 374210560,
+      "wall_seconds": 72.45115473499936
+    },
+    {
+      "child_cpu_seconds": 90.494598,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881106",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881106",
+        "learning_rate": 0.003,
+        "seed": 881106,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 385875968,
+      "wall_seconds": 90.84063538999999
+    },
+    {
+      "child_cpu_seconds": 72.39573,
+      "exit_code": 0,
+      "id": "mqar__two_gates__seed881105",
+      "job": {
+        "arm": "two_gates",
+        "id": "mqar__two_gates__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 373567488,
+      "wall_seconds": 72.67163380200054
+    },
+    {
+      "child_cpu_seconds": 73.773259,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881104",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881104",
+        "learning_rate": 0.003,
+        "seed": 881104,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 615550976,
+      "wall_seconds": 74.24951281100039
+    },
+    {
+      "child_cpu_seconds": 73.364471,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881101",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 585551872,
+      "wall_seconds": 73.59841149099975
+    },
+    {
+      "child_cpu_seconds": 72.380717,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881105",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881105",
+        "learning_rate": 0.001,
+        "seed": 881105,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 373989376,
+      "wall_seconds": 72.90229947199987
+    },
+    {
+      "child_cpu_seconds": 72.494054,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881106",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881106",
+        "learning_rate": 0.001,
+        "seed": 881106,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 373469184,
+      "wall_seconds": 72.6462958940001
+    },
+    {
+      "child_cpu_seconds": 92.166616,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881108",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881108",
+        "learning_rate": 0.003,
+        "seed": 881108,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 386138112,
+      "wall_seconds": 92.78418538500046
+    },
+    {
+      "child_cpu_seconds": 73.008205,
+      "exit_code": 0,
+      "id": "selective_copy__value_g__seed881107",
+      "job": {
+        "arm": "value_g",
+        "id": "selective_copy__value_g__seed881107",
+        "learning_rate": 0.003,
+        "seed": 881107,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 604979200,
+      "wall_seconds": 73.3385031559992
+    },
+    {
+      "child_cpu_seconds": 72.210793,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881103",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881103",
+        "learning_rate": 0.001,
+        "seed": 881103,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 373387264,
+      "wall_seconds": 72.46251509499962
+    },
+    {
+      "child_cpu_seconds": 90.315443,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881101",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 383586304,
+      "wall_seconds": 90.6214550069999
+    },
+    {
+      "child_cpu_seconds": 91.603839,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881105",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 385765376,
+      "wall_seconds": 92.05759841399959
+    },
+    {
+      "child_cpu_seconds": 70.976816,
+      "exit_code": 0,
+      "id": "mqar__lif_snn__seed881105",
+      "job": {
+        "arm": "lif_snn",
+        "id": "mqar__lif_snn__seed881105",
+        "learning_rate": 0.003,
+        "seed": 881105,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 376168448,
+      "wall_seconds": 71.22489504799978
+    },
+    {
+      "child_cpu_seconds": 89.48060199999999,
+      "exit_code": 0,
+      "id": "selective_copy__transformer__seed881101",
+      "job": {
+        "arm": "transformer",
+        "id": "selective_copy__transformer__seed881101",
+        "learning_rate": 0.003,
+        "seed": 881101,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 385855488,
+      "wall_seconds": 89.86336565300007
+    },
+    {
+      "child_cpu_seconds": 91.111372,
+      "exit_code": 0,
+      "id": "mqar__transformer__seed881103",
+      "job": {
+        "arm": "transformer",
+        "id": "mqar__transformer__seed881103",
+        "learning_rate": 0.003,
+        "seed": 881103,
+        "stage": "equal_cpu",
+        "task": "mqar",
+        "updates": 96
+      },
+      "maxrss_bytes": 389185536,
+      "wall_seconds": 91.54391071899954
+    },
+    {
+      "child_cpu_seconds": 75.356036,
+      "exit_code": 0,
+      "id": "selective_copy__two_gates__seed881102",
+      "job": {
+        "arm": "two_gates",
+        "id": "selective_copy__two_gates__seed881102",
+        "learning_rate": 0.001,
+        "seed": 881102,
+        "stage": "equal_cpu",
+        "task": "selective_copy",
+        "updates": 96
+      },
+      "maxrss_bytes": 376590336,
+      "wall_seconds": 75.47903608800061
+    }
+  ],
+  "stage": "equal_cpu",
+  "wall_seconds": 1278.1318958350003
+}

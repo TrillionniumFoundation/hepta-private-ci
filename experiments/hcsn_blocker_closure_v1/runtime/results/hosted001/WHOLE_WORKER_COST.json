@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/usr/local/bin/python",
+    "-m",
+    "experiments.hcsn_blocker_closure_v1.runtime.task_runtime",
+    "--output",
+    "/__w/hepta-private-ci/hepta-private-ci/experiments/hcsn_blocker_closure_v1/runtime/results/hosted001",
+    "--binary",
+    "/__w/_temp/hcsn-native-owner"
+  ],
+  "cost_scope": "Exact worker PID wait4; includes Python imports, oracle solve, model initialization, all native children, IPC, persistence, evidence writing, and checks. Excludes this launcher's imports and installation.",
+  "exit_code": 0,
+  "hardware_energy_joules": null,
+  "launcher_cpu_seconds_from_before_spawn": 0.0003061919999999829,
+  "nested_warning": "Native child CPU and worker self CPU are components of the wait4 total; do not add them to it.",
+  "production_authority": false,
+  "rss_scope": "Linux wait4 maximum RSS is a peak statistic, not the sum of concurrent processes or memory traffic.",
+  "schema": "hcsn-task-runtime-whole-worker-cost.v1",
+  "training_performed": false,
+  "wall_seconds": 10.219531186000495,
+  "worker_and_reaped_descendant_cpu_seconds": 6.1872869999999995,
+  "worker_peak_rss_kib": 74296
+}

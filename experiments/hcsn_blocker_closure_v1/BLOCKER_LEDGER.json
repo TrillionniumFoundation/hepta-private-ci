@@ -1,0 +1,144 @@
+{
+  "schema": "hcsn-six-stage-acceptance-ledger.v1",
+  "scientific_decision": "NO_GO",
+  "all_original_requirements_satisfied": false,
+  "claim_policy": "Completed implementation and completed experiments are distinct from satisfied scientific performance requirements. Negative and unavailable outcomes are not relabeled as successful closure.",
+  "stages": [
+    {
+      "order": 1,
+      "requirement": "Unambiguous C/P/F/f/H/K, conditioning, times, firing, reset and refractory contract",
+      "status": "PASS_WITHIN_DECLARED_MODEL",
+      "evidence": [
+        "RESEARCH_MODEL_ZH.md",
+        "audits/first_event002/RESULTS.json"
+      ],
+      "limits": [
+        "Model probability is not established as a content-label posterior.",
+        "Threshold/reset dynamics do not themselves certify a bifurcation or phase transition."
+      ]
+    },
+    {
+      "order": 2,
+      "requirement": "Low-dimensional Bellman/QVI including post-firing value, independently verified solutions and gradients",
+      "status": "PASS_FOR_FINITE_ORACLE",
+      "evidence": [
+        "oracle/results/local003/RESULTS.json",
+        "oracle/results/torch001/RESULTS.json"
+      ],
+      "limits": [
+        "Current content network retains a Brownian/Erlang boundary and finite fixed-policy value surrogate.",
+        "A feasible improvement of at least about 4.6051 percent over the legacy boundary remains preserved.",
+        "Ordinary two-threshold policy ties the exact task oracle on 20 registered task/grid cases."
+      ]
+    },
+    {
+      "order": 3,
+      "requirement": "Joint learning of content, dynamics, boundary, reset and refractory components with interpretable freezes",
+      "status": "JOINT_OPTIMIZATION_IMPLEMENTED_COMPONENT_BENEFIT_NOT_ESTABLISHED",
+      "evidence": [
+        "content/RESULTS_ZH.md",
+        "audits/content_outcome_001.json"
+      ],
+      "limits": [
+        "Freezing the named boundary group freezes raw_K; dynamics can still move the boundary.",
+        "Gradient flow alone does not establish positive task benefit."
+      ],
+      "observed": {
+        "full_parameter_groups_moved": 5,
+        "task_seed_pairs_per_arm": 16,
+        "each_named_freeze_exactly_unchanged": true,
+        "freeze_benefit_gates_passed": 1,
+        "freeze_benefit_gates_total": 5,
+        "sole_pass": "full model versus freeze_content"
+      }
+    },
+    {
+      "order": 4,
+      "requirement": "Isolate value-boundary and dual-channel benefit under matched information, active parameters and complete cost",
+      "status": "FAIL_REGISTERED_MECHANISM_AND_EXTERNAL_NET_BENEFIT",
+      "evidence": [
+        "content/RESULTS_ZH.md",
+        "audits/content_outcome_001.json"
+      ],
+      "limits": [
+        "Four Holm mechanism families are distinct; no unified global family control is claimed.",
+        "Equal optimizer-training CPU is not equal whole-worker or whole-system cost."
+      ],
+      "observed": {
+        "mechanism_gates_passed": 1,
+        "mechanism_gates_total": 14,
+        "boundary_gates_passed": 0,
+        "channel_gates_passed": 0,
+        "interaction_gates_passed": 0,
+        "external_gates_passed": 2,
+        "external_gates_total": 12,
+        "selected_physical_arms": {
+          "selective_copy": "value_g",
+          "mqar": "value_ordinary"
+        },
+        "external_pass_scope": "MQAR ID/OOD versus LIF using ordinary features; no J/G dual-channel attribution"
+      }
+    },
+    {
+      "order": 5,
+      "requirement": "Stable content capability on selective copy, MQAR, temporal extrapolation and real multimodal encoding",
+      "status": "FAIL_GENERAL_BENEFIT",
+      "evidence": [
+        "av/RESULTS_ZH.md",
+        "audits/av_outcome_001.json"
+      ],
+      "observed": {
+        "av_valid_jobs": 90,
+        "av_primary_gates_passed": 1,
+        "av_primary_gates_total": 8,
+        "av_overall_net_benefit": false,
+        "core_valid_jobs": 444,
+        "core_external_gates_passed": 2,
+        "core_external_gates_total": 12
+      },
+      "limits": [
+        "One offline audiovisual domain and 8 heldout actors; no foundation-model capability claim.",
+        "No exhaustive tuning or broad modern strong-baseline coverage."
+      ]
+    },
+    {
+      "order": 6,
+      "requirement": "Actual Hepta messages/state/reset/stop plus tuned hardware, full costs, latency, energy and scale",
+      "status": "PARTIAL_EXECUTION_PASS_HARDWARE_SCALE_UNPROVEN",
+      "evidence": [
+        "execution_binding/RESULTS_ZH.md",
+        "hardware/RESULTS_ZH.md"
+      ],
+      "observed": {
+        "native_processes": 7,
+        "native_binding_passed": true,
+        "persistent_neural_state_bytes": 484,
+        "cpu_cases_complete": 30,
+        "cuda_cases_unavailable": 30,
+        "actual_energy_joules": null,
+        "optimized_gpu_kernel_measured": false,
+        "foundation_model_scale_measured": false
+      },
+      "limits": [
+        "Python/PyTorch computes the neural kernel; native owner enforces real messages and KEEP/STOP.",
+        "Engineering stopping is not demonstrated classification-optimal stopping.",
+        "484 bytes excludes weights, inputs, outputs, temporaries, logs and BPTT graphs.",
+        "Current CPU reference is slower; unavailable CUDA is not evidence that no GPU exists."
+      ]
+    }
+  ],
+  "delivery": {
+    "core_postprocessing_complete": true,
+    "exact_final_head_ci": "TRACKED_ON_SEPARATE_EVIDENCE_BRANCH",
+    "pull_request": 4362,
+    "draft": true,
+    "merge_performed": false,
+    "native_policy": "DENY_ALL",
+    "execution_scope": "SHADOW_ONLY",
+    "summary_audit_complete": true,
+    "raw_prediction_audit_complete": true,
+    "core_permanent_publication_verified": true,
+    "av_permanent_publication_verified": true,
+    "final_ci_evidence_branch": "research/hcsn-final-checks-20261031"
+  }
+}

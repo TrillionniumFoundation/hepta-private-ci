@@ -1,0 +1,52 @@
+{
+  "schema": "hcsn-core-publisher-bounded-observation.v1",
+  "poll": 7,
+  "observed_utc": "2026-10-31T04:22:51.296Z",
+  "run_id": 41156755829,
+  "head_sha": "c9063043d088b6b469e740b9b6f341f3faea3928",
+  "run_status": "completed",
+  "run_conclusion": "success",
+  "publisher": {
+    "id": 124428879276,
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-31T04:21:36Z",
+    "completed_at": "2026-10-31T04:22:42Z",
+    "runner_id": 1000301048,
+    "runner_name": "GitHub Actions 1000301048",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check out the immutable source seal",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Obtain this exact run's evidence",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify all bytes and publish on an isolated evidence branch",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Check out the immutable source seal",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "full_run_completed": true,
+  "mutations": false
+}

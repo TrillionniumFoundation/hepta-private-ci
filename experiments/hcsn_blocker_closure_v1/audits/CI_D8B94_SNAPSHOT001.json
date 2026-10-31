@@ -1,0 +1,32 @@
+{
+  "architecture": "queued",
+  "blob_policy": "success",
+  "blocking_workflow_complete": false,
+  "codespell": "success",
+  "current_observed_failures": [],
+  "head_sha": "d8b94bd750b4c52bd253b81285acc6c4a2dbeacf",
+  "inherited_broad_checks_pending": true,
+  "new_source_or_documentation_failure_found": false,
+  "observed_by_utc": "2026-10-31T03:36:12Z",
+  "raw": [
+    {
+      "bytes": 46686,
+      "file": "experiments/hcsn_blocker_closure_v1/audits/CI_D8B94_SNAPSHOT001_RUNS.json",
+      "sha256": "ccb0c392c9dac9b3e57d70f954f818f1780a621c636213f53504cfb6ca8a596f"
+    },
+    {
+      "bytes": 40854,
+      "file": "experiments/hcsn_blocker_closure_v1/audits/CI_D8B94_SNAPSHOT001_BLOCKING_JOBS.json",
+      "sha256": "fc5629fc8a37e496efe2a3523c0fa16dcaf7f6b8dee7f94dc00a403247780d69"
+    },
+    {
+      "bytes": 2002,
+      "file": "experiments/hcsn_blocker_closure_v1/audits/CI_D8B94_SNAPSHOT001_ARCHITECTURE_JOBS.json",
+      "sha256": "815e398e91c0adc53f41885d910941366f841e54efc51c8d09403a582385e722"
+    }
+  ],
+  "schema": "hcsn-exact-head-ci-status.v1",
+  "scope": "success",
+  "scope_note": "Bounded exact-head metadata only. Broad Rust/Bazel/SDK checks are not edited or retried; aggregate required status is not declared green.",
+  "v8": "success"
+}

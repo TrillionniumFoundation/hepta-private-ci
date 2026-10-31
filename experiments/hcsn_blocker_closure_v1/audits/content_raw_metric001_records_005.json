@@ -1,0 +1,2902 @@
+[
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.3877787807814457e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_margin__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1396484375,
+      "brier": 0.8719158951650633,
+      "correct": 143,
+      "cross_entropy": 2.066391004027011,
+      "ece": 0.008811021787731826,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1396484375,
+      "brier": 0.8719158951650632,
+      "correct": 143,
+      "cross_entropy": 2.066391004027011,
+      "ece": 0.008811021787731965,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 2.220446049250313e-16,
+      "ece": 1.2836953722228372e-16
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_margin__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.353515625,
+      "brier": 0.7549391678918251,
+      "correct": 362,
+      "cross_entropy": 1.6288252488673909,
+      "ece": 0.016569143300299287,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.353515625,
+      "brier": 0.7549391678918252,
+      "correct": 362,
+      "cross_entropy": 1.6288252488673907,
+      "ece": 0.01656914330029916,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 9.020562075079397e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_margin__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3486328125,
+      "brier": 0.7791396209171984,
+      "correct": 357,
+      "cross_entropy": 1.715763128345292,
+      "ece": 0.030932199559778932,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3486328125,
+      "brier": 0.7791396209171984,
+      "correct": 357,
+      "cross_entropy": 1.715763128345292,
+      "ece": 0.030932199559778842,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.2663481374630692e-16
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_margin__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3759765625,
+      "brier": 0.74516662275505,
+      "correct": 385,
+      "cross_entropy": 1.5998977856338796,
+      "ece": 0.014009272101459322,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3759765625,
+      "brier": 0.74516662275505,
+      "correct": 385,
+      "cross_entropy": 1.5998977856338796,
+      "ece": 0.014009272101459195,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_j__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.12109375,
+      "brier": 0.8787489513045876,
+      "correct": 124,
+      "cross_entropy": 2.094299151953466,
+      "ece": 0.03790610225676219,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.12109375,
+      "brier": 0.8787489513045876,
+      "correct": 124,
+      "cross_entropy": 2.094299151953466,
+      "ece": 0.03790610225676222,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_j__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2265625,
+      "brier": 0.8339486492719485,
+      "correct": 232,
+      "cross_entropy": 1.9105780826705987,
+      "ece": 0.05936642586965289,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2265625,
+      "brier": 0.8339486492719485,
+      "correct": 232,
+      "cross_entropy": 1.9105780826705987,
+      "ece": 0.059366425869652864,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 2.220446049250313e-16,
+      "ece": 7.632783294297951e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_j__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2265625,
+      "brier": 0.8450494394631678,
+      "correct": 232,
+      "cross_entropy": 1.9616303439250022,
+      "ece": 0.049933118527127944,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2265625,
+      "brier": 0.8450494394631678,
+      "correct": 232,
+      "cross_entropy": 1.9616303439250025,
+      "ece": 0.04993311852712787,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 4.163336342344337e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_j__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2158203125,
+      "brier": 0.8314526774173955,
+      "correct": 221,
+      "cross_entropy": 1.894658386641347,
+      "ece": 0.05147013354455378,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2158203125,
+      "brier": 0.8314526774173955,
+      "correct": 221,
+      "cross_entropy": 1.894658386641347,
+      "ece": 0.05147013354455374,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.1102230246251565e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_j__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1318359375,
+      "brier": 0.8762229951472011,
+      "correct": 135,
+      "cross_entropy": 2.083975431251077,
+      "ece": 0.017915290409401735,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1318359375,
+      "brier": 0.8762229951472011,
+      "correct": 135,
+      "cross_entropy": 2.083975431251077,
+      "ece": 0.017915290409401624,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.734723475976807e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_j__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.291015625,
+      "brier": 0.8005162295093201,
+      "correct": 298,
+      "cross_entropy": 1.7737598122284801,
+      "ece": 0.012616155008273084,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.291015625,
+      "brier": 0.8005162295093201,
+      "correct": 298,
+      "cross_entropy": 1.7737598122284801,
+      "ece": 0.012616155008273101,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.1510571102112408e-16
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_j__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2841796875,
+      "brier": 0.8134977442080589,
+      "correct": 291,
+      "cross_entropy": 1.8524793363600547,
+      "ece": 0.025906516244355943,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2841796875,
+      "brier": 0.8134977442080589,
+      "correct": 291,
+      "cross_entropy": 1.8524793363600547,
+      "ece": 0.025906516244356158,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.1102230246251565e-16
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_j__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3359375,
+      "brier": 0.7887021957939562,
+      "correct": 344,
+      "cross_entropy": 1.7615342763927067,
+      "ece": 0.05238935395176893,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3359375,
+      "brier": 0.7887021957939562,
+      "correct": 344,
+      "cross_entropy": 1.7615342763927067,
+      "ece": 0.052389353951768816,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 8.326672684688674e-17
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_j__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1435546875,
+      "brier": 0.8705048947725968,
+      "correct": 147,
+      "cross_entropy": 2.05918523743839,
+      "ece": 0.011285817346416954,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1435546875,
+      "brier": 0.8705048947725967,
+      "correct": 147,
+      "cross_entropy": 2.05918523743839,
+      "ece": 0.011285817346416871,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 4.5102810375396984e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_j__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3203125,
+      "brier": 0.7913375881270281,
+      "correct": 328,
+      "cross_entropy": 1.7520756440303027,
+      "ece": 0.022504248663033792,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3203125,
+      "brier": 0.7913375881270281,
+      "correct": 328,
+      "cross_entropy": 1.7520756440303027,
+      "ece": 0.022504248663033747,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 4.163336342344337e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_j__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3076171875,
+      "brier": 0.7995532512179628,
+      "correct": 315,
+      "cross_entropy": 1.786953968409213,
+      "ece": 0.027762865989563103,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3076171875,
+      "brier": 0.7995532512179628,
+      "correct": 315,
+      "cross_entropy": 1.786953968409213,
+      "ece": 0.02776286598956306,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 7.979727989493313e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_j__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3291015625,
+      "brier": 0.7813065397354277,
+      "correct": 337,
+      "cross_entropy": 1.7249312028788761,
+      "ece": 0.022785907661549375,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3291015625,
+      "brier": 0.7813065397354277,
+      "correct": 337,
+      "cross_entropy": 1.7249312028788761,
+      "ece": 0.022785907661549296,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_j__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2373046875,
+      "brier": 0.8469163641439896,
+      "correct": 243,
+      "cross_entropy": 1.9656727369554186,
+      "ece": 0.057698424638381596,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2373046875,
+      "brier": 0.8469163641439896,
+      "correct": 243,
+      "cross_entropy": 1.9656727369554186,
+      "ece": 0.05769842463838165,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.469446951953614e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_j__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3291015625,
+      "brier": 0.7706455278036748,
+      "correct": 337,
+      "cross_entropy": 1.665090661551222,
+      "ece": 0.01826811832401467,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3291015625,
+      "brier": 0.7706455278036748,
+      "correct": 337,
+      "cross_entropy": 1.665090661551222,
+      "ece": 0.018268118324014634,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.1796119636642288e-16
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_j__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.33203125,
+      "brier": 0.7906066644034658,
+      "correct": 340,
+      "cross_entropy": 1.7755099128963732,
+      "ece": 0.02555185725312716,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.33203125,
+      "brier": 0.7906066644034658,
+      "correct": 340,
+      "cross_entropy": 1.7755099128963732,
+      "ece": 0.02555185725312704,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.8735013540549517e-16
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_j__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3505859375,
+      "brier": 0.7636741459544323,
+      "correct": 359,
+      "cross_entropy": 1.6507323580721445,
+      "ece": 0.019975565354198217,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3505859375,
+      "brier": 0.7636741459544323,
+      "correct": 359,
+      "cross_entropy": 1.6507323580721445,
+      "ece": 0.019975565354198404,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.6653345369377348e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_j__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1484375,
+      "brier": 0.874390937982957,
+      "correct": 152,
+      "cross_entropy": 2.0772340544941668,
+      "ece": 0.005518826813904809,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1484375,
+      "brier": 0.874390937982957,
+      "correct": 152,
+      "cross_entropy": 2.0772340544941668,
+      "ece": 0.005518826813904976,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 2.220446049250313e-16,
+      "ece": 3.8163916471489756e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_j__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3369140625,
+      "brier": 0.7870833965774771,
+      "correct": 345,
+      "cross_entropy": 1.7468668903521445,
+      "ece": 0.029130761709796275,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3369140625,
+      "brier": 0.7870833965774771,
+      "correct": 345,
+      "cross_entropy": 1.7468668903521447,
+      "ece": 0.029130761709796314,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.122502256758253e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_j__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3203125,
+      "brier": 0.7984896347704786,
+      "correct": 328,
+      "cross_entropy": 1.8026722108176279,
+      "ece": 0.024752571482307237,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3203125,
+      "brier": 0.7984896347704786,
+      "correct": 328,
+      "cross_entropy": 1.8026722108176279,
+      "ece": 0.024752571482307268,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.469446951953614e-18
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_j__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.333984375,
+      "brier": 0.7795715627844683,
+      "correct": 342,
+      "cross_entropy": 1.7258135655774938,
+      "ece": 0.022238536246875263,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.333984375,
+      "brier": 0.7795715627844683,
+      "correct": 342,
+      "cross_entropy": 1.7258135655774938,
+      "ece": 0.022238536246875266,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 8.326672684688674e-17
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_j__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1865234375,
+      "brier": 0.8679113013401782,
+      "correct": 191,
+      "cross_entropy": 2.0527075395355565,
+      "ece": 0.033300204180077425,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1865234375,
+      "brier": 0.8679113013401782,
+      "correct": 191,
+      "cross_entropy": 2.0527075395355565,
+      "ece": 0.03330020418007734,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.3877787807814457e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_j__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3037109375,
+      "brier": 0.7844690155092112,
+      "correct": 311,
+      "cross_entropy": 1.715415855055686,
+      "ece": 0.02235201924097295,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3037109375,
+      "brier": 0.7844690155092112,
+      "correct": 311,
+      "cross_entropy": 1.715415855055686,
+      "ece": 0.022352019240972937,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.6653345369377348e-16
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_j__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.291015625,
+      "brier": 0.8153197860633656,
+      "correct": 298,
+      "cross_entropy": 1.8770917976848986,
+      "ece": 0.019971568130612932,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.291015625,
+      "brier": 0.8153197860633657,
+      "correct": 298,
+      "cross_entropy": 1.8770917976848986,
+      "ece": 0.019971568130612766,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 4.5102810375396984e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_j__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3427734375,
+      "brier": 0.7792096830836228,
+      "correct": 351,
+      "cross_entropy": 1.715876138488974,
+      "ece": 0.01784452468790904,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3427734375,
+      "brier": 0.7792096830836229,
+      "correct": 351,
+      "cross_entropy": 1.715876138488974,
+      "ece": 0.017844524687908994,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_j__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.125,
+      "brier": 0.8738599376324685,
+      "correct": 128,
+      "cross_entropy": 2.0743833464260377,
+      "ece": 0.03235746138645387,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.125,
+      "brier": 0.8738599376324685,
+      "correct": 128,
+      "cross_entropy": 2.0743833464260377,
+      "ece": 0.0323574613864539,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.938893903907228e-18
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_j__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.302734375,
+      "brier": 0.8095654423404957,
+      "correct": 310,
+      "cross_entropy": 1.817945352353452,
+      "ece": 0.03510403203754346,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.302734375,
+      "brier": 0.8095654423404957,
+      "correct": 310,
+      "cross_entropy": 1.817945352353452,
+      "ece": 0.035104032037543455,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 7.28583859910259e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_j__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2724609375,
+      "brier": 0.8182272430261104,
+      "correct": 279,
+      "cross_entropy": 1.8570204482892554,
+      "ece": 0.014086986039559685,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2724609375,
+      "brier": 0.8182272430261104,
+      "correct": 279,
+      "cross_entropy": 1.8570204482892554,
+      "ece": 0.014086986039559612,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.734723475976807e-16
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_j__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.31640625,
+      "brier": 0.7986004307766362,
+      "correct": 324,
+      "cross_entropy": 1.796795134078232,
+      "ece": 0.03506830042239758,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.31640625,
+      "brier": 0.7986004307766363,
+      "correct": 324,
+      "cross_entropy": 1.796795134078232,
+      "ece": 0.035068300422397405,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_j__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.142578125,
+      "brier": 0.8718856272988209,
+      "correct": 146,
+      "cross_entropy": 2.066469119901778,
+      "ece": 0.005862887249305365,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.142578125,
+      "brier": 0.8718856272988208,
+      "correct": 146,
+      "cross_entropy": 2.066469119901778,
+      "ece": 0.0058628872493053374,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 4.85722573273506e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_j__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.35546875,
+      "brier": 0.7557371979768699,
+      "correct": 364,
+      "cross_entropy": 1.6235410056997148,
+      "ece": 0.025310178706158388,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.35546875,
+      "brier": 0.7557371979768699,
+      "correct": 364,
+      "cross_entropy": 1.6235410056997148,
+      "ece": 0.025310178706158436,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.3877787807814457e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_j__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3486328125,
+      "brier": 0.7796723906977989,
+      "correct": 357,
+      "cross_entropy": 1.7204558246321169,
+      "ece": 0.03838460807172452,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3486328125,
+      "brier": 0.7796723906977989,
+      "correct": 357,
+      "cross_entropy": 1.7204558246321169,
+      "ece": 0.03838460807172454,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.8163916471489756e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_j__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3701171875,
+      "brier": 0.7451334050198679,
+      "correct": 379,
+      "cross_entropy": 1.595812736916576,
+      "ece": 0.020634954111729525,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3701171875,
+      "brier": 0.7451334050198679,
+      "correct": 379,
+      "cross_entropy": 1.595812736916576,
+      "ece": 0.020634954111729564,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.1102230246251565e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_g__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1220703125,
+      "brier": 0.8785573430018594,
+      "correct": 125,
+      "cross_entropy": 2.093487420213842,
+      "ece": 0.036885189361793996,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1220703125,
+      "brier": 0.8785573430018593,
+      "correct": 125,
+      "cross_entropy": 2.093487420213842,
+      "ece": 0.036885189361793885,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 0.0
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_g__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2470703125,
+      "brier": 0.8241262628474969,
+      "correct": 253,
+      "cross_entropy": 1.8753269500039003,
+      "ece": 0.05802572725782209,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2470703125,
+      "brier": 0.8241262628474969,
+      "correct": 253,
+      "cross_entropy": 1.8753269500039003,
+      "ece": 0.05802572725782209,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 9.020562075079397e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_g__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.255859375,
+      "brier": 0.8352481765784014,
+      "correct": 262,
+      "cross_entropy": 1.9320299032897619,
+      "ece": 0.032651450187837466,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.255859375,
+      "brier": 0.8352481765784013,
+      "correct": 262,
+      "cross_entropy": 1.9320299032897619,
+      "ece": 0.03265145018783756,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.469446951953614e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_g__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.248046875,
+      "brier": 0.8235513173519177,
+      "correct": 254,
+      "cross_entropy": 1.8694707860850184,
+      "ece": 0.03441169586624514,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.248046875,
+      "brier": 0.8235513173519177,
+      "correct": 254,
+      "cross_entropy": 1.8694707860850184,
+      "ece": 0.0344116958662451,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_g__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1337890625,
+      "brier": 0.8759377101568268,
+      "correct": 137,
+      "cross_entropy": 2.082782739659387,
+      "ece": 0.01582352637830786,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1337890625,
+      "brier": 0.8759377101568268,
+      "correct": 137,
+      "cross_entropy": 2.082782739659387,
+      "ece": 0.015823526378307806,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 9.367506770274758e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_g__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2880859375,
+      "brier": 0.7998424628732962,
+      "correct": 295,
+      "cross_entropy": 1.7722344596432222,
+      "ece": 0.012610604849245196,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2880859375,
+      "brier": 0.7998424628732962,
+      "correct": 295,
+      "cross_entropy": 1.7722344596432222,
+      "ece": 0.012610604849245102,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.0816681711721685e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_g__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2802734375,
+      "brier": 0.8112825104010987,
+      "correct": 287,
+      "cross_entropy": 1.8440493943355434,
+      "ece": 0.02260599325946052,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2802734375,
+      "brier": 0.8112825104010987,
+      "correct": 287,
+      "cross_entropy": 1.8440493943355434,
+      "ece": 0.02260599325946054,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 2.0816681711721685e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_g__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.337890625,
+      "brier": 0.7882330999546107,
+      "correct": 346,
+      "cross_entropy": 1.7611828767174578,
+      "ece": 0.037214983645065015,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.337890625,
+      "brier": 0.7882330999546105,
+      "correct": 346,
+      "cross_entropy": 1.7611828767174578,
+      "ece": 0.037214983645064995,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_g__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1298828125,
+      "brier": 0.871337241405224,
+      "correct": 133,
+      "cross_entropy": 2.062315617445293,
+      "ece": 0.025161937207448193,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1298828125,
+      "brier": 0.8713372414052238,
+      "correct": 133,
+      "cross_entropy": 2.062315617445293,
+      "ece": 0.02516193720744822,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 8.673617379884035e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_g__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3232421875,
+      "brier": 0.7867485058604491,
+      "correct": 331,
+      "cross_entropy": 1.7366874777540229,
+      "ece": 0.023499343651398212,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3232421875,
+      "brier": 0.7867485058604491,
+      "correct": 331,
+      "cross_entropy": 1.7366874777540229,
+      "ece": 0.023499343651398125,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.938893903907228e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_g__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3173828125,
+      "brier": 0.7898970923497346,
+      "correct": 325,
+      "cross_entropy": 1.7533318966867824,
+      "ece": 0.022313295731638285,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3173828125,
+      "brier": 0.7898970923497346,
+      "correct": 325,
+      "cross_entropy": 1.7533318966867824,
+      "ece": 0.022313295731638216,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 8.326672684688674e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_g__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.33203125,
+      "brier": 0.7755238409970142,
+      "correct": 340,
+      "cross_entropy": 1.7047279986553616,
+      "ece": 0.016705010306305862,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.33203125,
+      "brier": 0.7755238409970141,
+      "correct": 340,
+      "cross_entropy": 1.7047279986553616,
+      "ece": 0.01670501030630578,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 9.020562075079397e-17
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_g__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2314453125,
+      "brier": 0.8487599604393874,
+      "correct": 237,
+      "cross_entropy": 1.972278695042455,
+      "ece": 0.05387088303903247,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2314453125,
+      "brier": 0.8487599604393874,
+      "correct": 237,
+      "cross_entropy": 1.972278695042455,
+      "ece": 0.05387088303903238,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.3877787807814457e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_g__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.328125,
+      "brier": 0.7666943724863433,
+      "correct": 336,
+      "cross_entropy": 1.6454954391109506,
+      "ece": 0.028033114373140936,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.328125,
+      "brier": 0.7666943724863433,
+      "correct": 336,
+      "cross_entropy": 1.6454954391109506,
+      "ece": 0.028033114373140922,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_g__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.330078125,
+      "brier": 0.7884592752793376,
+      "correct": 338,
+      "cross_entropy": 1.757022032382362,
+      "ece": 0.037714730497200144,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.330078125,
+      "brier": 0.7884592752793376,
+      "correct": 338,
+      "cross_entropy": 1.757022032382362,
+      "ece": 0.03771473049720017,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.8163916471489756e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_g__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.349609375,
+      "brier": 0.7588687902416634,
+      "correct": 358,
+      "cross_entropy": 1.630055527540597,
+      "ece": 0.020937407905010853,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.349609375,
+      "brier": 0.7588687902416634,
+      "correct": 358,
+      "cross_entropy": 1.630055527540597,
+      "ece": 0.020937407905010814,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 4.440892098500626e-16,
+      "ece": 1.942890293094024e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_g__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1552734375,
+      "brier": 0.8734718521054146,
+      "correct": 159,
+      "cross_entropy": 2.0736731360888028,
+      "ece": 0.0014856517317854978,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1552734375,
+      "brier": 0.8734718521054144,
+      "correct": 159,
+      "cross_entropy": 2.073673136088803,
+      "ece": 0.0014856517317853035,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 4.85722573273506e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_g__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3388671875,
+      "brier": 0.7802023091309868,
+      "correct": 347,
+      "cross_entropy": 1.7233433696672011,
+      "ece": 0.025584961780027553,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3388671875,
+      "brier": 0.7802023091309868,
+      "correct": 347,
+      "cross_entropy": 1.7233433696672011,
+      "ece": 0.025584961780027504,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.898059818321144e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_g__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3251953125,
+      "brier": 0.7952225392616781,
+      "correct": 333,
+      "cross_entropy": 1.7942753670112814,
+      "ece": 0.022985812698347003,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3251953125,
+      "brier": 0.7952225392616781,
+      "correct": 333,
+      "cross_entropy": 1.7942753670112814,
+      "ece": 0.022985812698346944,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.938893903907228e-18
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_g__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3388671875,
+      "brier": 0.7731006024061753,
+      "correct": 347,
+      "cross_entropy": 1.7053811134092245,
+      "ece": 0.0200092622423265,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3388671875,
+      "brier": 0.7731006024061753,
+      "correct": 347,
+      "cross_entropy": 1.7053811134092245,
+      "ece": 0.020009262242326506,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.1102230246251565e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_g__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.169921875,
+      "brier": 0.8701095644703467,
+      "correct": 174,
+      "cross_entropy": 2.060646303122453,
+      "ece": 0.021327306519631578,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.169921875,
+      "brier": 0.8701095644703466,
+      "correct": 174,
+      "cross_entropy": 2.060646303122453,
+      "ece": 0.021327306519631467,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 2.220446049250313e-16,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_g__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3076171875,
+      "brier": 0.7811148018466352,
+      "correct": 315,
+      "cross_entropy": 1.70516582731378,
+      "ece": 0.018847178924306058,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3076171875,
+      "brier": 0.7811148018466352,
+      "correct": 315,
+      "cross_entropy": 1.7051658273137802,
+      "ece": 0.018847178924306086,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.0755285551056204e-16
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_g__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.310546875,
+      "brier": 0.8010589519443778,
+      "correct": 318,
+      "cross_entropy": 1.8138403846518294,
+      "ece": 0.013092051298113904,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.310546875,
+      "brier": 0.8010589519443778,
+      "correct": 318,
+      "cross_entropy": 1.8138403846518294,
+      "ece": 0.013092051298113796,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 7.632783294297951e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_g__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.328125,
+      "brier": 0.7771527925508528,
+      "correct": 336,
+      "cross_entropy": 1.7058932992707614,
+      "ece": 0.008824718371769475,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.328125,
+      "brier": 0.7771527925508528,
+      "correct": 336,
+      "cross_entropy": 1.7058932992707614,
+      "ece": 0.008824718371769551,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 4.440892098500626e-16,
+      "ece": 1.1102230246251565e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_g__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.126953125,
+      "brier": 0.874067977493302,
+      "correct": 130,
+      "cross_entropy": 2.0753814276777884,
+      "ece": 0.030210993951779175,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.126953125,
+      "brier": 0.874067977493302,
+      "correct": 130,
+      "cross_entropy": 2.075381427677789,
+      "ece": 0.030210993951779064,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.6653345369377348e-16
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_g__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3017578125,
+      "brier": 0.8076986211618841,
+      "correct": 309,
+      "cross_entropy": 1.8126991481882677,
+      "ece": 0.026912164506224082,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3017578125,
+      "brier": 0.8076986211618842,
+      "correct": 309,
+      "cross_entropy": 1.8126991481882677,
+      "ece": 0.026912164506223916,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 4.163336342344337e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_g__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.279296875,
+      "brier": 0.8181295800574755,
+      "correct": 286,
+      "cross_entropy": 1.8581303900159316,
+      "ece": 0.020765752753388485,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.279296875,
+      "brier": 0.8181295800574755,
+      "correct": 286,
+      "cross_entropy": 1.8581303900159316,
+      "ece": 0.020765752753388444,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 9.71445146547012e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_g__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3232421875,
+      "brier": 0.7972330671395549,
+      "correct": 331,
+      "cross_entropy": 1.792621645973619,
+      "ece": 0.04095991704343167,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3232421875,
+      "brier": 0.7972330671395549,
+      "correct": 331,
+      "cross_entropy": 1.792621645973619,
+      "ece": 0.04095991704343177,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.6653345369377348e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_g__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.140625,
+      "brier": 0.8719895068620802,
+      "correct": 144,
+      "cross_entropy": 2.0669089701930186,
+      "ece": 0.007449766801751523,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.140625,
+      "brier": 0.8719895068620802,
+      "correct": 144,
+      "cross_entropy": 2.0669089701930186,
+      "ece": 0.007449766801751689,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.5265566588595902e-16
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_g__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3544921875,
+      "brier": 0.7572566765753908,
+      "correct": 363,
+      "cross_entropy": 1.6259728038477568,
+      "ece": 0.020407092033027492,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3544921875,
+      "brier": 0.7572566765753908,
+      "correct": 363,
+      "cross_entropy": 1.6259728038477568,
+      "ece": 0.02040709203302734,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.245004513516506e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_g__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.35546875,
+      "brier": 0.7764079916666475,
+      "correct": 364,
+      "cross_entropy": 1.7138847236580381,
+      "ece": 0.03770497118155021,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.35546875,
+      "brier": 0.7764079916666475,
+      "correct": 364,
+      "cross_entropy": 1.7138847236580381,
+      "ece": 0.03770497118155027,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.204170427930421e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_g__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.373046875,
+      "brier": 0.74580560684886,
+      "correct": 382,
+      "cross_entropy": 1.5964319814583852,
+      "ece": 0.01735929471347424,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.373046875,
+      "brier": 0.74580560684886,
+      "correct": 382,
+      "cross_entropy": 1.5964319814583852,
+      "ece": 0.017359294713474187,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_fh__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1220703125,
+      "brier": 0.8786888064777201,
+      "correct": 125,
+      "cross_entropy": 2.09404970762455,
+      "ece": 0.03695863881218192,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1220703125,
+      "brier": 0.87868880647772,
+      "correct": 125,
+      "cross_entropy": 2.09404970762455,
+      "ece": 0.036958638812181976,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 2.0816681711721685e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_fh__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.23828125,
+      "brier": 0.8298299799263288,
+      "correct": 244,
+      "cross_entropy": 1.8969165348496235,
+      "ece": 0.057020152263171094,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.23828125,
+      "brier": 0.8298299799263287,
+      "correct": 244,
+      "cross_entropy": 1.8969165348496235,
+      "ece": 0.057020152263171114,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_fh__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2392578125,
+      "brier": 0.8409736170695428,
+      "correct": 245,
+      "cross_entropy": 1.9505187437663838,
+      "ece": 0.05086804280664782,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2392578125,
+      "brier": 0.8409736170695428,
+      "correct": 245,
+      "cross_entropy": 1.9505187437663838,
+      "ece": 0.050868042806647876,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_fh__seed881101",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2392578125,
+      "brier": 0.828264990468242,
+      "correct": 245,
+      "cross_entropy": 1.8859740738784252,
+      "ece": 0.05271735321137864,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2392578125,
+      "brier": 0.828264990468242,
+      "correct": 245,
+      "cross_entropy": 1.8859740738784252,
+      "ece": 0.052717353211378694,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.1102230246251565e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_fh__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1337890625,
+      "brier": 0.8762130948225839,
+      "correct": 137,
+      "cross_entropy": 2.083951076578757,
+      "ece": 0.015877889148327606,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1337890625,
+      "brier": 0.8762130948225839,
+      "correct": 137,
+      "cross_entropy": 2.083951076578757,
+      "ece": 0.015877889148327495,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 6.245004513516506e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_fh__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.302734375,
+      "brier": 0.8012648769455939,
+      "correct": 310,
+      "cross_entropy": 1.7758382278295644,
+      "ece": 0.03135342733081382,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.302734375,
+      "brier": 0.8012648769455939,
+      "correct": 310,
+      "cross_entropy": 1.7758382278295644,
+      "ece": 0.03135342733081388,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.1102230246251565e-16
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_fh__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2900390625,
+      "brier": 0.8142141979259797,
+      "correct": 297,
+      "cross_entropy": 1.8565134382034278,
+      "ece": 0.027656475737182093,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2900390625,
+      "brier": 0.8142141979259796,
+      "correct": 297,
+      "cross_entropy": 1.8565134382034278,
+      "ece": 0.027656475737181982,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 8.326672684688674e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_fh__seed881102",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3408203125,
+      "brier": 0.7893026320368961,
+      "correct": 349,
+      "cross_entropy": 1.7634987352240832,
+      "ece": 0.05265260036177288,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3408203125,
+      "brier": 0.7893026320368961,
+      "correct": 349,
+      "cross_entropy": 1.7634987352240832,
+      "ece": 0.0526526003617728,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.3877787807814457e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_fh__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1435546875,
+      "brier": 0.8704696202646818,
+      "correct": 147,
+      "cross_entropy": 2.0590351633333874,
+      "ece": 0.011163735011859993,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1435546875,
+      "brier": 0.8704696202646818,
+      "correct": 147,
+      "cross_entropy": 2.0590351633333874,
+      "ece": 0.011163735011860132,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.0878077872387166e-16
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_fh__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3251953125,
+      "brier": 0.791735537427591,
+      "correct": 333,
+      "cross_entropy": 1.7533600308375705,
+      "ece": 0.030633683881888262,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3251953125,
+      "brier": 0.791735537427591,
+      "correct": 333,
+      "cross_entropy": 1.7533600308375705,
+      "ece": 0.03063368388188857,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 9.367506770274758e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_fh__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.306640625,
+      "brier": 0.7985563019640135,
+      "correct": 314,
+      "cross_entropy": 1.7837855178930966,
+      "ece": 0.027730830668931894,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.306640625,
+      "brier": 0.7985563019640135,
+      "correct": 314,
+      "cross_entropy": 1.7837855178930966,
+      "ece": 0.0277308306689318,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.3877787807814457e-16
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_fh__seed881103",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3251953125,
+      "brier": 0.7816695582726004,
+      "correct": 333,
+      "cross_entropy": 1.7262762829369263,
+      "ece": 0.017016635272693377,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3251953125,
+      "brier": 0.7816695582726004,
+      "correct": 333,
+      "cross_entropy": 1.7262762829369263,
+      "ece": 0.017016635272693238,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 2.220446049250313e-16,
+      "ece": 1.734723475976807e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_fh__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.234375,
+      "brier": 0.8476435402108463,
+      "correct": 240,
+      "cross_entropy": 1.9682035942166165,
+      "ece": 0.05599826931975893,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.234375,
+      "brier": 0.8476435402108462,
+      "correct": 240,
+      "cross_entropy": 1.9682035942166163,
+      "ece": 0.055998269319759104,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.8163916471489756e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_fh__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.326171875,
+      "brier": 0.7738660881447226,
+      "correct": 334,
+      "cross_entropy": 1.6718376730632047,
+      "ece": 0.019390031135621294,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.326171875,
+      "brier": 0.7738660881447226,
+      "correct": 334,
+      "cross_entropy": 1.6718376730632047,
+      "ece": 0.019390031135621256,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.6653345369377348e-16
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_fh__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.330078125,
+      "brier": 0.7941500405167238,
+      "correct": 338,
+      "cross_entropy": 1.7831034786798734,
+      "ece": 0.0348804104277241,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.330078125,
+      "brier": 0.7941500405167238,
+      "correct": 338,
+      "cross_entropy": 1.7831034786798734,
+      "ece": 0.034880410427724266,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 1.3877787807814457e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_fh__seed881104",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.34765625,
+      "brier": 0.7655519559207302,
+      "correct": 356,
+      "cross_entropy": 1.6566281539842045,
+      "ece": 0.025800085833181666,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.34765625,
+      "brier": 0.7655519559207303,
+      "correct": 356,
+      "cross_entropy": 1.6566281539842045,
+      "ece": 0.02580008583318168,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.3877787807814457e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_fh__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1494140625,
+      "brier": 0.8743259660979866,
+      "correct": 153,
+      "cross_entropy": 2.0769896707416606,
+      "ece": 0.004445139809166693,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1494140625,
+      "brier": 0.8743259660979866,
+      "correct": 153,
+      "cross_entropy": 2.0769896707416606,
+      "ece": 0.004445139809166554,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 2.220446049250313e-16,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_fh__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.33203125,
+      "brier": 0.7873657195506991,
+      "correct": 340,
+      "cross_entropy": 1.7478152993247562,
+      "ece": 0.025566236817223652,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.33203125,
+      "brier": 0.7873657195506991,
+      "correct": 340,
+      "cross_entropy": 1.747815299324756,
+      "ece": 0.025566236817223597,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 7.28583859910259e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_fh__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.31640625,
+      "brier": 0.798983141873624,
+      "correct": 324,
+      "cross_entropy": 1.8040808474165195,
+      "ece": 0.024082076081023036,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.31640625,
+      "brier": 0.798983141873624,
+      "correct": 324,
+      "cross_entropy": 1.8040808474165195,
+      "ece": 0.024082076081022964,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.3183898417423734e-16
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_fh__seed881105",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3359375,
+      "brier": 0.7795792528218972,
+      "correct": 344,
+      "cross_entropy": 1.7257487710429327,
+      "ece": 0.023937001513290285,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3359375,
+      "brier": 0.7795792528218972,
+      "correct": 344,
+      "cross_entropy": 1.7257487710429327,
+      "ece": 0.023937001513290153,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 0.0
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_fh__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1787109375,
+      "brier": 0.869178623999256,
+      "correct": 183,
+      "cross_entropy": 2.0573283527356523,
+      "ece": 0.02792994662638515,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1787109375,
+      "brier": 0.8691786239992559,
+      "correct": 183,
+      "cross_entropy": 2.0573283527356523,
+      "ece": 0.02792994662638515,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 2.220446049250313e-16,
+      "ece": 1.5265566588595902e-16
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_fh__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.30078125,
+      "brier": 0.7844925573622807,
+      "correct": 308,
+      "cross_entropy": 1.7178439227716686,
+      "ece": 0.024956281004701913,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.30078125,
+      "brier": 0.7844925573622807,
+      "correct": 308,
+      "cross_entropy": 1.7178439227716689,
+      "ece": 0.024956281004702065,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 2.220446049250313e-16,
+      "cross_entropy": 0.0,
+      "ece": 0.0
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_fh__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2880859375,
+      "brier": 0.811543918141179,
+      "correct": 295,
+      "cross_entropy": 1.866062674933541,
+      "ece": 0.027941636866684192,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2880859375,
+      "brier": 0.8115439181411788,
+      "correct": 295,
+      "cross_entropy": 1.866062674933541,
+      "ece": 0.027941636866684192,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 1.1102230246251565e-16,
+      "cross_entropy": 0.0,
+      "ece": 2.42861286636753e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_fh__seed881106",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3388671875,
+      "brier": 0.7790929335544748,
+      "correct": 347,
+      "cross_entropy": 1.7173831081383477,
+      "ece": 0.012607468722548313,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3388671875,
+      "brier": 0.7790929335544747,
+      "correct": 347,
+      "cross_entropy": 1.7173831081383477,
+      "ece": 0.012607468722548337,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.6653345369377348e-16
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_fh__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1279296875,
+      "brier": 0.8740802620407654,
+      "correct": 131,
+      "cross_entropy": 2.07532039509908,
+      "ece": 0.029444256302559618,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1279296875,
+      "brier": 0.8740802620407654,
+      "correct": 131,
+      "cross_entropy": 2.07532039509908,
+      "ece": 0.02944425630255945,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 7.979727989493313e-17
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_fh__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3037109375,
+      "brier": 0.8099238914681328,
+      "correct": 311,
+      "cross_entropy": 1.8184528505237751,
+      "ece": 0.0294576631843775,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3037109375,
+      "brier": 0.8099238914681328,
+      "correct": 311,
+      "cross_entropy": 1.8184528505237751,
+      "ece": 0.02945766318437742,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.949029909160572e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_fh__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.2685546875,
+      "brier": 0.8195010244083256,
+      "correct": 275,
+      "cross_entropy": 1.8604897328038348,
+      "ece": 0.013181091768958616,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.2685546875,
+      "brier": 0.8195010244083256,
+      "correct": 275,
+      "cross_entropy": 1.8604897328038348,
+      "ece": 0.013181091768958587,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 2.220446049250313e-16,
+      "ece": 1.5959455978986625e-16
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_fh__seed881107",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.318359375,
+      "brier": 0.7987808143235575,
+      "correct": 326,
+      "cross_entropy": 1.7970250483311696,
+      "ece": 0.033693874243578836,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.318359375,
+      "brier": 0.7987808143235575,
+      "correct": 326,
+      "cross_entropy": 1.7970250483311694,
+      "ece": 0.033693874243578996,
+      "positions": 1024
+    },
+    "split": "test"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 5.551115123125783e-17
+    },
+    "file": "validation_000048.npz",
+    "job": "fixed/selective_copy__value_fh__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.1416015625,
+      "brier": 0.8718466583673661,
+      "correct": 145,
+      "cross_entropy": 2.066319432592719,
+      "ece": 0.0066560651031856155,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.1416015625,
+      "brier": 0.8718466583673661,
+      "correct": 145,
+      "cross_entropy": 2.066319432592719,
+      "ece": 0.006656065103185671,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 3.469446951953614e-18
+    },
+    "file": "validation_000096.npz",
+    "job": "fixed/selective_copy__value_fh__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.361328125,
+      "brier": 0.7568083687306926,
+      "correct": 370,
+      "cross_entropy": 1.6276022568637214,
+      "ece": 0.02746907895016426,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.361328125,
+      "brier": 0.7568083687306926,
+      "correct": 370,
+      "cross_entropy": 1.6276022568637214,
+      "ece": 0.027469078950164257,
+      "positions": 1024
+    },
+    "split": "val"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 2.7755575615628914e-17
+    },
+    "file": "ood.npz",
+    "job": "fixed/selective_copy__value_fh__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.3486328125,
+      "brier": 0.7792292150739621,
+      "correct": 357,
+      "cross_entropy": 1.720431229030734,
+      "ece": 0.03679243593229312,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.3486328125,
+      "brier": 0.7792292150739621,
+      "correct": 357,
+      "cross_entropy": 1.720431229030734,
+      "ece": 0.03679243593229315,
+      "positions": 1024
+    },
+    "split": "ood"
+  },
+  {
+    "absolute_errors": {
+      "accuracy": 0.0,
+      "brier": 0.0,
+      "cross_entropy": 0.0,
+      "ece": 1.5612511283791264e-17
+    },
+    "file": "test.npz",
+    "job": "fixed/selective_copy__value_fh__seed881108",
+    "labels_equal_registered": true,
+    "passed": true,
+    "recomputed": {
+      "accuracy": 0.373046875,
+      "brier": 0.746122489919705,
+      "correct": 382,
+      "cross_entropy": 1.5991366086648948,
+      "ece": 0.015190167813166134,
+      "positions": 1024
+    },
+    "reported": {
+      "accuracy": 0.373046875,
+      "brier": 0.746122489919705,
+      "correct": 382,
+      "cross_entropy": 1.5991366086648948,
+      "ece": 0.015190167813166119,
+      "positions": 1024
+    },
+    "split": "test"
+  }
+]

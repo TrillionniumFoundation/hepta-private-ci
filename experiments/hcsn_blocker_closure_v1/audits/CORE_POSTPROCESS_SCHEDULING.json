@@ -1,0 +1,16 @@
+{
+  "schema": "hcsn-independent-postprocessing-scheduling.v1",
+  "utc": "2026-10-31T04:14:24.458002+00:00",
+  "completed_experiment_job": 124405134658,
+  "experiment_completion": "2026-10-31T03:27:26Z",
+  "publication_job": 124428879276,
+  "publication_status_at_summary_audit": "queued",
+  "decision": "Run the originally sealed content_outcome_audit, whose input contract accepts completed worker summaries and has no full-run status parameter, while publication is queued. Keep the distinct raw-metric replayer unchanged and wait for its required completed-run receipt.",
+  "summary_auditor_sha256": "4a9bc9c0dfbd4d3c23e7351b2ba6d9e310e732fcf22cb04e5b2c14bb05a8552b",
+  "raw_replayer_sha256": "110896c16ff84e084d8dd37e6f17804c3c93af0331be9fb5590b7da917336ef6",
+  "scientific_thresholds_changed": false,
+  "training_selection_changed": false,
+  "recovery_all_members_verified": 8567,
+  "raw_prediction_replay_ran": false,
+  "native_binding_and_cpu_probe_completed_before_quality_summary_access": true
+}
