@@ -98,6 +98,47 @@ def global_integrity(study, protocol):
                 execution_sha256=digest(study/"execution.json"), execution=execution)
 
 
+def frontend_account(study, protocol):
+    """One shared from-zero AV rebuild, separately metered from every model job."""
+    directory = Path(study).parent/"frontend_cost001"
+    if not (directory/"IDENTITY_AND_COST.json").is_file():
+        return dict(available=False, errors=["Separate frontend receipt unavailable"])
+    identity = read_json(directory/"IDENTITY_AND_COST.json")
+    meter = read_json(directory/"whole_process.json")
+    errors, files = [], []
+    for row in identity["files"]:
+        key = "results/async_frontend001/data/"+row["path"]
+        frozen = protocol["source_hashes"].get(key)
+        rebuilt = digest(directory/"rebuilt/data"/row["path"])
+        equal = frozen == row["registered_sha256"] == row["rebuilt_sha256"] == rebuilt
+        files.append(dict(row, independently_identical=equal))
+        if not equal:
+            errors.append("Rebuilt frontend differs from registered data: "+row["path"])
+    if {row["path"] for row in files} != {"train.npz", "validation.npz", "test.npz", "NORMALIZATION.json"}:
+        errors.append("Frontend identity evidence lacks a required artifact")
+    log = Path(meter["log_path"])
+    if not log.is_absolute():
+        log = Path(meter["cwd"])/log
+    if (meter.get("returncode") != 0 or not meter.get("child_reaped") or meter.get("timed_out")
+            or digest(log) != meter["log_sha256"]):
+        errors.append("Frontend process completion/log evidence is inconsistent")
+    if meter.get("meter_source_sha256") != protocol["source_hashes"].get("cost_meter.py"):
+        errors.append("Frontend meter source differs from frozen meter")
+    for own, recorded in (("child_cpu_seconds", "whole_process_cpu_seconds"),
+                          ("wall_seconds", "whole_process_wall_seconds"),
+                          ("child_peak_rss_bytes", "peak_rss_bytes")):
+        if meter[own] != identity[recorded]:
+            errors.append("Frontend summary and receipt cost disagree: "+own)
+    return dict(available=True, audit_ok=not errors, errors=errors, files=files,
+                child_cpu_seconds=meter["child_cpu_seconds"], wall_seconds=meter["wall_seconds"],
+                child_peak_rss_bytes=meter["child_peak_rss_bytes"], supervisor_cpu_seconds=meter["supervisor_cpu_seconds"],
+                includes=identity["includes"], excludes=identity["excludes"],
+                identity_sha256=digest(directory/"IDENTITY_AND_COST.json"),
+                receipt_sha256=digest(directory/"whole_process.json"),
+                accounting="One shared reconstruction account; not added to each arm, old attempts, or total development cost",
+                production_scope="Includes prefix audits and raw cleanup; not a minimum production frontend cost")
+
+
 def prediction_metrics(path, expected, cohort=None, classes=None):
     with np.load(path, allow_pickle=False) as archive:
         logits, labels = np.asarray(archive["logits"]), np.asarray(archive["labels"])

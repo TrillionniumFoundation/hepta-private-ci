@@ -1,0 +1,56 @@
+{
+  "review_base_commit": "d3aafc144274287fe80b26452af1cf656a5a0ab3",
+  "reviewed_at_utc": "2026-10-31T03:13:35.075371+00:00",
+  "files": {
+    "analysis.py": {
+      "base_sha256": "c7d2b55787cde4db5d0ea414d79705a8b34d9de2fc2b2fdba56790d738246c34",
+      "current_sha256": "bfc43ebf6c8f29eb988a9693502cdb1d4691518d5c3f4adcb44b80d5b1be0f9b",
+      "added_functions": [],
+      "removed_functions": [],
+      "changed_existing_functions": [
+        "analyze",
+        "chinese_report"
+      ],
+      "analyze_identical_after_removing_only_new_frontend_metadata_field": true,
+      "protected_statistical_functions_identical": true
+    },
+    "analysis_audit.py": {
+      "base_sha256": "5e056110db5e646077a4784d70995b99ff326d5a2a2bad02ead43da6efb7ee0b",
+      "current_sha256": "f73f6c096729ddafc419f3473ad9ba36426286c5d82aef463299aa78f80cf08a",
+      "added_functions": [
+        "frontend_account"
+      ],
+      "removed_functions": [],
+      "changed_existing_functions": [],
+      "all_existing_integrity_functions_identical": true
+    },
+    "plot_results.py": {
+      "base_sha256": "8384dfc2d1e27f42c48f58533e3a82bceb5b0b7c2cd4cb20f1433b4517a4abda",
+      "current_sha256": "399a14c117f89b408033c51750d7f933d90f8dc24cb57901e59cebec42090fa5",
+      "added_functions": [],
+      "removed_functions": [],
+      "changed_existing_functions": [
+        "cost_plot",
+        "length_plot"
+      ],
+      "plot_data_selection_identical": true
+    }
+  },
+  "interpretation_script": {
+    "sha256": "7d152bfce3d9b91ae4b25f81095db5f4dcefa13bec6099bdaaf8e4895afd4ec3",
+    "imports": [
+      "import argparse",
+      "from datetime import datetime, timezone",
+      "import json",
+      "from pathlib import Path",
+      "from .analysis_audit import digest"
+    ],
+    "reviewed_scope": "Reads frozen aggregate JSON; counts existing classifications, joint/frozen parameter evidence and duplicates; preserves original report and appends study-specific prose. No model, checkpoint selection, training, prediction-array reads, or threshold tuning."
+  },
+  "conclusion": "Only shared frontend accounting/presentation and figure layout changed. Existing effect aggregation, pairing, confidence intervals, quality gates, budget gates, and worker cost gates are identical to base commit.",
+  "qualifications": [
+    "The aggregate gains the independent shared_frontend_account metadata object; frontend cost is not added to arm costs or gates.",
+    "Interpretation adds descriptive counts derived from frozen results, not a new statistical selection rule.",
+    "No trained-model experiments or official prediction arrays were rerun or opened during this review."
+  ]
+}

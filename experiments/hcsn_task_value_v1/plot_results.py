@@ -81,6 +81,8 @@ def save_figure(fig, output, name):
 
 def length_plot(data, output):
     fig, axes = plt.subplots(1, 3, figsize=(14, 4.5), sharey=True)
+    lower = min([-.03, *[r["accuracy_mean"]-(r["accuracy_sd"] or 0)-.02 for r in data["length_curves"]]])
+    upper = max([1.03, *[r["accuracy_mean"]+(r["accuracy_sd"] or 0)+.02 for r in data["length_curves"]]])
     for ax, task in zip(axes, SYNTHETIC, strict=True):
         for arm in ARMS:
             rows = sorted((r for r in data["length_curves"] if r["task"] == task and r["arm"] == arm), key=lambda r: r["length"])
@@ -92,7 +94,7 @@ def length_plot(data, output):
             for r in rows:
                 if r["n"] != len(data["expected_seeds"]):
                     ax.annotate(f"n={r['n']}", (r["length"], r["accuracy_mean"]), fontsize=7)
-        ax.set(title=TASKS[task], xlabel="Test sequence length", xticks=[32, 64, 128], ylim=(-.03, 1.03))
+        ax.set(title=TASKS[task], xlabel="Test sequence length", xticks=[32, 64, 128], ylim=(lower, upper))
         ax.grid(alpha=.2)
     axes[0].set_ylabel("Test accuracy")
     handles = [Line2D([0], [0], color=COLORS[a], marker="o", label=LABELS[a]) for a in ARMS]
@@ -104,7 +106,7 @@ def length_plot(data, output):
 
 
 def cost_plot(data, output):
-    fig, axes = plt.subplots(2, 2, figsize=(12, 9), sharey=True)
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10), sharey=True)
     for ax, task in zip(axes.flat, (*SYNTHETIC, "async_av"), strict=True):
         rows = [r for r in data["cost_points"] if r["task"] == task]
         notes = []
@@ -129,8 +131,7 @@ def cost_plot(data, output):
                 ax.annotate(f"n={r['n']}", (x, y), fontsize=7)
         if not notes:
             notes = ["No plotted HCSN comparison passes the registered NI gate."]
-        ax.text(.02, .98, "\n".join(notes), transform=ax.transAxes, va="top", fontsize=7.5,
-                bbox=dict(facecolor="white", alpha=.8, edgecolor="none"))
+        ax.text(.02, -.26, "\n".join(notes), transform=ax.transAxes, va="top", fontsize=7.5)
         ax.set(title=TASKS[task], xlabel="Inner training CPU (seconds, logarithmic scale)",
                xscale="log", ylim=(-.03, 1.03))
         ax.grid(alpha=.2)
@@ -144,7 +145,7 @@ def cost_plot(data, output):
     fig.text(.5, -.01, "Width 16; all seeds mean ± SD. Black ring: registered quality NI against named baseline(s), not universal superiority.\n"
              "An asterisk additionally requires the whole-worker CPU ratio CI upper bound < 1. Parameter/CPU matches remain separate in JSON.",
              ha="center", fontsize=9)
-    fig.tight_layout(rect=(0, .11, 1, .95))
+    fig.tight_layout(rect=(0, .17, 1, .95), h_pad=4)
     save_figure(fig, output, "quality_cost_scatter")
 
 

@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 from scipy.stats import t as student_t
 
-from .analysis_audit import audit_job, digest, global_integrity, pending_jobs, read_json, registered_jobs
+from .analysis_audit import audit_job, digest, frontend_account, global_integrity, pending_jobs, read_json, registered_jobs
 
 
 DEFAULT_SEEDS = (31031, 31067, 31103)
@@ -302,7 +302,16 @@ def chinese_report(report):
               "receipt 不含此前环境安装、共享数据准备及未被 worker 回收的外部进程。推理计量是共享 CPU 主机上整段序列、batch=1、一次预热后五次重复；并非优化 KV-cache 服务，长输入通过重复首个测试输入构造。能耗未直接测量，未从 CPU 时间、事件数或本地 I/O 推造焦耳。", "",
               "推理的 logical tensor 字节与按底层 storage 去重的字节均在 inference_summaries 中逐长度报告；null 表示该接口未提供缓存状态，不能当作零内存。返回状态不包括输入、输出 logits、反向传播图或所有临时分配，训练内存不由这些数字界定。", "",
               "## 失败、完整性问题与未关闭问题", ""]
+    frontend = report.get("shared_frontend_account", {})
+    if frontend.get("available"):
+        section = ["### 一次共享前端重建账目", "",
+            f"独立完整进程计量：child CPU {frontend['child_cpu_seconds']:.6f} 秒，wall {frontend['wall_seconds']:.6f} 秒，峰值 RSS {frontend['child_peak_rss_bytes']} 字节；其监控进程 CPU 另计 {frontend['supervisor_cpu_seconds']:.6f} 秒。四个数据/归一化产物逐字节哈希与正式注册产物一致：{frontend['audit_ok']}。",
+            "",
+            "这一次流程从无原始媒体缓存开始，包含 48 个固定来源片段下载、ffprobe/ffmpeg、特征、因果前缀审计、仅训练集归一化、写盘与原始文件清理。它独立列账，未加到每个模型作业或每个比较上；此前旧 attempt 的 13.463 秒内部时钟保留，也不重复相加为‘完整研发成本’。包含审计的真实重建流程不等于最低生产前端成本，未测焦耳。证据为 frontend_cost001/IDENTITY_AND_COST.json 与 whole_process.json。", ""]
+        index = lines.index("## 失败、完整性问题与未关闭问题")
+        lines[index:index] = section
     lines.extend("- **全局证据**："+error for error in report["integrity"]["errors"])
+    lines.extend("- **共享前端证据**："+error for error in frontend.get("errors", []))
     for row in audits:
         if row["errors"]:
             lines.append(f"- **{row['id']}**："+"；".join(row["errors"]))
@@ -374,7 +383,8 @@ def analyze(study, output, *, authorized=False):
                   analysis_thresholds=policy, integrity=integrity, job_audit=audits, comparisons=comparisons,
                   unavailable_comparisons=unavailable, factorial=factorial(groups, seeds, planned),
                   arm_summaries=arm_summaries(groups), inference_summaries=inference_summaries(groups),
-                  resource_totals=totals, test_predictions_used_for="Final prespecified reporting only",
+                  resource_totals=totals, shared_frontend_account=frontend_account(study, protocol),
+                  test_predictions_used_for="Final prespecified reporting only",
                   source_sha256={name: digest(Path(__file__).parent/name) for name in ("analysis.py", "analysis_audit.py")},
                   limitations=["Three-seed nominal t intervals; no multiplicity correction",
                                "Seed intervals do not measure dataset or hardware generalization",
