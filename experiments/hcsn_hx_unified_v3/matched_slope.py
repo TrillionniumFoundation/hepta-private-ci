@@ -21,6 +21,7 @@ class SlopeMatch:
     ordinary_value: float
     ordinary_slope: float
     stencil_rel_disagreement: float
+    roundoff_rel_floor: float
     step: float
 
     def calibrated(self, channel_value: float) -> float:
@@ -56,12 +57,18 @@ def _profile(f: Callable[[float], float], anchor: float, step: float):
         right = (-3*ys[2]+4*ys[3]-ys[4])/(2*h)
         if not all(map(math.isfinite, (derivative,left,right))):
             raise ArithmeticError('Nonfinite local derivative')
-        samples[half] = (ys[2], derivative, left, right)
+        # An internally consistent stencil is insufficient if f64 quantization
+        # masks the signal (e.g. channel(z)=1e12+z). Eight output ULPs is a
+        # deliberately conservative heuristic, NOT an interval certificate.
+        roundoff_floor = (8 * max(math.ulp(y) for y in ys) / h
+                          / abs(derivative)) if derivative else math.inf
+        samples[half] = (ys[2], derivative, left, right, roundoff_floor)
     coarser, finer = samples[False], samples[True]
     if coarser[0] != finer[0]:
         raise ArithmeticError('Non-deterministic channel at anchor')
-    return finer[0], finer[1], max(abs(coarser[1]-finer[1]),
-                                   abs(finer[2]-finer[3]))
+    return (finer[0], finer[1],
+            max(abs(coarser[1]-finer[1]), abs(finer[2]-finer[3])),
+            max(coarser[4], finer[4]))
 
 
 def match_local_slope(
@@ -84,22 +91,33 @@ def match_local_slope(
     if (not all(map(math.isfinite,args)) or step<=0 or slope_floor<=0
             or not 0<relative_tolerance<1 or maximum_abs_scale<=0):
         raise ValueError('Invalid local matching numerical contract')
-    c,dc,ec = _profile(channel,anchor,step)
-    o,do,eo = _profile(ordinary,anchor,step)
+    c,dc,ec,qc = _profile(channel,anchor,step)
+    o,do,eo,qo = _profile(ordinary,anchor,step)
     if min(abs(dc),abs(do)) < slope_floor:
         raise ArithmeticError('Near-zero channel/ordinary derivative')
     relative=max(ec/abs(dc),eo/abs(do))
     if relative > relative_tolerance:
         raise ArithmeticError('Local derivative unstable or nonsmooth')
+    if max(qc,qo) > relative_tolerance:
+        raise ArithmeticError('Unresolved f64 stencil roundoff relative to local slope')
     beta=do/dc
     alpha=math.fsum((o,-beta*c))
     if not (math.isfinite(alpha) and math.isfinite(beta)
             and abs(beta)<=maximum_abs_scale):
         raise ArithmeticError('Matched affine gain not representable or too large')
-    return SlopeMatch(anchor=anchor,offset=alpha,scale=beta,
-                      channel_value=c,channel_slope=dc,
-                      ordinary_value=o,ordinary_slope=do,
-                      stencil_rel_disagreement=relative,step=step)
+    matched=SlopeMatch(anchor=anchor,offset=alpha,scale=beta,
+                       channel_value=c,channel_slope=dc,
+                       ordinary_value=o,ordinary_slope=do,
+                       stencil_rel_disagreement=relative,
+                       roundoff_rel_floor=max(qc,qo),step=step)
+    # The delivered affine operation is executed in f64, not exact reals.
+    # Catastrophic cancellation may erase even the anchor value despite a
+    # numerically stable local derivative, so verify the actual output path.
+    value=matched.calibrated(c)
+    tolerance=max(32*math.ulp(o),1e-12*max(1.,abs(o)))
+    if abs(value-o)>tolerance:
+        raise ArithmeticError('Representable affine calibration misses anchor value')
+    return matched
 
 
 def ordinary_sigmoid(z: float) -> float:
