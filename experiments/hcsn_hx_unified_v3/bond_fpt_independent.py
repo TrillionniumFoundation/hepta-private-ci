@@ -19,6 +19,10 @@ class Passage:
     probability: float
     discounted: float
     absolute_error_bound: float
+    # Research-only direct first-passage coupon duration, when requested.
+    # Its SciPy quadrature error is only an estimate, not an interval proof.
+    default_coupon_duration: float | None = None
+    duration_error_estimate: float | None = None
 
 
 def _check(x: float, drift: float, sigma: float, discount: float, horizon: float) -> None:
@@ -29,7 +33,8 @@ def _check(x: float, drift: float, sigma: float, discount: float, horizon: float
 
 
 def integrate_passage(x: float, *, drift: float, sigma: float,
-                      discount: float, horizon: float) -> Passage:
+                      discount: float, horizon: float,
+                      compute_default_duration: bool = False) -> Passage:
     """Evaluate F=Pr(T<=h), G=E[exp(-qT) 1(T<=h)] independently.
 
     T is first time x+drift*t+sigma*W_t reaches 0, starting at x>0.
@@ -37,6 +42,8 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
     F = sqrt(2/pi) int_u0^inf exp[-.5(u+a/u)^2] du,
     G = sqrt(2/pi) int_u0^inf exp[-.5(u+a/u)^2-q*x^2/(sigma^2*u^2)]du,
     a=drift*x/sigma^2. No financial HX closed form appears here.
+    Opt-in direct duration integrates density*(1-exp(-q*t))/q without F-G.
+    Its error estimate is diagnostic, never a certified interval bound.
     """
     _check(x, drift, sigma, discount, horizon)
     scale = x/sigma
@@ -68,6 +75,13 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
         z = scale*v+(drift/sigma)/v
         logv = -.5*z*z-q/(v*v)
         return 0. if logv < -745 else scale*math.sqrt(2/math.pi)*math.exp(logv)
+    def duration_weight(t: float) -> float:
+        # q*t can underflow even when t and the stopped duration are resolved.
+        # Evaluate (1-exp(-q*t))/q using the q*t -> 0 limit, not F-G.
+        qt=discount*t
+        if qt <= 1e-8:
+            return t*(1. - .5*qt + qt*qt/6.)
+        return -math.expm1(-qt)/discount
     def large(u, q):
         z = u+a/u
         logv = -.5*z*z-q*(scale/u)**2
@@ -90,6 +104,8 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
             gparts=[]
             ferr=[]
             gerr=[]
+            duration_parts=[]
+            duration_errors=[]
             start=vlo
             panels=0
             while start < uend:
@@ -104,12 +120,19 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
                 gparts.append(gg)
                 ferr.append(eef)
                 gerr.append(eeg)
+                if compute_default_duration:
+                    dd,eed=quad(lambda v: small(v,0.)*duration_weight((1./v)**2),
+                                start,stop,epsabs=3e-13,epsrel=3e-12,limit=300)
+                    duration_parts.append(dd)
+                    duration_errors.append(eed)
                 start=stop
                 panels+=1
             f0,g0=math.fsum(fparts),math.fsum(gparts)
             fe0,ge0=math.fsum(ferr),math.fsum(gerr)
+            d0=math.fsum(duration_parts) if compute_default_duration else 0.
+            de0=math.fsum(duration_errors) if compute_default_duration else 0.
         else:
-            f0=g0=fe0=ge0=0.
+            f0=g0=fe0=ge0=d0=de0=0.
         # A single quad(uc, infinity) can miss a narrow peak far from uc.
         # The exponent in large(u,q) is
         #   -u*u/2 - a - (a*a/2 + q*scale*scale)/u**2.
@@ -117,7 +140,7 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
         # at the mode.  Always isolate a fixed-width window around that
         # mode, even when the mode lies tens/hundreds of units from uc.
         # math.hypot avoids an intermediate overflow from squaring a.
-        def peaked_integral(q):
+        def peaked_integral(q, *, coupon_duration=False):
             mode=math.sqrt(math.hypot(a,math.sqrt(2*q)*scale))
             if not math.isfinite(mode):
                 raise ArithmeticError('First-passage density mode unresolved in f64')
@@ -137,13 +160,18 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
             cuts.append(math.inf)
             total=error=0.
             for lo,hi in zip(cuts,cuts[1:]):
-                part,estimated_error=quad(lambda u: large(u,q),lo,hi,
+                if coupon_duration:
+                    kernel=lambda u: large(u,0.)*duration_weight((scale/u)**2)
+                else:
+                    kernel=lambda u: large(u,q)
+                part,estimated_error=quad(kernel,lo,hi,
                     epsabs=3e-13,epsrel=3e-12,limit=300)
                 total+=part
                 error+=estimated_error
             return total,error
         f1,fe1=peaked_integral(0.)
         g1,ge1=peaked_integral(discount)
+        d1,de1=peaked_integral(0.,coupon_duration=True) if compute_default_duration else (0.,0.)
     f, g=f0+f1,g0+g1
     fe,ge=fe0+fe1,ge0+ge1
     err = fe+ge+1e-13
@@ -151,12 +179,23 @@ def integrate_passage(x: float, *, drift: float, sigma: float,
         raise ArithmeticError('Nonfinite first-passage quadrature')
     if f < -err or f > 1+err or g < -err or g > f+err:
         raise ArithmeticError('First-passage probability ordering violated')
-    return Passage(f,g,err)
+    duration=None
+    duration_error=None
+    if compute_default_duration:
+        duration=math.fsum((d0,d1))
+        duration_error=de0+de1+1e-13*max(1.,horizon)
+        # Necessary stopping-time envelope; refusal is not certification.
+        ceiling=f*duration_weight(horizon)
+        if (not all(math.isfinite(v) for v in (duration,duration_error,ceiling))
+                or duration < 0. or duration > ceiling):
+            raise ArithmeticError('Direct first-passage coupon duration unresolved in f64')
+    return Passage(f,g,err,duration,duration_error)
 
 
 def independent_bond(*, x: float, drift: float, sigma: float, discount: float,
                      horizon: float, coupon_per_bond: float, principal_per_bond: float,
-                     recovery_per_bond: float) -> tuple[float, Passage]:
+                     recovery_per_bond: float,
+                     direct_coupon_duration: bool = False) -> tuple[float, Passage]:
     """Bond by independent stopped cash-flow expectation, not Eq. (8) F/G.
 
     It discounts coupon flow until min(T,h), principal on survival, and
@@ -166,7 +205,8 @@ def independent_bond(*, x: float, drift: float, sigma: float, discount: float,
     if not all(math.isfinite(v) and v>=0 for v in vals):
         raise ValueError('Bond cashflows must be nonnegative and finite')
     fp = integrate_passage(x,drift=drift,sigma=sigma,
-                           discount=discount,horizon=horizon)
+                           discount=discount,horizon=horizon,
+                           compute_default_duration=(direct_coupon_duration and coupon_per_bond > 0.))
     survival=1-fp.probability
     terminal=math.exp(-discount*horizon)*survival
     # Split the stopped coupon annuity into the survival contribution and
@@ -182,31 +222,41 @@ def independent_bond(*, x: float, drift: float, sigma: float, discount: float,
         # This narrows the coupon domain; it is not an error certificate.
         if discount_horizon < float.fromhex('0x1.0p-1022'):
             raise ArithmeticError('Coupon discount-horizon product unresolved in f64')
-        default_duration_num=fp.probability-fp.discounted
-        # F-G is still a difference of separate quadrature estimates; its
-        # cancellation cannot be repaired with expm1. Refuse an unresolved
-        # default-time contribution rather than pretending the coupon is
-        # zero. The SciPy error is a diagnostic estimate, NOT a certified
-        # interval enclosure; this is a conservative fail-closed check.
-        # A far-tail F below 1e-9 contributes at most 1e-9 of the
-        # undiscounted horizon to the coupon and may round F-G to zero.
-        # Do not reject that negligible tail solely due to the common
-        # absolute quadrature tolerance; the guard targets material mass.
-        if fp.probability > 1e-9 and default_duration_num <= 16*max(
-                fp.absolute_error_bound, math.ulp(fp.probability),
-                math.ulp(fp.discounted)):
-            raise ArithmeticError('First-passage coupon duration unresolved in f64')
-        # The tiny-F carveout above can still amplify independent F/G
-        # roundoff by 1/q. For every tau <= horizon, the default-time
-        # coupon contribution obeys 0 <= F-G <= F*(1-exp(-q*h)).
-        # Check this *necessary physical envelope* before dividing by q.
-        # It is a refusal guard, not a certified numerical error bound.
-        if (default_duration_num < 0. or default_duration_num >
-                fp.probability*(-math.expm1(-discount_horizon))):
-            raise ArithmeticError('First-passage coupon domination unresolved in f64')
-        survival_annuity=-math.expm1(-discount_horizon)/discount
-        coupon_pv=coupon_per_bond*(
-            survival*survival_annuity+default_duration_num/discount)
+        if direct_coupon_duration:
+            # Use independently integrated positive density-weighted stopped
+            # duration. Do not recover it by subtracting nearly equal F/G.
+            # Historical fail-closed subtraction path remains the default.
+            if fp.default_coupon_duration is None:
+                raise ArithmeticError('Direct coupon duration missing')
+            survival_annuity=-math.expm1(-discount_horizon)/discount
+            coupon_pv=coupon_per_bond*(
+                survival*survival_annuity+fp.default_coupon_duration)
+        else:
+            default_duration_num=fp.probability-fp.discounted
+            # F-G is still a difference of separate quadrature estimates; its
+            # cancellation cannot be repaired with expm1. Refuse an unresolved
+            # default-time contribution rather than pretending the coupon is
+            # zero. The SciPy error is a diagnostic estimate, NOT a certified
+            # interval enclosure; this is a conservative fail-closed check.
+            # A far-tail F below 1e-9 contributes at most 1e-9 of the
+            # undiscounted horizon to the coupon and may round F-G to zero.
+            # Do not reject that negligible tail solely due to the common
+            # absolute quadrature tolerance; the guard targets material mass.
+            if fp.probability > 1e-9 and default_duration_num <= 16*max(
+                    fp.absolute_error_bound, math.ulp(fp.probability),
+                    math.ulp(fp.discounted)):
+                raise ArithmeticError('First-passage coupon duration unresolved in f64')
+            # The tiny-F carveout above can still amplify independent F/G
+            # roundoff by 1/q. For every tau <= horizon, the default-time
+            # coupon contribution obeys 0 <= F-G <= F*(1-exp(-q*h)).
+            # Check this *necessary physical envelope* before dividing by q.
+            # It is a refusal guard, not a certified numerical error bound.
+            if (default_duration_num < 0. or default_duration_num >
+                    fp.probability*(-math.expm1(-discount_horizon))):
+                raise ArithmeticError('First-passage coupon domination unresolved in f64')
+            survival_annuity=-math.expm1(-discount_horizon)/discount
+            coupon_pv=coupon_per_bond*(
+                survival*survival_annuity+default_duration_num/discount)
     bond=coupon_pv+principal_per_bond*terminal+recovery_per_bond*fp.discounted
     if not math.isfinite(bond) or bond < -2*fp.absolute_error_bound*sum(vals)/discount:
         raise ArithmeticError('Invalid discounted bond cash flow')
