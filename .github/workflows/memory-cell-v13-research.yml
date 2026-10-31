@@ -1,0 +1,158 @@
+name: Memory cell V13 adapter continuation across three VMs
+
+on:
+  push:
+    branches: [research/memory-cell-v13-20261031]
+    paths:
+      - 'qualification/memory-cell-v13/*.py'
+      - 'qualification/memory-cell-v13/evidence/inputs/**'
+      - '.github/workflows/memory-cell-v13-research.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_CORETYPE: 'NEHALEM'
+
+# Rerun all jobs together: run_attempt binding rejects mixed-attempt artifacts.
+# This qualifies adapter/Adam/RNG/cursor continuation, not encoder training,
+# distributed ownership, scientific superiority, or production activation.
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      handoff: ${{ steps.handoff.outputs.artifact-id }}
+      reference: ${{ steps.reference.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v13
+      - name: Install exact numerical dependency
+        run: |
+          python3 -m venv "$RUNNER_TEMP/v13-env"
+          "$RUNNER_TEMP/v13-env/bin/python" -m pip install --disable-pip-version-check numpy==2.3.5
+      - name: Exercise source revisions and real process-death publication boundaries
+        run: |
+          mkdir -p "$RUNNER_TEMP/v13-prepare"
+          set -o pipefail
+          "$RUNNER_TEMP/v13-env/bin/python" -m unittest discover -s qualification/memory-cell-v13 -p lifecycle_tests.py -v 2>&1 | tee "$RUNNER_TEMP/v13-prepare/lifecycle-tests.log"
+      - name: Train a prefix and a separately uninterrupted reference
+        run: |
+          set -o pipefail
+          "$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/migration.py prepare \
+            --input qualification/memory-cell-v13/evidence/inputs/train_features.npz \
+            --manifest qualification/memory-cell-v13/evidence/inputs/encoder_manifest.json \
+            --out "$RUNNER_TEMP/v13-prepare" 2>&1 | tee "$RUNNER_TEMP/v13-prepare/prepare.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: handoff
+        with:
+          name: memory-v13-handoff-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v13-prepare/handoff
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: reference
+        with:
+          name: memory-v13-reference-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v13-prepare/reference
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v13-prepare-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v13-prepare
+          if-no-files-found: warn
+          retention-days: 30
+
+  resume:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      resumed: ${{ steps.resumed.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v13
+      - name: Install exact numerical dependency
+        run: |
+          python3 -m venv "$RUNNER_TEMP/v13-env"
+          "$RUNNER_TEMP/v13-env/bin/python" -m pip install --disable-pip-version-check numpy==2.3.5
+      - name: Start artifact transfer clock
+        run: |
+          "$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/migration.py mark-transfer --out "$RUNNER_TEMP/v13-resume/transfer-start.json"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.prepare.outputs.handoff }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/v13-input
+      - name: Resume complete optimizer and sampler state on the second runner
+        run: |
+          set -o pipefail
+          "$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/migration.py resume \
+            --input "$RUNNER_TEMP/v13-input" --out "$RUNNER_TEMP/v13-resume" \
+            --transfer-start "$RUNNER_TEMP/v13-resume/transfer-start.json" 2>&1 | tee "$RUNNER_TEMP/v13-resume/resume.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: resumed
+        if: always()
+        with:
+          name: memory-v13-resumed-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v13-resume
+          if-no-files-found: error
+          retention-days: 30
+
+  verify:
+    needs: [prepare, resume]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v13
+      - name: Install exact numerical dependency
+        run: |
+          python3 -m venv "$RUNNER_TEMP/v13-env"
+          "$RUNNER_TEMP/v13-env/bin/python" -m pip install --disable-pip-version-check numpy==2.3.5
+      - name: Start artifact transfer clock
+        run: |
+          "$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/migration.py mark-transfer --out "$RUNNER_TEMP/v13-verify/transfer-start.json"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.prepare.outputs.handoff }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/v13-input/source
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.prepare.outputs.reference }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/v13-input/reference
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: ${{ needs.resume.outputs.resumed }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/v13-input/resumed
+      - name: Compare all training state and perform additional continuation on the third runner
+        run: |
+          set -o pipefail
+          "$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/migration.py verify \
+            --source "$RUNNER_TEMP/v13-input/source" --reference "$RUNNER_TEMP/v13-input/reference" \
+            --input "$RUNNER_TEMP/v13-input/resumed" --out "$RUNNER_TEMP/v13-verify" \
+            --transfer-start "$RUNNER_TEMP/v13-verify/transfer-start.json" \
+            --require-distinct-boots 2>&1 | tee "$RUNNER_TEMP/v13-verify/verify.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v13-verify-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/v13-verify
+          if-no-files-found: error
+          retention-days: 30
