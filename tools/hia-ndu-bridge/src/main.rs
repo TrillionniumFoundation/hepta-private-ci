@@ -164,6 +164,7 @@ fn evaluate(input: &[u8]) -> Result<Value, String> {
             && (!candidate.verified
                 || candidate.resource_cost_q32 != 0
                 || candidate.risk_q32 != 0
+                || candidate.uncertainty_q32 != 0
                 || candidate.terminal_q32 != 0
                 || candidate.events.iter().any(|event| event.instant_q32 != 0))
         {
@@ -234,6 +235,11 @@ fn evaluate(input: &[u8]) -> Result<Value, String> {
             "risk_q32": candidate.risk_q32,
             "projection_count": recursive.projection_count
         }));
+    }
+    // A neutral no-work option is mandatory, not just a possible candidate.
+    // Without it a negative-only set could recommend continuing optimization.
+    if !candidate_ids.contains("abstain") {
+        return Err("missing mandatory abstain candidate".into());
     }
     let profile = UtilityProfile {
         profile_id: id("hia.compiler.v1")?,
