@@ -82,6 +82,22 @@ def _exp_cdf(exponent: float, argument: float) -> float:
     return math.exp(log_value)
 
 
+def _log_asset_ratio(asset: float, asset_boundary: float) -> float:
+    """Stable log(asset / boundary) for validated positive, finite inputs.
+
+    Preserve the existing quotient-based rounding in the regular domain.
+    On a finite-operand quotient overflow, subtract finite individual logs
+    instead of feeding infinity into first-passage normal-tail formulae.
+    """
+    ratio = asset / asset_boundary
+    if math.isfinite(ratio):
+        return math.log(ratio)
+    v = math.log(asset) - math.log(asset_boundary)
+    if not math.isfinite(v):
+        raise ArithmeticError('HX log asset/boundary ratio unresolved in f64')
+    return v
+
+
 def _b_and_B(p: HX, t: float):
     """The auxiliary b(t), B(t) of HX (12); t is a, -a, +/-zhat."""
     z,a,m,sigma = p.z,p.a,p.maturity,p.volatility
@@ -144,7 +160,7 @@ def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = N
         return recovery
     if tau==0:
         return p.per_bond_principal
-    v=math.log(asset/b)
+    v=_log_asset_ratio(asset,b)
     u=p.volatility*math.sqrt(tau)
     h1=(-v-p.a*u*u)/u
     h2=(-v+p.a*u*u)/u
@@ -311,7 +327,7 @@ def default_probability(p: HX, asset: float, tau: float, asset_boundary: float |
         return 1.0
     if tau==0:
         return 0.0
-    v=math.log(asset/b)
+    v=_log_asset_ratio(asset,b)
     u=p.volatility*math.sqrt(tau)
     result=float(ndtr((-v-p.a*u*u)/u))+_exp_cdf(-2*p.a*v,(-v+p.a*u*u)/u)
     return result
@@ -328,7 +344,7 @@ def discounted_default_factor(p: HX, asset: float, tau: float,
         return 1.0
     if tau==0:
         return 0.0
-    v=math.log(asset/b)
+    v=_log_asset_ratio(asset,b)
     u=p.volatility*math.sqrt(tau)
     return (_exp_cdf((-p.a+p.zhat)*v,(-v-p.zhat*u*u)/u)
             +_exp_cdf((-p.a-p.zhat)*v,(-v+p.zhat*u*u)/u))
