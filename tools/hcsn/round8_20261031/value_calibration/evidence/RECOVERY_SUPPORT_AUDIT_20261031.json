@@ -1,0 +1,186 @@
+{
+  "audit_source_sha256": "22eca0a8dd81618fcfc4fd248eb4fcea140f63982add6ee06ecd61257745a4f1",
+  "conclusion": "No missing-public-information, cost-split or zero-scale implementation error found in these finite contracts. Shift failures are extrapolation of continuation Q beyond the frozen training domain. Changed compute/event fees also require a new contract; the source freeze keeps them fixed.",
+  "constant_public_features": [
+    "corruption_probability",
+    "read_budget_over_8",
+    "repair_budget_over_8",
+    "stop_total_cost",
+    "invalid_attempt_cost"
+  ],
+  "coverage": [
+    {
+      "business_success_count": 0,
+      "domain_admitted": 673,
+      "domain_rejected": 0,
+      "features_outside_training_range": [],
+      "policy_execution_count": 0,
+      "public_states": 673,
+      "regime": "nominal"
+    },
+    {
+      "business_success_count": 0,
+      "domain_admitted": 0,
+      "domain_rejected": 525,
+      "features_outside_training_range": [
+        {
+          "name": "ordinary_reliability",
+          "shift": [
+            0.57,
+            0.57
+          ],
+          "training": [
+            0.7,
+            0.8
+          ]
+        },
+        {
+          "name": "delayed_reliability",
+          "shift": [
+            0.72,
+            0.72
+          ],
+          "training": [
+            0.85,
+            0.9
+          ]
+        }
+      ],
+      "policy_execution_count": 0,
+      "public_states": 525,
+      "regime": "drift"
+    },
+    {
+      "business_success_count": 0,
+      "domain_admitted": 0,
+      "domain_rejected": 549,
+      "features_outside_training_range": [
+        {
+          "name": "arrival_delay_over_8",
+          "shift": [
+            0.0,
+            0.375
+          ],
+          "training": [
+            0.0,
+            0.25
+          ]
+        },
+        {
+          "name": "corruption_probability",
+          "shift": [
+            0.8,
+            0.8
+          ],
+          "training": [
+            0.35,
+            0.35
+          ]
+        }
+      ],
+      "policy_execution_count": 0,
+      "public_states": 549,
+      "regime": "missing"
+    },
+    {
+      "business_success_count": 0,
+      "domain_admitted": 0,
+      "domain_rejected": 525,
+      "features_outside_training_range": [
+        {
+          "name": "read_total_cost",
+          "shift": [
+            0.1,
+            0.1
+          ],
+          "training": [
+            0.009000000000000001,
+            0.045
+          ]
+        },
+        {
+          "name": "wait_total_cost",
+          "shift": [
+            0.024,
+            0.032
+          ],
+          "training": [
+            0.009000000000000001,
+            0.017
+          ]
+        },
+        {
+          "name": "repair_total_cost",
+          "shift": [
+            0.13999999999999999,
+            0.13999999999999999
+          ],
+          "training": [
+            0.025,
+            0.055
+          ]
+        },
+        {
+          "name": "stop_total_cost",
+          "shift": [
+            0.022,
+            0.022
+          ],
+          "training": [
+            0.007,
+            0.007
+          ]
+        }
+      ],
+      "policy_execution_count": 0,
+      "public_states": 525,
+      "regime": "cost_shift"
+    }
+  ],
+  "feature_sufficiency_invariants": {
+    "absolute_clock_origin": {
+      "max_input_error": 0.0,
+      "max_transition_reward_error": 0.0,
+      "states_checked": 673
+    },
+    "action_latency_cost_split": {
+      "max_input_error": 6.938893903907228e-18,
+      "max_transition_reward_error": 6.938893903907228e-18,
+      "states_checked": 673
+    },
+    "prior_and_past_votes_same_posterior": {
+      "max_input_error": 1.1102230246251565e-16,
+      "max_transition_reward_error": 3.3306690738754696e-16,
+      "states_checked": 556
+    },
+    "sunk_additive_cost": {
+      "max_input_error": 0.0,
+      "max_transition_reward_error": 0.0,
+      "states_checked": 673
+    }
+  },
+  "freeze_sha256": "da08baa4464b202a0071a2767d08009464f9b60e279c540332fc09ed042096ad",
+  "heads_checked_for_unit_scale_on_constant_features": [
+    "clocked_11.json",
+    "clocked_12.json",
+    "clocked_13.json",
+    "clocked_14.json",
+    "clocked_15.json",
+    "direct_11.json",
+    "direct_12.json",
+    "direct_13.json",
+    "direct_14.json",
+    "direct_15.json",
+    "first_passage_11.json",
+    "first_passage_12.json",
+    "first_passage_13.json",
+    "first_passage_14.json",
+    "first_passage_15.json"
+  ],
+  "passed": true,
+  "production_activation": false,
+  "schema": "hepta.round8.value-support-audit.v1",
+  "scope": "Posthoc contract and implementation diagnosis, not efficacy; domain rejection is not a completed business task.",
+  "support_source_sha256": "52221b7df3c463412604c0931fe203d2dd74c21476444e61528578ca694bf6bd",
+  "tampered_domain_rejected": true
+}
