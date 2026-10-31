@@ -110,11 +110,13 @@ Phase wall 包含 artifact 等待、下载和并发重叠，不能将求和解�
 
 ## 6．七 VM 串行实验的 checkpoint 状态
 
-Run `41157593645@024acd29` 的 source、replica-a、replica-b、controller 四个 jobs 已成功。controller 的实际步骤为 “Commit migration, kill before acknowledgment, restore and fence old owner”。随后两个 readback jobs `124417049698`、`124417049703` 排队；此 checkpoint 尚无完整 final 收据。
+Run `41157593645@024acd29` 的 source、replica-a、replica-b、controller 四个 jobs 已成功。前四份 artifact 已另行下载，逐个通过 advertised ZIP SHA 校验；本地 `INDEPENDENT_AUDIT_PARTIAL_4.json` 验证四个不同 boots/instances、controller 的 before/after commit 两次 SIGKILL（均 exit -9）、5 项迁移检查，以及 source/migrate 数据库重放一致。当前状态为 epoch 2、owner=replica-a、valid=1。随后两个 readback jobs `124417049698`、`124417049703` 排队；此 checkpoint 尚无完整 final 收据。
 
 因此当前不能宣称该 run 已独立核验七个不同 boots、两个 SIGKILL、两个冷读回和最终撤销全链。后续要收齐同 run/attempt 的 source、两个 replicas、migrate、两个 readbacks、final，独立核对七个身份、SIGKILL -9、epoch 1→2→3、旧 snapshot 拒绝和撤销结果。失败也须保留，不能换用其他 run 的成功 stage 补齐。
 
-上述“前四 jobs 成功”是 GitHub job 进度，不能代替本地完整 artifact 审计。两个已完成 live 包可以独立发布，不依赖此排队实验。
+较早且已经修复下载层级的 [run 41157391919](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41157391919)，执行提交为 `465aa2077076254a4fa75de7e85521e2bd8d117a`，当前同样为前四 jobs 成功、两个 readback 排队。这一状态来自其自己的 GitHub metadata；没有用 `024acd29` 的 partial artifacts 填充它的证据。若它先完成，应完整收齐该 run 再独立验收。
+
+已核验的 `024acd29` 前四阶段明确标记 `partial=true`、`complete_run_passed=false`，不能代替完整七阶段审计。两个已完成 live 包可以独立发布，不依赖这些排队实验。
 
 ## 7．边界与复核入口
 
@@ -131,3 +133,23 @@ python3 qualification/memory-cell-v12/evidence_pack.py restore \
 ```
 
 恢复后，`GITHUB_ARTIFACTS.json`、`GITHUB_JOBS.json`、`SOURCE_SNAPSHOT.json`、`ARCHIVE_VERIFICATION.json`、`INDEPENDENT_AUDIT.json` 给出各自的身份与结果。`POST_RUN_TOOLS/hepta_federation_audit.py` 是不导入 producer 的独立核验器；对恢复出的该 run 目录重跑即可复核原 bytes。将两个路径中的 run ID 改为 `41157593644` 可恢复首轮。不要使用当前分支的新源码替换归档中的实际执行源码来解释较早运行。
+
+## 8．保留首次串行工程失败及精确修复
+
+最初的 [run 41156495200](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41156495200) 执行提交为 `84ff90a879ba19e527654985e5e927afa5bbfb60`。source job 成功，两个 replica job 在首次独立读取 checkpoint 的步骤失败，controller、readback、final 随后跳过。这个 intended seven-VM workflow 没有走到七个实际参与节点，也没有完成跨机器模型读回或迁移。
+
+[失败归档](evidence-packs/federation-failure-41156495200/manifest.json)保留三个原始 artifact ZIP、对应安全展开、两份完整失败 job logs、GitHub metadata、失败时的四份源码/工作流、精确修复工作流与 diff，以及 `FAILURE_ANALYSIS.json`。三个 ZIP 均已通过 advertised SHA 校验。source bundle 的实际权重/probes 仍能独立重算且误差为 0；失败不是用新的模型替换或删除坏例解决的。
+
+两个 `blocked.json` 都记录 `Denied: missing, linked, or oversized JSON file`、`phase=replica`、`passed=false`。日志给出了实际目录关系：
+
+```text
+下载位置：federation-input/memory-v12-fed-source-41156495200-1/
+程序输入：federation-input/
+程序期望：federation-input/stage.json
+```
+
+原 source ZIP 的 `stage.json` 位于 archive 根目录；`actions/download-artifact` 按 artifact ID 下载时在目标目录下再创建一层 artifact 名目录，消费者却按已经展开到目标根的路径读取。两份日志的实际下载路径、命令输入和 traceback，与该层级错配一致。没有将这一工程失败解释为模型推理或迁移协议已成功。
+
+修复提交 `465aa2077076254a4fa75de7e85521e2bd8d117a` 在五个按 artifact ID 下载的步骤增加 `merge-multiple: true`，使提取位置与消费者输入一致。失败包中的 `FIX_REFERENCE/LAYOUT_FIX.patch` 保存的是 `84ff90a→465aa207` 的精确五处变化；未把后续 `024acd29` 的其他 workflow trigger 修改混入这次修复。
+
+失败包原始文件共 **481,326 B**，无损 xz part 为 **186,660 B**；archive SHA-256 为 `1133f3c0074191dee0c7243813f20422ac8d99bf8a2dbefe9d51386e598df633`。两个 blocked receipt 只计各自失败阶段的短 wall，不能据此补造整次 workflow 的完整 CPU/端到端成本。失败保留，不计为一次成功资格测试，也不与后续 run 拼接。

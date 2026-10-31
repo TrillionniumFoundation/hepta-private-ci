@@ -1,5 +1,5 @@
 {
-  "as_of_utc": "2026-10-31T02:49:42.263793+00:00",
+  "as_of_utc": "2026-10-31T02:56:18.098269+00:00",
   "native_gate_passed": false,
   "native_gate_pending": true,
   "native_runs": [
@@ -82,10 +82,17 @@
       "successful_test_cases": 26
     },
     {
-      "passed": null,
+      "all_32_source_hashes_equal_current_files": true,
+      "executed_tests": 38,
+      "log": "evidence/python-ci/run-41160216394/expanded/tests.log",
+      "passed": true,
+      "raw_archive_manifest": "evidence-packs/python-ci-41158537363-41160216394/manifest.json",
+      "receipt": "evidence/python-ci/run-41160216394/expanded/receipt.json",
       "run_id": 41160216394,
       "source_commit": "38ffc1a548cd5e39376469e5328124e37bd5933b",
-      "status": "queued"
+      "source_stable": true,
+      "status": "completed",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41160216394"
     }
   ],
   "python_dependency_versions": {

@@ -92,7 +92,7 @@ flowchart TD
 | 单 authority、冷恢复与在线 handoff | `federation.py`、`federation_experiment.py`、`federation_live.py` |
 | 无损证据传输与恢复 | `evidence_pack.py`、`evidence-packs/*/manifest.json` |
 
-本机最终 Python 行为测试为 38/38；这与科研优越性指标分开。隔离 CI 固定实际实验依赖：NumPy 2.3.5、SciPy 1.17.0、scikit-learn 1.8.0、joblib 1.5.3、threadpoolctl 3.6.0。首次隔离 CI 遗漏后四项，造成两个测试模块导入失败；失败回执与修复后的运行分别保存。运行所有行为回归：
+本机及隔离 GitHub CI 的 Python 行为测试均为 38/38；CI 为 `41160216394@38ffc1a5`，其全部 32 项源码摘要与当前文件一致。这与科研优越性指标分开。隔离 CI 固定实际实验依赖：NumPy 2.3.5、SciPy 1.17.0、scikit-learn 1.8.0、joblib 1.5.3、threadpoolctl 3.6.0。首次隔离 CI 遗漏后四项，造成两个测试模块导入失败；失败回执与修复后的运行分别保存。运行所有行为回归：
 
 ```bash
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 \

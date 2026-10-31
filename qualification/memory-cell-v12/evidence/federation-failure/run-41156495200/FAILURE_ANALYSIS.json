@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.memory.federation-layout-failure.v1",
+  "run_id": 41156495200,
+  "attempt": 1,
+  "source_commit": "84ff90a879ba19e527654985e5e927afa5bbfb60",
+  "complete_run_passed": false,
+  "failure": "download-artifact directory nesting disagreed with the consumer input path",
+  "error_type": "Denied",
+  "error": "missing, linked, or oversized JSON file",
+  "expected_stage": "/home/runner/work/_temp/federation-input/stage.json",
+  "downloaded_stage": "/home/runner/work/_temp/federation-input/memory-v12-fed-source-41156495200-1/stage.json",
+  "evidence": "Both failed job logs show the nested download destination and the replica command using its parent; original source ZIP contains stage.json at archive root. No linked/oversized source member was found by safe extraction.",
+  "blocked": {
+    "replica-a": {
+      "error": "missing, linked, or oversized JSON file",
+      "error_type": "Denied",
+      "passed": false,
+      "phase": "replica",
+      "wall_seconds": 0.002046972000002256
+    },
+    "replica-b": {
+      "error": "missing, linked, or oversized JSON file",
+      "error_type": "Denied",
+      "passed": false,
+      "phase": "replica",
+      "wall_seconds": 0.0016628730000007863
+    }
+  },
+  "jobs": [
+    {
+      "id": 124404323931,
+      "name": "source",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 124404740754,
+      "name": "replicas (replica-a)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 124404740812,
+      "name": "replicas (replica-b)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 124405489529,
+      "name": "controller",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 124405490043,
+      "name": "readback",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 124405490353,
+      "name": "final",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "initial_source_model_independently_verified": {
+    "parameters": 17098,
+    "parameter_bytes": 68392,
+    "model_bytes": 138370,
+    "probes_bytes": 17888,
+    "bundle_bytes": 157050,
+    "probe_count": 8,
+    "max_abs_error": 0.0,
+    "optimizer_present": false,
+    "model_sha256": "ead9abe3bfa39654e27e61b883cb3014791b140d1f19c063615b09dda569f361",
+    "probes_sha256": "0824f44e7bdba2a861aeced3a1c3f81ecb6af6c8f1bd4cf8feb650cb3d044839"
+  },
+  "archive_count": 3,
+  "advertised_zip_checksums_all_verified": true,
+  "fix_commit": "465aa2077076254a4fa75de7e85521e2bd8d117a",
+  "fix": "Set merge-multiple: true on all five artifact-id download steps; FIX_REFERENCE retains the exact five-line change.",
+  "limits": "No successful cross-runner model inference, migration, final revocation or seven-instance conclusion is credited to this failed attempt; complete CPU/end-to-end cost was not reconstructed from the two blocked receipts."
+}
