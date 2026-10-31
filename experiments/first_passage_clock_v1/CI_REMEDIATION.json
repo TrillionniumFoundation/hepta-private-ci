@@ -302,5 +302,54 @@
     },
     "remaining_local_build_limit": "Complete locked dependency resolution and compilation are not yet verified. Default-sandbox network attempts failed; an approved targeted fetch subsequently succeeded. The restored source metadata is no longer a blocker, while dependency-cache gaps and fluctuating disk capacity still constrain a full local build.",
     "scientific_freeze": "Unchanged; no new confirmation run or superiority claim"
+  },
+  "first_native_followup": {
+    "source_head": "64ea585d8ad809cd09e0e61da5e0f3c7528b4774",
+    "focused_run": 41155268731,
+    "focused_job": 124400558335,
+    "fork_history": {
+      "status": "PASS_IN_EXACT_NATIVE_WINDOWS_RUN",
+      "test": "agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items",
+      "passed": 1,
+      "failed": 0,
+      "filtered_out": 2340,
+      "seconds": 3.12,
+      "evidence": "Both child shutdown paths reached termination, persistence completion and registry cleanup. The parent shutdown submission returned and the original test body ended.",
+      "limit": "This isolated pass does not establish full-suite liveness or prove the previous intermittent hang fixed. No watchdog deadline was changed."
+    },
+    "windows_security_matrix": {
+      "status": "NOT_EXECUTED_COMPILE_ERROR",
+      "error": "E0659: assert_eq is ambiguous at token_delete_boundary_tests.rs:410 and :420",
+      "repair": "Explicitly import the already-declared pretty_assertions macro in each new test module.",
+      "owner_probe": "New native checks explicitly set and verify TokenUser ownership, test implicit and explicit WRITE_DAC plus an OWNER_RIGHTS control, attempt actual DACL reauthorization and deletion, and compare complete owner/DACL serialization and contents with same-ACL host positive controls.",
+      "scope": "Both modes use the host base token. These finite-object probes do not characterize the elevated runner dedicated account or prove full-read, registry, IPC and child startup compatibility. Original security assertions and the production token remain unchanged."
+    },
+    "agentd_test_compile": {
+      "status": "REPAIR_PENDING_NATIVE_CONFIRMATION",
+      "jobs": [
+        124401322553,
+        124401322745
+      ],
+      "error": "hepta-agentd/control_socket_tests.rs imported pretty_assertions without a crate dependency; native macOS release verification and Clippy both failed at that import.",
+      "repair": "Use the existing standard equality assertion without changing any test condition or dependency manifest."
+    },
+    "publication": {
+      "status": "PUBLISHED",
+      "published_repair_head": "64ea585d8ad809cd09e0e61da5e0f3c7528b4774",
+      "draft_pr": 4378,
+      "note": "The prior approval failure was superseded by an authorized successful publication and verified branch update. It is no longer the current blocker."
+    },
+    "local_probe_validation": {
+      "diff_check": "PASS",
+      "just_fmt": "PASS",
+      "scoped_fix": "just fix -p codex-hepta-agentd -p codex-windows-sandbox reached dependency resolution and exited 101 at the missing http-auth registry entry before linting.",
+      "native_execution": "Required on the next candidate head; no local Windows compilation or security pass is claimed."
+    },
+    "log_sha256": {
+      "pr4378_64ea_focused_windows.log": "d3b8594ce10178aa282015e895c7cbc4f9eb4bbae3d2824d07904012faf985b6",
+      "pr4378_64ea_macos_release.log": "9682e5736509db9ae600837602bf281c446359af572ef0fcbe07449da22f22a1",
+      "pr4378_64ea_macos_clippy.log": "977388dea5d5f5c8402aab5d214f9f6d1b20c4a96f353ed0166910aa4c298add"
+    },
+    "scientific_scope": "The frozen research results and production_activation=false remain unchanged."
   }
 }
