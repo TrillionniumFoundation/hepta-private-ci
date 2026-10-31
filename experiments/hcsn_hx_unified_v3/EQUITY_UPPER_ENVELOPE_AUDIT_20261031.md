@@ -74,3 +74,14 @@ P4 OPEN: native Rust/GPU 64–4096 Cell throughput/RSS/p95/p99/Joules and crash 
 P5 BLOCKED: matched-scale hybrid experiment only after prior scientific gates.
 
 Admission flags remain complete_debt_error_budget=false, global_equilibrium_certified=false, scientific_gate_closed=false, production_activation=false. Keep this branch as an unmerged Draft, no threshold changes or deployments.
+
+## Independent cross-implementation validation addendum
+
+During this run a parallel research PR #4513 appeared, implementing the **same mathematical component**, HEAD `fd0e627a45744518de826459a0beced49dfd6f49`. Consequently Draft #4514 was **retargeted to #4513** as a strictly independent executable audit, rather than claiming a novel mathematical bound. The base #4513 source Git blob `0d9a0f54dc29a84681e2080fb3986a4625f6d21e` was reconstructed byte-identically in the local test package.
+
+New `test_hx_equity_envelope_crosscheck.py` compares both separately authored implementations across **60 seeded valid financial regimes** with seven exact output enclosures each, plus **27** high-liquidity / zero-shock / adversarial nominal-Dirichlet combinations. All these bounded numerical comparisons agree. The earlier 5 focused methods and 3 new crosscheck methods were rerun together: **8/8 targeted unittest methods PASS**, 0 skip, Python 3.13.5 CPU. No full upstream CI, hardware or all-domain theorem. The underlying numerical equity comparison still used the disclosed reconstructed HX subset. No historic STOP/mesh/causal negatives removed. This retarget is not a merge or a production authorization.
+
+Reproduce on #4513 plus this PR's six additive paths:
+    python -m unittest -v experiments.hcsn_hx_unified_v3.test_hx_equity_envelope_crosscheck experiments.hcsn_hx_unified_v3.test_hx_equity_upper_envelope
+
+PR #4514 HEAD after crosscheck test upload: `ea542073e9fc94d204cf08d9642592c61a4ac767` (prior to this report-only commit); actual latest head may advance. All scientific flags stay false.
