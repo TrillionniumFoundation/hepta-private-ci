@@ -1,0 +1,188 @@
+{
+  "schema": "hepta.task-progression.blocker-ledger.v1",
+  "date_utc": "2026-10-31",
+  "branch": "research/hcsn-value-boundary-native-20261031",
+  "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4461",
+  "scientific_freeze_commit": "a37c99a87a25fe8417ec29ddbebb1c035d356a53",
+  "freeze_verified_at_utc": "2026-10-31T02:42:31Z",
+  "final_delivery_head": null,
+  "final_delivery_head_note": "由最终远端发布核验提供；本账本不猜测随后文档提交的 head。",
+  "all_blockers_closed": false,
+  "main_activation": false,
+  "release_disposition": "research_only_draft",
+  "scope": {
+    "engineering_open_p0_p1": 0,
+    "engineering_scope": "本轮已定义的有限模型、冻结输入支持、统计与成本会计、Q24 数值合同以及完成动作后恢复范围内，已发现的数据一致性与实现审计问题均已修复并复核。此数值不涵盖下列仍开放的科学与生产资格。",
+    "scientific_or_mainline_open_items": 9,
+    "negative_result_is_positive_admission": false,
+    "formal_policy_executions": 29440,
+    "formal_task_cohorts": [
+      {"task": "fixed_deadline_teacher_oneread_residual", "runs": 3840, "paired_episodes": 1280, "independent_training_seeds": 5},
+      {"task": "continuous_time_finite_value_boundary", "runs": 25600, "paired_episodes": 5120, "prespecified_contracts": 8, "fits_per_contract": 5}
+    ],
+    "efficacy_pooled_between_tasks": false,
+    "native_pairs_per_attempt": 160,
+    "native_attempts": 2,
+    "native_additional_independent_efficacy_samples": 0,
+    "read_decoder_operations": 89628,
+    "read_count_scope": "7792 + 81836 是 READ／decoder 操作，不是总文件系统读取；support 复读、metadata 和 evaluator 读取另有成本或包含于外层 CPU。"
+  },
+  "engineering_items": [
+    {
+      "id": "ENG-FREEZE-PROVENANCE",
+      "severity": "P0",
+      "status": "resolved_verified",
+      "issue": "科学准备与确认顺序、候选选择及不可变证据身份必须可核查。",
+      "resolution": "确认前核验 104 个远端文件／blob 及准备归档；两组数据均在核验后生成，所有候选和失败尝试保留。",
+      "evidence": ["FREEZE_VERIFIED.json", "../task_policy_v2_20261031/confirmation_publication/VERIFIED_FREEZE.json", "../value_boundary_v2_20261031/publication/formal-confirmation01/CONFIRM_STAGE_RECEIPT.json"]
+    },
+    {
+      "id": "ENG-SAME-PROCESS",
+      "severity": "P0",
+      "status": "qualified_in_scope",
+      "issue": "价值求解、训练与实际后继需要使用同一个状态过程。",
+      "resolution": "另行声明的有限 CTMDP 采用同一 READ、共享指数期限、预算、提交、复位和恢复合同；全部原始轨迹逐决策独立复算通过。",
+      "limit": "不把指数期限状态约简移用到原固定期限任务，不声称开放域或连续高维任务等价。",
+      "evidence": ["../value_boundary_v2_20261031/publication/PROTOCOL.json", "../progression_audit_20261031/CONFIRMATION_AUDIT.md"]
+    },
+    {
+      "id": "ENG-ACTUAL-TRAINING",
+      "severity": "P1",
+      "status": "qualified_in_scope",
+      "issue": "必须确认实际训练、非零候选选择和部署模型身份。",
+      "resolution": "五个 4484 参数残差模型各训练 6000 步并依冻结 Q24 验证标准选模；40 个有限合同策略完成 600 步已知模型直接价值优化，完整候选均保留。",
+      "limit": "训练执行完成不等于平稳或收敛；残差五模型均未达梯度阈值，软边界仅 25/40 达阈值。",
+      "evidence": ["../task_policy_v2_20261031/evidence/formal_prepared/PREPARE_SUMMARY.json", "../value_boundary_v2_20261031/publication/PREPARED_SUMMARY.json"]
+    },
+    {
+      "id": "ENG-STATE-AND-MATH",
+      "severity": "P1",
+      "status": "qualified_in_scope",
+      "issue": "增量状态、恢复、首达传播与声明梯度需要独立参照。",
+      "resolution": "3200 条冻结轨迹／18238 次决策与历史回放等价；采样事件、2048 间隔长流、有限 QVI、独立 LP、Poisson 首达与有限差分检查通过。",
+      "limit": "Frechet 导数固定策略区域；不能视为硬边界切换、优化器响应或多 cell 网络全局总导数。",
+      "evidence": ["../recurrent_owner_v2_20261031/evidence/REPORT.json", "../progression_audit_20261031/PRE_FREEZE_AUDIT_03.json", "../progression_audit_20261031/CONFIRMATION_AUDIT.md"]
+    },
+    {
+      "id": "ENG-COST-OMISSIONS",
+      "severity": "P0",
+      "status": "resolved_verified",
+      "issue": "价值边界准备包装、部署加载与尾部资源计量曾遗漏。",
+      "resolution": "冻结前修复并重跑，完整计入部署序列化、hash、加载、状态／guard 检验与准备包装尾部；旧 attempt 完整保留。确认外层 wait4 包含子进程，内层组件不重复加总。",
+      "limit": "研究 CPU 会计不等于货币价格或硬件能耗；开发、审计、归档及发布开销分别保留。",
+      "evidence": ["../progression_audit_20261031/VALUE_PREPARE_AUDIT.json", "../value_boundary_v2_20261031/publication/formal-confirmation01/QUALITY_AND_COST.json", "../value_boundary_v2_20261031/publication/formal-confirmation01/PROCESS.json"]
+    },
+    {
+      "id": "ENG-NATIVE-Q24",
+      "severity": "P1",
+      "status": "qualified_in_scope",
+      "issue": "真实 native 运行器必须执行正式模型并证明数值与生命周期绑定。",
+      "resolution": "固定真实 upstream、10 个原生测试、五模型 2560 验证状态及每次 160 个任务对的共同 Q24 合同通过；完成动作后的 320 次恢复／attempt 通过。",
+      "limit": "原 float64 argmax 的 6 个伪同分差异保留；原生执行 MLP，不执行解析 cell 物理；不覆盖任意崩溃外部效果结算。",
+      "evidence": ["../native_task_bridge_20261031/SOURCE_IDENTITY.json", "../native_task_bridge_20261031/BUILD_Q24_PROFILE.json", "native_publication/SUMMARY.json", "../progression_audit_20261031/NATIVE_CONFIRMATION_AUDIT_02.json"]
+    },
+    {
+      "id": "ENG-NATIVE-TERMINAL-REPORT",
+      "severity": "P1",
+      "status": "resolved_verified",
+      "issue": "原生 attempt01 在写完资格报告后，末端日志将 flush=True 误传给 json.dumps，进程退出 1。",
+      "resolution": "新增 native_confirmation_reporting_fix.py，仅把该参数移动到 print；a53aa04be8ffc4a9a656e5ce1fa5e8eba8206273 先发布后重跑原样本，attempt02 退出 0。原文件、两轮数据、成本和失败退出均保留。",
+      "limit": "只修复报告出口；第二轮不是额外独立确认样本，不能挑选较快一轮。",
+      "evidence": ["NATIVE_REPORTING_REPAIR.json", "native_confirmation_reporting_fix.py", "native_publication/attempt01/PROCESS.json", "native_publication/attempt02/PROCESS.json"]
+    },
+    {
+      "id": "ENG-INDEPENDENT-AUDIT",
+      "severity": "P1",
+      "status": "resolved_verified",
+      "issue": "统计、原始执行与审计自身的 session 分组／计时假设需要独立复核。",
+      "resolution": "全量原始动作、guard、成本、实际 decoder 与统计独立重建通过；修复审计中遗漏 split 的会话键，以及未声明的 10 微秒计时差阈值，原失败记录全部保留。",
+      "limit": "独立审计验证已声明有限范围及证据一致性，不自动授予科学或生产资格。",
+      "evidence": ["../progression_audit_20261031/CONFIRMATION_AUDIT.md", "../progression_audit_20261031/CONFIRMATION_AUDIT_SUMMARY.json", "../progression_audit_20261031/NATIVE_AUDIT_FAILED_01.json"]
+    }
+  ],
+  "scientific_and_mainline_items": [
+    {
+      "id": "SCI-RESIDUAL-NET-BENEFIT",
+      "status": "open_current_admission_failed",
+      "requirement": "在相同状态、质量要求和完整成本下，学习残差稳定超过强普通规划器。",
+      "current_evidence": "IID／stress 效用差 +0.006627／+0.010216，95% 区间均跨零、Holm p 均 1；κ1/H1000 净效用 -0.032421／-0.028871，区间也跨零。两百分点质量非劣通过，但收益准入失败。",
+      "closure_condition": "新的冻结候选在独立确认中满足事前规定的质量和完整成本收益门槛。当前负结果不证明架构普遍更差。",
+      "evidence": ["../task_policy_v2_20261031/confirmation_publication/COMPACT_RESULTS.json"]
+    },
+    {
+      "id": "SCI-INDEPENDENT-ANALYTIC-CELL",
+      "status": "open_not_established",
+      "requirement": "分离价值控制后，解析 cell 本身仍提供稳定任务净收益。",
+      "current_evidence": "全部 5120 个 QVI 普通／解析路径相同；解析分布额外计算使本次平均执行 CPU 较高。任务价值边界效用提高不能归为解析表示独立优势。",
+      "closure_condition": "相同状态、控制器、内容质量、训练预算及完整成本的比较独立确认解析 cell 的增量收益。",
+      "evidence": ["../value_boundary_v2_20261031/publication/formal-confirmation01/QUALITY_AND_COST.json"]
+    },
+    {
+      "id": "SCI-VALUE-BOUNDARY-QUALITY",
+      "status": "open_not_established",
+      "requirement": "保持声明内容质量要求时，价值边界具有稳定净收益。",
+      "current_evidence": "八合同等权效用 +0.140235、κ1/H1000 净效用 +0.141861，但 fit 区间为未多重校正描述性区间。正确与错误提交同时增加，条件准确率 91.2395%→87.2150%；nominal_2 区间跨零，STOP 负控通过停止取得收益。",
+      "closure_condition": "预先冻结质量／错误约束与非劣门槛，在新确认上同时满足质量和完整成本收益条件；共同 posterior guard 不替代质量证明。",
+      "evidence": ["../value_boundary_v2_20261031/publication/formal-confirmation01/QUALITY_AND_COST.json", "../value_boundary_v2_20261031/publication/formal-confirmation01/SUMMARY.json"]
+    },
+    {
+      "id": "PROD-NATIVE-PHYSICS",
+      "status": "open_not_implemented",
+      "requirement": "解析 cell 物理传播在原生 Hepta 运行器内执行并通过独立资格验证。",
+      "current_evidence": "native_physics_executed=false；原生执行正式残差 MLP，内容、OneRead 和 cell 物理在外部；cell 特征只作生命周期绑定。",
+      "closure_condition": "原生实现真实传播、复位、不应期与采样状态，并以相同数值／事件合同独立核验。",
+      "evidence": ["native_publication/SUMMARY.json", "../native_task_bridge_20261031/README.md"]
+    },
+    {
+      "id": "PROD-ARBITRARY-CRASH-EFFECTS",
+      "status": "open_not_proven",
+      "requirement": "任意崩溃点后，外部效果与 owner 状态完成可靠一致结算。",
+      "current_evidence": "验证范围是动作完成后的恢复。可信快照、模型身份与顺序检查不证明外部效果 exactly-once，也不构成敌对存储防回滚证明。",
+      "closure_condition": "明确外部效果协议与持久化责任，覆盖效果前后各崩溃点、重试与去重的故障注入证据。",
+      "evidence": ["native_publication/SUMMARY.json", "../recurrent_owner_v2_20261031/README.md"]
+    },
+    {
+      "id": "SCI-HIGH-DIMENSIONAL-SCALING",
+      "status": "open_not_measured",
+      "requirement": "多 cell、高维状态与近似扩展的收益、传播和边界误差可控。",
+      "current_evidence": "有限精确矩阵与逐合同表策略的资格成立；未建立可扩展耦合网络的误差／计算成本结论。",
+      "closure_condition": "声明高维近似及误差指标，使用可计算独立低维参照和更大规模任务验证收益与完整成本。",
+      "evidence": ["../value_boundary_v2_20261031/README.md", "../progression_audit_20261031/PRE_FREEZE_AUDIT_03.json"]
+    },
+    {
+      "id": "SCI-NATURAL-CONTENT-GENERALIZATION",
+      "status": "open_not_measured",
+      "requirement": "大规模自然内容及未见任务上的同质量任务收益。",
+      "current_evidence": "真实 decoder 调用已核查，但价值任务的精确观测 law 基于八个有限支持模板；逐合同重新拟合不等于同一模型的 OOD 泛化。",
+      "closure_condition": "使用冻结的自然内容任务、同质量门槛、独立未见数据与相同查询／资源预算验证。",
+      "evidence": ["../value_boundary_v2_20261031/publication/PROTOCOL.json", "../progression_audit_20261031/CONFIRMATION_AUDIT.md"]
+    },
+    {
+      "id": "SCI-HARDWARE-ENERGY",
+      "status": "open_not_measured",
+      "requirement": "在规定硬件与相同质量／吞吐条件下实际节能。",
+      "current_evidence": "已记录 CPU 和稀疏事件；没有功耗或能量测量。原生 debug／RAM 目录计时不构成等持久化责任的语言性能比较。",
+      "closure_condition": "固定硬件、负载和完整成本范围，测量能量、延迟、吞吐及质量并提供重复性。",
+      "evidence": ["../recurrent_owner_v2_20261031/evidence/REPORT.json", "native_publication/SUMMARY.json"]
+    },
+    {
+      "id": "SCI-JOINT-TRAINING-AND-CONVERGENCE",
+      "status": "open_not_established",
+      "requirement": "可扩展神经模型的动力学／边界／内容联合训练与声明的收敛性质。",
+      "current_evidence": "40 个有限硬策略具有精确最优性证书，但训练是已知模型 mirror 表策略；软策略仅 25/40 达梯度阈值，五个残差模型均未达平稳阈值；固定区域 Frechet 导数不是学习边界总导数。",
+      "closure_condition": "明确联合目标、导数合同和适用范围，验证优化停止条件、梯度、软分布到事件执行转移及独立任务收益；不得由有限硬策略证书外推一般神经收敛。",
+      "evidence": ["../value_boundary_v2_20261031/publication/PREPARED_SUMMARY.json", "../task_policy_v2_20261031/evidence/formal_prepared/PREPARE_SUMMARY.json", "../value_boundary_v2_20261031/README.md"]
+    }
+  ],
+  "remote_ci_at_publication_check": {
+    "draft": true,
+    "mergeable": true,
+    "blocking-ci": "pending",
+    "architecture": "pending",
+    "v8-canary": "in_progress",
+    "remote_ci_pass_claim": false,
+    "note": "发布时状态快照，可能随后变化；不等待 CI 不能表述为通过，也不影响 main_activation=false。"
+  },
+  "report": "RESULTS.md",
+  "independent_audit": "../progression_audit_20261031/CONFIRMATION_AUDIT.md"
+}
