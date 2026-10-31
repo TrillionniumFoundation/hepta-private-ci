@@ -1,0 +1,102 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--cargo-metadata",
+    "/workspace/scratch/37ced04cbdda/native-r7-build02/cargo-metadata.json",
+    "--binaries-metadata",
+    "/workspace/scratch/37ced04cbdda/native-r7-build02/binaries-metadata.json",
+    "--config-file",
+    "/workspace/scratch/37ced04cbdda/native-r7-build02/nextest.toml",
+    "--no-tests",
+    "fail",
+    "-j",
+    "1"
+  ],
+  "cwd": "/workspace/scratch/37ced04cbdda/native-format-workflow01/codex-rs",
+  "returncode": 96,
+  "stdout": "",
+  "stderr": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nerror: workspace root manifest at /workspace/scratch/37ced04cbdda/native-format-workflow01/codex-rs/Cargo.toml does not exist\n(hint: ensure that project source is available for reused build, using --workspace-remap if necessary)\nerror: recipe `test` failed on line 89 with exit code 96\n",
+  "reused_direct_rustc_test_binary": true,
+  "fresh_cargo_test_build": false,
+  "binary_sha256": "d37ddbac70526f2c8c2a29ab832ca3e3d57a49ab1a97bfb73b8be0df0ce4fb17",
+  "metadata": {
+    "cargo": {
+      "packages": [
+        {
+          "name": "codex-r7-native-policy",
+          "version": "0.1.0",
+          "id": "path+file:///workspace/scratch/37ced04cbdda/native-format-workflow01/codex-rs#codex-r7-native-policy@0.1.0",
+          "license": null,
+          "license_file": null,
+          "description": null,
+          "source": null,
+          "dependencies": [],
+          "targets": [
+            {
+              "kind": [
+                "bin"
+              ],
+              "crate_types": [
+                "bin"
+              ],
+              "name": "codex-r7-native-policy",
+              "src_path": "/workspace/scratch/37ced04cbdda/hepta-event-comparison/experiments/analytic_event_neuron/round8_contract_closure_20261031/native/main.rs",
+              "edition": "2024",
+              "doc": true,
+              "doctest": false,
+              "test": true
+            }
+          ],
+          "features": {},
+          "manifest_path": "/workspace/scratch/37ced04cbdda/native-format-workflow01/codex-rs/Cargo.toml",
+          "metadata": null,
+          "publish": null,
+          "authors": [],
+          "categories": [],
+          "keywords": [],
+          "readme": null,
+          "repository": null,
+          "homepage": null,
+          "documentation": null,
+          "edition": "2024",
+          "links": null,
+          "default_run": null,
+          "rust_version": null
+        }
+      ],
+      "workspace_members": [
+        "path+file:///workspace/scratch/37ced04cbdda/native-format-workflow01/codex-rs#codex-r7-native-policy@0.1.0"
+      ],
+      "workspace_default_members": [
+        "path+file:///workspace/scratch/37ced04cbdda/native-format-workflow01/codex-rs#codex-r7-native-policy@0.1.0"
+      ],
+      "resolve": null,
+      "target_directory": "/workspace/scratch/37ced04cbdda/native-r7-build02",
+      "build_directory": "/workspace/scratch/37ced04cbdda/native-r7-build02",
+      "version": 1,
+      "workspace_root": "/workspace/scratch/37ced04cbdda/native-format-workflow01/codex-rs",
+      "metadata": null
+    },
+    "binaries": {
+      "rust-build-meta": {
+        "target-directory": "/workspace/scratch/37ced04cbdda/native-r7-build02",
+        "base-output-directories": [
+          "debug"
+        ],
+        "non-test-binaries": {},
+        "linked-paths": []
+      },
+      "rust-binaries": {
+        "codex-r7-native-policy": {
+          "binary-id": "codex-r7-native-policy",
+          "binary-name": "codex-r7-native-policy",
+          "package-id": "path+file:///workspace/scratch/37ced04cbdda/native-format-workflow01/codex-rs#codex-r7-native-policy@0.1.0",
+          "kind": "bin",
+          "binary-path": "/workspace/scratch/37ced04cbdda/native-r7-build02/r7-native-policy-tests",
+          "build-platform": "host"
+        }
+      }
+    }
+  }
+}

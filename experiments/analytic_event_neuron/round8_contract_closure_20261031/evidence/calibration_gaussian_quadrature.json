@@ -1,0 +1,21 @@
+{
+  "classification": "development quadrature diagnostic; no heldout or confirmation worlds",
+  "orders": [48, 96],
+  "anchor": "R7 first_passage_none_{fit_seed}.json copied to the common leak-zero Brownian continuous model",
+  "deployment": "mean",
+  "operator": "gaussian",
+  "configurations": "round7.data.task_configuration(index)",
+  "world_seed_formula": "86000000 + fit_seed * 1000 + index",
+  "latent_seed_formula": "97000000 + fit_seed * 1000 + index",
+  "index_range": [0, 31],
+  "comparison": "Full run_episode action sequence equality; max absolute Q difference only while public prefixes match",
+  "rows": [
+    {"seed": 11, "worlds": 32, "changed_action_sequences": 0, "shared_prefix_Q_max_difference": 3.3306690738754696e-16, "shared_prefixes": 156},
+    {"seed": 12, "worlds": 32, "changed_action_sequences": 0, "shared_prefix_Q_max_difference": 4.440892098500626e-16, "shared_prefixes": 155},
+    {"seed": 13, "worlds": 32, "changed_action_sequences": 0, "shared_prefix_Q_max_difference": 3.3306690738754696e-16, "shared_prefixes": 123},
+    {"seed": 14, "worlds": 32, "changed_action_sequences": 0, "shared_prefix_Q_max_difference": 4.440892098500626e-16, "shared_prefixes": 103},
+    {"seed": 15, "worlds": 32, "changed_action_sequences": 0, "shared_prefix_Q_max_difference": 2.7755575615628914e-16, "shared_prefixes": 156}
+  ],
+  "process_cpu_seconds": 1.285694201,
+  "limits": "Only the evaluated frozen readouts and nominal development paths are checked; this is not a uniform quadrature bound or a test of heldout superiority."
+}

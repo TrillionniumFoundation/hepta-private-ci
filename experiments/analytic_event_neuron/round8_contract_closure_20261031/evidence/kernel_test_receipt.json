@@ -1,0 +1,15 @@
+{
+  "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 /workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python -B -m unittest experiments.analytic_event_neuron.round8_contract_closure_20261031.test_kernels -v",
+  "exit_code": 0,
+  "initial_failure_retained": "evidence/kernel_initial_audit.json",
+  "recorded_utc": "2026-10-31T08:07:45.335762+00:00",
+  "result": "OK",
+  "source_sha256": {
+    "kernel_audit.py": "008a413bb2f7bf53774cc189055f709da203007c1881923ac0dd54544a198749",
+    "kernels.py": "2367c43a37fb3edd14e17095fa3bc72b1a614812ecbf87267f41eb16c0570715",
+    "test_kernels.py": "ca3cc985a2f9c68063e86970abe3f94ba8082eab4252a223b3aa714d7ba084c4"
+  },
+  "tests_run": 5,
+  "tool_chunk_id": "b3bf65",
+  "unittest_elapsed_seconds": 0.321
+}

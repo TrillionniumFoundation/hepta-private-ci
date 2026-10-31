@@ -1,0 +1,36 @@
+{
+  "archive_format": "concatenated binary parts of one gzip tar stream",
+  "archive_parts": [
+    {
+      "bytes": 384000,
+      "path": "native-evidence.tar.gz.part000",
+      "sha256": "e01014d62200035372f5f15224b4046ceb142b757130a3cef3ffd98bd82ac998"
+    },
+    {
+      "bytes": 384000,
+      "path": "native-evidence.tar.gz.part001",
+      "sha256": "9c953b6cd2f2f67f40e0a7ebffc44d6b1b25f060b4bfbe9c572da519be81be0e"
+    },
+    {
+      "bytes": 134093,
+      "path": "native-evidence.tar.gz.part002",
+      "sha256": "673c6747f5a31b8fca0b882f67289c25440060468120113d1e4a716f5ad31cd9"
+    }
+  ],
+  "gzip_bytes": 902093,
+  "gzip_sha256": "9ecbb1856ccd660c4fd83d20a0b95cbe17b3207152140abcde42ba14b1994eeb",
+  "inventory_parts": [
+    {
+      "bytes": 2139,
+      "path": "inventory000.json",
+      "sha256": "978991e2b45685a55969f0e32de03a2094a299799b9677f1807d622f83a62c26"
+    }
+  ],
+  "member_count": 14,
+  "original_local_files_retained": true,
+  "qualified_binary": "executables/r7-native-policy",
+  "raw_task_and_owner_evidence": "Packaged by the root experiment separately; not duplicated here.",
+  "schema": "hepta.native-evidence-bundle.v1",
+  "source_build_receipt": "build/BUILD_ATTEMPT03.json",
+  "total_input_bytes": 2309338
+}
