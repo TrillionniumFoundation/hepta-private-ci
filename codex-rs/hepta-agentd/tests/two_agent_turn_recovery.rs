@@ -41,15 +41,15 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use core_test_support::responses;
+use core_test_support::streaming_sse::StreamingSseChunk;
+use core_test_support::streaming_sse::start_streaming_sse_server_with_request_observer;
 use serde_json::Value;
+use tokio::io::AsyncReadExt;
+use tokio::io::AsyncWriteExt;
+use tokio::net::TcpStream;
+use tokio::sync::oneshot;
 use tokio::time::sleep;
 use tokio::time::timeout;
-use wiremock::Mock;
-use wiremock::Request;
-use wiremock::Respond;
-use wiremock::ResponseTemplate;
-use wiremock::matchers::method;
-use wiremock::matchers::path_regex;
 
 mod support;
 
@@ -458,20 +458,21 @@ async fn start_queued_if_pending(
 
 #[derive(Default)]
 struct SequenceState {
-    requests: Mutex<Vec<Request>>,
+    requests: Mutex<Vec<Vec<u8>>>,
     calls: AtomicUsize,
     capture_failed: AtomicBool,
 }
 
 impl SequenceState {
-    fn capture_request(&self, request: &Request) -> Result<()> {
+    fn capture_request(&self, body: &[u8]) -> Result<()> {
         self.requests
             .lock()
             .map_err(|_| {
                 self.capture_failed.store(/*val*/ true, Ordering::Release);
                 anyhow!("request capture lock poisoned")
             })?
-            .push(request.clone());
+            .push(body.to_vec());
+        self.calls.fetch_add(1, Ordering::AcqRel);
         Ok(())
     }
 
@@ -484,78 +485,8 @@ impl SequenceState {
     }
 }
 
-struct DelayedFirstSequence {
-    state: Arc<SequenceState>,
-    bodies: Vec<String>,
-}
-
-impl Respond for DelayedFirstSequence {
-    fn respond(&self, request: &Request) -> ResponseTemplate {
-        if self.state.capture_request(request).is_err() {
-            return ResponseTemplate::new(/*s*/ 500);
-        }
-        let index = self.state.calls.fetch_add(1, Ordering::AcqRel);
-        let body = self
-            .bodies
-            .get(index)
-            .unwrap_or_else(|| panic!("unexpected model request {index}"));
-        let response = ResponseTemplate::new(200)
-            .insert_header("content-type", "text/event-stream")
-            .set_body_string(body.clone());
-        if index == 0 {
-            // The request has crossed the physical-send boundary, but the old
-            // process cannot receive a terminal model response before SIGKILL.
-            // Keep enough time for the harness to enqueue work and SIGKILL
-            // the old Agent, while allowing the mock server to service the
-            // post-restart recovery request without a two-minute queue.
-            response.set_delay(Duration::from_secs(8))
-        } else {
-            response
-        }
-    }
-}
-
-struct GatedFirstSequence {
-    state: Arc<SequenceState>,
-    bodies: Vec<String>,
-}
-
-impl Respond for GatedFirstSequence {
-    fn respond(&self, request: &Request) -> ResponseTemplate {
-        if self.state.capture_request(request).is_err() {
-            return ResponseTemplate::new(/*s*/ 500);
-        }
-        let index = self.state.calls.fetch_add(1, Ordering::AcqRel);
-        let body = self
-            .bodies
-            .get(index)
-            .unwrap_or_else(|| panic!("unexpected gated model request {index}"));
-        let response = ResponseTemplate::new(200)
-            .insert_header("content-type", "text/event-stream")
-            .set_body_string(body.clone())
-            // Keep the first peer turn in flight while the other Agent is
-            // killed/restarted.  A finite HTTP delay is deliberately used
-            // instead of blocking `Respond::respond` on a condition variable:
-            // wiremock may execute responders on the test runtime, and a
-            // blocking gate can starve the supervisor and make the test
-            // deadlock before the release point.
-            ;
-        if index == 0 {
-            response.set_delay(Duration::from_secs(15))
-        } else {
-            response
-        }
-    }
-}
-
 #[tokio::test]
 async fn poisoned_request_capture_is_reported_without_counting_a_send() -> Result<()> {
-    let request = Request {
-        url: "http://localhost/responses".parse()?,
-        method: "POST".parse()?,
-        headers: Default::default(),
-        body: Vec::new(),
-    };
     for gated in [false, true] {
         let state = Arc::new(SequenceState::default());
         let poisoned = std::panic::catch_unwind(|| {
@@ -563,19 +494,41 @@ async fn poisoned_request_capture_is_reported_without_counting_a_send() -> Resul
             panic!("injected request capture failure");
         });
         ensure!(poisoned.is_err() && state.requests.is_poisoned());
-        let _response = if gated {
-            GatedFirstSequence {
-                state: Arc::clone(&state),
-                bodies: Vec::new(),
-            }
-            .respond(&request)
-        } else {
-            DelayedFirstSequence {
-                state: Arc::clone(&state),
-                bodies: Vec::new(),
-            }
-            .respond(&request)
-        };
+        let (release, gate) = oneshot::channel();
+        let capture = Arc::clone(&state);
+        let (server, _) = start_streaming_sse_server_with_request_observer(
+            vec![vec![StreamingSseChunk {
+                gate: gated.then_some(gate),
+                body: final_sse("capture-must-fail"),
+            }]],
+            move |body| {
+                capture
+                    .capture_request(body)
+                    .map_err(|error| error.to_string())
+            },
+        )
+        .await;
+        let response = timeout(EVENT_TIMEOUT, async {
+            let mut connection = TcpStream::connect(
+                server
+                    .uri()
+                    .strip_prefix("http://")
+                    .context("HTTP fixture URI")?,
+            )
+            .await?;
+            connection
+                .write_all(b"POST /v1/responses HTTP/1.1\r\nHost: localhost\r\nContent-Length: 2\r\nConnection: close\r\n\r\n{}")
+                .await?;
+            let mut response = Vec::new();
+            connection.read_to_end(&mut response).await?;
+            Ok::<_, anyhow::Error>(response)
+        })
+        .await
+        .context("timed out exchanging poisoned-capture HTTP request")??;
+        ensure!(response.starts_with(b"HTTP/1.1 500 "));
+        ensure!(server.requests().await.is_empty());
+        drop(release);
+        server.shutdown().await;
         ensure!(state.capture_failed.load(Ordering::Acquire) && state.requests.is_poisoned());
         ensure!(state.calls.load(Ordering::Acquire) == 0);
         ensure!(state.request_count().is_err());
@@ -600,36 +553,55 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     let agent_a = fleet.register(AGENT_A, "workspace-a")?;
     let agent_b = fleet.register(AGENT_B, "workspace-b")?;
 
-    let model_a = responses::start_mock_server().await;
-    let model_b = responses::start_mock_server().await;
-    MockResponsesConfig::new(&model_a.uri()).write(agent_a.layout.home_root())?;
-    MockResponsesConfig::new(&model_b.uri()).write(agent_b.layout.home_root())?;
-
+    let (cancel_old_a, old_a_gate) = oneshot::channel();
+    let (release_b, b_gate) = oneshot::channel();
     let model_a_state = Arc::new(SequenceState::default());
-    Mock::given(method("POST"))
-        .and(path_regex(".*/responses$"))
-        .respond_with(DelayedFirstSequence {
-            state: Arc::clone(&model_a_state),
-            bodies: vec![
-                final_sse("agent-a-killed-response"),
-                final_sse("agent-a-recovered-response"),
-                final_sse("agent-a-queued-response"),
-            ],
+    let capture_a = Arc::clone(&model_a_state);
+    let (model_a, _) = start_streaming_sse_server_with_request_observer(
+        [
+            ("agent-a-killed-response", Some(old_a_gate)),
+            ("agent-a-recovered-response", None),
+            ("agent-a-queued-response", None),
+        ]
+        .into_iter()
+        .map(|(response_id, gate)| {
+            vec![StreamingSseChunk {
+                gate,
+                body: final_sse(response_id),
+            }]
         })
-        .mount(&model_a)
-        .await;
+        .collect(),
+        move |body| {
+            capture_a
+                .capture_request(body)
+                .map_err(|error| error.to_string())
+        },
+    )
+    .await;
     let model_b_state = Arc::new(SequenceState::default());
-    Mock::given(method("POST"))
-        .and(path_regex(".*/responses$"))
-        .respond_with(GatedFirstSequence {
-            state: Arc::clone(&model_b_state),
-            bodies: vec![
-                final_sse("agent-b-original-response"),
-                final_sse("agent-b-queued-response"),
-            ],
+    let capture_b = Arc::clone(&model_b_state);
+    let (model_b, _) = start_streaming_sse_server_with_request_observer(
+        [
+            ("agent-b-original-response", Some(b_gate)),
+            ("agent-b-queued-response", None),
+        ]
+        .into_iter()
+        .map(|(response_id, gate)| {
+            vec![StreamingSseChunk {
+                gate,
+                body: final_sse(response_id),
+            }]
         })
-        .mount(&model_b)
-        .await;
+        .collect(),
+        move |body| {
+            capture_b
+                .capture_request(body)
+                .map_err(|error| error.to_string())
+        },
+    )
+    .await;
+    MockResponsesConfig::new(model_a.uri()).write(agent_a.layout.home_root())?;
+    MockResponsesConfig::new(model_b.uri()).write(agent_b.layout.home_root())?;
 
     fleet.start(&agent_a)?;
     fleet.start(&agent_b)?;
@@ -682,10 +654,10 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     // turn: the test needs a second control connection to observe the
     // persisted in-progress turn and queue work while the first HTTP request
     // is intentionally held open.  The previous single-connection form could
-    // deadlock in the provider mock before the test reached `gate.release()`.
+    // deadlock in the provider mock before the test released the response.
     let mut b_turn_starter = QualificationClient::connect(&agent_b, &control_b).await?;
     let b_thread_id = thread_b.id.clone();
-    let b_turn_task = tokio::spawn(async move {
+    let mut b_turn_task = tokio::spawn(async move {
         b_turn_starter
             .start_turn(&b_thread_id, B_CLIENT_ID, B_TEXT)
             .await
@@ -720,6 +692,9 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
 
     fleet.supervisor.kill(&agent_a.agent_id)?;
     wait_inactive(&mut fleet, &agent_a.agent_id).await?;
+    // Never deliver provider output to the killed generation. Dropping its
+    // sender closes only that connection; recovery can consume the next stream.
+    drop(cancel_old_a);
     drop(client_a);
     drop(queue_a);
 
@@ -843,9 +818,22 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     assert_user_item_once(&b_before_release.thread.turns, B_CLIENT_ID, B_TEXT)?;
     ensure!(model_b_state.request_count()? == 1);
 
-    let b_turn = b_turn_task
-        .await
-        .context("gated Agent B turn task panicked")??;
+    release_b
+        .send(())
+        .map_err(|_| anyhow!("Agent B response gate closed before release"))?;
+    let b_turn = match timeout(EVENT_TIMEOUT, &mut b_turn_task).await {
+        Ok(result) => result.context("gated Agent B turn task panicked")??,
+        Err(_) => {
+            b_turn_task.abort();
+            let cleanup = match b_turn_task.await {
+                Ok(_) => "completed during cancellation".to_string(),
+                Err(error) => error.to_string(),
+            };
+            anyhow::bail!(
+                "timed out waiting for Agent B turn RPC after releasing its response; task joined: {cleanup}"
+            );
+        }
+    };
     ensure!(b_turn.turn.id == b_turn_id);
     client_b
         .wait_for_turn_status(&thread_b.id, &b_turn_id, TurnStatus::Completed)
@@ -882,7 +870,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     ensure!(requests_a.len() == 3);
     let bodies_a = requests_a
         .iter()
-        .map(Request::body_json::<Value>)
+        .map(|body| serde_json::from_slice::<Value>(body))
         .collect::<Result<Vec<_>, _>>()?;
     ensure!(
         bodies_a
@@ -912,7 +900,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     ensure!(requests_b.len() == 2);
     let bodies_b = requests_b
         .iter()
-        .map(Request::body_json::<Value>)
+        .map(|body| serde_json::from_slice::<Value>(body))
         .collect::<Result<Vec<_>, _>>()?;
     ensure!(request_user_text_count(&bodies_b[0], B_TEXT) == 1);
     ensure!(
@@ -944,6 +932,8 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     queue_b.inner.shutdown().await?;
     ensure!(model_a_state.request_count()? == 3);
     ensure!(model_b_state.request_count()? == 2);
+    model_a.shutdown().await;
+    model_b.shutdown().await;
     Ok(())
 }
 
