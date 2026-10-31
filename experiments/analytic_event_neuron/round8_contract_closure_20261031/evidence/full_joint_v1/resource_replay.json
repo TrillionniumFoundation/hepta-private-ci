@@ -1,0 +1,35 @@
+{
+  "candidate_manifest_sha256": "b7d55711a1c5bcfb025bafbe8379b7a90515eb6bedf6528ab541de018abb91c1",
+  "candidate_update_count_unchanged": true,
+  "discarded_measurements": "All process_memory_observed_after_step0_notification VmRSS/VmHWM values in launch_*.json: namespace PIDs were looked up in a host-mounted /proc. They do not describe the Torch child. Preserve raw observations but never use them as model-memory evidence.",
+  "fit_seed": 11,
+  "frozen_inputs_unchanged": true,
+  "initial_checkpoint_sha256": "0448a1c416be0b4173fe14b1b9d768d1a3a0fe29ca5b08137f123b7d49839964",
+  "mode": "first_passage",
+  "n_grid": 15,
+  "original_training_first_step_wall_seconds": 1.747864663004293,
+  "pid_view": {
+    "os_getpid": 2,
+    "proc_self_pid": 1233204
+  },
+  "post_update_metrics": [
+    0.6187392035847075,
+    3.4331720651655866,
+    1.1653206413197184
+  ],
+  "post_update_utility_difference_from_original_curve": 0.0,
+  "postfreeze_diagnostic": true,
+  "pre_update_utility": 0.6163789753799976,
+  "process_peak_rss_kib_before_step": 275704,
+  "process_peak_rss_kib_through_step": 1215816,
+  "public_states": 738,
+  "registration_sha256": "606530930a5033a84e1af7c7cd0cf22b3d6d92f7ac35a6a51d66812dd2fddb7e",
+  "replay_process_cpu_seconds": 1.0506946460000002,
+  "replay_wall_seconds": 1.0507282229955308,
+  "replayed_updates": 1,
+  "retained_measurements": "Training.json SELF peak RSS and launch child-RUSAGE peak RSS/CPU are namespace-safe. Peak RSS includes interpreter/startup and is not a per-step allocation delta.",
+  "schema": "hepta.full-joint.first-step-resource-replay.v1",
+  "scope": "Independent replay of the original initial model solely to measure a full 738-state first update. The in-memory replay object is discarded, no heldout is constructed or read, and no candidate receives a 31st update.",
+  "source_sha256": "5cfcc08a819f5f5861968d12a8a63eb647df451b06c3daf177835de5a601d7cc",
+  "unclipped_gradient_norm": 0.085727482447829
+}
