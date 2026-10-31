@@ -53,3 +53,24 @@ Exact upstream debt PDE implementation blob in the *local tested harness* matche
 This closes a **bounded experimental subquestion**: the finite set of actual PDE nodes now has external first-hit-derived upper and lower pricing error bounds. It does **NOT** close P0: missing continuum spatial interpolation error, full maturity-dependent error envelope (including incompatible corner), global financially endogenous coupled equilibrium, all-state obstacle active sets, independent financial FP32/BF16 gradient validation, and downstream exact-rational equity/STOP propagation using *all* real error budgets. P1 mechanism advantages remain negative/unproved; P2 OOD memory/host recovery, P3 genuine four-modal, P4 native GPU/Joules/4096, and P5 equal-budget backbone advantage remain open/blocked.
 
 `complete_debt_error_budget=false`; `global_equilibrium_certified=false`; `all_scientific_blockers_closed=false`; `production_activation=false`. Keep this PR Draft/unmerged. All prior failures remain visible.
+
+## Follow-up: bridge real debt bounds into existing conditional stop audit
+
+Two additive files implement a strict diagnostic bridge using the exact same inherited parent #4520 numerical equity/conditional gate sources. Before evaluating, the bridge rejects incomplete/mismatched node sets and parameters, rounds each measured *actual* debt-error supremum **upward** to nine decimal places, and passes it as `debt_error`. It deliberately sets `upper_equity_error='0'` only as a **hypothetical perfect upper-equity boundary**, never claims physical full-bound verification. Receipt fields `equity_boundary_error_proved=false`, `continuum_stop_certified=false`, `scientific_gate_closed=false`, `production_activation=false` are invariant.
+
+| sale_fraction | nodes / time steps | actual debt upper rounded up | guaranteed STOP | guaranteed CONTINUE | AMBIGUOUS |
+|---|---|---|---:|---:|---:|
+| .015 | 101/250 | 0.042719435 | 0 | 98 | 1 |
+| .015 | 201/500 | 0.043101153 | 0 | 196 | 3 |
+| .015 | 401/1000 | 0.043012387 | 0 | 392 | 7 |
+| .2 | 101/250 | 0.096889570 | 0 | 93 | 6 |
+| .2 | 201/500 | 0.099101852 | 0 | 186 | 13 |
+| .2 | 401/1000 | 0.099422438 | 0 | 372 | 27 |
+
+**No guaranteed STOP survives** the supplied *real* debt error budget on any of these panels, even with the idealized zero upper-equity error. This is deliberately a narrower conditional finite-quantized-grid statement, not a proof that the true financial optimal equity STOP policy has no stop states. Indeed, the previous fixed-barrier extra-STOP *numerical* observations remain unchanged and unresolved.
+
+```sh
+python -m unittest -v experiments.hcsn_hx_unified_v3.test_hx_measured_debt_conditional_bridge
+```
+
+**2/2 additional focused local tests PASS**, zero skipped. The parent #4520 `hx_joint_pde_obstacle.py`, `hx_conditional_debt_interval_gate.py`, and `hx_actual_pde_conditional_audit.py` were matched by exact locally tested Git blobs `0aea5c12b2e42c6a17277071efc968a9c2981df2`, `aff677714e8307e16b4c0b6e29512b7bab70b649`, and `c21306bd2e00ed90b2688136bbd68712382bcae9`. The new bridge/test blobs `9f531ee84ae6c331342ee5320f975e77ea2e2092` / `d531045ac14cdec27b95c567aa655ebe2d8b9a0d` were read back exact. Total **11/11 new focused local tests PASS**, no full repo CI claim or P0 scientific closure.
