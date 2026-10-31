@@ -11,7 +11,7 @@
 | P0：field 改善真实更新 | 将 A 实际 gated 选择接到完整同 parent 后继；分别报告请求、guard 接受、物理状态相等、参数/optimizer 组件变化和原数值范数。 | 原完整研究的真实执行、独立终点和成本闭环；动作活动本身不等于正收益。 |
 | P0：advantage 是否可靠 | 补 C 48 行 gated calibration、严格 threshold/tie、实际 regret、attainable gain、配对标签及完整 baseline-tail 链。 | 校准行参与过 threshold 选择且存在依赖；它们不是新的 deployment-distribution 校准保证。 |
 | P1：field 是否保留必要信息 | 原 history/full-current-state 比较和 W 诊断保留，新增解释限制。 | 真实结果、可达性/占用分布证据；学习出的 full-state ridge 不是信息 oracle。 |
-| P1：解析 cell 额外贡献 | 原 C 两个 simple effects、interaction、跨架构比较和四项 retention 全部保留；正交互但双负简单效应有单独分类。 | 原 C 全部测试种子的真实结果；有限 FPT event-law 对照不能外推为完整 Hepta/NDU 优势。 |
+| P1：解析 cell 额外贡献 | 原 C 两个 simple effects、interaction、跨架构比较和四项 retention 全部保留；正交互但双负简单效应有单独分类。 | 原 C 全部测试种子的真实结果；有限解析事件律对照不能外推为完整 Hepta/NDU 优势。 |
 | P1：值得采用的系统能力 | 原 ordinary/taper 对照、当前已声明成本覆盖审计与统一解释入口已连接。 | 新任务族、规模验证、部署活动和完整历史/摊销成本；当前同任务新 schedule/source-pair 不能替代跨任务外推。 |
 
 ## 科学身份与分析入口
@@ -30,6 +30,16 @@
 - [依赖恢复凭据](dependency_materialization.json)：两个本地下载文件仅去除多余终末换行，AST 及位置完全相同，恢复到既有基线的准确 Git blob；它们不作为改动上传。
 - P0、P1、统一入口均经过另一位审阅者检查；真实科学结论仍须等待原全流程封存。
 
+## 全局 CI 与本次文档修正
+
+本次两个专用 CI 已分别实际通过：[P0 9 项](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41200153294)及[完整增量 21 项](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41200449604)。后者验证提交 `0c017a9dab2ed770a1e3557e30d56c9b42bd3ac5` 的实际代码；随后修正仅涉及文档和新增核验记录，六个 Python 实现/测试文件保持不变。
+
+同一提交的仓库全局检查没有全部通过。v8-canary 成功；Codespell 和 architecture source-head 失败。精确归因见 [spelling 证据](global_ci_inherited_findings.json)及[锁文件评估](lock_reconciliation_assessment.json)。
+
+Codespell 实际输出 29 次诊断：9 次已登记历史诊断、18 次继承未登记诊断，以及本次两个中文文档中的技术缩写误报。本次只把这两处新增缩写改成准确的中文表述。其余 27 次诊断所在 18 个文件的 base/head Git blob 完全一致。现有精确登记器同时约束单一历史来源、完整 inventory digest 和逐条 multiplicity，不能只追加 JSON 就接纳后续冻结材料；本次没有修改该检查规则或原科学文字。修正后的实际 CI 状态应读取新 run，不把预计的 27 次诊断当作已经重测。
+
+架构 source-head 的原 Cargo 锁与既有 manifests 不一致。已找到准确输入匹配、实际生成成功的旧 artifact，但其候选还包含兼容范围内的额外生产依赖重选，原产物自身保留 `dependency_graph_approved=false`。本次保存候选来源与差异审查，不把该候选直接覆盖到研究分支，也不把 x86_64 的 metadata 成功当作当前 arm64 或整个系统资格通过。两个 PR 保持 draft；专用合成测试通过不等于全仓库可合并。
+
 ## 原实验恢复与资源阻塞
 
 [静态恢复核验](../restored_inputs_static_verification_20261031.json)确认九个原始模型/数据/observer 文件 SHA256 均一致，Python build 和十项包 metadata 与冻结记录匹配。原配置的 21 个直接 descriptor 均匹配。此项检查未 import Torch，**不等于重新取得动态 runtime digest**。
@@ -43,6 +53,8 @@
 | RAM 与磁盘联合通过 | 0/3 | 连续 3/3 |
 
 OOM/kill 计数在三次观察内保持 41/9；这是共享环境累计值，不能归因于本次研究。前后均没有 execution06 启动标记。本次没有消耗原登记科学窗口，也没有启动一个无人处理 17 道 durable ACK 的后台研究。
+
+12:18:54 UTC 的追加单次必要条件检查仍不通过：有效可用内存 716,984,320 B、可用磁盘 1,384,656,896 B，启动标记仍为空。该单次复查不替代原三次连续 admission。
 
 [干净文件缓存检查](clean_page_cache_inventory.json)仅查询本项目 103 个大型文件的内核页驻留元数据，未读取 payload；所报告驻留约 53 MB，不能解决缺口，因此没有执行缓存驱逐。[旧 archive 退役检查](archive_retirement_readonly_audit.json)确认 execution04 可退役大副本已不在；execution05 虽有约 129 MB 回读副本，但失败 episode、已有结果及 inode 变化均不满足原退役入口，未删除。公开报告省略私有服务对象身份，原收据未修改。
 

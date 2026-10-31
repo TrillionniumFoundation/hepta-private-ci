@@ -14,7 +14,7 @@
 | **P2：标签、baseline、时钟和剩余预算是否一致？** | 保留原 A 的 108 行 gated calibration；新增 C 两个 heads 各 24 行的 strict-gate 校准诊断，并核对原 bank 标签、分割与 baseline-tail 状态链。 | A 为候选 macro48 后固定各 seed baseline 至 clock288；C 为候选 macro16 后 baseline2 至 clock96。这些是固定 tape 的 realized contrast；不是 expected Q 或 uniform certificate。 |
 | **P3：field 遗漏什么决策信息？** | 保留 B 的 `field-history task`、`full-state-field task` 与原 W shared-action 诊断；`p1_interpretation.py` 限定这些比较能支持的解释。 | Full-current-state ridge 是学习出的估计器，不能视为信息 oracle；history 仍付 H12 观察成本。W 的三个预定近场构造对不代表实际访问状态的分布；最优动作集合相交时，排序差异不强迫决策损失。 |
 | **P4：独立收益是否胜过 ordinary 与轻量控制？** | 原 B 全部十项效应、两个 observer、逐固定模型值和原 gates 全部保留；operational coverage 检查当前已声明的 path/stage/scoring 成本范围。 | `fixed-taper-field` 的正值有利于 taper。原 field gate 不包含 taper 比较或完整成本 Pareto 条件；选择操作的 timer 不等于整条路径耗时，历史未知成本不补零。 |
-| **P5：Hepta 是否额外适配？** | 原 C 的 interaction、两个 simple effects、跨架构 field 比较及四项 own-warmstart retention 共八项全部保留；新增机器可读的解释分类。 | 正 interaction 可以只是两个负 simple effects 中 dual 较少受损。原 interaction+retention gate 不要求 dual simple effect 为正。C 的有限 FPT event-law 处理不能推广为完整 Hepta/NDU 或 LLM 尺度优势。 |
+| **P5：Hepta 是否额外适配？** | 原 C 的 interaction、两个 simple effects、跨架构 field 比较及四项 own-warmstart retention 共八项全部保留；新增机器可读的解释分类。 | 正 interaction 可以只是两个负 simple effects 中 dual 较少受损。原 interaction+retention gate 不要求 dual simple effect 为正。C 的有限解析事件律处理不能推广为完整 Hepta/NDU 或 LLM 尺度优势。 |
 
 五问题的原定义和完整解释范围见 [原 review 文档](../../operational/parameter_field_recovery06/postseal/README.md) 与 [原结论模板](../../operational/parameter_field_recovery06/postseal/FINAL_CONCLUSION_TEMPLATE.zh-CN.md)。本目录不替换原 `REVIEW.json`、`COMMENTS.zh-CN.md`、`A_INACTIVE_GLOBAL.json` 或 primary aggregate。
 
