@@ -52,9 +52,12 @@ jobs:
       - name: Exercise preread owner and paired counterfactuals
         run: |
           if [ -f tools/hcsn/round10_20261031/native/qualify.py ]; then
-            python3 -m pip install numpy==2.3.5
+            python3 -m pip install numpy==2.3.5 scipy==1.17.0
             python3 tools/hcsn/round10_20261031/native/qualify.py --binary /tmp/hcsn-build/target/release/hcsn-owner-preread --output /tmp/hcsn-build/evidence
           fi
+      - name: Preserve scientific evidence transport
+        if: always()
+        run: python3 tools/hcsn/round10_20261031/integration/export_evidence.py --evidence /tmp/hcsn-build/evidence --archive /tmp/hcsn-build/evidence.tar.gz
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -64,6 +67,7 @@ jobs:
             /tmp/hcsn-build/Cargo.lock
             /tmp/hcsn-build/RUSTC.txt
             /tmp/hcsn-build/evidence/
+            /tmp/hcsn-build/evidence.tar.gz
             /tmp/hcsn-build/target/release/hcsn-owner-baseline
             /tmp/hcsn-build/target/release/hcsn-owner-preread
           if-no-files-found: error
