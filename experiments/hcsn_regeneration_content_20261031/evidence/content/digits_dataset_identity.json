@@ -1,0 +1,23 @@
+{
+  "dataset": "sklearn.datasets.load_digits",
+  "raw_shape": [
+    1797,
+    8,
+    8
+  ],
+  "dataset_sha256": "f0a9ff1c330d4251ebfbf449850431f71fea6d81a110f71cd6ec0c0fff20790f",
+  "split_seed": 20261031,
+  "split_counts": {
+    "train": 1074,
+    "dev": 355,
+    "test": 368
+  },
+  "split_sha256": {
+    "train": "b8db2a7d419e42df79bef79ba7460da48ebaa2db016dfea4f3ee75589c54660a",
+    "dev": "17f4d51ff74fbe943749455f85254b6b50e98b011c80dc0c305716183443d55c",
+    "test": "0959c0cd16601ace764b0b5c9bf91b9b1620f5650dc6ba61fa36143f61cc5d02"
+  },
+  "normalization": "fixed pixel / 16; no fitted feature transform",
+  "split_rule": "per class floor(.6*n),floor(.2*n),remainder; sorted IDs",
+  "test_usage": "dataset identity only before checkpoint freeze; no test loss or accuracy"
+}

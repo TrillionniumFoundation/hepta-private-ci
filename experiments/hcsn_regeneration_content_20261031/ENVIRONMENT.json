@@ -1,0 +1,43 @@
+{
+  "collected_unix_time": 1793446773.6645525,
+  "python": "3.12.14",
+  "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "sklearn": "1.8.0",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "processor_model": "AMD EPYC 9V74 80-Core Processor",
+  "affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "memory_snapshot": [
+    "MemTotal:       10206472 kB",
+    "MemAvailable:    5108740 kB"
+  ],
+  "declared_formal_threads": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "available_tools": {
+    "python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "git": "/usr/local/bin/git",
+    "just": null,
+    "cargo": null,
+    "rustc": null
+  },
+  "execution_limits": [
+    "No torch/JAX runtime installed",
+    "Git HTTPS clone failed because configured browser-proxy:8889 was unreachable; GitHub connector remains usable",
+    "No Rust source changes; repository-wide just fmt cannot run in API-backed partial tree without just/cargo/codex-rs; Python syntax and numerical validation recorded separately"
+  ],
+  "hardware_scope": "Shared CPU runtime; no GPU, joule meter, or neuromorphic hardware"
+}

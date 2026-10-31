@@ -1,0 +1,9 @@
+{
+  "exit_code": 1,
+  "wall_seconds": 0.039627503996598534,
+  "fresh_destination": "/workspace/scratch/97e00ce02d57/hepta_research/evidence_restore_verification_20261031",
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/97e00ce02d57/hepta_research/experiments/hcsn_regeneration_content_20261031/archive_evidence.py\", line 459, in <module>\n    main()\n  File \"/workspace/scratch/97e00ce02d57/hepta_research/experiments/hcsn_regeneration_content_20261031/archive_evidence.py\", line 451, in main\n    manifest_parts = relative_path(args.manifest)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/97e00ce02d57/hepta_research/experiments/hcsn_regeneration_content_20261031/archive_evidence.py\", line 36, in relative_path\n    raise ValueError(\"Noncanonical or unsafe relative path: \" + name)\nValueError: Noncanonical or unsafe relative path: /workspace/scratch/97e00ce02d57/hepta_research/experiments/hcsn_regeneration_content_20261031/archives/evidence_v1/MANIFEST.json\n",
+  "archive_tool_sha256": "502575705d3642f0b06d51676c43391b6466b5483bbefa82853500e6b9e5dd8d",
+  "manifest_sha256": "ac5dc163bf097c5bd6271c47f51239e0e293128214678e095faea3a4de099b52"
+}

@@ -1,0 +1,77 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/hcsn-regeneration-content-20261031",
+  "retrieval": "GitHub Git commits API, read-only, after execution",
+  "commits": [
+    {
+      "role": "hcsn_primary_freeze",
+      "sha": "103be7196bf5d88a5662e57084d5b8761d9a71a3",
+      "tree": "5e57c86592dffa24ebf0cba3d4b3a308cc028890",
+      "committer_date": "2026-10-31T11:42:12Z",
+      "author_date": "2026-10-31T11:42:12Z",
+      "parents": [
+        "fd6871cd4e982d823f37844cfeca679bb997fd11"
+      ]
+    },
+    {
+      "role": "hcsn_secondary_freeze",
+      "sha": "cb3a8e1e3422e7477adb41d9e7bff8d20a9810b7",
+      "tree": "bf4b6918c1eae122838c90bc861f6fa9dcc2a299",
+      "committer_date": "2026-10-31T11:47:04Z",
+      "author_date": "2026-10-31T11:47:04Z",
+      "parents": [
+        "d43479fef2999c1b6de93673f148ffd4b9c22a43"
+      ]
+    },
+    {
+      "role": "hcsn_primary_candidate_commit",
+      "sha": "2cb71c47503821373bd31790d37febf7af22c84e",
+      "tree": "fc75492c84afaf735f648ab836d94a7d46e2673a",
+      "committer_date": "2026-10-31T11:51:17Z",
+      "author_date": "2026-10-31T11:51:17Z",
+      "parents": [
+        "cb3a8e1e3422e7477adb41d9e7bff8d20a9810b7"
+      ]
+    },
+    {
+      "role": "hcsn_secondary_candidate_commit",
+      "sha": "e3571ef540244aee85ff4d0e5575233ab3b869e0",
+      "tree": "52b7b6780d735c44f535dafce23cc0ef4a0c6ff4",
+      "committer_date": "2026-10-31T11:55:51Z",
+      "author_date": "2026-10-31T11:55:51Z",
+      "parents": [
+        "2cb71c47503821373bd31790d37febf7af22c84e"
+      ]
+    },
+    {
+      "role": "hcsn_deployed_value_freeze",
+      "sha": "231e02a3badfacf2ad031d09ca9fc79cdd46119a",
+      "tree": "a4d6e40ce3ef32bcefaeb2d037c31264746dadf9",
+      "committer_date": "2026-10-31T11:56:57Z",
+      "author_date": "2026-10-31T11:56:57Z",
+      "parents": [
+        "e3571ef540244aee85ff4d0e5575233ab3b869e0"
+      ]
+    },
+    {
+      "role": "hcsn_analysis_commit",
+      "sha": "307ee6264045a26702073cca5afb297db5959393",
+      "tree": "cd84e2402eb75c270771a9fd3d2e9c5505d326a3",
+      "committer_date": "2026-10-31T11:57:32Z",
+      "author_date": "2026-10-31T11:57:32Z",
+      "parents": [
+        "231e02a3badfacf2ad031d09ca9fc79cdd46119a"
+      ]
+    },
+    {
+      "role": "hcsn_binding_commit",
+      "sha": "190e98e0161ff5dd3c08b68b21dfc65da94eef2c",
+      "tree": "29cd663c75398f1303b6e074df4a61129ea60d2e",
+      "committer_date": "2026-10-31T12:05:46Z",
+      "author_date": "2026-10-31T12:05:46Z",
+      "parents": [
+        "307ee6264045a26702073cca5afb297db5959393"
+      ]
+    }
+  ]
+}

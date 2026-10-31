@@ -1,0 +1,38 @@
+{
+  "current_source_sha256": {
+    "PROTOCOL.json": "5388faaee954bf5f758a6967907b011626a4ce5650620bc9265860409856e189",
+    "SOURCE_FREEZE.json": "4f9cc70d34522abd6aa8edd7b6153ecd8531dfe2fc78d0a82b09bccd64cd3697",
+    "diagnostics.py": "51da5bdea73aa94f42e151baa8c5c32ede26b67089df9184cf19bc52205a38ce",
+    "renewal.py": "5f71896d8781f0fa67f0cb2937a4a8629a3d77aee0f0450307aa473592879e15",
+    "run_study.py": "f21617c5c85b15ab6da0d58dfa932b5adaf6da2a7676b42d69ea6f02dbbd786e"
+  },
+  "horizon": {
+    "contract": "mu=-0.25,sigma=1,reset=0.8,refractory=0.15; x>=0; content x>=0.05",
+    "implemented_gradient_scope": "Only initial-distance x gradient is exposed/trained. No horizon gradient API was added or claimed.",
+    "initial_corner": "At x=0,H=0 the first event is an immediate atom. The spatial derivative and joint continuous extension fail there; the time right derivative at fixed x=0 is zero.",
+    "limits": "The statement does not extend unchanged to zero noise or zero reset; both are excluded by the implemented input domain.",
+    "mean": "sum_{n>=1} F(H-(n-1)*d,x+(n-1)*reset)",
+    "smoothness": "For sigma>0, reset>0 and x>0, the mathematical expected count is smooth across H=k*d despite changes to the finite loop length.",
+    "switching_points": "At H=k*d every newly available subsequent term has positive distance x+k*reset. Its zero-time extension is flat to all orders because exp(-distance^2/(2*sigma^2*t)) dominates all powers of t.",
+    "time_derivative": "sum_{n>=1} first_passage_density(x+(n-1)*reset,mu,sigma,H-(n-1)*d) on positive remaining horizons"
+  },
+  "review_method": "Read-only source inspection and mathematical derivation; no formal rerun or training.",
+  "runner_review": {
+    "counts": {
+      "content_fits": 54,
+      "controller_fits": 6,
+      "digit_test_examples": 368,
+      "renewal_formal_rows": 2142,
+      "synthetic_diagnostic_examples": 512
+    },
+    "inspected_resolution": "Current frozen run_study.py verify_candidate checks the exact artifact set, every hash, SOURCE_FREEZE hash, and git-show manifest bytes; the API-workspace fallback requires a matching root remote-readback receipt.",
+    "last_input_ablation": "Frozen-model last-observation-only ablation is explicitly distinguished from a separately retrained baseline.",
+    "original_gap": "A 40-hex candidate argument plus mutable local checkpoint receipts did not bind the evaluated artifacts to the published candidate.",
+    "remaining_operational_step": "Actual candidate publication/readback and post-training candidate validation are root operations; this source review did not execute them.",
+    "required_fix": "Require the exact 54 content checkpoint and 6 controller paths/hashes in CANDIDATE_FREEZE.json, bind SOURCE_FREEZE hash, then bind candidate manifest to a real Git commit or actual root GitHub readback.",
+    "timing": "Cached raw input; full recurrent forward plus readout; data construction/serialization excluded; 2 warmups and 7 groups of 3 forwards match protocol."
+  },
+  "schema": "hcsn-horizon-and-runner-readonly-review-v1",
+  "source_freeze_commit": "103be7196bf5d88a5662e57084d5b8761d9a71a3",
+  "source_mutation": false
+}

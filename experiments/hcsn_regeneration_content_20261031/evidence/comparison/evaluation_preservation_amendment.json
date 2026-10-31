@@ -1,0 +1,17 @@
+{
+  "change": "evaluate_run now mkdir(exist_ok=False); preserve any existing evaluation directory",
+  "prior_audit_source": {
+    "comparison_models.py": "8dddd1328156379c90e12c4b4f4c316c6c46997af29c5f3daba67485af78f366",
+    "comparison_run.py": "8545bb4f48005a46c78f7bd0caa09d975022731e9e16b6b252caf596ff9c859e",
+    "content.py": "b957f8caad667d4b40ccc64f38ccf1efc3a9ce5776c3856738d3edc2026b7516",
+    "content_audit.py": "8c2d8c28797341ac2023af193aafc5aed64ecf0e6e64be2074e7e41c28ab049a",
+    "content_tasks.py": "a71b61d3d37057db078837dd640e9ded7caa8147aab655f5a482d538fc8dde0a",
+    "renewal.py": "5f71896d8781f0fa67f0cb2937a4a8629a3d77aee0f0450307aa473592879e15"
+  },
+  "new_source": {
+    "comparison_models.py": "8dddd1328156379c90e12c4b4f4c316c6c46997af29c5f3daba67485af78f366",
+    "comparison_run.py": "edd88fa69d28ad77a91243d6ef99e7e9ca98313c8f27c5519d17ba5dd937c50e"
+  },
+  "mathematics_and_training_changed": false,
+  "audit_reuse_reason": "Only evaluation IO overwrite behavior and explanatory documentation changed; Transformer/LIF model, backprop, data and fit loop remain byte-identical."
+}

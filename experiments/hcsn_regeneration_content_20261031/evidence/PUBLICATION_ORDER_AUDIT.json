@@ -1,0 +1,42 @@
+{
+  "all_passed": true,
+  "checks": {
+    "actual_continuation_audit_before_any_test": true,
+    "all_execution_phases_exit_zero": true,
+    "analysis_registration_before_any_test": true,
+    "primary_candidate_before_first_test": true,
+    "primary_source_before_training": true,
+    "query_binding_explicitly_after_test": true,
+    "query_binding_source_before_diagnostic": true,
+    "secondary_candidate_before_any_test": true,
+    "secondary_source_before_training": true
+  },
+  "formal_and_posthoc_cpu_seconds": 602.5159130000001,
+  "formal_and_posthoc_wall_seconds": 602.9322405259736,
+  "process_receipts": 22,
+  "receipt_sha256": {
+    "evidence/execution/comparison_dev.json": "129e1eb581bed310dfb9f3eb4916154a6c1e51ef9ac7ba16a64e709a479e2e09",
+    "evidence/execution/comparison_test.json": "947a06dc951f9fb670e0eb075a565a0968029563781ef539bf8fd9eb9f4b6558",
+    "evidence/execution/comparison_train.json": "69448fd7d4cc67b104f9cb614efdcd578919eb6b0915b0445f49ba02b13c0e2e",
+    "evidence/execution/content_dev.json": "62a26739e13eb806ae42ba56c61163ef48e7236e8a50a6dad1b7b0a03f987f70",
+    "evidence/execution/content_diagnostics.json": "364b63ad82a1e4b37c3480e0866067beb8652101828152d899bc9eb04a88c01b",
+    "evidence/execution/content_test.json": "7631cef235340507ed8ff2ab47bc7e544dd20e0421cc2e39a5810a2907db9bd7",
+    "evidence/execution/content_train.json": "765cd44c8f9b3b01bdb8a159b006a4d38edda0a351f9b420a6c8a36afd88c491",
+    "evidence/execution/deployed_value_audit.json": "235893872792ade22bf5432324b0e95ec09713f89e1f6e1e911c942d0da90942",
+    "evidence/execution/policy_fit_analytic_s11.json": "61dcc6dbd0ee74595358e317ea25f5cdb321b475167fb18d7f4773ed6e00bbb9",
+    "evidence/execution/policy_fit_analytic_s23.json": "c95895173b6324b30effeac111a37aaaaa48df4e605af23e3989f32180dda6f3",
+    "evidence/execution/policy_fit_analytic_s37.json": "aaca2efd59e5361de819aa210bd22fe7f1c6ed67f34c540168d4fda4768d8b63",
+    "evidence/execution/policy_fit_ordinary_s11.json": "43c057de9a493c1baec070097970b7b192f186e82d1105671876944abe5b6a2a",
+    "evidence/execution/policy_fit_ordinary_s23.json": "780e18d1cc67f93a7caade39527bde86763cce1fe58af958e900699860d665c0",
+    "evidence/execution/policy_fit_ordinary_s37.json": "b5b27413439f89430d4fd8a87a27d0aac1dabb6ab28c454dc43e40b18ede38ae",
+    "evidence/execution/policy_policy_analytic_s11.json": "dfc17b17db59c31ef5d313a7a3c37079c70d1c2f4baabbad45179c2782420175",
+    "evidence/execution/policy_policy_analytic_s23.json": "f624a5041a16ced3b5a5af89c889d7a81c9c4502ca5e1dc906d982942fde62a5",
+    "evidence/execution/policy_policy_analytic_s37.json": "ebd0b6bf90a754e3c69b9dd35dd6dc2ca12a760723b583a997be193096870314",
+    "evidence/execution/policy_policy_ordinary_s11.json": "968f92fc27e5d3242f707b2cba6ee174e18d88b69e8e06edabeb6665dbca90b6",
+    "evidence/execution/policy_policy_ordinary_s23.json": "2116ab384144e896d51e2749e638528f366eb375dab2f787429331e73cd9ba73",
+    "evidence/execution/policy_policy_ordinary_s37.json": "619a73655eee47ca0e69f2da9844cd16c88f53f7f3d7201865d1305429080d25",
+    "evidence/execution/recall_binding_posthoc.json": "199352820e1e5b2ca57c6478e2e8dbeebac41dceadd49fab2ca591e69554b574",
+    "evidence/execution/renewal.json": "c3841eb8599ec1e27b811ebb2f2b406a15efe73687de30a34d69fe9f6e991a91"
+  },
+  "scope": "Sum of non-overlapping registered child-process phases; excludes tool calls, publication, independent review and report generation"
+}

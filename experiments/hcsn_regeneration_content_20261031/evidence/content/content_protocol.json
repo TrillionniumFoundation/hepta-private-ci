@@ -1,0 +1,89 @@
+{
+  "analytic_gate": "1-exp(-E[N]); x=softplus(-a)+.05, mu=-.25, sigma=1, reset=.8, refractory=.15",
+  "batch": 32,
+  "dev_seed": "1200000 + 10000*task_index + (100 if long_delay else 0)",
+  "dev_synthetic_examples": 512,
+  "dtype": "float64",
+  "evaluation_digits": "entire fixed requested dev/test split once",
+  "families": [
+    "ordinary",
+    "analytic"
+  ],
+  "grad_clip": 1.0,
+  "interpretation": "deterministic renewal-flow gate; not expectation of a nonlinear sampled SNN",
+  "lr": 0.003,
+  "objective": "mean final-token classification cross entropy; full BPTT",
+  "optimizer": "Adam beta=(.9,.999), eps=1e-8",
+  "ordinary_gate": "1-exp(-dt*softplus(a))",
+  "seeds": [
+    11,
+    23,
+    37
+  ],
+  "tasks": {
+    "clock_shift": "alternating dt=.5,1.5; raw observations unchanged",
+    "digits_long_delay": "8 zero rows after 8 image rows",
+    "digits_split_seed": 20261031,
+    "multimodal_long_steps": 16,
+    "multimodal_reliabilities": {
+      "A": 0.7,
+      "B": 0.75
+    },
+    "multimodal_support_order": {
+      "A": [
+        -1,
+        1
+      ],
+      "B": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          1
+        ]
+      ]
+    },
+    "multimodal_train_steps": 8,
+    "recall_keys_values": [
+      3,
+      3
+    ],
+    "recall_long_delay": 12,
+    "recall_train_delay": 4,
+    "semantics": "raw one-hot tokens, raw finite-noise wave, or raw 8x8 digit rows; no posterior input",
+    "tasks": {
+      "associative_recall": {
+        "classes": 3,
+        "input_dim": 9
+      },
+      "digits_rows": {
+        "classes": 10,
+        "input_dim": 8
+      },
+      "multimodal_evidence": {
+        "classes": 2,
+        "input_dim": 12
+      }
+    }
+  },
+  "test_seed": "1700000 + 10000*task_index + (100 if long_delay else 0)",
+  "test_synthetic_examples": 2048,
+  "train_seed": "700000 + 10000*task_index + model_seed",
+  "updates": 300,
+  "version": 1,
+  "widths": [
+    16,
+    32,
+    64
+  ]
+}
