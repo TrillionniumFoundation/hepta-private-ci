@@ -32,34 +32,67 @@ mod python_fixture;
 async fn memory_v12_python_trained_bytes_match_native_reader() {
     let payload = python_fixture::PAYLOAD.as_bytes();
     let expected_digest = "87be8189b400654b7567db575a4485a791109abc3042cbfe299c8eb34587ba47"
-        .parse::<Digest32>().expect("pinned Python export digest");
+        .parse::<Digest32>()
+        .expect("pinned Python export digest");
     let model = crate::memory_mlp_v12::MemoryMlpCellV12::from_bytes(payload, expected_digest)
         .expect("actual Python-trained float32 tensors");
     let rows = [("item:a", [11, 3, 14]), ("item:b", [7, 2, 12])];
     for (index, (key, values)) in rows.iter().enumerate() {
         let prediction = model.predict(key).expect("native matrix inference");
-        assert_eq!(prediction.value, Some(MemoryInventoryValueV1::Semantic(MemoryInventoryPolicyV1 {
-            reserve: values[0], pack: values[1], limit: values[2],
-        })));
+        assert_eq!(
+            prediction.value,
+            Some(MemoryInventoryValueV1::Semantic(MemoryInventoryPolicyV1 {
+                reserve: values[0],
+                pack: values[1],
+                limit: values[2],
+            }))
+        );
         assert_eq!(prediction.abstain, None);
-        assert_eq!(prediction.logits.len(), python_fixture::EXPECTED[index].len());
-        for (actual, expected) in prediction.logits.iter().zip(python_fixture::EXPECTED[index]) {
-            assert!((actual - expected).abs() <= 1e-8, "native/Python logit differs: {actual} versus {expected}");
+        assert_eq!(
+            prediction.logits.len(),
+            python_fixture::EXPECTED[index].len()
+        );
+        for (actual, expected) in prediction
+            .logits
+            .iter()
+            .zip(python_fixture::EXPECTED[index])
+        {
+            assert!(
+                (actual - expected).abs() <= 1e-8,
+                "native/Python logit differs: {actual} versus {expected}"
+            );
         }
     }
-    let unknown = model.predict("item:never-written").expect("bounded unknown query");
-    assert_eq!(unknown, codex_hepta_neuron::MemoryResidualPredictionV1 {
-        kind: codex_hepta_cognitive_types::MemoryCellKindV1::Semantic,
-        value: None, logits: Vec::new(), minimum_margin: 0.0, source_ids: Vec::new(),
-        artifact_digest: expected_digest.to_string(), parameter_digest: model.parameters_digest.to_string(),
-        abstain: Some(codex_hepta_neuron::MemoryResidualAbstentionV1::OutsideWrittenSupport),
-    });
+    let unknown = model
+        .predict("item:never-written")
+        .expect("bounded unknown query");
+    assert_eq!(
+        unknown,
+        codex_hepta_neuron::MemoryResidualPredictionV1 {
+            kind: codex_hepta_cognitive_types::MemoryCellKindV1::Semantic,
+            value: None,
+            logits: Vec::new(),
+            minimum_margin: 0.0,
+            source_ids: Vec::new(),
+            artifact_digest: expected_digest.to_string(),
+            parameter_digest: model.parameters_digest.to_string(),
+            abstain: Some(codex_hepta_neuron::MemoryResidualAbstentionV1::OutsideWrittenSupport),
+        }
+    );
     let mut changed: serde_json::Value = serde_json::from_slice(payload).expect("Python DTO");
-    let mut weights = changed["arrays"]["hidden.weight"]["f32le_hex"].as_str().expect("weights").as_bytes().to_vec();
+    let mut weights = changed["arrays"]["hidden.weight"]["f32le_hex"]
+        .as_str()
+        .expect("weights")
+        .as_bytes()
+        .to_vec();
     weights[0] = if weights[0] == b'0' { b'1' } else { b'0' };
-    changed["arrays"]["hidden.weight"]["f32le_hex"] = json!(String::from_utf8(weights).expect("hex"));
+    changed["arrays"]["hidden.weight"]["f32le_hex"] =
+        json!(String::from_utf8(weights).expect("hex"));
     let changed = serde_json::to_vec(&changed).expect("changed tensor bytes");
-    assert!(crate::memory_mlp_v12::MemoryMlpCellV12::from_bytes(&changed, Digest32::of_bytes(&changed)).is_err());
+    assert!(
+        crate::memory_mlp_v12::MemoryMlpCellV12::from_bytes(&changed, Digest32::of_bytes(&changed))
+            .is_err()
+    );
 
     // This is an explicit integration-only provenance rebinding, not a claim
     // that the Python fixture was trained against this newly created SQLite DB.
@@ -67,52 +100,105 @@ async fn memory_v12_python_trained_bytes_match_native_reader() {
     // before replacing source identities. All learned tensors stay unchanged.
     let (_root, store, access) = owner_fixture().await;
     let owner = snapshot(&store, &access).await;
-    let projection = owner.training_projection_v11(&MemoryTrainingSelectorV11 {
-        cell_id: key("cell:python-trained"), kind: MemoryInventoryKindV1::Semantic,
-        keys: vec![key("item:a"), key("item:b")],
-    }).expect("authenticated owner projection");
-    let mut rebound: serde_json::Value = serde_json::from_slice(payload).expect("original Python DTO");
+    let projection = owner
+        .training_projection_v11(&MemoryTrainingSelectorV11 {
+            cell_id: key("cell:python-trained"),
+            kind: MemoryInventoryKindV1::Semantic,
+            keys: vec![key("item:a"), key("item:b")],
+        })
+        .expect("authenticated owner projection");
+    let mut rebound: serde_json::Value =
+        serde_json::from_slice(payload).expect("original Python DTO");
     let mut lineage = Vec::new();
     for (source, (key, values)) in projection.records().iter().zip(rows) {
         assert_eq!(source.record.key.as_str(), key);
-        assert_eq!(source.record.value, json!({"reserve":values[0],"pack":values[1],"limit":values[2]}));
+        assert_eq!(
+            source.record.value,
+            json!({"reserve":values[0],"pack":values[1],"limit":values[2]})
+        );
         let address = Digest32::of_bytes(key.as_bytes()).to_string();
         let labels = serde_json::to_vec(&(key, values)).expect("original Python training row");
-        assert_eq!(rebound["supports"][&address], json!([Digest32::of_bytes(&labels).to_string()]));
+        assert_eq!(
+            rebound["supports"][&address],
+            json!([Digest32::of_bytes(&labels).to_string()])
+        );
         rebound["supports"][&address] = json!([source.source_id.to_string()]);
         lineage.push(source.source_id.to_string());
     }
     lineage.sort();
     rebound["lineage_sources"] = json!(lineage);
     rebound["owner_cut_sha256"] = json!(projection.acquisition_cut_digest());
-    MemoryCellCandidateV12::from_projection(&projection, generation(1), &serde_json::to_vec(&rebound).expect("rebound metadata"))
-        .expect("unchanged trained parameters bind to exactly matching owner records");
+    MemoryCellCandidateV12::from_projection(
+        &projection,
+        generation(1),
+        &serde_json::to_vec(&rebound).expect("rebound metadata"),
+    )
+    .expect("unchanged trained parameters bind to exactly matching owner records");
 }
 
 #[tokio::test]
 async fn memory_v12_trained_payload_rejects_version_and_parameter_substitution() {
     let (_root, store, access) = owner_fixture().await;
     let owner = snapshot(&store, &access).await;
-    let projection = owner.training_projection_v11(&MemoryTrainingSelectorV11 {
-        cell_id: key("cell:learned"), kind: MemoryInventoryKindV1::Semantic,
-        keys: vec![key("item:a"), key("item:b")],
-    }).expect("owner projection");
+    let projection = owner
+        .training_projection_v11(&MemoryTrainingSelectorV11 {
+            cell_id: key("cell:learned"),
+            kind: MemoryInventoryKindV1::Semantic,
+            keys: vec![key("item:a"), key("item:b")],
+        })
+        .expect("owner projection");
     let payload = train(&projection);
     MemoryCellCandidateV12::from_projection(&projection, generation(1), &payload).expect("V12");
     assert!(MemoryCellCandidateV11::from_projection(&projection, generation(1), &payload).is_err());
     let mut changed: serde_json::Value = serde_json::from_slice(&payload).expect("payload");
     changed["parameter_sha256"] = json!(Digest32::of_bytes(b"other-parameters").to_string());
-    assert!(MemoryCellCandidateV12::from_projection(&projection, generation(1), &serde_json::to_vec(&changed).expect("JSON")).is_err());
+    assert!(
+        MemoryCellCandidateV12::from_projection(
+            &projection,
+            generation(1),
+            &serde_json::to_vec(&changed).expect("JSON")
+        )
+        .is_err()
+    );
     let mut changed: serde_json::Value = serde_json::from_slice(&payload).expect("payload");
     changed["owner_cut_sha256"] = json!(Digest32::of_bytes(b"other-owner-cut").to_string());
-    assert!(MemoryCellCandidateV12::from_projection(&projection, generation(1), &serde_json::to_vec(&changed).expect("JSON")).is_err());
+    assert!(
+        MemoryCellCandidateV12::from_projection(
+            &projection,
+            generation(1),
+            &serde_json::to_vec(&changed).expect("JSON")
+        )
+        .is_err()
+    );
     let mut changed: serde_json::Value = serde_json::from_slice(&payload).expect("payload");
-    let omitted = changed["supports"].as_object().expect("supports").keys().next().expect("support").clone();
+    let omitted = changed["supports"]
+        .as_object()
+        .expect("supports")
+        .keys()
+        .next()
+        .expect("support")
+        .clone();
     let source = changed["supports"][&omitted][0].clone();
-    changed["supports"].as_object_mut().expect("supports").remove(&omitted);
-    changed["features"].as_object_mut().expect("features").remove(&omitted);
-    changed["lineage_sources"].as_array_mut().expect("lineage").retain(|item| *item != source);
-    assert!(MemoryCellCandidateV12::from_projection(&projection, generation(1), &serde_json::to_vec(&changed).expect("JSON")).is_err());
+    changed["supports"]
+        .as_object_mut()
+        .expect("supports")
+        .remove(&omitted);
+    changed["features"]
+        .as_object_mut()
+        .expect("features")
+        .remove(&omitted);
+    changed["lineage_sources"]
+        .as_array_mut()
+        .expect("lineage")
+        .retain(|item| *item != source);
+    assert!(
+        MemoryCellCandidateV12::from_projection(
+            &projection,
+            generation(1),
+            &serde_json::to_vec(&changed).expect("JSON")
+        )
+        .is_err()
+    );
 }
 
 #[tokio::test]
@@ -122,46 +208,167 @@ async fn memory_v12_trained_cells_publish_read_restart_correct_and_forget() {
     use MemoryInventoryKindV1::Semantic;
     let (root, store, access) = owner_fixture().await;
     let owner = snapshot(&store, &access).await;
-    let mut semantic = CellFixture::new(root.path().join("semantic"), &owner, "cell:semantic", Semantic, "item:a");
-    let mut procedure = CellFixture::new(root.path().join("procedure"), &owner, "cell:procedure", Procedure, "flow:a");
-    let previous_manifest = semantic.publication.admission.validated_manifest.manifest.clone();
+    let mut semantic = CellFixture::new(
+        root.path().join("semantic"),
+        &owner,
+        "cell:semantic",
+        Semantic,
+        "item:a",
+    );
+    let mut procedure = CellFixture::new(
+        root.path().join("procedure"),
+        &owner,
+        "cell:procedure",
+        Procedure,
+        "flow:a",
+    );
+    let previous_manifest = semantic
+        .publication
+        .admission
+        .validated_manifest
+        .manifest
+        .clone();
     semantic.selector.keys.push(key("item:b"));
     publish_trained(&mut semantic, &owner);
     publish_trained(&mut procedure, &owner);
     let learned_manifest = &semantic.publication.admission.validated_manifest.manifest;
-    assert_eq!(learned_manifest.objective_class_digest, previous_manifest.objective_class_digest);
-    assert_ne!(learned_manifest.schema_profile_digest, previous_manifest.schema_profile_digest);
-    assert_ne!(learned_manifest.compatibility_digest, previous_manifest.compatibility_digest);
-    let plan = MemoryServingPlanV11::prepare(&owner, generation(2), vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)]).expect("learned plan");
+    assert_eq!(
+        learned_manifest.objective_class_digest,
+        previous_manifest.objective_class_digest
+    );
+    assert_ne!(
+        learned_manifest.schema_profile_digest,
+        previous_manifest.schema_profile_digest
+    );
+    assert_ne!(
+        learned_manifest.compatibility_digest,
+        previous_manifest.compatibility_digest
+    );
+    let plan = MemoryServingPlanV11::prepare(
+        &owner,
+        generation(2),
+        vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)],
+    )
+    .expect("learned plan");
     let scope = CognitiveScope::AgentPrivate;
     let query = request(&owner);
-    let first = plan.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.expect("learned composition");
+    let first = plan
+        .read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
+        .await
+        .expect("learned composition");
     assert_eq!(first.value["value"], json!(14));
     let mut other = query.clone();
     other.entity_key = key("item:b");
-    assert_eq!(plan.read(&store, &access, &scope, &other, MemoryOperationV1::Semantic).await.expect("second learned address").value,
-        json!({"reserve":7,"pack":2,"limit":12}));
-    semantic.host.sleep_selected().expect("evict decoded tensors");
-    assert_eq!(plan.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.expect("wake tensors").value, first.value);
+    assert_eq!(
+        plan.read(&store, &access, &scope, &other, MemoryOperationV1::Semantic)
+            .await
+            .expect("second learned address")
+            .value,
+        json!({"reserve":7,"pack":2,"limit":12})
+    );
+    semantic
+        .host
+        .sleep_selected()
+        .expect("evict decoded tensors");
+    assert_eq!(
+        plan.read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
+            .await
+            .expect("wake tensors")
+            .value,
+        first.value
+    );
     let saved = plan.checkpoint().expect("checkpoint");
     drop(plan);
     let mut semantic = semantic.reopen();
     let procedure = procedure.reopen();
-    let restored = MemoryServingPlanV11::restore(&saved, &owner, vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)]).expect("authenticate recovered learned bytes");
+    let restored = MemoryServingPlanV11::restore(
+        &saved,
+        &owner,
+        vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)],
+    )
+    .expect("authenticate recovered learned bytes");
     let sibling = procedure.host.load_current().expect("sibling");
-    store.write_memory_inventory(&access, &scope, &record("item:a", Event, json!(9)), MemoryCellWriteModeV1::Correct { expected_revision: 1 }).await.expect("unrelated source");
-    let fresh = restored.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.expect("same learned weights fresh source");
+    store
+        .write_memory_inventory(
+            &access,
+            &scope,
+            &record("item:a", Event, json!(9)),
+            MemoryCellWriteModeV1::Correct {
+                expected_revision: 1,
+            },
+        )
+        .await
+        .expect("unrelated source");
+    let fresh = restored
+        .read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
+        .await
+        .expect("same learned weights fresh source");
     assert_eq!(fresh.value["value"], json!(6));
     assert_eq!(fresh.cells, first.cells);
     assert_ne!(fresh.query_cut_digest, first.query_cut_digest);
-    store.write_memory_inventory(&access, &scope, &record("item:a", Semantic, json!({"reserve":14,"pack":2,"limit":15})), MemoryCellWriteModeV1::Correct { expected_revision: 1 }).await.expect("relevant correction");
-    assert!(restored.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.is_err());
+    store
+        .write_memory_inventory(
+            &access,
+            &scope,
+            &record(
+                "item:a",
+                Semantic,
+                json!({"reserve":14,"pack":2,"limit":15}),
+            ),
+            MemoryCellWriteModeV1::Correct {
+                expected_revision: 1,
+            },
+        )
+        .await
+        .expect("relevant correction");
+    assert!(
+        restored
+            .read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
+            .await
+            .is_err()
+    );
     let corrected = snapshot(&store, &access).await;
     publish_trained(&mut semantic, &corrected);
-    assert!(Arc::ptr_eq(&sibling, &procedure.host.load_current().expect("unchanged sibling")));
-    let next = MemoryServingPlanV11::prepare(&corrected, generation(3), vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)]).expect("retrained semantic plan");
-    assert_eq!(next.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.expect("fresh learned source").value["value"], json!(10));
-    assert!(MemoryServingPlanV11::restore(&saved, &corrected, vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)]).is_err());
-    store.forget_memory_inventory(&access, &scope, &record("item:b", Semantic, json!(null)).address(), /*expected_revision*/ 1, "withdraw fitted dependency", now()).await.expect("tombstone");
-    assert!(next.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.is_err(), "even an unqueried trained dependency must invalidate its model");
+    assert!(Arc::ptr_eq(
+        &sibling,
+        &procedure.host.load_current().expect("unchanged sibling")
+    ));
+    let next = MemoryServingPlanV11::prepare(
+        &corrected,
+        generation(3),
+        vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)],
+    )
+    .expect("retrained semantic plan");
+    assert_eq!(
+        next.read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
+            .await
+            .expect("fresh learned source")
+            .value["value"],
+        json!(10)
+    );
+    assert!(
+        MemoryServingPlanV11::restore(
+            &saved,
+            &corrected,
+            vec![Arc::clone(&semantic.host), Arc::clone(&procedure.host)]
+        )
+        .is_err()
+    );
+    store
+        .forget_memory_inventory(
+            &access,
+            &scope,
+            &record("item:b", Semantic, json!(null)).address(),
+            /*expected_revision*/ 1,
+            "withdraw fitted dependency",
+            now(),
+        )
+        .await
+        .expect("tombstone");
+    assert!(
+        next.read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
+            .await
+            .is_err(),
+        "even an unqueried trained dependency must invalidate its model"
+    );
 }
