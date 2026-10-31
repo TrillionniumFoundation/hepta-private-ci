@@ -116,7 +116,7 @@ def regenerative_boundary(p: Stop) -> float:
     h=math.fsum((lost,delay))
     if not math.isfinite(h) or h<=0:
         raise ArithmeticError('Renewal exponent outside resolved f64 domain')
-    if h <= 1e-4:
+    if h <= 1e-3:
         # Coalescing W0/W-1 at -1/e. Use a positive series for the
         # cancellation-free inverse h=t²/2+t³/3+... .
         t=math.sqrt(2*h)
@@ -131,6 +131,14 @@ def regenerative_boundary(p: Stop) -> float:
                 raise ArithmeticError('Renewal branch-point inverse unresolved')
     else:
         t=1+float(lambertw(-math.exp(-h)/math.e,k=0).real)
+        if h <= 1e-1:
+            # Direct Lambert-W still loses O(1e-13) relative accuracy at
+            # h~1e-3. One stable Newton correction of
+            # -log1p(-t)-t=h avoids expanding the slow-series regime.
+            if not (0<t<1):
+                raise ArithmeticError('Renewal Lambert-W inverse unresolved')
+            residual=-math.log1p(-t)-t-h
+            t-=residual*(1-t)/t
     b=p.cost+t/k
     if not math.isfinite(b) or not b>p.cost:
         raise ArithmeticError('Non-positive or unresolved firing reward at boundary')
