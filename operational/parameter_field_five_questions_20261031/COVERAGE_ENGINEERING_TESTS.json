@@ -1,0 +1,55 @@
+{
+  "created_utc": "2026-10-31T01:28:56.874796+00:00",
+  "errors": 0,
+  "failures": 0,
+  "files": {
+    "USAGE_COVERAGE.md": {
+      "bytes": 2627,
+      "lines": 48,
+      "sha256": "7141d037aed6a14f413d3f42a343062b717f9a73fd17708b2f4c168b4f59d1f4"
+    },
+    "postseal_analysis_coverage.py": {
+      "bytes": 25759,
+      "lines": 422,
+      "sha256": "425a368c1d9af77186b2f4eecfd25ed73a35c6bf8da41d5008f1e20b943a8e7e"
+    },
+    "test_postseal_analysis_coverage.py": {
+      "bytes": 13516,
+      "lines": 220,
+      "sha256": "0f5faeb8e1a304343876cbfb0d4911ba46a12481b1f309aae7d6ddb604c49326"
+    }
+  },
+  "frozen_scientific_sources_modified": false,
+  "no_arguments_smoke": {
+    "exit_code": 2,
+    "result": {
+      "reasons": [
+        "An actual complete original postseal review and its externally held SHA256 are required.",
+        "Engineering fixtures are not scientific outcomes; no original source/seal gate has been entered."
+      ],
+      "schema": "hepta.postseal-analysis-coverage-audit.1",
+      "scientific_inputs_modified": false,
+      "scientific_payloads_decoded": false,
+      "status": "NOT_EVALUATED"
+    },
+    "stderr": ""
+  },
+  "python": "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "real_scientific_results_read": false,
+  "schema": "hepta.postseal-coverage-engineering-tests.1",
+  "scientific_endpoints_opened": false,
+  "scientific_status": "NOT_EVALUATED",
+  "status": "ENGINEERING_TESTS_PASS",
+  "test_command": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "test_postseal_analysis_coverage",
+    "-v"
+  ],
+  "test_output": "test_complete_original_sparse_counter_records_proven_zeros_not_missing_costs (test_postseal_analysis_coverage.CoverageChecks.test_complete_original_sparse_counter_records_proven_zeros_not_missing_costs) ... ok\ntest_completed_metadata_still_reenters_original_gate_before_any_outcome (test_postseal_analysis_coverage.CoverageChecks.test_completed_metadata_still_reenters_original_gate_before_any_outcome) ... ok\ntest_cost_roundoff_and_nonadditive_peak (test_postseal_analysis_coverage.CoverageChecks.test_cost_roundoff_and_nonadditive_peak) ... ok\ntest_duplicate_stage_seed_is_not_complete_coverage (test_postseal_analysis_coverage.CoverageChecks.test_duplicate_stage_seed_is_not_complete_coverage) ... ok\ntest_identity_boolean_and_missing_simple_effect_fail (test_postseal_analysis_coverage.CoverageChecks.test_identity_boolean_and_missing_simple_effect_fail) ... ok\ntest_incomplete_review_refuses_before_import_or_scientific_read (test_postseal_analysis_coverage.CoverageChecks.test_incomplete_review_refuses_before_import_or_scientific_read) ... ok\ntest_independent_factorial_identity_and_original_gate (test_postseal_analysis_coverage.CoverageChecks.test_independent_factorial_identity_and_original_gate) ... ok\ntest_missing_arm_ledger_and_C_warmstart_cost_are_reported (test_postseal_analysis_coverage.CoverageChecks.test_missing_arm_ledger_and_C_warmstart_cost_are_reported) ... ok\ntest_missing_counter_and_partial_paired_cost_do_not_pass (test_postseal_analysis_coverage.CoverageChecks.test_missing_counter_and_partial_paired_cost_do_not_pass) ... ok\ntest_missing_overall_cpu_or_physical_ledger_never_imputed (test_postseal_analysis_coverage.CoverageChecks.test_missing_overall_cpu_or_physical_ledger_never_imputed) ... ok\ntest_missing_total_cost_is_not_replaced_by_complete_path_ledgers (test_postseal_analysis_coverage.CoverageChecks.test_missing_total_cost_is_not_replaced_by_complete_path_ledgers) ... ok\ntest_no_real_gate_means_NOT_EVALUATED (test_postseal_analysis_coverage.CoverageChecks.test_no_real_gate_means_NOT_EVALUATED) ... ok\ntest_recorded_gradient_count_must_match_physical_backward_work (test_postseal_analysis_coverage.CoverageChecks.test_recorded_gradient_count_must_match_physical_backward_work) ... ok\ntest_single_metric_on_single_path_cannot_mean_full_cost_coverage (test_postseal_analysis_coverage.CoverageChecks.test_single_metric_on_single_path_cannot_mean_full_cost_coverage) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.014s\n\nOK\n",
+  "test_scope": "Pure synthetic aggregate and metadata fixtures; a mocked original gate is an engineering wiring test only.",
+  "tests_run": 14
+}
