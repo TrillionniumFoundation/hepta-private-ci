@@ -8,6 +8,7 @@ use pretty_assertions::assert_eq;
 
 #[test]
 fn appended_lines_preserve_multiline_syntax_state() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let first = "fn main() {\n    /* comment\n";
     let appended = "       continues */\n    println!(\"界 e\u{301}\");\n}\n";
     let code = format!("{first}{appended}");
@@ -26,6 +27,7 @@ fn appended_lines_preserve_multiline_syntax_state() {
 
 #[test]
 fn empty_and_unknown_language_fences_append() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     for lang in ["rust", "unknown-language"] {
         let highlighter = StreamingCodeHighlighter::new("", lang, syntax_theme_revision()).unwrap();
         let (_, lines) = highlighter.append("fn main() {}\n\n").unwrap();
@@ -35,6 +37,7 @@ fn empty_and_unknown_language_fences_append() {
 
 #[test]
 fn incomplete_lines_and_theme_changes_discard_state() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let highlighter =
         StreamingCodeHighlighter::new("fn first() {}\n", "rust", syntax_theme_revision()).unwrap();
     assert!(highlighter.append("fn partial()").is_none());
@@ -48,6 +51,7 @@ fn incomplete_lines_and_theme_changes_discard_state() {
 
 #[test]
 fn crossing_each_highlighting_limit_requires_a_canonical_render() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let cases = [
         (
             String::new(),

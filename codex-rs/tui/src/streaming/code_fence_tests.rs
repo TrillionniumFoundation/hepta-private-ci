@@ -5,6 +5,7 @@ use crate::render::highlight::syntax_theme_revision;
 
 #[test]
 fn detects_only_source_preserving_open_fences() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     for source in [
         "```rust,no_run\nfn main() {}\n",
         "~~~~python title=demo\nvalue = 1\n",
@@ -35,6 +36,7 @@ fn detects_only_source_preserving_open_fences() {
 
 #[test]
 fn every_possible_closer_returns_to_the_canonical_parser() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let opening = "~~~~rust\n";
     assert!(!has_possible_closing_line(
         "~~~\n```\n",
@@ -57,6 +59,7 @@ fn every_possible_closer_returns_to_the_canonical_parser() {
 
 #[test]
 fn lazy_initialization_rejects_a_changed_theme() {
+    let _theme_guard = crate::render::highlight::syntax_theme_test_guard();
     let source = "```rust\nfn first() {}\n";
     let mut fence = OpenCodeFence::detect(source, source.len(), syntax_theme_revision()).unwrap();
     fence.theme_revision = fence.theme_revision.wrapping_sub(1);

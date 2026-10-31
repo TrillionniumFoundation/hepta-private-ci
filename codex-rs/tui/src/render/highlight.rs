@@ -59,6 +59,8 @@ static THEME: OnceLock<RwLock<Theme>> = OnceLock::new();
 static THEME_REVISION: AtomicU64 = AtomicU64::new(0);
 static THEME_OVERRIDE: OnceLock<Option<String>> = OnceLock::new();
 static CODEX_HOME: OnceLock<Option<PathBuf>> = OnceLock::new();
+#[cfg(test)]
+static THEME_TEST_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
 // Syntect/bat encode ANSI palette semantics in alpha:
 // `a=0` => indexed ANSI palette via RGB payload, `a=1` => terminal default.
@@ -249,12 +251,28 @@ fn theme_lock() -> &'static RwLock<Theme> {
 
 /// Swap the active syntax theme at runtime and invalidate rendered-content caches.
 pub(crate) fn set_syntax_theme(theme: Theme) {
+    #[cfg(test)]
+    let _theme_test_guard = THEME_TEST_LOCK
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let mut guard = match theme_lock().write() {
         Ok(guard) => guard,
         Err(poisoned) => poisoned.into_inner(),
     };
     *guard = theme;
     THEME_REVISION.fetch_add(1, Ordering::Release);
+}
+
+/// Keep differential renders on one theme while unrelated application tests mutate it.
+///
+/// This is separate from the theme's read lock: highlighting takes that lock internally,
+/// and recursively taking a read lock while a writer waits can deadlock. Guarded tests
+/// must not call the global theme setter; cache invalidation tests use local stale revisions.
+#[cfg(test)]
+pub(crate) fn syntax_theme_test_guard() -> std::sync::MutexGuard<'static, ()> {
+    THEME_TEST_LOCK
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 /// Return the revision of the active syntax theme for rendered-content caches.
