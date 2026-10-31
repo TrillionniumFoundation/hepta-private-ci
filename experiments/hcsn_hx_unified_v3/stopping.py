@@ -139,9 +139,16 @@ def regenerative_boundary(p: Stop) -> float:
                 raise ArithmeticError('Renewal Lambert-W inverse unresolved')
             residual=-math.log1p(-t)-t-h
             t-=residual*(1-t)/t
-    b=p.cost+t/k
-    if not math.isfinite(b) or not b>p.cost:
+    displacement=t/k
+    b=p.cost+displacement
+    if not (math.isfinite(displacement) and displacement>0
+            and math.isfinite(b) and b>p.cost):
         raise ArithmeticError('Non-positive or unresolved firing reward at boundary')
+    # The independent solver already rejects absolute-cost ULPs that swamp
+    # a meaningful share of the reward. Apply the same f64 admission policy
+    # to the main Lambert-W path; b>cost alone does not suffice.
+    if math.ulp(b)>1e-8*displacement:
+        raise ArithmeticError('Regenerative boundary resolution unresolved at cost scale')
     return b
 
 
