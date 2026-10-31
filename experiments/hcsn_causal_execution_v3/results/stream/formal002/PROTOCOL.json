@@ -1,0 +1,71 @@
+{
+  "cost_boundary": "Local prepared-feature store through prediction/evidence/restart; raw decoding and live network absent",
+  "data_status": "Previously observed small CREMA-D cohort; follow-up exploration, not fresh actor confirmation",
+  "frozen_at_utc": "2026-10-31T11:54:28Z",
+  "mandatory_baseline": "read-all using identical frozen encoder and exact observation store",
+  "models": {
+    "async_av": {
+      "path": "/workspace/scratch/492bd8dc87c7/hepta-hcsn-next/experiments/hcsn_causal_execution_v3/results/av_probe/async_av/selected_encoder.npz",
+      "sha256": "2f390a2dda86eef5eb808bad1092e86dbe9cc3fd904bf378890d87deccb7768b"
+    },
+    "av_binding": {
+      "path": "/workspace/scratch/492bd8dc87c7/hepta-hcsn-next/experiments/hcsn_causal_execution_v3/results/av_probe/av_binding/selected_encoder.npz",
+      "sha256": "8caeeeb6ebc663c348bd02da7ed77dde26363b42978c42f711e90d0584894fc4"
+    }
+  },
+  "payload": "Only 16 prepared features, 64 bytes/READ; recompute deltas from accepted history",
+  "policies": {
+    "all": {
+      "kind": "all"
+    },
+    "confidence_0.6": {
+      "kind": "confidence",
+      "minimum_reads": 4,
+      "threshold": 0.6
+    },
+    "confidence_0.75": {
+      "kind": "confidence",
+      "minimum_reads": 4,
+      "threshold": 0.75
+    },
+    "confidence_0.9": {
+      "kind": "confidence",
+      "minimum_reads": 4,
+      "threshold": 0.9
+    },
+    "periodic": {
+      "kind": "periodic",
+      "period_seconds": 0.1
+    }
+  },
+  "policy_order": [
+    "all",
+    "periodic",
+    "confidence_0.6",
+    "confidence_0.75",
+    "confidence_0.9"
+  ],
+  "quality_claim": "No advantage claim unless encoder quality and independent noninferiority are established",
+  "recovery": "serialize full acquired history and counters; new Python process/model load resumes each episode",
+  "recovery_after_headers": 2,
+  "schema": "hcsn-causal-stream-v3",
+  "selection": "validation accuracy >= read-all and CE <= read-all + .1; minimize encoder calls; declared-order ties",
+  "sources": {
+    "av_probe.py": "890001592133a414e22863e903d10f62c927558938f6fcc0afa30a36d63ea127",
+    "process_meter.py": "c67731cbf9719cae993f46f37acfbcd8f4d44a22ee046c6abbffb2a7ea5e6819",
+    "stream_runtime.py": "9de78006642611436117e8534b2da6177243d57759f460ca1fe4b92fad81b88c",
+    "stream_study.py": "233838a8a4319bd05565873dee447056754e6a9059deab5eab3d6f0a3a2b7443"
+  },
+  "tasks": [
+    "async_av",
+    "av_binding"
+  ],
+  "timing_repeats": 3,
+  "unavailable_measurements": [
+    "raw media decoding",
+    "live communication",
+    "physical sensor cost",
+    "joule energy"
+  ],
+  "validation_ce_tolerance": 0.1
+}
