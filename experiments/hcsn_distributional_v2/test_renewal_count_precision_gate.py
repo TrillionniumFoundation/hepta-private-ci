@@ -31,6 +31,19 @@ class PositiveRenewalCountTests(unittest.TestCase):
                                        delta=3e-13)
                 self.assertGreater(actual.ever_fired,0.)
 
+    def test_microstep_active_population_is_not_erased(self):
+        # The old eq+(active-eq)*exp(-s*dt) evaluates to zero for
+        # initial active=0 at dt=1e-17 or 1e-20, although the exact
+        # transition 0.5*(1-exp(-2*dt)) remains representable.
+        for dt in (1e-12,1e-16,1e-17,1e-20):
+            with self.subTest(dt=dt):
+                result=advance(RenewalState.initial(0.),1.,1.,dt)
+                expected=-math.expm1(-2*dt)/2
+                self.assertGreater(result.active,0.)
+                self.assertEqual(result.active,expected)
+                self.assertLessEqual(result.no_fire_active,
+                                     result.active+16*math.ulp(1.))
+
     def test_original_cancellation_witness_is_real_and_distinct(self):
         for dt in (1e-17,1e-20):
             with self.subTest(dt=dt):
