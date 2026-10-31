@@ -63,6 +63,20 @@ class OutputTests(unittest.TestCase):
                     gate.classify(stdout, stderr, status, EXPECTED)["policy_passed"]
                 )
 
+    def test_explicit_multiplicity_accepts_exactly_the_registered_count(self):
+        expected = Counter({key: 2 for key in EXPECTED})
+        for count in (0, 1, 2, 3):
+            with self.subTest(count=count):
+                report = gate.classify(
+                    DIAGNOSTIC * count,
+                    f"{count}\n",
+                    65 if count else 0,
+                    expected,
+                )
+                self.assertEqual(report["policy_passed"], count == 2)
+                self.assertEqual(report["missing_frozen_findings"], max(2 - count, 0))
+                self.assertEqual(report["new_findings"], max(count - 2, 0))
+
     def test_unknown_diagnostics_and_inconsistent_tool_results_fail(self):
         cases = [
             (DIAGNOSTIC + "unexpected warning\n", "1\n", 65),
@@ -134,6 +148,62 @@ class RepositoryTests(unittest.TestCase):
         )
         inventory_patch.start()
         self.addCleanup(inventory_patch.stop)
+        (self.root / "historical-v2.txt").write_text(f"{TOKEN} {TOKEN}\n")
+        self.run_git("add", "historical-v2.txt")
+        self.run_git(
+            "-c",
+            "user.name=Policy Tests",
+            "-c",
+            "user.email=policy@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "commit",
+            "--quiet",
+            "-m",
+            "Freeze extension",
+        )
+        self.extension_commit = self.run_git("rev-parse", "HEAD").strip()
+        sources_patch = patch.object(
+            gate, "EXTENSION_SOURCE_COMMITS", (self.extension_commit,)
+        )
+        sources_patch.start()
+        self.addCleanup(sources_patch.stop)
+        self.extension = {
+            "schema_version": 2,
+            "codespell_version": gate.VERSION,
+            "legacy_policy": {
+                "path": gate.POLICY_PATH,
+                "source_commit": self.commit,
+                "canonical_sha256": gate.AUTHORIZED_POLICY_SHA256,
+            },
+            "sources": [
+                {
+                    "source_commit": self.extension_commit,
+                    "files": [
+                        {
+                            **self.record("historical-v2.txt"),
+                            "findings": [
+                                {
+                                    "line": 1,
+                                    "token_sha256": TOKEN_SHA,
+                                    "diagnostic_sha256": gate.digest(
+                                        DIAGNOSTIC.replace(
+                                            "evidence.txt", "historical-v2.txt"
+                                        )
+                                        .rstrip("\n")
+                                        .encode()
+                                    ),
+                                    "count": 2,
+                                }
+                            ],
+                        }
+                    ],
+                }
+            ],
+        }
+        extension_patch = self.authorized_extension()
+        extension_patch.start()
+        self.addCleanup(extension_patch.stop)
 
     def run_git(self, *arguments):
         return subprocess.run(
@@ -151,6 +221,15 @@ class RepositoryTests(unittest.TestCase):
     def write_policy(self, policy):
         (self.root / gate.POLICY_PATH).write_text(json.dumps(policy) + "\n")
 
+    def authorized_extension(self):
+        self.extension["legacy_policy"]["canonical_sha256"] = (
+            gate.AUTHORIZED_POLICY_SHA256
+        )
+        (self.root / gate.EXTENSION_PATH).write_text(json.dumps(self.extension) + "\n")
+        return patch.object(
+            gate, "AUTHORIZED_EXTENSION_SHA256", gate.policy_identity(self.extension)
+        )
+
     def test_real_checker_accepts_only_the_frozen_observation(self):
         report = gate.evaluate(self.root)
         self.assertTrue(report["policy_passed"])
@@ -161,8 +240,9 @@ class RepositoryTests(unittest.TestCase):
                 report["new_findings"],
                 report["tracked_files_checked"],
             ),
-            (1, 1, 0, 3),
+            (3, 3, 0, 4),
         )
+        self.assertEqual(report["source_commits"], [self.commit, self.extension_commit])
 
     def test_same_word_in_new_file_is_not_globally_ignored(self):
         (self.root / "new.txt").write_text(TOKEN + "\n")
@@ -175,7 +255,7 @@ class RepositoryTests(unittest.TestCase):
                 report["frozen_historical_findings"],
                 report["new_findings"],
             ),
-            (False, 2, 1, 1),
+            (False, 4, 3, 1),
         )
 
     def test_any_frozen_byte_change_fails(self):
@@ -190,7 +270,10 @@ class RepositoryTests(unittest.TestCase):
         with patch.object(
             gate, "AUTHORIZED_POLICY_SHA256", gate.policy_identity(self.policy)
         ):
-            with self.assertRaisesRegex(gate.PolicyError, "provenance mismatch"):
+            with (
+                self.authorized_extension(),
+                self.assertRaisesRegex(gate.PolicyError, "provenance mismatch"),
+            ):
                 gate.evaluate(self.root)
 
     def test_new_file_cannot_be_registered_as_historical(self):
@@ -202,7 +285,10 @@ class RepositoryTests(unittest.TestCase):
         with patch.object(
             gate, "AUTHORIZED_POLICY_SHA256", gate.policy_identity(self.policy)
         ):
-            with self.assertRaisesRegex(gate.PolicyError, "Git verification failed"):
+            with (
+                self.authorized_extension(),
+                self.assertRaisesRegex(gate.PolicyError, "Git verification failed"),
+            ):
                 gate.evaluate(self.root)
 
     def test_removing_historical_inventory_and_changing_source_cannot_pass(self):
@@ -330,6 +416,144 @@ class RepositoryTests(unittest.TestCase):
                 self.write_policy(policy)
                 with self.assertRaises(gate.PolicyError):
                     gate.load_policy(self.root)
+
+    def test_extension_inventory_and_count_tampering_fails(self):
+        original = copy.deepcopy(self.extension)
+        for count in (True, 0, -1, 1, 3):
+            with self.subTest(count=count):
+                changed = copy.deepcopy(original)
+                changed["sources"][0]["files"][0]["findings"][0]["count"] = count
+                (self.root / gate.EXTENSION_PATH).write_text(json.dumps(changed))
+                with self.assertRaises(gate.PolicyError):
+                    gate.evaluate(self.root)
+        for field, value in (("sources", []), ("legacy_policy", {})):
+            with self.subTest(field=field):
+                changed = copy.deepcopy(original)
+                changed[field] = value
+                (self.root / gate.EXTENSION_PATH).write_text(json.dumps(changed))
+                with self.assertRaises(gate.PolicyError):
+                    gate.evaluate(self.root)
+
+    def test_extension_is_required_without_fallback_to_version_one(self):
+        (self.root / gate.EXTENSION_PATH).unlink()
+        with self.assertRaises(FileNotFoundError):
+            gate.evaluate(self.root)
+
+    def test_extension_rejects_duplicate_files_and_diagnostic_tuples(self):
+        original = copy.deepcopy(self.extension)
+        for group in ("files", "findings"):
+            with self.subTest(group=group):
+                self.extension = copy.deepcopy(original)
+                source = self.extension["sources"][0]
+                entries = (
+                    source["files"]
+                    if group == "files"
+                    else source["files"][0]["findings"]
+                )
+                entries.append(copy.deepcopy(entries[0]))
+                with (
+                    self.authorized_extension(),
+                    self.assertRaisesRegex(gate.PolicyError, "Duplicate"),
+                ):
+                    gate.evaluate(self.root)
+
+    def test_extension_cannot_replace_an_original_file(self):
+        self.extension["sources"][0]["files"][0]["path"] = "evidence.txt"
+        with (
+            self.authorized_extension(),
+            self.assertRaisesRegex(gate.PolicyError, "Duplicate source path"),
+        ):
+            gate.evaluate(self.root)
+
+    def test_extension_source_must_match_its_fixed_registration(self):
+        self.extension["sources"][0]["source_commit"] = "f" * 40
+        with (
+            self.authorized_extension(),
+            self.assertRaisesRegex(gate.PolicyError, "source commits changed"),
+        ):
+            gate.evaluate(self.root)
+
+    def test_extension_source_must_be_an_ancestor(self):
+        unrelated = self.run_git(
+            "-c",
+            "user.name=Policy Tests",
+            "-c",
+            "user.email=policy@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "commit-tree",
+            "HEAD^{tree}",
+            "-m",
+            "Other root",
+        ).strip()
+        self.extension["sources"][0]["source_commit"] = unrelated
+        with (
+            patch.object(gate, "EXTENSION_SOURCE_COMMITS", (unrelated,)),
+            self.authorized_extension(),
+            self.assertRaisesRegex(gate.PolicyError, "Git verification failed"),
+        ):
+            gate.evaluate(self.root)
+
+    def test_extension_changed_bytes_cannot_replace_historical_provenance(self):
+        (self.root / "historical-v2.txt").write_text(f"{TOKEN} {TOKEN}\ncorrect\n")
+        self.extension["sources"][0]["files"][0].update(
+            self.record("historical-v2.txt")
+        )
+        with (
+            self.authorized_extension(),
+            self.assertRaisesRegex(gate.PolicyError, "provenance mismatch"),
+        ):
+            gate.evaluate(self.root)
+
+    def test_extension_cannot_register_a_new_file_as_historical(self):
+        (self.root / "new.txt").write_text(f"{TOKEN} {TOKEN}\n")
+        self.extension["sources"][0]["files"][0].update(self.record("new.txt"))
+        with (
+            self.authorized_extension(),
+            self.assertRaisesRegex(gate.PolicyError, "Git verification failed"),
+        ):
+            gate.evaluate(self.root)
+
+    def test_real_checker_rejects_a_missing_or_extra_registered_occurrence(self):
+        finding = self.extension["sources"][0]["files"][0]["findings"][0]
+        for count, missing, new in ((1, 0, 1), (3, 1, 0)):
+            with self.subTest(count=count):
+                finding["count"] = count
+                with self.authorized_extension(), redirect_stderr(io.StringIO()):
+                    report = gate.evaluate(self.root)
+                self.assertEqual(
+                    {
+                        key: report[key]
+                        for key in (
+                            "policy_passed",
+                            "raw_lint_findings",
+                            "missing_frozen_findings",
+                            "new_findings",
+                        )
+                    },
+                    {
+                        "policy_passed": False,
+                        "raw_lint_findings": 3,
+                        "missing_frozen_findings": missing,
+                        "new_findings": new,
+                    },
+                )
+
+    def test_extension_changes_during_scan_fail_even_for_json_whitespace(self):
+        real_run = subprocess.run
+
+        def mutate_after_scan(arguments, **kwargs):
+            result = real_run(arguments, **kwargs)
+            if "--count" in arguments:
+                path = self.root / gate.EXTENSION_PATH
+                path.write_bytes(path.read_bytes() + b"\n")
+            return result
+
+        with patch.object(gate.subprocess, "run", side_effect=mutate_after_scan):
+            with self.assertRaisesRegex(
+                gate.PolicyError, "Extension changed during scan"
+            ):
+                gate.evaluate(self.root)
 
 
 if __name__ == "__main__":

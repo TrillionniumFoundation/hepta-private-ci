@@ -1,0 +1,170 @@
+name: Parameter field minimal lock closure
+
+on:
+  push:
+    branches:
+      - research/parameter-field-lock-closure-20261031
+      - research/parameter-field-execution-20261031
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+
+jobs:
+  lock-resolution:
+    name: Locked Cargo graph (${{ matrix.machine }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            machine: x86_64
+          - runner: ubuntu-24.04-arm
+            machine: aarch64
+    steps:
+      - name: Checkout the exact candidate head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test edge restoration and failure contracts
+        run: python3 -B -m unittest discover -s operational/parameter_field_lock_closure_20261031 -p 'test_*.py' -v
+      - name: Install the inherited Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Run actual locked Cargo metadata
+        id: validation
+        timeout-minutes: 17
+        run: >-
+          python3 -B operational/parameter_field_lock_closure_20261031/run_validation.py
+          --phase metadata --expected-machine '${{ matrix.machine }}'
+          --output-dir "$RUNNER_TEMP/lock-closure-metadata-${{ matrix.machine }}"
+      - name: Retain locked resolver evidence
+        if: always() && steps.validation.outcome != 'skipped'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: lock-closure-metadata-${{ matrix.machine }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/lock-closure-metadata-${{ matrix.machine }}/
+          if-no-files-found: error
+          retention-days: 14
+
+  native-regressions:
+    name: Existing native regressions (${{ matrix.machine }})
+    needs: lock-resolution
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            machine: x86_64
+          - runner: ubuntu-24.04-arm
+            machine: aarch64
+    steps:
+      - name: Checkout the exact candidate head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install the inherited Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Install pinned test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install existing Linux test prerequisites
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential pkg-config libcap-dev bubblewrap
+      - name: Run the existing thirteen classified regression groups
+        id: validation
+        timeout-minutes: 48
+        run: >-
+          python3 -B operational/parameter_field_lock_closure_20261031/run_validation.py
+          --phase native --expected-machine '${{ matrix.machine }}'
+          --output-dir "$RUNNER_TEMP/lock-closure-native-${{ matrix.machine }}"
+      - name: Retain native command and JUnit evidence
+        if: always() && steps.validation.outcome != 'skipped'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: lock-closure-native-${{ matrix.machine }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/lock-closure-native-${{ matrix.machine }}/
+          if-no-files-found: error
+          retention-days: 14
+
+  bazel-lock:
+    name: Existing Bazel lock check
+    needs: lock-resolution
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Checkout the exact candidate head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare inherited Bazel tooling
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: parameter-field-lock-closure
+      - name: Install the inherited Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Check Bazel lock without updating it
+        id: validation
+        timeout-minutes: 22
+        run: >-
+          python3 -B operational/parameter_field_lock_closure_20261031/run_validation.py
+          --phase bazel --expected-machine x86_64
+          --output-dir "$RUNNER_TEMP/lock-closure-bazel"
+      - name: Retain Bazel evidence
+        if: always() && steps.validation.outcome != 'skipped'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: lock-closure-bazel-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/lock-closure-bazel/
+          if-no-files-found: error
+          retention-days: 14
+
+  cargo-deny:
+    name: Unmodified canonical cargo-deny
+    uses: ./.github/workflows/cargo-deny.yml
+
+  codespell:
+    name: Canonical full-tree spelling policy
+    uses: ./.github/workflows/codespell.yml
+
+  required:
+    name: Minimal lock closure required
+    if: always()
+    needs: [lock-resolution, native-regressions, bazel-lock, cargo-deny, codespell]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      CHECK_RESULTS: ${{ toJSON(needs) }}
+    steps:
+      - name: Require all real checks, including both architecture arms
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          results = json.loads(os.environ['CHECK_RESULTS'])
+          failures = {name: data['result'] for name, data in results.items() if data['result'] != 'success'}
+          print(json.dumps({'checks': results, 'qualification': False, 'failures': failures}, indent=2))
+          sys.exit(bool(failures))
+          PY
