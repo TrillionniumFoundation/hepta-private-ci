@@ -1,0 +1,37 @@
+{
+  "schema": "hcsn.native-content-cost.protocol.v1",
+  "seeds": [
+    173,
+    271,
+    419,
+    587
+  ],
+  "parameters": [
+    0.2,
+    -0.3,
+    0.4,
+    -0.1,
+    0.5,
+    0.2,
+    0.4,
+    -0.2,
+    0.3,
+    0.5,
+    -0.1
+  ],
+  "intervals": 12,
+  "duration_micros": 2000000,
+  "horizon_micros": 750000,
+  "dense_subdivisions": 16,
+  "packet_length": 32,
+  "decoded_per_endpoint": 1,
+  "source_sha256": "21ca5b9777379a27e6729a1073eb10ccdfb1000b3235ff25ec4d5acf76b74db0",
+  "native_binary_sha256": "6cfe7b61662d5c74272594bfc5de0b0aaa2f9cb9b1df3c5ca7dabef7e6298109",
+  "numeric_tolerance": 2e-10,
+  "input_generation_seed": 181031,
+  "content_source": "Frozen FullHX marked-first-symbol memory model; no retraining or open-language claim",
+  "hypothesis": "Omitting redundant control commits preserves endpoint outputs and reduces full measured lifecycle cost",
+  "strong_ordinary_baseline": "Ordinary gates receive exactly the same event-aware public schedule",
+  "authority": "DENY_ALL",
+  "production_activation": false
+}

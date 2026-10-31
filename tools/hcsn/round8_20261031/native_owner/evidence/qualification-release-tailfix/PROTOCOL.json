@@ -1,0 +1,27 @@
+{
+  "seeds": [
+    173,
+    271,
+    419,
+    587
+  ],
+  "families": [
+    "ordinary",
+    "distribution",
+    "sampled"
+  ],
+  "dense_subdivisions": 16,
+  "intervals": 12,
+  "duration_micros": 2000000,
+  "horizon_micros": 750000,
+  "numeric_tolerance": 2e-10,
+  "ensemble_samples": 20000,
+  "ensemble_sigma_gate": 6,
+  "tail_probe_horizons_micros": [
+    1,
+    10,
+    750000
+  ],
+  "tail_relative_tolerance": 1e-12,
+  "claim": "native finite-law correctness and measured implementation cost; no task efficacy"
+}

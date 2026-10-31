@@ -1,0 +1,62 @@
+{
+  "schema": "hcsn.native-content-source-identity.v1",
+  "base_commit": "3a0e62c61b595576f16313c9b6016ec62cf8088b",
+  "files": [
+    {
+      "path": "tools/hcsn/task_value_factorial_20261030/task.py",
+      "bytes": 17537,
+      "git_blob_sha": "de786cff82802432e7f2630c684046c8b919191c",
+      "sha256": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc",
+      "present_unchanged_in_base": true
+    },
+    {
+      "path": "tools/hcsn/task_value_factorial_20261030/UPSTREAM_FILES.json",
+      "bytes": 954,
+      "git_blob_sha": "431dfa88c8b29c0e05b11ea6ffe8248b6f1f36b0",
+      "sha256": "be6aa0751da3e9a63b4c70d0c8bc4c42d8f2595548009013eb4b92b5e44fc98e",
+      "present_unchanged_in_base": true
+    },
+    {
+      "path": "tools/hcsn/third/memory/reference.py",
+      "bytes": 5648,
+      "git_blob_sha": "7b9ba8ff2ba5e44651b291c8c6fe47b9d159581d",
+      "sha256": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e",
+      "present_unchanged_in_base": true
+    },
+    {
+      "path": "tools/hcsn/benchmarks/data.py",
+      "bytes": 2841,
+      "git_blob_sha": "5aa80974b2722fdfa66609922bb191410e8812d0",
+      "sha256": "7f086e58eb04429de723fb0383b8731cc1fc50eff643fd5e78993cf32fd0f63d",
+      "present_unchanged_in_base": true
+    },
+    {
+      "path": "tools/hcsn/third/memory/checkpoints/memory_full_mass_seed29.npz",
+      "bytes": 27574,
+      "git_blob_sha": "68fdf2c66856da1de974e9a1b8c00f6ff059d97a",
+      "sha256": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+      "present_unchanged_in_base": true
+    },
+    {
+      "path": "tools/hcsn/next/full_kernel/baseline_table.npz",
+      "bytes": 253216,
+      "git_blob_sha": "0a7028fdf245107cfdd68f5099a4792c19f55916",
+      "sha256": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764",
+      "present_unchanged_in_base": true
+    }
+  ],
+  "new_dependency_files": [],
+  "scope": "All six content dependencies are unmodified files already present in the pinned base tree. Only qualify_content.py and its new evidence are added.",
+  "protocol_freeze": "PROTOCOL.json written and closed before generating any input or evaluating any case; it includes the exact runner SHA256 and native binary SHA256",
+  "data_freeze": "DATA_IDENTITY.json written after deterministic generation and before any backend run",
+  "evaluation_records": "qualification-content-20261031/REPORT.json; 48 distinct normal packets, 12 normal paired comparisons, 3 separately flagged missing-file paired comparisons; backend repeats are not independent samples",
+  "observed_file_timestamps_utc": {
+    "PROTOCOL.json": "2026-10-31T05:10:39.361099+00:00",
+    "DATA_IDENTITY.json": "2026-10-31T05:10:39.370875+00:00",
+    "REPORT.json": "2026-10-31T05:10:50.222079+00:00"
+  },
+  "timestamp_scope": "Observed filesystem write timestamps retained as metadata; exact freeze order also follows runner source before evaluation",
+  "native_signal_controls_content_calls": false,
+  "python_host_restarted": false,
+  "restart_scope": "Native child restart and ContentAdapter reconstruction only, Python host loop stays alive"
+}

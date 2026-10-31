@@ -1,0 +1,408 @@
+{
+  "schema": "hcsn.value-head-independent-readonly-identity.v1",
+  "prepared": "tools/hcsn/round8_20261031/value_calibration/evidence/prepared02",
+  "freeze_sha256": "da08baa4464b202a0071a2767d08009464f9b60e279c540332fc09ed042096ad",
+  "all_match": true,
+  "checks": [
+    {
+      "section": "source",
+      "path": "experiments/analytic_event_neuron/round7/oracle.py",
+      "expected": "c834be7566eb29429e057c04af520b557a1b4743a2406884c902e12ac61f2181",
+      "actual": "c834be7566eb29429e057c04af520b557a1b4743a2406884c902e12ac61f2181",
+      "matches": true
+    },
+    {
+      "section": "source",
+      "path": "experiments/analytic_event_neuron/round7/task.py",
+      "expected": "c53f09496975c15236962469adf8ad3e0be175bc5fc36f03f7cd79d8d7899522",
+      "actual": "c53f09496975c15236962469adf8ad3e0be175bc5fc36f03f7cd79d8d7899522",
+      "matches": true
+    },
+    {
+      "section": "source",
+      "path": "tools/hcsn/round8_20261031/value_calibration/audit.py",
+      "expected": "46b06ad2dd1e98feff1ae7f06fac0ee703ba24339cf2367fe6f1f8ce08c5ce2b",
+      "actual": "46b06ad2dd1e98feff1ae7f06fac0ee703ba24339cf2367fe6f1f8ce08c5ce2b",
+      "matches": true
+    },
+    {
+      "section": "source",
+      "path": "tools/hcsn/round8_20261031/value_calibration/finite.py",
+      "expected": "b7b5d885078d55cb94c72d59cc795d82ff8366c3078557b18c2d8119f7b2b75b",
+      "actual": "b7b5d885078d55cb94c72d59cc795d82ff8366c3078557b18c2d8119f7b2b75b",
+      "matches": true
+    },
+    {
+      "section": "source",
+      "path": "tools/hcsn/round8_20261031/value_calibration/frozen.py",
+      "expected": "ad47955d0fb4a849627409856ad7c712c4c3391179bb890d0f9593e2a5af037e",
+      "actual": "ad47955d0fb4a849627409856ad7c712c4c3391179bb890d0f9593e2a5af037e",
+      "matches": true
+    },
+    {
+      "section": "source",
+      "path": "tools/hcsn/round8_20261031/value_calibration/head.py",
+      "expected": "d284cbc6f13458d1d718677b499ff941cb8e59a06ecee4b0ee7730e94c1a5e5b",
+      "actual": "d284cbc6f13458d1d718677b499ff941cb8e59a06ecee4b0ee7730e94c1a5e5b",
+      "matches": true
+    },
+    {
+      "section": "source",
+      "path": "tools/hcsn/round8_20261031/value_calibration/parity.py",
+      "expected": "f1fb672bbfb03df05b1f34c231065c310aa1ae158ed509cd0d05675a7e6dc95b",
+      "actual": "f1fb672bbfb03df05b1f34c231065c310aa1ae158ed509cd0d05675a7e6dc95b",
+      "matches": true
+    },
+    {
+      "section": "source",
+      "path": "tools/hcsn/round8_20261031/value_calibration/run.py",
+      "expected": "18fa8a8dc3435c9c78091da0149cef0301de53fdcc281c051c0fdba7af9faa23",
+      "actual": "18fa8a8dc3435c9c78091da0149cef0301de53fdcc281c051c0fdba7af9faa23",
+      "matches": true
+    },
+    {
+      "section": "source",
+      "path": "tools/hcsn/round8_20261031/value_calibration/test_value.py",
+      "expected": "06817b2494ed34999c019eb29a6b4f0f49fb4719b1559eef085e6bcfe7b2379c",
+      "actual": "06817b2494ed34999c019eb29a6b4f0f49fb4719b1559eef085e6bcfe7b2379c",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "PREPARE.json",
+      "expected": "162e617440a2d657914b525f16ef7ed4144956b1b20292b4427eab1783eedb95",
+      "actual": "162e617440a2d657914b525f16ef7ed4144956b1b20292b4427eab1783eedb95",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "PROTOCOL.json",
+      "expected": "51846f948ad62aba0c2f12358102483268fd2f2ff989267c8647b2610a67bc09",
+      "actual": "51846f948ad62aba0c2f12358102483268fd2f2ff989267c8647b2610a67bc09",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "STATE_GRAPH.json",
+      "expected": "f53d84127bf4e34a8520bb7011dfd94d3cca8f58237eecb5f399d2d055706803",
+      "actual": "f53d84127bf4e34a8520bb7011dfd94d3cca8f58237eecb5f399d2d055706803",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "clocked_11.json",
+      "expected": "5a3fc9d53879b7d4e7b03358a1e8cd2b0d0c5883b2fa96b068273fb28d5b5b04",
+      "actual": "5a3fc9d53879b7d4e7b03358a1e8cd2b0d0c5883b2fa96b068273fb28d5b5b04",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "clocked_11_tables.npz",
+      "expected": "268dfdb5215826e68fd92d2208c05cc683e9fdc4f83b3480f429a263917e67bd",
+      "actual": "268dfdb5215826e68fd92d2208c05cc683e9fdc4f83b3480f429a263917e67bd",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "clocked_12.json",
+      "expected": "38e9f8e6c9aaf9826ca198f56c9cd586e8612eaa5a459f6f0194bff1e1c555c5",
+      "actual": "38e9f8e6c9aaf9826ca198f56c9cd586e8612eaa5a459f6f0194bff1e1c555c5",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "clocked_12_tables.npz",
+      "expected": "5637e520ba87a101f75d010d8a40efe63b90f15692c73285862c7aefeaed9715",
+      "actual": "5637e520ba87a101f75d010d8a40efe63b90f15692c73285862c7aefeaed9715",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "clocked_13.json",
+      "expected": "eac17c56cdffdd1f374595762b2232229829860e0aa9183fe243c804dc34d479",
+      "actual": "eac17c56cdffdd1f374595762b2232229829860e0aa9183fe243c804dc34d479",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "clocked_13_tables.npz",
+      "expected": "12f550c91a33ec602b96e0752f47bbed4f1f4d6aa3af699631b1fa286caf68a6",
+      "actual": "12f550c91a33ec602b96e0752f47bbed4f1f4d6aa3af699631b1fa286caf68a6",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "clocked_14.json",
+      "expected": "1f0d374966106634f618bc7a9f82032c3e284a5634f1170a38b54b8cdd646fc1",
+      "actual": "1f0d374966106634f618bc7a9f82032c3e284a5634f1170a38b54b8cdd646fc1",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "clocked_14_tables.npz",
+      "expected": "02be5dc51e746c9b0fe583ea859d7eda9d36c29666294948c689d341da0e6be9",
+      "actual": "02be5dc51e746c9b0fe583ea859d7eda9d36c29666294948c689d341da0e6be9",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "clocked_15.json",
+      "expected": "c114f47a690fb3b164d461a735e2ac55e116d652ed165f7a113d6c7a25aabbe7",
+      "actual": "c114f47a690fb3b164d461a735e2ac55e116d652ed165f7a113d6c7a25aabbe7",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "clocked_15_tables.npz",
+      "expected": "0de52960d33a347fd7619ca5b08d1b39fd754f86420ff0f06a29cafd307b9648",
+      "actual": "0de52960d33a347fd7619ca5b08d1b39fd754f86420ff0f06a29cafd307b9648",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "direct_11.json",
+      "expected": "5218c44ab26e6dd277e62bbf16b316c14c0cd62f96c90a2c45663e81f55e3f9c",
+      "actual": "5218c44ab26e6dd277e62bbf16b316c14c0cd62f96c90a2c45663e81f55e3f9c",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "direct_11_tables.npz",
+      "expected": "69b538fca5a31b8bbf674c114a1d2b6c59bee8277d642fd1b6f452efee56317b",
+      "actual": "69b538fca5a31b8bbf674c114a1d2b6c59bee8277d642fd1b6f452efee56317b",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "direct_12.json",
+      "expected": "76c210482396a85d49f643faed236952b1d1a561a814250110ad4db3ab9cc131",
+      "actual": "76c210482396a85d49f643faed236952b1d1a561a814250110ad4db3ab9cc131",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "direct_12_tables.npz",
+      "expected": "392915a8b982b4a9cd322620ebbb4f12c8faf4df7b99d28942577af9db787631",
+      "actual": "392915a8b982b4a9cd322620ebbb4f12c8faf4df7b99d28942577af9db787631",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "direct_13.json",
+      "expected": "504bda791eb5c76acc2a38d92b6f16c16ca22a5788cef8cfa3d69e8a9cd880e1",
+      "actual": "504bda791eb5c76acc2a38d92b6f16c16ca22a5788cef8cfa3d69e8a9cd880e1",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "direct_13_tables.npz",
+      "expected": "209dfc3fc6366222f640c65ebdd944d676713d3a9123bbf09bf4b22c377d5355",
+      "actual": "209dfc3fc6366222f640c65ebdd944d676713d3a9123bbf09bf4b22c377d5355",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "direct_14.json",
+      "expected": "a15712e93c4f8c4362ef85c111577d8133e8cacc9c78d60e9bc0b9275bb7f645",
+      "actual": "a15712e93c4f8c4362ef85c111577d8133e8cacc9c78d60e9bc0b9275bb7f645",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "direct_14_tables.npz",
+      "expected": "82838e7454095a1b1dc3f642c02c9bd0e3d13eaf24a37c3678c453cd67e77d9b",
+      "actual": "82838e7454095a1b1dc3f642c02c9bd0e3d13eaf24a37c3678c453cd67e77d9b",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "direct_15.json",
+      "expected": "f4da462bc3c4bdd1e339196ec6f6b73471f4c375e96cc334ea38f9c1807b21f1",
+      "actual": "f4da462bc3c4bdd1e339196ec6f6b73471f4c375e96cc334ea38f9c1807b21f1",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "direct_15_tables.npz",
+      "expected": "40ce7c0163f59083ab25160c64653c1718e2bd3cea62ea36ed0e1ea3eff35e51",
+      "actual": "40ce7c0163f59083ab25160c64653c1718e2bd3cea62ea36ed0e1ea3eff35e51",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "first_passage_11.json",
+      "expected": "ccd8c7e41ddac9314789c0f95c0a4299d458f09a71cad57ce18fc79e4716d8a8",
+      "actual": "ccd8c7e41ddac9314789c0f95c0a4299d458f09a71cad57ce18fc79e4716d8a8",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "first_passage_11_tables.npz",
+      "expected": "89e72fc2c6afee0c27537241626dad4854d3bc033ee0c2fd044797c9135d13b4",
+      "actual": "89e72fc2c6afee0c27537241626dad4854d3bc033ee0c2fd044797c9135d13b4",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "first_passage_12.json",
+      "expected": "c9f18f4e3042fa1aeefaad1b29ef3f6de87e2b4b3ee8f7ecf6b1b079ced84e4c",
+      "actual": "c9f18f4e3042fa1aeefaad1b29ef3f6de87e2b4b3ee8f7ecf6b1b079ced84e4c",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "first_passage_12_tables.npz",
+      "expected": "8f23f979f336ff9454f3ba16148b78bb957e72e9cb4254ea0a7fe16f52e88db8",
+      "actual": "8f23f979f336ff9454f3ba16148b78bb957e72e9cb4254ea0a7fe16f52e88db8",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "first_passage_13.json",
+      "expected": "a7c2fb1e7cb10be19273f300910d5352f0c99b27310ef916a1f4e12f0c5bde2e",
+      "actual": "a7c2fb1e7cb10be19273f300910d5352f0c99b27310ef916a1f4e12f0c5bde2e",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "first_passage_13_tables.npz",
+      "expected": "3adf54dbfe6a3ac674748d91be4bd0f2dee98a2f640dfe62011e53accb9a1672",
+      "actual": "3adf54dbfe6a3ac674748d91be4bd0f2dee98a2f640dfe62011e53accb9a1672",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "first_passage_14.json",
+      "expected": "58b793736dc41d24066e6b019f098a4175965f4ad71595c9b1de6b57c8f6cb6e",
+      "actual": "58b793736dc41d24066e6b019f098a4175965f4ad71595c9b1de6b57c8f6cb6e",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "first_passage_14_tables.npz",
+      "expected": "d4c1a15463696a59e7285335d0bf67d897850612d2b7a3a643ce61d80d3ed2d0",
+      "actual": "d4c1a15463696a59e7285335d0bf67d897850612d2b7a3a643ce61d80d3ed2d0",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "first_passage_15.json",
+      "expected": "4215c3aead8052bc006a24f1c7af3094d9a3000b097016e24453546fcd377903",
+      "actual": "4215c3aead8052bc006a24f1c7af3094d9a3000b097016e24453546fcd377903",
+      "matches": true
+    },
+    {
+      "section": "files",
+      "path": "first_passage_15_tables.npz",
+      "expected": "675fba0ab376a6710b468dd6154648e3b6f21a60f3c20cf328c2279c7f29839b",
+      "actual": "675fba0ab376a6710b468dd6154648e3b6f21a60f3c20cf328c2279c7f29839b",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/clocked_none_11.json",
+      "expected": "c02f8c7761d1c0d0fd93d5cf3dcfef00562d591b247eab02ad85cdb245244432",
+      "actual": "c02f8c7761d1c0d0fd93d5cf3dcfef00562d591b247eab02ad85cdb245244432",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/clocked_none_12.json",
+      "expected": "0272f1a97ae44c081e9a1dbce40d035bb92ace5afb9054782a1039c7abdd035c",
+      "actual": "0272f1a97ae44c081e9a1dbce40d035bb92ace5afb9054782a1039c7abdd035c",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/clocked_none_13.json",
+      "expected": "505b2a67a9d3d390c1b32f871fdda567a2f1e431370221e8adb5b34a898e8bc5",
+      "actual": "505b2a67a9d3d390c1b32f871fdda567a2f1e431370221e8adb5b34a898e8bc5",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/clocked_none_14.json",
+      "expected": "c5513515e56d4d9a583a9bd3eb3014e4a361028b2035ed07e69a98cfb74ed0b2",
+      "actual": "c5513515e56d4d9a583a9bd3eb3014e4a361028b2035ed07e69a98cfb74ed0b2",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/clocked_none_15.json",
+      "expected": "46b82e720800ca178b368e47f23f0d5fcf70f6429c3420e9a36487b39360fec4",
+      "actual": "46b82e720800ca178b368e47f23f0d5fcf70f6429c3420e9a36487b39360fec4",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/direct_none_11.json",
+      "expected": "1fb5cc3048d34346f2f5d8f491b5fcf94cc734cefdcb244ddd8da04d4ce96be0",
+      "actual": "1fb5cc3048d34346f2f5d8f491b5fcf94cc734cefdcb244ddd8da04d4ce96be0",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/direct_none_12.json",
+      "expected": "bfd3145b24dec52238aee542edf1161447389475fdd201fe75effe917ff6a364",
+      "actual": "bfd3145b24dec52238aee542edf1161447389475fdd201fe75effe917ff6a364",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/direct_none_13.json",
+      "expected": "e481257ed77a6e94dac0dae26836884557981e4cc061afdee2a957ba0cbf838b",
+      "actual": "e481257ed77a6e94dac0dae26836884557981e4cc061afdee2a957ba0cbf838b",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/direct_none_14.json",
+      "expected": "cfba97ec7e63d97ab85c3592c81cd9ed4b93c5944d98124cd25d33ed280ff40b",
+      "actual": "cfba97ec7e63d97ab85c3592c81cd9ed4b93c5944d98124cd25d33ed280ff40b",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/direct_none_15.json",
+      "expected": "66419a17f7c8bcf252bc39aca8a599066244707ed1bbe8bcdb95e8babda3b4f9",
+      "actual": "66419a17f7c8bcf252bc39aca8a599066244707ed1bbe8bcdb95e8babda3b4f9",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/first_passage_none_11.json",
+      "expected": "847d73cc7479f484cbf9d1b4cbd8d648afa43ffba7501f45ff6f1548a955f8c6",
+      "actual": "847d73cc7479f484cbf9d1b4cbd8d648afa43ffba7501f45ff6f1548a955f8c6",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/first_passage_none_12.json",
+      "expected": "b1e0f03fd682b0400cdd670e02cc28a7332d2406bc348057db5c51ec94f56d4d",
+      "actual": "b1e0f03fd682b0400cdd670e02cc28a7332d2406bc348057db5c51ec94f56d4d",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/first_passage_none_13.json",
+      "expected": "a179988727925b13b130b51a13436c41cf560226fe9d4fab071dae9288ee82ca",
+      "actual": "a179988727925b13b130b51a13436c41cf560226fe9d4fab071dae9288ee82ca",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/first_passage_none_14.json",
+      "expected": "1b8b172aac49712e8180d5675dc7ae21026e359e911dafb9b655436c23006736",
+      "actual": "1b8b172aac49712e8180d5675dc7ae21026e359e911dafb9b655436c23006736",
+      "matches": true
+    },
+    {
+      "section": "upstream_checkpoints",
+      "path": "experiments/analytic_event_neuron/round7/evidence/fits_primary/first_passage_none_15.json",
+      "expected": "82b40ba32a58a40f566de923940254cf71d19c1db68db6b660d5ded62cb44d1f",
+      "actual": "82b40ba32a58a40f566de923940254cf71d19c1db68db6b660d5ded62cb44d1f",
+      "matches": true
+    }
+  ],
+  "scope": "Local bytes match saved freeze; external immutable commit anchoring is owned by root, not asserted here"
+}

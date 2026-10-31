@@ -1,0 +1,26 @@
+{
+  "schema": "hcsn.native-owner-execution-context.v2",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "qualification_env": {
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "qualification_command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "qualify.py",
+    "--binary",
+    "/workspace/scratch/7187fe3695d3/native-r8-revalidation-build/native-owner-final",
+    "--out",
+    "evidence/qualification-revalidation-20261031",
+    "--build-sha",
+    "58c5acd47498d5536293ae8223ed1b28ae8f87a21efd0467c801e46f4298d89b"
+  ],
+  "python_source_sha256": {
+    "build.py": "5d01a40417b5c0c961400ade44bc8e50701960f27b1bafc2444d0bc4a14cc7dc",
+    "direct_build.py": "e5086ccb29f692e8f9e973eaa7b2edd02fb98a9909c431bdbb68469654bb17ad",
+    "qualify.py": "7f8ec27ad5e2e62db2784f99e212ea7977bdf9d25979ce192a1f32c43be7fa29",
+    "reference.py": "f223aa8f5d27ee7aa73da829862ca3da651215f81e07660bf74157005fdf2ee2"
+  }
+}

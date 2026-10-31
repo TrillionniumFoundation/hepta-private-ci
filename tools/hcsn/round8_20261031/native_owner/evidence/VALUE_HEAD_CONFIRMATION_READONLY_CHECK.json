@@ -1,0 +1,19 @@
+{
+  "schema": "hcsn.value-head-independent-readonly-confirmation-identity.v1",
+  "checks": {
+    "frozen_source_hash_agrees_with_summary": true,
+    "frozen_source_hash_agrees_with_start": true,
+    "raw_archive_hash_agrees_with_summary": true,
+    "unchanged_source_flag": true,
+    "freeze_reference_agrees": true
+  },
+  "all_match": true,
+  "files": {
+    "tools/hcsn/round8_20261031/value_calibration/evidence/prepared02/FREEZE.json": "da08baa4464b202a0071a2767d08009464f9b60e279c540332fc09ed042096ad",
+    "tools/hcsn/round8_20261031/value_calibration/evidence/confirmation01/START.json": "a14a4ff38e9a1af2067eb57c96fece94495da0f1076c5a74cfef4d8ff94db56f",
+    "tools/hcsn/round8_20261031/value_calibration/evidence/confirmation01/SUMMARY.json": "81def1d4bf5174b0f4d5cce1aba5b5397b1dc469ff4e5d91101f6b3a6f3d4bad",
+    "tools/hcsn/round8_20261031/value_calibration/evidence/confirmation01/RAW.jsonl.gz": "cda448227d60d77ebe127d1ea9446c18779a32a114d47dcbd1895c5700aec65f"
+  },
+  "freeze_reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/3a0e62c61b595576f16313c9b6016ec62cf8088b",
+  "scope": "Local source/prepared/raw-summary pairing; external immutable commit identity is checked by root separately"
+}

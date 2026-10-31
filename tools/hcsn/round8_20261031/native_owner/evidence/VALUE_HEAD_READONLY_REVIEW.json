@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn.value-head-independent-readonly-review.v1",
+  "status": "no_blocking_algebraic_defect_identified",
+  "source_sha256": {
+    "audit.py": "46b06ad2dd1e98feff1ae7f06fac0ee703ba24339cf2367fe6f1f8ce08c5ce2b",
+    "finite.py": "b7b5d885078d55cb94c72d59cc795d82ff8366c3078557b18c2d8119f7b2b75b",
+    "frozen.py": "ad47955d0fb4a849627409856ad7c712c4c3391179bb890d0f9593e2a5af037e",
+    "head.py": "d284cbc6f13458d1d718677b499ff941cb8e59a06ecee4b0ee7730e94c1a5e5b",
+    "parity.py": "f1fb672bbfb03df05b1f34c231065c310aa1ae158ed509cd0d05675a7e6dc95b",
+    "run.py": "18fa8a8dc3435c9c78091da0149cef0301de53fdcc281c051c0fdba7af9faa23",
+    "test_value.py": "06817b2494ed34999c019eb29a6b4f0f49fb4719b1559eef085e6bcfe7b2379c"
+  },
+  "reviewed": [
+    "Bellman action timing after latent transition; current event cost is sunk for action selection and charged to actual utility",
+    "STOP exact publicly known terminal payoff and decision-cost anchor",
+    "legal-action masked direct-value and action-gap MSE derivative",
+    "conditional hidden-world enumeration versus task execution",
+    "same-capacity new heads and distinction from larger-than-old head capacity",
+    "raw episode action/reward/cost/event replay and five paired fit inference units",
+    "training/source/preparation freeze and actual serialized-weight deployment",
+    "execution and amortized preparation CPU scopes"
+  ],
+  "findings": [
+    {
+      "severity": "scope",
+      "item": "Execution CPU is measured after model/head loading. It includes per-step encoder, transition matrix, inference, task execution and in-memory trace construction, but excludes process startup, checkpoint loading and outer gzip record writing. Do not call it complete native deployment CPU."
+    },
+    {
+      "severity": "scope",
+      "item": "prepared01 failed before training with measured_cpu_seconds=null. Both measured development attempts are charged, but failed setup CPU is unknown and must not be represented as zero or as a complete campaign total."
+    },
+    {
+      "severity": "audit_hardening",
+      "item": "The frozen audit module checks source and numerical replay but does not independently check all FREEZE file/checkpoint entries or compare SUMMARY raw SHA. Separate read-only supplemental checks verify those actual local bindings: 57 freeze entries and confirmation raw/summary/start pairing all pass."
+    },
+    {
+      "severity": "interpretation",
+      "item": "Complete nominal finite graph is supervised training data. New nominal episode draws test execution, not unseen-state generalization. New-versus-old changes capacity, exact STOP anchor, objective and training together; family comparisons are secondary and do not isolate neuron physics."
+    }
+  ],
+  "supporting_identity_reports": [
+    "VALUE_HEAD_FREEZE_READONLY_CHECK.json",
+    "VALUE_HEAD_CONFIRMATION_READONLY_CHECK.json"
+  ],
+  "modified_training_source": false,
+  "reran_training": false,
+  "external_immutable_commit_validation": "owned by root; this report verifies local bytes only"
+}
