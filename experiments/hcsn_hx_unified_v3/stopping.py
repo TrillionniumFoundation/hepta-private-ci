@@ -166,8 +166,10 @@ def regenerative_boundary_independent(p: Stop) -> float:
     separation at the Lambert-W branch point and can silently return cost.
     For small h, solve the *exponential* smooth-fit equation independently
     in adaptive-precision Decimal, without using the primary W or log-series
-    inversion. Preserve the ordinary Brent path for resolved regular cases.
-    This is an offline diagnostic; it does not certify the finance HX system.
+    inversion. For regular h solve the nondimensional smooth-fit displacement
+    t, so Brent's relative tolerance is not amplified by a large cost offset.
+    Reject unresolved f64 reward representation in either regime. This remains
+    an offline diagnostic, not certification of the finance HX system.
     """
     k=p.kappa
     gap=p.cost-p.reset
@@ -204,18 +206,32 @@ def regenerative_boundary_independent(p: Stop) -> float:
                 raise ArithmeticError('Independent root outside proper renewal domain')
             if abs(t+(-(hd+t)).exp()-1)>Decimal(10)**(-ctx.prec+15):
                 raise ArithmeticError('Independent smooth-fit residual unresolved')
+            displacement=float(t/d(k))
             boundary=float(d(p.cost)+t/d(k))
     else:
-        def residual(b):
-            return k*(b-p.cost)+p.delay_discount*math.exp(-k*(b-p.reset))-1
-        left=p.cost
-        right=p.cost+1/k
-        if (not math.isfinite(right) or not right>left
-                or residual(left)>=0 or residual(right)<=0):
-            raise ArithmeticError('Independent root bracket invalid')
-        boundary=brentq(residual,left,right,xtol=1e-13,rtol=1e-13)
-    if not math.isfinite(boundary) or not boundary>p.cost:
-        raise ArithmeticError('Independent boundary unresolved in f64')
+        # Solve dimensionless t=k*(b-cost), not large absolute b. Brent's
+        # rtol on b could exceed the entire displacement for a large cost.
+        # expm1 preserves the strictly negative left residual at h>0.
+        def residual(t):
+            return t+math.expm1(-h-t)
+        if not residual(0.)<0:
+            raise ArithmeticError('Independent dimensionless root left bracket invalid')
+        # Roundoff may erase the strictly positive residual at t=1 for
+        # very large h. Refuse instead of treating rounded t=1 as interior.
+        if residual(1.)<=0:
+            raise ArithmeticError('Independent dimensionless root right bracket unresolved')
+        t=brentq(residual,0.,1.,xtol=5e-15,rtol=8e-15)
+        if not math.isfinite(t) or not 0<t<1:
+            raise ArithmeticError('Independent dimensionless root unresolved')
+        displacement=t/k
+        boundary=p.cost+displacement
+    # For either branch, b>cost alone is insufficient: if one cost ULP
+    # materially exceeds the firing reward resolution, refuse explicitly.
+    # This is a numerical admission policy, not a certified interval bound.
+    if (not math.isfinite(boundary) or not boundary>p.cost
+            or not math.isfinite(displacement) or displacement<=0
+            or math.ulp(boundary)>1e-8*displacement):
+        raise ArithmeticError('Independent boundary resolution unresolved at cost scale')
     return boundary
 
 def _obstacle_from_value(p: Stop, x: float, b: float, val: float) -> float:
