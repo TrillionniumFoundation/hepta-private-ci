@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "detail": null,
+      "name": "archive member index actually sharded",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "multipart transport actually exercised",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "blob bounds",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "publication receipt exact bytes",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "all original members restored",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "large data restored byte-for-byte",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "failed-attempt evidence included",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "wrong execution seal rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "corrupted transport bytes rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "publication traversal rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "reviewed code unchanged during roundtrip",
+      "passed": true
+    }
+  ],
+  "cpu_seconds": 0.46989477,
+  "passed": true,
+  "schema": "hcsn-hosted-independent-source-review.v1",
+  "scope": "independent source inspection plus tiny synthetic archive roundtrip; not evidence of hosted training completion or hardware advantage",
+  "source_sha256": {
+    "hepta-hcsn/.github/workflows/hcsn-blocker-hosted.yml": "55a64c064009762c8433373aa93d9f7b0a4c2076ce3b88446dd6362e2c02dce5",
+    "hepta-hcsn/experiments/hcsn_blocker_closure_v1/HOSTED_LAUNCH.json": "1be18653ccadf40bdf3049a171c38c67c5248b9018d0cf162cd51297ef21826c",
+    "hepta-hcsn/experiments/hcsn_blocker_closure_v1/evidence.py": "ae9a3be375c36b151ead24d83c8fdc018d4ec1b31f1e11dd42b5335ca00c8618",
+    "hepta-hcsn/experiments/hcsn_blocker_closure_v1/hosted.py": "ac06393718ecab048bc0788c6774e6c6fbfb0061536ff20670de120691a5675f"
+  },
+  "static_findings": [
+    "hosted prepare binds git HEAD to GITHUB_SHA and repo name before formal data construction",
+    "Pinned Python3.12.14 Torch2.8.0+cpu NumPy2.3.5 SciPy1.17.0 and4CPU/8GiB/no swap cgroup checked",
+    "Content preflight and registration precede all formal model outcomes",
+    "Order is76development, durable LR/arm selection lock,304fixed,64equalCPU jobs",
+    "Frozen imports need no missing real_av module: old RunBook imports stdlib; current models require baseline/oracle/distri/accelerated modules present in sparse rules",
+    "native restore and owner modules use native_vendor subtree included in sparse checkout",
+    "Final science gates are separate from process/integrity success",
+    "Unconditional packaging preserves current attempt including failure records; initial checkout/install failure details remain in GitHub step logs",
+    "Binary part size327680 and member shard checks respect512000repositoryblob limit",
+    "Canonical manifest is reconstructed losslessly before originalunshardedmanifest is removed",
+    "Publish checks exact file inventory/hashes/seal then pushes isolated evidence branch, never source branch",
+    "Derived summary readability should not replace raw archive or alter scientific analysis"
+  ],
+  "unresolved_launch_blockers": []
+}
