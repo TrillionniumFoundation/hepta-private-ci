@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn-evidence-restore.v3",
+  "manifest_sha256": "ffb9f90bdd81c395193534e8c3963ccf0556f2114a19c2006210007aaebb63ed",
+  "archive_sha256": "8f67c64a529ccd9f68919b8c249dc55a447b7bd20b1a60fecbada616b50e0599",
+  "verified_members": 312,
+  "written": 312,
+  "identical_existing": 0,
+  "all_verified": true,
+  "restore_cost": {
+    "wall_seconds": 0.23997937099193223,
+    "cpu_seconds": 0.2394489609999999,
+    "process_peak_rss_kib": 104160,
+    "scope": "archive operation; final receipt serialization excluded",
+    "energy_joules": null
+  },
+  "current_source_members_verified": 312,
+  "current_source_mismatches": [],
+  "current_source_inventory_exact": true,
+  "temporary_restore_removed": true,
+  "raw_sources_preserved": true,
+  "components": [
+    "results/stream",
+    "development/stream_preexecution_review01",
+    "results/costs"
+  ],
+  "combined_pack_verify_cost": {
+    "wall_seconds": 1.8379508200014243,
+    "cpu_seconds": 1.832756176,
+    "process_peak_rss_kib": 104160,
+    "energy_joules": null,
+    "scope": "pack, all hashes, restore and independent comparison; excludes final receipt write"
+  }
+}
