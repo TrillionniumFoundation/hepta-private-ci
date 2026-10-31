@@ -1,0 +1,631 @@
+{
+  "accuracy_gates": [
+    {
+      "criterion": "max channel probability error <= 0.001",
+      "name": "default_noise_fpt_main_grid",
+      "scope": "Brownian validation subcase, drift=1, sigma=.45, b=1, dt=1",
+      "status": "FAIL"
+    },
+    {
+      "criterion": "error strictly decreases on grids 9,15,31,63",
+      "name": "drifted_fpt_mesh_refinement_progress",
+      "scope": "Refinement progress is not an accuracy acceptance or continuous-model proof",
+      "status": "PASS"
+    },
+    {
+      "criterion": "row mass error <= 2e-10 and entries >= -2e-13",
+      "name": "ctmc_probability_law",
+      "scope": "Implementation probability law only",
+      "status": "PASS"
+    },
+    {
+      "criterion": "absolute upper-hit probability error <= 0.0001",
+      "name": "low_noise_fpt_main_grid",
+      "scope": "sigma=.05, drift=1, b=1, dt=.8; lower-first-exit correction is bounded by exp(-800)",
+      "status": "FAIL"
+    },
+    {
+      "criterion": "variance ratio within 5% of sigma^2*dt at every tested dt",
+      "name": "small_dt_fixed_grid_continuous",
+      "scope": "Zero drift, sigma=.45, fixed grid15; tiny actual Brownian boundary-hit probability is negligible here",
+      "status": "FAIL"
+    },
+    {
+      "criterion": "variance ratio within 5% of sigma^2*dt at every tested dt",
+      "name": "small_dt_fixed_grid_clocked",
+      "scope": "Zero drift, sigma=.45, fixed grid15; tiny actual Brownian boundary-hit probability is negligible here",
+      "status": "FAIL"
+    },
+    {
+      "criterion": "variance ratio within 5% of sigma^2*dt at every tested dt",
+      "name": "small_dt_fixed_grid_first_passage",
+      "scope": "Zero drift, sigma=.45, fixed grid15; tiny actual Brownian boundary-hit probability is negligible here",
+      "status": "PASS"
+    },
+    {
+      "criterion": "original refractory cohort survival agrees with (1-q)^k within 1e-13",
+      "name": "refractory_discrete_window_contract",
+      "scope": "A check of the declared discrete recovery law",
+      "status": "PASS"
+    },
+    {
+      "criterion": "mean physical refractory duration changes by at most 5%",
+      "name": "fixed_q_preserves_physical_recovery_when_dt_changes",
+      "scope": "A prerequisite for claiming a same-process dt convergence study; the current tick-relative model does not promise this",
+      "status": "FAIL"
+    },
+    {
+      "criterion": "all terminal tails have absolute error <=.001 and relative error <=10%",
+      "name": "gaussian_kernel_calibration_after_noise_law_swap",
+      "scope": "Hypothetical non-Gaussian internal-noise substitution with equal mean/variance; non-Gaussian external content alone does not invalidate a conditional Gaussian kernel",
+      "status": "FAIL"
+    },
+    {
+      "criterion": "relative lower-tail error <= 0.1% at z=-8,-9,-10",
+      "name": "registered_gaussian_extreme_tail_accuracy",
+      "scope": "Known cancellation in this runtime's torch.special.ndtr; the already running primary model was deliberately not changed",
+      "status": "FAIL"
+    }
+  ],
+  "created_utc": "2026-10-31T01:59:35.080875+00:00",
+  "drifted_brownian_first_exit": {
+    "configuration": {
+      "boundary": 1.0,
+      "drift": 1.0,
+      "dt": 1.0,
+      "leak_bound": 1.3e-15,
+      "sigma": 0.45
+    },
+    "measurements": [
+      {
+        "accuracy_status": "FAIL",
+        "grid": 9,
+        "max_absolute_error": 0.021374197670410044,
+        "probabilities_plus_minus": [
+          0.6071508572883022,
+          0.002603973103550705
+        ]
+      },
+      {
+        "accuracy_status": "FAIL",
+        "grid": 15,
+        "max_absolute_error": 0.015650506245029616,
+        "probabilities_plus_minus": [
+          0.6014271658629218,
+          0.0009674635084307645
+        ]
+      },
+      {
+        "accuracy_status": "FAIL",
+        "grid": 31,
+        "max_absolute_error": 0.009381686861821281,
+        "probabilities_plus_minus": [
+          0.5951583464797134,
+          0.00027167651656223737
+        ]
+      },
+      {
+        "accuracy_status": "FAIL",
+        "grid": 63,
+        "max_absolute_error": 0.00527086368430052,
+        "probabilities_plus_minus": [
+          0.5910475233021927,
+          0.00010798298223022588
+        ]
+      }
+    ],
+    "reference_method": "Independently integrated killed-Brownian boundary flux, 399 exponentially decaying terms",
+    "reference_plus_minus": [
+      0.5857766596178922,
+      3.008872927987906e-05
+    ]
+  },
+  "dynamics_sha256": "52857735514c295c5bb09846ac7200709d7ecb6a2537c2e38db1d42526f76bc8",
+  "fixed_mesh_small_dt": [
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 1.1644170184444604
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 1.1644170185036484
+      },
+      "dt": 0.1,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 0.9994715569813724
+      },
+      "grid": 9,
+      "reference_variance": 0.020250000000000004
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.5188798313194266
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.5188798313194266
+      },
+      "dt": 0.01,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 0.9999999237830557
+      },
+      "grid": 9,
+      "reference_variance": 0.0020250000000000003
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 4.159854902242423e-10
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 4.159854902242423e-10
+      },
+      "dt": 0.001,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 0.9999999999928542
+      },
+      "grid": 9,
+      "reference_variance": 0.00020250000000000002
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.0
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.0
+      },
+      "dt": 0.0001,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 0.9999999999999984
+      },
+      "grid": 9,
+      "reference_variance": 2.025e-05
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 1.0643004109018936
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 1.0643004109742158
+      },
+      "dt": 0.1,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 0.9999765301367827
+      },
+      "grid": 15,
+      "reference_variance": 0.020250000000000004
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 1.2728338391064877
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 1.2728338391064877
+      },
+      "dt": 0.01,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 0.9999999999936852
+      },
+      "grid": 15,
+      "reference_variance": 0.0020250000000000003
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.0008664018188072238
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.0008664018188072238
+      },
+      "dt": 0.001,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 1.0000000000000002
+      },
+      "grid": 15,
+      "reference_variance": 0.00020250000000000002
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.0
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.0
+      },
+      "dt": 0.0001,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 1.0000000000000002
+      },
+      "grid": 15,
+      "reference_variance": 2.025e-05
+    },
+    {
+      "clocked": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 1.0160751027343222
+      },
+      "continuous": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 1.0160751028185282
+      },
+      "dt": 0.1,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 0.9999997960394055
+      },
+      "grid": 31,
+      "reference_variance": 0.020250000000000004
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 1.1606001155404453
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 1.1606001155404453
+      },
+      "dt": 0.01,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 0.9999999999999998
+      },
+      "grid": 31,
+      "reference_variance": 0.0020250000000000003
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.5418609502256208
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.5418609502256208
+      },
+      "dt": 0.001,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 1.0
+      },
+      "grid": 31,
+      "reference_variance": 0.00020250000000000002
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 7.329420849394105e-10
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 7.329420849394105e-10
+      },
+      "dt": 0.0001,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 1.0
+      },
+      "grid": 31,
+      "reference_variance": 2.025e-05
+    },
+    {
+      "clocked": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 1.0040187756120305
+      },
+      "continuous": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 1.0040187757024521
+      },
+      "dt": 0.1,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 0.9999999955320279
+      },
+      "grid": 63,
+      "reference_variance": 0.020250000000000004
+    },
+    {
+      "clocked": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 1.0401877572016436
+      },
+      "continuous": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 1.0401877572016436
+      },
+      "dt": 0.01,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 0.9999999999999996
+      },
+      "grid": 63,
+      "reference_variance": 0.0020250000000000003
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 1.326975991668846
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 1.326975991668846
+      },
+      "dt": 0.001,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 0.9999999999999996
+      },
+      "grid": 63,
+      "reference_variance": 0.00020250000000000002
+    },
+    {
+      "clocked": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.02489240332642528
+      },
+      "continuous": {
+        "accuracy_status": "FAIL",
+        "variance_ratio": 0.02489240332642528
+      },
+      "dt": 0.0001,
+      "first_passage": {
+        "accuracy_status": "PASS",
+        "variance_ratio": 1.0
+      },
+      "grid": 63,
+      "reference_variance": 2.025e-05
+    }
+  ],
+  "grids": [
+    9,
+    15,
+    31,
+    63
+  ],
+  "low_noise_first_exit": {
+    "configuration": {
+      "boundary": 1.0,
+      "drift": 1.0,
+      "dt": 0.8,
+      "leak_bound": 1.3e-15,
+      "sigma": 0.05
+    },
+    "log_upper_bound_on_lower_first_exit_correction": -800.0,
+    "measurements": [
+      {
+        "absolute_error": 0.37277812032429275,
+        "accuracy_status": "FAIL",
+        "effective_variance_rate_at_zero": 0.2025,
+        "grid": 9,
+        "plus_probability": 0.3727824421502995
+      },
+      {
+        "absolute_error": 0.31533270472844166,
+        "accuracy_status": "FAIL",
+        "effective_variance_rate_at_zero": 0.1275,
+        "grid": 15,
+        "plus_probability": 0.3153370265544484
+      },
+      {
+        "absolute_error": 0.22430977199768215,
+        "accuracy_status": "FAIL",
+        "effective_variance_rate_at_zero": 0.065,
+        "grid": 31,
+        "plus_probability": 0.2243140938236889
+      },
+      {
+        "absolute_error": 0.1330740591524248,
+        "accuracy_status": "FAIL",
+        "effective_variance_rate_at_zero": 0.03375,
+        "grid": 63,
+        "plus_probability": 0.13307838097843153
+      }
+    ],
+    "single_upper_barrier_reference": 4.3218260067306375e-06
+  },
+  "main_grid": 15,
+  "non_gaussian_terminal_tails": [
+    {
+      "absolute_error": 0.03709688671434998,
+      "accuracy_status": "FAIL",
+      "actual_terminal_tail": 0.1215583672171071,
+      "distribution": "laplace_unit_variance",
+      "gaussian_prediction": 0.15865525393145707,
+      "relative_error": 0.3051775666589348,
+      "threshold_standard_deviations": 1.0
+    },
+    {
+      "absolute_error": 0.06781019702335239,
+      "accuracy_status": "FAIL",
+      "actual_terminal_tail": 0.09084505690810468,
+      "distribution": "student_t3_unit_variance",
+      "gaussian_prediction": 0.15865525393145707,
+      "relative_error": 0.7464379387416372,
+      "threshold_standard_deviations": 1.0
+    },
+    {
+      "absolute_error": 0.006802741332798918,
+      "accuracy_status": "FAIL",
+      "actual_terminal_tail": 0.029552873280978113,
+      "distribution": "laplace_unit_variance",
+      "gaussian_prediction": 0.022750131948179195,
+      "relative_error": 0.23018883030833906,
+      "threshold_standard_deviations": 2.0
+    },
+    {
+      "absolute_error": 0.002490468771262185,
+      "accuracy_status": "FAIL",
+      "actual_terminal_tail": 0.02025966317691701,
+      "distribution": "student_t3_unit_variance",
+      "gaussian_prediction": 0.022750131948179195,
+      "relative_error": 0.12292745192820967,
+      "threshold_standard_deviations": 2.0
+    },
+    {
+      "absolute_error": 0.005834900013589445,
+      "accuracy_status": "FAIL",
+      "actual_terminal_tail": 0.007184798045219538,
+      "distribution": "laplace_unit_variance",
+      "gaussian_prediction": 0.0013498980316300933,
+      "relative_error": 0.8121174703681117,
+      "threshold_standard_deviations": 3.0
+    },
+    {
+      "absolute_error": 0.005573518462799429,
+      "accuracy_status": "FAIL",
+      "actual_terminal_tail": 0.0069234164944295224,
+      "distribution": "student_t3_unit_variance",
+      "gaussian_prediction": 0.0013498980316300933,
+      "relative_error": 0.8050242921661291,
+      "threshold_standard_deviations": 3.0
+    }
+  ],
+  "probability_law_check": {
+    "maximum_row_mass_error": 2.6201263381153694e-14,
+    "minimum_transition_entry": 0.0
+  },
+  "promotion_limitations": [
+    "Fixed-grid first-passage performance is performance of the specified CTMC, not verified continuous-OU first-passage evidence.",
+    "At drift mu and mesh h, upwind local variance rate is sigma^2+abs(mu)*h; low-noise learned parameters can be dominated by numerical diffusion.",
+    "Endpoint Gaussian binning can freeze at fixed mesh as dt decreases; voltage and time must be refined jointly.",
+    "The continuous comparison is also a projected finite-grid distribution model with boundary-tail bias.",
+    "Current q is relative to the tick; fixed-q dt sweeps change the physical refractory process.",
+    "A Gaussian conditional transition is not calibrated for arbitrary non-Gaussian internal increments merely because mean and variance match.",
+    "The frozen torch.special.ndtr implementation returns zero at standardized arguments -9 and -10 in this runtime; extreme-tail likelihood accuracy is not established. An erfc/log-CDF correction belongs to a separately versioned rerun."
+  ],
+  "recovery_windows": {
+    "max_discrete_cohort_error": 2.710505431213761e-20,
+    "measurements": [
+      {
+        "cohort_checks": [
+          {
+            "geometric_reference": 0.35,
+            "ticks": 1,
+            "unreleased_original_cohort": 0.35
+          },
+          {
+            "geometric_reference": 0.04287499999999999,
+            "ticks": 3,
+            "unreleased_original_cohort": 0.04287499999999999
+          },
+          {
+            "geometric_reference": 0.0002251875390624999,
+            "ticks": 8,
+            "unreleased_original_cohort": 0.00022518753906249986
+          }
+        ],
+        "dt": 1.0,
+        "expected_whole_refractory_duration": 1.5384615384615383,
+        "expected_whole_refractory_ticks": 1.5384615384615383,
+        "q": 0.65,
+        "unreleased_fraction_after_physical_time_1": 0.35
+      },
+      {
+        "cohort_checks": [
+          {
+            "geometric_reference": 0.35,
+            "ticks": 1,
+            "unreleased_original_cohort": 0.35
+          },
+          {
+            "geometric_reference": 0.04287499999999999,
+            "ticks": 3,
+            "unreleased_original_cohort": 0.04287499999999999
+          },
+          {
+            "geometric_reference": 0.0002251875390624999,
+            "ticks": 8,
+            "unreleased_original_cohort": 0.00022518753906249986
+          }
+        ],
+        "dt": 0.1,
+        "expected_whole_refractory_duration": 0.15384615384615385,
+        "expected_whole_refractory_ticks": 1.5384615384615383,
+        "q": 0.65,
+        "unreleased_fraction_after_physical_time_1": 2.7585473535156234e-05
+      },
+      {
+        "cohort_checks": [
+          {
+            "geometric_reference": 0.35,
+            "ticks": 1,
+            "unreleased_original_cohort": 0.35
+          },
+          {
+            "geometric_reference": 0.04287499999999999,
+            "ticks": 3,
+            "unreleased_original_cohort": 0.04287499999999999
+          },
+          {
+            "geometric_reference": 0.0002251875390624999,
+            "ticks": 8,
+            "unreleased_original_cohort": 0.00022518753906249986
+          }
+        ],
+        "dt": 0.01,
+        "expected_whole_refractory_duration": 0.015384615384615384,
+        "expected_whole_refractory_ticks": 1.5384615384615383,
+        "q": 0.65,
+        "unreleased_fraction_after_physical_time_1": 2.551552067298669e-46
+      }
+    ],
+    "physical_time_note": "A continuous recovery hazard lambda would require q(dt)=1-exp(-lambda*dt), plus an explicit convention for the event tick remainder. That alternative is not implemented here."
+  },
+  "registered_normal_cdf_extreme_tails": [
+    {
+      "accuracy_status": "FAIL",
+      "registered_torch_ndtr": 6.106226635438361e-16,
+      "relative_error": 0.018443122643774495,
+      "scipy_ndtr_reference": 6.22096057427174e-16,
+      "standardized_argument": -8.0,
+      "torch_erfc_reference": 6.22096057427182e-16
+    },
+    {
+      "accuracy_status": "FAIL",
+      "registered_torch_ndtr": 0.0,
+      "relative_error": 1.0,
+      "scipy_ndtr_reference": 1.1285884059538324e-19,
+      "standardized_argument": -9.0,
+      "torch_erfc_reference": 1.1285884059538425e-19
+    },
+    {
+      "accuracy_status": "FAIL",
+      "registered_torch_ndtr": 0.0,
+      "relative_error": 1.0,
+      "scipy_ndtr_reference": 7.61985302416047e-24,
+      "standardized_argument": -10.0,
+      "torch_erfc_reference": 7.619853024160595e-24
+    }
+  ],
+  "runtime": {
+    "dtype": "float64",
+    "numpy": "1.26.4",
+    "python": "3.12.14",
+    "scipy": "1.17.0",
+    "torch": "2.9.1+cpu",
+    "torch_threads": 1
+  },
+  "schema_version": 1,
+  "scope": "Diagnostics of the registered fixed-grid models; failures are not proof of code bugs and no generator was retuned to hide them.",
+  "status": "NUMERICAL_PROMOTION_BLOCKED",
+  "threshold_registration": "Diagnostic tolerances were declared after exploratory corner discovery, not before data collection; no confirmatory statistical claim."
+}

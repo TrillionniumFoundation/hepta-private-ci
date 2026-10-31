@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.analytic-event.round7.source-baseline.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_commit": "bf88335edc41d40d57d8e84716dd1d2e8cd13a68",
+  "baseline_branch": "research/analytic-event-round6-20261030",
+  "baseline_role": "Newest inspected analytic-event research continuation; main is a distinct implementation profile.",
+  "other_verified_heads": {
+    "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "analytic_round5": "d6a828eac92cc8df03f3ccce0a6d2fc04c7ce9f6",
+    "first_passage_adaptive": "eb5a1cc503e1ea6592d68e73c95b94d24564352a"
+  },
+  "restored_parent_files": [
+    {
+      "path": "AGENTS.md",
+      "source_commit": "bf88335edc41d40d57d8e84716dd1d2e8cd13a68",
+      "bytes": 22519,
+      "git_blob_sha1": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "restoration": "remote content verified against GitHub Git blob; exact bytes preserved",
+      "modified_by_round7": false
+    },
+    {
+      "path": "experiments/analytic_event_neuron/analytic.py",
+      "source_commit": "bf88335edc41d40d57d8e84716dd1d2e8cd13a68",
+      "bytes": 9336,
+      "git_blob_sha1": "f369b51533965f39808fbe7e832251da70ce0c70",
+      "sha256": "6d447f88aa5c52b6a273271f4936b5e3dc1a2db8b791f48db71d141d97713264",
+      "restoration": "remote content verified against GitHub Git blob; exact bytes preserved",
+      "modified_by_round7": false
+    },
+    {
+      "path": "experiments/analytic_event_neuron/reference.py",
+      "source_commit": "bf88335edc41d40d57d8e84716dd1d2e8cd13a68",
+      "bytes": 11312,
+      "git_blob_sha1": "9268ee0b708bb1b25e01fa0cdd3b44e73721d969",
+      "sha256": "f6793ae7a19fe324ecbb86eb2af38c9e55820e643a4fd7ed09bab66a5be84fdb",
+      "restoration": "remote content verified against GitHub Git blob; exact bytes preserved",
+      "modified_by_round7": false
+    },
+    {
+      "path": "experiments/analytic_event_neuron/native_adapter.py",
+      "source_commit": "bf88335edc41d40d57d8e84716dd1d2e8cd13a68",
+      "bytes": 3626,
+      "git_blob_sha1": "7b5c6bac9db639ea0e2b07b7d5fee59eafa5fc1b",
+      "sha256": "24e3b7babc15a60341a7ce0e74e02c48bbc477d9801664f55509a4caec40a389",
+      "restoration": "remote content verified against GitHub Git blob; exact bytes preserved",
+      "modified_by_round7": false
+    }
+  ],
+  "local_reference": {
+    "path": "experiments/analytic_event_neuron/round7/reference_source/first_passage_kernels.py",
+    "source_path": "experiments/first_passage_cell/kernels.py",
+    "source_commit": "eb5a1cc503e1ea6592d68e73c95b94d24564352a",
+    "source_checkout": "/tmp/hepta-integration-20261030-65d421def718",
+    "bytes": 15856,
+    "git_blob_sha1": "ba36d943f405403ed7e26a607d28cd18a23055fa",
+    "sha256": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308",
+    "scope": "Reference only. Brownian single-lower-barrier kernels, not a continuous OU two-barrier solution. No prior source changes."
+  },
+  "native_reuse": {
+    "archive_commit": "bf88335edc41d40d57d8e84716dd1d2e8cd13a68",
+    "archive_path": "experiments/analytic_event_neuron/evidence/NATIVE_RUNTIME_EVIDENCE.tar.gz",
+    "archive_bytes": 804117,
+    "archive_git_blob_sha1": "5f7e2a112c0ffe6c44b5d8d83a7154870d42d498",
+    "archive_sha256": "58ef6033c4fbd4791d51cd09b7bdacdb015c6f8e3a09557a4c331cd3462330e4",
+    "restore_receipt": "evidence/native_reuse/RESTORE_RECEIPT.json",
+    "original_build_receipt": "evidence/native_reuse/BUILD_RECEIPT.json",
+    "executable_path": "evidence/native_reuse/analytic_event",
+    "executable_sha256": "b519cae26325f818d9596aab34504490a0b5355b9eb633369878e6f07a50e179",
+    "original_build_source_commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+    "fresh_compile": false,
+    "activation": "Research reuse only; no production promotion or current-main binary qualification.",
+    "publication": "The full evidence bundle may include the exact historical executable and its original build/restore receipts for offline replay, as subsequently authorized by the coordinator. Do not claim a fresh compile or separately qualify it as the current main/Round7 neuron. This complete-bundle decision supersedes the original restoration receipt packaging note."
+  },
+  "working_copy_scope": "A partial research checkout was materialized. Git publication and any later file restoration are recorded separately by the coordinator.",
+  "scientific_separation": [
+    "Parent analytic.py implements terminal Gaussian mass/CDF/probit and finite quantization; signed communications are not a first-passage law.",
+    "Round7 clocked events and finite-grid first-passage events have separately declared transition laws, reset and refractory semantics.",
+    "Round7 CTMC matrix exponential is exact only for its finite generator, up to numerical error. Its continuum OU approximation requires a grid study.",
+    "Round7 finite task DP is exact for the declared discrete evidence task, not a continuous QVI theorem.",
+    "Source restoration and reading historical reports are not experiment reruns, training, or fresh compilation."
+  ],
+  "created_utc": "2026-10-31T01:48:26.228709+00:00"
+}

@@ -1,0 +1,21 @@
+{
+  "change": "Two softmax weights from log(actual survival mass), log(actual event mass); actual conditional denominators; exact-zero supports preserved; refractory rows unchanged.",
+  "continuous_diffusion_promotion": "Still blocked by independent numerical_audit.json; temperature is a finite-law mechanism control, not a diffusion semigroup.",
+  "corrected_source_sha256": "0fb4fc5e5524496b6287d0baca6f20a868457f930744630bfdf275e7765aa9dd",
+  "created_utc": "2026-10-31T02:04:00.668515+00:00",
+  "legacy_fit_disposition": "All five legacy temperature fits are excluded from final fits regardless of performance; corrected secondary fits must be rerun from the fixed registered seeds. Primary modes do not call this class.",
+  "legacy_source_sha256": "ba2257561f102983d3f4a1c29a2c8deb5f8cc1de6e0db98f550268a4a8c532be",
+  "status": "CORRECTED_SECONDARY_KERNEL_VALIDATED",
+  "test_source_sha256": "e87aea4bb51729a56cc23fa8aace56bcf3d04b959761f3b6427c023af15df4d0",
+  "tests_run": 4,
+  "tests_status": "PASS",
+  "unchanged_dynamics_sha256": "52857735514c295c5bb09846ac7200709d7ecb6a2537c2e38db1d42526f76bc8",
+  "validation_command": "PYTHONPATH=/tmp/convergence-smollm-runtime/lib/python3.12/site-packages python -m unittest experiments.analytic_event_neuron.round7.test_temperature -v",
+  "validation_scope": [
+    "T=1 reproduces the base FPT law up to row-normalization roundoff.",
+    "Exact zero, exact one, p=1e-20 and near-one probabilities preserve mass, active conditional distribution, and event direction.",
+    "Trainable parameter count remains matched with diffusion fixed and one learned temperature.",
+    "Full task-return temperature derivative agrees with finite differences.",
+    "Actual small-dt CTMC rows conserve probability and have finite temperature gradients."
+  ]
+}

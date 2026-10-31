@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.round7.audit-launch.v1",
+  "start_utc": "2026-10-31T02:25:35+00:00",
+  "freeze_utc": "2026-10-31T02:23:47.523187+00:00",
+  "frozen_manifest_sha256": "3cda25b5fc17774e624d590679267066b51a9246072801c53453ee964b2202f0",
+  "manifest_verified_before_launch": true,
+  "output_was_absent_before_launch": true,
+  "root": "/workspace/scratch/08bf0b785298/hepta-research/experiments/analytic_event_neuron/round7",
+  "output": "/workspace/scratch/08bf0b785298/hepta-research/experiments/analytic_event_neuron/round7/evidence/audits",
+  "artifact_root": "/workspace/scratch/08bf0b785298/hepta-research/experiments/analytic_event_neuron/round7/evidence/runtime_artifacts",
+  "pythonpath": "/tmp/convergence-smollm-runtime/lib/python3.12/site-packages",
+  "module": "experiments.analytic_event_neuron.round7.audits",
+  "torch_threads": 1,
+  "expected_fit_seeds": [11, 12, 13, 14, 15],
+  "expected_public_prefixes": 40,
+  "conditional_continuations_per_legal_action": 64,
+  "expected_broker_episodes": 16,
+  "selection_policy": "Frozen registrations only; all attempts and failures retained. No source, model, protocol, or frozen REVIEW edits."
+}

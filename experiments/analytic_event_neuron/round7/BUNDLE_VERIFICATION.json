@@ -1,0 +1,191 @@
+{
+  "bundle": {
+    "archive_bytes": 92389272,
+    "archive_format": "ustar+gzip",
+    "archive_sha256": "938a00c2beca370049e7d0d26facba0933da2d5f0085420b9b291916982f920f",
+    "directory_count": 65,
+    "last_part_bytes": 114584,
+    "member_count": 370,
+    "part_bytes": 524288,
+    "part_count": 177,
+    "regular_file_count": 305,
+    "unpacked_file_bytes": 101242834
+  },
+  "bundle_directory": "experiments/analytic_event_neuron/round7/evidence_bundle",
+  "bundle_manifest": {
+    "bytes": 110394,
+    "git_blob_sha1": "d09f71cda91a53e686b2b4a69f2b0ff6017564f7",
+    "repository_path": "experiments/analytic_event_neuron/round7/evidence_bundle/BUNDLE_MANIFEST.json",
+    "sha256": "06d4dc519169127af1cb5b4679c4c9ae3d84df203d3c7dbcc8e9f11c9058b29f"
+  },
+  "completed_utc": "2026-10-31T02:52:31.961641+00:00",
+  "disk": {
+    "conservative_estimated_peak_extra_bytes": 327446388,
+    "final_available_bytes_after_cleanup": 695943168,
+    "initial_available_bytes": 793784320,
+    "minimum_observed_available_bytes": 511455232,
+    "phases": [
+      {
+        "free_bytes": 793784320,
+        "phase": "before_pack",
+        "utc": "2026-10-31T02:52:28.134665+00:00"
+      },
+      {
+        "free_bytes": 696389632,
+        "phase": "after_pack",
+        "utc": "2026-10-31T02:52:30.930468+00:00"
+      },
+      {
+        "free_bytes": 593780736,
+        "phase": "after_restore",
+        "utc": "2026-10-31T02:52:31.414772+00:00"
+      },
+      {
+        "free_bytes": 593539072,
+        "phase": "all_content_checks_passed",
+        "utc": "2026-10-31T02:52:31.949335+00:00"
+      },
+      {
+        "free_bytes": 695943168,
+        "phase": "after_private_restore_cleanup",
+        "utc": "2026-10-31T02:52:31.958048+00:00"
+      }
+    ],
+    "sample_count": 40,
+    "sample_interval_seconds": 0.1
+  },
+  "frozen_inputs_after": {
+    "checked_utc": "2026-10-31T02:52:31.961738+00:00",
+    "input_count": 108,
+    "manifest_sha256": "3cda25b5fc17774e624d590679267066b51a9246072801c53453ee964b2202f0",
+    "status": "PASS"
+  },
+  "frozen_inputs_before": {
+    "checked_utc": "2026-10-31T02:52:27.905375+00:00",
+    "input_count": 108,
+    "manifest_sha256": "3cda25b5fc17774e624d590679267066b51a9246072801c53453ee964b2202f0",
+    "status": "PASS"
+  },
+  "frozen_inputs_modified": false,
+  "frozen_packer_sha256": "768fc9fd65e0a0a227461d68f5b2ae03eeb9977df65de3206c7fc4f032524f89",
+  "historical_native": {
+    "bytes": 968288,
+    "fresh_build": false,
+    "kind": "file",
+    "mode": 493,
+    "path": "native_reuse/analytic_event",
+    "restored_executable_permission_verified": true,
+    "sha256": "b519cae26325f818d9596aab34504490a0b5355b9eb633369878e6f07a50e179"
+  },
+  "independent_member_verification": {
+    "all_member_types_sizes_sha256_and_permission_modes_match": true,
+    "bundle_parts_independently_rehashed": true,
+    "byte_for_byte_compared_content_bytes": 101242834,
+    "checked_directories": 65,
+    "checked_regular_files": 305,
+    "concatenated_archive_independently_rehashed": true,
+    "inventory_sha256": "ee698f8bfeb7783cd4d6bafe200acd4f5b58946737a7651d1110bdfeaa5417e6",
+    "no_symlinks_or_special_members": true,
+    "restored_inventory_matches_manifest": true,
+    "root_directory_mode_not_a_tar_member": true,
+    "source_inventory_matches_manifest": true,
+    "source_inventory_unchanged_after_pack_restore": true,
+    "status": "PASS",
+    "unexpected_bundle_files": false
+  },
+  "notes": [
+    "Verification receipts are outside evidence to avoid a self-referential archive.",
+    "Original 45-test and post-freeze four-test receipts are retained; archive verification did not rerun scientific optimization.",
+    "Restore target was a private directory controlled by this process; no concurrent-hostile-filesystem sandbox is claimed."
+  ],
+  "pack": {
+    "process_cpu_seconds": 2.7951197129999996,
+    "status": "PASS",
+    "wall_seconds": 2.7946919000096386
+  },
+  "publication_performed": false,
+  "reproduction_document": {
+    "bytes": 20361,
+    "git_blob_sha1": "19fb385084123401db866d7ccb02b808de2476c1",
+    "postfreeze_independent_four_tests_and_complete_tables_documented": true,
+    "repository_path": "experiments/analytic_event_neuron/round7/REPRODUCE.md",
+    "sha256": "c35297a0d38783a06efd4dca56eae34f5b0d586da9e74a3c5e1b5d4589190688"
+  },
+  "restore": {
+    "all_part_archive_member_checksums_verified": true,
+    "archive_sha256": "938a00c2beca370049e7d0d26facba0933da2d5f0085420b9b291916982f920f",
+    "cleanup_scope": "Only the fresh private directory created by this verification; no other thread files were removed.",
+    "existing_mismatches_overwritten": false,
+    "manifest_sha256": "06d4dc519169127af1cb5b4679c4c9ae3d84df203d3c7dbcc8e9f11c9058b29f",
+    "members": 370,
+    "output": "/tmp/hepta-r7-bundle-verify-54bz9qo1/evidence",
+    "private_parent_mode": "0700",
+    "private_parent_removed_after_success": true,
+    "process_cpu_seconds": 0.47749806800000005,
+    "restored_tree_removed_after_success": true,
+    "source_and_bundle_retained": true,
+    "status": "verified_and_restored",
+    "unpacked_file_bytes": 101242834,
+    "wall_seconds": 0.4841670439927839
+  },
+  "retention": {
+    "all_original_evidence_members_retained": true,
+    "exclusions": [
+      "every __pycache__ directory",
+      "this bundle output directory if nested within source"
+    ],
+    "independent_joint_optimal_review_included": true,
+    "posthoc_full_tables_included": true,
+    "raw_confirmation_included": true,
+    "top_level_members": [
+      "AUDIT_FINISH.json",
+      "AUDIT_LAUNCH.json",
+      "AUDIT_STDERR.log",
+      "AUDIT_STDOUT.json",
+      "COMPONENT_PROFILE.json",
+      "CONFIRMATION_LAUNCH.json",
+      "DEVELOPMENT_LEDGER.json",
+      "ENVIRONMENT.json",
+      "JOINT_OPTIMAL_DIAGNOSTIC.json",
+      "JOINT_OPTIMAL_TABLES.jsonl.gz",
+      "REGISTERED_CHECKPOINTS.json",
+      "TEST_OUTPUT.txt",
+      "TEST_RECEIPT.json",
+      "TRAINING_AUDIT.json",
+      "audits",
+      "checkpoint_resolution_summary.json",
+      "checkpoint_resolution_transfer.json",
+      "checkpoint_resolution_transfer_receipt.json",
+      "confirmation_001",
+      "development_control",
+      "development_final",
+      "development_resolution_transfer_smoke.json",
+      "development_runner",
+      "development_smoke",
+      "development_temperature_legacy",
+      "fits_clocked_control",
+      "fits_freezes_a",
+      "fits_freezes_b",
+      "fits_primary",
+      "fits_temperature_corrected",
+      "joint_control_audit.json",
+      "native_bridge",
+      "native_reuse",
+      "numerical_audit.json",
+      "runtime_artifacts",
+      "temperature_corrected_test_output.txt",
+      "temperature_correction_validation.json"
+    ]
+  },
+  "schema": "hepta.round7.bundle-verification.v1",
+  "source_directory": "experiments/analytic_event_neuron/round7/evidence",
+  "started_utc": "2026-10-31T02:52:27.900909+00:00",
+  "status": "PASS",
+  "total_wall_seconds": 4.060723009999492,
+  "upload_checklist": {
+    "bytes": 63818,
+    "git_blob_sha1": "c4f37a360690e9ecebdba53189b38383f76d8654",
+    "repository_path": "experiments/analytic_event_neuron/round7/BUNDLE_UPLOAD_MANIFEST.json",
+    "sha256": "46c6a69fa2a14b3533466722aaecf94fde53bdf570b772f77608a44bc708dc6f"
+  }
+}
