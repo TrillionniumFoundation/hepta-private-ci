@@ -1,0 +1,33 @@
+{
+  "action_records": 12575,
+  "all_passed": true,
+  "auditor_sha256": "8e93472f3721bc7a760f376e4779b954d5214969809cc57149bb35a880456745",
+  "enclosing_receipt_excluded_from_inner_sum": true,
+  "inner_worker_cpu_seconds": 13.064231,
+  "limitations": "Offline trace/data/integrity/score audit; process receipts are observed records, not hardware attestations. No sensor/network/energy or fresh-actor claim.",
+  "outer_study_cpu_seconds": 13.263035,
+  "protocol_sha256": "7825b69fbd335d3c52502b8ad6cb9090f698cd95609cd222137ba85b035e38af",
+  "restart_episodes": 36,
+  "result_files": 24,
+  "tasks": {
+    "async_av": {
+      "baseline_probability_max_error": 2.220446049250313e-16,
+      "eligible_policies": [
+        "all"
+      ],
+      "recovered_episodes": 12,
+      "repeated_runs": 6,
+      "selected_policy": "all"
+    },
+    "av_binding": {
+      "baseline_probability_max_error": 7.771561172376096e-16,
+      "eligible_policies": [
+        "all"
+      ],
+      "recovered_episodes": 24,
+      "repeated_runs": 6,
+      "selected_policy": "all"
+    }
+  },
+  "worker_receipts": 26
+}

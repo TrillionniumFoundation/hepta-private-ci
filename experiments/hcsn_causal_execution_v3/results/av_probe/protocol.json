@@ -1,0 +1,50 @@
+{
+  "alphas": [
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0,
+    1000.0
+  ],
+  "candidate_count_per_task": 120,
+  "candidate_limits": "Small validation set and finite grid selection can overfit validation; report all candidates",
+  "diagnostics": [
+    "missing_audio",
+    "missing_video",
+    "content_shuffle",
+    "metadata_only"
+  ],
+  "families": [
+    "moments",
+    "bilinear",
+    "synchrony",
+    "combined"
+  ],
+  "features": "No actor/clip/emotion labels, absolute timestamps, age, duration, or count input. Causal observed-prefix moments/interactions.",
+  "fitting": "train-only feature mean/std and regularized least-squares one-hot targets",
+  "frozen_at_utc": "2026-10-31T11:46:13Z",
+  "qualification": {
+    "async_av_validation_accuracy": 0.5,
+    "av_binding_validation_accuracy": 0.75,
+    "meaning": "Exploratory frontend screening threshold only, not inferential acceptance"
+  },
+  "schema": "hcsn-v3.av-feature-probe",
+  "selection": "minimum validation CE; first tie in declared order",
+  "source_sha256": "890001592133a414e22863e903d10f62c927558938f6fcc0afa30a36d63ea127",
+  "tasks": [
+    "async_av",
+    "av_binding"
+  ],
+  "temperatures": [
+    0.1,
+    0.25,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "test_access": "selected checkpoint only; test and interventions opened after selection files",
+  "test_status": "Exploratory reused old actors; baseline metadata inspected before this run; no fresh confirmation",
+  "train_data_sha256": "cc53d3185720157590fa47fd7b93103fe92b0186b587ec4ea763c61ee7de6da1",
+  "validation_data_sha256": "e3c74e378df33592b0d40014deeb213e3639395ff0e0ecf3956dff57e7f39b2f"
+}

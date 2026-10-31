@@ -1,0 +1,2477 @@
+{
+  "protocol_sha256": "a7cf030668b00e06aff16f0cf32da82c0599415affa740239e3b8f22964b86fb",
+  "rows": [
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.022857162999999958,
+        "wall_seconds": 0.02288894000230357
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 132,
+        "counter_scalars": 4,
+        "inspected_tokens": 32,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/selective_copy_L32_H3.2_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.02136619899999992,
+        "wall_seconds": 0.02136673900531605
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 132,
+        "counter_scalars": 4,
+        "inspected_tokens": 32,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/selective_copy_L32_H12.8_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.023506065999999937,
+        "wall_seconds": 0.02350660099182278
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 132,
+        "counter_scalars": 4,
+        "inspected_tokens": 128,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/selective_copy_L128_H3.2_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.025233982999999904,
+        "wall_seconds": 0.025234800996258855
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 132,
+        "counter_scalars": 4,
+        "inspected_tokens": 128,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/selective_copy_L128_H12.8_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.036237191999999974,
+        "wall_seconds": 0.036238152999430895
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 3.2,
+      "length": 512,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 132,
+        "counter_scalars": 4,
+        "inspected_tokens": 512,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/selective_copy_L512_H3.2_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.034325953999999825,
+        "wall_seconds": 0.03432654601056129
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 12.8,
+      "length": 512,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 132,
+        "counter_scalars": 4,
+        "inspected_tokens": 512,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/selective_copy_L512_H12.8_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.017966581000000037,
+        "wall_seconds": 0.017967122999834828
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 264,
+        "counter_scalars": 4,
+        "inspected_tokens": 32,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/mqar_L32_H3.2_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.018591919000000123,
+        "wall_seconds": 0.018592834006994963
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 264,
+        "counter_scalars": 4,
+        "inspected_tokens": 32,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/mqar_L32_H12.8_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.021828484999999898,
+        "wall_seconds": 0.021830056997714564
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 264,
+        "counter_scalars": 4,
+        "inspected_tokens": 128,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/mqar_L128_H3.2_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.020987926999999962,
+        "wall_seconds": 0.020987948999390937
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 264,
+        "counter_scalars": 4,
+        "inspected_tokens": 128,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/mqar_L128_H12.8_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.033331387000000046,
+        "wall_seconds": 0.03333244899113197
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 3.2,
+      "length": 512,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 264,
+        "counter_scalars": 4,
+        "inspected_tokens": 512,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/mqar_L512_H3.2_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.03853366699999983,
+        "wall_seconds": 0.03853480399993714
+      },
+      "exact_recall": 1.0,
+      "family": "delta_memory",
+      "horizon": 12.8,
+      "length": 512,
+      "nll": -0.0,
+      "operation_counts": {
+        "array_state_bytes": 264,
+        "counter_scalars": 4,
+        "inspected_tokens": 512,
+        "output_buffer_bytes": 128,
+        "reads": 4,
+        "writes": 4
+      },
+      "prediction": "predictions/mqar_L512_H12.8_delta_memory.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": null,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.01410962299999996,
+        "wall_seconds": 0.014113703000475653
+      },
+      "exact_recall": 1.0,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00023303749912884086,
+      "prediction": "predictions/selective_copy_s81031_shared_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.014712118000000052,
+        "wall_seconds": 0.014715708995936438
+      },
+      "exact_recall": 0.0390625,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 2.1401190757751465,
+      "prediction": "predictions/selective_copy_s81031_shared_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.58203125,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.06594106299999991,
+        "wall_seconds": 0.06594598699302878
+      },
+      "exact_recall": 1.0,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00026595787494443357,
+      "prediction": "predictions/selective_copy_s81031_shared_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.06784552099999996,
+        "wall_seconds": 0.06787065400567371
+      },
+      "exact_recall": 0.0234375,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 3.0015382766723633,
+      "prediction": "predictions/selective_copy_s81031_shared_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.466796875,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.030151204000000043,
+        "wall_seconds": 0.03015528799733147
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.0002241172915091738,
+      "prediction": "predictions/selective_copy_s81031_two_gate_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.012454554999999923,
+        "wall_seconds": 0.012456618991564028
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00023303749912884086,
+      "prediction": "predictions/selective_copy_s81031_two_gate_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.029578843999999993,
+        "wall_seconds": 0.029581903989310376
+      },
+      "exact_recall": 0.0546875,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 1.8636972904205322,
+      "prediction": "predictions/selective_copy_s81031_two_gate_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.611328125,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.015018571999999786,
+        "wall_seconds": 0.015021058003185317
+      },
+      "exact_recall": 0.0390625,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 2.1401190757751465,
+      "prediction": "predictions/selective_copy_s81031_two_gate_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.58203125,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.13623675099999977,
+        "wall_seconds": 0.1362430330045754
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0002581971639301628,
+      "prediction": "predictions/selective_copy_s81031_two_gate_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06661410199999995,
+        "wall_seconds": 0.06661800900474191
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00026595787494443357,
+      "prediction": "predictions/selective_copy_s81031_two_gate_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.13613115499999973,
+        "wall_seconds": 0.13614784899982624
+      },
+      "exact_recall": 0.046875,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 2.4263267517089844,
+      "prediction": "predictions/selective_copy_s81031_two_gate_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.55078125,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06516625199999959,
+        "wall_seconds": 0.06516971500241198
+      },
+      "exact_recall": 0.0234375,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 3.0015382766723633,
+      "prediction": "predictions/selective_copy_s81031_two_gate_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.466796875,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.18828252,
+        "wall_seconds": 0.18829848799214233
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00022430383251048625,
+      "prediction": "predictions/selective_copy_s81031_analytic_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.013343945999999995,
+        "wall_seconds": 0.013346958003239706
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00023303749912884086,
+      "prediction": "predictions/selective_copy_s81031_analytic_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.20710982899999975,
+        "wall_seconds": 0.2071383829897968
+      },
+      "exact_recall": 0.0390625,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 2.262209892272949,
+      "prediction": "predictions/selective_copy_s81031_analytic_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.564453125,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.012223552000000026,
+        "wall_seconds": 0.01222630099800881
+      },
+      "exact_recall": 0.0390625,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 2.1401190757751465,
+      "prediction": "predictions/selective_copy_s81031_analytic_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.58203125,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.695634455,
+        "wall_seconds": 0.6967543530045077
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00025359136634506285,
+      "prediction": "predictions/selective_copy_s81031_analytic_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06912071399999986,
+        "wall_seconds": 0.06912456599820871
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00026595787494443357,
+      "prediction": "predictions/selective_copy_s81031_analytic_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.6549013750000001,
+        "wall_seconds": 0.654974842997035
+      },
+      "exact_recall": 0.03125,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 2.8977575302124023,
+      "prediction": "predictions/selective_copy_s81031_analytic_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.486328125,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06317619600000057,
+        "wall_seconds": 0.06317998899612576
+      },
+      "exact_recall": 0.0234375,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 3.0015382766723633,
+      "prediction": "predictions/selective_copy_s81031_analytic_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.466796875,
+      "samples": 128,
+      "seed": 81031,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.011561958999999788,
+        "wall_seconds": 0.011565656997845508
+      },
+      "exact_recall": 1.0,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00018320618255529553,
+      "prediction": "predictions/selective_copy_s81032_shared_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.011434570999999671,
+        "wall_seconds": 0.011438005007221363
+      },
+      "exact_recall": 0.09375,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 3.0564000606536865,
+      "prediction": "predictions/selective_copy_s81032_shared_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.544921875,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.06322072300000059,
+        "wall_seconds": 0.06322473600448575
+      },
+      "exact_recall": 0.9921875,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00667369831353426,
+      "prediction": "predictions/selective_copy_s81032_shared_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.998046875,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.06245892100000017,
+        "wall_seconds": 0.06247963500209153
+      },
+      "exact_recall": 0.0859375,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 2.6407229900360107,
+      "prediction": "predictions/selective_copy_s81032_shared_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.5703125,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.028675021999999828,
+        "wall_seconds": 0.028678923001280054
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00017672183457762003,
+      "prediction": "predictions/selective_copy_s81032_two_gate_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.011511303999999889,
+        "wall_seconds": 0.011513568999362178
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00018320618255529553,
+      "prediction": "predictions/selective_copy_s81032_two_gate_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.028453282999999274,
+        "wall_seconds": 0.028456888991058804
+      },
+      "exact_recall": 0.15625,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 2.7548880577087402,
+      "prediction": "predictions/selective_copy_s81032_two_gate_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.568359375,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.01196378599999992,
+        "wall_seconds": 0.011966058998950757
+      },
+      "exact_recall": 0.09375,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 3.0564000606536865,
+      "prediction": "predictions/selective_copy_s81032_two_gate_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.544921875,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.13150040799999996,
+        "wall_seconds": 0.1315056919993367
+      },
+      "exact_recall": 0.9609375,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.02986317127943039,
+      "prediction": "predictions/selective_copy_s81032_two_gate_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.990234375,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06230164800000004,
+        "wall_seconds": 0.062305021012434736
+      },
+      "exact_recall": 0.9921875,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00667369831353426,
+      "prediction": "predictions/selective_copy_s81032_two_gate_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.998046875,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.1298097079999998,
+        "wall_seconds": 0.12987190300191287
+      },
+      "exact_recall": 0.1328125,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 2.4196605682373047,
+      "prediction": "predictions/selective_copy_s81032_two_gate_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.59375,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06282994300000055,
+        "wall_seconds": 0.06283321700175293
+      },
+      "exact_recall": 0.0859375,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 2.6407229900360107,
+      "prediction": "predictions/selective_copy_s81032_two_gate_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.5703125,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.17917528499999946,
+        "wall_seconds": 0.17918266699416563
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.0001768213842296973,
+      "prediction": "predictions/selective_copy_s81032_analytic_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.011505985999999524,
+        "wall_seconds": 0.011508310999488458
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00018320618255529553,
+      "prediction": "predictions/selective_copy_s81032_analytic_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.1878802610000001,
+        "wall_seconds": 0.1881377960089594
+      },
+      "exact_recall": 0.171875,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 2.582681894302368,
+      "prediction": "predictions/selective_copy_s81032_analytic_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.587890625,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.011539747000000489,
+        "wall_seconds": 0.01154203100304585
+      },
+      "exact_recall": 0.09375,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 3.0564000606536865,
+      "prediction": "predictions/selective_copy_s81032_analytic_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.544921875,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.6700930830000003,
+        "wall_seconds": 0.6701944090018515
+      },
+      "exact_recall": 0.9453125,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0439898781478405,
+      "prediction": "predictions/selective_copy_s81032_analytic_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.986328125,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06401700500000018,
+        "wall_seconds": 0.06402018399967346
+      },
+      "exact_recall": 0.9921875,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00667369831353426,
+      "prediction": "predictions/selective_copy_s81032_analytic_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.998046875,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.6413529599999999,
+        "wall_seconds": 0.6413967320113443
+      },
+      "exact_recall": 0.1640625,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 2.1564059257507324,
+      "prediction": "predictions/selective_copy_s81032_analytic_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.62109375,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06343376800000033,
+        "wall_seconds": 0.06345920899184421
+      },
+      "exact_recall": 0.0859375,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 2.6407229900360107,
+      "prediction": "predictions/selective_copy_s81032_analytic_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.5703125,
+      "samples": 128,
+      "seed": 81032,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.01202451599999943,
+        "wall_seconds": 0.012027921999106184
+      },
+      "exact_recall": 1.0,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00020393708837218583,
+      "prediction": "predictions/selective_copy_s81033_shared_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.011528569999999405,
+        "wall_seconds": 0.011531546013429761
+      },
+      "exact_recall": 0.1484375,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 1.5520790815353394,
+      "prediction": "predictions/selective_copy_s81033_shared_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.75,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.06407700400000049,
+        "wall_seconds": 0.0641228879976552
+      },
+      "exact_recall": 1.0,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00027196461451239884,
+      "prediction": "predictions/selective_copy_s81033_shared_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.06594220400000061,
+        "wall_seconds": 0.06594728298659902
+      },
+      "exact_recall": 0.09375,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 1.9059377908706665,
+      "prediction": "predictions/selective_copy_s81033_shared_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.693359375,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.02975404400000059,
+        "wall_seconds": 0.029759388999082148
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00019201515533495694,
+      "prediction": "predictions/selective_copy_s81033_two_gate_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.012280765999999943,
+        "wall_seconds": 0.012283006013603881
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00020393708837218583,
+      "prediction": "predictions/selective_copy_s81033_two_gate_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.02980557199999989,
+        "wall_seconds": 0.029808243009028956
+      },
+      "exact_recall": 0.1640625,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 1.6767643690109253,
+      "prediction": "predictions/selective_copy_s81033_two_gate_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.74609375,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.011907412999999423,
+        "wall_seconds": 0.011909845998161472
+      },
+      "exact_recall": 0.1484375,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 1.5520790815353394,
+      "prediction": "predictions/selective_copy_s81033_two_gate_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.75,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.12917630699999982,
+        "wall_seconds": 0.1291817539895419
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00026169820921495557,
+      "prediction": "predictions/selective_copy_s81033_two_gate_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06299431700000024,
+        "wall_seconds": 0.06299779399705585
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00027196461451239884,
+      "prediction": "predictions/selective_copy_s81033_two_gate_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.130035683,
+        "wall_seconds": 0.13004222000017762
+      },
+      "exact_recall": 0.140625,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 1.916431188583374,
+      "prediction": "predictions/selective_copy_s81033_two_gate_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.712890625,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06373245699999952,
+        "wall_seconds": 0.06376228500448633
+      },
+      "exact_recall": 0.09375,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 1.9059377908706665,
+      "prediction": "predictions/selective_copy_s81033_two_gate_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.693359375,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.17976800499999968,
+        "wall_seconds": 0.1797963620047085
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00019210910249967128,
+      "prediction": "predictions/selective_copy_s81033_analytic_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.013398051000000244,
+        "wall_seconds": 0.01340191600320395
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00020393708837218583,
+      "prediction": "predictions/selective_copy_s81033_analytic_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.18398113200000044,
+        "wall_seconds": 0.18401147500844672
+      },
+      "exact_recall": 0.2265625,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 1.3727412223815918,
+      "prediction": "predictions/selective_copy_s81033_analytic_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.76953125,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.012372863999999595,
+        "wall_seconds": 0.01240912699722685
+      },
+      "exact_recall": 0.1484375,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 1.5520790815353394,
+      "prediction": "predictions/selective_copy_s81033_analytic_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.75,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.6351460209999988,
+        "wall_seconds": 0.6351874859974487
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0002511545899324119,
+      "prediction": "predictions/selective_copy_s81033_analytic_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06259347099999957,
+        "wall_seconds": 0.06259840399434324
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00027196461451239884,
+      "prediction": "predictions/selective_copy_s81033_analytic_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.7387567439999998,
+        "wall_seconds": 0.7388444560056087
+      },
+      "exact_recall": 0.171875,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 1.6552528142929077,
+      "prediction": "predictions/selective_copy_s81033_analytic_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.73828125,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06296702599999904,
+        "wall_seconds": 0.06297042300866451
+      },
+      "exact_recall": 0.09375,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 1.9059377908706665,
+      "prediction": "predictions/selective_copy_s81033_analytic_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.693359375,
+      "samples": 128,
+      "seed": 81033,
+      "task": "selective_copy"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.011524944999999676,
+        "wall_seconds": 0.011528330011060461
+      },
+      "exact_recall": 1.0,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.0002528066688682884,
+      "prediction": "predictions/mqar_s81031_shared_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.011762387000000984,
+        "wall_seconds": 0.011765488001401536
+      },
+      "exact_recall": 0.4453125,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.8415483832359314,
+      "prediction": "predictions/mqar_s81031_shared_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.806640625,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.06226940999999897,
+        "wall_seconds": 0.06229100999189541
+      },
+      "exact_recall": 1.0,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0003110046964138746,
+      "prediction": "predictions/mqar_s81031_shared_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.062240317000000545,
+        "wall_seconds": 0.062244400003692135
+      },
+      "exact_recall": 0.140625,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 1.6026105880737305,
+      "prediction": "predictions/mqar_s81031_shared_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.650390625,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.028676895000000258,
+        "wall_seconds": 0.02868037499138154
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00023020872322376817,
+      "prediction": "predictions/mqar_s81031_two_gate_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.011981992999999136,
+        "wall_seconds": 0.011984025986748748
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.0002528066688682884,
+      "prediction": "predictions/mqar_s81031_two_gate_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.02873618299999947,
+        "wall_seconds": 0.02873894300137181
+      },
+      "exact_recall": 0.515625,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.5869423747062683,
+      "prediction": "predictions/mqar_s81031_two_gate_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.853515625,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.011454169000000292,
+        "wall_seconds": 0.01145605200144928
+      },
+      "exact_recall": 0.4453125,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.8415483832359314,
+      "prediction": "predictions/mqar_s81031_two_gate_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.806640625,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.12916681299999944,
+        "wall_seconds": 0.1291721400048118
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00027751835295930505,
+      "prediction": "predictions/mqar_s81031_two_gate_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06208531699999931,
+        "wall_seconds": 0.062110348997521214
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0003110046964138746,
+      "prediction": "predictions/mqar_s81031_two_gate_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.12881874600000032,
+        "wall_seconds": 0.12886166300449986
+      },
+      "exact_recall": 0.171875,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 1.4330434799194336,
+      "prediction": "predictions/mqar_s81031_two_gate_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.67578125,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06148104899999929,
+        "wall_seconds": 0.061484357007429935
+      },
+      "exact_recall": 0.140625,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 1.6026105880737305,
+      "prediction": "predictions/mqar_s81031_two_gate_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.650390625,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.17848841500000034,
+        "wall_seconds": 0.17849681599182077
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00023292357218451798,
+      "prediction": "predictions/mqar_s81031_analytic_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.011538414999998636,
+        "wall_seconds": 0.011540688996319659
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.0002528066688682884,
+      "prediction": "predictions/mqar_s81031_analytic_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.19515033799999948,
+        "wall_seconds": 0.19515641100588255
+      },
+      "exact_recall": 0.546875,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.547913670539856,
+      "prediction": "predictions/mqar_s81031_analytic_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.86328125,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.011921403999998859,
+        "wall_seconds": 0.011923605998163112
+      },
+      "exact_recall": 0.4453125,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.8415483832359314,
+      "prediction": "predictions/mqar_s81031_analytic_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.806640625,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.6867067410000001,
+        "wall_seconds": 0.6868287970137317
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00028438697336241603,
+      "prediction": "predictions/mqar_s81031_analytic_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06299422700000079,
+        "wall_seconds": 0.06299858300189953
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0003110046964138746,
+      "prediction": "predictions/mqar_s81031_analytic_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.684437624000001,
+        "wall_seconds": 0.6867856470053084
+      },
+      "exact_recall": 0.1640625,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 1.4684585332870483,
+      "prediction": "predictions/mqar_s81031_analytic_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.6796875,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.08627900399999966,
+        "wall_seconds": 0.08628296799724922
+      },
+      "exact_recall": 0.140625,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 1.6026105880737305,
+      "prediction": "predictions/mqar_s81031_analytic_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.650390625,
+      "samples": 128,
+      "seed": 81031,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.014766592999999162,
+        "wall_seconds": 0.01477056099975016
+      },
+      "exact_recall": 1.0,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00026115484070032835,
+      "prediction": "predictions/mqar_s81032_shared_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.013111030000001023,
+        "wall_seconds": 0.013114034998579882
+      },
+      "exact_recall": 0.796875,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.12217192351818085,
+      "prediction": "predictions/mqar_s81032_shared_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.9453125,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.06819068399999928,
+        "wall_seconds": 0.06819529501080979
+      },
+      "exact_recall": 1.0,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0005350638530217111,
+      "prediction": "predictions/mqar_s81032_shared_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.0810403449999999,
+        "wall_seconds": 0.08104494299914222
+      },
+      "exact_recall": 0.828125,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 0.13024909794330597,
+      "prediction": "predictions/mqar_s81032_shared_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.955078125,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.044896811999999287,
+        "wall_seconds": 0.04490157500549685
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00022610340965911746,
+      "prediction": "predictions/mqar_s81032_two_gate_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.017100002999999475,
+        "wall_seconds": 0.01710344299499411
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00026115484070032835,
+      "prediction": "predictions/mqar_s81032_two_gate_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.042794065000000714,
+        "wall_seconds": 0.04279998100537341
+      },
+      "exact_recall": 0.9140625,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.06683167815208435,
+      "prediction": "predictions/mqar_s81032_two_gate_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.978515625,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.01503949399999982,
+        "wall_seconds": 0.015041873994050547
+      },
+      "exact_recall": 0.796875,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.12217192351818085,
+      "prediction": "predictions/mqar_s81032_two_gate_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.9453125,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.17991508799999956,
+        "wall_seconds": 0.17994559499493334
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00039387299329973757,
+      "prediction": "predictions/mqar_s81032_two_gate_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.08334212799999996,
+        "wall_seconds": 0.08334672899218276
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0005350638530217111,
+      "prediction": "predictions/mqar_s81032_two_gate_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.16868928400000094,
+        "wall_seconds": 0.16869663400575519
+      },
+      "exact_recall": 0.90625,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 0.07577215135097504,
+      "prediction": "predictions/mqar_s81032_two_gate_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.9765625,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.07637591299999968,
+        "wall_seconds": 0.0763802349974867
+      },
+      "exact_recall": 0.828125,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 0.13024909794330597,
+      "prediction": "predictions/mqar_s81032_two_gate_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.955078125,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.226146696999999,
+        "wall_seconds": 0.22622418000537436
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00023139873519539833,
+      "prediction": "predictions/mqar_s81032_analytic_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.013895374000000515,
+        "wall_seconds": 0.013897915996494703
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00026115484070032835,
+      "prediction": "predictions/mqar_s81032_analytic_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.21459102300000055,
+        "wall_seconds": 0.21460803400259465
+      },
+      "exact_recall": 0.9140625,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.05830751359462738,
+      "prediction": "predictions/mqar_s81032_analytic_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.978515625,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.01213076399999835,
+        "wall_seconds": 0.012132720003137365
+      },
+      "exact_recall": 0.796875,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.12217192351818085,
+      "prediction": "predictions/mqar_s81032_analytic_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.9453125,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.7349972659999988,
+        "wall_seconds": 0.7372126660047797
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0005135848186910152,
+      "prediction": "predictions/mqar_s81032_analytic_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06875894700000096,
+        "wall_seconds": 0.06876260500575881
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0005350638530217111,
+      "prediction": "predictions/mqar_s81032_analytic_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.6801008979999992,
+        "wall_seconds": 0.6802195490017766
+      },
+      "exact_recall": 0.859375,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 0.09608333557844162,
+      "prediction": "predictions/mqar_s81032_analytic_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.962890625,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.0632820039999995,
+        "wall_seconds": 0.06328572200436611
+      },
+      "exact_recall": 0.828125,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 0.13024909794330597,
+      "prediction": "predictions/mqar_s81032_analytic_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.955078125,
+      "samples": 128,
+      "seed": 81032,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.01261844799999956,
+        "wall_seconds": 0.01265426400641445
+      },
+      "exact_recall": 1.0,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00023610459174960852,
+      "prediction": "predictions/mqar_s81033_shared_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.011897928999999863,
+        "wall_seconds": 0.01190065999981016
+      },
+      "exact_recall": 0.9375,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.07266967743635178,
+      "prediction": "predictions/mqar_s81033_shared_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.984375,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.06324229500000023,
+        "wall_seconds": 0.06324643400148489
+      },
+      "exact_recall": 1.0,
+      "family": "shared",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0003094240673817694,
+      "prediction": "predictions/mqar_s81033_shared_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.0632326600000006,
+        "wall_seconds": 0.0632611659966642
+      },
+      "exact_recall": 0.6796875,
+      "family": "shared",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 0.33487358689308167,
+      "prediction": "predictions/mqar_s81033_shared_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.912109375,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.028929380000001004,
+        "wall_seconds": 0.02893348400539253
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00021127598301973194,
+      "prediction": "predictions/mqar_s81033_two_gate_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.012391682000000515,
+        "wall_seconds": 0.01239406201057136
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00023610459174960852,
+      "prediction": "predictions/mqar_s81033_two_gate_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.030028251999999256,
+        "wall_seconds": 0.030031978007173166
+      },
+      "exact_recall": 0.921875,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.05234673619270325,
+      "prediction": "predictions/mqar_s81033_two_gate_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.98046875,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.011865020000000115,
+        "wall_seconds": 0.011866960005136207
+      },
+      "exact_recall": 0.9375,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.07266967743635178,
+      "prediction": "predictions/mqar_s81033_two_gate_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.984375,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.13052929599999885,
+        "wall_seconds": 0.13054416498926003
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00028051770641468465,
+      "prediction": "predictions/mqar_s81033_two_gate_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06354179999999943,
+        "wall_seconds": 0.06354517400905024
+      },
+      "exact_recall": 1.0,
+      "family": "two_gate",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0003094240673817694,
+      "prediction": "predictions/mqar_s81033_two_gate_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.13252736300000123,
+        "wall_seconds": 0.13255257799755782
+      },
+      "exact_recall": 0.7109375,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 0.32004156708717346,
+      "prediction": "predictions/mqar_s81033_two_gate_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.921875,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06285382799999972,
+        "wall_seconds": 0.06285735899291467
+      },
+      "exact_recall": 0.6796875,
+      "family": "two_gate",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 0.33487358689308167,
+      "prediction": "predictions/mqar_s81033_two_gate_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.912109375,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.226065568000001,
+        "wall_seconds": 0.22607400400738697
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00021399751130957156,
+      "prediction": "predictions/mqar_s81033_analytic_frozen_shared_updates256_L32_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.01576500100000011,
+        "wall_seconds": 0.015767841003253125
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 32,
+      "nll": 0.00023610459174960852,
+      "prediction": "predictions/mqar_s81033_analytic_frozen_shared_updates256_L32_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.22404145199999803,
+        "wall_seconds": 0.22410490000038408
+      },
+      "exact_recall": 0.9296875,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.0512176975607872,
+      "prediction": "predictions/mqar_s81033_analytic_frozen_shared_updates256_L32_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.982421875,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.014492652000001272,
+        "wall_seconds": 0.014494944989564829
+      },
+      "exact_recall": 0.9375,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 32,
+      "nll": 0.07266967743635178,
+      "prediction": "predictions/mqar_s81033_analytic_frozen_shared_updates256_L32_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.984375,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.7497580709999987,
+        "wall_seconds": 0.7498084280086914
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.00029836376779712737,
+      "prediction": "predictions/mqar_s81033_analytic_frozen_shared_updates256_L128_H3.2_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.08519022700000178,
+        "wall_seconds": 0.08519388300192077
+      },
+      "exact_recall": 1.0,
+      "family": "analytic",
+      "horizon": 3.2,
+      "length": 128,
+      "nll": 0.0003094240673817694,
+      "prediction": "predictions/mqar_s81033_analytic_frozen_shared_updates256_L128_H3.2_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 1.0,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": false,
+      "cost": {
+        "cpu_seconds": 0.6452807810000003,
+        "wall_seconds": 0.6453175820061006
+      },
+      "exact_recall": 0.71875,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 0.35316628217697144,
+      "prediction": "predictions/mqar_s81033_analytic_frozen_shared_updates256_L128_H12.8_disabled0.npz",
+      "queries": 512,
+      "query_accuracy": 0.92578125,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    },
+    {
+      "adapter_disabled": true,
+      "cost": {
+        "cpu_seconds": 0.06530193300000064,
+        "wall_seconds": 0.06530669498897623
+      },
+      "exact_recall": 0.6796875,
+      "family": "analytic",
+      "horizon": 12.8,
+      "length": 128,
+      "nll": 0.33487358689308167,
+      "prediction": "predictions/mqar_s81033_analytic_frozen_shared_updates256_L128_H12.8_disabled1.npz",
+      "queries": 512,
+      "query_accuracy": 0.912109375,
+      "samples": 128,
+      "seed": 81033,
+      "task": "mqar"
+    }
+  ]
+}

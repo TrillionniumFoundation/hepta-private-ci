@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn-v3-handoff.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/hcsn-causal-execution-v3-20261031",
+  "pull_request": 4525,
+  "pull_request_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4525",
+  "draft": true,
+  "merged": false,
+  "scientific_delivery_commit": "261ec28a6aa0dd6fa6d372107acbfa5ebcf958ef",
+  "source_baseline_commit": "c5e159ec6c5ba174b36debacad166da635c57d48",
+  "stream_source_published_before_execution": "58734d86b5dd8436f56a210632fca1acf8f3ea6c",
+  "scope": "Only experiments/hcsn_causal_execution_v3 is added; this final metadata commit does not change scientific sources or evidence.",
+  "verification": {
+    "scientific_files": 146,
+    "all_remote_blob_hashes_match": true,
+    "bundle_members": 1578,
+    "bundle_parts": 82,
+    "formal_mechanism_workers": 63,
+    "formal_stream_workers": 26,
+    "formal_worker_failures": 0,
+    "actual_process_recoveries": 36
+  },
+  "results": {
+    "primary_D_minus_B": 0.00984375,
+    "primary_descriptive_95_interval": [
+      -0.004245442708333332,
+      0.025572916666666667
+    ],
+    "inference_B_cpu_seconds": 136.850036,
+    "inference_D_cpu_seconds": 85.700836,
+    "analytic_utility_advantage_established": false,
+    "quality_noninferiority_preregistered": false,
+    "qualified_AV_encoder_savings": 0,
+    "AV_emotion_test_correct": 5,
+    "AV_emotion_test_count": 12,
+    "AV_binding_test_correct": 13,
+    "AV_binding_test_count": 24
+  },
+  "reports": [
+    "REPORT_ZH.md",
+    "MECHANISM_RESULTS.md",
+    "MEMORY_RESULTS_ZH.md",
+    "AV_RESULTS.md",
+    "STREAM_RESULTS_ZH.md",
+    "REPRODUCE.md"
+  ],
+  "validation_limitation": "Canonical just fmt was attempted but no local HEAD existed for changed-path discovery; whitespace checks pass, frozen hashes unchanged, no Rust changes.",
+  "open_claims": [
+    "Confirm shared clock repair on untouched inputs and resolve residual Copy failures",
+    "General AV encoder on more independent actors and sessions",
+    "Analytic utility or preregistered same-quality economic advantage against strong ordinary cores",
+    "Raw-media, physical sensing/network and measured energy costs"
+  ],
+  "local_head_not_used_as_source_identity": true
+}

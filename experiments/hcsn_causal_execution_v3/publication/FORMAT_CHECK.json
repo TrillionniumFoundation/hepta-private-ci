@@ -1,0 +1,141 @@
+{
+  "conclusion": "Canonical just fmt was invoked without modification. It cannot determine changed paths because this isolated publication snapshot has no local HEAD; no baseline commit was fabricated. Scoped cached/unstaged whitespace checks recorded separately.",
+  "formatter": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/492bd8dc87c7/hepta-hcsn-next/codex-rs",
+    "exit_code": 2,
+    "resolved_executable": "/tmp/hcsn-r10-format-tools/just/just",
+    "stderr": "fatal: bad revision 'HEAD'\nCannot determine formatting scope: Command '['git', 'diff', '--name-only', '--diff-filter=ACDMRT', '--no-renames', '-z', 'HEAD', '--']' returned non-zero exit status 128.\nerror: Recipe `fmt` failed on line 51 with exit code 2\n",
+    "stdout": "",
+    "wall_seconds": 0.09113526344299316
+  },
+  "formatter_ownership_inspection": "Canonical scoped_formatter_groups owns Rust, Just, Bazel/Starlark, sdk/python, scripts and .github. These experiments Python/Markdown paths have no formatter group; this observation does not convert the failed exact invocation to a pass.",
+  "head_check": {
+    "exit_code": 128,
+    "stderr": "fatal: Needed a single revision\n",
+    "stdout": ""
+  },
+  "local_head_available": false,
+  "not_published": [
+    "justfile",
+    "scripts/format.py",
+    "scripts/just-shell.py",
+    "codex-rs/"
+  ],
+  "recorded_at_utc": "2026-10-31T12:05:37Z",
+  "rust_tests": "Not run: no Rust source changes.",
+  "scaffolding": {
+    "justfile": {
+      "copied_exactly": true,
+      "publish": false,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "source": "/workspace/scratch/355ce93c7251/hepta-hcsn-fourtrack/justfile"
+    },
+    "scripts/format.py": {
+      "copied_exactly": true,
+      "publish": false,
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+      "source": "/workspace/scratch/355ce93c7251/hepta-hcsn-fourtrack/scripts/format.py"
+    },
+    "scripts/just-shell.py": {
+      "copied_exactly": true,
+      "publish": false,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+      "source": "/workspace/scratch/355ce93c7251/hepta-hcsn-fourtrack/scripts/just-shell.py"
+    }
+  },
+  "source_identity_before": {
+    "experiments/hcsn_causal_execution_v3/__init__.py": "4d77d70d4f664e21e538b23f5f0bf845f0c5efa02ac670d37ef13a699c37feaa",
+    "experiments/hcsn_causal_execution_v3/archive_v3.py": "f02ce2173064606c7fa54781db5ffb4001e57e5c0cad7c1321ecf51c4bfb17e7",
+    "experiments/hcsn_causal_execution_v3/archive_v3_tests.py": "6f4cb8a2250d78b48d95c718143f2716e89854991d92aeda203706fc1df2621f",
+    "experiments/hcsn_causal_execution_v3/av_audit.py": "e492cd6f69832014c9343cd41eec72669df4ed9e4e307eabb7c3a3789056e496",
+    "experiments/hcsn_causal_execution_v3/av_probe.py": "890001592133a414e22863e903d10f62c927558938f6fcc0afa30a36d63ea127",
+    "experiments/hcsn_causal_execution_v3/av_probe_tests.py": "a409b3c9a934b32adf1ab697dfbacb02b43abb38cb13b33f73c197387653329f",
+    "experiments/hcsn_causal_execution_v3/development/stream_preexecution_review01/av_probe.py": "890001592133a414e22863e903d10f62c927558938f6fcc0afa30a36d63ea127",
+    "experiments/hcsn_causal_execution_v3/development/stream_preexecution_review01/process_meter.py": "c67731cbf9719cae993f46f37acfbcd8f4d44a22ee046c6abbffb2a7ea5e6819",
+    "experiments/hcsn_causal_execution_v3/development/stream_preexecution_review01/stream_runtime.py": "bd45aa9f65b8ac26881de8496a2b7e30155757283b67ecf276bc818b36871682",
+    "experiments/hcsn_causal_execution_v3/development/stream_preexecution_review01/stream_study.py": "991143ab1702ced47362dba81e3f8d66668ad04746d801c82b8642d3fdc7bb2a",
+    "experiments/hcsn_causal_execution_v3/mechanism_followup.py": "f972db7e0d41529b50c06d56d24bac80d83e185a006f85477758364bf677e429",
+    "experiments/hcsn_causal_execution_v3/mechanism_followup_tests.py": "7ffcd28bb10948853e9ec8b650d0649a1fd72ee466605a64a2244302be36d4db",
+    "experiments/hcsn_causal_execution_v3/memory_audit.py": "fe93930d88fd7cb7e62154740bee6d102ba8838a3c863960ca066963d190e807",
+    "experiments/hcsn_causal_execution_v3/memory_clock_audit.py": "84e73a85da4b04a23b15b03e76cd566562a3197a5d3cd9d24ac6882f3334756c",
+    "experiments/hcsn_causal_execution_v3/memory_clock_repair.py": "41299c989d5104cc665c74a1334c9196c7188a52e73b140568cb96fa6deacee6",
+    "experiments/hcsn_causal_execution_v3/memory_probe.py": "b26d15d208823803e9d90891d1923309316a28c7faa6b20793671a4323599fa4",
+    "experiments/hcsn_causal_execution_v3/memory_probe_tests.py": "16d5ddc9fd40dddbe626f405fa402375bce14778a254b90d7b52ef3792a5f887",
+    "experiments/hcsn_causal_execution_v3/plot_results.py": "d2244978b6b5ba17a99f54da62cf8a0437b3c2b66ffd95cf022c309345c1f4c1",
+    "experiments/hcsn_causal_execution_v3/process_meter.py": "c67731cbf9719cae993f46f37acfbcd8f4d44a22ee046c6abbffb2a7ea5e6819",
+    "experiments/hcsn_causal_execution_v3/stream_audit.py": "8e93472f3721bc7a760f376e4779b954d5214969809cc57149bb35a880456745",
+    "experiments/hcsn_causal_execution_v3/stream_runtime.py": "9de78006642611436117e8534b2da6177243d57759f460ca1fe4b92fad81b88c",
+    "experiments/hcsn_causal_execution_v3/stream_runtime_tests.py": "26b802ba97d9bff728320be6a997bb5a01c569635c284ce9a6b2a084d8b2d535",
+    "experiments/hcsn_causal_execution_v3/stream_study.py": "233838a8a4319bd05565873dee447056754e6a9059deab5eab3d6f0a3a2b7443"
+  },
+  "source_identity_unchanged": true,
+  "staging": {
+    "command_prefix": [
+      "git",
+      "add",
+      "--"
+    ],
+    "exit_code": 0,
+    "paths": [
+      "experiments/hcsn_causal_execution_v3/AV_RESULTS.md",
+      "experiments/hcsn_causal_execution_v3/MECHANISM_RESULTS.md",
+      "experiments/hcsn_causal_execution_v3/MEMORY_RESULTS_ZH.md",
+      "experiments/hcsn_causal_execution_v3/README.md",
+      "experiments/hcsn_causal_execution_v3/REPORT_ZH.md",
+      "experiments/hcsn_causal_execution_v3/REPRODUCE.md",
+      "experiments/hcsn_causal_execution_v3/STREAM_RESULTS_ZH.md",
+      "experiments/hcsn_causal_execution_v3/__init__.py",
+      "experiments/hcsn_causal_execution_v3/archive_v3.py",
+      "experiments/hcsn_causal_execution_v3/archive_v3_tests.py",
+      "experiments/hcsn_causal_execution_v3/av_audit.py",
+      "experiments/hcsn_causal_execution_v3/av_probe.py",
+      "experiments/hcsn_causal_execution_v3/av_probe_tests.py",
+      "experiments/hcsn_causal_execution_v3/mechanism_followup.py",
+      "experiments/hcsn_causal_execution_v3/mechanism_followup_tests.py",
+      "experiments/hcsn_causal_execution_v3/memory_audit.py",
+      "experiments/hcsn_causal_execution_v3/memory_clock_audit.py",
+      "experiments/hcsn_causal_execution_v3/memory_clock_repair.py",
+      "experiments/hcsn_causal_execution_v3/memory_probe.py",
+      "experiments/hcsn_causal_execution_v3/memory_probe_tests.py",
+      "experiments/hcsn_causal_execution_v3/plot_results.py",
+      "experiments/hcsn_causal_execution_v3/process_meter.py",
+      "experiments/hcsn_causal_execution_v3/stream_audit.py",
+      "experiments/hcsn_causal_execution_v3/stream_runtime.py",
+      "experiments/hcsn_causal_execution_v3/stream_runtime_tests.py",
+      "experiments/hcsn_causal_execution_v3/stream_study.py"
+    ],
+    "stderr": "",
+    "stdout": ""
+  },
+  "whitespace_checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "experiments/hcsn_causal_execution_v3"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "experiments/hcsn_causal_execution_v3"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

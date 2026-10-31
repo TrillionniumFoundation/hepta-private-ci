@@ -1,0 +1,32 @@
+{
+  "source_hash_matches_frozen_protocol": true,
+  "behavioral_tests_passed": 4,
+  "tasks": {
+    "async_av": {
+      "candidate_count": 120,
+      "raw_prediction_files_recomputed": 240,
+      "maximum_metric_error": 0.0,
+      "selection_is_min_validation_ce": true,
+      "selected_sha_matches": true,
+      "probability_floor_cases": []
+    },
+    "av_binding": {
+      "candidate_count": 120,
+      "raw_prediction_files_recomputed": 240,
+      "maximum_metric_error": 0.0,
+      "selection_is_min_validation_ce": true,
+      "selected_sha_matches": true,
+      "probability_floor_cases": [
+        {
+          "candidate": "bilinear_a0.01_t0.1",
+          "split": "validation",
+          "count": 1,
+          "minimum_probability": 5.096571628391972e-16
+        }
+      ]
+    }
+  },
+  "all_passed": true,
+  "initial_audit_retained": "verification.json",
+  "auditor_correction": "Initial recomputation omitted the declared score probability floor1e-15. The model/selection/results did not change; corrected independent recomputation applies the same metric definition."
+}

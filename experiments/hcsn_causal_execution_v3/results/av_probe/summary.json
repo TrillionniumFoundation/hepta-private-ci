@@ -1,0 +1,363 @@
+{
+  "conclusion": "Shared ordinary feature sufficiency only; no analytic-core attribution or fresh-actor confirmation",
+  "cpu_seconds": 1.496584054,
+  "energy_joules": null,
+  "max_rss_kib": 208676,
+  "protocol_sha256": "8c6721f7376150cca5b604bd016d195eea94394a98bbf17f10dbbd0bb5f1259b",
+  "results": {
+    "async_av": {
+      "content_shuffle": {
+        "accuracy": 0.25,
+        "actor_macro_accuracy": 0.25,
+        "actors": [
+          {
+            "accuracy": 0.16666666666666666,
+            "actor": "1023",
+            "ce": 1.291610505684989,
+            "examples": 6
+          },
+          {
+            "accuracy": 0.3333333333333333,
+            "actor": "1040",
+            "ce": 1.5501610836278568,
+            "examples": 6
+          }
+        ],
+        "ce": 1.4208857946564233,
+        "cpu_seconds": 0.043938729000000176,
+        "descriptive_actor_bootstrap_95": [
+          0.16666666666666666,
+          0.3333333333333333
+        ],
+        "examples": 12,
+        "independent_actors": 2,
+        "input_array_sha256": "5b1cd7a9a1383a3b9e4cc3656d3f42d4578b8e5bf0cff648a97cdeaaa6fcc576",
+        "limitation": "Only two reused test actors. This descriptive resampling interval is not reliable population confirmation.",
+        "wall_seconds": 0.043940892996033654
+      },
+      "missing_audio": {
+        "accuracy": 0.16666666666666666,
+        "actor_macro_accuracy": 0.16666666666666666,
+        "actors": [
+          {
+            "accuracy": 0.16666666666666666,
+            "actor": "1023",
+            "ce": 2.0526741424988377,
+            "examples": 6
+          },
+          {
+            "accuracy": 0.16666666666666666,
+            "actor": "1040",
+            "ce": 2.9997883962098233,
+            "examples": 6
+          }
+        ],
+        "ce": 2.526231269354331,
+        "cpu_seconds": 0.02650815400000006,
+        "descriptive_actor_bootstrap_95": [
+          0.16666666666666666,
+          0.16666666666666666
+        ],
+        "examples": 12,
+        "independent_actors": 2,
+        "input_array_sha256": "36cf94caa0de433350591302a3d3278c1a8921a0cfdc43675f5a0bd12cd71cfc",
+        "limitation": "Only two reused test actors. This descriptive resampling interval is not reliable population confirmation.",
+        "wall_seconds": 0.026662151998607442
+      },
+      "missing_video": {
+        "accuracy": 0.25,
+        "actor_macro_accuracy": 0.25,
+        "actors": [
+          {
+            "accuracy": 0.3333333333333333,
+            "actor": "1023",
+            "ce": 1.6852713831134711,
+            "examples": 6
+          },
+          {
+            "accuracy": 0.16666666666666666,
+            "actor": "1040",
+            "ce": 2.0462354005617898,
+            "examples": 6
+          }
+        ],
+        "ce": 1.8657533918376306,
+        "cpu_seconds": 0.036083434000000025,
+        "descriptive_actor_bootstrap_95": [
+          0.16666666666666666,
+          0.3333333333333333
+        ],
+        "examples": 12,
+        "independent_actors": 2,
+        "input_array_sha256": "143102139a6b901c3b1a1d7d2a8f5e1e598af713359f1048e87e04a08c321ea1",
+        "limitation": "Only two reused test actors. This descriptive resampling interval is not reliable population confirmation.",
+        "wall_seconds": 0.0360914210032206
+      },
+      "modality_mismatch": {
+        "accuracy": 0.25,
+        "actor_macro_accuracy": 0.25,
+        "actors": [
+          {
+            "accuracy": 0.3333333333333333,
+            "actor": "1023",
+            "ce": 1.7206233406617084,
+            "examples": 6
+          },
+          {
+            "accuracy": 0.16666666666666666,
+            "actor": "1040",
+            "ce": 2.1214138516818193,
+            "examples": 6
+          }
+        ],
+        "ce": 1.9210185961717643,
+        "cpu_seconds": 0.043773674000000096,
+        "descriptive_actor_bootstrap_95": [
+          0.16666666666666666,
+          0.3333333333333333
+        ],
+        "examples": 12,
+        "independent_actors": 2,
+        "input_array_sha256": "870e59e12c7a863d213ab981092efedbce5ac472bea2ce8b6a820cd3030a8cb7",
+        "limitation": "Only two reused test actors. This descriptive resampling interval is not reliable population confirmation.",
+        "wall_seconds": 0.04377641499741003
+      },
+      "normal": {
+        "accuracy": 0.4166666666666667,
+        "actor_macro_accuracy": 0.41666666666666663,
+        "actors": [
+          {
+            "accuracy": 0.6666666666666666,
+            "actor": "1023",
+            "ce": 1.504568636255723,
+            "examples": 6
+          },
+          {
+            "accuracy": 0.16666666666666666,
+            "actor": "1040",
+            "ce": 2.250613786067356,
+            "examples": 6
+          }
+        ],
+        "ce": 1.8775912111615396,
+        "cpu_seconds": 0.0446226150000002,
+        "descriptive_actor_bootstrap_95": [
+          0.16666666666666666,
+          0.6666666666666666
+        ],
+        "examples": 12,
+        "independent_actors": 2,
+        "input_array_sha256": "dc72127c7e58c9efa3b5d1c2fbf422c0273d7d4ce0f7626678642f4280833850",
+        "limitation": "Only two reused test actors. This descriptive resampling interval is not reliable population confirmation.",
+        "wall_seconds": 0.04463249300897587
+      }
+    },
+    "av_binding": {
+      "content_shuffle": {
+        "accuracy": 0.5416666666666666,
+        "actor_macro_accuracy": 0.5416666666666667,
+        "actors": [
+          {
+            "accuracy": 0.5833333333333334,
+            "actor": "1023",
+            "ce": 0.6991927892944495,
+            "examples": 12
+          },
+          {
+            "accuracy": 0.5,
+            "actor": "1040",
+            "ce": 0.913565115557843,
+            "examples": 12
+          }
+        ],
+        "ce": 0.8063789524261461,
+        "cpu_seconds": 0.012342048000000272,
+        "descriptive_actor_bootstrap_95": [
+          0.5,
+          0.5833333333333334
+        ],
+        "examples": 24,
+        "independent_actors": 2,
+        "input_array_sha256": "f17a53288a96acefd1e0b25b2371b716bbeb9bb489a86ee8ba7eae9cc4340b6c",
+        "limitation": "Only two reused test actors. This descriptive resampling interval is not reliable population confirmation.",
+        "wall_seconds": 0.012343634996796027
+      },
+      "metadata_only": {
+        "accuracy": 0.5,
+        "actor_macro_accuracy": 0.5,
+        "actors": [
+          {
+            "accuracy": 0.5,
+            "actor": "1023",
+            "ce": 0.7016335291449235,
+            "examples": 12
+          },
+          {
+            "accuracy": 0.5,
+            "actor": "1040",
+            "ce": 0.7016335291449235,
+            "examples": 12
+          }
+        ],
+        "ce": 0.7016335291449235,
+        "cpu_seconds": 0.011847774000000033,
+        "descriptive_actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "examples": 24,
+        "independent_actors": 2,
+        "input_array_sha256": "aa7513dac4fa72007de6158a6ef6a9a4fbb6d894f12953f558a72424cf6936e6",
+        "limitation": "Only two reused test actors. This descriptive resampling interval is not reliable population confirmation.",
+        "wall_seconds": 0.011858875994221307
+      },
+      "missing_audio": {
+        "accuracy": 0.5,
+        "actor_macro_accuracy": 0.5,
+        "actors": [
+          {
+            "accuracy": 0.5,
+            "actor": "1023",
+            "ce": 0.7016469390714671,
+            "examples": 12
+          },
+          {
+            "accuracy": 0.5,
+            "actor": "1040",
+            "ce": 0.7041459639628075,
+            "examples": 12
+          }
+        ],
+        "ce": 0.7028964515171374,
+        "cpu_seconds": 0.008544338000000096,
+        "descriptive_actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "examples": 24,
+        "independent_actors": 2,
+        "input_array_sha256": "1baaaa1de934e5bcb7099649c18907ff74de85f58b94be3994046141b617e1fb",
+        "limitation": "Only two reused test actors. This descriptive resampling interval is not reliable population confirmation.",
+        "wall_seconds": 0.008551047998480499
+      },
+      "missing_video": {
+        "accuracy": 0.5,
+        "actor_macro_accuracy": 0.5,
+        "actors": [
+          {
+            "accuracy": 0.5,
+            "actor": "1023",
+            "ce": 0.7338502722759198,
+            "examples": 12
+          },
+          {
+            "accuracy": 0.5,
+            "actor": "1040",
+            "ce": 0.7183149892610823,
+            "examples": 12
+          }
+        ],
+        "ce": 0.726082630768501,
+        "cpu_seconds": 0.00817239599999997,
+        "descriptive_actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "examples": 24,
+        "independent_actors": 2,
+        "input_array_sha256": "d30182c09b41ab1ffa21f20f05fc9ad09bc43a73c606c0782603cc9f01108fda",
+        "limitation": "Only two reused test actors. This descriptive resampling interval is not reliable population confirmation.",
+        "wall_seconds": 0.008173700000043027
+      },
+      "normal": {
+        "accuracy": 0.5416666666666666,
+        "actor_macro_accuracy": 0.5416666666666667,
+        "actors": [
+          {
+            "accuracy": 0.5833333333333334,
+            "actor": "1023",
+            "ce": 0.7267172231066894,
+            "examples": 12
+          },
+          {
+            "accuracy": 0.5,
+            "actor": "1040",
+            "ce": 0.7293270319294681,
+            "examples": 12
+          }
+        ],
+        "ce": 0.7280221275180788,
+        "cpu_seconds": 0.012668051999999985,
+        "descriptive_actor_bootstrap_95": [
+          0.5,
+          0.5833333333333334
+        ],
+        "examples": 24,
+        "independent_actors": 2,
+        "input_array_sha256": "3ad2aca8b2ae5aeabefa6279083e96191ae31d9de081cc84e81136a306351d32",
+        "limitation": "Only two reused test actors. This descriptive resampling interval is not reliable population confirmation.",
+        "wall_seconds": 0.01266934500017669
+      },
+      "single_modality_balance": {
+        "audio_pair_equal": true,
+        "compared_fields": [
+          "x",
+          "dt",
+          "valid",
+          "observed",
+          "timestamps"
+        ],
+        "pairs": 24,
+        "video_by_source_equal": true
+      }
+    }
+  },
+  "scope": "prepared-feature dataset load, candidate fitting/selection, artifact I/O and inference; no original media decode or network",
+  "selections": {
+    "async_av": {
+      "alpha": 0.1,
+      "checkpoint_sha256": "2f390a2dda86eef5eb808bad1092e86dbe9cc3fd904bf378890d87deccb7768b",
+      "family": "moments",
+      "features": 96,
+      "id": "moments_a0.1_t0.25",
+      "independent_training_actors": 4,
+      "independent_validation_actors": 2,
+      "qualified_validation_screen": false,
+      "selected_before_current_test_open": true,
+      "temperature": 0.25,
+      "train": {
+        "accuracy": 1.0,
+        "ce": 0.30184839805795166,
+        "examples": 24
+      },
+      "validation": {
+        "accuracy": 0.3333333333333333,
+        "ce": 1.2879401439137534,
+        "examples": 12
+      }
+    },
+    "av_binding": {
+      "alpha": 0.1,
+      "checkpoint_sha256": "8caeeeb6ebc663c348bd02da7ed77dde26363b42978c42f711e90d0584894fc4",
+      "family": "combined",
+      "features": 3680,
+      "id": "combined_a0.1_t0.5",
+      "independent_training_actors": 4,
+      "independent_validation_actors": 2,
+      "qualified_validation_screen": true,
+      "selected_before_current_test_open": true,
+      "temperature": 0.5,
+      "train": {
+        "accuracy": 1.0,
+        "ce": 0.27463757503791014,
+        "examples": 48
+      },
+      "validation": {
+        "accuracy": 0.75,
+        "ce": 0.6104715868299195,
+        "examples": 24
+      }
+    }
+  },
+  "wall_seconds": 1.4970012910052901
+}

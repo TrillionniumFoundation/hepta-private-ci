@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_causal_execution_v3.stream_study",
+    "execute",
+    "--output",
+    "/workspace/scratch/492bd8dc87c7/hepta-hcsn-next/experiments/hcsn_causal_execution_v3/results/stream/formal002",
+    "--training-python",
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python"
+  ],
+  "cpu_seconds": 13.263035,
+  "device_energy_joules": null,
+  "energy_sensor_available": false,
+  "input_blocks": 0,
+  "involuntary_context_switches": 214,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "output_blocks": 19552,
+  "peak_rss_bytes": 208314368,
+  "returncode": 0,
+  "scope": "Linux wait4 fresh process and waited descendants; imports/loading/evaluation/output included",
+  "timing_environment": "Single thread, shared host; other tenants cannot be excluded",
+  "voluntary_context_switches": 224,
+  "wall_seconds": 13.271964962012134
+}

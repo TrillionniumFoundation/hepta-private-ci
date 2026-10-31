@@ -1,0 +1,1281 @@
+{
+  "costs": {
+    "all_worker_cpu_seconds": 399.623781,
+    "cost_interpretation": "separate full-process measurements; scientific workers execute serially; host not isolated",
+    "energy_joules": null,
+    "max_single_worker_rss_kib": 340708,
+    "ordinary_training_once_cpu_seconds": 22.040918,
+    "per_arm": {
+      "A": {
+        "cpu_seconds": 25.412007,
+        "independent_deployment_plus_fit_cpu_seconds": 47.452925,
+        "max_single_worker_rss_kib": 241772,
+        "wall_seconds": 25.443209411998396
+      },
+      "B": {
+        "cpu_seconds": 136.850036,
+        "independent_deployment_plus_fit_cpu_seconds": 158.890954,
+        "max_single_worker_rss_kib": 242232,
+        "wall_seconds": 136.88988021598198
+      },
+      "B_on_D": {
+        "cpu_seconds": 15.920338999999998,
+        "independent_deployment_plus_fit_cpu_seconds": 37.961257,
+        "max_single_worker_rss_kib": 250796,
+        "wall_seconds": 15.938176355004543
+      },
+      "C": {
+        "cpu_seconds": 17.719693,
+        "independent_deployment_plus_fit_cpu_seconds": 17.719693,
+        "max_single_worker_rss_kib": 232604,
+        "wall_seconds": 17.76411697799631
+      },
+      "D": {
+        "cpu_seconds": 85.700836,
+        "independent_deployment_plus_fit_cpu_seconds": 85.700836,
+        "max_single_worker_rss_kib": 232604,
+        "wall_seconds": 85.74139562000346
+      },
+      "D_both": {
+        "cpu_seconds": 12.190249999999999,
+        "independent_deployment_plus_fit_cpu_seconds": 12.190249999999999,
+        "max_single_worker_rss_kib": 232604,
+        "wall_seconds": 12.203173770016292
+      },
+      "D_current": {
+        "cpu_seconds": 48.795176,
+        "independent_deployment_plus_fit_cpu_seconds": 48.795176,
+        "max_single_worker_rss_kib": 232604,
+        "wall_seconds": 48.82929838998825
+      },
+      "D_hypothetical": {
+        "cpu_seconds": 14.075154,
+        "independent_deployment_plus_fit_cpu_seconds": 14.075154,
+        "max_single_worker_rss_kib": 232604,
+        "wall_seconds": 14.10455815900059
+      },
+      "hold_on_D": {
+        "cpu_seconds": 11.590674,
+        "independent_deployment_plus_fit_cpu_seconds": 11.590674,
+        "max_single_worker_rss_kib": 242216,
+        "wall_seconds": 11.614482834003866
+      }
+    },
+    "sensor_network_energy": "not physically measured",
+    "training_deployment_horizon": "each fit used across both recorded conditions",
+    "world_generation_cpu_seconds": 9.328698
+  },
+  "failed_workers": 0,
+  "findings": {
+    "hidden_refractory_mismatch": {
+      "contrasts": {
+        "B-A": {
+          "accuracy": {
+            "descriptive_95": [
+              0.024739583333333332,
+              0.068359375
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.045572916666666664,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              -0.09467026022929502,
+              -0.04450756652371129
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.06853335943881007,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              0.026301432291666666,
+              0.06961002604166666
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.047239583333333335,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              -0.17893804042647876,
+              -0.08496957875061373
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.13031644910565834,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -0.08072916666666667,
+              0.0
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.041666666666666664,
+            "paired_episodes": 384
+          }
+        },
+        "B_on_D-D": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.006510416666666667,
+              0.0032552083333333335
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.0013020833333333333,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              -0.0011289887992297811,
+              0.004823571018132088
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.001880234955171204,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.006510416666666667,
+              0.0032552083333333335
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.0013020833333333333,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              -0.0027962545030013903,
+              0.008017182792449798
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.0026856108712147025,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              0.0,
+              0.0
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.0,
+            "paired_episodes": 384
+          }
+        },
+        "C-A": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.0026041666666666665,
+              0.028645833333333332
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.013020833333333334,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              -0.028633233386858636,
+              -0.0022256967893050225
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.013474919326419386,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.0026041666666666665,
+              0.02861979166666667
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.013229166666666667,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              -0.04367527286606374,
+              -0.0031487224136062097
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.021542344290125286,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -0.0234375,
+              0.013020833333333334
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.005208333333333333,
+            "paired_episodes": 384
+          }
+        },
+        "D-B": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.008463541666666666,
+              0.010416666666666666
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.0013020833333333333,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              -0.012647238639968935,
+              0.00884960071688394
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.002060880818835055,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.007369791666666664,
+              0.011458984374999991
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.0023437500000000008,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              -0.021255536765351118,
+              0.016009613934447386
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.0026134927894578917,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -0.06770833333333333,
+              0.013020833333333334
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.026041666666666668,
+            "paired_episodes": 384
+          }
+        },
+        "D-C": {
+          "accuracy": {
+            "descriptive_95": [
+              0.014973958333333334,
+              0.052734375
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.033854166666666664,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              -0.0789067275282162,
+              -0.03660296175060083
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.05711932093122574,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              0.01744791666666667,
+              0.05541731770833333
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.03635416666666667,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              -0.14796519101780234,
+              -0.07583616423126303
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.11138759760499095,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -0.11197916666666667,
+              -0.013020833333333334
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.0625,
+            "paired_episodes": 384
+          }
+        },
+        "D_both-D": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.4401041666666667,
+              -0.3704427083333333
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.404296875,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              0.4366094963067611,
+              0.4887145363003217
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.4620217068098687,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.3681263020833333,
+              -0.29840950520833337
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.3320052083333333,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              0.8380159343679217,
+              0.9269220800123639
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.8819480189671444,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -1.8619791666666667,
+              -1.7552083333333333
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -1.8072916666666667,
+            "paired_episodes": 384
+          }
+        },
+        "D_current-D": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.318359375,
+              -0.2584635416666667
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.2877604166666667,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              0.32283924043362233,
+              0.34994505146496985
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.3364321763452475,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.246224609375,
+              -0.185703125
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.21546874999999996,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              0.6096500373552759,
+              0.6730577563507045
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.640548344808291,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -1.8619791666666667,
+              -1.7552083333333333
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -1.8072916666666667,
+            "paired_episodes": 384
+          }
+        },
+        "D_hypothetical-D": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.3782552083333333,
+              -0.3235677083333333
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.3509114583333333,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              0.3803887272495825,
+              0.42709161559160974
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.40299361255610017,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.38518359375000005,
+              -0.3319518229166667
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.35861979166666663,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              0.7271347226017352,
+              0.8068879048409576
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.7664450767278108,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              0.13802083333333334,
+              0.24479166666666666
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.19270833333333334,
+            "paired_episodes": 384
+          }
+        },
+        "hold_on_D-D": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.016927083333333332,
+              0.0078125
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.004557291666666667,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              0.04077881390118531,
+              0.084138290288465
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.06229962381371076,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.016927083333333332,
+              0.0078125
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.004557291666666667,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              1.8713666910469595,
+              2.754280338645065
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 2.3154196882762363,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              0.0,
+              0.0
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.0,
+            "paired_episodes": 384
+          }
+        },
+        "interaction": {
+          "descriptive_95": [
+            -0.02911458333333333,
+            0.007447916666666669
+          ],
+          "fit_groups": 3,
+          "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+          "mean": -0.010885416666666663,
+          "paired_episodes": 384
+        }
+      },
+      "divergences": {
+        "B": {
+          "action_changed": 115,
+          "content_changed": 368,
+          "episodes": 384,
+          "tick0_action_changed": 8
+        },
+        "B_on_D": {
+          "action_changed": 0,
+          "content_changed": 361,
+          "episodes": 384,
+          "tick0_action_changed": 0
+        },
+        "D_both": {
+          "action_changed": 384,
+          "content_changed": 384,
+          "episodes": 384,
+          "tick0_action_changed": 358
+        },
+        "D_current": {
+          "action_changed": 384,
+          "content_changed": 384,
+          "episodes": 384,
+          "tick0_action_changed": 0
+        },
+        "D_hypothetical": {
+          "action_changed": 384,
+          "content_changed": 384,
+          "episodes": 384,
+          "tick0_action_changed": 358
+        },
+        "hold_on_D": {
+          "action_changed": 0,
+          "content_changed": 361,
+          "episodes": 384,
+          "tick0_action_changed": 0
+        }
+      },
+      "means": {
+        "A": {
+          "accuracy": 0.8372395833333334,
+          "arm_cpu_seconds": 0.020337261557291677,
+          "arm_wall_seconds": 0.02033886628426747,
+          "brier": 0.22157586644393437,
+          "net_reward": 0.7222395833333333,
+          "nll": 0.4136768801518673,
+          "reads": 2.875
+        },
+        "B": {
+          "accuracy": 0.8828125,
+          "arm_cpu_seconds": 0.16257495582031248,
+          "arm_wall_seconds": 0.16260714722416955,
+          "brier": 0.1530425070051243,
+          "net_reward": 0.7694791666666667,
+          "nll": 0.28336043104620895,
+          "reads": 2.8333333333333335
+        },
+        "B_on_D": {
+          "accuracy": 0.8828125,
+          "arm_cpu_seconds": 0.006839690945312497,
+          "arm_wall_seconds": 0.006838606559388912,
+          "brier": 0.15286186114146047,
+          "net_reward": 0.7705208333333333,
+          "nll": 0.2834325491279658,
+          "reads": 2.8072916666666665
+        },
+        "C": {
+          "accuracy": 0.8502604166666666,
+          "arm_cpu_seconds": 0.010879210565104165,
+          "arm_wall_seconds": 0.010879530252699018,
+          "brier": 0.208100947117515,
+          "net_reward": 0.73546875,
+          "nll": 0.392134535861742,
+          "reads": 2.8697916666666665
+        },
+        "D": {
+          "accuracy": 0.8841145833333334,
+          "arm_cpu_seconds": 0.09693261888541667,
+          "arm_wall_seconds": 0.09696699125026953,
+          "brier": 0.15098162618628927,
+          "net_reward": 0.7718229166666667,
+          "nll": 0.28074693825675107,
+          "reads": 2.8072916666666665
+        },
+        "D_both": {
+          "accuracy": 0.4798177083333333,
+          "arm_cpu_seconds": 0.003275040351562505,
+          "arm_wall_seconds": 0.0032741490315023234,
+          "brier": 0.6130033329961581,
+          "net_reward": 0.4398177083333333,
+          "nll": 1.1626949572238956,
+          "reads": 1.0
+        },
+        "D_current": {
+          "accuracy": 0.5963541666666666,
+          "arm_cpu_seconds": 0.05122472239583332,
+          "arm_wall_seconds": 0.05122812887517133,
+          "brier": 0.4874138025315367,
+          "net_reward": 0.5563541666666666,
+          "nll": 0.9212952830650423,
+          "reads": 1.0
+        },
+        "D_hypothetical": {
+          "accuracy": 0.533203125,
+          "arm_cpu_seconds": 0.005574607408854168,
+          "arm_wall_seconds": 0.005574269234519609,
+          "brier": 0.5539752387423894,
+          "net_reward": 0.41320312499999995,
+          "nll": 1.047192014984562,
+          "reads": 3.0
+        },
+        "hold_on_D": {
+          "accuracy": 0.8795572916666666,
+          "arm_cpu_seconds": 0.0010373049921874953,
+          "arm_wall_seconds": 0.0010369845156219526,
+          "brier": 0.21328125,
+          "net_reward": 0.767265625,
+          "nll": 2.5961666265329875,
+          "reads": 2.8072916666666665
+        }
+      }
+    },
+    "matched": {
+      "contrasts": {
+        "B-A": {
+          "accuracy": {
+            "descriptive_95": [
+              0.016276041666666668,
+              0.055338541666666664
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.035807291666666664,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              -0.08240148324183193,
+              -0.04274263702204154
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.06238730032832246,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              0.020832682291666665,
+              0.059037109374999994
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.039869791666666675,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              -0.15848224209558345,
+              -0.08104338463707013
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.11836678942634377,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -0.16145833333333334,
+              -0.0390625
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.1015625,
+            "paired_episodes": 384
+          }
+        },
+        "B_on_D-D": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.006510416666666667,
+              0.0006510416666666666
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.0026041666666666665,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              -0.0010670886955077609,
+              0.006195552251864451
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.002091474440007741,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.006510416666666667,
+              0.0006510416666666666
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.0026041666666666665,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              -0.001649513219219966,
+              0.009042403395836436
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.0030267943726194134,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              0.0,
+              0.0
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.0,
+            "paired_episodes": 384
+          }
+        },
+        "C-A": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.005859375,
+              0.015625
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.004557291666666667,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              -0.01565001458346211,
+              0.001559852729452663
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.006903939797341828,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.0064843750000000006,
+              0.015625
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.004140624999999999,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              -0.025249689484716842,
+              0.0067679090029439575
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.009355175241151658,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -0.013020833333333334,
+              0.0390625
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.010416666666666666,
+            "paired_episodes": 384
+          }
+        },
+        "D-B": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.005208333333333333,
+              0.024739583333333332
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.009114583333333334,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              -0.01646242585609894,
+              0.008934697735084558
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.0034357064178615004,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.004245442708333332,
+              0.025572916666666667
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.00984375,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              -0.0314856521677132,
+              0.021043321253799162
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.0032713792390971492,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -0.0546875,
+              0.018229166666666668
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.018229166666666668,
+            "paired_episodes": 384
+          }
+        },
+        "D-C": {
+          "accuracy": {
+            "descriptive_95": [
+              0.018880208333333332,
+              0.06315104166666667
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.040364583333333336,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              -0.07671526279141264,
+              -0.04177248209717108
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.058919066948842136,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              0.023619791666666667,
+              0.06830794270833333
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.045572916666666664,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              -0.14648999120737433,
+              -0.07949087055734522
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.11228299342428925,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -0.19010416666666666,
+              -0.06770833333333333
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.13020833333333334,
+            "paired_episodes": 384
+          }
+        },
+        "D_both-D": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.4140625,
+              -0.3522135416666667
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.3828125,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              0.4116429452143206,
+              0.4663826884379417
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.438397958260423,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.34416731770833336,
+              -0.28325520833333334
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.3133333333333333,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              0.7906381025913899,
+              0.8946051311445887
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.8409708907273455,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -1.796875,
+              -1.6692708333333333
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -1.7369791666666667,
+            "paired_episodes": 384
+          }
+        },
+        "D_current-D": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.3151041666666667,
+              -0.263671875
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.2897135416666667,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              0.3106096533593168,
+              0.34362606398993234
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.3265851414991266,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.2445579427083333,
+              -0.19585937499999997
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.22023437499999998,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              0.5918651567699333,
+              0.6593092464072303
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.6242757724311767,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              -1.796875,
+              -1.6692708333333333
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -1.7369791666666667,
+            "paired_episodes": 384
+          }
+        },
+        "D_hypothetical-D": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.3736979166666667,
+              -0.3098958333333333
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.3404947916666667,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              0.3615768334785627,
+              0.40829433955541455
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.38469810706271784,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.38320442708333335,
+              -0.3205201822916667
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.35101562500000005,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              0.6859332359346607,
+              0.7798190332009666
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.7313998993999739,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              0.203125,
+              0.3307291666666667
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.2630208333333333,
+            "paired_episodes": 384
+          }
+        },
+        "hold_on_D-D": {
+          "accuracy": {
+            "descriptive_95": [
+              -0.026041666666666668,
+              0.0006510416666666666
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.013020833333333334,
+            "paired_episodes": 384
+          },
+          "brier": {
+            "descriptive_95": [
+              0.053514674938483525,
+              0.09694373241506962
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.0751601862508423,
+            "paired_episodes": 384
+          },
+          "net_reward": {
+            "descriptive_95": [
+              -0.026041666666666668,
+              0.0006510416666666666
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": -0.013020833333333334,
+            "paired_episodes": 384
+          },
+          "nll": {
+            "descriptive_95": [
+              2.005394888261084,
+              2.7662620741261033
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 2.3867244707135056,
+            "paired_episodes": 384
+          },
+          "reads": {
+            "descriptive_95": [
+              0.0,
+              0.0
+            ],
+            "fit_groups": 3,
+            "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+            "mean": 0.0,
+            "paired_episodes": 384
+          }
+        },
+        "interaction": {
+          "descriptive_95": [
+            -0.014740234374999994,
+            0.025859375
+          ],
+          "fit_groups": 3,
+          "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+          "mean": 0.005703125000000001,
+          "paired_episodes": 384
+        }
+      },
+      "divergences": {
+        "B": {
+          "action_changed": 115,
+          "content_changed": 371,
+          "episodes": 384,
+          "tick0_action_changed": 10
+        },
+        "B_on_D": {
+          "action_changed": 0,
+          "content_changed": 361,
+          "episodes": 384,
+          "tick0_action_changed": 0
+        },
+        "D_both": {
+          "action_changed": 384,
+          "content_changed": 384,
+          "episodes": 384,
+          "tick0_action_changed": 356
+        },
+        "D_current": {
+          "action_changed": 383,
+          "content_changed": 383,
+          "episodes": 384,
+          "tick0_action_changed": 0
+        },
+        "D_hypothetical": {
+          "action_changed": 384,
+          "content_changed": 384,
+          "episodes": 384,
+          "tick0_action_changed": 356
+        },
+        "hold_on_D": {
+          "action_changed": 0,
+          "content_changed": 361,
+          "episodes": 384,
+          "tick0_action_changed": 0
+        }
+      },
+      "means": {
+        "A": {
+          "accuracy": 0.837890625,
+          "arm_cpu_seconds": 0.02075925224739583,
+          "arm_wall_seconds": 0.020761420734250653,
+          "brier": 0.2156628204953417,
+          "net_reward": 0.7236197916666667,
+          "nll": 0.4007643297155849,
+          "reads": 2.8567708333333335
+        },
+        "B": {
+          "accuracy": 0.8736979166666666,
+          "arm_cpu_seconds": 0.16759617792708337,
+          "arm_wall_seconds": 0.16760906313318932,
+          "brier": 0.1532755201670192,
+          "net_reward": 0.7634895833333335,
+          "nll": 0.2823975402892411,
+          "reads": 2.7552083333333335
+        },
+        "B_on_D": {
+          "accuracy": 0.8802083333333334,
+          "arm_cpu_seconds": 0.006621400244791666,
+          "arm_wall_seconds": 0.006623563353855388,
+          "brier": 0.1519312881891655,
+          "net_reward": 0.7707291666666668,
+          "nll": 0.28215295542276336,
+          "reads": 2.7369791666666665
+        },
+        "C": {
+          "accuracy": 0.8424479166666666,
+          "arm_cpu_seconds": 0.009760874682291662,
+          "arm_wall_seconds": 0.009761999346930375,
+          "brier": 0.20875888069799986,
+          "net_reward": 0.7277604166666666,
+          "nll": 0.39140915447443314,
+          "reads": 2.8671875
+        },
+        "D": {
+          "accuracy": 0.8828125,
+          "arm_cpu_seconds": 0.10050954551041673,
+          "arm_wall_seconds": 0.10052828895300081,
+          "brier": 0.14983981374915772,
+          "net_reward": 0.7733333333333334,
+          "nll": 0.27912616105014393,
+          "reads": 2.7369791666666665
+        },
+        "D_both": {
+          "accuracy": 0.5,
+          "arm_cpu_seconds": 0.003354781651041665,
+          "arm_wall_seconds": 0.0033539093824022834,
+          "brier": 0.5882377720095807,
+          "net_reward": 0.45999999999999996,
+          "nll": 1.1200970517774893,
+          "reads": 1.0
+        },
+        "D_current": {
+          "accuracy": 0.5930989583333334,
+          "arm_cpu_seconds": 0.051172478505208334,
+          "arm_wall_seconds": 0.051189111869234694,
+          "brier": 0.4764249552482844,
+          "net_reward": 0.5530989583333333,
+          "nll": 0.9034019334813207,
+          "reads": 1.0
+        },
+        "D_hypothetical": {
+          "accuracy": 0.5423177083333334,
+          "arm_cpu_seconds": 0.005860638848958329,
+          "arm_wall_seconds": 0.005861059317529301,
+          "brier": 0.5345379208118756,
+          "net_reward": 0.4223177083333333,
+          "nll": 1.010526060450118,
+          "reads": 3.0
+        },
+        "hold_on_D": {
+          "accuracy": 0.8697916666666666,
+          "arm_cpu_seconds": 0.000995365294270828,
+          "arm_wall_seconds": 0.0009951030439954895,
+          "brier": 0.225,
+          "net_reward": 0.7603125000000001,
+          "nll": 2.6658506317636497,
+          "reads": 2.7369791666666665
+        }
+      }
+    }
+  },
+  "production_activation": false,
+  "protocol_sha256": "fd463d4055f79d064f62f4bdfa0586b1e39f895b31c1ce6303c093d854d4ae41",
+  "scope": "controlled renewal mechanism and implementation costs only",
+  "workers": 63
+}

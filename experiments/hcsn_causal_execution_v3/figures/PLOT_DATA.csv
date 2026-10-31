@@ -1,0 +1,39 @@
+panel,measure,group,variant,seed,value,unit,correct_sequences,sequences
+A,mean,matched D-B,,,0.00984375,utility,,
+A,descriptive_95_low,matched D-B,,,-0.004245442708333332,utility,,
+A,descriptive_95_high,matched D-B,,,0.025572916666666667,utility,,
+B,mean_exact_recall,L32_T3.2,original,,1.0,fraction,,
+B,exact_recall,L32_T3.2,original,81031,1.0,fraction,128,128
+B,exact_recall,L32_T3.2,original,81032,1.0,fraction,128,128
+B,exact_recall,L32_T3.2,original,81033,1.0,fraction,128,128
+B,mean_exact_recall,L32_T3.2,fixed_clock_cap,,1.0,fraction,,
+B,exact_recall,L32_T3.2,fixed_clock_cap,81031,1.0,fraction,128,128
+B,exact_recall,L32_T3.2,fixed_clock_cap,81032,1.0,fraction,128,128
+B,exact_recall,L32_T3.2,fixed_clock_cap,81033,1.0,fraction,128,128
+B,mean_exact_recall,L128_T3.2,original,,0.9973958333333334,fraction,,
+B,exact_recall,L128_T3.2,original,81031,1.0,fraction,128,128
+B,exact_recall,L128_T3.2,original,81032,0.9921875,fraction,127,128
+B,exact_recall,L128_T3.2,original,81033,1.0,fraction,128,128
+B,mean_exact_recall,L128_T3.2,fixed_clock_cap,,0.9973958333333334,fraction,,
+B,exact_recall,L128_T3.2,fixed_clock_cap,81031,1.0,fraction,128,128
+B,exact_recall,L128_T3.2,fixed_clock_cap,81032,0.9921875,fraction,127,128
+B,exact_recall,L128_T3.2,fixed_clock_cap,81033,1.0,fraction,128,128
+B,mean_exact_recall,L32_T12.8,original,,0.09375,fraction,,
+B,exact_recall,L32_T12.8,original,81031,0.0390625,fraction,5,128
+B,exact_recall,L32_T12.8,original,81032,0.09375,fraction,12,128
+B,exact_recall,L32_T12.8,original,81033,0.1484375,fraction,19,128
+B,mean_exact_recall,L32_T12.8,fixed_clock_cap,,1.0,fraction,,
+B,exact_recall,L32_T12.8,fixed_clock_cap,81031,1.0,fraction,128,128
+B,exact_recall,L32_T12.8,fixed_clock_cap,81032,1.0,fraction,128,128
+B,exact_recall,L32_T12.8,fixed_clock_cap,81033,1.0,fraction,128,128
+B,mean_exact_recall,L128_T12.8,original,,0.06770833333333333,fraction,,
+B,exact_recall,L128_T12.8,original,81031,0.0234375,fraction,3,128
+B,exact_recall,L128_T12.8,original,81032,0.0859375,fraction,11,128
+B,exact_recall,L128_T12.8,original,81033,0.09375,fraction,12,128
+B,mean_exact_recall,L128_T12.8,fixed_clock_cap,,0.9661458333333334,fraction,,
+B,exact_recall,L128_T12.8,fixed_clock_cap,81031,1.0,fraction,128,128
+B,exact_recall,L128_T12.8,fixed_clock_cap,81032,0.8984375,fraction,115,128
+B,exact_recall,L128_T12.8,fixed_clock_cap,81033,1.0,fraction,128,128
+C,complete_worker_CPU,B,,,136.850036,seconds,,
+C,complete_worker_CPU,D,,,85.700836,seconds,,
+C,D_vs_B_CPU_reduction,D/B,,,0.3737609539247765,fraction,,

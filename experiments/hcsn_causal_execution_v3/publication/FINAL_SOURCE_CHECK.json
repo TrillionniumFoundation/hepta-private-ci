@@ -1,0 +1,52 @@
+{
+  "recorded_at_utc": "2026-10-31T12:12:01.277018+00:00",
+  "baseline_commit": "c5e159ec6c5ba174b36debacad166da635c57d48",
+  "namespace": "experiments/hcsn_causal_execution_v3",
+  "scope": "Only this new experiment namespace is published; no native Rust or production code changed",
+  "bundles": [
+    {
+      "name": "memory001",
+      "members": 188,
+      "parts": 24,
+      "compressed_bytes": 4577784,
+      "archive_sha256": "3d7ea0c19fc06ac76906dd73b81efac3c9dd154dbdaebb1d850ede0d5754fff5"
+    },
+    {
+      "name": "av_probe001",
+      "members": 743,
+      "parts": 16,
+      "compressed_bytes": 3066048,
+      "archive_sha256": "c10347a8c55983720133dd0d948b40a793990a951a43803d0a697efdc436aa80"
+    },
+    {
+      "name": "mechanism_final001",
+      "members": 335,
+      "parts": 39,
+      "compressed_bytes": 7659652,
+      "archive_sha256": "bfe46c4aeeee665b81f6ea4a832671d32646b672a448f022c528657ff7fe2ee4"
+    },
+    {
+      "name": "stream001",
+      "members": 312,
+      "parts": 3,
+      "compressed_bytes": 481300,
+      "archive_sha256": "8f67c64a529ccd9f68919b8c249dc55a447b7bd20b1a60fecbada616b50e0599"
+    }
+  ],
+  "total_members": 1578,
+  "total_parts": 82,
+  "whitespace": {
+    "cached": {
+      "exit_code": 0,
+      "output": ""
+    },
+    "unstaged": {
+      "exit_code": 0,
+      "output": ""
+    }
+  },
+  "formatter_receipt": "publication/FORMAT_CHECK.json",
+  "formatter_status": "Attempted canonical just fmt; local source snapshot has no HEAD, so changed-path discovery exited2. Experiment paths have no owner in canonical formatter. No formatter or baseline was fabricated.",
+  "frozen_stream_sources_match": true,
+  "frozen_av_source_matches": true
+}

@@ -1,0 +1,341 @@
+{
+  "schema": "hcsn-static-scientific-plot.v1",
+  "plot_script": "plot_results.py",
+  "plot_script_sha256": "d2244978b6b5ba17a99f54da62cf8a0437b3c2b66ffd95cf022c309345c1f4c1",
+  "inputs": {
+    "mechanism": {
+      "path": "results/mechanism/formal001/RESULTS.json",
+      "sha256": "90537f0d42e82edbe3bc2d4da309ff4952cacb5942303d330b67e3a532400c38"
+    },
+    "mechanism_protocol": {
+      "path": "results/mechanism/formal001/PROTOCOL.json",
+      "sha256": "fd463d4055f79d064f62f4bdfa0586b1e39f895b31c1ce6303c093d854d4ae41"
+    },
+    "memory": {
+      "path": "results/memory/RESULTS.json",
+      "sha256": "6e0a287e35d839315a0f74aead10738255c6e52805e569af231c553d1e622ad2"
+    },
+    "memory_protocol": {
+      "path": "results/memory/PROTOCOL.json",
+      "sha256": "a7cf030668b00e06aff16f0cf32da82c0599415affa740239e3b8f22964b86fb"
+    },
+    "clock": {
+      "path": "results/memory_clock_repair/RESULTS.json",
+      "sha256": "320b981a050c122dbe72eed009e90b41e54730f56b31b3b6f4be897f80f38353"
+    },
+    "clock_protocol": {
+      "path": "results/memory_clock_repair/PROTOCOL.json",
+      "sha256": "d2823b2446efa0c2938236b07918d115a3a6330dd0240d982490b3e1725c1395"
+    }
+  },
+  "exact_plotted_data": {
+    "A_matched_D_minus_B_utility": {
+      "descriptive_95": [
+        -0.004245442708333332,
+        0.025572916666666667
+      ],
+      "fit_groups": 3,
+      "independence_limitation": "only three independently fitted groups; no population-wide architecture claim",
+      "mean": 0.00984375,
+      "paired_episodes": 384
+    },
+    "B_shared_Copy_exact_recall": [
+      {
+        "length": 32,
+        "horizon": 3.2,
+        "original": {
+          "mean_exact_recall": 1.0,
+          "mean_percent": 100.0,
+          "fitted_seeds": [
+            81031,
+            81032,
+            81033
+          ],
+          "seed_exact_recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "correct_sequences_per_seed": [
+            128,
+            128,
+            128
+          ],
+          "sequences_per_seed": [
+            128,
+            128,
+            128
+          ],
+          "predictions": [
+            "predictions/selective_copy_s81031_shared_L32_H3.2_disabled0.npz",
+            "predictions/selective_copy_s81032_shared_L32_H3.2_disabled0.npz",
+            "predictions/selective_copy_s81033_shared_L32_H3.2_disabled0.npz"
+          ],
+          "aggregation": "arithmetic mean of fitted seeds on the same sequences; not independent datasets"
+        },
+        "fixed_clock_cap": {
+          "mean_exact_recall": 1.0,
+          "mean_percent": 100.0,
+          "fitted_seeds": [
+            81031,
+            81032,
+            81033
+          ],
+          "seed_exact_recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "correct_sequences_per_seed": [
+            128,
+            128,
+            128
+          ],
+          "sequences_per_seed": [
+            128,
+            128,
+            128
+          ],
+          "predictions": [
+            "predictions/selective_copy_s81031_shared_L32_H3.2_capped.npz",
+            "predictions/selective_copy_s81032_shared_L32_H3.2_capped.npz",
+            "predictions/selective_copy_s81033_shared_L32_H3.2_capped.npz"
+          ],
+          "aggregation": "arithmetic mean of fitted seeds on the same sequences; not independent datasets"
+        }
+      },
+      {
+        "length": 128,
+        "horizon": 3.2,
+        "original": {
+          "mean_exact_recall": 0.9973958333333334,
+          "mean_percent": 99.73958333333334,
+          "fitted_seeds": [
+            81031,
+            81032,
+            81033
+          ],
+          "seed_exact_recall": [
+            1.0,
+            0.9921875,
+            1.0
+          ],
+          "correct_sequences_per_seed": [
+            128,
+            127,
+            128
+          ],
+          "sequences_per_seed": [
+            128,
+            128,
+            128
+          ],
+          "predictions": [
+            "predictions/selective_copy_s81031_shared_L128_H3.2_disabled0.npz",
+            "predictions/selective_copy_s81032_shared_L128_H3.2_disabled0.npz",
+            "predictions/selective_copy_s81033_shared_L128_H3.2_disabled0.npz"
+          ],
+          "aggregation": "arithmetic mean of fitted seeds on the same sequences; not independent datasets"
+        },
+        "fixed_clock_cap": {
+          "mean_exact_recall": 0.9973958333333334,
+          "mean_percent": 99.73958333333334,
+          "fitted_seeds": [
+            81031,
+            81032,
+            81033
+          ],
+          "seed_exact_recall": [
+            1.0,
+            0.9921875,
+            1.0
+          ],
+          "correct_sequences_per_seed": [
+            128,
+            127,
+            128
+          ],
+          "sequences_per_seed": [
+            128,
+            128,
+            128
+          ],
+          "predictions": [
+            "predictions/selective_copy_s81031_shared_L128_H3.2_capped.npz",
+            "predictions/selective_copy_s81032_shared_L128_H3.2_capped.npz",
+            "predictions/selective_copy_s81033_shared_L128_H3.2_capped.npz"
+          ],
+          "aggregation": "arithmetic mean of fitted seeds on the same sequences; not independent datasets"
+        }
+      },
+      {
+        "length": 32,
+        "horizon": 12.8,
+        "original": {
+          "mean_exact_recall": 0.09375,
+          "mean_percent": 9.375,
+          "fitted_seeds": [
+            81031,
+            81032,
+            81033
+          ],
+          "seed_exact_recall": [
+            0.0390625,
+            0.09375,
+            0.1484375
+          ],
+          "correct_sequences_per_seed": [
+            5,
+            12,
+            19
+          ],
+          "sequences_per_seed": [
+            128,
+            128,
+            128
+          ],
+          "predictions": [
+            "predictions/selective_copy_s81031_shared_L32_H12.8_disabled0.npz",
+            "predictions/selective_copy_s81032_shared_L32_H12.8_disabled0.npz",
+            "predictions/selective_copy_s81033_shared_L32_H12.8_disabled0.npz"
+          ],
+          "aggregation": "arithmetic mean of fitted seeds on the same sequences; not independent datasets"
+        },
+        "fixed_clock_cap": {
+          "mean_exact_recall": 1.0,
+          "mean_percent": 100.0,
+          "fitted_seeds": [
+            81031,
+            81032,
+            81033
+          ],
+          "seed_exact_recall": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "correct_sequences_per_seed": [
+            128,
+            128,
+            128
+          ],
+          "sequences_per_seed": [
+            128,
+            128,
+            128
+          ],
+          "predictions": [
+            "predictions/selective_copy_s81031_shared_L32_H12.8_capped.npz",
+            "predictions/selective_copy_s81032_shared_L32_H12.8_capped.npz",
+            "predictions/selective_copy_s81033_shared_L32_H12.8_capped.npz"
+          ],
+          "aggregation": "arithmetic mean of fitted seeds on the same sequences; not independent datasets"
+        }
+      },
+      {
+        "length": 128,
+        "horizon": 12.8,
+        "original": {
+          "mean_exact_recall": 0.06770833333333333,
+          "mean_percent": 6.770833333333333,
+          "fitted_seeds": [
+            81031,
+            81032,
+            81033
+          ],
+          "seed_exact_recall": [
+            0.0234375,
+            0.0859375,
+            0.09375
+          ],
+          "correct_sequences_per_seed": [
+            3,
+            11,
+            12
+          ],
+          "sequences_per_seed": [
+            128,
+            128,
+            128
+          ],
+          "predictions": [
+            "predictions/selective_copy_s81031_shared_L128_H12.8_disabled0.npz",
+            "predictions/selective_copy_s81032_shared_L128_H12.8_disabled0.npz",
+            "predictions/selective_copy_s81033_shared_L128_H12.8_disabled0.npz"
+          ],
+          "aggregation": "arithmetic mean of fitted seeds on the same sequences; not independent datasets"
+        },
+        "fixed_clock_cap": {
+          "mean_exact_recall": 0.9661458333333334,
+          "mean_percent": 96.61458333333334,
+          "fitted_seeds": [
+            81031,
+            81032,
+            81033
+          ],
+          "seed_exact_recall": [
+            1.0,
+            0.8984375,
+            1.0
+          ],
+          "correct_sequences_per_seed": [
+            128,
+            115,
+            128
+          ],
+          "sequences_per_seed": [
+            128,
+            128,
+            128
+          ],
+          "predictions": [
+            "predictions/selective_copy_s81031_shared_L128_H12.8_capped.npz",
+            "predictions/selective_copy_s81032_shared_L128_H12.8_capped.npz",
+            "predictions/selective_copy_s81033_shared_L128_H12.8_capped.npz"
+          ],
+          "aggregation": "arithmetic mean of fitted seeds on the same sequences; not independent datasets"
+        }
+      }
+    ],
+    "C_complete_worker_CPU_seconds": {
+      "B": 136.850036,
+      "D": 85.700836
+    },
+    "C_D_vs_B_CPU_reduction_fraction": 0.3737609539247765,
+    "C_episodes_per_arm": 768,
+    "C_episodes_per_fresh_worker": 128,
+    "C_ordinary_training_once_CPU_seconds": 22.040918,
+    "clock_caps": {
+      "cumulative_time": 3.2,
+      "dt": 0.15
+    }
+  },
+  "limitations": [
+    "three fitted groups, controlled mechanism; descriptive intervals",
+    "Post-diagnostic exploratory intervention on previously evaluated inputs",
+    "clock repair uses shared content only; no analytic-adapter attribution",
+    "no preregistered quality noninferiority certificate",
+    "shared CPU host; energy not measured"
+  ],
+  "rendering": {
+    "library": "matplotlib",
+    "version": "3.10.8",
+    "PNG_dpi": 200,
+    "mean_copy_aggregation": "unweighted arithmetic mean of exactly three recorded seed values",
+    "printed_precision": "six decimals utility; two decimals percent; three decimals CPU; exact values retained here and CSV"
+  },
+  "outputs": {
+    "hcsn_three_findings.png": {
+      "sha256": "57db241be7c04cbdc00afbc12360c935d2bc75908a7777cddd2d373aafb33813",
+      "bytes": 278353
+    },
+    "hcsn_three_findings.svg": {
+      "sha256": "32943d67826c8e90bb1d8698e54756f4c9705e9f9155bae8f1c598051ab73215",
+      "bytes": 33711
+    },
+    "PLOT_DATA.csv": {
+      "sha256": "e307dd429ebdae33f0466b8bc6b6e6a5a0c5f0f58116f5d0779b9a178762bae3",
+      "bytes": 2562
+    }
+  }
+}
