@@ -36,15 +36,19 @@ class Stop:
         # binary64 root: refuse genuinely out-of-range results.
         root_q=math.sqrt(2.)*math.sqrt(self.discount)
         noise=root_q*self.diffusion
-        if 0.<noise<math.inf:
+        # A nonzero subnormal noise product can already have lost enough
+        # relative precision to corrupt a finite root. Normalize these
+        # products as well as zero/overflow; do not reuse their rounded value.
+        if float.fromhex('0x1.0p-1022') <= noise < math.inf:
             scale=math.hypot(self.drift,noise)
             if self.drift>=0:
                 k=self.discount/(scale/2.+self.drift/2.)
             else:
                 k=(scale/self.diffusion-self.drift/self.diffusion)/self.diffusion
         else:
-            # Only the intermediate noise product overflowed/underflowed;
-            # normalize by sigma so that the same finite root is retained.
+            # The noise product overflowed, vanished, or became subnormal.
+            # Normalize by sigma without using that rounded product. This
+            # repairs this intermediate, not all finite-domain roundoff.
             drift_scaled=self.drift/self.diffusion
             if not math.isfinite(drift_scaled):
                 # Here mu/sigma is far larger than sqrt(2*rho), so the
