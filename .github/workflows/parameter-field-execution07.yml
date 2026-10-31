@@ -80,7 +80,7 @@ jobs:
       - name: Retrieve and byte-verify all nine original public inputs
         working-directory: /work/source
         run: /opt/runtime/venv/bin/python -B tools/parameter_field_executor/prepare_inputs.py
-      - name: Check package and direct-script boundaries before initialization
+      - name: Check source closure and direct-script boundaries before initialization
         working-directory: /work/source
         run: |
           /opt/runtime/venv/bin/python -B -m unittest operational.parameter_field_recovery07.test_artifact_transport operational.parameter_field_recovery07.test_supervisor operational.parameter_field_recovery07.test_semantic_preflight operational.parameter_field_recovery07.test_registration operational.parameter_field_recovery07.test_postseal operational.parameter_field_recovery07.test_bootstrap -v

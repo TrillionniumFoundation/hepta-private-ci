@@ -204,7 +204,7 @@ def source_check(config):
             own + n + ".py"
             for n in (
                 "process",
-                "queue",
+                "job_queue",
                 "controller",
                 "worker",
                 "supervisor",

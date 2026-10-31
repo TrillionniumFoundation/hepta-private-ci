@@ -24,6 +24,28 @@ class ExecutionTests(unittest.TestCase):
     def tearDown(self):
         self.temporary.cleanup()
 
+    def test_required_source_closure_uses_current_package_modules(self):
+        own = Path(__file__).resolve().parent
+        root = own.parents[1]
+        self.assertFalse((own / "queue.py").exists())
+        files = {
+            path.relative_to(root).as_posix(): process.descriptor(path)["sha256"]
+            for path in own.glob("*.py")
+        }
+        frozen = self.save("source-freeze.json", {"source_files": files})
+        config = {
+            "source_root": str(root),
+            "descriptors": {"controller_freeze": frozen},
+        }
+        self.assertEqual(process.source_check(config), files)
+        missing = dict(files)
+        del missing["operational/parameter_field_recovery07/job_queue.py"]
+        config["descriptors"]["controller_freeze"] = self.save(
+            "missing-source-freeze.json", {"source_files": missing}
+        )
+        with self.assertRaisesRegex(ValueError, "source closure is incomplete"):
+            process.source_check(config)
+
     def save(self, name, value):
         return process.write(self.root / name, value)
 
