@@ -1,0 +1,8 @@
+{
+  "existing_pairs": 33,
+  "semantic_mismatches": [],
+  "input_sha256": "0a282d783eac54c7416392e49af5a99d20c770bf883f89894f141e543312ac2d",
+  "initial_comparator_result": "32 normal pairs differed only because flat decoder performance timings were included; one failed-read pair matched",
+  "correction": "Exclude measured CPU/wall fields from semantic equality; retain them in original raw rows and cost comparisons",
+  "scope": "Development validation of comparator against existing evidence; no new model/task selection"
+}
