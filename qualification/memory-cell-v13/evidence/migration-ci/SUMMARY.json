@@ -1,0 +1,38 @@
+{
+  "economic_benefit_demonstrated": false,
+  "first_failure_retained": true,
+  "latest_qualified_run": 41206138368,
+  "runs": [
+    {
+      "ci_conclusion": "failure",
+      "economic_benefit_demonstrated": false,
+      "head_sha": "f3069e82ebd98b3d22c33bee32096f5217783e79",
+      "head_tree": "84ba9f6e3089e5e17a00fe83a3e6173aff54d12f",
+      "known_ci_payload_bytes_lower_bound": 94835276,
+      "model_runtime_restore_accepted": true,
+      "qualification_path": "run-41205095256/QUALIFICATION.json",
+      "qualification_sha256": "94c7a692f11f7dfb7dda66f8a57eacea2bdeb8ed3e15ae2a1d2d72af7569b03b",
+      "run_attempt": 1,
+      "run_id": 41205095256,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41205095256",
+      "strict_cross_vm_continuation_accepted": false
+    },
+    {
+      "ci_conclusion": "success",
+      "economic_benefit_demonstrated": false,
+      "head_sha": "8ae2d91947203a868f880312df823004b7289f25",
+      "head_tree": "b1b399ae4819bb6c4cee9fe720fe4227bd12bfa1",
+      "known_ci_payload_bytes_lower_bound": 94852964,
+      "model_runtime_restore_accepted": true,
+      "qualification_path": "run-41206138368/QUALIFICATION.json",
+      "qualification_sha256": "d2fb4bba2aca386c721c3bba3a0126946e798154100d597fcfa1600bf8570643",
+      "run_attempt": 1,
+      "run_id": 41206138368,
+      "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41206138368",
+      "strict_cross_vm_continuation_accepted": true
+    }
+  ],
+  "schema": "hepta.memory.migration-ci-summary.v13",
+  "scope": "Exact learned adapter/head plus full Adam/RNG/sampler continuation on frozen 120-row MiniLM features under the recorded baseline numerical profile; actual encoder re-download and training-text replay on the resume VM. No arbitrary-hardware, generalization, general-memory or network-economic claim.",
+  "strict_continuation_under_recorded_profile": true
+}

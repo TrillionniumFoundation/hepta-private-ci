@@ -1,0 +1,494 @@
+﻿2026-10-31T13:34:27.7026348Z Current runner version: '2.338.2'
+2026-10-31T13:34:27.7053381Z ##[group]Runner Image Provisioner
+2026-10-31T13:34:27.7054266Z Hosted Compute Agent
+2026-10-31T13:34:27.7055397Z Version: 20261021.618
+2026-10-31T13:34:27.7056107Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-31T13:34:27.7056862Z Build Date: 2026-10-21T00:45:21Z
+2026-10-31T13:34:27.7057620Z Worker ID: {4dba5d55-2ee0-4898-9c7f-5dd20030cb54}
+2026-10-31T13:34:27.7058358Z Region: chilecentral
+2026-10-31T13:34:27.7059226Z Cloud: Azure
+2026-10-31T13:34:27.7059854Z ##[endgroup]
+2026-10-31T13:34:27.7061431Z ##[group]Operating System
+2026-10-31T13:34:27.7062167Z Ubuntu
+2026-10-31T13:34:27.7062699Z 24.04.5
+2026-10-31T13:34:27.7063201Z LTS
+2026-10-31T13:34:27.7063862Z ##[endgroup]
+2026-10-31T13:34:27.7064424Z ##[group]Runner Image
+2026-10-31T13:34:27.7065087Z Image: ubuntu-24.04
+2026-10-31T13:34:27.7065672Z Version: 20261025.353.1
+2026-10-31T13:34:27.7067028Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-31T13:34:27.7069108Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-10-31T13:34:27.7070264Z ##[endgroup]
+2026-10-31T13:34:27.7071406Z ##[group]GITHUB_TOKEN Permissions
+2026-10-31T13:34:27.7073445Z Contents: read
+2026-10-31T13:34:27.7074189Z Metadata: read
+2026-10-31T13:34:27.7074758Z ##[endgroup]
+2026-10-31T13:34:27.7077296Z Secret source: Actions
+2026-10-31T13:34:27.7078330Z Cache mode: write
+2026-10-31T13:34:27.7079615Z Prepare workflow directory
+2026-10-31T13:34:27.7482339Z Prepare all required actions
+2026-10-31T13:34:27.7531235Z Getting action download info
+2026-10-31T13:34:28.2442039Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-10-31T13:34:28.3325263Z Download action repository 'actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093' (SHA:d3f86a106a0bac45b974a628896c90dbdf5c8093)
+2026-10-31T13:34:29.1071520Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-31T13:34:29.3208677Z Complete job name: resume
+2026-10-31T13:34:29.4134690Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-10-31T13:34:29.4135880Z with:
+2026-10-31T13:34:29.4136391Z   persist-credentials: false
+2026-10-31T13:34:29.4137034Z   sparse-checkout: qualification/memory-cell-v13
+2026-10-31T13:34:29.4137800Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-10-31T13:34:29.4142380Z   token: ***
+2026-10-31T13:34:29.4142874Z   ssh-strict: true
+2026-10-31T13:34:29.4143358Z   ssh-user: git
+2026-10-31T13:34:29.4143821Z   clean: true
+2026-10-31T13:34:29.4144308Z   sparse-checkout-cone-mode: true
+2026-10-31T13:34:29.4144877Z   fetch-depth: 1
+2026-10-31T13:34:29.4145355Z   fetch-tags: false
+2026-10-31T13:34:29.4145861Z   show-progress: true
+2026-10-31T13:34:29.4146370Z   lfs: false
+2026-10-31T13:34:29.4146830Z   submodules: false
+2026-10-31T13:34:29.4147367Z   set-safe-directory: true
+2026-10-31T13:34:29.4148180Z env:
+2026-10-31T13:34:29.4148856Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:34:29.4149494Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:34:29.4150023Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:34:29.4150600Z   OMP_NUM_THREADS: 1
+2026-10-31T13:34:29.4151117Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:34:29.4152409Z   NPY_DISABLE_CPU_FEATURES: SSSE3,SSE41,POPCNT,SSE42,AVX,F16C,FMA3,AVX2,AVX512F,AVX512CD,AVX512_KNL,AVX512_KNM,AVX512_SKX,AVX512_CLX,AVX512_CNL,AVX512_ICL,AVX512_SPR
+2026-10-31T13:34:29.4153735Z ##[endgroup]
+2026-10-31T13:34:29.6805166Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-10-31T13:34:29.6808747Z ##[group]Getting Git version info
+2026-10-31T13:34:29.6810353Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-31T13:34:29.6812679Z [command]/usr/bin/git version
+2026-10-31T13:34:29.6906972Z git version 2.56.0
+2026-10-31T13:34:29.6936473Z ##[endgroup]
+2026-10-31T13:34:29.6954368Z Temporarily overriding HOME='/home/runner/work/_temp/2e3c9530-a5fc-4bf4-9c02-4431541e3946' before making global git config changes
+2026-10-31T13:34:29.6956918Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-31T13:34:29.6961795Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-31T13:34:29.7016467Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-31T13:34:29.7020879Z ##[group]Initializing the repository
+2026-10-31T13:34:29.7026372Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-31T13:34:29.7157861Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-31T13:34:29.7160062Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-31T13:34:29.7161541Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-31T13:34:29.7162409Z hint: call:
+2026-10-31T13:34:29.7162852Z hint:
+2026-10-31T13:34:29.7163438Z hint: 	git config --global init.defaultBranch <name>
+2026-10-31T13:34:29.7164112Z hint:
+2026-10-31T13:34:29.7164765Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-31T13:34:29.7166506Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-31T13:34:29.7167979Z hint:
+2026-10-31T13:34:29.7169386Z hint: 	git branch -m <name>
+2026-10-31T13:34:29.7170164Z hint:
+2026-10-31T13:34:29.7170867Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-31T13:34:29.7172101Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-10-31T13:34:29.7190064Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-31T13:34:29.7241371Z ##[endgroup]
+2026-10-31T13:34:29.7242621Z ##[group]Disabling automatic garbage collection
+2026-10-31T13:34:29.7245568Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-31T13:34:29.7284964Z ##[endgroup]
+2026-10-31T13:34:29.7287166Z ##[group]Setting up auth
+2026-10-31T13:34:29.7289741Z Removing SSH command configuration
+2026-10-31T13:34:29.7294237Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-31T13:34:29.7341326Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-31T13:34:29.7753201Z Removing HTTP extra header
+2026-10-31T13:34:29.7755338Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-31T13:34:29.7804881Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-31T13:34:29.8065102Z Removing includeIf entries pointing to credentials config files
+2026-10-31T13:34:29.8073095Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-31T13:34:29.8119239Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-31T13:34:29.8369188Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-31T13:34:29.8422276Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:29.8475287Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:29.8529090Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:29.8590300Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:29.8634002Z ##[endgroup]
+2026-10-31T13:34:29.8635720Z ##[group]Fetching the repository
+2026-10-31T13:34:29.8645739Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +8ae2d91947203a868f880312df823004b7289f25:refs/remotes/origin/research/memory-cell-v13-20261031
+2026-10-31T13:34:30.9074395Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-31T13:34:30.9076787Z  * [new ref]         8ae2d91947203a868f880312df823004b7289f25 -> origin/research/memory-cell-v13-20261031
+2026-10-31T13:34:30.9091677Z [command]/usr/bin/git branch --list --remote origin/research/memory-cell-v13-20261031
+2026-10-31T13:34:30.9133496Z   origin/research/memory-cell-v13-20261031
+2026-10-31T13:34:30.9145633Z [command]/usr/bin/git rev-parse refs/remotes/origin/research/memory-cell-v13-20261031
+2026-10-31T13:34:30.9180186Z 8ae2d91947203a868f880312df823004b7289f25
+2026-10-31T13:34:30.9189005Z ##[endgroup]
+2026-10-31T13:34:30.9191671Z ##[group]Determining the checkout info
+2026-10-31T13:34:30.9194671Z ##[endgroup]
+2026-10-31T13:34:30.9197477Z ##[group]Setting up sparse checkout
+2026-10-31T13:34:30.9200417Z [command]/usr/bin/git sparse-checkout set qualification/memory-cell-v13
+2026-10-31T13:34:30.9251048Z ##[endgroup]
+2026-10-31T13:34:30.9253307Z ##[group]Checking out the ref
+2026-10-31T13:34:30.9257479Z [command]/usr/bin/git checkout --progress --force -B research/memory-cell-v13-20261031 refs/remotes/origin/research/memory-cell-v13-20261031
+2026-10-31T13:34:32.0630094Z Updating files:   0% (1/126)
+2026-10-31T13:34:32.0630843Z Updating files:   1% (2/126)
+2026-10-31T13:34:32.0631314Z Updating files:   2% (3/126)
+2026-10-31T13:34:32.0631886Z Updating files:   3% (4/126)
+2026-10-31T13:34:32.0632306Z Updating files:   4% (6/126)
+2026-10-31T13:34:32.0632960Z Updating files:   5% (7/126)
+2026-10-31T13:34:32.0664380Z Updating files:   6% (8/126)
+2026-10-31T13:34:32.0665016Z Updating files:   7% (9/126)
+2026-10-31T13:34:32.0665467Z Updating files:   8% (11/126)
+2026-10-31T13:34:32.0665793Z Updating files:   9% (12/126)
+2026-10-31T13:34:32.0666078Z Updating files:  10% (13/126)
+2026-10-31T13:34:32.0666353Z Updating files:  11% (14/126)
+2026-10-31T13:34:32.0666638Z Updating files:  12% (16/126)
+2026-10-31T13:34:32.0666908Z Updating files:  13% (17/126)
+2026-10-31T13:34:32.0686277Z Updating files:  14% (18/126)
+2026-10-31T13:34:32.0687317Z Updating files:  15% (19/126)
+2026-10-31T13:34:32.0688092Z Updating files:  16% (21/126)
+2026-10-31T13:34:32.0689296Z Updating files:  17% (22/126)
+2026-10-31T13:34:32.0691611Z Updating files:  18% (23/126)
+2026-10-31T13:34:32.0693071Z Updating files:  19% (24/126)
+2026-10-31T13:34:32.0693962Z Updating files:  20% (26/126)
+2026-10-31T13:34:32.0695114Z Updating files:  21% (27/126)
+2026-10-31T13:34:32.0695918Z Updating files:  22% (28/126)
+2026-10-31T13:34:32.0704110Z Updating files:  23% (29/126)
+2026-10-31T13:34:32.0706079Z Updating files:  24% (31/126)
+2026-10-31T13:34:32.0707929Z Updating files:  25% (32/126)
+2026-10-31T13:34:32.0709862Z Updating files:  26% (33/126)
+2026-10-31T13:34:32.0710697Z Updating files:  27% (35/126)
+2026-10-31T13:34:32.0711648Z Updating files:  28% (36/126)
+2026-10-31T13:34:32.0712646Z Updating files:  29% (37/126)
+2026-10-31T13:34:32.0714775Z Updating files:  30% (38/126)
+2026-10-31T13:34:32.0716113Z Updating files:  31% (40/126)
+2026-10-31T13:34:32.0716753Z Updating files:  32% (41/126)
+2026-10-31T13:34:32.0717450Z Updating files:  33% (42/126)
+2026-10-31T13:34:32.0721102Z Updating files:  34% (43/126)
+2026-10-31T13:34:32.0722416Z Updating files:  35% (45/126)
+2026-10-31T13:34:32.0724043Z Updating files:  36% (46/126)
+2026-10-31T13:34:32.0725419Z Updating files:  37% (47/126)
+2026-10-31T13:34:32.0727046Z Updating files:  38% (48/126)
+2026-10-31T13:34:32.0728187Z Updating files:  39% (50/126)
+2026-10-31T13:34:32.0729486Z Updating files:  40% (51/126)
+2026-10-31T13:34:32.0731713Z Updating files:  41% (52/126)
+2026-10-31T13:34:32.0733229Z Updating files:  42% (53/126)
+2026-10-31T13:34:32.0734739Z Updating files:  43% (55/126)
+2026-10-31T13:34:32.0735824Z Updating files:  44% (56/126)
+2026-10-31T13:34:32.0736819Z Updating files:  45% (57/126)
+2026-10-31T13:34:32.0739337Z Updating files:  46% (58/126)
+2026-10-31T13:34:32.0740642Z Updating files:  47% (60/126)
+2026-10-31T13:34:32.0741577Z Updating files:  48% (61/126)
+2026-10-31T13:34:32.0742336Z Updating files:  49% (62/126)
+2026-10-31T13:34:32.0835981Z Updating files:  50% (63/126)
+2026-10-31T13:34:32.0839858Z Updating files:  51% (65/126)
+2026-10-31T13:34:32.0840506Z Updating files:  52% (66/126)
+2026-10-31T13:34:32.0841047Z Updating files:  53% (67/126)
+2026-10-31T13:34:32.0841594Z Updating files:  54% (69/126)
+2026-10-31T13:34:32.0842215Z Updating files:  55% (70/126)
+2026-10-31T13:34:32.0842744Z Updating files:  56% (71/126)
+2026-10-31T13:34:32.0843268Z Updating files:  57% (72/126)
+2026-10-31T13:34:32.0843785Z Updating files:  58% (74/126)
+2026-10-31T13:34:32.0844285Z Updating files:  59% (75/126)
+2026-10-31T13:34:32.0844794Z Updating files:  60% (76/126)
+2026-10-31T13:34:32.0845312Z Updating files:  61% (77/126)
+2026-10-31T13:34:32.0845813Z Updating files:  62% (79/126)
+2026-10-31T13:34:32.0846311Z Updating files:  63% (80/126)
+2026-10-31T13:34:32.0846813Z Updating files:  64% (81/126)
+2026-10-31T13:34:32.0847357Z Updating files:  65% (82/126)
+2026-10-31T13:34:32.0847998Z Updating files:  66% (84/126)
+2026-10-31T13:34:32.0848748Z Updating files:  67% (85/126)
+2026-10-31T13:34:32.0849306Z Updating files:  68% (86/126)
+2026-10-31T13:34:32.0849823Z Updating files:  69% (87/126)
+2026-10-31T13:34:32.0850338Z Updating files:  70% (89/126)
+2026-10-31T13:34:32.0850844Z Updating files:  71% (90/126)
+2026-10-31T13:34:32.0851393Z Updating files:  72% (91/126)
+2026-10-31T13:34:32.0851933Z Updating files:  73% (92/126)
+2026-10-31T13:34:32.0852458Z Updating files:  74% (94/126)
+2026-10-31T13:34:32.0853261Z Updating files:  75% (95/126)
+2026-10-31T13:34:32.0853905Z Updating files:  76% (96/126)
+2026-10-31T13:34:32.0854484Z Updating files:  77% (98/126)
+2026-10-31T13:34:32.0855044Z Updating files:  78% (99/126)
+2026-10-31T13:34:32.0855607Z Updating files:  79% (100/126)
+2026-10-31T13:34:32.0856180Z Updating files:  80% (101/126)
+2026-10-31T13:34:32.0856713Z Updating files:  81% (103/126)
+2026-10-31T13:34:32.0857244Z Updating files:  82% (104/126)
+2026-10-31T13:34:32.0857779Z Updating files:  83% (105/126)
+2026-10-31T13:34:32.0858305Z Updating files:  84% (106/126)
+2026-10-31T13:34:32.0859293Z Updating files:  85% (108/126)
+2026-10-31T13:34:32.0859853Z Updating files:  86% (109/126)
+2026-10-31T13:34:32.0860304Z Updating files:  87% (110/126)
+2026-10-31T13:34:32.0860746Z Updating files:  88% (111/126)
+2026-10-31T13:34:32.0861237Z Updating files:  89% (113/126)
+2026-10-31T13:34:32.0861698Z Updating files:  90% (114/126)
+2026-10-31T13:34:32.0862129Z Updating files:  91% (115/126)
+2026-10-31T13:34:32.0862569Z Updating files:  92% (116/126)
+2026-10-31T13:34:32.0862997Z Updating files:  93% (118/126)
+2026-10-31T13:34:32.0863421Z Updating files:  94% (119/126)
+2026-10-31T13:34:32.0863846Z Updating files:  95% (120/126)
+2026-10-31T13:34:32.0864276Z Updating files:  96% (121/126)
+2026-10-31T13:34:32.0864696Z Updating files:  97% (123/126)
+2026-10-31T13:34:32.0865130Z Updating files:  98% (124/126)
+2026-10-31T13:34:32.0865560Z Updating files:  99% (125/126)
+2026-10-31T13:34:32.0865993Z Updating files: 100% (126/126)
+2026-10-31T13:34:32.0866438Z Updating files: 100% (126/126), done.
+2026-10-31T13:34:32.0951598Z Switched to a new branch 'research/memory-cell-v13-20261031'
+2026-10-31T13:34:32.0957568Z branch 'research/memory-cell-v13-20261031' set up to track 'origin/research/memory-cell-v13-20261031'.
+2026-10-31T13:34:32.0967396Z ##[endgroup]
+2026-10-31T13:34:32.1023425Z [command]/usr/bin/git log -1 --format=%H
+2026-10-31T13:34:32.1060589Z 8ae2d91947203a868f880312df823004b7289f25
+2026-10-31T13:34:32.1070972Z ##[group]Removing auth
+2026-10-31T13:34:32.1071338Z Removing SSH command configuration
+2026-10-31T13:34:32.1077953Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-31T13:34:32.1122451Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-31T13:34:32.1391504Z Removing HTTP extra header
+2026-10-31T13:34:32.1396299Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-31T13:34:32.1440340Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-31T13:34:32.1698918Z Removing includeIf entries pointing to credentials config files
+2026-10-31T13:34:32.1703470Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-31T13:34:32.1740960Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-31T13:34:32.1742006Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-31T13:34:32.1742608Z includeif.gitdir:/github/workspace/.git.path
+2026-10-31T13:34:32.1743006Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-31T13:34:32.1751175Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-31T13:34:32.1784500Z /home/runner/work/_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:32.1796314Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:32.1846260Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-31T13:34:32.1880403Z /home/runner/work/_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:32.1890644Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:32.1945067Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-31T13:34:32.1978242Z /github/runner_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:32.1991118Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:32.2038992Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-31T13:34:32.2071211Z /github/runner_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:32.2080084Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config
+2026-10-31T13:34:32.2123868Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-31T13:34:32.2382740Z Removing credentials config '/home/runner/work/_temp/git-credentials-544a3ce4-bc6d-4452-9c68-fea02a39afea.config'
+2026-10-31T13:34:32.2391820Z ##[endgroup]
+2026-10-31T13:34:32.2604027Z ##[group]Run python3 -m venv "$RUNNER_TEMP/v13-env"
+2026-10-31T13:34:32.2604518Z [36;1mpython3 -m venv "$RUNNER_TEMP/v13-env"[0m
+2026-10-31T13:34:32.2605261Z [36;1m"$RUNNER_TEMP/v13-env/bin/python" -m pip install --disable-pip-version-check -r qualification/memory-cell-v13/requirements-runtime.txt[0m
+2026-10-31T13:34:32.2631173Z shell: /usr/bin/bash -e {0}
+2026-10-31T13:34:32.2631463Z env:
+2026-10-31T13:34:32.2631689Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:34:32.2631962Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:34:32.2632209Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:34:32.2632447Z   OMP_NUM_THREADS: 1
+2026-10-31T13:34:32.2632675Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:34:32.2633360Z   NPY_DISABLE_CPU_FEATURES: SSSE3,SSE41,POPCNT,SSE42,AVX,F16C,FMA3,AVX2,AVX512F,AVX512CD,AVX512_KNL,AVX512_KNM,AVX512_SKX,AVX512_CLX,AVX512_CNL,AVX512_ICL,AVX512_SPR
+2026-10-31T13:34:32.2634089Z ##[endgroup]
+2026-10-31T13:34:36.0041191Z Collecting numpy==2.3.5 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 2))
+2026-10-31T13:34:36.2498166Z   Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-31T13:34:36.3184640Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.1/62.1 kB 791.5 kB/s eta 0:00:00
+2026-10-31T13:34:36.4607718Z Collecting onnxruntime==1.23.2 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 3))
+2026-10-31T13:34:36.5183970Z   Downloading onnxruntime-1.23.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (5.1 kB)
+2026-10-31T13:34:36.7495047Z Collecting tokenizers==0.21.4 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 4))
+2026-10-31T13:34:36.8064175Z   Downloading tokenizers-0.21.4-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.7 kB)
+2026-10-31T13:34:36.8781249Z Collecting flatbuffers==25.9.23 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 5))
+2026-10-31T13:34:36.9377852Z   Downloading flatbuffers-25.9.23-py2.py3-none-any.whl.metadata (875 bytes)
+2026-10-31T13:34:37.0174512Z Collecting coloredlogs==15.0.1 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 6))
+2026-10-31T13:34:37.0744036Z   Downloading coloredlogs-15.0.1-py2.py3-none-any.whl.metadata (12 kB)
+2026-10-31T13:34:37.1633039Z Collecting humanfriendly==10.0 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 7))
+2026-10-31T13:34:37.2203041Z   Downloading humanfriendly-10.0-py2.py3-none-any.whl.metadata (9.2 kB)
+2026-10-31T13:34:37.3024244Z Collecting sympy==1.14.0 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 8))
+2026-10-31T13:34:37.3590075Z   Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+2026-10-31T13:34:37.4369729Z Collecting mpmath==1.3.0 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 9))
+2026-10-31T13:34:37.4956010Z   Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+2026-10-31T13:34:37.7841185Z Collecting protobuf==6.33.5 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 10))
+2026-10-31T13:34:37.8442998Z   Downloading protobuf-6.33.5-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+2026-10-31T13:34:37.9987993Z Collecting huggingface-hub==0.36.0 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 11))
+2026-10-31T13:34:38.1739657Z   Downloading huggingface_hub-0.36.0-py3-none-any.whl.metadata (14 kB)
+2026-10-31T13:34:38.2929496Z Collecting hf-xet==1.2.0 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 12))
+2026-10-31T13:34:38.3506833Z   Downloading hf_xet-1.2.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+2026-10-31T13:34:38.4477604Z Collecting filelock==3.20.0 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 13))
+2026-10-31T13:34:38.5055896Z   Downloading filelock-3.20.0-py3-none-any.whl.metadata (2.1 kB)
+2026-10-31T13:34:38.5946424Z Collecting fsspec==2025.9.0 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 14))
+2026-10-31T13:34:38.6522464Z   Downloading fsspec-2025.9.0-py3-none-any.whl.metadata (10 kB)
+2026-10-31T13:34:38.7470788Z Collecting requests==2.32.5 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 15))
+2026-10-31T13:34:38.8041647Z   Downloading requests-2.32.5-py3-none-any.whl.metadata (4.9 kB)
+2026-10-31T13:34:38.9137589Z Collecting tqdm==4.67.1 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 16))
+2026-10-31T13:34:38.9722345Z   Downloading tqdm-4.67.1-py3-none-any.whl.metadata (57 kB)
+2026-10-31T13:34:38.9888247Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 57.7/57.7 kB 3.7 MB/s eta 0:00:00
+2026-10-31T13:34:39.0870235Z Collecting urllib3==2.5.0 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 17))
+2026-10-31T13:34:39.1450596Z   Downloading urllib3-2.5.0-py3-none-any.whl.metadata (6.5 kB)
+2026-10-31T13:34:39.2277351Z Collecting packaging==26.3 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 18))
+2026-10-31T13:34:39.2843768Z   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+2026-10-31T13:34:39.3855771Z Collecting PyYAML==6.0.3 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 19))
+2026-10-31T13:34:39.4427468Z   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-10-31T13:34:39.5227460Z Collecting typing_extensions==4.16.0 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 20))
+2026-10-31T13:34:39.5797077Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-10-31T13:34:39.6626893Z Collecting certifi==2026.10.19 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 21))
+2026-10-31T13:34:39.7213519Z   Downloading certifi-2026.10.19-py3-none-any.whl.metadata (2.5 kB)
+2026-10-31T13:34:39.9375174Z Collecting charset-normalizer==3.5.2 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 22))
+2026-10-31T13:34:39.9946854Z   Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+2026-10-31T13:34:40.0067454Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.4/46.4 kB 4.1 MB/s eta 0:00:00
+2026-10-31T13:34:40.0823875Z Collecting idna==3.19 (from -r qualification/memory-cell-v13/requirements-runtime.txt (line 23))
+2026-10-31T13:34:40.1401773Z   Downloading idna-3.19-py3-none-any.whl.metadata (9.2 kB)
+2026-10-31T13:34:40.5274896Z Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-31T13:34:40.9384537Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 93.3 MB/s eta 0:00:00
+2026-10-31T13:34:41.0000663Z Downloading onnxruntime-1.23.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (17.4 MB)
+2026-10-31T13:34:41.2480056Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 17.4/17.4 MB 51.2 MB/s eta 0:00:00
+2026-10-31T13:34:41.3084701Z Downloading tokenizers-0.21.4-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.1 MB)
+2026-10-31T13:34:41.3289237Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 169.1 MB/s eta 0:00:00
+2026-10-31T13:34:41.3874146Z Downloading flatbuffers-25.9.23-py2.py3-none-any.whl (30 kB)
+2026-10-31T13:34:41.4461156Z Downloading coloredlogs-15.0.1-py2.py3-none-any.whl (46 kB)
+2026-10-31T13:34:41.4498815Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.0/46.0 kB 18.3 MB/s eta 0:00:00
+2026-10-31T13:34:41.5066267Z Downloading humanfriendly-10.0-py2.py3-none-any.whl (86 kB)
+2026-10-31T13:34:41.5109758Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 86.8/86.8 kB 30.7 MB/s eta 0:00:00
+2026-10-31T13:34:41.5677192Z Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+2026-10-31T13:34:41.6080072Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 168.5 MB/s eta 0:00:00
+2026-10-31T13:34:41.6648139Z Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+2026-10-31T13:34:41.6717438Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 111.1 MB/s eta 0:00:00
+2026-10-31T13:34:41.7299077Z Downloading protobuf-6.33.5-cp39-abi3-manylinux2014_x86_64.whl (323 kB)
+2026-10-31T13:34:41.7353799Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 323.5/323.5 kB 86.5 MB/s eta 0:00:00
+2026-10-31T13:34:41.7938401Z Downloading huggingface_hub-0.36.0-py3-none-any.whl (566 kB)
+2026-10-31T13:34:41.8009603Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 566.1/566.1 kB 114.8 MB/s eta 0:00:00
+2026-10-31T13:34:41.8605715Z Downloading hf_xet-1.2.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
+2026-10-31T13:34:41.8826682Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 165.1 MB/s eta 0:00:00
+2026-10-31T13:34:41.9408084Z Downloading filelock-3.20.0-py3-none-any.whl (16 kB)
+2026-10-31T13:34:42.0012615Z Downloading fsspec-2025.9.0-py3-none-any.whl (199 kB)
+2026-10-31T13:34:42.0061600Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 199.3/199.3 kB 64.1 MB/s eta 0:00:00
+2026-10-31T13:34:42.0630149Z Downloading requests-2.32.5-py3-none-any.whl (64 kB)
+2026-10-31T13:34:42.0674804Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 64.7/64.7 kB 22.1 MB/s eta 0:00:00
+2026-10-31T13:34:42.1244000Z Downloading tqdm-4.67.1-py3-none-any.whl (78 kB)
+2026-10-31T13:34:42.1285810Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 78.5/78.5 kB 29.2 MB/s eta 0:00:00
+2026-10-31T13:34:42.1871648Z Downloading urllib3-2.5.0-py3-none-any.whl (129 kB)
+2026-10-31T13:34:42.1916379Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 129.8/129.8 kB 46.1 MB/s eta 0:00:00
+2026-10-31T13:34:42.2486386Z Downloading packaging-26.3-py3-none-any.whl (129 kB)
+2026-10-31T13:34:42.2533699Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.0/130.0 kB 45.5 MB/s eta 0:00:00
+2026-10-31T13:34:42.3103712Z Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-10-31T13:34:42.3188112Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 130.1 MB/s eta 0:00:00
+2026-10-31T13:34:42.3761963Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-10-31T13:34:42.3803123Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.6/45.6 kB 15.6 MB/s eta 0:00:00
+2026-10-31T13:34:42.4372835Z Downloading certifi-2026.10.19-py3-none-any.whl (136 kB)
+2026-10-31T13:34:42.4422043Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 136.5/136.5 kB 46.6 MB/s eta 0:00:00
+2026-10-31T13:34:42.4996764Z Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (257 kB)
+2026-10-31T13:34:42.5050785Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 257.6/257.6 kB 72.0 MB/s eta 0:00:00
+2026-10-31T13:34:42.5619690Z Downloading idna-3.19-py3-none-any.whl (68 kB)
+2026-10-31T13:34:42.5663496Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 68.5/68.5 kB 24.1 MB/s eta 0:00:00
+2026-10-31T13:34:42.8351508Z Installing collected packages: mpmath, flatbuffers, urllib3, typing_extensions, tqdm, sympy, PyYAML, protobuf, packaging, numpy, idna, humanfriendly, hf-xet, fsspec, filelock, charset-normalizer, certifi, requests, coloredlogs, onnxruntime, huggingface-hub, tokenizers
+2026-10-31T13:34:52.1243489Z Successfully installed PyYAML-6.0.3 certifi-2026.10.19 charset-normalizer-3.5.2 coloredlogs-15.0.1 filelock-3.20.0 flatbuffers-25.9.23 fsspec-2025.9.0 hf-xet-1.2.0 huggingface-hub-0.36.0 humanfriendly-10.0 idna-3.19 mpmath-1.3.0 numpy-2.3.5 onnxruntime-1.23.2 packaging-26.3 protobuf-6.33.5 requests-2.32.5 sympy-1.14.0 tokenizers-0.21.4 tqdm-4.67.1 typing_extensions-4.16.0 urllib3-2.5.0
+2026-10-31T13:34:52.3777819Z ##[group]Run "$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/numerics_profile.py capture \
+2026-10-31T13:34:52.3779090Z [36;1m"$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/numerics_profile.py capture \[0m
+2026-10-31T13:34:52.3779711Z [36;1m  --role resume --out "$RUNNER_TEMP/v13-resume/NUMERICS.json"[0m
+2026-10-31T13:34:52.3799786Z shell: /usr/bin/bash -e {0}
+2026-10-31T13:34:52.3800047Z env:
+2026-10-31T13:34:52.3800257Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:34:52.3800520Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:34:52.3800746Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:34:52.3800980Z   OMP_NUM_THREADS: 1
+2026-10-31T13:34:52.3801204Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:34:52.3801892Z   NPY_DISABLE_CPU_FEATURES: SSSE3,SSE41,POPCNT,SSE42,AVX,F16C,FMA3,AVX2,AVX512F,AVX512CD,AVX512_KNL,AVX512_KNM,AVX512_SKX,AVX512_CLX,AVX512_CNL,AVX512_ICL,AVX512_SPR
+2026-10-31T13:34:52.3802603Z ##[endgroup]
+2026-10-31T13:34:52.5008158Z {"phase": "capture", "passed": true, "errors": []}
+2026-10-31T13:34:52.5167764Z ##[group]Run "$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/migration.py mark-transfer --out "$RUNNER_TEMP/v13-resume/transfer-start.json"
+2026-10-31T13:34:52.5169433Z [36;1m"$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/migration.py mark-transfer --out "$RUNNER_TEMP/v13-resume/transfer-start.json"[0m
+2026-10-31T13:34:52.5190192Z shell: /usr/bin/bash -e {0}
+2026-10-31T13:34:52.5190449Z env:
+2026-10-31T13:34:52.5190659Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:34:52.5190915Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:34:52.5191140Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:34:52.5191366Z   OMP_NUM_THREADS: 1
+2026-10-31T13:34:52.5191584Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:34:52.5192349Z   NPY_DISABLE_CPU_FEATURES: SSSE3,SSE41,POPCNT,SSE42,AVX,F16C,FMA3,AVX2,AVX512F,AVX512CD,AVX512_KNL,AVX512_KNM,AVX512_SKX,AVX512_CLX,AVX512_CNL,AVX512_ICL,AVX512_SPR
+2026-10-31T13:34:52.5193192Z ##[endgroup]
+2026-10-31T13:34:52.6393067Z ##[group]Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+2026-10-31T13:34:52.6393521Z with:
+2026-10-31T13:34:52.6393727Z   artifact-ids: 13044403591
+2026-10-31T13:34:52.6393971Z   merge-multiple: true
+2026-10-31T13:34:52.6394223Z   path: /home/runner/work/_temp/v13-input
+2026-10-31T13:34:52.6394577Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-10-31T13:34:52.6394894Z   run-id: 41206138368
+2026-10-31T13:34:52.6395091Z env:
+2026-10-31T13:34:52.6395287Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:34:52.6395529Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:34:52.6395744Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:34:52.6395967Z   OMP_NUM_THREADS: 1
+2026-10-31T13:34:52.6396188Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:34:52.6396855Z   NPY_DISABLE_CPU_FEATURES: SSSE3,SSE41,POPCNT,SSE42,AVX,F16C,FMA3,AVX2,AVX512F,AVX512CD,AVX512_KNL,AVX512_KNM,AVX512_SKX,AVX512_CLX,AVX512_CNL,AVX512_ICL,AVX512_SPR
+2026-10-31T13:34:52.6397559Z ##[endgroup]
+2026-10-31T13:34:52.7990386Z Downloading artifacts by ID
+2026-10-31T13:34:52.8184200Z (node:2543) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-31T13:34:52.8185072Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-31T13:34:53.2256908Z Found 3 artifact(s)
+2026-10-31T13:34:53.2258927Z Preparing to download the following artifacts:
+2026-10-31T13:34:53.2260025Z - memory-v13-handoff-41206138368-1 (ID: 13044403591, Size: 426193, Expected Digest: sha256:2cb09493007d8b393a59a03971ebf71802855b279697f55393bd514cb7a134e9)
+2026-10-31T13:34:53.5708743Z Redirecting to blob download url: https://productionresultssa1.blob.core.windows.net/actions-results/06007441-5da0-85ef-b444-edfaa9e8e58e/workflow-job-run-ef0ef694-ad83-5e34-9aa0-f047f9bc970c/artifacts/6d6a113cbadeef460f81cbce7572d613bc4040b4665c0a575382bdf4a67ed077.zip
+2026-10-31T13:34:53.5711544Z Starting download of artifact to: /home/runner/work/_temp/v13-input
+2026-10-31T13:34:54.1322856Z (node:2543) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+2026-10-31T13:34:54.7037924Z SHA256 digest of downloaded artifact is 2cb09493007d8b393a59a03971ebf71802855b279697f55393bd514cb7a134e9
+2026-10-31T13:34:54.7039144Z Artifact download completed successfully.
+2026-10-31T13:34:54.7039749Z Total of 1 artifact(s) downloaded
+2026-10-31T13:34:54.7047098Z Download artifact has finished successfully
+2026-10-31T13:34:54.7213858Z ##[group]Run set -o pipefail
+2026-10-31T13:34:54.7214194Z [36;1mset -o pipefail[0m
+2026-10-31T13:34:54.7214632Z [36;1m"$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/migration.py resume \[0m
+2026-10-31T13:34:54.7215213Z [36;1m  --input "$RUNNER_TEMP/v13-input" --out "$RUNNER_TEMP/v13-resume" \[0m
+2026-10-31T13:34:54.7215911Z [36;1m  --transfer-start "$RUNNER_TEMP/v13-resume/transfer-start.json" 2>&1 | tee "$RUNNER_TEMP/v13-resume/resume.log"[0m
+2026-10-31T13:34:54.7235922Z shell: /usr/bin/bash -e {0}
+2026-10-31T13:34:54.7236178Z env:
+2026-10-31T13:34:54.7236390Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:34:54.7236657Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:34:54.7236896Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:34:54.7237130Z   OMP_NUM_THREADS: 1
+2026-10-31T13:34:54.7237354Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:34:54.7238086Z   NPY_DISABLE_CPU_FEATURES: SSSE3,SSE41,POPCNT,SSE42,AVX,F16C,FMA3,AVX2,AVX512F,AVX512CD,AVX512_KNL,AVX512_KNM,AVX512_SKX,AVX512_CLX,AVX512_CNL,AVX512_ICL,AVX512_SPR
+2026-10-31T13:34:54.7239029Z ##[endgroup]
+2026-10-31T13:34:54.8659467Z {"passed": true, "phase": "resume"}
+2026-10-31T13:34:54.8836912Z ##[group]Run set -o pipefail
+2026-10-31T13:34:54.8837267Z [36;1mset -o pipefail[0m
+2026-10-31T13:34:54.8837715Z [36;1m"$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/runtime_restore.py \[0m
+2026-10-31T13:34:54.8838226Z [36;1m  --input "$RUNNER_TEMP/v13-input" \[0m
+2026-10-31T13:34:54.8839015Z [36;1m  --rows qualification/memory-cell-v13/evidence/inputs/train_rows.json \[0m
+2026-10-31T13:34:54.8839521Z [36;1m  --checkpoint "$RUNNER_TEMP/v13-resume/resumed.npz" \[0m
+2026-10-31T13:34:54.8839926Z [36;1m  --model-dir "$RUNNER_TEMP/v13-runtime-model" \[0m
+2026-10-31T13:34:54.8840530Z [36;1m  --out "$RUNNER_TEMP/v13-resume/runtime-restore.json" 2>&1 | tee "$RUNNER_TEMP/v13-resume/runtime-restore.log"[0m
+2026-10-31T13:34:54.8860952Z shell: /usr/bin/bash -e {0}
+2026-10-31T13:34:54.8861217Z env:
+2026-10-31T13:34:54.8861436Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:34:54.8861707Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:34:54.8861952Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:34:54.8862229Z   OMP_NUM_THREADS: 1
+2026-10-31T13:34:54.8862459Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:34:54.8863145Z   NPY_DISABLE_CPU_FEATURES: SSSE3,SSE41,POPCNT,SSE42,AVX,F16C,FMA3,AVX2,AVX512F,AVX512CD,AVX512_KNL,AVX512_KNM,AVX512_SKX,AVX512_CLX,AVX512_CNL,AVX512_ICL,AVX512_SPR
+2026-10-31T13:34:54.8863859Z ##[endgroup]
+2026-10-31T13:34:59.7256343Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-31T13:34:59.7256783Z with:
+2026-10-31T13:34:59.7257008Z   name: memory-v13-resumed-41206138368-1
+2026-10-31T13:34:59.7257306Z   path: /home/runner/work/_temp/v13-resume
+2026-10-31T13:34:59.7257603Z   if-no-files-found: error
+2026-10-31T13:34:59.7257848Z   retention-days: 30
+2026-10-31T13:34:59.7258068Z   compression-level: 6
+2026-10-31T13:34:59.7258289Z   overwrite: false
+2026-10-31T13:34:59.7258875Z   include-hidden-files: false
+2026-10-31T13:34:59.7259125Z env:
+2026-10-31T13:34:59.7259329Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:34:59.7259581Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:34:59.7259805Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:34:59.7260041Z   OMP_NUM_THREADS: 1
+2026-10-31T13:34:59.7260259Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:34:59.7260961Z   NPY_DISABLE_CPU_FEATURES: SSSE3,SSE41,POPCNT,SSE42,AVX,F16C,FMA3,AVX2,AVX512F,AVX512CD,AVX512_KNL,AVX512_KNM,AVX512_SKX,AVX512_CLX,AVX512_CNL,AVX512_ICL,AVX512_SPR
+2026-10-31T13:34:59.7261860Z ##[endgroup]
+2026-10-31T13:34:59.8994998Z (node:2569) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-31T13:34:59.8995735Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-31T13:34:59.9090127Z With the provided path, there will be 8 files uploaded
+2026-10-31T13:34:59.9096061Z Artifact name is valid!
+2026-10-31T13:34:59.9096738Z Root directory input is valid!
+2026-10-31T13:35:00.4280992Z Beginning upload of artifact content to blob storage
+2026-10-31T13:35:00.4690970Z (node:2569) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-31T13:35:01.4110803Z Uploaded bytes 256811
+2026-10-31T13:35:01.5416797Z Finished uploading artifact content to blob storage!
+2026-10-31T13:35:01.5417581Z SHA256 digest of uploaded artifact zip is 2c5e14769fdc376d40b5f474f890740c490ac0982efdb127b69d410279cac10f
+2026-10-31T13:35:01.5419929Z Finalizing artifact upload
+2026-10-31T13:35:02.0407976Z Artifact memory-v13-resumed-41206138368-1.zip successfully finalized. Artifact ID 13044581106
+2026-10-31T13:35:02.0409317Z Artifact memory-v13-resumed-41206138368-1 has been successfully uploaded! Final size is 256811 bytes. Artifact ID is 13044581106
+2026-10-31T13:35:02.0416681Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41206138368/artifacts/13044581106
+2026-10-31T13:35:02.0649097Z Post job cleanup.
+2026-10-31T13:35:02.1549170Z [command]/usr/bin/git version
+2026-10-31T13:35:02.1625332Z git version 2.56.0
+2026-10-31T13:35:02.1668062Z Temporarily overriding HOME='/home/runner/work/_temp/291bfc89-3abe-43fd-8d30-f8f910f80fab' before making global git config changes
+2026-10-31T13:35:02.1669619Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-31T13:35:02.1673651Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-31T13:35:02.1711405Z Removing SSH command configuration
+2026-10-31T13:35:02.1718695Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-31T13:35:02.1771386Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-31T13:35:02.2072007Z Removing HTTP extra header
+2026-10-31T13:35:02.2073402Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-31T13:35:02.2116331Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-31T13:35:02.2416291Z Removing includeIf entries pointing to credentials config files
+2026-10-31T13:35:02.2424680Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-31T13:35:02.2476145Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-31T13:35:02.2899596Z Evaluate and set job outputs
+2026-10-31T13:35:02.2904804Z Set output 'resumed'
+2026-10-31T13:35:02.2906711Z Cleaning up orphan processes
+2026-10-31T13:35:02.3301569Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

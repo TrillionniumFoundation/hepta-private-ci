@@ -1,0 +1,837 @@
+{
+  "actual_three_distinct_ci_vms": true,
+  "artifacts": [
+    {
+      "advertised_digest_match": true,
+      "advertised_size_match": true,
+      "id": 13044581106,
+      "name": "memory-v13-resumed-41206138368-1",
+      "path": "zips/13044581106.zip",
+      "run_binding_match": true,
+      "zip_bytes": 256811,
+      "zip_sha256": "2c5e14769fdc376d40b5f474f890740c490ac0982efdb127b69d410279cac10f"
+    },
+    {
+      "advertised_digest_match": true,
+      "advertised_size_match": true,
+      "id": 13044433479,
+      "name": "memory-v13-reference-41206138368-1",
+      "path": "zips/13044433479.zip",
+      "run_binding_match": true,
+      "zip_bytes": 500953,
+      "zip_sha256": "d471de282613f8acd95ad4cfda6af44bb33c314b86252c6ad30682cc49c8f0e4"
+    },
+    {
+      "advertised_digest_match": true,
+      "advertised_size_match": true,
+      "id": 13044403591,
+      "name": "memory-v13-handoff-41206138368-1",
+      "path": "zips/13044403591.zip",
+      "run_binding_match": true,
+      "zip_bytes": 426193,
+      "zip_sha256": "2cb09493007d8b393a59a03971ebf71802855b279697f55393bd514cb7a134e9"
+    },
+    {
+      "advertised_digest_match": true,
+      "advertised_size_match": true,
+      "id": 13044219520,
+      "name": "memory-v13-prepare-evidence-41206138368-1",
+      "path": "zips/13044219520.zip",
+      "run_binding_match": true,
+      "zip_bytes": 930487,
+      "zip_sha256": "4c2cc3b2f20183e9e66179d728412ce7d703c87b7d9a78473de90090342eb372"
+    },
+    {
+      "advertised_digest_match": true,
+      "advertised_size_match": true,
+      "id": 13043549087,
+      "name": "memory-v13-verify-41206138368-1",
+      "path": "zips/13043549087.zip",
+      "run_binding_match": true,
+      "zip_bytes": 255243,
+      "zip_sha256": "3fb286245f2b8fb0b19d2403d92bdd32b85b75977c699ce705f3e57ddcc7155c"
+    }
+  ],
+  "checks": {
+    "complete_state_exact": true,
+    "future_predictions_exact": true,
+    "future_training_exact": true,
+    "predictions_exact": true,
+    "reject_wrong_encoder_hash": true,
+    "reject_wrong_features_sha256": true,
+    "reject_wrong_source_version": true,
+    "sender_predictions_exact": true,
+    "sender_state_exact": true,
+    "step_exact": true,
+    "target_backend_restored": true,
+    "three_distinct_boots": true,
+    "three_real_ci_jobs": true
+  },
+  "ci_conclusion": "success",
+  "economic_benefit_demonstrated": false,
+  "failed_checks": [],
+  "head_sha": "8ae2d91947203a868f880312df823004b7289f25",
+  "head_tree": "b1b399ae4819bb6c4cee9fe720fe4227bd12bfa1",
+  "independent_audit": {
+    "all_parameter_optimizer_sampler_and_metadata_bytes_exact_90_and_97": true,
+    "first_failed_run_retained": "../run-41205095256/QUALIFICATION.json",
+    "frozen_scientific_source_hashes_unchanged_from_first_run": true,
+    "numerics_profile_checks": {
+      "all_capture_passed": true,
+      "all_dispatch_disabled": true,
+      "all_float64_kernels_baseline": true,
+      "comparable_fields_equal": true,
+      "comparable_hashes_valid": true,
+      "profile_files_match_verifier_receipt": true,
+      "profiles_bound_to_actual_training_nodes": true,
+      "profiles_bound_to_run_head": true
+    },
+    "training_executed_by_audit": false
+  },
+  "input_binding": {
+    "encoder_hash": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+    "features_sha256": "69ec1a8c3d7eda6f9602a3bfddfbcaa7f0cfe4cabe40c90d2ef524998afe02ab",
+    "manifest_sha256": "504c25fe0ff8202a1409a885ce46f7e3df6082141081c348963084f8aefdf978",
+    "source_version": "19ebe0c1c2686688df7327baf7334165b18d5d95c8fac4f3ce013809a8ae328f"
+  },
+  "model_runtime_restore_accepted": true,
+  "network_payload_cost": {
+    "artifact_upload_bytes_all_5": 2369687,
+    "audit_download_bytes_outside_ci": 2369687,
+    "ci_artifact_download_bytes": 1610150,
+    "cold_base_download_bytes": 90873127,
+    "known_ci_payload_bytes_lower_bound": 94852964,
+    "scope": "ZIP/file payload only, not actual network wire traffic. Package wheels, checkout, actions, HTTP/TLS headers, retries and log transport are excluded. Prepare evidence duplicates reference/handoff and remains counted as actual upload traffic. No monetary billing or steady-state network economics measured."
+  },
+  "nodes": [
+    {
+      "blas_core": "NEHALEM",
+      "boot_id": "7ae41f16-70c9-48e3-92dc-22b1e00aa5c6",
+      "hostname": "runnervm48cm3",
+      "job": "prepare",
+      "numpy": "2.3.5",
+      "pid": 2266,
+      "python": "3.12.3",
+      "role": "prepare",
+      "run_attempt": "1",
+      "run_id": "41206138368",
+      "source_commit": "8ae2d91947203a868f880312df823004b7289f25",
+      "source_hashes": {
+        "adapter.py": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+        "backend.py": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53",
+        "download_model.py": "fd0a7e1ba831c4f2929ee8d29d22495c61ecfdbf7ceee3daec9f5110ff09c0f7",
+        "lifecycle.py": "0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb",
+        "migration.py": "fa66339d342771a9742cb344106ef238a7da624b97b046e1bf63a179d2bdd6c4",
+        "requirements-runtime.txt": "2fef005a571439bf24a7185b23284aa5347d9cacacf4e977e5333e311c5859d6",
+        "runtime_restore.py": "87bc4be12bf46e76e453b035866babbbbfffb6c51783520ea0bbfb18651bd799"
+      }
+    },
+    {
+      "blas_core": "NEHALEM",
+      "boot_id": "c49f95d4-a4ad-4671-bf20-3d73b67297d5",
+      "hostname": "runnervm48cm3",
+      "job": "resume",
+      "numpy": "2.3.5",
+      "pid": 2557,
+      "python": "3.12.3",
+      "role": "resume",
+      "run_attempt": "1",
+      "run_id": "41206138368",
+      "source_commit": "8ae2d91947203a868f880312df823004b7289f25",
+      "source_hashes": {
+        "adapter.py": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+        "backend.py": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53",
+        "download_model.py": "fd0a7e1ba831c4f2929ee8d29d22495c61ecfdbf7ceee3daec9f5110ff09c0f7",
+        "lifecycle.py": "0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb",
+        "migration.py": "fa66339d342771a9742cb344106ef238a7da624b97b046e1bf63a179d2bdd6c4",
+        "requirements-runtime.txt": "2fef005a571439bf24a7185b23284aa5347d9cacacf4e977e5333e311c5859d6",
+        "runtime_restore.py": "87bc4be12bf46e76e453b035866babbbbfffb6c51783520ea0bbfb18651bd799"
+      }
+    },
+    {
+      "blas_core": "NEHALEM",
+      "boot_id": "07e7e471-ef75-49da-833e-09ba0ab94f9f",
+      "hostname": "runnervm48cm3",
+      "job": "verify",
+      "numpy": "2.3.5",
+      "pid": 2577,
+      "python": "3.12.3",
+      "role": "verify",
+      "run_attempt": "1",
+      "run_id": "41206138368",
+      "source_commit": "8ae2d91947203a868f880312df823004b7289f25",
+      "source_hashes": {
+        "adapter.py": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+        "backend.py": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53",
+        "download_model.py": "fd0a7e1ba831c4f2929ee8d29d22495c61ecfdbf7ceee3daec9f5110ff09c0f7",
+        "lifecycle.py": "0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb",
+        "migration.py": "fa66339d342771a9742cb344106ef238a7da624b97b046e1bf63a179d2bdd6c4",
+        "requirements-runtime.txt": "2fef005a571439bf24a7185b23284aa5347d9cacacf4e977e5333e311c5859d6",
+        "runtime_restore.py": "87bc4be12bf46e76e453b035866babbbbfffb6c51783520ea0bbfb18651bd799"
+      }
+    }
+  ],
+  "numerics_profile": {
+    "causal_limit": "The unchanged strict gate passed after adding a baseline-dispatch execution profile. The first run did not capture CPU/ufunc dispatch, so the specific cause of its rounding difference is not established.",
+    "comparable": {
+      "capture_script": {
+        "bytes": 7154,
+        "sha256": "db7c1e783e4b3e0e624ab2c57fa14a50ca9b5e8203aea9126dbf1a080588819a"
+      },
+      "compiled_baseline": [
+        "SSE",
+        "SSE2",
+        "SSE3"
+      ],
+      "compiled_dispatch": [
+        "SSSE3",
+        "SSE41",
+        "POPCNT",
+        "SSE42",
+        "AVX",
+        "F16C",
+        "FMA3",
+        "AVX2",
+        "AVX512F",
+        "AVX512CD",
+        "AVX512_KNL",
+        "AVX512_KNM",
+        "AVX512_SKX",
+        "AVX512_CLX",
+        "AVX512_CNL",
+        "AVX512_ICL",
+        "AVX512_SPR"
+      ],
+      "effective_baseline": {
+        "SSE": true,
+        "SSE2": true,
+        "SSE3": true
+      },
+      "effective_dispatch": {
+        "AVX": false,
+        "AVX2": false,
+        "AVX512CD": false,
+        "AVX512F": false,
+        "AVX512_CLX": false,
+        "AVX512_CNL": false,
+        "AVX512_ICL": false,
+        "AVX512_KNL": false,
+        "AVX512_KNM": false,
+        "AVX512_SKX": false,
+        "AVX512_SPR": false,
+        "F16C": false,
+        "FMA3": false,
+        "POPCNT": false,
+        "SSE41": false,
+        "SSE42": false,
+        "SSSE3": false
+      },
+      "enabled_dispatch": [],
+      "environment": {
+        "NPY_DISABLE_CPU_FEATURES": "SSSE3,SSE41,POPCNT,SSE42,AVX,F16C,FMA3,AVX2,AVX512F,AVX512CD,AVX512_KNL,AVX512_KNM,AVX512_SKX,AVX512_CLX,AVX512_CNL,AVX512_ICL,AVX512_SPR",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_CORETYPE": "NEHALEM",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "float64_kernels": {
+        "add": {
+          "ddd": {
+            "available": "AVX2 baseline(SSE SSE2 SSE3)",
+            "current": "baseline(SSE SSE2 SSE3)"
+          }
+        },
+        "divide": {
+          "ddd": {
+            "available": "AVX2 baseline(SSE SSE2 SSE3)",
+            "current": "baseline(SSE SSE2 SSE3)"
+          }
+        },
+        "exp": {
+          "dd": {
+            "available": "AVX512_SKX AVX512F AVX2 baseline(SSE SSE2 SSE3)",
+            "current": "baseline(SSE SSE2 SSE3)"
+          }
+        },
+        "multiply": {
+          "ddd": {
+            "available": "AVX2 baseline(SSE SSE2 SSE3)",
+            "current": "baseline(SSE SSE2 SSE3)"
+          }
+        },
+        "sqrt": {
+          "dd": {
+            "available": "SSE41 baseline(SSE SSE2 SSE3)",
+            "current": "baseline(SSE SSE2 SSE3)"
+          }
+        },
+        "subtract": {
+          "ddd": {
+            "available": "AVX2 baseline(SSE SSE2 SSE3)",
+            "current": "baseline(SSE SSE2 SSE3)"
+          }
+        },
+        "tanh": {
+          "dd": {
+            "available": "AVX512_SKX AVX2 baseline(SSE SSE2 SSE3)",
+            "current": "baseline(SSE SSE2 SSE3)"
+          }
+        }
+      },
+      "libc": [
+        "glibc",
+        "2.39"
+      ],
+      "machine": "x86_64",
+      "numpy": "2.3.5",
+      "numpy_core": {
+        "bytes": 10808937,
+        "sha256": "ba96467ae494babaf7c3458b09cc03c4200c2e10010860d80e452ffb8b01c8cd"
+      },
+      "openblas_libraries": {
+        "libscipy_openblas64_-fdde5778.so": {
+          "bytes": 25034001,
+          "sha256": "ee2039cf13a45e1e89f04d0cea9585657d93ffaa425594e1935161013fdf4e12"
+        }
+      },
+      "python": "3.12.3",
+      "python_compiler": "GCC 13.3.0",
+      "python_implementation": "CPython",
+      "run_attempt": "1",
+      "run_id": "41206138368",
+      "source_commit": "8ae2d91947203a868f880312df823004b7289f25",
+      "system": "Linux"
+    },
+    "comparable_sha256": "82afc78979e4617c3ac9d0afcb06b845c35ddb3b6b5e98243c28b67e32f77f5a",
+    "cpus": [
+      {
+        "boot_id": "7ae41f16-70c9-48e3-92dc-22b1e00aa5c6",
+        "model": "AMD EPYC 9V74 80-Core Processor",
+        "role": "prepare"
+      },
+      {
+        "boot_id": "c49f95d4-a4ad-4671-bf20-3d73b67297d5",
+        "model": "AMD EPYC 7763 64-Core Processor",
+        "role": "resume"
+      },
+      {
+        "boot_id": "07e7e471-ef75-49da-833e-09ba0ab94f9f",
+        "model": "AMD EPYC 9V74 80-Core Processor",
+        "role": "verify"
+      }
+    ],
+    "original_verifier_comparison": "expanded/13043549087/NUMERICS_COMPARISON.json"
+  },
+  "parent_sha": "f3069e82ebd98b3d22c33bee32096f5217783e79",
+  "patch_paths": [
+    ".github/workflows/memory-cell-v13-research.yml",
+    "qualification/memory-cell-v13/numerics_profile.py"
+  ],
+  "run_attempt": 1,
+  "run_id": 41206138368,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41206138368",
+  "runtime_restore": {
+    "checkpoint_file_unchanged": true,
+    "downloaded_files": {
+      "1_Pooling/config.json": {
+        "bytes": 190,
+        "sha256": "4be450dde3b0273bb9787637cfbd28fe04a7ba6ab9d36ac48e92b11e350ffc23",
+        "source_digest": "d1514c3162bbe87b343f565fadc62e6c06f04f03",
+        "source_digest_kind": "git"
+      },
+      "config.json": {
+        "bytes": 612,
+        "sha256": "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41",
+        "source_digest": "72b987fd805cfa2b58c4c8c952b274a11bfd5a00",
+        "source_digest_kind": "git"
+      },
+      "modules.json": {
+        "bytes": 349,
+        "sha256": "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf",
+        "source_digest": "952a9b81c0bfd99800fabf352f69c7ccd46c5e43",
+        "source_digest_kind": "git"
+      },
+      "onnx/model.onnx": {
+        "bytes": 90405214,
+        "sha256": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452",
+        "source_digest": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452",
+        "source_digest_kind": "sha256"
+      },
+      "sentence_bert_config.json": {
+        "bytes": 53,
+        "sha256": "fc1993fde0a95c24ec6c022539d41cf6e2f7c9721e5415d6fb6897472a9cd4b7",
+        "source_digest": "59d594003bf59880a884c574bf88ef7555bb0202",
+        "source_digest_kind": "git"
+      },
+      "special_tokens_map.json": {
+        "bytes": 112,
+        "sha256": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3",
+        "source_digest": "e7b0375001f109a6b8873d756ad4f7bbb15fbaa5",
+        "source_digest_kind": "git"
+      },
+      "tokenizer.json": {
+        "bytes": 466247,
+        "sha256": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
+        "source_digest": "cb202bfe2e3c98645018a6d12f182a434c9d3e02",
+        "source_digest_kind": "git"
+      },
+      "tokenizer_config.json": {
+        "bytes": 350,
+        "sha256": "acb92769e8195aabd29b7b2137a9e6d6e25c476a4f15aa4355c233426c61576b",
+        "source_digest": "c79f2b6a0cea6f4b564fed1938984bace9d30ff0",
+        "source_digest_kind": "git"
+      }
+    },
+    "embedding_max_abs_delta": 8.940696716308594e-08,
+    "embedding_tolerance": {
+      "atol": 1e-07,
+      "rtol": 1e-06
+    },
+    "official_model": {
+      "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+      "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+    },
+    "passed": true,
+    "predictions_equal": true,
+    "rows": 120,
+    "state_unchanged": true
+  },
+  "schema": "hepta.memory.migration-ci-qualification.v13",
+  "scope_limits": [
+    "Acceptance applies to this exact frozen input, adapter implementation and recorded numerical runtime profile; not arbitrary hardware or software.",
+    "Frozen encoder; learned residual adapter/head continuation, not full encoder training.",
+    "Only 120 training examples replayed; no held-out generalization or memory quality claim.",
+    "Trusted GitHub artifact service and single-owner source semantics; no distributed ownership or consensus qualification.",
+    "Exact full-state restoration is separate from economic benefit; no economic advantage demonstrated."
+  ],
+  "strict_cross_vm_continuation_accepted": true,
+  "timing": {
+    "checkpoint_prepare_write_seconds": 0.04721127400000569,
+    "checkpoint_resume_load_seconds": 0.00940368400006264,
+    "checkpoint_resume_save_seconds": 0.009499115000039637,
+    "github_timestamp_resolution_seconds": 1,
+    "job_details": [
+      {
+        "completed_at": "2026-10-31T13:34:23Z",
+        "conclusion": "success",
+        "job_id": 124551477821,
+        "role": "prepare",
+        "started_at": "2026-10-31T13:34:11Z",
+        "steps": [
+          {
+            "completed_at": "2026-10-31T13:34:12Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "started_at": "2026-10-31T13:34:11Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:13Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:34:12Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:18Z",
+            "conclusion": "success",
+            "name": "Install exact numerical dependency",
+            "started_at": "2026-10-31T13:34:13Z",
+            "wall_seconds": 5.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:18Z",
+            "conclusion": "success",
+            "name": "Capture and require the baseline numerical profile before training",
+            "started_at": "2026-10-31T13:34:18Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:19Z",
+            "conclusion": "success",
+            "name": "Exercise source revisions and real process-death publication boundaries",
+            "started_at": "2026-10-31T13:34:18Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:19Z",
+            "conclusion": "success",
+            "name": "Train a prefix and a separately uninterrupted reference",
+            "started_at": "2026-10-31T13:34:19Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:20Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "started_at": "2026-10-31T13:34:19Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:21Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "started_at": "2026-10-31T13:34:20Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:22Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "started_at": "2026-10-31T13:34:21Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:22Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:34:22Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:22Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "started_at": "2026-10-31T13:34:22Z",
+            "wall_seconds": 0.0
+          }
+        ],
+        "wall_seconds": 12.0
+      },
+      {
+        "completed_at": "2026-10-31T13:35:05Z",
+        "conclusion": "success",
+        "job_id": 124551577260,
+        "role": "resume",
+        "started_at": "2026-10-31T13:34:26Z",
+        "steps": [
+          {
+            "completed_at": "2026-10-31T13:34:29Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "started_at": "2026-10-31T13:34:27Z",
+            "wall_seconds": 2.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:32Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:34:29Z",
+            "wall_seconds": 3.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:52Z",
+            "conclusion": "success",
+            "name": "Install the complete pinned CPU encoder and adapter dependencies",
+            "started_at": "2026-10-31T13:34:32Z",
+            "wall_seconds": 20.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:52Z",
+            "conclusion": "success",
+            "name": "Capture and require the baseline numerical profile before continuation",
+            "started_at": "2026-10-31T13:34:52Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:52Z",
+            "conclusion": "success",
+            "name": "Start artifact transfer clock",
+            "started_at": "2026-10-31T13:34:52Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:54Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "started_at": "2026-10-31T13:34:52Z",
+            "wall_seconds": 2.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:54Z",
+            "conclusion": "success",
+            "name": "Resume complete optimizer and sampler state on the second runner",
+            "started_at": "2026-10-31T13:34:54Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:34:59Z",
+            "conclusion": "success",
+            "name": "Restore the shared encoder from pinned official files and replay actual training texts",
+            "started_at": "2026-10-31T13:34:54Z",
+            "wall_seconds": 5.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:02Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "started_at": "2026-10-31T13:34:59Z",
+            "wall_seconds": 3.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:02Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:35:02Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:02Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "started_at": "2026-10-31T13:35:02Z",
+            "wall_seconds": 0.0
+          }
+        ],
+        "wall_seconds": 39.0
+      },
+      {
+        "completed_at": "2026-10-31T13:35:25Z",
+        "conclusion": "success",
+        "job_id": 124551738613,
+        "role": "verify",
+        "started_at": "2026-10-31T13:35:08Z",
+        "steps": [
+          {
+            "completed_at": "2026-10-31T13:35:10Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "started_at": "2026-10-31T13:35:09Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:12Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:35:10Z",
+            "wall_seconds": 2.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:18Z",
+            "conclusion": "success",
+            "name": "Install exact numerical dependency",
+            "started_at": "2026-10-31T13:35:12Z",
+            "wall_seconds": 6.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:18Z",
+            "conclusion": "success",
+            "name": "Independently capture and require the third runner numerical profile",
+            "started_at": "2026-10-31T13:35:18Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:18Z",
+            "conclusion": "success",
+            "name": "Start artifact transfer clock",
+            "started_at": "2026-10-31T13:35:18Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:19Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "started_at": "2026-10-31T13:35:18Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:20Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "started_at": "2026-10-31T13:35:19Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:21Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "started_at": "2026-10-31T13:35:20Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:21Z",
+            "conclusion": "success",
+            "name": "Require comparable effective numerical profiles from all three runners",
+            "started_at": "2026-10-31T13:35:21Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:21Z",
+            "conclusion": "success",
+            "name": "Compare all training state and perform additional continuation on the third runner",
+            "started_at": "2026-10-31T13:35:21Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:23Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "started_at": "2026-10-31T13:35:21Z",
+            "wall_seconds": 2.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:23Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:35:23Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:35:23Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "started_at": "2026-10-31T13:35:23Z",
+            "wall_seconds": 0.0
+          }
+        ],
+        "wall_seconds": 17.0
+      }
+    ],
+    "run_start_to_last_job_end_seconds": 89.0,
+    "runtime_restore": {
+      "adapter_probe_wall_seconds": 0.0008450640000319254,
+      "cpu_seconds": 1.4517934870000002,
+      "download_wall_seconds": 3.6745721910000384,
+      "encoder_inference_wall_seconds": 0.5870232469999337,
+      "encoder_initialization_wall_seconds": 0.35813100399991527,
+      "peak_rss_kib": 216368,
+      "timing_scope": "excludes interpreter/import and pip installation; CI steps retain those durations",
+      "wall_seconds": 4.637608985000043
+    },
+    "summed_job_wall_seconds": 68.0,
+    "training_prepare": [
+      {
+        "examples": 528,
+        "first_loss": 2.4750813943124146,
+        "last_loss": 0.2696247474628888,
+        "mean_loss": 1.1076946779749206,
+        "seconds": 0.009407748000000993,
+        "step": 35,
+        "updates": 35
+      },
+      {
+        "examples": 1352,
+        "first_loss": 2.4750813943124146,
+        "last_loss": 0.0176944942829388,
+        "mean_loss": 0.5222968359378666,
+        "seconds": 0.021392052000003048,
+        "step": 90,
+        "updates": 90
+      },
+      {
+        "examples": 104,
+        "first_loss": 0.025698467691256593,
+        "last_loss": 0.006333568428195666,
+        "mean_loss": 0.012433320798327674,
+        "seconds": 0.002292197000002716,
+        "step": 97,
+        "updates": 7
+      }
+    ],
+    "training_resume": {
+      "examples": 824,
+      "first_loss": 0.382453738947641,
+      "last_loss": 0.0176944942829388,
+      "mean_loss": 0.14977093645974135,
+      "seconds": 0.018606094000006124,
+      "step": 90,
+      "updates": 55
+    },
+    "training_verify": {
+      "examples": 104,
+      "first_loss": 0.025698467691256593,
+      "last_loss": 0.006333568428195666,
+      "mean_loss": 0.012433320798327674,
+      "seconds": 0.003055113000002052,
+      "step": 97,
+      "updates": 7
+    },
+    "transfer_resume": {
+      "download_and_extract_wall_seconds": 2.2023867,
+      "files": {
+        "NUMERICS.json": 6321,
+        "PREPARE.json": 2255,
+        "encoder_manifest.json": 3689,
+        "features.npz": 171337,
+        "prefix.npz": 249942
+      },
+      "materialized_bytes": 433544,
+      "scope": "includes artifact service/action overhead; upload durations remain in CI logs"
+    },
+    "transfer_verify": {
+      "download_and_extract_wall_seconds": 3.11751504,
+      "files": {
+        "reference/REFERENCE.json": 1016,
+        "reference/expected.npz": 250542,
+        "reference/expected_plus.npz": 250714,
+        "resumed/EXECUTION.json": 113,
+        "resumed/NUMERICS.json": 6179,
+        "resumed/RESUME.json": 2335,
+        "resumed/resume.log": 36,
+        "resumed/resumed.npz": 250542,
+        "resumed/runtime-restore.json": 6750,
+        "resumed/runtime-restore.log": 0,
+        "resumed/transfer-start.json": 35,
+        "source/NUMERICS.json": 6321,
+        "source/PREPARE.json": 2255,
+        "source/encoder_manifest.json": 3689,
+        "source/features.npz": 171337,
+        "source/prefix.npz": 249942
+      },
+      "materialized_bytes": 1201806,
+      "scope": "includes artifact service/action overhead; upload durations remain in CI logs"
+    },
+    "transfer_verify_clock_limit": "Includes the new numerical profile comparison between artifact download and entry to migration.verify, in addition to action/service overhead.",
+    "upload_content_and_finalize_details": [
+      {
+        "artifact_id": 13044403591,
+        "content_and_finalize_wall_seconds": 0.493311,
+        "content_finish_utc": "2026-10-31T13:34:19.9419759Z",
+        "content_start_utc": "2026-10-31T13:34:19.8491176Z",
+        "content_wall_seconds": 0.092858,
+        "finalized_utc": "2026-10-31T13:34:20.3424282Z",
+        "name": "memory-v13-handoff-41206138368-1",
+        "role": "prepare"
+      },
+      {
+        "artifact_id": 13044433479,
+        "content_and_finalize_wall_seconds": 0.488263,
+        "content_finish_utc": "2026-10-31T13:34:20.7845424Z",
+        "content_start_utc": "2026-10-31T13:34:20.6936150Z",
+        "content_wall_seconds": 0.090927,
+        "finalized_utc": "2026-10-31T13:34:21.1818784Z",
+        "name": "memory-v13-reference-41206138368-1",
+        "role": "prepare"
+      },
+      {
+        "artifact_id": 13044219520,
+        "content_and_finalize_wall_seconds": 0.512002,
+        "content_finish_utc": "2026-10-31T13:34:21.6663317Z",
+        "content_start_utc": "2026-10-31T13:34:21.5374138Z",
+        "content_wall_seconds": 0.128918,
+        "finalized_utc": "2026-10-31T13:34:22.0494154Z",
+        "name": "memory-v13-prepare-evidence-41206138368-1",
+        "role": "prepare"
+      },
+      {
+        "artifact_id": 13044581106,
+        "content_and_finalize_wall_seconds": 1.612698,
+        "content_finish_utc": "2026-10-31T13:35:01.5416797Z",
+        "content_start_utc": "2026-10-31T13:35:00.4280992Z",
+        "content_wall_seconds": 1.11358,
+        "finalized_utc": "2026-10-31T13:35:02.0407976Z",
+        "name": "memory-v13-resumed-41206138368-1",
+        "role": "resume"
+      },
+      {
+        "artifact_id": 13043549087,
+        "content_and_finalize_wall_seconds": 0.958571,
+        "content_finish_utc": "2026-10-31T13:35:22.6473961Z",
+        "content_start_utc": "2026-10-31T13:35:22.1612730Z",
+        "content_wall_seconds": 0.486123,
+        "finalized_utc": "2026-10-31T13:35:23.1198442Z",
+        "name": "memory-v13-verify-41206138368-1",
+        "role": "verify"
+      }
+    ]
+  }
+}

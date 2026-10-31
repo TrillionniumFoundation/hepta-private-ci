@@ -1,0 +1,647 @@
+{
+  "actual_three_distinct_ci_vms": true,
+  "artifacts": [
+    {
+      "advertised_digest_match": true,
+      "advertised_size_match": true,
+      "id": 13044207621,
+      "name": "memory-v13-handoff-41205095256-1",
+      "path": "zips/13044207621.zip",
+      "run_binding_match": true,
+      "zip_bytes": 423988,
+      "zip_sha256": "e33c396fe80b5b16f641438c2263adf6a84e52b947c9f72b33a0a275d6ef0efe"
+    },
+    {
+      "advertised_digest_match": true,
+      "advertised_size_match": true,
+      "id": 13044077890,
+      "name": "memory-v13-reference-41205095256-1",
+      "path": "zips/13044077890.zip",
+      "run_binding_match": true,
+      "zip_bytes": 500971,
+      "zip_sha256": "3ae5f55f3e77f259629651fea2e1b48d1db64dc11571361f1ad026a8425c6b1a"
+    },
+    {
+      "advertised_digest_match": true,
+      "advertised_size_match": true,
+      "id": 13044053203,
+      "name": "memory-v13-verify-41205095256-1",
+      "path": "zips/13044053203.zip",
+      "run_binding_match": true,
+      "zip_bytes": 252818,
+      "zip_sha256": "182ca8bf22de7593a0a99b9ada60243529b20d15b0c1ca8fa1725dc7d7d95459"
+    },
+    {
+      "advertised_digest_match": true,
+      "advertised_size_match": true,
+      "id": 13043793658,
+      "name": "memory-v13-prepare-evidence-41205095256-1",
+      "path": "zips/13043793658.zip",
+      "run_binding_match": true,
+      "zip_bytes": 926077,
+      "zip_sha256": "b3846e0cbaf7a4c79c34dd1cfc2d907a688b70d7c1edbe75676be91796a033fe"
+    },
+    {
+      "advertised_digest_match": true,
+      "advertised_size_match": true,
+      "id": 13043557680,
+      "name": "memory-v13-resumed-41205095256-1",
+      "path": "zips/13043557680.zip",
+      "run_binding_match": true,
+      "zip_bytes": 254674,
+      "zip_sha256": "24253034539be91b003059041aacfc325447069361cc0cd324d596a3ef3ba35b"
+    }
+  ],
+  "checks": {
+    "complete_state_exact": false,
+    "future_predictions_exact": true,
+    "future_training_exact": false,
+    "predictions_exact": true,
+    "reject_wrong_encoder_hash": true,
+    "reject_wrong_features_sha256": true,
+    "reject_wrong_source_version": true,
+    "sender_predictions_exact": true,
+    "sender_state_exact": true,
+    "step_exact": true,
+    "target_backend_restored": true,
+    "three_distinct_boots": true,
+    "three_real_ci_jobs": true
+  },
+  "ci_conclusion": "failure",
+  "economic_benefit_demonstrated": false,
+  "failed_checks": [
+    "complete_state_exact",
+    "future_training_exact"
+  ],
+  "failure_diagnosis": {
+    "inference": "Consistent with arithmetic execution-path differences; CPU/ufunc dispatch was not captured and is not a proven cause.",
+    "maximum_parameter_abs_difference_step90": 3.3306690738754696e-16,
+    "maximum_parameter_abs_difference_step97": 3.7470027081099033e-16,
+    "observed": "Only floating-point parameter and Adam arrays differ; metadata, RNG and sampler order are exact. Classes agree.",
+    "raw_comparison": "INDEPENDENT_ARRAY_COMPARISON.json",
+    "source_mutations_during_audit": false,
+    "training_executed_by_audit": false
+  },
+  "head_sha": "f3069e82ebd98b3d22c33bee32096f5217783e79",
+  "head_tree": "84ba9f6e3089e5e17a00fe83a3e6173aff54d12f",
+  "input_binding": {
+    "encoder_hash": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+    "features_sha256": "69ec1a8c3d7eda6f9602a3bfddfbcaa7f0cfe4cabe40c90d2ef524998afe02ab",
+    "manifest_sha256": "504c25fe0ff8202a1409a885ce46f7e3df6082141081c348963084f8aefdf978",
+    "source_version": "19ebe0c1c2686688df7327baf7334165b18d5d95c8fac4f3ce013809a8ae328f"
+  },
+  "local_tree_equivalent_commit": "569859fdadd70c2ebbb318515f6902cfba0fa4d2",
+  "model_runtime_restore_accepted": true,
+  "network_payload_cost": {
+    "artifact_upload_bytes_all_5": 2358528,
+    "audit_download_bytes_outside_ci": 2358528,
+    "ci_artifact_download_bytes": 1603621,
+    "cold_base_download_bytes": 90873127,
+    "known_ci_payload_bytes_lower_bound": 94835276,
+    "scope": "ZIP/file payload only, not actual network wire traffic. Package wheels, checkout, actions, HTTP/TLS headers, retries and log transport are excluded; not zero cost. Prepare evidence duplicates reference/handoff for audit, and remains counted as actual upload traffic. No monetary billing or steady-state network economics measured."
+  },
+  "nodes": [
+    {
+      "blas_core": "NEHALEM",
+      "boot_id": "05c30e2b-47d4-4822-ba6a-b777c3ca72d2",
+      "hostname": "runnervm48cm3",
+      "job": "prepare",
+      "numpy": "2.3.5",
+      "pid": 2250,
+      "python": "3.12.3",
+      "role": "prepare",
+      "run_attempt": "1",
+      "run_id": "41205095256",
+      "source_commit": "f3069e82ebd98b3d22c33bee32096f5217783e79",
+      "source_hashes": {
+        "adapter.py": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+        "backend.py": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53",
+        "download_model.py": "fd0a7e1ba831c4f2929ee8d29d22495c61ecfdbf7ceee3daec9f5110ff09c0f7",
+        "lifecycle.py": "0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb",
+        "migration.py": "fa66339d342771a9742cb344106ef238a7da624b97b046e1bf63a179d2bdd6c4",
+        "requirements-runtime.txt": "2fef005a571439bf24a7185b23284aa5347d9cacacf4e977e5333e311c5859d6",
+        "runtime_restore.py": "87bc4be12bf46e76e453b035866babbbbfffb6c51783520ea0bbfb18651bd799"
+      }
+    },
+    {
+      "blas_core": "NEHALEM",
+      "boot_id": "a0471a76-c943-44da-87ef-357509cd63c1",
+      "hostname": "runnervm48cm3",
+      "job": "resume",
+      "numpy": "2.3.5",
+      "pid": 2502,
+      "python": "3.12.3",
+      "role": "resume",
+      "run_attempt": "1",
+      "run_id": "41205095256",
+      "source_commit": "f3069e82ebd98b3d22c33bee32096f5217783e79",
+      "source_hashes": {
+        "adapter.py": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+        "backend.py": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53",
+        "download_model.py": "fd0a7e1ba831c4f2929ee8d29d22495c61ecfdbf7ceee3daec9f5110ff09c0f7",
+        "lifecycle.py": "0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb",
+        "migration.py": "fa66339d342771a9742cb344106ef238a7da624b97b046e1bf63a179d2bdd6c4",
+        "requirements-runtime.txt": "2fef005a571439bf24a7185b23284aa5347d9cacacf4e977e5333e311c5859d6",
+        "runtime_restore.py": "87bc4be12bf46e76e453b035866babbbbfffb6c51783520ea0bbfb18651bd799"
+      }
+    },
+    {
+      "blas_core": "NEHALEM",
+      "boot_id": "79acd265-dde3-474b-819a-efcff74ba401",
+      "hostname": "runnervm48cm3",
+      "job": "verify",
+      "numpy": "2.3.5",
+      "pid": 2517,
+      "python": "3.12.3",
+      "role": "verify",
+      "run_attempt": "1",
+      "run_id": "41205095256",
+      "source_commit": "f3069e82ebd98b3d22c33bee32096f5217783e79",
+      "source_hashes": {
+        "adapter.py": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+        "backend.py": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53",
+        "download_model.py": "fd0a7e1ba831c4f2929ee8d29d22495c61ecfdbf7ceee3daec9f5110ff09c0f7",
+        "lifecycle.py": "0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb",
+        "migration.py": "fa66339d342771a9742cb344106ef238a7da624b97b046e1bf63a179d2bdd6c4",
+        "requirements-runtime.txt": "2fef005a571439bf24a7185b23284aa5347d9cacacf4e977e5333e311c5859d6",
+        "runtime_restore.py": "87bc4be12bf46e76e453b035866babbbbfffb6c51783520ea0bbfb18651bd799"
+      }
+    }
+  ],
+  "run_attempt": 1,
+  "run_id": 41205095256,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41205095256",
+  "runtime_restore": {
+    "checkpoint_file_unchanged": true,
+    "downloaded_files": {
+      "1_Pooling/config.json": {
+        "bytes": 190,
+        "sha256": "4be450dde3b0273bb9787637cfbd28fe04a7ba6ab9d36ac48e92b11e350ffc23",
+        "source_digest": "d1514c3162bbe87b343f565fadc62e6c06f04f03",
+        "source_digest_kind": "git"
+      },
+      "config.json": {
+        "bytes": 612,
+        "sha256": "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41",
+        "source_digest": "72b987fd805cfa2b58c4c8c952b274a11bfd5a00",
+        "source_digest_kind": "git"
+      },
+      "modules.json": {
+        "bytes": 349,
+        "sha256": "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf",
+        "source_digest": "952a9b81c0bfd99800fabf352f69c7ccd46c5e43",
+        "source_digest_kind": "git"
+      },
+      "onnx/model.onnx": {
+        "bytes": 90405214,
+        "sha256": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452",
+        "source_digest": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452",
+        "source_digest_kind": "sha256"
+      },
+      "sentence_bert_config.json": {
+        "bytes": 53,
+        "sha256": "fc1993fde0a95c24ec6c022539d41cf6e2f7c9721e5415d6fb6897472a9cd4b7",
+        "source_digest": "59d594003bf59880a884c574bf88ef7555bb0202",
+        "source_digest_kind": "git"
+      },
+      "special_tokens_map.json": {
+        "bytes": 112,
+        "sha256": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3",
+        "source_digest": "e7b0375001f109a6b8873d756ad4f7bbb15fbaa5",
+        "source_digest_kind": "git"
+      },
+      "tokenizer.json": {
+        "bytes": 466247,
+        "sha256": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
+        "source_digest": "cb202bfe2e3c98645018a6d12f182a434c9d3e02",
+        "source_digest_kind": "git"
+      },
+      "tokenizer_config.json": {
+        "bytes": 350,
+        "sha256": "acb92769e8195aabd29b7b2137a9e6d6e25c476a4f15aa4355c233426c61576b",
+        "source_digest": "c79f2b6a0cea6f4b564fed1938984bace9d30ff0",
+        "source_digest_kind": "git"
+      }
+    },
+    "embedding_max_abs_delta": 8.940696716308594e-08,
+    "embedding_tolerance": {
+      "atol": 1e-07,
+      "rtol": 1e-06
+    },
+    "official_model": {
+      "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+      "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+    },
+    "passed": true,
+    "predictions_equal": true,
+    "rows": 120,
+    "state_unchanged": true
+  },
+  "schema": "hepta.memory.migration-ci-qualification.v13",
+  "scope_limits": [
+    "Frozen encoder; learned residual adapter/head training, not full encoder training.",
+    "Only 120 training examples replayed; no held-out generalization or memory quality claim.",
+    "Trusted GitHub artifact service and single-owner source semantics; no distributed ownership or consensus qualification.",
+    "Producer VERIFY.cross_vm_claim identifies topology, not successful strict qualification; final acceptance must also require passed=true.",
+    "First-run failure retained; thresholds unchanged."
+  ],
+  "strict_cross_vm_continuation_accepted": false,
+  "timing": {
+    "checkpoint_prepare_write_seconds": 0.019010432999998272,
+    "checkpoint_resume_load_seconds": 0.009486085999995453,
+    "checkpoint_resume_save_seconds": 0.009640361999998959,
+    "github_timestamp_resolution_seconds": 1,
+    "job_details": [
+      {
+        "completed_at": "2026-10-31T13:20:26Z",
+        "conclusion": "success",
+        "job_id": 124548448867,
+        "role": "prepare",
+        "started_at": "2026-10-31T13:20:11Z",
+        "steps": [
+          {
+            "completed_at": "2026-10-31T13:20:13Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "started_at": "2026-10-31T13:20:12Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:15Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:20:13Z",
+            "wall_seconds": 2.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:19Z",
+            "conclusion": "success",
+            "name": "Install exact numerical dependency",
+            "started_at": "2026-10-31T13:20:15Z",
+            "wall_seconds": 4.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:20Z",
+            "conclusion": "success",
+            "name": "Exercise source revisions and real process-death publication boundaries",
+            "started_at": "2026-10-31T13:20:19Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:20Z",
+            "conclusion": "success",
+            "name": "Train a prefix and a separately uninterrupted reference",
+            "started_at": "2026-10-31T13:20:20Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:21Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "started_at": "2026-10-31T13:20:20Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:23Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "started_at": "2026-10-31T13:20:21Z",
+            "wall_seconds": 2.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:24Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "started_at": "2026-10-31T13:20:23Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:24Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:20:24Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:24Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "started_at": "2026-10-31T13:20:24Z",
+            "wall_seconds": 0.0
+          }
+        ],
+        "wall_seconds": 15.0
+      },
+      {
+        "completed_at": "2026-10-31T13:20:57Z",
+        "conclusion": "success",
+        "job_id": 124548517769,
+        "role": "resume",
+        "started_at": "2026-10-31T13:20:29Z",
+        "steps": [
+          {
+            "completed_at": "2026-10-31T13:20:31Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "started_at": "2026-10-31T13:20:30Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:33Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:20:31Z",
+            "wall_seconds": 2.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:50Z",
+            "conclusion": "success",
+            "name": "Install the complete pinned CPU encoder and adapter dependencies",
+            "started_at": "2026-10-31T13:20:33Z",
+            "wall_seconds": 17.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:50Z",
+            "conclusion": "success",
+            "name": "Start artifact transfer clock",
+            "started_at": "2026-10-31T13:20:50Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:51Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "started_at": "2026-10-31T13:20:50Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:51Z",
+            "conclusion": "success",
+            "name": "Resume complete optimizer and sampler state on the second runner",
+            "started_at": "2026-10-31T13:20:51Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:54Z",
+            "conclusion": "success",
+            "name": "Restore the shared encoder from pinned official files and replay actual training texts",
+            "started_at": "2026-10-31T13:20:51Z",
+            "wall_seconds": 3.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:56Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "started_at": "2026-10-31T13:20:54Z",
+            "wall_seconds": 2.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:56Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:20:56Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:20:56Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "started_at": "2026-10-31T13:20:56Z",
+            "wall_seconds": 0.0
+          }
+        ],
+        "wall_seconds": 28.0
+      },
+      {
+        "completed_at": "2026-10-31T13:21:16Z",
+        "conclusion": "failure",
+        "job_id": 124548636031,
+        "role": "verify",
+        "started_at": "2026-10-31T13:21:01Z",
+        "steps": [
+          {
+            "completed_at": "2026-10-31T13:21:03Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "started_at": "2026-10-31T13:21:02Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:21:04Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:21:03Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:21:10Z",
+            "conclusion": "success",
+            "name": "Install exact numerical dependency",
+            "started_at": "2026-10-31T13:21:04Z",
+            "wall_seconds": 6.0
+          },
+          {
+            "completed_at": "2026-10-31T13:21:10Z",
+            "conclusion": "success",
+            "name": "Start artifact transfer clock",
+            "started_at": "2026-10-31T13:21:10Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:21:11Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "started_at": "2026-10-31T13:21:10Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:21:12Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "started_at": "2026-10-31T13:21:11Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:21:13Z",
+            "conclusion": "success",
+            "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+            "started_at": "2026-10-31T13:21:12Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:21:13Z",
+            "conclusion": "failure",
+            "name": "Compare all training state and perform additional continuation on the third runner",
+            "started_at": "2026-10-31T13:21:13Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:21:14Z",
+            "conclusion": "success",
+            "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+            "started_at": "2026-10-31T13:21:13Z",
+            "wall_seconds": 1.0
+          },
+          {
+            "completed_at": "2026-10-31T13:21:14Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "started_at": "2026-10-31T13:21:14Z",
+            "wall_seconds": 0.0
+          },
+          {
+            "completed_at": "2026-10-31T13:21:14Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "started_at": "2026-10-31T13:21:14Z",
+            "wall_seconds": 0.0
+          }
+        ],
+        "wall_seconds": 15.0
+      }
+    ],
+    "run_start_to_last_job_end_seconds": 68.0,
+    "runtime_restore": {
+      "adapter_probe_wall_seconds": 0.0008476459999968711,
+      "cpu_seconds": 1.486747887,
+      "download_wall_seconds": 2.166818069999998,
+      "encoder_inference_wall_seconds": 0.5942333469999994,
+      "encoder_initialization_wall_seconds": 0.3634094770000047,
+      "peak_rss_kib": 216624,
+      "timing_scope": "excludes interpreter/import and pip installation; CI steps retain those durations",
+      "wall_seconds": 3.142792830999994
+    },
+    "summed_job_wall_seconds": 58.0,
+    "training_prepare": [
+      {
+        "examples": 528,
+        "first_loss": 2.4750813943124146,
+        "last_loss": 0.2696247474628888,
+        "mean_loss": 1.1076946779749208,
+        "seconds": 0.006565257000001878,
+        "step": 35,
+        "updates": 35
+      },
+      {
+        "examples": 1352,
+        "first_loss": 2.4750813943124146,
+        "last_loss": 0.0176944942829389,
+        "mean_loss": 0.5222968359378667,
+        "seconds": 0.013978935000000803,
+        "step": 90,
+        "updates": 90
+      },
+      {
+        "examples": 104,
+        "first_loss": 0.025698467691257,
+        "last_loss": 0.006333568428195706,
+        "mean_loss": 0.012433320798327778,
+        "seconds": 0.0017408970000012403,
+        "step": 97,
+        "updates": 7
+      }
+    ],
+    "training_resume": {
+      "examples": 824,
+      "first_loss": 0.3824537389476407,
+      "last_loss": 0.017694494282938927,
+      "mean_loss": 0.14977093645974157,
+      "seconds": 0.017574568999997098,
+      "step": 90,
+      "updates": 55
+    },
+    "training_verify": {
+      "examples": 104,
+      "first_loss": 0.025698467691256985,
+      "last_loss": 0.00633356842819576,
+      "mean_loss": 0.012433320798327768,
+      "seconds": 0.0028800489999980528,
+      "step": 97,
+      "updates": 7
+    },
+    "transfer_resume": {
+      "download_and_extract_wall_seconds": 1.055916087,
+      "files": {
+        "PREPARE.json": 2254,
+        "encoder_manifest.json": 3689,
+        "features.npz": 171337,
+        "prefix.npz": 249934
+      },
+      "materialized_bytes": 427214,
+      "scope": "includes artifact service/action overhead; upload durations remain in CI logs"
+    },
+    "transfer_verify": {
+      "download_and_extract_wall_seconds": 2.547400879,
+      "files": {
+        "reference/REFERENCE.json": 1016,
+        "reference/expected.npz": 250539,
+        "reference/expected_plus.npz": 250726,
+        "resumed/EXECUTION.json": 114,
+        "resumed/RESUME.json": 2320,
+        "resumed/resume.log": 36,
+        "resumed/resumed.npz": 250547,
+        "resumed/runtime-restore.json": 6740,
+        "resumed/runtime-restore.log": 0,
+        "resumed/transfer-start.json": 35,
+        "source/PREPARE.json": 2254,
+        "source/encoder_manifest.json": 3689,
+        "source/features.npz": 171337,
+        "source/prefix.npz": 249934
+      },
+      "materialized_bytes": 1189287,
+      "scope": "includes artifact service/action overhead; upload durations remain in CI logs"
+    },
+    "upload_content_and_finalize_details": [
+      {
+        "artifact_id": 13044207621,
+        "content_and_finalize_wall_seconds": 0.942044,
+        "content_finish_utc": "2026-10-31T13:20:21.3026927Z",
+        "content_start_utc": "2026-10-31T13:20:20.8068751Z",
+        "content_wall_seconds": 0.495817,
+        "finalized_utc": "2026-10-31T13:20:21.7489194Z",
+        "name": "memory-v13-handoff-41205095256-1",
+        "role": "prepare"
+      },
+      {
+        "artifact_id": 13044077890,
+        "content_and_finalize_wall_seconds": 0.978942,
+        "content_finish_utc": "2026-10-31T13:20:22.7780588Z",
+        "content_start_utc": "2026-10-31T13:20:22.2091897Z",
+        "content_wall_seconds": 0.568869,
+        "finalized_utc": "2026-10-31T13:20:23.1881318Z",
+        "name": "memory-v13-reference-41205095256-1",
+        "role": "prepare"
+      },
+      {
+        "artifact_id": 13043793658,
+        "content_and_finalize_wall_seconds": 1.051423,
+        "content_finish_utc": "2026-10-31T13:20:24.2808078Z",
+        "content_start_utc": "2026-10-31T13:20:23.6833959Z",
+        "content_wall_seconds": 0.597412,
+        "finalized_utc": "2026-10-31T13:20:24.7348181Z",
+        "name": "memory-v13-prepare-evidence-41205095256-1",
+        "role": "prepare"
+      },
+      {
+        "artifact_id": 13043557680,
+        "content_and_finalize_wall_seconds": 0.812135,
+        "content_finish_utc": "2026-10-31T13:20:55.6743888Z",
+        "content_start_utc": "2026-10-31T13:20:55.3015697Z",
+        "content_wall_seconds": 0.372819,
+        "finalized_utc": "2026-10-31T13:20:56.1137045Z",
+        "name": "memory-v13-resumed-41205095256-1",
+        "role": "resume"
+      },
+      {
+        "artifact_id": 13044053203,
+        "content_and_finalize_wall_seconds": 0.793332,
+        "content_finish_utc": "2026-10-31T13:21:14.0905902Z",
+        "content_start_utc": "2026-10-31T13:21:13.7388901Z",
+        "content_wall_seconds": 0.3517,
+        "finalized_utc": "2026-10-31T13:21:14.5322229Z",
+        "name": "memory-v13-verify-41205095256-1",
+        "role": "verify"
+      }
+    ]
+  }
+}

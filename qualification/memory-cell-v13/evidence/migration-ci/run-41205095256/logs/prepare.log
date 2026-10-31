@@ -1,0 +1,317 @@
+﻿2026-10-31T13:20:12.6352749Z Current runner version: '2.338.2'
+2026-10-31T13:20:12.6371931Z ##[group]Runner Image Provisioner
+2026-10-31T13:20:12.6372541Z Hosted Compute Agent
+2026-10-31T13:20:12.6372918Z Version: 20261021.618
+2026-10-31T13:20:12.6373385Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-31T13:20:12.6373870Z Build Date: 2026-10-21T00:45:21Z
+2026-10-31T13:20:12.6374298Z Worker ID: {26bd8193-6ca9-40e6-921a-406e1e3732b0}
+2026-10-31T13:20:12.6374778Z Region: westus3
+2026-10-31T13:20:12.6375134Z Cloud: Azure
+2026-10-31T13:20:12.6375503Z ##[endgroup]
+2026-10-31T13:20:12.6376347Z ##[group]Operating System
+2026-10-31T13:20:12.6376723Z Ubuntu
+2026-10-31T13:20:12.6377042Z 24.04.5
+2026-10-31T13:20:12.6377541Z LTS
+2026-10-31T13:20:12.6377897Z ##[endgroup]
+2026-10-31T13:20:12.6378259Z ##[group]Runner Image
+2026-10-31T13:20:12.6378638Z Image: ubuntu-24.04
+2026-10-31T13:20:12.6379014Z Version: 20261025.353.1
+2026-10-31T13:20:12.6379802Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-31T13:20:12.6380740Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-10-31T13:20:12.6381320Z ##[endgroup]
+2026-10-31T13:20:12.6382027Z ##[group]GITHUB_TOKEN Permissions
+2026-10-31T13:20:12.6383294Z Contents: read
+2026-10-31T13:20:12.6383632Z Metadata: read
+2026-10-31T13:20:12.6384043Z ##[endgroup]
+2026-10-31T13:20:12.6385438Z Secret source: Actions
+2026-10-31T13:20:12.6386046Z Cache mode: write
+2026-10-31T13:20:12.6386727Z Prepare workflow directory
+2026-10-31T13:20:12.6640830Z Prepare all required actions
+2026-10-31T13:20:12.6685960Z Getting action download info
+2026-10-31T13:20:12.9784463Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-10-31T13:20:13.0529478Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-31T13:20:13.2597860Z Complete job name: prepare
+2026-10-31T13:20:13.3129839Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-10-31T13:20:13.3130367Z with:
+2026-10-31T13:20:13.3130608Z   persist-credentials: false
+2026-10-31T13:20:13.3130918Z   sparse-checkout: qualification/memory-cell-v13
+2026-10-31T13:20:13.3131304Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-10-31T13:20:13.3133496Z   token: ***
+2026-10-31T13:20:13.3133730Z   ssh-strict: true
+2026-10-31T13:20:13.3133968Z   ssh-user: git
+2026-10-31T13:20:13.3134202Z   clean: true
+2026-10-31T13:20:13.3134445Z   sparse-checkout-cone-mode: true
+2026-10-31T13:20:13.3134738Z   fetch-depth: 1
+2026-10-31T13:20:13.3134978Z   fetch-tags: false
+2026-10-31T13:20:13.3135224Z   show-progress: true
+2026-10-31T13:20:13.3135464Z   lfs: false
+2026-10-31T13:20:13.3135686Z   submodules: false
+2026-10-31T13:20:13.3135940Z   set-safe-directory: true
+2026-10-31T13:20:13.3136267Z env:
+2026-10-31T13:20:13.3136497Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:20:13.3136809Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:20:13.3137184Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:20:13.3137439Z   OMP_NUM_THREADS: 1
+2026-10-31T13:20:13.3137689Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:20:13.3137951Z ##[endgroup]
+2026-10-31T13:20:13.5741427Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-10-31T13:20:13.5742724Z ##[group]Getting Git version info
+2026-10-31T13:20:13.5743181Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-31T13:20:13.5743873Z [command]/usr/bin/git version
+2026-10-31T13:20:13.5812106Z git version 2.56.0
+2026-10-31T13:20:13.5829886Z ##[endgroup]
+2026-10-31T13:20:13.5840874Z Temporarily overriding HOME='/home/runner/work/_temp/c8144c0d-1f6b-44cc-97f1-fd8898cfc157' before making global git config changes
+2026-10-31T13:20:13.5842264Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-31T13:20:13.5845028Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-31T13:20:13.5893918Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-10-31T13:20:13.5897804Z ##[group]Initializing the repository
+2026-10-31T13:20:13.5901760Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-31T13:20:13.5992672Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-31T13:20:13.5993454Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-31T13:20:13.5994062Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-31T13:20:13.5994555Z hint: call:
+2026-10-31T13:20:13.5994807Z hint:
+2026-10-31T13:20:13.5995157Z hint: 	git config --global init.defaultBranch <name>
+2026-10-31T13:20:13.5995542Z hint:
+2026-10-31T13:20:13.5995932Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-31T13:20:13.5996531Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-31T13:20:13.5997272Z hint:
+2026-10-31T13:20:13.5997592Z hint: 	git branch -m <name>
+2026-10-31T13:20:13.5997903Z hint:
+2026-10-31T13:20:13.5998317Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-31T13:20:13.6010558Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-10-31T13:20:13.6024692Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-31T13:20:13.6073181Z ##[endgroup]
+2026-10-31T13:20:13.6073952Z ##[group]Disabling automatic garbage collection
+2026-10-31T13:20:13.6076464Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-31T13:20:13.6106827Z ##[endgroup]
+2026-10-31T13:20:13.6107783Z ##[group]Setting up auth
+2026-10-31T13:20:13.6108405Z Removing SSH command configuration
+2026-10-31T13:20:13.6112209Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-31T13:20:13.6162794Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-31T13:20:13.6515527Z Removing HTTP extra header
+2026-10-31T13:20:13.6521597Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-31T13:20:13.6560346Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-31T13:20:13.6752122Z Removing includeIf entries pointing to credentials config files
+2026-10-31T13:20:13.6758418Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-31T13:20:13.6799433Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-31T13:20:13.7022913Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-31T13:20:13.7071210Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:13.7112358Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:13.7210417Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:13.7258707Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:13.7296432Z ##[endgroup]
+2026-10-31T13:20:13.7297365Z ##[group]Fetching the repository
+2026-10-31T13:20:13.7303892Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +f3069e82ebd98b3d22c33bee32096f5217783e79:refs/remotes/origin/research/memory-cell-v13-20261031
+2026-10-31T13:20:14.3314200Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-31T13:20:14.3316104Z  * [new ref]         f3069e82ebd98b3d22c33bee32096f5217783e79 -> origin/research/memory-cell-v13-20261031
+2026-10-31T13:20:14.3327891Z [command]/usr/bin/git branch --list --remote origin/research/memory-cell-v13-20261031
+2026-10-31T13:20:14.3361702Z   origin/research/memory-cell-v13-20261031
+2026-10-31T13:20:14.3369911Z [command]/usr/bin/git rev-parse refs/remotes/origin/research/memory-cell-v13-20261031
+2026-10-31T13:20:14.3399619Z f3069e82ebd98b3d22c33bee32096f5217783e79
+2026-10-31T13:20:14.3404213Z ##[endgroup]
+2026-10-31T13:20:14.3405547Z ##[group]Determining the checkout info
+2026-10-31T13:20:14.3406808Z ##[endgroup]
+2026-10-31T13:20:14.3408237Z ##[group]Setting up sparse checkout
+2026-10-31T13:20:14.3409315Z [command]/usr/bin/git sparse-checkout set qualification/memory-cell-v13
+2026-10-31T13:20:14.3463512Z ##[endgroup]
+2026-10-31T13:20:14.3464595Z ##[group]Checking out the ref
+2026-10-31T13:20:14.3466543Z [command]/usr/bin/git checkout --progress --force -B research/memory-cell-v13-20261031 refs/remotes/origin/research/memory-cell-v13-20261031
+2026-10-31T13:20:15.1276354Z Switched to a new branch 'research/memory-cell-v13-20261031'
+2026-10-31T13:20:15.1278767Z branch 'research/memory-cell-v13-20261031' set up to track 'origin/research/memory-cell-v13-20261031'.
+2026-10-31T13:20:15.1288706Z ##[endgroup]
+2026-10-31T13:20:15.1339881Z [command]/usr/bin/git log -1 --format=%H
+2026-10-31T13:20:15.1373416Z f3069e82ebd98b3d22c33bee32096f5217783e79
+2026-10-31T13:20:15.1382441Z ##[group]Removing auth
+2026-10-31T13:20:15.1382931Z Removing SSH command configuration
+2026-10-31T13:20:15.1385378Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-31T13:20:15.1424029Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-31T13:20:15.1642267Z Removing HTTP extra header
+2026-10-31T13:20:15.1646918Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-31T13:20:15.1698559Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-31T13:20:15.1905046Z Removing includeIf entries pointing to credentials config files
+2026-10-31T13:20:15.1908622Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-31T13:20:15.1942756Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-31T13:20:15.2016976Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-31T13:20:15.2028098Z includeif.gitdir:/github/workspace/.git.path
+2026-10-31T13:20:15.2028434Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-31T13:20:15.2029697Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-31T13:20:15.2030340Z /home/runner/work/_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:15.2031315Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:15.2040175Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-31T13:20:15.2071076Z /home/runner/work/_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:15.2079995Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:15.2128176Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-31T13:20:15.2158095Z /github/runner_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:15.2164005Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:15.2202529Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-31T13:20:15.2231457Z /github/runner_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:15.2237023Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config
+2026-10-31T13:20:15.2277005Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-31T13:20:15.2494187Z Removing credentials config '/home/runner/work/_temp/git-credentials-56c8214a-06d4-43c1-a280-67b4d318517b.config'
+2026-10-31T13:20:15.2495026Z ##[endgroup]
+2026-10-31T13:20:15.2669562Z ##[group]Run python3 -m venv "$RUNNER_TEMP/v13-env"
+2026-10-31T13:20:15.2669854Z [36;1mpython3 -m venv "$RUNNER_TEMP/v13-env"[0m
+2026-10-31T13:20:15.2670177Z [36;1m"$RUNNER_TEMP/v13-env/bin/python" -m pip install --disable-pip-version-check numpy==2.3.5[0m
+2026-10-31T13:20:15.2689808Z shell: /usr/bin/bash -e {0}
+2026-10-31T13:20:15.2689975Z env:
+2026-10-31T13:20:15.2690114Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:20:15.2690266Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:20:15.2690417Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:20:15.2690553Z   OMP_NUM_THREADS: 1
+2026-10-31T13:20:15.2690700Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:20:15.2690846Z ##[endgroup]
+2026-10-31T13:20:17.7502834Z Collecting numpy==2.3.5
+2026-10-31T13:20:17.7773101Z   Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-10-31T13:20:17.7863056Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.1/62.1 kB 7.3 MB/s eta 0:00:00
+2026-10-31T13:20:17.7955887Z Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-10-31T13:20:17.9826715Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 81.5 MB/s eta 0:00:00
+2026-10-31T13:20:18.0063921Z Installing collected packages: numpy
+2026-10-31T13:20:19.3489196Z Successfully installed numpy-2.3.5
+2026-10-31T13:20:19.4838393Z ##[group]Run mkdir -p "$RUNNER_TEMP/v13-prepare"
+2026-10-31T13:20:19.4838810Z [36;1mmkdir -p "$RUNNER_TEMP/v13-prepare"[0m
+2026-10-31T13:20:19.4839103Z [36;1mset -o pipefail[0m
+2026-10-31T13:20:19.4839604Z [36;1m"$RUNNER_TEMP/v13-env/bin/python" -m unittest discover -s qualification/memory-cell-v13 -p lifecycle_tests.py -v 2>&1 | tee "$RUNNER_TEMP/v13-prepare/lifecycle-tests.log"[0m
+2026-10-31T13:20:19.4858219Z shell: /usr/bin/bash -e {0}
+2026-10-31T13:20:19.4858384Z env:
+2026-10-31T13:20:19.4858523Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:20:19.4858677Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:20:19.4858814Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:20:19.4858951Z   OMP_NUM_THREADS: 1
+2026-10-31T13:20:19.4859080Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:20:19.4859231Z ##[endgroup]
+2026-10-31T13:20:19.8792971Z test_complete_model_publication_cold_read_and_idempotent_staging (lifecycle_tests.LifecycleTests.test_complete_model_publication_cold_read_and_idempotent_staging) ... ok
+2026-10-31T13:20:19.9419678Z test_correction_fences_old_reads_rejects_relabelled_weights_and_preserves_other_answers (lifecycle_tests.LifecycleTests.test_correction_fences_old_reads_rejects_relabelled_weights_and_preserves_other_answers) ... ok
+2026-10-31T13:20:20.1213033Z test_real_sigkill_before_and_after_publication_commit (lifecycle_tests.LifecycleTests.test_real_sigkill_before_and_after_publication_commit) ... ok
+2026-10-31T13:20:20.1509251Z test_scope_encoder_and_immutable_bytes_are_checked (lifecycle_tests.LifecycleTests.test_scope_encoder_and_immutable_bytes_are_checked) ... ok
+2026-10-31T13:20:20.1509797Z 
+2026-10-31T13:20:20.1509945Z ----------------------------------------------------------------------
+2026-10-31T13:20:20.1510305Z Ran 4 tests in 0.482s
+2026-10-31T13:20:20.1510443Z 
+2026-10-31T13:20:20.1510517Z OK
+2026-10-31T13:20:20.1694766Z ##[group]Run set -o pipefail
+2026-10-31T13:20:20.1694962Z [36;1mset -o pipefail[0m
+2026-10-31T13:20:20.1695203Z [36;1m"$RUNNER_TEMP/v13-env/bin/python" qualification/memory-cell-v13/migration.py prepare \[0m
+2026-10-31T13:20:20.1695547Z [36;1m  --input qualification/memory-cell-v13/evidence/inputs/train_features.npz \[0m
+2026-10-31T13:20:20.1695887Z [36;1m  --manifest qualification/memory-cell-v13/evidence/inputs/encoder_manifest.json \[0m
+2026-10-31T13:20:20.1696212Z [36;1m  --out "$RUNNER_TEMP/v13-prepare" 2>&1 | tee "$RUNNER_TEMP/v13-prepare/prepare.log"[0m
+2026-10-31T13:20:20.1712907Z shell: /usr/bin/bash -e {0}
+2026-10-31T13:20:20.1713048Z env:
+2026-10-31T13:20:20.1713169Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:20:20.1713309Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:20:20.1713434Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:20:20.1713561Z   OMP_NUM_THREADS: 1
+2026-10-31T13:20:20.1713682Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:20:20.1713815Z ##[endgroup]
+2026-10-31T13:20:20.2954356Z {"passed": true, "phase": "prepare"}
+2026-10-31T13:20:20.3172028Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-31T13:20:20.3172282Z with:
+2026-10-31T13:20:20.3172412Z   name: memory-v13-handoff-41205095256-1
+2026-10-31T13:20:20.3172595Z   path: /home/runner/work/_temp/v13-prepare/handoff
+2026-10-31T13:20:20.3172807Z   if-no-files-found: error
+2026-10-31T13:20:20.3172942Z   retention-days: 30
+2026-10-31T13:20:20.3173067Z   compression-level: 6
+2026-10-31T13:20:20.3173185Z   overwrite: false
+2026-10-31T13:20:20.3173304Z   include-hidden-files: false
+2026-10-31T13:20:20.3173436Z env:
+2026-10-31T13:20:20.3173550Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:20:20.3173694Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:20:20.3173815Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:20:20.3173949Z   OMP_NUM_THREADS: 1
+2026-10-31T13:20:20.3174070Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:20:20.3174203Z ##[endgroup]
+2026-10-31T13:20:20.4430693Z (node:2253) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-31T13:20:20.4431240Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-31T13:20:20.4483870Z With the provided path, there will be 4 files uploaded
+2026-10-31T13:20:20.4498654Z Artifact name is valid!
+2026-10-31T13:20:20.4499875Z Root directory input is valid!
+2026-10-31T13:20:20.8068751Z Beginning upload of artifact content to blob storage
+2026-10-31T13:20:20.8427976Z (node:2253) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-31T13:20:21.2467604Z Uploaded bytes 423988
+2026-10-31T13:20:21.3026927Z Finished uploading artifact content to blob storage!
+2026-10-31T13:20:21.3028025Z SHA256 digest of uploaded artifact zip is e33c396fe80b5b16f641438c2263adf6a84e52b947c9f72b33a0a275d6ef0efe
+2026-10-31T13:20:21.3028662Z Finalizing artifact upload
+2026-10-31T13:20:21.7489194Z Artifact memory-v13-handoff-41205095256-1.zip successfully finalized. Artifact ID 13044207621
+2026-10-31T13:20:21.7490001Z Artifact memory-v13-handoff-41205095256-1 has been successfully uploaded! Final size is 423988 bytes. Artifact ID is 13044207621
+2026-10-31T13:20:21.7494575Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41205095256/artifacts/13044207621
+2026-10-31T13:20:21.7667019Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-31T13:20:21.7667518Z with:
+2026-10-31T13:20:21.7667649Z   name: memory-v13-reference-41205095256-1
+2026-10-31T13:20:21.7667835Z   path: /home/runner/work/_temp/v13-prepare/reference
+2026-10-31T13:20:21.7668010Z   if-no-files-found: error
+2026-10-31T13:20:21.7668156Z   retention-days: 30
+2026-10-31T13:20:21.7668282Z   compression-level: 6
+2026-10-31T13:20:21.7668408Z   overwrite: false
+2026-10-31T13:20:21.7668536Z   include-hidden-files: false
+2026-10-31T13:20:21.7668682Z env:
+2026-10-31T13:20:21.7668799Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:20:21.7668937Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:20:21.7669062Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:20:21.7669192Z   OMP_NUM_THREADS: 1
+2026-10-31T13:20:21.7669313Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:20:21.7669442Z ##[endgroup]
+2026-10-31T13:20:21.8858629Z (node:2266) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-31T13:20:21.8859125Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-31T13:20:21.8913487Z With the provided path, there will be 3 files uploaded
+2026-10-31T13:20:21.8913945Z Artifact name is valid!
+2026-10-31T13:20:21.8914257Z Root directory input is valid!
+2026-10-31T13:20:22.2091897Z Beginning upload of artifact content to blob storage
+2026-10-31T13:20:22.2361112Z (node:2266) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-31T13:20:22.7169720Z Uploaded bytes 500971
+2026-10-31T13:20:22.7780588Z Finished uploading artifact content to blob storage!
+2026-10-31T13:20:22.7781409Z SHA256 digest of uploaded artifact zip is 3ae5f55f3e77f259629651fea2e1b48d1db64dc11571361f1ad026a8425c6b1a
+2026-10-31T13:20:22.7782752Z Finalizing artifact upload
+2026-10-31T13:20:23.1881318Z Artifact memory-v13-reference-41205095256-1.zip successfully finalized. Artifact ID 13044077890
+2026-10-31T13:20:23.1882079Z Artifact memory-v13-reference-41205095256-1 has been successfully uploaded! Final size is 500971 bytes. Artifact ID is 13044077890
+2026-10-31T13:20:23.1886855Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41205095256/artifacts/13044077890
+2026-10-31T13:20:23.2069486Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-31T13:20:23.2069722Z with:
+2026-10-31T13:20:23.2069875Z   name: memory-v13-prepare-evidence-41205095256-1
+2026-10-31T13:20:23.2070079Z   path: /home/runner/work/_temp/v13-prepare
+2026-10-31T13:20:23.2070252Z   if-no-files-found: warn
+2026-10-31T13:20:23.2070391Z   retention-days: 30
+2026-10-31T13:20:23.2070522Z   compression-level: 6
+2026-10-31T13:20:23.2070652Z   overwrite: false
+2026-10-31T13:20:23.2070790Z   include-hidden-files: false
+2026-10-31T13:20:23.2070928Z env:
+2026-10-31T13:20:23.2071053Z   PYTHONDONTWRITEBYTECODE: 1
+2026-10-31T13:20:23.2071199Z   PYTHONUNBUFFERED: 1
+2026-10-31T13:20:23.2071328Z   OPENBLAS_NUM_THREADS: 1
+2026-10-31T13:20:23.2071465Z   OMP_NUM_THREADS: 1
+2026-10-31T13:20:23.2071591Z   OPENBLAS_CORETYPE: NEHALEM
+2026-10-31T13:20:23.2071730Z ##[endgroup]
+2026-10-31T13:20:23.3268066Z (node:2279) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-31T13:20:23.3268585Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-31T13:20:23.3323915Z With the provided path, there will be 11 files uploaded
+2026-10-31T13:20:23.3328378Z Artifact name is valid!
+2026-10-31T13:20:23.3328922Z Root directory input is valid!
+2026-10-31T13:20:23.6833959Z Beginning upload of artifact content to blob storage
+2026-10-31T13:20:23.7290814Z (node:2279) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-31T13:20:24.2259635Z Uploaded bytes 926077
+2026-10-31T13:20:24.2808078Z Finished uploading artifact content to blob storage!
+2026-10-31T13:20:24.2808708Z SHA256 digest of uploaded artifact zip is b3846e0cbaf7a4c79c34dd1cfc2d907a688b70d7c1edbe75676be91796a033fe
+2026-10-31T13:20:24.2809526Z Finalizing artifact upload
+2026-10-31T13:20:24.7348181Z Artifact memory-v13-prepare-evidence-41205095256-1.zip successfully finalized. Artifact ID 13043793658
+2026-10-31T13:20:24.7348956Z Artifact memory-v13-prepare-evidence-41205095256-1 has been successfully uploaded! Final size is 926077 bytes. Artifact ID is 13043793658
+2026-10-31T13:20:24.7350273Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41205095256/artifacts/13043793658
+2026-10-31T13:20:24.7521036Z Post job cleanup.
+2026-10-31T13:20:24.8118978Z [command]/usr/bin/git version
+2026-10-31T13:20:24.8157575Z git version 2.56.0
+2026-10-31T13:20:24.8187631Z Temporarily overriding HOME='/home/runner/work/_temp/191f9f15-2ccb-4646-b698-75534e79ac11' before making global git config changes
+2026-10-31T13:20:24.8188460Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-31T13:20:24.8191773Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-10-31T13:20:24.8226043Z Removing SSH command configuration
+2026-10-31T13:20:24.8230931Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-31T13:20:24.8264143Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-31T13:20:24.8500226Z Removing HTTP extra header
+2026-10-31T13:20:24.8505024Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-31T13:20:24.8540846Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-31T13:20:24.8776033Z Removing includeIf entries pointing to credentials config files
+2026-10-31T13:20:24.8785608Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-31T13:20:24.8828798Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-31T13:20:24.9185283Z Evaluate and set job outputs
+2026-10-31T13:20:24.9190913Z Set output 'handoff'
+2026-10-31T13:20:24.9192040Z Set output 'reference'
+2026-10-31T13:20:24.9192813Z Cleaning up orphan processes
+2026-10-31T13:20:24.9465819Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+
