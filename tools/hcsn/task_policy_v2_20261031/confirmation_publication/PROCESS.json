@@ -1,0 +1,29 @@
+{
+  "schema": "hcsn.experiment.stage-process.v1",
+  "command": [
+    "python",
+    "-m",
+    "tools.hcsn.task_policy_v2_20261031.campaign",
+    "confirm",
+    "--prepared",
+    "/dev/shm/hepta-task-policy-v2-20261031/formal_campaign01",
+    "--out",
+    "/dev/shm/hepta-task-policy-v2-20261031/formal_confirmation01",
+    "--freeze-receipt",
+    "/workspace/scratch/c135db76929c/hepta-task-research/tools/hcsn/task_progression_20261031/TEACHER_FREEZE_RECEIPT.json"
+  ],
+  "started_at": "2026-10-31T02:43:10.939341+00:00",
+  "finished_at": "2026-10-31T02:44:43.260241+00:00",
+  "returncode": 0,
+  "child_pid": 990940,
+  "user_cpu_seconds": 90.968909,
+  "system_cpu_seconds": 1.227042,
+  "total_cpu_seconds": 92.195951,
+  "wall_seconds": 92.32091486100398,
+  "peak_rss_bytes": 153137152,
+  "voluntary_context_switches": 436,
+  "involuntary_context_switches": 604,
+  "output_sha256": "01597cb4ae2b814452fc6379be63b57abdb444156c640effbb5f2aa1c7168dee",
+  "measurement": "Linux wait4 on this exact stage process; retain nested subprocess records separately, do not add nested and enclosing totals",
+  "runner_sha256": "254086e7e92e9e71b96e65a3ebc55cfa60c796b4bc9183d399803e9101eebaa6"
+}
