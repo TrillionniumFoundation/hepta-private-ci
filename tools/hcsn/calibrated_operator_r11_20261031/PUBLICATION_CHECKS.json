@@ -1,0 +1,2885 @@
+{
+  "at": "2026-10-31T11:54:05.504956+00:00",
+  "baseline_configuration": {
+    "absent_in_local_repo_subset": [
+      "codex-rs/.rustfmt.toml",
+      "codex-rs/rust-toolchain",
+      "rustfmt.toml",
+      ".rustfmt.toml",
+      "rust-toolchain.toml",
+      "rust-toolchain"
+    ],
+    "copied": [
+      "codex-rs/rustfmt.toml",
+      "codex-rs/rust-toolchain.toml"
+    ]
+  },
+  "baseline_files": [
+    {
+      "bytes": 78,
+      "path": "codex-rs/rust-toolchain.toml",
+      "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+    },
+    {
+      "bytes": 164,
+      "path": "codex-rs/rustfmt.toml",
+      "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+    },
+    {
+      "bytes": 7838,
+      "path": "justfile",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "bytes": 16599,
+      "path": "scripts/format.py",
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+    },
+    {
+      "bytes": 2030,
+      "path": "scripts/just-shell.py",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    {
+      "bytes": 10206,
+      "path": "scripts/run-nextest.py",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    }
+  ],
+  "checks": {
+    "all_311_additions_in_format_scope": true,
+    "all_formatter_baseline_files_match_fixed_remote_commit": true,
+    "complete_release_verifier": true,
+    "format_view_publication_bytes_unchanged": true,
+    "frozen_sources_and_lane_manifests": true,
+    "historical_sources_not_extracted": true,
+    "original_just_fmt_check": true,
+    "staging_unchanged": true
+  },
+  "commands": [
+    {
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/tmp/hcsn-r11-publish-format-view",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.0037739679974038154
+    },
+    {
+      "command": [
+        "git",
+        "add",
+        "--all"
+      ],
+      "cwd": "/tmp/hcsn-r11-publish-format-view",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.004015061000245623
+    },
+    {
+      "command": [
+        "git",
+        "-c",
+        "user.name=HCSN publication check",
+        "-c",
+        "user.email=publication-check@localhost",
+        "commit",
+        "--quiet",
+        "-m",
+        "Original formatter baseline"
+      ],
+      "cwd": "/tmp/hcsn-r11-publish-format-view",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.006464327001594938
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--check"
+      ],
+      "cwd": "/tmp/hcsn-r11-publish-format-view/codex-rs",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.2146203960001003
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-c",
+        "\nimport hashlib,json\nfrom pathlib import Path\nstage=Path('/workspace/scratch/90465ae04106/r11-release');repo=Path('/workspace/scratch/90465ae04106/hepta-hcsn')\nprefix='tools/hcsn/calibrated_operator_r11_20261031/'\ndef sha(b):return hashlib.sha256(b).hexdigest()\ndef check(path,expected,expected_bytes=None):\n raw=path.read_bytes();actual=sha(raw)\n row=dict(path=str(path),expected_sha256=expected,actual_sha256=actual,bytes=len(raw),passed=actual==expected and (expected_bytes is None or len(raw)==expected_bytes))\n if not row['passed']:raise AssertionError(row)\n return row\nout={}\nfreeze=json.loads((stage/'evidence/training_02/FREEZE.json').read_text())\nout['training_02_source']=[check(stage/name,value) for name,value in freeze['source'].items()]\nout['training_02_models']=[check(stage/'evidence/training_02'/name,value['sha256']) for name,value in freeze['models'].items()]\nout['training_02_artifacts']=[check(stage/'evidence/training_02'/name,value) for name,value in freeze['artifacts'].items()]\nfor lane,filename in [('content','DELIVERY_MANIFEST.json'),('numerics','PUBLICATION_MANIFEST.json')]:\n m=json.loads((stage/lane/filename).read_text())\n out[lane+'_publication_manifest']=[check(stage/lane/row['path'],row['sha256'],row['bytes']) for row in m['files']]\nfor filename in ['evidence/BUILD_02.json','propagation/evidence/BUILD_02.json']:\n m=json.loads((stage/filename).read_text());rows=[];vendor=Path(m['binary']).parents[2]/'vendor'\n for name,expected in m['source_sha256'].items():\n  if name.startswith('cached-dependency/'):\n   stem=name.split('/',1)[1];folder=vendor/stem\n   inventory={str(p.relative_to(folder)):sha(p.read_bytes()) for p in sorted(folder.rglob('*')) if p.is_file()}\n   actual=sha(json.dumps(inventory,sort_keys=True,separators=(',',':')).encode())\n   row=dict(path=name,resolved=str(folder),kind='cached_source_directory',files=len(inventory),expected_sha256=expected,actual_sha256=actual,passed=actual==expected and inventory==m['dependency_sources'][stem]['source_files'])\n   assert row['passed'],row;rows.append(row)\n  else:\n   path=stage/name[len(prefix):] if name.startswith(prefix) else repo/name\n   row=check(path,expected);row.update(recorded_path=name,kind='staging_source' if name.startswith(prefix) else 'repository_base_source');rows.append(row)\n serialization=json.dumps(m['source_sha256'],sort_keys=True) if filename.startswith('propagation/') else json.dumps(m['source_sha256'],sort_keys=True,separators=(',',':'))\n digest=sha(serialization.encode())\n assert digest==m['source_digest'],filename\n out[filename]=dict(rows=rows,source_digest=digest,all_match=True)\nprint(json.dumps(out,sort_keys=True))\n"
+      ],
+      "cwd": "/tmp/hcsn-r11-publish-format-view",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Verified results are included in hash_checks.",
+      "wall_seconds": 0.19352164700103458
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "/workspace/scratch/90465ae04106/r11-release/release.py",
+        "verify",
+        "--release",
+        "/workspace/scratch/90465ae04106/r11-release"
+      ],
+      "cwd": "/tmp/hcsn-r11-publish-format-view",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"manifest_sha256\": \"5494aa549528657f93f20473a5f0880b355b5b6f121ca4f010c9c10292af57b2\",\n  \"maximum_file_bytes\": 466578,\n  \"original_bytes_verified\": 63465796,\n  \"original_files_verified\": 1929,\n  \"passed\": true,\n  \"publication_bytes\": 51196733,\n  \"publication_files\": 310,\n  \"restored\": false\n}\n",
+      "wall_seconds": 0.25273082200146746
+    }
+  ],
+  "format_environment": {
+    "LD_LIBRARY_PATH": "/tmp/hcsn-r10-format-tools/lib",
+    "PATH": "/tmp/hcsn-r10-format-tools/bin:/tmp/pq-r3-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin:/root/.codex/tmp/arg0-linux/codex-arg07AktYH:/opt/codex/codex-path:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/override:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/fallback",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "format_scope": {
+    "added_file_count": 311,
+    "expected_publication_files": 310,
+    "rust_files": [
+      "tools/hcsn/calibrated_operator_r11_20261031/native/grid.rs",
+      "tools/hcsn/calibrated_operator_r11_20261031/native/grid_tests.rs",
+      "tools/hcsn/calibrated_operator_r11_20261031/native/main.rs",
+      "tools/hcsn/calibrated_operator_r11_20261031/native/policy.rs",
+      "tools/hcsn/calibrated_operator_r11_20261031/native/port.rs",
+      "tools/hcsn/calibrated_operator_r11_20261031/propagation/probe.rs",
+      "tools/hcsn/calibrated_operator_r11_20261031/propagation/probe_tests.rs"
+    ],
+    "workflow_files": 1
+  },
+  "format_view": "/tmp/hcsn-r11-publish-format-view",
+  "hash_checks": {
+    "content_publication_manifest": [
+      {
+        "actual_sha256": "f93aee00e412e31bdb08a20681cf424eea31c855f357d5bf8daf739750ea2045",
+        "bytes": 6344,
+        "expected_sha256": "f93aee00e412e31bdb08a20681cf424eea31c855f357d5bf8daf739750ea2045",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/README.md"
+      },
+      {
+        "actual_sha256": "9726c122256a4f29aaef51ced5c060872bb5cf26da76d1b23faa8fd6b42111dd",
+        "bytes": 10177,
+        "expected_sha256": "9726c122256a4f29aaef51ced5c060872bb5cf26da76d1b23faa8fd6b42111dd",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/REPORT_ZH.md"
+      },
+      {
+        "actual_sha256": "10fa6681a3f0dc66fdc12e92b26924cc230871080db5c4016d8836e7e7ba5f24",
+        "bytes": 5203,
+        "expected_sha256": "10fa6681a3f0dc66fdc12e92b26924cc230871080db5c4016d8836e7e7ba5f24",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/CONTENT_AUDIT.json"
+      },
+      {
+        "actual_sha256": "3138bc85dae490d4a0fa77cc71dd49cc3225e6560f01e4d4061ecde8cbee1de2",
+        "bytes": 59216,
+        "expected_sha256": "3138bc85dae490d4a0fa77cc71dd49cc3225e6560f01e4d4061ecde8cbee1de2",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/FREEZE.json"
+      },
+      {
+        "actual_sha256": "a5e8270894412a94611eec6fbf9ff4aa6d873fd38c97e4a6d026c3ea8eea5947",
+        "bytes": 215615,
+        "expected_sha256": "a5e8270894412a94611eec6fbf9ff4aa6d873fd38c97e4a6d026c3ea8eea5947",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/INDEX.json"
+      },
+      {
+        "actual_sha256": "dd45220bac84af6934a5ad07094601444d685dd292cde8ad4688b6afc274f5e7",
+        "bytes": 1753,
+        "expected_sha256": "dd45220bac84af6934a5ad07094601444d685dd292cde8ad4688b6afc274f5e7",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/PROTOCOL.json"
+      },
+      {
+        "actual_sha256": "fabc149a5622aa86380b666ea321a491ceb32d7c52b56f8509403406067060c3",
+        "bytes": 24414,
+        "expected_sha256": "fabc149a5622aa86380b666ea321a491ceb32d7c52b56f8509403406067060c3",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/READ_ONLY_REVIEW.json"
+      },
+      {
+        "actual_sha256": "85d9b8762ec2aaa3dcb01b0acc0d1a5e402753dcd21a040288b2e53337e1a135",
+        "bytes": 401,
+        "expected_sha256": "85d9b8762ec2aaa3dcb01b0acc0d1a5e402753dcd21a040288b2e53337e1a135",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/REGISTRATION.json"
+      },
+      {
+        "actual_sha256": "267d6f182598fcfb30d24d220ff991b1e896f4d68f37e786f778c0f024814324",
+        "bytes": 199786,
+        "expected_sha256": "267d6f182598fcfb30d24d220ff991b1e896f4d68f37e786f778c0f024814324",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/RESULTS.json"
+      },
+      {
+        "actual_sha256": "f3d7e6bd6b69fe98599d66f21b0285162fc6dd807b9e836a6806f88347238a1b",
+        "bytes": 43340,
+        "expected_sha256": "f3d7e6bd6b69fe98599d66f21b0285162fc6dd807b9e836a6806f88347238a1b",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/SUMMARY.json"
+      },
+      {
+        "actual_sha256": "2f98ba2f8f7dd6c41cd46dead1ddbd7a862f3c413ea4f3142e11e650178540fc",
+        "bytes": 376112,
+        "expected_sha256": "2f98ba2f8f7dd6c41cd46dead1ddbd7a862f3c413ea4f3142e11e650178540fc",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0000.tar.gz"
+      },
+      {
+        "actual_sha256": "19f80fd3ebe61f87fa0679710758735366687cba438ad4dbde6d45f6cd8e0a97",
+        "bytes": 259463,
+        "expected_sha256": "19f80fd3ebe61f87fa0679710758735366687cba438ad4dbde6d45f6cd8e0a97",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0001.tar.gz"
+      },
+      {
+        "actual_sha256": "51d473e466c3c31b46cc72ef70a9c93cb9930025b9acab81f5ba7f1cf07151e6",
+        "bytes": 399797,
+        "expected_sha256": "51d473e466c3c31b46cc72ef70a9c93cb9930025b9acab81f5ba7f1cf07151e6",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0002.tar.gz"
+      },
+      {
+        "actual_sha256": "d9587a33e85c89307be9c901667c1eb74a22a3487ddf0383dea77d0bb4e1f76a",
+        "bytes": 317878,
+        "expected_sha256": "d9587a33e85c89307be9c901667c1eb74a22a3487ddf0383dea77d0bb4e1f76a",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0003.tar.gz"
+      },
+      {
+        "actual_sha256": "bafbd4cbe17757872ebfab6814d8a94eb341557c03e4916490feee56434e65a1",
+        "bytes": 333689,
+        "expected_sha256": "bafbd4cbe17757872ebfab6814d8a94eb341557c03e4916490feee56434e65a1",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0004.tar.gz"
+      },
+      {
+        "actual_sha256": "3129a92cdee5a6ba659239a2150c3fc3cd7527ddce6de9cb3cfbde91375c9d1e",
+        "bytes": 343253,
+        "expected_sha256": "3129a92cdee5a6ba659239a2150c3fc3cd7527ddce6de9cb3cfbde91375c9d1e",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0005.tar.gz"
+      },
+      {
+        "actual_sha256": "89e0691f5b253a628756854118d82f573874946fd6ec5056d9bb98f7b5e0d2de",
+        "bytes": 283991,
+        "expected_sha256": "89e0691f5b253a628756854118d82f573874946fd6ec5056d9bb98f7b5e0d2de",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0006.tar.gz"
+      },
+      {
+        "actual_sha256": "b35c97bac794db32c5d2729d4e0b9eef729491ba54b8e8b0f523f908fc1ad253",
+        "bytes": 288002,
+        "expected_sha256": "b35c97bac794db32c5d2729d4e0b9eef729491ba54b8e8b0f523f908fc1ad253",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0007.tar.gz"
+      },
+      {
+        "actual_sha256": "c73f841ef7f40900f3f151b37fc98a636801a80d992095c8075c1c920ce98a20",
+        "bytes": 302196,
+        "expected_sha256": "c73f841ef7f40900f3f151b37fc98a636801a80d992095c8075c1c920ce98a20",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0008.tar.gz"
+      },
+      {
+        "actual_sha256": "f01c8dc669334d3e99c58ada0f0bc7843106d14c80f8b0a522fc506a7ff682fd",
+        "bytes": 293691,
+        "expected_sha256": "f01c8dc669334d3e99c58ada0f0bc7843106d14c80f8b0a522fc506a7ff682fd",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0009.tar.gz"
+      },
+      {
+        "actual_sha256": "960ea370a52c8fda6ebb023eedf8328a10fd9d971953a6a72edfaf4a86dc8d28",
+        "bytes": 310513,
+        "expected_sha256": "960ea370a52c8fda6ebb023eedf8328a10fd9d971953a6a72edfaf4a86dc8d28",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0010.tar.gz"
+      },
+      {
+        "actual_sha256": "d1cfb78e36f0755210b338b7404a53b95da6b5abdcaac88abfff5392280b3745",
+        "bytes": 293038,
+        "expected_sha256": "d1cfb78e36f0755210b338b7404a53b95da6b5abdcaac88abfff5392280b3745",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0011.tar.gz"
+      },
+      {
+        "actual_sha256": "bc1ca6e2fae19cfc33a24012af4e7d3f6ab860ea9ba804dab7a689c2d9eb630a",
+        "bytes": 286544,
+        "expected_sha256": "bc1ca6e2fae19cfc33a24012af4e7d3f6ab860ea9ba804dab7a689c2d9eb630a",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0012.tar.gz"
+      },
+      {
+        "actual_sha256": "8db382a50e43ca810a5ee63e5e924175029d7c5c7c5158252dd5e01db2486c2f",
+        "bytes": 286040,
+        "expected_sha256": "8db382a50e43ca810a5ee63e5e924175029d7c5c7c5158252dd5e01db2486c2f",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0013.tar.gz"
+      },
+      {
+        "actual_sha256": "7f3759ece29abc943b799b811236bec3ac49adc37fc6c235eb3f3ee01b6200fe",
+        "bytes": 310012,
+        "expected_sha256": "7f3759ece29abc943b799b811236bec3ac49adc37fc6c235eb3f3ee01b6200fe",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0014.tar.gz"
+      },
+      {
+        "actual_sha256": "a8504817ab1c85b676d36498e372c9705fffe92ceed6311d87d0037fc5de449f",
+        "bytes": 309304,
+        "expected_sha256": "a8504817ab1c85b676d36498e372c9705fffe92ceed6311d87d0037fc5de449f",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0015.tar.gz"
+      },
+      {
+        "actual_sha256": "641da87086db368857d31cdf7eecfe1ec764b217678f8ea728feca63ccc43656",
+        "bytes": 234189,
+        "expected_sha256": "641da87086db368857d31cdf7eecfe1ec764b217678f8ea728feca63ccc43656",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0016.tar.gz"
+      },
+      {
+        "actual_sha256": "548d999048c4cf3c68117df4746c0b67c35b73b3e0d4283bbdce74806bb9a706",
+        "bytes": 216041,
+        "expected_sha256": "548d999048c4cf3c68117df4746c0b67c35b73b3e0d4283bbdce74806bb9a706",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0017.tar.gz"
+      },
+      {
+        "actual_sha256": "4fbac634b63319930fd81fc27439f46641bd9467647e9839d08f2dd232a0a331",
+        "bytes": 184866,
+        "expected_sha256": "4fbac634b63319930fd81fc27439f46641bd9467647e9839d08f2dd232a0a331",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0018.tar.gz"
+      },
+      {
+        "actual_sha256": "a53347aab998f714e65fdb62bd5f19d907abeb61a92d8e50bac0aca1b7720b6f",
+        "bytes": 239396,
+        "expected_sha256": "a53347aab998f714e65fdb62bd5f19d907abeb61a92d8e50bac0aca1b7720b6f",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0019.tar.gz"
+      },
+      {
+        "actual_sha256": "67fc00d94b8d95081583a20c45ada6017b4ee878be0ccd80760e66492e433be4",
+        "bytes": 349400,
+        "expected_sha256": "67fc00d94b8d95081583a20c45ada6017b4ee878be0ccd80760e66492e433be4",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0020.tar.gz"
+      },
+      {
+        "actual_sha256": "1bc6119b9d99df9478d1cb95559f6e20b6a95ebe02b8a322aec90d9fda23ab7a",
+        "bytes": 359943,
+        "expected_sha256": "1bc6119b9d99df9478d1cb95559f6e20b6a95ebe02b8a322aec90d9fda23ab7a",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0021.tar.gz"
+      },
+      {
+        "actual_sha256": "e5d5f52755445f2b1c60037731f57070b66cae91196a07b2d9fd1fb68ba8c57b",
+        "bytes": 202568,
+        "expected_sha256": "e5d5f52755445f2b1c60037731f57070b66cae91196a07b2d9fd1fb68ba8c57b",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0022.tar.gz"
+      },
+      {
+        "actual_sha256": "90b4429ba0044416cd01a6909227639225b5993a04fec3f6624c3ea232c5072b",
+        "bytes": 205322,
+        "expected_sha256": "90b4429ba0044416cd01a6909227639225b5993a04fec3f6624c3ea232c5072b",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0023.tar.gz"
+      },
+      {
+        "actual_sha256": "4c6ede123ef43ff262305382b39c8e916545db8e7904853ebc793e9f781fa5fa",
+        "bytes": 384061,
+        "expected_sha256": "4c6ede123ef43ff262305382b39c8e916545db8e7904853ebc793e9f781fa5fa",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0024.tar.gz"
+      },
+      {
+        "actual_sha256": "d0ce820387225ca8570ec400293529095f727841a8e9cfef08306ecade21d581",
+        "bytes": 183445,
+        "expected_sha256": "d0ce820387225ca8570ec400293529095f727841a8e9cfef08306ecade21d581",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0025.tar.gz"
+      },
+      {
+        "actual_sha256": "3c0d78d2877dc8abcee9895f98aa8d5b9b1c2d891d98e535a4a62dc4f81d854b",
+        "bytes": 219332,
+        "expected_sha256": "3c0d78d2877dc8abcee9895f98aa8d5b9b1c2d891d98e535a4a62dc4f81d854b",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0026.tar.gz"
+      },
+      {
+        "actual_sha256": "acbc19cd69ada19876abc1ad8839da50bbe4354e60c6942eb8ca41563a0d4a06",
+        "bytes": 364455,
+        "expected_sha256": "acbc19cd69ada19876abc1ad8839da50bbe4354e60c6942eb8ca41563a0d4a06",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0027.tar.gz"
+      },
+      {
+        "actual_sha256": "d66ee95d30cca609c83a2deaff256f4d0948dc9f586b40d05a22790e36852075",
+        "bytes": 381100,
+        "expected_sha256": "d66ee95d30cca609c83a2deaff256f4d0948dc9f586b40d05a22790e36852075",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0028.tar.gz"
+      },
+      {
+        "actual_sha256": "c07fd33f11283297f9841daa695e14c0ac9222a03610742d9924a850cebdeb93",
+        "bytes": 386365,
+        "expected_sha256": "c07fd33f11283297f9841daa695e14c0ac9222a03610742d9924a850cebdeb93",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0029.tar.gz"
+      },
+      {
+        "actual_sha256": "ff3fc0a91ab1ab43d1dd5af866586122021cf45a3fdaa068718ffead870577c6",
+        "bytes": 394362,
+        "expected_sha256": "ff3fc0a91ab1ab43d1dd5af866586122021cf45a3fdaa068718ffead870577c6",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0030.tar.gz"
+      },
+      {
+        "actual_sha256": "30b6dd296b5740d35f7e62b552048e6a5d3f22bf83af2530d263df2a661a73ba",
+        "bytes": 351034,
+        "expected_sha256": "30b6dd296b5740d35f7e62b552048e6a5d3f22bf83af2530d263df2a661a73ba",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0031.tar.gz"
+      },
+      {
+        "actual_sha256": "6ae42a331be292950273374f1feb6cc6171a5a16f5e2b48c0b700ca7eee9bad3",
+        "bytes": 344479,
+        "expected_sha256": "6ae42a331be292950273374f1feb6cc6171a5a16f5e2b48c0b700ca7eee9bad3",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0032.tar.gz"
+      },
+      {
+        "actual_sha256": "701bb50a3dea9a989ce1ca8254062e95e225c60a82188e8aa93da13d2f8f9ae8",
+        "bytes": 389384,
+        "expected_sha256": "701bb50a3dea9a989ce1ca8254062e95e225c60a82188e8aa93da13d2f8f9ae8",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/evidence/confirmation_01/raw_part0033.tar.gz"
+      },
+      {
+        "actual_sha256": "bd01a0d1473ee0446d21378be9e40271d67ccb19991820cff62aa03e5444ed71",
+        "bytes": 7851,
+        "expected_sha256": "bd01a0d1473ee0446d21378be9e40271d67ccb19991820cff62aa03e5444ed71",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/models.py"
+      },
+      {
+        "actual_sha256": "15df91aa5438441ea06ed0bad1cb1e19cdbd1be84cde5864abfe0b5b4979aed5",
+        "bytes": 6936,
+        "expected_sha256": "15df91aa5438441ea06ed0bad1cb1e19cdbd1be84cde5864abfe0b5b4979aed5",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/restore_evidence.py"
+      },
+      {
+        "actual_sha256": "5bbde90a5fc89b306b0b107986b39b405c362b1ae68080e4d84e5d2fe50be35e",
+        "bytes": 18500,
+        "expected_sha256": "5bbde90a5fc89b306b0b107986b39b405c362b1ae68080e4d84e5d2fe50be35e",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/study.py"
+      },
+      {
+        "actual_sha256": "0b37536e19b61253e3e6387892598672ae03d7467c48b0fba3f19bf4292bf648",
+        "bytes": 5714,
+        "expected_sha256": "0b37536e19b61253e3e6387892598672ae03d7467c48b0fba3f19bf4292bf648",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/content/summarize.py"
+      }
+    ],
+    "evidence/BUILD_02.json": {
+      "all_match": true,
+      "rows": [
+        {
+          "actual_sha256": "3df225977b194e17909a73127f298d84a983e074f3a8aef950dfdabf8c88d417",
+          "bytes": 4726,
+          "expected_sha256": "3df225977b194e17909a73127f298d84a983e074f3a8aef950dfdabf8c88d417",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/deletion.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/deletion.rs"
+        },
+        {
+          "actual_sha256": "71a50fc119072b8fe2a36e8431bc4bcbbda9dd5debf6ee24999caba188049745",
+          "bytes": 1832,
+          "expected_sha256": "71a50fc119072b8fe2a36e8431bc4bcbbda9dd5debf6ee24999caba188049745",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/deletion_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/deletion_tests.rs"
+        },
+        {
+          "actual_sha256": "f7e89f69319e86d97d506bc3a656b6b061639470fb6475feb62d6f1694e8f4cd",
+          "bytes": 4441,
+          "expected_sha256": "f7e89f69319e86d97d506bc3a656b6b061639470fb6475feb62d6f1694e8f4cd",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/inference_control.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/inference_control.rs"
+        },
+        {
+          "actual_sha256": "121b4974d95688843b4962a74a7759c4d275ab504909d8d26dca7308246f8128",
+          "bytes": 4428,
+          "expected_sha256": "121b4974d95688843b4962a74a7759c4d275ab504909d8d26dca7308246f8128",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/inference_control_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/inference_control_tests.rs"
+        },
+        {
+          "actual_sha256": "d8bf3aa2183cec3773be8134117166df440a8e0220de33d318e4800a21d5ea1f",
+          "bytes": 22951,
+          "expected_sha256": "d8bf3aa2183cec3773be8134117166df440a8e0220de33d318e4800a21d5ea1f",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/journal.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/journal.rs"
+        },
+        {
+          "actual_sha256": "6630ce721c6cb875cdb95805a804f62338971afd3df7c4a22762186839dc7928",
+          "bytes": 8559,
+          "expected_sha256": "6630ce721c6cb875cdb95805a804f62338971afd3df7c4a22762186839dc7928",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/journal_anchor_tests.rs"
+        },
+        {
+          "actual_sha256": "1162918fde01466d9d7b7abb33fd502dca289b970e84b37168ad4e2ca0692252",
+          "bytes": 1270,
+          "expected_sha256": "1162918fde01466d9d7b7abb33fd502dca289b970e84b37168ad4e2ca0692252",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/journal_lock.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/journal_lock.rs"
+        },
+        {
+          "actual_sha256": "d889a32c0a56dc36842acb1889abfe0e2fa03c8839ab4500ab7d2487a1ea0540",
+          "bytes": 8934,
+          "expected_sha256": "d889a32c0a56dc36842acb1889abfe0e2fa03c8839ab4500ab7d2487a1ea0540",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/journal_segment_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/journal_segment_tests.rs"
+        },
+        {
+          "actual_sha256": "6fe8271500c11fd6e5e445d238e636a9de4edd17e08318ee38bf9b5189f7bab8",
+          "bytes": 15094,
+          "expected_sha256": "6fe8271500c11fd6e5e445d238e636a9de4edd17e08318ee38bf9b5189f7bab8",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/journal_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/journal_tests.rs"
+        },
+        {
+          "actual_sha256": "dc441b025b4ddbc8fa1b5622c7f3092406c5a5067c9c1fd886d02578c9d01c37",
+          "bytes": 9491,
+          "expected_sha256": "dc441b025b4ddbc8fa1b5622c7f3092406c5a5067c9c1fd886d02578c9d01c37",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/lib.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/lib.rs"
+        },
+        {
+          "actual_sha256": "add9642dfff13e663d4127d9d119ad6ff7dd19f0e3c8935b9de19f2b0c9a962e",
+          "bytes": 1975,
+          "expected_sha256": "add9642dfff13e663d4127d9d119ad6ff7dd19f0e3c8935b9de19f2b0c9a962e",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/lib_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/lib_tests.rs"
+        },
+        {
+          "actual_sha256": "114cfb3367d01612e684021a8961cb7f4d742f8855f90dd792db108081eaa471",
+          "bytes": 14553,
+          "expected_sha256": "114cfb3367d01612e684021a8961cb7f4d742f8855f90dd792db108081eaa471",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/plasticity.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/plasticity.rs"
+        },
+        {
+          "actual_sha256": "3d2175a990711873320ba65166aaa77cb45b328214b9356c35cff30ddd2a638b",
+          "bytes": 3939,
+          "expected_sha256": "3d2175a990711873320ba65166aaa77cb45b328214b9356c35cff30ddd2a638b",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/plasticity_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/plasticity_tests.rs"
+        },
+        {
+          "actual_sha256": "c397c867dac6877f6f9b24569798057e988b1c5aed0befbb6d8f2b1f59446b60",
+          "bytes": 21626,
+          "expected_sha256": "c397c867dac6877f6f9b24569798057e988b1c5aed0befbb6d8f2b1f59446b60",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/population_v2.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/population_v2.rs"
+        },
+        {
+          "actual_sha256": "a7de122f8fd2d24118f3d894ceeca56c940113992ab972bf8e4f914cfa3f805e",
+          "bytes": 4551,
+          "expected_sha256": "a7de122f8fd2d24118f3d894ceeca56c940113992ab972bf8e4f914cfa3f805e",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/population_v2_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/population_v2_tests.rs"
+        },
+        {
+          "actual_sha256": "240a3ae18713aea814dad483c9470c34212a1d4d50a9aae84007e8f3dbc6bf35",
+          "bytes": 38284,
+          "expected_sha256": "240a3ae18713aea814dad483c9470c34212a1d4d50a9aae84007e8f3dbc6bf35",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/protocol.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/protocol.rs"
+        },
+        {
+          "actual_sha256": "5787899890bcd16aaea9042b5924583fa71a3d9f755debf6bc1b05bfa626ee69",
+          "bytes": 11489,
+          "expected_sha256": "5787899890bcd16aaea9042b5924583fa71a3d9f755debf6bc1b05bfa626ee69",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/protocol_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/protocol_tests.rs"
+        },
+        {
+          "actual_sha256": "b425d7a58aec3c4b29b18875141bcc2d1a6ec1c743ac941ff3cff48694fa4520",
+          "bytes": 8503,
+          "expected_sha256": "b425d7a58aec3c4b29b18875141bcc2d1a6ec1c743ac941ff3cff48694fa4520",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/qualification.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/qualification.rs"
+        },
+        {
+          "actual_sha256": "c732fb1b35fad52b5108ebc4aa7dd2a4f007ae6ba4d48ac1352e02f91f3876cb",
+          "bytes": 4844,
+          "expected_sha256": "c732fb1b35fad52b5108ebc4aa7dd2a4f007ae6ba4d48ac1352e02f91f3876cb",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/qualification_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/qualification_tests.rs"
+        },
+        {
+          "actual_sha256": "bace4a3c36a2a4199a975aeac73041011ed487b2d308c75c4e062b25e6451fad",
+          "bytes": 16402,
+          "expected_sha256": "bace4a3c36a2a4199a975aeac73041011ed487b2d308c75c4e062b25e6451fad",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/runtime.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/runtime.rs"
+        },
+        {
+          "actual_sha256": "320be5a7bdb7b997844da3ca168536f9458b046151e5dbe3d675fe19ed564f9a",
+          "bytes": 17193,
+          "expected_sha256": "320be5a7bdb7b997844da3ca168536f9458b046151e5dbe3d675fe19ed564f9a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/runtime_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/runtime_tests.rs"
+        },
+        {
+          "actual_sha256": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b",
+          "bytes": 21134,
+          "expected_sha256": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/runtime_types.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/runtime_types.rs"
+        },
+        {
+          "actual_sha256": "bc5a1f64ddfda4e603e590d62b0ed01fa5b0b3cd54f1d1d4407477af5bed2810",
+          "bytes": 15728,
+          "expected_sha256": "bc5a1f64ddfda4e603e590d62b0ed01fa5b0b3cd54f1d1d4407477af5bed2810",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/sparse.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/sparse.rs"
+        },
+        {
+          "actual_sha256": "055790ef7be81f8db53fb270d82fd845c3d530f2bb62d4fe220526dc8eb97bce",
+          "bytes": 3808,
+          "expected_sha256": "055790ef7be81f8db53fb270d82fd845c3d530f2bb62d4fe220526dc8eb97bce",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/sparse_body_scope_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/sparse_body_scope_tests.rs"
+        },
+        {
+          "actual_sha256": "40069dacc61797df327402da7a9f74e7838db5757a124587eaf3f158e6998a8b",
+          "bytes": 10294,
+          "expected_sha256": "40069dacc61797df327402da7a9f74e7838db5757a124587eaf3f158e6998a8b",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/sparse_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/sparse_tests.rs"
+        },
+        {
+          "actual_sha256": "69bca85b5d839db1fb0552bd521515645045b04a2e696828c30efbce77f57213",
+          "bytes": 8398,
+          "expected_sha256": "69bca85b5d839db1fb0552bd521515645045b04a2e696828c30efbce77f57213",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/witness.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/witness.rs"
+        },
+        {
+          "actual_sha256": "fcd257565eb0017aebbfbbabb6b0d2c59367e044ba0330b018bb52ce976074ac",
+          "bytes": 4769,
+          "expected_sha256": "fcd257565eb0017aebbfbbabb6b0d2c59367e044ba0330b018bb52ce976074ac",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/witness_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/witness_tests.rs"
+        },
+        {
+          "actual_sha256": "2cb7407a89d8ad4839e81abee4814b4a41af98435486308b705f365db264d99e",
+          "bytes": 29683,
+          "expected_sha256": "2cb7407a89d8ad4839e81abee4814b4a41af98435486308b705f365db264d99e",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/durable_control.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/durable_control.rs"
+        },
+        {
+          "actual_sha256": "f67623dae2e833d2fa4e27183ebb63be2ff838a6d3b87a0d833b296b4e345f0d",
+          "bytes": 5586,
+          "expected_sha256": "f67623dae2e833d2fa4e27183ebb63be2ff838a6d3b87a0d833b296b4e345f0d",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs"
+        },
+        {
+          "actual_sha256": "2ed6f5f02e069824e72c2975661c92d9d850e7d9bab4ab24dd525abb315bd11c",
+          "bytes": 6729,
+          "expected_sha256": "2ed6f5f02e069824e72c2975661c92d9d850e7d9bab4ab24dd525abb315bd11c",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/durable_history_tests.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/durable_history_tests.rs"
+        },
+        {
+          "actual_sha256": "85c8c13691909f22d864ac43ea322c5fc6d2a504b5a46e4c207d8574f12d73fb",
+          "bytes": 8071,
+          "expected_sha256": "85c8c13691909f22d864ac43ea322c5fc6d2a504b5a46e4c207d8574f12d73fb",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/lib.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/lib.rs"
+        },
+        {
+          "actual_sha256": "706c64c84039d9a043b4d3735403787400525575e16bc840c5f65e04a2b70dc8",
+          "bytes": 2098,
+          "expected_sha256": "706c64c84039d9a043b4d3735403787400525575e16bc840c5f65e04a2b70dc8",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/lib_tests.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/lib_tests.rs"
+        },
+        {
+          "actual_sha256": "bdee48d7589675b597bb734850c08bb18fa94483029657612bee4e71650bd849",
+          "bytes": 32502,
+          "expected_sha256": "bdee48d7589675b597bb734850c08bb18fa94483029657612bee4e71650bd849",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/native_control.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/native_control.rs"
+        },
+        {
+          "actual_sha256": "8a703e5b4c87e50a60c941a54dfb95365c550dccbc8394d039365406dd8f59ca",
+          "bytes": 23275,
+          "expected_sha256": "8a703e5b4c87e50a60c941a54dfb95365c550dccbc8394d039365406dd8f59ca",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/native_control_tests.rs"
+        },
+        {
+          "actual_sha256": "32fc64ae461621b4f6a8f20d3ff4e17ded53c6a00d9338fd8594c1539423e72b",
+          "bytes": 12836,
+          "expected_sha256": "32fc64ae461621b4f6a8f20d3ff4e17ded53c6a00d9338fd8594c1539423e72b",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/neuron_feature.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/neuron_feature.rs"
+        },
+        {
+          "actual_sha256": "4119b9ca64eef5b6c283ffacc418b6e64d016a99e3ca63fc22cd0d0c164e0561",
+          "bytes": 3709,
+          "expected_sha256": "4119b9ca64eef5b6c283ffacc418b6e64d016a99e3ca63fc22cd0d0c164e0561",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/neuron_feature_tests.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/neuron_feature_tests.rs"
+        },
+        {
+          "actual_sha256": "5907602ef8128b3237991e737e2fc687eb5ac9c716505cc7d884eed9523ea2a9",
+          "bytes": 3413,
+          "expected_sha256": "5907602ef8128b3237991e737e2fc687eb5ac9c716505cc7d884eed9523ea2a9",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/bounded.rs",
+          "recorded_path": "codex-rs/hepta-types/src/bounded.rs"
+        },
+        {
+          "actual_sha256": "3145c56c2882e91420bc994dd93f3375e1b532b03331826868d0ecfc019077bc",
+          "bytes": 1642,
+          "expected_sha256": "3145c56c2882e91420bc994dd93f3375e1b532b03331826868d0ecfc019077bc",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/bounded_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/bounded_tests.rs"
+        },
+        {
+          "actual_sha256": "d7df2b3581046fec4d7350747b1a8053a549c6feb33e462802107a4eb4acd391",
+          "bytes": 15228,
+          "expected_sha256": "d7df2b3581046fec4d7350747b1a8053a549c6feb33e462802107a4eb4acd391",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/canonical_digest.rs",
+          "recorded_path": "codex-rs/hepta-types/src/canonical_digest.rs"
+        },
+        {
+          "actual_sha256": "9985f3ac27b0f357653206f4788cb366b623548c53502d277cd81f1a0f3d8fbe",
+          "bytes": 14679,
+          "expected_sha256": "9985f3ac27b0f357653206f4788cb366b623548c53502d277cd81f1a0f3d8fbe",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/canonical_digest_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/canonical_digest_tests.rs"
+        },
+        {
+          "actual_sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2",
+          "bytes": 4474,
+          "expected_sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/digest.rs",
+          "recorded_path": "codex-rs/hepta-types/src/digest.rs"
+        },
+        {
+          "actual_sha256": "9ff87ab6ffb17f27c2a23762893f641bb55edaff33f8bfb307729d9be8295a6c",
+          "bytes": 1484,
+          "expected_sha256": "9ff87ab6ffb17f27c2a23762893f641bb55edaff33f8bfb307729d9be8295a6c",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/digest_stream_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/digest_stream_tests.rs"
+        },
+        {
+          "actual_sha256": "838dc12e305735321c1028dabb7c5dd4e363f1bced8126d2c50eb7527febe37c",
+          "bytes": 1719,
+          "expected_sha256": "838dc12e305735321c1028dabb7c5dd4e363f1bced8126d2c50eb7527febe37c",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/digest_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/digest_tests.rs"
+        },
+        {
+          "actual_sha256": "38de891c6a9dd6a2889c0d6a83fd0bcecf6ed17e2b7090739df8d2effe0b2cff",
+          "bytes": 3717,
+          "expected_sha256": "38de891c6a9dd6a2889c0d6a83fd0bcecf6ed17e2b7090739df8d2effe0b2cff",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/fixed.rs",
+          "recorded_path": "codex-rs/hepta-types/src/fixed.rs"
+        },
+        {
+          "actual_sha256": "cfa86da0bc63fa273c3124bbd0988fd6bd22383a0338b15ac2a944c80aa5544b",
+          "bytes": 2115,
+          "expected_sha256": "cfa86da0bc63fa273c3124bbd0988fd6bd22383a0338b15ac2a944c80aa5544b",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/fixed_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/fixed_tests.rs"
+        },
+        {
+          "actual_sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3",
+          "bytes": 13344,
+          "expected_sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/identity.rs",
+          "recorded_path": "codex-rs/hepta-types/src/identity.rs"
+        },
+        {
+          "actual_sha256": "c3bba7041a11ead1ccb655fb6491c5835a3020c3f26d4deb22edc94a4f8e34be",
+          "bytes": 5482,
+          "expected_sha256": "c3bba7041a11ead1ccb655fb6491c5835a3020c3f26d4deb22edc94a4f8e34be",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/identity_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/identity_tests.rs"
+        },
+        {
+          "actual_sha256": "6793a05230b404884f1e2aed89a4369c52ad9a7f7adbb52a39a3ff1bf0ef5283",
+          "bytes": 3046,
+          "expected_sha256": "6793a05230b404884f1e2aed89a4369c52ad9a7f7adbb52a39a3ff1bf0ef5283",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/lib.rs",
+          "recorded_path": "codex-rs/hepta-types/src/lib.rs"
+        },
+        {
+          "actual_sha256": "d183cfb5f6981cb9d767a0d8a90cb895153f932ebc3c635ceb4f0b86e090cbfd",
+          "bytes": 9505,
+          "expected_sha256": "d183cfb5f6981cb9d767a0d8a90cb895153f932ebc3c635ceb4f0b86e090cbfd",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/numeric_conversion.rs",
+          "recorded_path": "codex-rs/hepta-types/src/numeric_conversion.rs"
+        },
+        {
+          "actual_sha256": "554d51398fdef4cd69ccc43b3f0d4a002a2a8eed20552a8228770bfde364883a",
+          "bytes": 11101,
+          "expected_sha256": "554d51398fdef4cd69ccc43b3f0d4a002a2a8eed20552a8228770bfde364883a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
+        },
+        {
+          "actual_sha256": "d656fa38fea5a18105da911107caae4d326a653854df0c5baed10d4ab3c6bbe9",
+          "bytes": 9363,
+          "expected_sha256": "d656fa38fea5a18105da911107caae4d326a653854df0c5baed10d4ab3c6bbe9",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/numeric_profile.rs",
+          "recorded_path": "codex-rs/hepta-types/src/numeric_profile.rs"
+        },
+        {
+          "actual_sha256": "fab0d6bd469412e77191e43cb17dde7f9638b07292ea5e2df5ad242cf616ea1a",
+          "bytes": 1969,
+          "expected_sha256": "fab0d6bd469412e77191e43cb17dde7f9638b07292ea5e2df5ad242cf616ea1a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/numeric_profile_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/numeric_profile_tests.rs"
+        },
+        {
+          "actual_sha256": "f01b741add536a597bf9c87664f83909fd77989d19ff4e2fc2c752d98cfbf593",
+          "bytes": 4948,
+          "expected_sha256": "f01b741add536a597bf9c87664f83909fd77989d19ff4e2fc2c752d98cfbf593",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/prompt_delivery.rs",
+          "recorded_path": "codex-rs/hepta-types/src/prompt_delivery.rs"
+        },
+        {
+          "actual_sha256": "1ad1075b9433c1a31629ba3df0509ce16ae7c70060797d2ea08f21b5a2c63f1a",
+          "bytes": 2578,
+          "expected_sha256": "1ad1075b9433c1a31629ba3df0509ce16ae7c70060797d2ea08f21b5a2c63f1a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/prompt_delivery_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/prompt_delivery_tests.rs"
+        },
+        {
+          "actual_sha256": "ad15fac503e3988c3fc5d8892136f91c45bb41a12266de5e037a31a6a690b005",
+          "bytes": 9460,
+          "expected_sha256": "ad15fac503e3988c3fc5d8892136f91c45bb41a12266de5e037a31a6a690b005",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/registry.rs",
+          "recorded_path": "codex-rs/hepta-types/src/registry.rs"
+        },
+        {
+          "actual_sha256": "d964bd53b636362da367fc9edf053c72272d62416ef231b632ee3dda6a5ec59a",
+          "bytes": 5008,
+          "expected_sha256": "d964bd53b636362da367fc9edf053c72272d62416ef231b632ee3dda6a5ec59a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/registry_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/registry_tests.rs"
+        },
+        {
+          "actual_sha256": "e1888c64c8682491837c907a91a960327530251450ecb38e70a60df792adba22",
+          "bytes": 14135,
+          "expected_sha256": "e1888c64c8682491837c907a91a960327530251450ecb38e70a60df792adba22",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/topology.rs",
+          "recorded_path": "codex-rs/hepta-types/src/topology.rs"
+        },
+        {
+          "actual_sha256": "1ebe7dcf2b82b8143aa298059afff3ea17ee76f7c6140aae41d099bed5031c48",
+          "bytes": 495,
+          "expected_sha256": "1ebe7dcf2b82b8143aa298059afff3ea17ee76f7c6140aae41d099bed5031c48",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/Cargo.toml",
+          "recorded_path": "codex-rs/hepta-neuron/Cargo.toml"
+        },
+        {
+          "actual_sha256": "7ca860f039344b7629db786ccb069d150ee87838ff8f1211e9a89935da00c16e",
+          "bytes": 384,
+          "expected_sha256": "7ca860f039344b7629db786ccb069d150ee87838ff8f1211e9a89935da00c16e",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/Cargo.toml",
+          "recorded_path": "codex-rs/hepta-infer-core/Cargo.toml"
+        },
+        {
+          "actual_sha256": "0df592ec8d8b63b9c8e7f9ca9f74feca802ffbd3b71dd0959c4127b4ad3109b0",
+          "bytes": 268,
+          "expected_sha256": "0df592ec8d8b63b9c8e7f9ca9f74feca802ffbd3b71dd0959c4127b4ad3109b0",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/Cargo.toml",
+          "recorded_path": "codex-rs/hepta-types/Cargo.toml"
+        },
+        {
+          "actual_sha256": "eb434b87eb5d12cc9cc49c1e72c577d7d5378ae9dc36b2b5f41fc3181be0b41c",
+          "bytes": 3477,
+          "expected_sha256": "eb434b87eb5d12cc9cc49c1e72c577d7d5378ae9dc36b2b5f41fc3181be0b41c",
+          "kind": "staging_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/r11-release/native/grid.rs",
+          "recorded_path": "tools/hcsn/calibrated_operator_r11_20261031/native/grid.rs"
+        },
+        {
+          "actual_sha256": "f2dda0eee38385e6dd9fa735e275a6ce661e53715c07abf9b38ce63b8e1d44ce",
+          "bytes": 1310,
+          "expected_sha256": "f2dda0eee38385e6dd9fa735e275a6ce661e53715c07abf9b38ce63b8e1d44ce",
+          "kind": "staging_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/r11-release/native/grid_tests.rs",
+          "recorded_path": "tools/hcsn/calibrated_operator_r11_20261031/native/grid_tests.rs"
+        },
+        {
+          "actual_sha256": "7bd59f185d7d8c0aaa731e7d9cc081120b01d7835debd91335fbae75a4ca341d",
+          "bytes": 4197,
+          "expected_sha256": "7bd59f185d7d8c0aaa731e7d9cc081120b01d7835debd91335fbae75a4ca341d",
+          "kind": "staging_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/r11-release/native/main.rs",
+          "recorded_path": "tools/hcsn/calibrated_operator_r11_20261031/native/main.rs"
+        },
+        {
+          "actual_sha256": "de9f8837d27b4fb19e95693205f6fb748ddac3c79bb53f6e973f182a5e5dc15b",
+          "bytes": 7680,
+          "expected_sha256": "de9f8837d27b4fb19e95693205f6fb748ddac3c79bb53f6e973f182a5e5dc15b",
+          "kind": "staging_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/r11-release/native/policy.rs",
+          "recorded_path": "tools/hcsn/calibrated_operator_r11_20261031/native/policy.rs"
+        },
+        {
+          "actual_sha256": "a7432c28bd89595308f19ca21f5f23e3361c45267b3396bdaefa98391e870320",
+          "bytes": 4963,
+          "expected_sha256": "a7432c28bd89595308f19ca21f5f23e3361c45267b3396bdaefa98391e870320",
+          "kind": "staging_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/r11-release/native/port.rs",
+          "recorded_path": "tools/hcsn/calibrated_operator_r11_20261031/native/port.rs"
+        },
+        {
+          "actual_sha256": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9",
+          "bytes": 15754,
+          "expected_sha256": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/round9_20261031/native/src/cell.rs",
+          "recorded_path": "tools/hcsn/round9_20261031/native/src/cell.rs"
+        },
+        {
+          "actual_sha256": "93b34ac7ce743e3cafc5d54124dc477d03999f47b99fcc23ebc6439f7d22ae79",
+          "bytes": 14334,
+          "expected_sha256": "93b34ac7ce743e3cafc5d54124dc477d03999f47b99fcc23ebc6439f7d22ae79",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/round9_20261031/native/src/content.rs",
+          "recorded_path": "tools/hcsn/round9_20261031/native/src/content.rs"
+        },
+        {
+          "actual_sha256": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+          "bytes": 5493,
+          "expected_sha256": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/round9_20261031/native/src/native.rs",
+          "recorded_path": "tools/hcsn/round9_20261031/native/src/native.rs"
+        },
+        {
+          "actual_sha256": "870aaa407f66eab55df98b0ef386a7a60e1209bae3368521454dac38248d294f",
+          "bytes": 14358,
+          "expected_sha256": "870aaa407f66eab55df98b0ef386a7a60e1209bae3368521454dac38248d294f",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/round9_20261031/native/src/owner.rs",
+          "recorded_path": "tools/hcsn/round9_20261031/native/src/owner.rs"
+        },
+        {
+          "actual_sha256": "2340e300afa93cc370843faa1aca84d0f03640f86daf1d4ebbf60113f0c0ca1a",
+          "bytes": 3510,
+          "expected_sha256": "2340e300afa93cc370843faa1aca84d0f03640f86daf1d4ebbf60113f0c0ca1a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/round9_20261031/native/src/schedule.rs",
+          "recorded_path": "tools/hcsn/round9_20261031/native/src/schedule.rs"
+        },
+        {
+          "actual_sha256": "14789ce188aa946361563c0b2235cd4930034efff43b36935d8a6ead507dea57",
+          "bytes": 10259,
+          "expected_sha256": "14789ce188aa946361563c0b2235cd4930034efff43b36935d8a6ead507dea57",
+          "kind": "staging_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/r11-release/build.py",
+          "recorded_path": "tools/hcsn/calibrated_operator_r11_20261031/build.py"
+        },
+        {
+          "actual_sha256": "5a0ba6c70ffd69790a77d95cfdff64b42e63f81914351a00c469d0c9b377f8a1",
+          "bytes": 16335,
+          "expected_sha256": "5a0ba6c70ffd69790a77d95cfdff64b42e63f81914351a00c469d0c9b377f8a1",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/task_native_loop_20261031/native/owner.rs",
+          "recorded_path": "tools/hcsn/task_native_loop_20261031/native/owner.rs"
+        },
+        {
+          "actual_sha256": "9cbbfd03a3c9c3ac0edbeaea9e469d4f277305d4e0e39038165190396e4ede48",
+          "bytes": 3127,
+          "expected_sha256": "9cbbfd03a3c9c3ac0edbeaea9e469d4f277305d4e0e39038165190396e4ede48",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/task_native_loop_20261031/native/store.rs",
+          "recorded_path": "tools/hcsn/task_native_loop_20261031/native/store.rs"
+        },
+        {
+          "actual_sha256": "1a97dae909cbe35a75dd48f6c8382e0fdb7726742e54aff271065a579957ece6",
+          "bytes": 12484,
+          "expected_sha256": "1a97dae909cbe35a75dd48f6c8382e0fdb7726742e54aff271065a579957ece6",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/task_native_loop_20261031/native/task.rs",
+          "recorded_path": "tools/hcsn/task_native_loop_20261031/native/task.rs"
+        },
+        {
+          "actual_sha256": "11295aa4b9ed8612647cef803e99ce6ce073e4ad211cbc9c3e02413cd9f35ba7",
+          "expected_sha256": "11295aa4b9ed8612647cef803e99ce6ce073e4ad211cbc9c3e02413cd9f35ba7",
+          "files": 11,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/block-buffer-0.10.4",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/block-buffer-0.10.4"
+        },
+        {
+          "actual_sha256": "eb5d7b35f7740950ccc175fb67864d77729b2e5b75939c42d45b679057f8fa3d",
+          "expected_sha256": "eb5d7b35f7740950ccc175fb67864d77729b2e5b75939c42d45b679057f8fa3d",
+          "files": 15,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/cfg-if-1.0.5",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/cfg-if-1.0.5"
+        },
+        {
+          "actual_sha256": "c69efae2b7ae867a8ca5de3dbef34c8c644f7b922b3ae6b5905489ddbef8fae0",
+          "expected_sha256": "c69efae2b7ae867a8ca5de3dbef34c8c644f7b922b3ae6b5905489ddbef8fae0",
+          "files": 17,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/cpufeatures-0.2.17",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/cpufeatures-0.2.17"
+        },
+        {
+          "actual_sha256": "f5971e8631f20612313ceed2a98cf47ba9d519cfc5f60e17027a4522dafb14db",
+          "expected_sha256": "f5971e8631f20612313ceed2a98cf47ba9d519cfc5f60e17027a4522dafb14db",
+          "files": 10,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/crypto-common-0.1.7",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/crypto-common-0.1.7"
+        },
+        {
+          "actual_sha256": "7d225867e94fd5f5f1f96c190a7bfb632cbb5aabca9e74fc630d4209a106b85b",
+          "expected_sha256": "7d225867e94fd5f5f1f96c190a7bfb632cbb5aabca9e74fc630d4209a106b85b",
+          "files": 17,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/diff-0.1.13",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/diff-0.1.13"
+        },
+        {
+          "actual_sha256": "f9451b6d9c8c76ae3ee0422d6de0c39c23507f6b205449e237e75fb8b88a22d8",
+          "expected_sha256": "f9451b6d9c8c76ae3ee0422d6de0c39c23507f6b205449e237e75fb8b88a22d8",
+          "files": 22,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/digest-0.10.7",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/digest-0.10.7"
+        },
+        {
+          "actual_sha256": "583f374d48c65e0188a75779b4c6615566633fcec18973152d23939c87c849f0",
+          "expected_sha256": "583f374d48c65e0188a75779b4c6615566633fcec18973152d23939c87c849f0",
+          "files": 17,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/generic-array-0.14.7",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/generic-array-0.14.7"
+        },
+        {
+          "actual_sha256": "a761749d2d36ddc7f6e02c6b7cefea2758c5a71a5550c9ab17c8adcf15e5e445",
+          "expected_sha256": "a761749d2d36ddc7f6e02c6b7cefea2758c5a71a5550c9ab17c8adcf15e5e445",
+          "files": 15,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/itoa-1.0.18",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/itoa-1.0.18"
+        },
+        {
+          "actual_sha256": "e7f6d304dde3e0925924378a3f1fb17dc6adeb6a555c2b885cc89d0be0677c3c",
+          "expected_sha256": "e7f6d304dde3e0925924378a3f1fb17dc6adeb6a555c2b885cc89d0be0677c3c",
+          "files": 361,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/libc-0.2.186",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/libc-0.2.186"
+        },
+        {
+          "actual_sha256": "a66e032db96d182c6503d14200ed295bdf360ec840b829fa543a23fd96b00307",
+          "expected_sha256": "a66e032db96d182c6503d14200ed295bdf360ec840b829fa543a23fd96b00307",
+          "files": 60,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/memchr-2.8.3",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/memchr-2.8.3"
+        },
+        {
+          "actual_sha256": "512283a99026697fddda974f14af2163a6a66ea2b1bd72bdcb94e74d491a9242",
+          "expected_sha256": "512283a99026697fddda974f14af2163a6a66ea2b1bd72bdcb94e74d491a9242",
+          "files": 16,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/pretty_assertions-1.4.1",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/pretty_assertions-1.4.1"
+        },
+        {
+          "actual_sha256": "22d6f70b576c6bb75bb1b5a081de4171083d7ef0beb632fd700cd2c92ce8cd81",
+          "expected_sha256": "22d6f70b576c6bb75bb1b5a081de4171083d7ef0beb632fd700cd2c92ce8cd81",
+          "files": 34,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/proc-macro2-1.0.107",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/proc-macro2-1.0.107"
+        },
+        {
+          "actual_sha256": "59ea157317d5579beadc19ad670e0b48bab6b3b1a1f2cc88a89f29f886d8952f",
+          "expected_sha256": "59ea157317d5579beadc19ad670e0b48bab6b3b1a1f2cc88a89f29f886d8952f",
+          "files": 36,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/quote-1.0.47",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/quote-1.0.47"
+        },
+        {
+          "actual_sha256": "c7cd1457ab9bbd4dc88e228af82e7284b107c341beb870e076a60be38eced8a5",
+          "expected_sha256": "c7cd1457ab9bbd4dc88e228af82e7284b107c341beb870e076a60be38eced8a5",
+          "files": 34,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/serde-1.0.229",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/serde-1.0.229"
+        },
+        {
+          "actual_sha256": "62d5664a4e897a061fda686acecdd6a071e7bdcd46c57275de6060d81de6f9b3",
+          "expected_sha256": "62d5664a4e897a061fda686acecdd6a071e7bdcd46c57275de6060d81de6f9b3",
+          "files": 28,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/serde_core-1.0.229",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/serde_core-1.0.229"
+        },
+        {
+          "actual_sha256": "9277f41d6be51c41eaed863218e2b8edefbf22c02ba8c13a42849548d0ede4b8",
+          "expected_sha256": "9277f41d6be51c41eaed863218e2b8edefbf22c02ba8c13a42849548d0ede4b8",
+          "files": 37,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/serde_derive-1.0.229",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/serde_derive-1.0.229"
+        },
+        {
+          "actual_sha256": "f39e61ed616f388caef429c1bc4848bfac569338a9ccee3cf58576be7cca817d",
+          "expected_sha256": "f39e61ed616f388caef429c1bc4848bfac569338a9ccee3cf58576be7cca817d",
+          "files": 90,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/serde_json-1.0.151",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/serde_json-1.0.151"
+        },
+        {
+          "actual_sha256": "66f39f46eea848e2bfa536625578cc92ab18f9f30280f57d84a8fedcef23f298",
+          "expected_sha256": "66f39f46eea848e2bfa536625578cc92ab18f9f30280f57d84a8fedcef23f298",
+          "files": 32,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/sha2-0.10.9",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/sha2-0.10.9"
+        },
+        {
+          "actual_sha256": "4f7d11e616c46033fdc41483fb08bd4953c30e49fb0f1d4fd5640c31ffd50460",
+          "expected_sha256": "4f7d11e616c46033fdc41483fb08bd4953c30e49fb0f1d4fd5640c31ffd50460",
+          "files": 105,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/syn-3.0.9",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/syn-3.0.9"
+        },
+        {
+          "actual_sha256": "bad2789d550bad305df3ce89460d484aa432c1b1897bf286b4d25f8ed8301101",
+          "expected_sha256": "bad2789d550bad305df3ce89460d484aa432c1b1897bf286b4d25f8ed8301101",
+          "files": 27,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/typenum-1.20.1",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/typenum-1.20.1"
+        },
+        {
+          "actual_sha256": "61f3a9a5a5fa3744b0b7c73e234baea7ca2e0b6e4c60a0785c68863779a295c9",
+          "expected_sha256": "61f3a9a5a5fa3744b0b7c73e234baea7ca2e0b6e4c60a0785c68863779a295c9",
+          "files": 27,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/unicode-ident-1.0.27",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/unicode-ident-1.0.27"
+        },
+        {
+          "actual_sha256": "7f4d458a311455ec5051c044fd4126b16e4ef0e6a56ecb95aa53c84d4a35bf33",
+          "expected_sha256": "7f4d458a311455ec5051c044fd4126b16e4ef0e6a56ecb95aa53c84d4a35bf33",
+          "files": 14,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/version_check-0.9.5",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/version_check-0.9.5"
+        },
+        {
+          "actual_sha256": "315681532950939ab2d0cc9456fadb4426a37a7221162838c814cbe7748cb0a6",
+          "expected_sha256": "315681532950939ab2d0cc9456fadb4426a37a7221162838c814cbe7748cb0a6",
+          "files": 24,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/yansi-1.0.1",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/yansi-1.0.1"
+        },
+        {
+          "actual_sha256": "32964b084daa2c2fb887f0564c4ec318dbd86610463fd93c5b2b901152bb33b6",
+          "expected_sha256": "32964b084daa2c2fb887f0564c4ec318dbd86610463fd93c5b2b901152bb33b6",
+          "files": 18,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/zmij-1.0.23",
+          "resolved": "/tmp/hcsn-r11-native-build02/vendor/zmij-1.0.23"
+        }
+      ],
+      "source_digest": "3e33f6e25a6da7188e9a9b0b7800b75c6b5020cd0de96a663ee414b9a9338c29"
+    },
+    "numerics_publication_manifest": [
+      {
+        "actual_sha256": "74c16b470d13351c7d853f7f196c08e035780e0ef1b81b89f8a648b2deeea59b",
+        "bytes": 2685,
+        "expected_sha256": "74c16b470d13351c7d853f7f196c08e035780e0ef1b81b89f8a648b2deeea59b",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/DEVELOPMENT_AUDIT_02.py.gz"
+      },
+      {
+        "actual_sha256": "692b430628c0f482483553401fd2d517fe28ea6a73a8ec1fe62590c32f24635d",
+        "bytes": 2597,
+        "expected_sha256": "692b430628c0f482483553401fd2d517fe28ea6a73a8ec1fe62590c32f24635d",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/DEVELOPMENT_AUDIT_RUNNER_01.py.gz"
+      },
+      {
+        "actual_sha256": "de9db91f8fa28ef5954084dec0e7d5fd0f203a45eb7b8fabbb8bc72e6fe2d273",
+        "bytes": 3307,
+        "expected_sha256": "de9db91f8fa28ef5954084dec0e7d5fd0f203a45eb7b8fabbb8bc72e6fe2d273",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/DEVELOPMENT_KERNEL_01.py.gz"
+      },
+      {
+        "actual_sha256": "ada73469f9eb61b878307e4db032fceb716a45e8d624c76ddbd1b68c0e4de07e",
+        "bytes": 3675,
+        "expected_sha256": "ada73469f9eb61b878307e4db032fceb716a45e8d624c76ddbd1b68c0e4de07e",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/DEVELOPMENT_KERNEL_02.py.gz"
+      },
+      {
+        "actual_sha256": "f70781f5ca9846d8b39a2405b9b11848035c9fd9fb2cafb1c79fe86d76fdc84c",
+        "bytes": 5359,
+        "expected_sha256": "f70781f5ca9846d8b39a2405b9b11848035c9fd9fb2cafb1c79fe86d76fdc84c",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/EVIDENCE_ARCHIVE.json"
+      },
+      {
+        "actual_sha256": "0ff7585856fc34a8b00af54b14213238166ba1911f6027f812cba30cdd722d01",
+        "bytes": 5184,
+        "expected_sha256": "0ff7585856fc34a8b00af54b14213238166ba1911f6027f812cba30cdd722d01",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/PROTOCOL.json"
+      },
+      {
+        "actual_sha256": "ad6859a6b2d621fa70b890af58d16df7758d6d5432a52383a46c5b1f75db6afe",
+        "bytes": 5609,
+        "expected_sha256": "ad6859a6b2d621fa70b890af58d16df7758d6d5432a52383a46c5b1f75db6afe",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/PROTOCOL_V2.json"
+      },
+      {
+        "actual_sha256": "07e4abe9e19da7b1617484a0697dbe7fb9767f3b5a33136976327e6b61711836",
+        "bytes": 5909,
+        "expected_sha256": "07e4abe9e19da7b1617484a0697dbe7fb9767f3b5a33136976327e6b61711836",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/PROTOCOL_V3.json"
+      },
+      {
+        "actual_sha256": "3542a8bca1c6a7041807d1c1b30dc5b3f5aa86bcd0a4bfdcaa6c72d2354fab58",
+        "bytes": 10081,
+        "expected_sha256": "3542a8bca1c6a7041807d1c1b30dc5b3f5aa86bcd0a4bfdcaa6c72d2354fab58",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/README.md"
+      },
+      {
+        "actual_sha256": "3f88fd8a4fc549fbbad7293003a927b0787f410debdd877ee847e4a2033edbd9",
+        "bytes": 1299,
+        "expected_sha256": "3f88fd8a4fc549fbbad7293003a927b0787f410debdd877ee847e4a2033edbd9",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/STRESS_EVIDENCE_ARCHIVE.json"
+      },
+      {
+        "actual_sha256": "c651c8df1da469ad9a29c09146883311946748ae76a7a241500b61ac224fd7a4",
+        "bytes": 33184,
+        "expected_sha256": "c651c8df1da469ad9a29c09146883311946748ae76a7a241500b61ac224fd7a4",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/STRESS_PROTOCOL.json"
+      },
+      {
+        "actual_sha256": "46a7021788c2b7789a6b76dc989f620d2b75e6883e789bc7a1d32620675df492",
+        "bytes": 2768,
+        "expected_sha256": "46a7021788c2b7789a6b76dc989f620d2b75e6883e789bc7a1d32620675df492",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/STRESS_REPORT.md"
+      },
+      {
+        "actual_sha256": "bf9de1d8d810e78c0004afa250498e54eda0cd7bebc140bad332ada177af48f0",
+        "bytes": 1656,
+        "expected_sha256": "bf9de1d8d810e78c0004afa250498e54eda0cd7bebc140bad332ada177af48f0",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/STRESS_SUMMARY.json"
+      },
+      {
+        "actual_sha256": "1fec21ed3e57bbdb0dec3b63fc79dddece6f9ff417a3bfb7a76d73b06d4efd1e",
+        "bytes": 18160,
+        "expected_sha256": "1fec21ed3e57bbdb0dec3b63fc79dddece6f9ff417a3bfb7a76d73b06d4efd1e",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/SUMMARY.json"
+      },
+      {
+        "actual_sha256": "f19814eea62a2ccaa7a4b93832f577563328752391ed84de37f6fb4fd581b05f",
+        "bytes": 120917,
+        "expected_sha256": "f19814eea62a2ccaa7a4b93832f577563328752391ed84de37f6fb4fd581b05f",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/TRAINING_FINAL_RESULTS.json"
+      },
+      {
+        "actual_sha256": "14f74aa48761fed08c61ccd97ffb4be2fadd911bd352b875d616ac2e20b01247",
+        "bytes": 1289,
+        "expected_sha256": "14f74aa48761fed08c61ccd97ffb4be2fadd911bd352b875d616ac2e20b01247",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/TRAINING_PROTOCOL.json"
+      },
+      {
+        "actual_sha256": "b2e1bfda89e19447e9e23408fcd0f26aaffd7fec427859b435fa7ee911b0a3f6",
+        "bytes": 120917,
+        "expected_sha256": "b2e1bfda89e19447e9e23408fcd0f26aaffd7fec427859b435fa7ee911b0a3f6",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/TRAINING_RESULTS.json"
+      },
+      {
+        "actual_sha256": "354af3a8f342fc3e797ad92aa9f385145e6ca83423da4f3401a5dc8635fb896e",
+        "bytes": 3722,
+        "expected_sha256": "354af3a8f342fc3e797ad92aa9f385145e6ca83423da4f3401a5dc8635fb896e",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/UPSTREAM_FILES.json"
+      },
+      {
+        "actual_sha256": "c3a2d5d0b8793d227e7ccd492080041abe388b651b0ec13d04f593431646640b",
+        "bytes": 1526,
+        "expected_sha256": "c3a2d5d0b8793d227e7ccd492080041abe388b651b0ec13d04f593431646640b",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/VERIFICATION.json"
+      },
+      {
+        "actual_sha256": "7e78e2ba7e46b76e5026b1eafc0de38eed587a79806b4464751bb628b40e5584",
+        "bytes": 8095,
+        "expected_sha256": "7e78e2ba7e46b76e5026b1eafc0de38eed587a79806b4464751bb628b40e5584",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/audit.py"
+      },
+      {
+        "actual_sha256": "1a7fb9480bca8fd127241b2488834bc682626f817469f8a69e07097f74adf4b6",
+        "bytes": 11926,
+        "expected_sha256": "1a7fb9480bca8fd127241b2488834bc682626f817469f8a69e07097f74adf4b6",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/kernel.py"
+      },
+      {
+        "actual_sha256": "45de03ca9c15d9f99beecd66b1929115f8f44593f824bb72d645a7fc03591210",
+        "bytes": 4124,
+        "expected_sha256": "45de03ca9c15d9f99beecd66b1929115f8f44593f824bb72d645a7fc03591210",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/package_evidence.py"
+      },
+      {
+        "actual_sha256": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+        "bytes": 3051,
+        "expected_sha256": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/reference.py"
+      },
+      {
+        "actual_sha256": "1889594d02dda46ae2f616ec033a2681a397cafd515786bd659cc21064c7a07f",
+        "bytes": 36,
+        "expected_sha256": "1889594d02dda46ae2f616ec033a2681a397cafd515786bd659cc21064c7a07f",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/requirements.txt"
+      },
+      {
+        "actual_sha256": "2a304dc34253c3e6b8d20a3ab8fda9e85845b04a59780565370b83969b168fbd",
+        "bytes": 317149,
+        "expected_sha256": "2a304dc34253c3e6b8d20a3ab8fda9e85845b04a59780565370b83969b168fbd",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/runtimearchive_chunks/development_audit_01.part0000.bytes.gz"
+      },
+      {
+        "actual_sha256": "04d50d95fcfe647ea4f4879e6b35630b86ee3ca89a085743af27f8d54bb661bc",
+        "bytes": 252791,
+        "expected_sha256": "04d50d95fcfe647ea4f4879e6b35630b86ee3ca89a085743af27f8d54bb661bc",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/runtimearchive_chunks/development_audit_01.part0001.bytes.gz"
+      },
+      {
+        "actual_sha256": "6a9b26a8b2169ca7f005dd4c211d2f1741adfd6376d5e02a79dc4a878978b0c3",
+        "bytes": 310471,
+        "expected_sha256": "6a9b26a8b2169ca7f005dd4c211d2f1741adfd6376d5e02a79dc4a878978b0c3",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/runtimearchive_chunks/development_audit_02.part0000.bytes.gz"
+      },
+      {
+        "actual_sha256": "358db7b0c4ae6c21dc5406505c2f968235da7ecf846914895992e1cd2f312be6",
+        "bytes": 307498,
+        "expected_sha256": "358db7b0c4ae6c21dc5406505c2f968235da7ecf846914895992e1cd2f312be6",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/runtimearchive_chunks/development_audit_02.part0001.bytes.gz"
+      },
+      {
+        "actual_sha256": "61e00bd1adf42987d7d5be6d434f6d8bfe391c0e58b455e10ef27b46188cb376",
+        "bytes": 165083,
+        "expected_sha256": "61e00bd1adf42987d7d5be6d434f6d8bfe391c0e58b455e10ef27b46188cb376",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/runtimearchive_chunks/development_audit_02.part0002.bytes.gz"
+      },
+      {
+        "actual_sha256": "4431282fc93f78cb2f2adc91a662398098241b6e9694835a2b5e0f8d2ba00128",
+        "bytes": 310452,
+        "expected_sha256": "4431282fc93f78cb2f2adc91a662398098241b6e9694835a2b5e0f8d2ba00128",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/runtimearchive_chunks/final_results.part0000.bytes.gz"
+      },
+      {
+        "actual_sha256": "f94b6a412b2ee6c3c044c2a08fefd0a2e957edb7d8bf2125a914f7466a770526",
+        "bytes": 307007,
+        "expected_sha256": "f94b6a412b2ee6c3c044c2a08fefd0a2e957edb7d8bf2125a914f7466a770526",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/runtimearchive_chunks/final_results.part0001.bytes.gz"
+      },
+      {
+        "actual_sha256": "4319abc08069c7a3d0a5466a5cd92bd95d3a35316c099697bb208c9803bac2fa",
+        "bytes": 164466,
+        "expected_sha256": "4319abc08069c7a3d0a5466a5cd92bd95d3a35316c099697bb208c9803bac2fa",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/runtimearchive_chunks/final_results.part0002.bytes.gz"
+      },
+      {
+        "actual_sha256": "f80bb2459f1a43a565e700eeaf29a47dab8b054e6f17da05455cece59e614137",
+        "bytes": 360252,
+        "expected_sha256": "f80bb2459f1a43a565e700eeaf29a47dab8b054e6f17da05455cece59e614137",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/runtimearchive_chunks/stress_results.part0000.bytes.gz"
+      },
+      {
+        "actual_sha256": "92924a163f6944d9904c5ad6c3ce61927aab868206f69340c1e9468c6c54d5d2",
+        "bytes": 343073,
+        "expected_sha256": "92924a163f6944d9904c5ad6c3ce61927aab868206f69340c1e9468c6c54d5d2",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/runtimearchive_chunks/stress_results.part0001.bytes.gz"
+      },
+      {
+        "actual_sha256": "6408561f8cb9772d50024bf1df6fcfb548c86aa2d391e39257c43dc7b6fe9a54",
+        "bytes": 5255,
+        "expected_sha256": "6408561f8cb9772d50024bf1df6fcfb548c86aa2d391e39257c43dc7b6fe9a54",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/stress.py"
+      },
+      {
+        "actual_sha256": "bd742c02f225d14d3812845c3535a22ea526b523870755bb0b537cb0fa6e7b18",
+        "bytes": 2303,
+        "expected_sha256": "bd742c02f225d14d3812845c3535a22ea526b523870755bb0b537cb0fa6e7b18",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/test_kernel.py"
+      },
+      {
+        "actual_sha256": "3356afabe9b75f96e9e9d979a32cf878b81b18cabc8b217e04b1863e76449d68",
+        "bytes": 4517,
+        "expected_sha256": "3356afabe9b75f96e9e9d979a32cf878b81b18cabc8b217e04b1863e76449d68",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/numerics/train_smoke.py"
+      }
+    ],
+    "propagation/evidence/BUILD_02.json": {
+      "all_match": true,
+      "rows": [
+        {
+          "actual_sha256": "3df225977b194e17909a73127f298d84a983e074f3a8aef950dfdabf8c88d417",
+          "bytes": 4726,
+          "expected_sha256": "3df225977b194e17909a73127f298d84a983e074f3a8aef950dfdabf8c88d417",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/deletion.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/deletion.rs"
+        },
+        {
+          "actual_sha256": "71a50fc119072b8fe2a36e8431bc4bcbbda9dd5debf6ee24999caba188049745",
+          "bytes": 1832,
+          "expected_sha256": "71a50fc119072b8fe2a36e8431bc4bcbbda9dd5debf6ee24999caba188049745",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/deletion_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/deletion_tests.rs"
+        },
+        {
+          "actual_sha256": "f7e89f69319e86d97d506bc3a656b6b061639470fb6475feb62d6f1694e8f4cd",
+          "bytes": 4441,
+          "expected_sha256": "f7e89f69319e86d97d506bc3a656b6b061639470fb6475feb62d6f1694e8f4cd",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/inference_control.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/inference_control.rs"
+        },
+        {
+          "actual_sha256": "121b4974d95688843b4962a74a7759c4d275ab504909d8d26dca7308246f8128",
+          "bytes": 4428,
+          "expected_sha256": "121b4974d95688843b4962a74a7759c4d275ab504909d8d26dca7308246f8128",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/inference_control_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/inference_control_tests.rs"
+        },
+        {
+          "actual_sha256": "d8bf3aa2183cec3773be8134117166df440a8e0220de33d318e4800a21d5ea1f",
+          "bytes": 22951,
+          "expected_sha256": "d8bf3aa2183cec3773be8134117166df440a8e0220de33d318e4800a21d5ea1f",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/journal.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/journal.rs"
+        },
+        {
+          "actual_sha256": "6630ce721c6cb875cdb95805a804f62338971afd3df7c4a22762186839dc7928",
+          "bytes": 8559,
+          "expected_sha256": "6630ce721c6cb875cdb95805a804f62338971afd3df7c4a22762186839dc7928",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/journal_anchor_tests.rs"
+        },
+        {
+          "actual_sha256": "1162918fde01466d9d7b7abb33fd502dca289b970e84b37168ad4e2ca0692252",
+          "bytes": 1270,
+          "expected_sha256": "1162918fde01466d9d7b7abb33fd502dca289b970e84b37168ad4e2ca0692252",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/journal_lock.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/journal_lock.rs"
+        },
+        {
+          "actual_sha256": "d889a32c0a56dc36842acb1889abfe0e2fa03c8839ab4500ab7d2487a1ea0540",
+          "bytes": 8934,
+          "expected_sha256": "d889a32c0a56dc36842acb1889abfe0e2fa03c8839ab4500ab7d2487a1ea0540",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/journal_segment_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/journal_segment_tests.rs"
+        },
+        {
+          "actual_sha256": "6fe8271500c11fd6e5e445d238e636a9de4edd17e08318ee38bf9b5189f7bab8",
+          "bytes": 15094,
+          "expected_sha256": "6fe8271500c11fd6e5e445d238e636a9de4edd17e08318ee38bf9b5189f7bab8",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/journal_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/journal_tests.rs"
+        },
+        {
+          "actual_sha256": "dc441b025b4ddbc8fa1b5622c7f3092406c5a5067c9c1fd886d02578c9d01c37",
+          "bytes": 9491,
+          "expected_sha256": "dc441b025b4ddbc8fa1b5622c7f3092406c5a5067c9c1fd886d02578c9d01c37",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/lib.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/lib.rs"
+        },
+        {
+          "actual_sha256": "add9642dfff13e663d4127d9d119ad6ff7dd19f0e3c8935b9de19f2b0c9a962e",
+          "bytes": 1975,
+          "expected_sha256": "add9642dfff13e663d4127d9d119ad6ff7dd19f0e3c8935b9de19f2b0c9a962e",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/lib_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/lib_tests.rs"
+        },
+        {
+          "actual_sha256": "114cfb3367d01612e684021a8961cb7f4d742f8855f90dd792db108081eaa471",
+          "bytes": 14553,
+          "expected_sha256": "114cfb3367d01612e684021a8961cb7f4d742f8855f90dd792db108081eaa471",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/plasticity.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/plasticity.rs"
+        },
+        {
+          "actual_sha256": "3d2175a990711873320ba65166aaa77cb45b328214b9356c35cff30ddd2a638b",
+          "bytes": 3939,
+          "expected_sha256": "3d2175a990711873320ba65166aaa77cb45b328214b9356c35cff30ddd2a638b",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/plasticity_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/plasticity_tests.rs"
+        },
+        {
+          "actual_sha256": "c397c867dac6877f6f9b24569798057e988b1c5aed0befbb6d8f2b1f59446b60",
+          "bytes": 21626,
+          "expected_sha256": "c397c867dac6877f6f9b24569798057e988b1c5aed0befbb6d8f2b1f59446b60",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/population_v2.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/population_v2.rs"
+        },
+        {
+          "actual_sha256": "a7de122f8fd2d24118f3d894ceeca56c940113992ab972bf8e4f914cfa3f805e",
+          "bytes": 4551,
+          "expected_sha256": "a7de122f8fd2d24118f3d894ceeca56c940113992ab972bf8e4f914cfa3f805e",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/population_v2_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/population_v2_tests.rs"
+        },
+        {
+          "actual_sha256": "240a3ae18713aea814dad483c9470c34212a1d4d50a9aae84007e8f3dbc6bf35",
+          "bytes": 38284,
+          "expected_sha256": "240a3ae18713aea814dad483c9470c34212a1d4d50a9aae84007e8f3dbc6bf35",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/protocol.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/protocol.rs"
+        },
+        {
+          "actual_sha256": "5787899890bcd16aaea9042b5924583fa71a3d9f755debf6bc1b05bfa626ee69",
+          "bytes": 11489,
+          "expected_sha256": "5787899890bcd16aaea9042b5924583fa71a3d9f755debf6bc1b05bfa626ee69",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/protocol_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/protocol_tests.rs"
+        },
+        {
+          "actual_sha256": "b425d7a58aec3c4b29b18875141bcc2d1a6ec1c743ac941ff3cff48694fa4520",
+          "bytes": 8503,
+          "expected_sha256": "b425d7a58aec3c4b29b18875141bcc2d1a6ec1c743ac941ff3cff48694fa4520",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/qualification.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/qualification.rs"
+        },
+        {
+          "actual_sha256": "c732fb1b35fad52b5108ebc4aa7dd2a4f007ae6ba4d48ac1352e02f91f3876cb",
+          "bytes": 4844,
+          "expected_sha256": "c732fb1b35fad52b5108ebc4aa7dd2a4f007ae6ba4d48ac1352e02f91f3876cb",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/qualification_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/qualification_tests.rs"
+        },
+        {
+          "actual_sha256": "bace4a3c36a2a4199a975aeac73041011ed487b2d308c75c4e062b25e6451fad",
+          "bytes": 16402,
+          "expected_sha256": "bace4a3c36a2a4199a975aeac73041011ed487b2d308c75c4e062b25e6451fad",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/runtime.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/runtime.rs"
+        },
+        {
+          "actual_sha256": "320be5a7bdb7b997844da3ca168536f9458b046151e5dbe3d675fe19ed564f9a",
+          "bytes": 17193,
+          "expected_sha256": "320be5a7bdb7b997844da3ca168536f9458b046151e5dbe3d675fe19ed564f9a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/runtime_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/runtime_tests.rs"
+        },
+        {
+          "actual_sha256": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b",
+          "bytes": 21134,
+          "expected_sha256": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/runtime_types.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/runtime_types.rs"
+        },
+        {
+          "actual_sha256": "bc5a1f64ddfda4e603e590d62b0ed01fa5b0b3cd54f1d1d4407477af5bed2810",
+          "bytes": 15728,
+          "expected_sha256": "bc5a1f64ddfda4e603e590d62b0ed01fa5b0b3cd54f1d1d4407477af5bed2810",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/sparse.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/sparse.rs"
+        },
+        {
+          "actual_sha256": "055790ef7be81f8db53fb270d82fd845c3d530f2bb62d4fe220526dc8eb97bce",
+          "bytes": 3808,
+          "expected_sha256": "055790ef7be81f8db53fb270d82fd845c3d530f2bb62d4fe220526dc8eb97bce",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/sparse_body_scope_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/sparse_body_scope_tests.rs"
+        },
+        {
+          "actual_sha256": "40069dacc61797df327402da7a9f74e7838db5757a124587eaf3f158e6998a8b",
+          "bytes": 10294,
+          "expected_sha256": "40069dacc61797df327402da7a9f74e7838db5757a124587eaf3f158e6998a8b",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/sparse_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/sparse_tests.rs"
+        },
+        {
+          "actual_sha256": "69bca85b5d839db1fb0552bd521515645045b04a2e696828c30efbce77f57213",
+          "bytes": 8398,
+          "expected_sha256": "69bca85b5d839db1fb0552bd521515645045b04a2e696828c30efbce77f57213",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/witness.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/witness.rs"
+        },
+        {
+          "actual_sha256": "fcd257565eb0017aebbfbbabb6b0d2c59367e044ba0330b018bb52ce976074ac",
+          "bytes": 4769,
+          "expected_sha256": "fcd257565eb0017aebbfbbabb6b0d2c59367e044ba0330b018bb52ce976074ac",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/src/witness_tests.rs",
+          "recorded_path": "codex-rs/hepta-neuron/src/witness_tests.rs"
+        },
+        {
+          "actual_sha256": "2cb7407a89d8ad4839e81abee4814b4a41af98435486308b705f365db264d99e",
+          "bytes": 29683,
+          "expected_sha256": "2cb7407a89d8ad4839e81abee4814b4a41af98435486308b705f365db264d99e",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/durable_control.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/durable_control.rs"
+        },
+        {
+          "actual_sha256": "f67623dae2e833d2fa4e27183ebb63be2ff838a6d3b87a0d833b296b4e345f0d",
+          "bytes": 5586,
+          "expected_sha256": "f67623dae2e833d2fa4e27183ebb63be2ff838a6d3b87a0d833b296b4e345f0d",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs"
+        },
+        {
+          "actual_sha256": "2ed6f5f02e069824e72c2975661c92d9d850e7d9bab4ab24dd525abb315bd11c",
+          "bytes": 6729,
+          "expected_sha256": "2ed6f5f02e069824e72c2975661c92d9d850e7d9bab4ab24dd525abb315bd11c",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/durable_history_tests.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/durable_history_tests.rs"
+        },
+        {
+          "actual_sha256": "85c8c13691909f22d864ac43ea322c5fc6d2a504b5a46e4c207d8574f12d73fb",
+          "bytes": 8071,
+          "expected_sha256": "85c8c13691909f22d864ac43ea322c5fc6d2a504b5a46e4c207d8574f12d73fb",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/lib.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/lib.rs"
+        },
+        {
+          "actual_sha256": "706c64c84039d9a043b4d3735403787400525575e16bc840c5f65e04a2b70dc8",
+          "bytes": 2098,
+          "expected_sha256": "706c64c84039d9a043b4d3735403787400525575e16bc840c5f65e04a2b70dc8",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/lib_tests.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/lib_tests.rs"
+        },
+        {
+          "actual_sha256": "bdee48d7589675b597bb734850c08bb18fa94483029657612bee4e71650bd849",
+          "bytes": 32502,
+          "expected_sha256": "bdee48d7589675b597bb734850c08bb18fa94483029657612bee4e71650bd849",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/native_control.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/native_control.rs"
+        },
+        {
+          "actual_sha256": "8a703e5b4c87e50a60c941a54dfb95365c550dccbc8394d039365406dd8f59ca",
+          "bytes": 23275,
+          "expected_sha256": "8a703e5b4c87e50a60c941a54dfb95365c550dccbc8394d039365406dd8f59ca",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/native_control_tests.rs"
+        },
+        {
+          "actual_sha256": "32fc64ae461621b4f6a8f20d3ff4e17ded53c6a00d9338fd8594c1539423e72b",
+          "bytes": 12836,
+          "expected_sha256": "32fc64ae461621b4f6a8f20d3ff4e17ded53c6a00d9338fd8594c1539423e72b",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/neuron_feature.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/neuron_feature.rs"
+        },
+        {
+          "actual_sha256": "4119b9ca64eef5b6c283ffacc418b6e64d016a99e3ca63fc22cd0d0c164e0561",
+          "bytes": 3709,
+          "expected_sha256": "4119b9ca64eef5b6c283ffacc418b6e64d016a99e3ca63fc22cd0d0c164e0561",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/src/neuron_feature_tests.rs",
+          "recorded_path": "codex-rs/hepta-infer-core/src/neuron_feature_tests.rs"
+        },
+        {
+          "actual_sha256": "5907602ef8128b3237991e737e2fc687eb5ac9c716505cc7d884eed9523ea2a9",
+          "bytes": 3413,
+          "expected_sha256": "5907602ef8128b3237991e737e2fc687eb5ac9c716505cc7d884eed9523ea2a9",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/bounded.rs",
+          "recorded_path": "codex-rs/hepta-types/src/bounded.rs"
+        },
+        {
+          "actual_sha256": "3145c56c2882e91420bc994dd93f3375e1b532b03331826868d0ecfc019077bc",
+          "bytes": 1642,
+          "expected_sha256": "3145c56c2882e91420bc994dd93f3375e1b532b03331826868d0ecfc019077bc",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/bounded_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/bounded_tests.rs"
+        },
+        {
+          "actual_sha256": "d7df2b3581046fec4d7350747b1a8053a549c6feb33e462802107a4eb4acd391",
+          "bytes": 15228,
+          "expected_sha256": "d7df2b3581046fec4d7350747b1a8053a549c6feb33e462802107a4eb4acd391",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/canonical_digest.rs",
+          "recorded_path": "codex-rs/hepta-types/src/canonical_digest.rs"
+        },
+        {
+          "actual_sha256": "9985f3ac27b0f357653206f4788cb366b623548c53502d277cd81f1a0f3d8fbe",
+          "bytes": 14679,
+          "expected_sha256": "9985f3ac27b0f357653206f4788cb366b623548c53502d277cd81f1a0f3d8fbe",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/canonical_digest_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/canonical_digest_tests.rs"
+        },
+        {
+          "actual_sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2",
+          "bytes": 4474,
+          "expected_sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/digest.rs",
+          "recorded_path": "codex-rs/hepta-types/src/digest.rs"
+        },
+        {
+          "actual_sha256": "9ff87ab6ffb17f27c2a23762893f641bb55edaff33f8bfb307729d9be8295a6c",
+          "bytes": 1484,
+          "expected_sha256": "9ff87ab6ffb17f27c2a23762893f641bb55edaff33f8bfb307729d9be8295a6c",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/digest_stream_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/digest_stream_tests.rs"
+        },
+        {
+          "actual_sha256": "838dc12e305735321c1028dabb7c5dd4e363f1bced8126d2c50eb7527febe37c",
+          "bytes": 1719,
+          "expected_sha256": "838dc12e305735321c1028dabb7c5dd4e363f1bced8126d2c50eb7527febe37c",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/digest_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/digest_tests.rs"
+        },
+        {
+          "actual_sha256": "38de891c6a9dd6a2889c0d6a83fd0bcecf6ed17e2b7090739df8d2effe0b2cff",
+          "bytes": 3717,
+          "expected_sha256": "38de891c6a9dd6a2889c0d6a83fd0bcecf6ed17e2b7090739df8d2effe0b2cff",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/fixed.rs",
+          "recorded_path": "codex-rs/hepta-types/src/fixed.rs"
+        },
+        {
+          "actual_sha256": "cfa86da0bc63fa273c3124bbd0988fd6bd22383a0338b15ac2a944c80aa5544b",
+          "bytes": 2115,
+          "expected_sha256": "cfa86da0bc63fa273c3124bbd0988fd6bd22383a0338b15ac2a944c80aa5544b",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/fixed_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/fixed_tests.rs"
+        },
+        {
+          "actual_sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3",
+          "bytes": 13344,
+          "expected_sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/identity.rs",
+          "recorded_path": "codex-rs/hepta-types/src/identity.rs"
+        },
+        {
+          "actual_sha256": "c3bba7041a11ead1ccb655fb6491c5835a3020c3f26d4deb22edc94a4f8e34be",
+          "bytes": 5482,
+          "expected_sha256": "c3bba7041a11ead1ccb655fb6491c5835a3020c3f26d4deb22edc94a4f8e34be",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/identity_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/identity_tests.rs"
+        },
+        {
+          "actual_sha256": "6793a05230b404884f1e2aed89a4369c52ad9a7f7adbb52a39a3ff1bf0ef5283",
+          "bytes": 3046,
+          "expected_sha256": "6793a05230b404884f1e2aed89a4369c52ad9a7f7adbb52a39a3ff1bf0ef5283",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/lib.rs",
+          "recorded_path": "codex-rs/hepta-types/src/lib.rs"
+        },
+        {
+          "actual_sha256": "d183cfb5f6981cb9d767a0d8a90cb895153f932ebc3c635ceb4f0b86e090cbfd",
+          "bytes": 9505,
+          "expected_sha256": "d183cfb5f6981cb9d767a0d8a90cb895153f932ebc3c635ceb4f0b86e090cbfd",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/numeric_conversion.rs",
+          "recorded_path": "codex-rs/hepta-types/src/numeric_conversion.rs"
+        },
+        {
+          "actual_sha256": "554d51398fdef4cd69ccc43b3f0d4a002a2a8eed20552a8228770bfde364883a",
+          "bytes": 11101,
+          "expected_sha256": "554d51398fdef4cd69ccc43b3f0d4a002a2a8eed20552a8228770bfde364883a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
+        },
+        {
+          "actual_sha256": "d656fa38fea5a18105da911107caae4d326a653854df0c5baed10d4ab3c6bbe9",
+          "bytes": 9363,
+          "expected_sha256": "d656fa38fea5a18105da911107caae4d326a653854df0c5baed10d4ab3c6bbe9",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/numeric_profile.rs",
+          "recorded_path": "codex-rs/hepta-types/src/numeric_profile.rs"
+        },
+        {
+          "actual_sha256": "fab0d6bd469412e77191e43cb17dde7f9638b07292ea5e2df5ad242cf616ea1a",
+          "bytes": 1969,
+          "expected_sha256": "fab0d6bd469412e77191e43cb17dde7f9638b07292ea5e2df5ad242cf616ea1a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/numeric_profile_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/numeric_profile_tests.rs"
+        },
+        {
+          "actual_sha256": "f01b741add536a597bf9c87664f83909fd77989d19ff4e2fc2c752d98cfbf593",
+          "bytes": 4948,
+          "expected_sha256": "f01b741add536a597bf9c87664f83909fd77989d19ff4e2fc2c752d98cfbf593",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/prompt_delivery.rs",
+          "recorded_path": "codex-rs/hepta-types/src/prompt_delivery.rs"
+        },
+        {
+          "actual_sha256": "1ad1075b9433c1a31629ba3df0509ce16ae7c70060797d2ea08f21b5a2c63f1a",
+          "bytes": 2578,
+          "expected_sha256": "1ad1075b9433c1a31629ba3df0509ce16ae7c70060797d2ea08f21b5a2c63f1a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/prompt_delivery_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/prompt_delivery_tests.rs"
+        },
+        {
+          "actual_sha256": "ad15fac503e3988c3fc5d8892136f91c45bb41a12266de5e037a31a6a690b005",
+          "bytes": 9460,
+          "expected_sha256": "ad15fac503e3988c3fc5d8892136f91c45bb41a12266de5e037a31a6a690b005",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/registry.rs",
+          "recorded_path": "codex-rs/hepta-types/src/registry.rs"
+        },
+        {
+          "actual_sha256": "d964bd53b636362da367fc9edf053c72272d62416ef231b632ee3dda6a5ec59a",
+          "bytes": 5008,
+          "expected_sha256": "d964bd53b636362da367fc9edf053c72272d62416ef231b632ee3dda6a5ec59a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/registry_tests.rs",
+          "recorded_path": "codex-rs/hepta-types/src/registry_tests.rs"
+        },
+        {
+          "actual_sha256": "e1888c64c8682491837c907a91a960327530251450ecb38e70a60df792adba22",
+          "bytes": 14135,
+          "expected_sha256": "e1888c64c8682491837c907a91a960327530251450ecb38e70a60df792adba22",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/src/topology.rs",
+          "recorded_path": "codex-rs/hepta-types/src/topology.rs"
+        },
+        {
+          "actual_sha256": "1ebe7dcf2b82b8143aa298059afff3ea17ee76f7c6140aae41d099bed5031c48",
+          "bytes": 495,
+          "expected_sha256": "1ebe7dcf2b82b8143aa298059afff3ea17ee76f7c6140aae41d099bed5031c48",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-neuron/Cargo.toml",
+          "recorded_path": "codex-rs/hepta-neuron/Cargo.toml"
+        },
+        {
+          "actual_sha256": "7ca860f039344b7629db786ccb069d150ee87838ff8f1211e9a89935da00c16e",
+          "bytes": 384,
+          "expected_sha256": "7ca860f039344b7629db786ccb069d150ee87838ff8f1211e9a89935da00c16e",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-infer-core/Cargo.toml",
+          "recorded_path": "codex-rs/hepta-infer-core/Cargo.toml"
+        },
+        {
+          "actual_sha256": "0df592ec8d8b63b9c8e7f9ca9f74feca802ffbd3b71dd0959c4127b4ad3109b0",
+          "bytes": 268,
+          "expected_sha256": "0df592ec8d8b63b9c8e7f9ca9f74feca802ffbd3b71dd0959c4127b4ad3109b0",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/codex-rs/hepta-types/Cargo.toml",
+          "recorded_path": "codex-rs/hepta-types/Cargo.toml"
+        },
+        {
+          "actual_sha256": "6dcc06764326955531eec5d9c2f004f5a52bb85a08c0f094a8927d50d4d4d603",
+          "bytes": 3968,
+          "expected_sha256": "6dcc06764326955531eec5d9c2f004f5a52bb85a08c0f094a8927d50d4d4d603",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/task_native_loop_20261031/native/main.rs",
+          "recorded_path": "tools/hcsn/task_native_loop_20261031/native/main.rs"
+        },
+        {
+          "actual_sha256": "d2639dbd1c5fe269a1c25cd4d6f18086e6326163a328686e5c70ac8a026d5a4d",
+          "bytes": 9054,
+          "expected_sha256": "d2639dbd1c5fe269a1c25cd4d6f18086e6326163a328686e5c70ac8a026d5a4d",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/task_native_loop_20261031/native/native_tests.rs",
+          "recorded_path": "tools/hcsn/task_native_loop_20261031/native/native_tests.rs"
+        },
+        {
+          "actual_sha256": "5a0ba6c70ffd69790a77d95cfdff64b42e63f81914351a00c469d0c9b377f8a1",
+          "bytes": 16335,
+          "expected_sha256": "5a0ba6c70ffd69790a77d95cfdff64b42e63f81914351a00c469d0c9b377f8a1",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/task_native_loop_20261031/native/owner.rs",
+          "recorded_path": "tools/hcsn/task_native_loop_20261031/native/owner.rs"
+        },
+        {
+          "actual_sha256": "d5ff342b87db7d1aedb1f3d87f67a3ef900785fd65ea31f468ff28b1ff883874",
+          "bytes": 6224,
+          "expected_sha256": "d5ff342b87db7d1aedb1f3d87f67a3ef900785fd65ea31f468ff28b1ff883874",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/task_native_loop_20261031/native/policy.rs",
+          "recorded_path": "tools/hcsn/task_native_loop_20261031/native/policy.rs"
+        },
+        {
+          "actual_sha256": "a5fe0d0961b70c258205e1fc43db0981ea34d93b10e4412fc889faa449e5a0ac",
+          "bytes": 4603,
+          "expected_sha256": "a5fe0d0961b70c258205e1fc43db0981ea34d93b10e4412fc889faa449e5a0ac",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/task_native_loop_20261031/native/port.rs",
+          "recorded_path": "tools/hcsn/task_native_loop_20261031/native/port.rs"
+        },
+        {
+          "actual_sha256": "9cbbfd03a3c9c3ac0edbeaea9e469d4f277305d4e0e39038165190396e4ede48",
+          "bytes": 3127,
+          "expected_sha256": "9cbbfd03a3c9c3ac0edbeaea9e469d4f277305d4e0e39038165190396e4ede48",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/task_native_loop_20261031/native/store.rs",
+          "recorded_path": "tools/hcsn/task_native_loop_20261031/native/store.rs"
+        },
+        {
+          "actual_sha256": "1a97dae909cbe35a75dd48f6c8382e0fdb7726742e54aff271065a579957ece6",
+          "bytes": 12484,
+          "expected_sha256": "1a97dae909cbe35a75dd48f6c8382e0fdb7726742e54aff271065a579957ece6",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/task_native_loop_20261031/native/task.rs",
+          "recorded_path": "tools/hcsn/task_native_loop_20261031/native/task.rs"
+        },
+        {
+          "actual_sha256": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9",
+          "bytes": 15754,
+          "expected_sha256": "7d4cd316379162e95ca06beec23219912ec53febc60107d93d781a9b9593d6a9",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/round9_20261031/native/src/cell.rs",
+          "recorded_path": "tools/hcsn/round9_20261031/native/src/cell.rs"
+        },
+        {
+          "actual_sha256": "93b34ac7ce743e3cafc5d54124dc477d03999f47b99fcc23ebc6439f7d22ae79",
+          "bytes": 14334,
+          "expected_sha256": "93b34ac7ce743e3cafc5d54124dc477d03999f47b99fcc23ebc6439f7d22ae79",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/round9_20261031/native/src/content.rs",
+          "recorded_path": "tools/hcsn/round9_20261031/native/src/content.rs"
+        },
+        {
+          "actual_sha256": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+          "bytes": 5493,
+          "expected_sha256": "418e50e1dd06f1b52fe5937288625db2c7a756acfbd730e732b1d063fbf31ef7",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/round9_20261031/native/src/native.rs",
+          "recorded_path": "tools/hcsn/round9_20261031/native/src/native.rs"
+        },
+        {
+          "actual_sha256": "870aaa407f66eab55df98b0ef386a7a60e1209bae3368521454dac38248d294f",
+          "bytes": 14358,
+          "expected_sha256": "870aaa407f66eab55df98b0ef386a7a60e1209bae3368521454dac38248d294f",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/round9_20261031/native/src/owner.rs",
+          "recorded_path": "tools/hcsn/round9_20261031/native/src/owner.rs"
+        },
+        {
+          "actual_sha256": "2340e300afa93cc370843faa1aca84d0f03640f86daf1d4ebbf60113f0c0ca1a",
+          "bytes": 3510,
+          "expected_sha256": "2340e300afa93cc370843faa1aca84d0f03640f86daf1d4ebbf60113f0c0ca1a",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/round9_20261031/native/src/schedule.rs",
+          "recorded_path": "tools/hcsn/round9_20261031/native/src/schedule.rs"
+        },
+        {
+          "actual_sha256": "b10081d064039c81f3dc634c11d8acb9bd4e4558d3471605c6221652c906d6fc",
+          "bytes": 10058,
+          "expected_sha256": "b10081d064039c81f3dc634c11d8acb9bd4e4558d3471605c6221652c906d6fc",
+          "kind": "repository_base_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/hepta-hcsn/tools/hcsn/task_native_loop_20261031/build.py",
+          "recorded_path": "tools/hcsn/task_native_loop_20261031/build.py"
+        },
+        {
+          "actual_sha256": "11295aa4b9ed8612647cef803e99ce6ce073e4ad211cbc9c3e02413cd9f35ba7",
+          "expected_sha256": "11295aa4b9ed8612647cef803e99ce6ce073e4ad211cbc9c3e02413cd9f35ba7",
+          "files": 11,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/block-buffer-0.10.4",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/block-buffer-0.10.4"
+        },
+        {
+          "actual_sha256": "eb5d7b35f7740950ccc175fb67864d77729b2e5b75939c42d45b679057f8fa3d",
+          "expected_sha256": "eb5d7b35f7740950ccc175fb67864d77729b2e5b75939c42d45b679057f8fa3d",
+          "files": 15,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/cfg-if-1.0.5",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/cfg-if-1.0.5"
+        },
+        {
+          "actual_sha256": "c69efae2b7ae867a8ca5de3dbef34c8c644f7b922b3ae6b5905489ddbef8fae0",
+          "expected_sha256": "c69efae2b7ae867a8ca5de3dbef34c8c644f7b922b3ae6b5905489ddbef8fae0",
+          "files": 17,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/cpufeatures-0.2.17",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/cpufeatures-0.2.17"
+        },
+        {
+          "actual_sha256": "f5971e8631f20612313ceed2a98cf47ba9d519cfc5f60e17027a4522dafb14db",
+          "expected_sha256": "f5971e8631f20612313ceed2a98cf47ba9d519cfc5f60e17027a4522dafb14db",
+          "files": 10,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/crypto-common-0.1.7",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/crypto-common-0.1.7"
+        },
+        {
+          "actual_sha256": "7d225867e94fd5f5f1f96c190a7bfb632cbb5aabca9e74fc630d4209a106b85b",
+          "expected_sha256": "7d225867e94fd5f5f1f96c190a7bfb632cbb5aabca9e74fc630d4209a106b85b",
+          "files": 17,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/diff-0.1.13",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/diff-0.1.13"
+        },
+        {
+          "actual_sha256": "f9451b6d9c8c76ae3ee0422d6de0c39c23507f6b205449e237e75fb8b88a22d8",
+          "expected_sha256": "f9451b6d9c8c76ae3ee0422d6de0c39c23507f6b205449e237e75fb8b88a22d8",
+          "files": 22,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/digest-0.10.7",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/digest-0.10.7"
+        },
+        {
+          "actual_sha256": "583f374d48c65e0188a75779b4c6615566633fcec18973152d23939c87c849f0",
+          "expected_sha256": "583f374d48c65e0188a75779b4c6615566633fcec18973152d23939c87c849f0",
+          "files": 17,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/generic-array-0.14.7",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/generic-array-0.14.7"
+        },
+        {
+          "actual_sha256": "a761749d2d36ddc7f6e02c6b7cefea2758c5a71a5550c9ab17c8adcf15e5e445",
+          "expected_sha256": "a761749d2d36ddc7f6e02c6b7cefea2758c5a71a5550c9ab17c8adcf15e5e445",
+          "files": 15,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/itoa-1.0.18",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/itoa-1.0.18"
+        },
+        {
+          "actual_sha256": "e7f6d304dde3e0925924378a3f1fb17dc6adeb6a555c2b885cc89d0be0677c3c",
+          "expected_sha256": "e7f6d304dde3e0925924378a3f1fb17dc6adeb6a555c2b885cc89d0be0677c3c",
+          "files": 361,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/libc-0.2.186",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/libc-0.2.186"
+        },
+        {
+          "actual_sha256": "a66e032db96d182c6503d14200ed295bdf360ec840b829fa543a23fd96b00307",
+          "expected_sha256": "a66e032db96d182c6503d14200ed295bdf360ec840b829fa543a23fd96b00307",
+          "files": 60,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/memchr-2.8.3",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/memchr-2.8.3"
+        },
+        {
+          "actual_sha256": "512283a99026697fddda974f14af2163a6a66ea2b1bd72bdcb94e74d491a9242",
+          "expected_sha256": "512283a99026697fddda974f14af2163a6a66ea2b1bd72bdcb94e74d491a9242",
+          "files": 16,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/pretty_assertions-1.4.1",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/pretty_assertions-1.4.1"
+        },
+        {
+          "actual_sha256": "22d6f70b576c6bb75bb1b5a081de4171083d7ef0beb632fd700cd2c92ce8cd81",
+          "expected_sha256": "22d6f70b576c6bb75bb1b5a081de4171083d7ef0beb632fd700cd2c92ce8cd81",
+          "files": 34,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/proc-macro2-1.0.107",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/proc-macro2-1.0.107"
+        },
+        {
+          "actual_sha256": "59ea157317d5579beadc19ad670e0b48bab6b3b1a1f2cc88a89f29f886d8952f",
+          "expected_sha256": "59ea157317d5579beadc19ad670e0b48bab6b3b1a1f2cc88a89f29f886d8952f",
+          "files": 36,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/quote-1.0.47",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/quote-1.0.47"
+        },
+        {
+          "actual_sha256": "c7cd1457ab9bbd4dc88e228af82e7284b107c341beb870e076a60be38eced8a5",
+          "expected_sha256": "c7cd1457ab9bbd4dc88e228af82e7284b107c341beb870e076a60be38eced8a5",
+          "files": 34,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/serde-1.0.229",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/serde-1.0.229"
+        },
+        {
+          "actual_sha256": "62d5664a4e897a061fda686acecdd6a071e7bdcd46c57275de6060d81de6f9b3",
+          "expected_sha256": "62d5664a4e897a061fda686acecdd6a071e7bdcd46c57275de6060d81de6f9b3",
+          "files": 28,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/serde_core-1.0.229",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/serde_core-1.0.229"
+        },
+        {
+          "actual_sha256": "9277f41d6be51c41eaed863218e2b8edefbf22c02ba8c13a42849548d0ede4b8",
+          "expected_sha256": "9277f41d6be51c41eaed863218e2b8edefbf22c02ba8c13a42849548d0ede4b8",
+          "files": 37,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/serde_derive-1.0.229",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/serde_derive-1.0.229"
+        },
+        {
+          "actual_sha256": "f39e61ed616f388caef429c1bc4848bfac569338a9ccee3cf58576be7cca817d",
+          "expected_sha256": "f39e61ed616f388caef429c1bc4848bfac569338a9ccee3cf58576be7cca817d",
+          "files": 90,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/serde_json-1.0.151",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/serde_json-1.0.151"
+        },
+        {
+          "actual_sha256": "66f39f46eea848e2bfa536625578cc92ab18f9f30280f57d84a8fedcef23f298",
+          "expected_sha256": "66f39f46eea848e2bfa536625578cc92ab18f9f30280f57d84a8fedcef23f298",
+          "files": 32,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/sha2-0.10.9",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/sha2-0.10.9"
+        },
+        {
+          "actual_sha256": "4f7d11e616c46033fdc41483fb08bd4953c30e49fb0f1d4fd5640c31ffd50460",
+          "expected_sha256": "4f7d11e616c46033fdc41483fb08bd4953c30e49fb0f1d4fd5640c31ffd50460",
+          "files": 105,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/syn-3.0.9",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/syn-3.0.9"
+        },
+        {
+          "actual_sha256": "bad2789d550bad305df3ce89460d484aa432c1b1897bf286b4d25f8ed8301101",
+          "expected_sha256": "bad2789d550bad305df3ce89460d484aa432c1b1897bf286b4d25f8ed8301101",
+          "files": 27,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/typenum-1.20.1",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/typenum-1.20.1"
+        },
+        {
+          "actual_sha256": "61f3a9a5a5fa3744b0b7c73e234baea7ca2e0b6e4c60a0785c68863779a295c9",
+          "expected_sha256": "61f3a9a5a5fa3744b0b7c73e234baea7ca2e0b6e4c60a0785c68863779a295c9",
+          "files": 27,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/unicode-ident-1.0.27",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/unicode-ident-1.0.27"
+        },
+        {
+          "actual_sha256": "7f4d458a311455ec5051c044fd4126b16e4ef0e6a56ecb95aa53c84d4a35bf33",
+          "expected_sha256": "7f4d458a311455ec5051c044fd4126b16e4ef0e6a56ecb95aa53c84d4a35bf33",
+          "files": 14,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/version_check-0.9.5",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/version_check-0.9.5"
+        },
+        {
+          "actual_sha256": "315681532950939ab2d0cc9456fadb4426a37a7221162838c814cbe7748cb0a6",
+          "expected_sha256": "315681532950939ab2d0cc9456fadb4426a37a7221162838c814cbe7748cb0a6",
+          "files": 24,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/yansi-1.0.1",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/yansi-1.0.1"
+        },
+        {
+          "actual_sha256": "32964b084daa2c2fb887f0564c4ec318dbd86610463fd93c5b2b901152bb33b6",
+          "expected_sha256": "32964b084daa2c2fb887f0564c4ec318dbd86610463fd93c5b2b901152bb33b6",
+          "files": 18,
+          "kind": "cached_source_directory",
+          "passed": true,
+          "path": "cached-dependency/zmij-1.0.23",
+          "resolved": "/tmp/hcsn-r11-propagation-build/vendor/zmij-1.0.23"
+        },
+        {
+          "actual_sha256": "8cae5dcb3647c14e5576a3296e877d769064d62e16f199a548577f590e26be07",
+          "bytes": 2509,
+          "expected_sha256": "8cae5dcb3647c14e5576a3296e877d769064d62e16f199a548577f590e26be07",
+          "kind": "staging_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/r11-release/propagation/probe.rs",
+          "recorded_path": "tools/hcsn/calibrated_operator_r11_20261031/propagation/probe.rs"
+        },
+        {
+          "actual_sha256": "9b220c08e79d5bbde65598fb194c92dde3632f230c788f65957b8a1537266124",
+          "bytes": 1392,
+          "expected_sha256": "9b220c08e79d5bbde65598fb194c92dde3632f230c788f65957b8a1537266124",
+          "kind": "staging_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/r11-release/propagation/probe_tests.rs",
+          "recorded_path": "tools/hcsn/calibrated_operator_r11_20261031/propagation/probe_tests.rs"
+        },
+        {
+          "actual_sha256": "2dc4fa9a038d6a2baeaec9e18a65b16d2be76139113c8c44c5125a10e0d03646",
+          "bytes": 2573,
+          "expected_sha256": "2dc4fa9a038d6a2baeaec9e18a65b16d2be76139113c8c44c5125a10e0d03646",
+          "kind": "staging_source",
+          "passed": true,
+          "path": "/workspace/scratch/90465ae04106/r11-release/propagation/build_probe.py",
+          "recorded_path": "tools/hcsn/calibrated_operator_r11_20261031/propagation/build_probe.py"
+        }
+      ],
+      "source_digest": "1df2d7586252339fc8928ca41fb7c6b201397aea5c6d81ddd82dee7799c58a98"
+    },
+    "training_02_artifacts": [
+      {
+        "actual_sha256": "ce3a626618402195714b07ea54d31827a8f2204dc7fe3586d70e7b09beb03eca",
+        "bytes": 126707,
+        "expected_sha256": "ce3a626618402195714b07ea54d31827a8f2204dc7fe3586d70e7b09beb03eca",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/data/development_seed81031.tar.gz"
+      },
+      {
+        "actual_sha256": "7afb83a96824e9456c5daa2fef94c57c86d4b43326a202de529b9624a064a233",
+        "bytes": 132799,
+        "expected_sha256": "7afb83a96824e9456c5daa2fef94c57c86d4b43326a202de529b9624a064a233",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/data/development_seed81037.tar.gz"
+      },
+      {
+        "actual_sha256": "cd58a9b098540cec0a2fbf31a88abda820b5135004091365a72245373aed96b3",
+        "bytes": 130033,
+        "expected_sha256": "cd58a9b098540cec0a2fbf31a88abda820b5135004091365a72245373aed96b3",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/data/development_seed81043.tar.gz"
+      },
+      {
+        "actual_sha256": "8a556811d0aa262a0bdf5a8f11ee7989326f7592afb3d6276a1a4a45d1c0877a",
+        "bytes": 132895,
+        "expected_sha256": "8a556811d0aa262a0bdf5a8f11ee7989326f7592afb3d6276a1a4a45d1c0877a",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/data/development_seed81049.tar.gz"
+      },
+      {
+        "actual_sha256": "bc3786428751c9ee745664a0d9317f4211959cae132e5fcfe204d452493d2678",
+        "bytes": 131060,
+        "expected_sha256": "bc3786428751c9ee745664a0d9317f4211959cae132e5fcfe204d452493d2678",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/data/development_seed81057.tar.gz"
+      },
+      {
+        "actual_sha256": "2156ed0446060bbaaf3e5b96e269c187d14fe37dc20a9764cfbf84086c787ab4",
+        "bytes": 435491,
+        "expected_sha256": "2156ed0446060bbaaf3e5b96e269c187d14fe37dc20a9764cfbf84086c787ab4",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/training/seed81031.json.gz"
+      },
+      {
+        "actual_sha256": "a555e4a87418a39b3ad22426b902384ac756d5da00ca406c2e3afd4fdcad37c1",
+        "bytes": 444384,
+        "expected_sha256": "a555e4a87418a39b3ad22426b902384ac756d5da00ca406c2e3afd4fdcad37c1",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/training/seed81037.json.gz"
+      },
+      {
+        "actual_sha256": "82f120311b3a239de919a6274d17c34e31e6106eb4353b759e23553f10bd8d1f",
+        "bytes": 442604,
+        "expected_sha256": "82f120311b3a239de919a6274d17c34e31e6106eb4353b759e23553f10bd8d1f",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/training/seed81043.json.gz"
+      },
+      {
+        "actual_sha256": "4812e5bd62f1de22901b66718631509d609c1ab749fd498caa5a63f82dec7881",
+        "bytes": 445949,
+        "expected_sha256": "4812e5bd62f1de22901b66718631509d609c1ab749fd498caa5a63f82dec7881",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/training/seed81049.json.gz"
+      },
+      {
+        "actual_sha256": "e0d8edba4d28d50e8987b1dfd74c3da8e05c4da86e33b0224258193c6520d91e",
+        "bytes": 439816,
+        "expected_sha256": "e0d8edba4d28d50e8987b1dfd74c3da8e05c4da86e33b0224258193c6520d91e",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/training/seed81057.json.gz"
+      }
+    ],
+    "training_02_models": [
+      {
+        "actual_sha256": "9bdfa68914f66a31de26bb639ba6a7707ddf38331e126c83daf89f73d597b86d",
+        "bytes": 58146,
+        "expected_sha256": "9bdfa68914f66a31de26bb639ba6a7707ddf38331e126c83daf89f73d597b86d",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81031_analytic_constant.json"
+      },
+      {
+        "actual_sha256": "e5f3be95dc01095772d2e17c7e5ec3c1b9cbf198be25b042acf5e684ce37d396",
+        "bytes": 58142,
+        "expected_sha256": "e5f3be95dc01095772d2e17c7e5ec3c1b9cbf198be25b042acf5e684ce37d396",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81031_analytic_value.json"
+      },
+      {
+        "actual_sha256": "0d17b2f56dca6a9f5a23e62b5b2d6ea8aaa81de39f585f28e176b66bf22b5d25",
+        "bytes": 58122,
+        "expected_sha256": "0d17b2f56dca6a9f5a23e62b5b2d6ea8aaa81de39f585f28e176b66bf22b5d25",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81031_grid.json"
+      },
+      {
+        "actual_sha256": "d18e4fc28279dcd18071f946b7cc38129e8df9bfc72ce78d36e264ada5ea120e",
+        "bytes": 58123,
+        "expected_sha256": "d18e4fc28279dcd18071f946b7cc38129e8df9bfc72ce78d36e264ada5ea120e",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81031_ordinary_value.json"
+      },
+      {
+        "actual_sha256": "a05c7a711b1a6a42454ec4fe428950558120e4715c6b9a6f933613c61c66ad5f",
+        "bytes": 58113,
+        "expected_sha256": "a05c7a711b1a6a42454ec4fe428950558120e4715c6b9a6f933613c61c66ad5f",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81037_analytic_constant.json"
+      },
+      {
+        "actual_sha256": "d070568303caa03f3b22a6afbe7bba6209a00591bf7ff79de59443d799123e9d",
+        "bytes": 58109,
+        "expected_sha256": "d070568303caa03f3b22a6afbe7bba6209a00591bf7ff79de59443d799123e9d",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81037_analytic_value.json"
+      },
+      {
+        "actual_sha256": "bf869d2cc99d171004b1e6f895a0df346034bdb24d2be6387417c593bada07b9",
+        "bytes": 58048,
+        "expected_sha256": "bf869d2cc99d171004b1e6f895a0df346034bdb24d2be6387417c593bada07b9",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81037_grid.json"
+      },
+      {
+        "actual_sha256": "1dff6dd3d4fab9342b359e950973e33a796acc57c6aeee9f31f556cc525a7c50",
+        "bytes": 58049,
+        "expected_sha256": "1dff6dd3d4fab9342b359e950973e33a796acc57c6aeee9f31f556cc525a7c50",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81037_ordinary_value.json"
+      },
+      {
+        "actual_sha256": "addb4d03be22dc498137246f247cbc1ace662e5edcf53fcbc9b84d31fdc84858",
+        "bytes": 58120,
+        "expected_sha256": "addb4d03be22dc498137246f247cbc1ace662e5edcf53fcbc9b84d31fdc84858",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81043_analytic_constant.json"
+      },
+      {
+        "actual_sha256": "42e76089ed83e7f7044df68279b657506c4c0c5c3458ba99be124de4751a499a",
+        "bytes": 58116,
+        "expected_sha256": "42e76089ed83e7f7044df68279b657506c4c0c5c3458ba99be124de4751a499a",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81043_analytic_value.json"
+      },
+      {
+        "actual_sha256": "c35243ae9dd12ff998bb6651b71e707c806ddb391ff865fb334b1272ff0f872e",
+        "bytes": 58121,
+        "expected_sha256": "c35243ae9dd12ff998bb6651b71e707c806ddb391ff865fb334b1272ff0f872e",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81043_grid.json"
+      },
+      {
+        "actual_sha256": "572832f93e7e59074cf9ee056046303375228337bdce3be877008ff68ac5efae",
+        "bytes": 58122,
+        "expected_sha256": "572832f93e7e59074cf9ee056046303375228337bdce3be877008ff68ac5efae",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81043_ordinary_value.json"
+      },
+      {
+        "actual_sha256": "e340a24e855b253aed09e1c37c27dd836347f0d329ef3b579b7e643a175bef82",
+        "bytes": 58162,
+        "expected_sha256": "e340a24e855b253aed09e1c37c27dd836347f0d329ef3b579b7e643a175bef82",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81049_analytic_constant.json"
+      },
+      {
+        "actual_sha256": "6139106218ccd6c0e05f4c1cc3c46fdb53e35c774359c47cf438c918a318bd3b",
+        "bytes": 58158,
+        "expected_sha256": "6139106218ccd6c0e05f4c1cc3c46fdb53e35c774359c47cf438c918a318bd3b",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81049_analytic_value.json"
+      },
+      {
+        "actual_sha256": "a237414796b04da000dd27fe9115cc7bee3016c1ef8c0891fafb93ceb277ed00",
+        "bytes": 58139,
+        "expected_sha256": "a237414796b04da000dd27fe9115cc7bee3016c1ef8c0891fafb93ceb277ed00",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81049_grid.json"
+      },
+      {
+        "actual_sha256": "bb537a107ff659609b513fa23071341f0ae0ffc2b1bcd364f77af22189d858da",
+        "bytes": 58140,
+        "expected_sha256": "bb537a107ff659609b513fa23071341f0ae0ffc2b1bcd364f77af22189d858da",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81049_ordinary_value.json"
+      },
+      {
+        "actual_sha256": "05572cea9a1ba730067c7639cc8d7064db144131c01913f1f43419e46a4d43c2",
+        "bytes": 58109,
+        "expected_sha256": "05572cea9a1ba730067c7639cc8d7064db144131c01913f1f43419e46a4d43c2",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81057_analytic_constant.json"
+      },
+      {
+        "actual_sha256": "ffe683422cd1049546f5152a459b8703b5b13ded6a45a888b8cf9818dcb2250f",
+        "bytes": 58105,
+        "expected_sha256": "ffe683422cd1049546f5152a459b8703b5b13ded6a45a888b8cf9818dcb2250f",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81057_analytic_value.json"
+      },
+      {
+        "actual_sha256": "e75fe2179692f4061ee79ef841c72fdb1f68479c66bc1a2052bca290e1426041",
+        "bytes": 58122,
+        "expected_sha256": "e75fe2179692f4061ee79ef841c72fdb1f68479c66bc1a2052bca290e1426041",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81057_grid.json"
+      },
+      {
+        "actual_sha256": "240411b8cdaecd35849390c38170e4487e13621363d319031bc2b2cc55b422bf",
+        "bytes": 58123,
+        "expected_sha256": "240411b8cdaecd35849390c38170e4487e13621363d319031bc2b2cc55b422bf",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/evidence/training_02/models/seed81057_ordinary_value.json"
+      }
+    ],
+    "training_02_source": [
+      {
+        "actual_sha256": "09435a34b538dea0b18913967942fd0d6c470c8827e357b8dbc6c551d0d2b045",
+        "bytes": 3836,
+        "expected_sha256": "09435a34b538dea0b18913967942fd0d6c470c8827e357b8dbc6c551d0d2b045",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/PROTOCOL.json"
+      },
+      {
+        "actual_sha256": "5a05b021a17013143ca9546365d0d4e9ea2c255a7fdf5a807c96c82940650cb9",
+        "bytes": 3117,
+        "expected_sha256": "5a05b021a17013143ca9546365d0d4e9ea2c255a7fdf5a807c96c82940650cb9",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/model.py"
+      },
+      {
+        "actual_sha256": "feaef61ac3bb9571eef442641ab454503e2f2dd707d59874932daeaf2752d441",
+        "bytes": 8361,
+        "expected_sha256": "feaef61ac3bb9571eef442641ab454503e2f2dd707d59874932daeaf2752d441",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/propagation/finite.py"
+      },
+      {
+        "actual_sha256": "0ac36adf5ae4cb302580089e3b84db62079ca08ff42944b62bedb4646463c7a8",
+        "bytes": 10307,
+        "expected_sha256": "0ac36adf5ae4cb302580089e3b84db62079ca08ff42944b62bedb4646463c7a8",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/train.py"
+      },
+      {
+        "actual_sha256": "66c2baf8b7063ac17ea807fe921e484070101e5160b862a1d4df5bff264557a4",
+        "bytes": 4574,
+        "expected_sha256": "66c2baf8b7063ac17ea807fe921e484070101e5160b862a1d4df5bff264557a4",
+        "passed": true,
+        "path": "/workspace/scratch/90465ae04106/r11-release/value.py"
+      }
+    ]
+  },
+  "limits": [
+    "Local publication consistency and changed-file formatting checks only; no scientific experiments or tests were rerun.",
+    "The format view is an isolated minimal Git repository containing byte-exact original formatter scripts as baseline and the 310 frozen publication files plus the new workflow as additions.",
+    "This is not a full production Cargo/Bazel build, a GitHub Actions run, or a fresh dependency-archive provenance check.",
+    "Cached dependency directory hashes validate the local pinned snapshots used by the recorded builds; they do not authenticate unavailable original .crate archives.",
+    "Historical attempt01 Rust remains inside its preserved evidence archive and is not extracted into the active formatting tree."
+  ],
+  "preliminary_checker_note": "An initial local checker used compact JSON separators for propagation source_digest, whereas its original build_probe.py uses default separators. The checker was corrected to the documented original algorithm; all 198 per-source comparisons and both recorded aggregate digests now verify without changing evidence. Initial no-config format check also returned 0. Final gate uses remotely verified fixed-base configs.",
+  "publication_inventory": {
+    "bytes": 51196733,
+    "files": 310,
+    "maximum_file_bytes": 466578
+  },
+  "publication_root": "/workspace/scratch/90465ae04106/r11-release",
+  "release_manifest_sha256": "5494aa549528657f93f20473a5f0880b355b5b6f121ca4f010c9c10292af57b2",
+  "remote_baseline": {
+    "commit": "6c6f25f736df040e0d447e0242fb9819e15b3022",
+    "files": [
+      {
+        "actual_git_blob_sha": "910c65114ec128a8317ee8257428451f3cd28230",
+        "bytes": 78,
+        "git_blob_sha": "910c65114ec128a8317ee8257428451f3cd28230",
+        "matched": true,
+        "path": "codex-rs/rust-toolchain.toml",
+        "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+      },
+      {
+        "actual_git_blob_sha": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+        "bytes": 164,
+        "git_blob_sha": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+        "matched": true,
+        "path": "codex-rs/rustfmt.toml",
+        "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+      },
+      {
+        "actual_git_blob_sha": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "bytes": 16599,
+        "git_blob_sha": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "matched": true,
+        "path": "scripts/format.py",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "actual_git_blob_sha": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+        "bytes": 2030,
+        "git_blob_sha": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+        "matched": true,
+        "path": "scripts/just-shell.py",
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      {
+        "actual_git_blob_sha": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+        "bytes": 10206,
+        "git_blob_sha": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+        "matched": true,
+        "path": "scripts/run-nextest.py",
+        "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+      },
+      {
+        "actual_git_blob_sha": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "bytes": 7838,
+        "git_blob_sha": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "matched": true,
+        "path": "justfile",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      }
+    ],
+    "repository": "TrillionniumFoundation/hepta-private-ci"
+  },
+  "schema": "hcsn.r11.publication-local-checks.v1",
+  "success": true,
+  "workflow": {
+    "bytes": 2908,
+    "path": ".github/workflows/hcsn-calibrated-operator.yml",
+    "sha256": "c13b4bd2045e18fa52dfffd693274526162d3f95233f2af98a1f632d4d8a31a9"
+  }
+}
