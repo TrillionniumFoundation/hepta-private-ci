@@ -3,11 +3,12 @@ use crate::transport::remote_control::protocol::normalize_remote_control_url;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use std::time::SystemTime;
+use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
 use tokio::sync::oneshot;
 
-const TEST_REQUEST_TIMEOUT: Duration = Duration::from_millis(100);
+const TEST_REQUEST_TIMEOUT: Duration = Duration::from_secs(1);
 
 fn auth() -> RemoteControlConnectionAuth {
     RemoteControlConnectionAuth {
@@ -42,6 +43,15 @@ async fn timed_out_request(partial_response: Option<&'static [u8]>) -> io::Error
     let (request_done_tx, request_done_rx) = oneshot::channel();
     let server_task = tokio::spawn(async move {
         let (mut stream, _) = listener.accept().await.expect("request should connect");
+        // Require a real request before publishing the synthetic response.
+        // Otherwise a loaded Windows runner may exhaust the request deadline
+        // before the server has sent headers, exercising the wrong failure.
+        let mut request_prefix = [0_u8; 5];
+        stream
+            .read_exact(&mut request_prefix)
+            .await
+            .expect("HTTP request should arrive before the response");
+        assert_eq!(&request_prefix, b"POST ");
         if let Some(partial_response) = partial_response {
             stream
                 .write_all(partial_response)
@@ -208,6 +218,12 @@ async fn request_timeout_before_response_headers_is_transient() {
 async fn response_body_timeout_is_transient() {
     let err = timed_out_request(Some(b"HTTP/1.1 200 OK\r\nContent-Length: 20\r\n\r\n{")).await;
     assert_transient_timeout(&err, Some(StatusCode::OK));
+}
+
+#[tokio::test]
+async fn incomplete_response_headers_cannot_claim_an_http_status() {
+    let err = timed_out_request(Some(b"HTTP/1.1 200 OK\r\nContent-Len")).await;
+    assert_transient_timeout(&err, /*expected_status*/ None);
 }
 
 #[test]
