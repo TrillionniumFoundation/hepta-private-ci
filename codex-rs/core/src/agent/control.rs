@@ -67,11 +67,14 @@ use uuid::Uuid;
 pub(crate) use self::execution::AgentExecutionGuard;
 use self::execution::AgentExecutionLimiter;
 use self::residency::V2Residency;
+pub(crate) use self::transitions::AgentTransitionLease;
+use self::transitions::AgentTransitions;
 
 mod execution;
 mod legacy;
 mod residency;
 mod spawn;
+mod transitions;
 mod user_authorization;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -122,6 +125,7 @@ pub(crate) struct AgentControl {
     /// Captured at construction so delegates retain their manager's allocation policy.
     thread_id_generator: ThreadIdGenerator,
     state: Arc<AgentRegistry>,
+    transitions: Arc<AgentTransitions>,
     v2_residency: Arc<V2Residency>,
     agent_execution_limiter: Arc<AgentExecutionLimiter>,
     /// Session-scoped state shared by the root thread and every cloned sub-agent control handle.
@@ -150,6 +154,7 @@ impl AgentControl {
             manager,
             thread_id_generator,
             state: Arc::default(),
+            transitions: Arc::default(),
             v2_residency: Arc::default(),
             agent_execution_limiter: Arc::default(),
             rollout_budget: Arc::default(),

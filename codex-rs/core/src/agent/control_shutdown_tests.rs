@@ -69,18 +69,21 @@ async fn delayed_shutdown_preserves_replacement_runtime_and_ownership() -> anyho
     original.thread.ensure_rollout_materialized().await;
     original.thread.session.flush_rollout().await?;
 
-    // Poll bounded shutdown until A is stopping, then keep the caller
+    // Poll the real shutdown caller until A is stopping, then keep that caller
     // suspended while another owner finishes A and resumes the stored thread as B.
     // The lifecycle gate is after terminalizer drain, so no watchdog is involved.
-    let bounded_shutdown = manager.shutdown_all_threads_bounded(Duration::from_secs(5));
-    tokio::pin!(bounded_shutdown);
+    let shutdown = control.shutdown_live_agent(thread_id);
+    tokio::pin!(shutdown);
     timeout(Duration::from_secs(5), async {
         tokio::select! {
-            result = &mut bounded_shutdown => anyhow::bail!("shutdown returned before its stop gate: {result:?}"),
+            result = &mut shutdown => anyhow::bail!("shutdown returned before its stop gate: {result:?}"),
             () = stop.entered.notified() => Ok(()),
         }
     })
     .await??;
+    let bounded_shutdown = manager.shutdown_all_threads_bounded(Duration::from_secs(5));
+    tokio::pin!(bounded_shutdown);
+    assert!(futures::poll!(&mut bounded_shutdown).is_pending());
     stop.release.notify_one();
     timeout(
         Duration::from_secs(5),
@@ -118,6 +121,7 @@ async fn delayed_shutdown_preserves_replacement_runtime_and_ownership() -> anyho
             ..Default::default()
         }
     );
+    timeout(Duration::from_secs(5), shutdown).await??;
     let stale_submission = manager_state
         .send_op_to_runtime(
             original.thread.as_ref(),
@@ -159,5 +163,106 @@ async fn delayed_shutdown_preserves_replacement_runtime_and_ownership() -> anyho
         Err(error) if matches!(error.details(), CodexErrorDetails::AgentLimitReached { max_threads: 1 })
     );
     control.shutdown_live_agent(thread_id).await?;
+    Ok(())
+}
+
+#[tokio::test]
+async fn cold_close_waits_for_cancelled_reload_then_releases_ownership() -> anyhow::Result<()> {
+    let (home, mut config) = test_config().await;
+    let _ = config.features.enable(Feature::MultiAgentV2);
+    let _ = config.features.enable(Feature::Sqlite);
+    config.model = Some("gpt-5.6-sol".to_string());
+    config.multi_agent_v2.max_concurrent_threads_per_session = 2;
+    let harness = AgentControlHarness::new_with_config(home, config).await;
+    let root = harness
+        .manager
+        .start_thread(StartThreadOptions {
+            history_mode: Some(ThreadHistoryMode::Paginated),
+            ..StartThreadOptions::new(harness.config.clone())
+        })
+        .await?;
+    let control = root.thread.session.services.agent_control.clone();
+    let spawned =
+        spawn_v2_reload_test_child(&control, harness.config.clone(), &root.thread, "worker").await;
+    let child_id = spawned.thread_id;
+    let child_path = spawned
+        .metadata
+        .agent_path
+        .ok_or_else(|| anyhow::anyhow!("child path was not registered"))?;
+    let child = harness.manager.get_thread(child_id).await?;
+    child
+        .inject_response_items(vec![assistant_message(
+            "persisted cold child",
+            Some(MessagePhase::FinalAnswer),
+        )])
+        .await?;
+    child.shutdown_and_wait().await?;
+    assert!(
+        harness
+            .manager
+            .remove_thread_if_matches(&child_id, &child)
+            .await
+            .is_some()
+    );
+    control.forget_v2_residency(child_id);
+    assert_eq!(control.state.live_agents().len(), 1);
+
+    let delivery = harness.manager.pause_next_startup_before_delivery();
+    let reload_control = control.clone();
+    let reload_config = harness.config.clone();
+    let reload = tokio::spawn(async move {
+        reload_control
+            .ensure_v2_agent_loaded(reload_config, child_id, /*parent*/ None)
+            .await
+    });
+    timeout(Duration::from_secs(5), delivery.wait_until_entered()).await?;
+    reload.abort();
+    assert!(matches!(reload.await, Err(error) if error.is_cancelled()));
+    // The requesting future is gone. Its detached delivery/cleanup owner must
+    // still fence cold retirement, including the gap before startup admission.
+    assert!(control.transitions.try_lock(child_id).is_none());
+    let close = control.close_agent(child_id);
+    tokio::pin!(close);
+    assert!(futures::poll!(&mut close).is_pending());
+    assert!(control.state.agent_metadata_for_thread(child_id).is_some());
+    delivery.release();
+    timeout(Duration::from_secs(5), close).await??;
+
+    assert!(harness.manager.get_thread(child_id).await.is_err());
+    assert!(control.state.agent_metadata_for_thread(child_id).is_none());
+    assert_eq!(control.state.agent_id_for_path(&child_path), None);
+    assert!(control.state.live_agents().is_empty());
+    drop(control.state.reserve_spawn_slot(Some(1))?);
+    let manager_state = control.upgrade()?;
+    drop(
+        control
+            .reserve_v2_residency_slot(
+                &manager_state,
+                &harness.config,
+                /*protected_thread_id*/ None,
+            )
+            .await?,
+    );
+    let graph = manager_state
+        .agent_graph_store()
+        .ok_or_else(|| anyhow::anyhow!("fixture requires its real agent graph store"))?;
+    assert_eq!(
+        graph
+            .list_thread_spawn_children(
+                root.thread_id,
+                Some(codex_agent_graph_store::ThreadSpawnEdgeStatus::Closed)
+            )
+            .await?,
+        vec![child_id]
+    );
+    control
+        .restore_v2_agent_metadata(&harness.config, root.thread_id)
+        .await;
+    assert!(control.state.live_agents().is_empty());
+    assert_matches!(
+        control.ensure_v2_agent_loaded(harness.config.clone(), child_id, /*parent*/ None).await,
+        Err(error) if matches!(error.details(), CodexErrorDetails::ThreadNotFound(id) if *id == child_id)
+    );
+    root.thread.shutdown_and_wait().await?;
     Ok(())
 }

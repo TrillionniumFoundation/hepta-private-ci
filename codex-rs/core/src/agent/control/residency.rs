@@ -133,6 +133,16 @@ impl V2Residency {
                 continue;
             };
             let control = &candidate_thread.session.services.agent_control;
+            // The requesting reload may already hold another agent's guard.
+            // Skip a busy candidate rather than waiting and reversing that order.
+            let Some(_transition) = control.transitions.try_lock(candidate_thread_id) else {
+                let _ = manager
+                    .with_current_runtime(candidate_thread_id, &candidate_thread, || {
+                        self.touch(candidate_thread_id)
+                    })
+                    .await;
+                continue;
+            };
             if !is_unloadable(candidate_thread.as_ref()).await {
                 let _ = manager
                     .with_current_runtime(candidate_thread_id, &candidate_thread, || {

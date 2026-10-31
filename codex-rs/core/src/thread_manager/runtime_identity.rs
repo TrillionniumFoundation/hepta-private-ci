@@ -18,6 +18,27 @@ impl ThreadManagerState {
             .then(publish)
     }
 
+    /// A cold registration can retire only while no runtime or admitted startup
+    /// owns its ID. The caller also holds the agent transition guard and compares
+    /// the captured metadata registration inside `retire`.
+    pub(crate) async fn retire_cold_agent_if_unloaded(
+        &self,
+        thread_id: ThreadId,
+        retire: impl FnOnce() -> bool,
+    ) -> bool {
+        let registry = self.thread_registry.write().await;
+        if registry.threads.contains_key(&thread_id)
+            || registry.starting_spawns.iter().any(|starting| {
+                starting.upgrade().is_some_and(|starting| {
+                    starting.thread_id == thread_id && !starting.complete.load(Ordering::Acquire)
+                })
+            })
+        {
+            return false;
+        }
+        retire()
+    }
+
     /// Submit to the exact runtime being operated on, preserving operation capture.
     /// A later registration under the same thread ID must not receive this operation.
     pub(crate) async fn send_op_to_runtime(
