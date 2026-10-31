@@ -102,6 +102,33 @@ class RenewalBranchPointTests(unittest.TestCase):
             with self.subTest(index=index, h=h):
                 self.assertLessEqual(abs(actual-oracle)/oracle,1e-12)
 
+    def test_branchpoint_gradient_diverges_with_verified_finite_differences(self):
+        # Exact smooth fit: db/dreset=-(1-t)/t and
+        # db/drefractory=(rho/kappa)*(1-t)/t. As h -> 0+ the
+        # Jacobian is intrinsically singular, not a solver regression.
+        previous_magnitude=0.
+        for gap in (1e-8,1e-12,1e-20,1e-40,1e-100):
+            p=Stop(0.,1.,.1,0.,-gap,0.)
+            b=regenerative_boundary(p)
+            t=p.kappa*(b-p.cost)
+            predicted=-(1-t)/t
+            epsilon=gap*1e-4
+            plus=regenerative_boundary(replace(p,reset=p.reset+epsilon))
+            minus=regenerative_boundary(replace(p,reset=p.reset-epsilon))
+            numerical=(plus-minus)/(2*epsilon)
+            self.assertLess(abs(numerical-predicted)/abs(predicted),2e-8)
+            self.assertGreater(abs(predicted),previous_magnitude)
+            previous_magnitude=abs(predicted)
+        p=Stop(0.,1.,.1,0.,-1e-12,1e-12)
+        b=regenerative_boundary(p)
+        t=p.kappa*b
+        predicted=p.discount/p.kappa*(1-t)/t
+        epsilon=1e-16
+        plus=regenerative_boundary(replace(p,refractory=p.refractory+epsilon))
+        minus=regenerative_boundary(replace(p,refractory=p.refractory-epsilon))
+        numerical=(plus-minus)/(2*epsilon)
+        self.assertLess(abs(numerical-predicted)/predicted,2e-8)
+
     def test_fail_closed_on_erased_or_unresolved_transforms(self):
         cases=(Stop(0.,1.,.1,0.,-float.fromhex('0x0.0000000000001p-1022'),0.),
                Stop(1e200,1e-200,1e-200,0.,-1.,0.),
