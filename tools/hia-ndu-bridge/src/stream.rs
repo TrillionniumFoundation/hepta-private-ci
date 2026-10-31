@@ -43,9 +43,9 @@ pub(crate) fn run(mut input: impl BufRead, mut output: impl Write) -> Result<(),
         .map_err(|error| error.to_string())?;
         output.flush().map_err(|error| error.to_string())?;
     }
-    let mut extra = [0_u8; 1];
-    if input.read(&mut extra).map_err(|error| error.to_string())? != 0 {
-        return Err("stream request budget of 256 exhausted".into());
-    }
+    // A persistent producer may leave stdin open after the 256th complete
+    // frame. Reading again to distinguish EOF from a 257th request can block
+    // indefinitely despite the finite request budget. Stop immediately:
+    // additional input is never evaluated and receives no response.
     Ok(())
 }

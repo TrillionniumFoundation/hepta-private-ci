@@ -68,8 +68,12 @@ digests. Its authority is always `DENY_ALL`, and `safety_certificate` is false.
 at most 256 newline-terminated requests, each bounded to 1 MiB before parsing.
 Every request still passes through the original typed decoder and original NDU
 evaluation functions. It emits a numbered response with the exact request digest;
-there is no evaluation-result cache. Partial frames, invalid requests and a 257th
-request terminate the process without admitting later work.
+there is no evaluation-result cache. Partial frames and invalid requests terminate the process with error.
+On the 256th complete request, the process emits that response and exits
+immediately, without waiting for stdin EOF or another frame. Any 257th frame
+is left unread and receives no response or evaluation; callers must open a
+new session. This prioritizes bounded shutdown over detecting oversend in
+the already exhausted session.
 
 The companion `hepta.hia_ndu_session.NduSession` executes a sealed Linux memfd,
 checks the actual process executable inode, and verifies the handshake, sequence,
@@ -102,7 +106,7 @@ explicit abstention/ties, stale identities, duplicate events and malformed
 protocol inputs. The small deterministic examples verify integration and do not
 claim a measured performance advantage for NDU.
 
-The executable also has eight Rust protocol tests in `src/protocol_tests.rs`.
+The executable also has a bounded Rust protocol test suite in `src/protocol_tests.rs`.
 They call the original recursion and candidate evaluator through the typed
 request parser, including later refusal cost, hard/resource/risk rejection,
 abstention, unresolved frontiers and exact request/snapshot identity. Run them

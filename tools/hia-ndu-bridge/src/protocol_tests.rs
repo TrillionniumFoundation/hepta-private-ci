@@ -94,11 +94,49 @@ fn stream_request_limit_is_a_hard_stop() {
     line.push(b'\n');
     let input = line.repeat(257);
     let mut output = Vec::new();
-    let failure = super::stream::run(std::io::Cursor::new(input), &mut output);
-    assert_eq!(
-        failure,
-        Err("stream request budget of 256 exhausted".into())
-    );
+    // The finite session closes immediately after its 256th response.
+    // Even an already buffered 257th request gets no evaluation/response.
+    let finished = super::stream::run(std::io::Cursor::new(input), &mut output);
+    assert_eq!(finished, Ok(()));
+    assert_eq!(output.iter().filter(|byte| **byte == b'\n').count(), 257);
+}
+
+// Model a persistent stdin producer that keeps its pipe open after exactly
+// 256 complete requests. A second read after the quota would block forever;
+// report WouldBlock here instead of hanging the test process.
+struct PipeStillOpen(std::io::Cursor<Vec<u8>>);
+
+impl std::io::Read for PipeStillOpen {
+    fn read(&mut self, output: &mut [u8]) -> std::io::Result<usize> {
+        if self.0.position() as usize >= self.0.get_ref().len() {
+            return Err(std::io::Error::from(std::io::ErrorKind::WouldBlock));
+        }
+        std::io::Read::read(&mut self.0, output)
+    }
+}
+
+impl std::io::BufRead for PipeStillOpen {
+    fn fill_buf(&mut self) -> std::io::Result<&[u8]> {
+        if self.0.position() as usize >= self.0.get_ref().len() {
+            return Err(std::io::Error::from(std::io::ErrorKind::WouldBlock));
+        }
+        std::io::BufRead::fill_buf(&mut self.0)
+    }
+
+    fn consume(&mut self, amount: usize) {
+        std::io::BufRead::consume(&mut self.0, amount);
+    }
+}
+
+#[test]
+fn stream_closes_at_256_without_waiting_for_producer_eof() {
+    let mut frame = serde_json::to_vec(&request(vec![path("bounded", &[1])]))
+        .expect("encode a bounded request");
+    frame.push(b'\n');
+    let input = PipeStillOpen(std::io::Cursor::new(frame.repeat(256)));
+    let mut output = Vec::new();
+    super::stream::run(input, &mut output)
+        .expect("a saturated session must close without reading one more byte");
     assert_eq!(output.iter().filter(|byte| **byte == b'\n').count(), 257);
 }
 
