@@ -12,6 +12,14 @@ from .immutable_trial_receipts import (publish,read,audit,seal,verify_seal,recov
                                       UnresolvedReceipt,ARMS,SEEDS,TASKS)
 
 
+def _child_env():
+    root=Path(__file__).resolve()
+    for _ in __package__.split('.'):
+        root=root.parent
+    previous=os.environ.get('PYTHONPATH','')
+    return {**os.environ,'PYTHONPATH':os.pathsep.join(filter(None,(str(root),previous)))}
+
+
 def record(task='copy',seed=2,arm='aggregate_count'):
     return dict(schema='hcsn-p2-timed-cpu-matched-followup-v2',task=task,
                 seed=seed,arm=arm,params=5186,
@@ -50,9 +58,9 @@ class ReceiptTests(unittest.TestCase):
             self.assertEqual(len(audit(td)),12)
             digest=seal(td)
             self.assertEqual(digest,verify_seal(td)['sealed_sha256'])
-            code='from hcsn_p2_20261031.immutable_trial_receipts import verify_seal; import sys; print(verify_seal(sys.argv[1])["record_count"])'
+            code=f'from {__package__}.immutable_trial_receipts import verify_seal; import sys; print(verify_seal(sys.argv[1])["record_count"])'
             run=subprocess.run([sys.executable,'-c',code,td],
-                    env={**os.environ,'PYTHONPATH':'/mnt/data'},
+                    env=_child_env(),
                     capture_output=True,text=True,check=True)
             self.assertEqual(run.stdout.strip(),'12')
             with self.assertRaises(UnresolvedReceipt):seal(td)
@@ -64,11 +72,11 @@ class ReceiptTests(unittest.TestCase):
 
     def test_real_crash_after_file_fsync_is_not_published(self):
         with TemporaryDirectory() as td:
-            code=('import os,sys;from hcsn_p2_20261031.immutable_trial_receipts '
-                  'import publish;from hcsn_p2_20261031.test_immutable_trial_receipts import record;'
+            code=(f'import os,sys;from {__package__}.immutable_trial_receipts '
+                  f'import publish;from {__package__}.test_immutable_trial_receipts import record;'
                   'publish(sys.argv[1],record(),crash_hook=lambda s:os._exit(73))')
             p=subprocess.run([sys.executable,'-c',code,td],
-                             env={**os.environ,'PYTHONPATH':'/mnt/data'})
+                             env=_child_env())
             self.assertEqual(p.returncode,73)
             self.assertFalse((Path(td)/'records'/'copy.2.aggregate_count.json').exists())
             with self.assertRaises(UnresolvedReceipt):audit(td,require_complete=False)
@@ -80,12 +88,12 @@ class ReceiptTests(unittest.TestCase):
 
     def test_real_crash_after_link_has_complete_self_checking_receipt(self):
         with TemporaryDirectory() as td:
-            code=('import os,sys;from hcsn_p2_20261031.immutable_trial_receipts '
-                  'import publish;from hcsn_p2_20261031.test_immutable_trial_receipts import record;'
+            code=(f'import os,sys;from {__package__}.immutable_trial_receipts '
+                  f'import publish;from {__package__}.test_immutable_trial_receipts import record;'
                   'publish(sys.argv[1],record(),crash_hook=lambda s:os._exit(74) '
                   'if s=="after_create_only_link" else None)')
             p=subprocess.run([sys.executable,'-c',code,td],
-                             env={**os.environ,'PYTHONPATH':'/mnt/data'})
+                             env=_child_env())
             self.assertEqual(p.returncode,74)
             with self.assertRaises(UnresolvedReceipt):read(td,'copy.2.aggregate_count')
             with self.assertRaises(UnresolvedReceipt):audit(td,require_complete=False)
@@ -128,10 +136,10 @@ class ReceiptTests(unittest.TestCase):
 
     def test_duplicate_key_with_parallel_processes_uses_link_exclusive(self):
         with TemporaryDirectory() as td:
-            code=('import sys;from hcsn_p2_20261031.immutable_trial_receipts '
-                  'import publish;from hcsn_p2_20261031.test_immutable_trial_receipts import record;'
+            code=(f'import sys;from {__package__}.immutable_trial_receipts '
+                  f'import publish;from {__package__}.test_immutable_trial_receipts import record;'
                   'publish(sys.argv[1],record())')
-            env={**os.environ,'PYTHONPATH':'/mnt/data'}
+            env=_child_env()
             workers=[subprocess.Popen([sys.executable,'-c',code,td],
                      stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,env=env)
                      for _ in range(4)]
