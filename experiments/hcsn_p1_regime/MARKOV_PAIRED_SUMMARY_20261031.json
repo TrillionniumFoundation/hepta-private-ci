@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn-p1-markov-evolving-summary-v2",
+  "protocol_sha256": "49c7cf2a2acaa17a91414571b6b1781a72e9a41c2831802efcb409663a1dafc1",
+  "raw_sha256": "44f00dcaae4ef6ddc40e590614c60ece807dc5146cc9e4f612a183b26ce7df53",
+  "n_seeds": 8,
+  "per_seed_receipt_sha256": {
+    "501": "b57108408627b9c06a39d51217c74614c6e2f4e6558dc7f5d749fab03899076e",
+    "502": "4c29f775fa24356d90a3d101e18c5b6c07b6211d1cd989ddac4e289321a4886e",
+    "503": "0edba2ea288b2ef1b160b7a44958e30ec7853b3503b742ad45dfbe58e7f43849",
+    "504": "9dc0c8e7ac8edd7b05750eef6ad3858ba687b94c38c853e9504b81fe963a03cf",
+    "505": "348a2cf9d7de3fdbc15702267157049bb288fc5cbab508b55fa0aaecbad31729",
+    "506": "fb952803cd349ba6bf1e02541d29e1d1f118c5592e06d27ecc4b56d5152f7bc3",
+    "507": "6e92ca6227202689e05998dad18dd186a913a3646280e4f19ee84632db31c1e7",
+    "508": "1c77af92cfd7c1eeffa0f97f83155f612b4540e76d3b3afa1aa8f"
+  },
+  "ood_brier_improvement_per_seed": [
+    0.01869149725026592,
+    -0.008768718681619214,
+    -0.00023088392209408282,
+    -0.007828122765580425,
+    -0.0012237483148284378,
+    -0.0016659553278001449,
+    0.0012033771265715643,
+    0.016363204587336033
+  ],
+  "iid_brier_improvement_per_seed": [
+    0.0010605041757932587,
+    -0.0004592692118725594,
+    -0.00032365885585661225,
+    -0.0006981169615497551,
+    -0.0029082572592256384,
+    0.00024577909246598084,
+    0.0004549279809283602,
+    0.004381898680528268
+  ],
+  "mean_ood_brier_improvement": 0.0020675812440314016,
+  "mean_iid_brier_improvement": 0.0002192259551514128,
+  "exact_two_sided_signflip_p_ood": 0.609375,
+  "min_training_cpu_seconds": 2.000053106,
+  "max_training_cpu_seconds": 2.001188992,
+  "mean_training_cpu_seconds": 2.0005221622500002,
+  "cpu_budgets_matched": true,
+  "trainable_parameters_each": 609,
+  "exploratory_screen_passed": false,
+  "same_observed_information": true,
+  "independent_new_information_from_feature": false,
+  "p1_closed": false,
+  "p0_p6_closed": false,
+  "production_activation": false,
+  "limits": [
+    "synthetic piecewise Markov GBM, not original HX",
+    "no GPU/energy/real tasks",
+    "per-seed model weights and CPU timing may vary slightly on replay"
+  ]
+}
