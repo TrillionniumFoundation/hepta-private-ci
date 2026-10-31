@@ -1,0 +1,276 @@
+{
+  "schema": "hepta.r10.publication-verification.v1",
+  "evidence_commit": "0256450e4d243287fc13a9bde604b4b211c0fcbd",
+  "evidence_tree": "2ef7c78cea3e59abe18a733933adaf6100d8b8b4",
+  "branch": "research/hcsn-causal-five-track-20261031",
+  "remote_delivery": {
+    "source_commit": "0256450e4d243287fc13a9bde604b4b211c0fcbd",
+    "r10_files_verified": 191,
+    "mismatches": [],
+    "extra": [],
+    "tree_truncated": false,
+    "global_files": [
+      {
+        "path": ".codespellrc",
+        "sha": "c494946d4e2a2bd11890e29f0b253aeba6f065aa",
+        "expected": "c494946d4e2a2bd11890e29f0b253aeba6f065aa",
+        "match": true
+      },
+      {
+        "path": ".github/blob-size-allowlist.txt",
+        "sha": "f14a489bf499279b57d91a66b1cf3bb58c5c9dbf",
+        "expected": "f14a489bf499279b57d91a66b1cf3bb58c5c9dbf",
+        "match": true
+      },
+      {
+        "path": ".github/workflows/hcsn-causal-five-track.yml",
+        "sha": "ad626aeeeedf768ab2dad00b1471a1a16a4e73ef",
+        "expected": "ad626aeeeedf768ab2dad00b1471a1a16a4e73ef",
+        "match": true
+      }
+    ],
+    "manifest_git_blob_sha1": "efa42b64b309b0eee2f3e9cc4f4b665f5f2155c5",
+    "manifest_sha256": "8d0b24df9327fcee4a97d29db9c4db75e0d37dc80b27a6e791696e91c5cca535",
+    "total_identity_verified_files": 194
+  },
+  "final_ci": {
+    "run_id": 41188245897,
+    "job_id": 124499473433,
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41188245897",
+    "source_commit": "0256450e4d243287fc13a9bde604b4b211c0fcbd",
+    "baseline_tests_passed": 11,
+    "preread_tests_passed": 5,
+    "qualification": {
+      "schema": "hepta.r10.native.qualification.v1",
+      "passed": true,
+      "runs": 576,
+      "all_action_state_cost_decoder_parity": true,
+      "restart_pairs": [
+        {
+          "name": "c0-s0-ordinary-oracle",
+          "equal": true,
+          "forced_first": "READ",
+          "restarted_processes": 2
+        },
+        {
+          "name": "c0-s0-ordinary-analytic",
+          "equal": true,
+          "forced_first": "READ",
+          "restarted_processes": 2
+        },
+        {
+          "name": "c0-s0-distribution-oracle",
+          "equal": true,
+          "forced_first": "READ",
+          "restarted_processes": 2
+        },
+        {
+          "name": "c0-s0-distribution-analytic",
+          "equal": true,
+          "forced_first": "READ",
+          "restarted_processes": 2
+        },
+        {
+          "name": "c1-s0-ordinary-oracle",
+          "equal": true,
+          "forced_first": "READ",
+          "restarted_processes": 2
+        },
+        {
+          "name": "c1-s0-ordinary-analytic",
+          "equal": true,
+          "forced_first": "READ",
+          "restarted_processes": 2
+        },
+        {
+          "name": "c1-s0-distribution-oracle",
+          "equal": true,
+          "forced_first": "READ",
+          "restarted_processes": 2
+        },
+        {
+          "name": "c1-s0-distribution-analytic",
+          "equal": true,
+          "forced_first": "READ",
+          "restarted_processes": 2
+        }
+      ],
+      "cloned_midtrajectory_counterfactual_states": 8,
+      "cloned_counterfactual_executions": 24,
+      "means": {
+        "ordinary/oracle": {
+          "quality": 0.8333333333333334,
+          "utility": 0.7979327299183337,
+          "reads": 0.5833333333333334,
+          "clock": 0.6875,
+          "task_cost": 0.03540060341499943,
+          "cpu_seconds": 0.006372946937500008,
+          "wall_seconds": 0.008872870812499064,
+          "peak_child_rss_kib": 54548.666666666664
+        },
+        "ordinary/ordinary": {
+          "quality": 0.8333333333333334,
+          "utility": 0.788136822508679,
+          "reads": 0.5833333333333334,
+          "clock": 1.875,
+          "task_cost": 0.04519651082465428,
+          "cpu_seconds": 0.007222038979166681,
+          "wall_seconds": 0.011545663999999789,
+          "peak_child_rss_kib": 54551.333333333336
+        },
+        "ordinary/matched_c1": {
+          "quality": 0.8125,
+          "utility": 0.7565810912821288,
+          "reads": 0.3958333333333333,
+          "clock": 3.3125,
+          "task_cost": 0.055918908717871176,
+          "cpu_seconds": 0.008012224666666685,
+          "wall_seconds": 0.014910975187499767,
+          "peak_child_rss_kib": 54551.333333333336
+        },
+        "ordinary/analytic": {
+          "quality": 0.8333333333333334,
+          "utility": 0.7913730604133565,
+          "reads": 0.5625,
+          "clock": 1.875,
+          "task_cost": 0.0419602729199768,
+          "cpu_seconds": 0.0073095716249999935,
+          "wall_seconds": 0.011649630687500098,
+          "peak_child_rss_kib": 54556.666666666664
+        },
+        "ordinary/fixed": {
+          "quality": 0.8541666666666666,
+          "utility": 0.768896561422736,
+          "reads": 1.2916666666666667,
+          "clock": 1.5625,
+          "task_cost": 0.08527010524393074,
+          "cpu_seconds": 0.008388514979166676,
+          "wall_seconds": 0.012491514395830924,
+          "peak_child_rss_kib": 54559.333333333336
+        },
+        "ordinary/stop": {
+          "quality": 0.7291666666666666,
+          "utility": 0.7271666666666667,
+          "reads": 0,
+          "clock": 0,
+          "task_cost": 0.002,
+          "cpu_seconds": 0.004769320270833335,
+          "wall_seconds": 0.005990191145834582,
+          "peak_child_rss_kib": 54572
+        },
+        "distribution/oracle": {
+          "quality": 0.8333333333333334,
+          "utility": 0.7979327299183337,
+          "reads": 0.5833333333333334,
+          "clock": 0.6875,
+          "task_cost": 0.03540060341499943,
+          "cpu_seconds": 0.006358333875,
+          "wall_seconds": 0.008699912479167201,
+          "peak_child_rss_kib": 54572
+        },
+        "distribution/ordinary": {
+          "quality": 0.8333333333333334,
+          "utility": 0.788136822508679,
+          "reads": 0.5833333333333334,
+          "clock": 1.875,
+          "task_cost": 0.04519651082465428,
+          "cpu_seconds": 0.007296922833333326,
+          "wall_seconds": 0.01170737670833688,
+          "peak_child_rss_kib": 54572
+        },
+        "distribution/matched_c1": {
+          "quality": 0.8125,
+          "utility": 0.7565810912821288,
+          "reads": 0.3958333333333333,
+          "clock": 3.3125,
+          "task_cost": 0.055918908717871176,
+          "cpu_seconds": 0.008002771770833335,
+          "wall_seconds": 0.014799911499999041,
+          "peak_child_rss_kib": 54572
+        },
+        "distribution/analytic": {
+          "quality": 0.8333333333333334,
+          "utility": 0.7913730604133565,
+          "reads": 0.5625,
+          "clock": 1.875,
+          "task_cost": 0.0419602729199768,
+          "cpu_seconds": 0.007326132999999999,
+          "wall_seconds": 0.011460669041666685,
+          "peak_child_rss_kib": 54572
+        },
+        "distribution/fixed": {
+          "quality": 0.8541666666666666,
+          "utility": 0.768896561422736,
+          "reads": 1.2916666666666667,
+          "clock": 1.5625,
+          "task_cost": 0.08527010524393074,
+          "cpu_seconds": 0.008394087541666664,
+          "wall_seconds": 0.012598110416661848,
+          "peak_child_rss_kib": 54580
+        },
+        "distribution/stop": {
+          "quality": 0.7291666666666666,
+          "utility": 0.7271666666666667,
+          "reads": 0,
+          "clock": 0,
+          "task_cost": 0.002,
+          "cpu_seconds": 0.00476040381249999,
+          "wall_seconds": 0.006015623625001965,
+          "peak_child_rss_kib": 54585.333333333336
+        }
+      },
+      "native_source_build_required": true,
+      "protocol": {
+        "schema": "hepta.r10.native.protocol.v1",
+        "cases": 8,
+        "world_seeds_per_case": 6,
+        "families": [
+          "ordinary",
+          "distribution"
+        ],
+        "policies": [
+          "oracle",
+          "ordinary",
+          "matched_c1",
+          "analytic",
+          "fixed",
+          "stop"
+        ],
+        "binary_sha256": "96fda0fbd0e6077ff09700515fea75caae24e5e744262a7d9203c20655b6cbe2",
+        "weights_sha256": "66bb4fabc2fdca0b08d7e834f6a1dfdd73aedb4cfbd1b4c594b709f742092972",
+        "runner_sha256": "2ecaff50047d5226945f6246e85b750b7b8f903ffee1d440ed68af590dbd5f41",
+        "tick_micros": 50000,
+        "clock_scope": "declared task ticks; actual CPU/wall time separately measured",
+        "model_scope": "frozen real FullHX binary observation from actual 32-symbol file; synthetic evidence task",
+        "policy_scope": "precomputed value tables from frozen exported heads; no native head-training claim",
+        "energy_measured": false,
+        "production_activation": false
+      },
+      "controller_evidence": "policy precedes payload access; whole native state cloned for counterfactuals",
+      "physics_task_relation": "finite CTMC propagated on READ/WAIT; task refractory is a separate declared control constraint; latent CTMC firing does not trigger READ",
+      "analytic_cell_advantage_established": false,
+      "energy_joules": null,
+      "campaign_parent_cpu_seconds": 1.270166926,
+      "campaign_wall_seconds": 7.774684742999995
+    },
+    "semantic_outcomes_equal_to_original_qualified_run": true,
+    "semantic_fields_compared": [
+      "quality",
+      "utility",
+      "reads",
+      "clock",
+      "task_cost"
+    ],
+    "semantic_differences": []
+  },
+  "original_scientific_evidence": {
+    "source_commit": "41a38cd4f05924c57d0ff841ea392de10704d9b3",
+    "run_id": 41185622819,
+    "unchanged": true,
+    "raw_data_and_report_not_replaced": true
+  },
+  "counting_rule": "Final CI is a verification repeat of the same configurations/world seeds after mechanical formatting and publication; it adds no independent scientific sample.",
+  "scope": "This later receipt is excluded from the self-referential delivery manifest. All original scientific data remain frozen.",
+  "all_five_scientific_claims_passed": false
+}
