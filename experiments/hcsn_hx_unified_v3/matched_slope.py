@@ -31,12 +31,19 @@ class SlopeMatch:
 
 
 def _profile(f: Callable[[float], float], anchor: float, step: float):
-    """Two 5-point derivatives plus one-sided checks; no automatic clipping."""
+    """Five-point/one-sided derivatives on three noncommensurate scales.
+
+    Coarse and half-step probes alone share sampling-grid aliases: a
+    high-frequency perturbation can vanish at both sets of stencil points,
+    falsely matching a gate whose true local slope differs by orders of
+    magnitude. Add a sqrt(1/2) scale as an independent alias diagnostic.
+    Finite stencils can still be fooled; this is NOT derivative certification.
+    """
     if anchor - 2 * step == anchor or anchor + 2 * step == anchor:
         raise ArithmeticError('Stencil offsets erased in f64')
     samples = {}
-    for half in (False, True):
-        h = step / 2 if half else step
+    for ratio in (1., .5, math.sqrt(.5)):
+        h = step * ratio
         if h <= 0 or anchor - 2*h == anchor or anchor + 2*h == anchor:
             raise ArithmeticError('Unrepresentable derivative step')
         ys = []
@@ -56,12 +63,15 @@ def _profile(f: Callable[[float], float], anchor: float, step: float):
         right = (-3*ys[2]+4*ys[3]-ys[4])/(2*h)
         if not all(map(math.isfinite, (derivative,left,right))):
             raise ArithmeticError('Nonfinite local derivative')
-        samples[half] = (ys[2], derivative, left, right)
-    coarser, finer = samples[False], samples[True]
-    if coarser[0] != finer[0]:
+        samples[ratio] = (ys[2], derivative, left, right)
+    finer = samples[.5]
+    if any(entry[0]!=finer[0] for entry in samples.values()):
         raise ArithmeticError('Non-deterministic channel at anchor')
-    return finer[0], finer[1], max(abs(coarser[1]-finer[1]),
-                                   abs(finer[2]-finer[3]))
+    disagreement=max(
+        max(abs(entry[1]-finer[1]),abs(entry[2]-entry[3]))
+        for entry in samples.values()
+    )
+    return finer[0], finer[1], disagreement
 
 
 def match_local_slope(
