@@ -114,11 +114,36 @@ def advance(state: RenewalState, lam: float, gamma: float, dt: float) -> Renewal
     s=lam+gamma
     if not math.isfinite(s):
         raise ArithmeticError('Renewal rates sum unresolved in f64')
-    decay=math.exp(-s*dt)
+    x=s*dt
+    decay=math.exp(-x)
     eq=gamma/s
-    active=math.fsum((eq,(state.active-eq)*decay))
-    occupation=math.fsum((eq*dt,(state.active-eq)*(-math.expm1(-s*dt))/s))
-    count=math.fsum((state.expected_count,lam*occupation))
+    if x <= .05:
+        # Form the new active probability from nonnegative populations.
+        # eq+(active-eq)*exp(-x) subtracts O(1) terms and silently drops
+        # tiny recovered active mass when exp(-x) rounds to exactly one.
+        active=math.fsum((state.active*decay,eq*(-math.expm1(-x))))
+        # E[N] integrates active occupancy. Starting refractory, the
+        # occupation is O(dt^2): subtracting eq*dt - eq*(-expm1(-x))/s
+        # cancels its leading O(dt) terms and can round a real event
+        # expectation to zero. Split the nonnegative integrals instead:
+        # J=int exp(-s*u)du; D=dt-J=dt*(x/2-x^2/6+x^3/24-...).
+        term=x/2
+        terms=[]
+        for n in range(1,17):
+            terms.append(term)
+            term *= -x/(n+2)
+        d_ratio=math.fsum(terms)
+        occupation=math.fsum((state.active*dt*(1-d_ratio),
+                              eq*dt*d_ratio))
+    else:
+        active=math.fsum((eq,(state.active-eq)*decay))
+        occupation=math.fsum((eq*dt,(state.active-eq)*(-math.expm1(-x))/s))
+    increment=lam*occupation
+    if not math.isfinite(increment) or increment <= 0:
+        raise ArithmeticError('Positive renewal count increment unresolved in f64')
+    count=math.fsum((state.expected_count,increment))
+    if not math.isfinite(count) or count <= state.expected_count:
+        raise ArithmeticError('Positive renewal event count erased at f64 scale')
     kernel=_exp_difference_quotient(lam,gamma,dt)
     no_fire_active=math.fsum((state.no_fire_active*math.exp(-lam*dt),
                              state.no_fire_refractory*gamma*kernel))
