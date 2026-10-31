@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.parameter-field.execution-engineering-tests.1",
+  "recorded_utc": "2026-10-31T12:11:39.063986+00:00",
+  "scope": "Synthetic arithmetic and evidence-boundary fixtures only; zero scientific runs or new independent samples.",
+  "command": [
+    "/workspace/scratch/178ced6a501f/runtime_recovery_20261030/venv/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "supplements/parameter_field_execution_20261031",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/092b68f38152/parameter-field-work",
+  "exit_code": 0,
+  "wall_seconds": 0.24371273200085852,
+  "child_user_cpu_seconds": 0.21526499999999998,
+  "child_system_cpu_seconds": 0.028064,
+  "child_peak_rss_kib": 34948,
+  "peak_rss_scope": "Only child process launched by this measurement; Linux KiB, not additive.",
+  "test_stdout": {
+    "path": "reports/parameter_field_execution_20261031/synthetic_tests.log",
+    "bytes": 3316,
+    "sha256": "c7fa2a463ec7f25398e24a6a40477182a4dac21802ed27df27eefc208db84b29"
+  },
+  "scientific_payloads_read": false,
+  "scientific_microsteps": 0
+}

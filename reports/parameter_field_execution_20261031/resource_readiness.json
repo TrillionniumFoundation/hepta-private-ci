@@ -1,0 +1,248 @@
+{
+  "schema": "hepta.parameter-field.execution-readonly-readiness.1",
+  "at_utc": "2026-10-31T12:07:14.291660+00:00",
+  "source_root": "/workspace/scratch/178ced6a501f/fullstudy_recovery06_git",
+  "source_commit": "bc4e757f5c90f6365f383c1127be710d2ded874a",
+  "config_path": "/workspace/scratch/178ced6a501f/fullstudy_execution06_ops/registrations/initial/PIPELINE_CONFIG.json",
+  "config_sha256": "d16bac3194b36d286f180976ddbc7dff16e544763e195d408a135b30af4fb86e",
+  "source_and_config_match": true,
+  "pipeline_descriptor_checks": [
+    {
+      "role": "amendment",
+      "bytes": 19115,
+      "sha256": "013121d6ca9377613ed6ef6f40cfdf25bc6fd3bc483a0da4ebd1305f908a3a96",
+      "matches": true
+    },
+    {
+      "role": "asset_recovery",
+      "bytes": 2029,
+      "sha256": "a0f1ab4f1f0bc61025a7f55988493dffd2a74a0a92a144ada8738b9af519f16e",
+      "matches": true
+    },
+    {
+      "role": "controller_freeze",
+      "bytes": 27495,
+      "sha256": "b22e494534496e3ce2477f108fa60ffe8e488958c43612c47f42423ed78b7f77",
+      "matches": true
+    },
+    {
+      "role": "cwd_policy",
+      "bytes": 25580,
+      "sha256": "8372d19d086cfeba5d7710fb095aa45c907c498da0d730864ef069d2a0a4f297",
+      "matches": true
+    },
+    {
+      "role": "cwd_runner",
+      "bytes": 26650,
+      "sha256": "95403029436c72dfb7a545de4794781947a45de62a9412a8be20ed1623f9f86b",
+      "matches": true
+    },
+    {
+      "role": "daemon_bootstrap",
+      "bytes": 14457,
+      "sha256": "8caa56a4af9e8c66a8cb5ce6f26469779dca6174ce0e234a5e9ea5626a1234a3",
+      "matches": true
+    },
+    {
+      "role": "durable_archive",
+      "bytes": 14865,
+      "sha256": "dfeee33870f3ca429284542cb8ca9ff8c9471a8fc8ff0339c3de251cabf260da",
+      "matches": true
+    },
+    {
+      "role": "execution04_cost_facts",
+      "bytes": 11264,
+      "sha256": "1a30f224ff772ec0151f809e7cf445fce85b38fbd4e4e555b8bc87c5bab294ef",
+      "matches": true
+    },
+    {
+      "role": "execution05_cost_facts",
+      "bytes": 717,
+      "sha256": "18e83746ee27172a4ffa5a3fc9fe7bd468ba9ea645eb6ce8402b85e48fd519da",
+      "matches": true
+    },
+    {
+      "role": "execution05_costs_source",
+      "bytes": 21152,
+      "sha256": "955adebcd366b3969719a361b40fee579a3e72b3e6c5f8a25bc2e69bada6eb03",
+      "matches": true
+    },
+    {
+      "role": "execution05_failure_sources",
+      "bytes": 3374,
+      "sha256": "83605f6963d34b3e66716acf23d863516c285fd68dac605c31bc02d12d338518",
+      "matches": true
+    },
+    {
+      "role": "import_pins",
+      "bytes": 8389,
+      "sha256": "091351bea8bbbe54331052858ed84d16db4a3e0e2931283de9bf1cd2043f427e",
+      "matches": true
+    },
+    {
+      "role": "import_receipt",
+      "bytes": 116925,
+      "sha256": "5215c9410345a1a5a3366cc33bcecc2e3bdd13947cbae8ee9cf9c2bbdc3ae074",
+      "matches": true
+    },
+    {
+      "role": "initial_queue",
+      "bytes": 5075,
+      "sha256": "ba04aee69a6227431873f66d3bc546ece542b6a36816c4fce7f66c1a0b08bc3c",
+      "matches": true
+    },
+    {
+      "role": "own_supervisor",
+      "bytes": 51460,
+      "sha256": "9fe5a97112693d6eb2f718c50d09c3b53a85c4f949d1b571b0494b48902f547b",
+      "matches": true
+    },
+    {
+      "role": "producer_config",
+      "bytes": 1644,
+      "sha256": "9ce7107e58d8cda23091ddc162eb94b311a85bb395495d5f9dd9067c7b9c7d1b",
+      "matches": true
+    },
+    {
+      "role": "producer_map",
+      "bytes": 5091,
+      "sha256": "70589781f7d3e4d0808afff6b5a7f8cc7981a5f85ce2d96baf6af5f5400cc305",
+      "matches": true
+    },
+    {
+      "role": "registration_config",
+      "bytes": 7153,
+      "sha256": "c1a4f3b18d01ca6224831c39d5bd457faf7939460b9d117ee77d391e2ecf9ce5",
+      "matches": true
+    },
+    {
+      "role": "registration_driver",
+      "bytes": 23852,
+      "sha256": "1e30fc9e0a234046346f4c46d01b217f009660dbd1b120da0d53f5298daa79ca",
+      "matches": true
+    },
+    {
+      "role": "runtime_receipt",
+      "bytes": 3416,
+      "sha256": "d24c3ded6e032ad387d77e7a0d179cd917f2e628f652ec27ea60bcc9ef356134",
+      "matches": true
+    },
+    {
+      "role": "wait4_launcher",
+      "bytes": 10156,
+      "sha256": "2ed6930e78aa9ba3328fc9525e0bb995b8bbbb6cd2b5bc6fa586b4e3fb2476dd",
+      "matches": true
+    }
+  ],
+  "sampling_function": "operational.parameter_field_recovery06.supervisor.capacity",
+  "sampling_function_source_sha256": "9fe5a97112693d6eb2f718c50d09c3b53a85c4f949d1b571b0494b48902f547b",
+  "thresholds": {
+    "ram_bytes": 1879048192,
+    "disk_bytes": 2415919104,
+    "consecutive_required": 3,
+    "interval_seconds": 10
+  },
+  "actual_intervals_seconds": [
+    10.012757141012116,
+    10.00531819499156
+  ],
+  "samples": [
+    {
+      "unix": 1793448414.2733943,
+      "memory_current": 8568741888,
+      "memory_limit": 8589934592,
+      "clean_inactive_file": 586194944,
+      "effective_available": 607387648,
+      "oom": 41,
+      "oom_kill": 9,
+      "disk_available": 1686994944,
+      "available_inodes": 1353935,
+      "index": 1,
+      "at_utc": "2026-10-31T12:06:54.273405+00:00",
+      "monotonic": 101505.758683688,
+      "ram_pass": false,
+      "disk_pass": false,
+      "joint_pass": false,
+      "consecutive_joint_pass": 0
+    },
+    {
+      "unix": 1793448424.2861462,
+      "memory_current": 8457220096,
+      "memory_limit": 8589934592,
+      "clean_inactive_file": 492318720,
+      "effective_available": 625033216,
+      "oom": 41,
+      "oom_kill": 9,
+      "disk_available": 1687048192,
+      "available_inodes": 1353950,
+      "index": 2,
+      "at_utc": "2026-10-31T12:07:04.286155+00:00",
+      "monotonic": 101515.771440829,
+      "ram_pass": false,
+      "disk_pass": false,
+      "joint_pass": false,
+      "consecutive_joint_pass": 0
+    },
+    {
+      "unix": 1793448434.2914658,
+      "memory_current": 8466796544,
+      "memory_limit": 8589934592,
+      "clean_inactive_file": 498106368,
+      "effective_available": 621244416,
+      "oom": 41,
+      "oom_kill": 9,
+      "disk_available": 1687048192,
+      "available_inodes": 1353950,
+      "index": 3,
+      "at_utc": "2026-10-31T12:07:14.291474+00:00",
+      "monotonic": 101525.776759024,
+      "ram_pass": false,
+      "disk_pass": false,
+      "joint_pass": false,
+      "consecutive_joint_pass": 0
+    }
+  ],
+  "all_three_joint_pass": false,
+  "maximum_consecutive_joint_pass": 0,
+  "oom_counters_stable_during_observation": true,
+  "markers_before": {
+    "STATUS.json": false,
+    "supervisor_run/START_POLICY.json": false,
+    "daemon_bootstrap": false,
+    "wait4_launcher": false,
+    "COMPLETE.json": false,
+    "FAILED.json": false
+  },
+  "markers_after": {
+    "STATUS.json": false,
+    "supervisor_run/START_POLICY.json": false,
+    "daemon_bootstrap": false,
+    "wait4_launcher": false,
+    "COMPLETE.json": false,
+    "FAILED.json": false
+  },
+  "no_scientific_launch_markers": true,
+  "supervisor_instantiated": false,
+  "supervisor_gate_called": false,
+  "science_started": false,
+  "torch_imported": false,
+  "unsealed_outcomes_read": false,
+  "original_ops_written": false,
+  "actual_supervisor_admission_performed": false,
+  "interpretation": "This independent observation uses the exact original capacity function and interval. Even a positive result would require the original supervisor own admission; no launch is authorized by this report itself.",
+  "alternative_executor_check": {
+    "checked_at_utc": "2026-10-31T12:07:14.291660+00:00",
+    "validated_alternative_executor_available": false,
+    "exposed_cloud_environment_ssh_or_attach_executor_tools": false,
+    "original_pipeline_uses_pinned_local_source_ops_raw_and_python_paths": true,
+    "registered_alternative_executor_identified": false,
+    "historical_pocket4_probe": {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "run_id": 37180529025,
+      "read_only_get_status": 404,
+      "interpretation": "The historical run cannot be retrieved with the current connector. This does not establish an available alternative executor and does not prove that no runners exist."
+    },
+    "dispatch_or_rerun_performed": false,
+    "protocol_or_runtime_paths_changed": false
+  }
+}
