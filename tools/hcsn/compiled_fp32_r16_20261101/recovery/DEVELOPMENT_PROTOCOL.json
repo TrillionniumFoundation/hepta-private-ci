@@ -1,0 +1,13 @@
+{
+  "schema": "hcsn.compiled-compensated-development.v1",
+  "stage": "New candidate; the published Python compensated V1 candidate stays immutable",
+  "implementation": "One C++ financial formula template and fixed ten-column forward AD, instantiated for float, double and explicit two-float words",
+  "financial_candidate_arithmetic": "Two binary32 words; no financial double operations. Higher precision allowed for fixed coefficient preparation, native-double baseline and independent reference/reporting only.",
+  "compiler_contract": ["-std=c++20", "-O3", "-fvisibility=hidden", "-fno-semantic-interposition", "-fno-fast-math", "-ffp-contract=off", "-fno-associative-math", "-fno-reciprocal-math"],
+  "forbidden_claims": ["Compiled compensated versus Python baseline speed advantage", "Ordinary one-word FP32 qualification from compensated results", "GPU or energy advantage"],
+  "regressions": ["Original 18 by 24 development matrix", "Five original failure witnesses", "Opened Python V1 128 by 4 holdout is now regression evidence only", "Exact-boundary/default invariants and generic primitive range witnesses"],
+  "unchanged_gates": {"value_scaled": 8e-7, "jacobian_scaled": 2e-5, "oracle_step_halving_scaled": 1e-12},
+  "fresh_validation": "After development: freeze source, compiler command/binary, precision contract and independently generated new-case manifest before evaluation; no retuning without another version and validation set.",
+  "cost": "All three modes under this same compiled template/AD and identical quantized inputs; complete boundary plus all five outputs and all ten derivatives. Boundary reuse separately identified. Record failures and do not count fast failures as comparable completed evaluations.",
+  "attempt_retention": "Preserve all numerical failures and distinct candidate source versions; do not alter frozen R11/R14/R15/Python V1 sources or gates."
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn.compiled-financial-build.v1",
+  "command": [
+    "/usr/bin/g++",
+    "-std=c++20",
+    "-O3",
+    "-fvisibility=hidden",
+    "-fno-semantic-interposition",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fno-associative-math",
+    "-fno-reciprocal-math",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-pedantic",
+    "-fPIC",
+    "-shared",
+    "/tmp/hcsn-compiled-recovery/kernel.cpp",
+    "-o",
+    "/tmp/hcsn-compiled-recovery/recovered.so"
+  ],
+  "compiler_version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "compiler_sha256": "52f1ddb33fe78b9441e0f42e9cd22c571f1101938e046c8a26582494e041cc73",
+  "source_sha256_before": {
+    "kernel.cpp": "6c04009f4a782a2aaac5f0e6d8af7048d9bd9c26f1a3039f47c1c83491bb63cd",
+    "arithmetic.hpp": "1f03b2cef36b5395511c98f815be741df9c3659b8f40a31dd38bfc5dc8e59bdd",
+    "constants.hpp": "d44d34cf51bcc70ef1961fdbef964ed2b703512f3d371683e743365c16d9ea4e",
+    "compiled.py": "5c60c7e7e9dada2388fb596f285e1ae4033c0b2accc1aed7ee1aa3892585b63d",
+    "generate_constants.py": "bc0109476c5c7a7bede37c1e7fcebba64f1ae3bd297af73894b49a2a6960637e",
+    "DEVELOPMENT_PROTOCOL.json": "419c52de3f3c88856d6d07c3f3dff1c6aeb62ecf63834d606e3382b02ca3588f"
+  },
+  "source_sha256_after": {
+    "kernel.cpp": "6c04009f4a782a2aaac5f0e6d8af7048d9bd9c26f1a3039f47c1c83491bb63cd",
+    "arithmetic.hpp": "1f03b2cef36b5395511c98f815be741df9c3659b8f40a31dd38bfc5dc8e59bdd",
+    "constants.hpp": "d44d34cf51bcc70ef1961fdbef964ed2b703512f3d371683e743365c16d9ea4e",
+    "compiled.py": "5c60c7e7e9dada2388fb596f285e1ae4033c0b2accc1aed7ee1aa3892585b63d",
+    "generate_constants.py": "bc0109476c5c7a7bede37c1e7fcebba64f1ae3bd297af73894b49a2a6960637e",
+    "DEVELOPMENT_PROTOCOL.json": "419c52de3f3c88856d6d07c3f3dff1c6aeb62ecf63834d606e3382b02ca3588f"
+  },
+  "source_unchanged": true,
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "",
+  "wall_seconds": 5.774960835000002,
+  "binary_sha256": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+  "arithmetic_contract": "No fast-math, reassociation, reciprocal substitution or fused contraction; FLT_EVAL_METHOD must equal zero."
+}
