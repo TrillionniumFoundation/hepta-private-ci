@@ -1,0 +1,51 @@
+{
+  "confirmation_child_cpu_seconds": 44.97484099999999,
+  "contrasts": {
+    "iid:value_risk-minus-ordinary_dual": {
+      "answers_differ": 2,
+      "first_actions_differ": 17,
+      "queries": 3072
+    },
+    "iid:value_risk-minus-state_confidence": {
+      "answers_differ": 1,
+      "first_actions_differ": 18,
+      "queries": 3072
+    },
+    "iid:value_risk-minus-stop_value": {
+      "answers_differ": 1,
+      "first_actions_differ": 16,
+      "queries": 3072
+    },
+    "ood:value_risk-minus-ordinary_dual": {
+      "answers_differ": 4,
+      "first_actions_differ": 31,
+      "queries": 3072
+    },
+    "ood:value_risk-minus-state_confidence": {
+      "answers_differ": 4,
+      "first_actions_differ": 45,
+      "queries": 3072
+    },
+    "ood:value_risk-minus-stop_value": {
+      "answers_differ": 4,
+      "first_actions_differ": 41,
+      "queries": 3072
+    }
+  },
+  "cpu_ratios_to_ordinary_dual": {
+    "iid": {
+      "current_1000_use_ratio": 1.1106425474963069,
+      "feature_ratio": 2.489663328612101,
+      "warm_owner_ratio": 1.112788450360582
+    },
+    "ood": {
+      "current_1000_use_ratio": 1.0724796275277753,
+      "feature_ratio": 2.2342850945003656,
+      "warm_owner_ratio": 1.0736107623249809
+    }
+  },
+  "maximum_raw_archive_bytes": 101216,
+  "schema": "hcsn-r16-channel-descriptive-details-v1",
+  "scope": "Predeclared descriptive action/answer and CPU summaries; no new efficacy test or primary-gate rescue.",
+  "statistics_child_cpu_seconds": 2.6633310000000074
+}

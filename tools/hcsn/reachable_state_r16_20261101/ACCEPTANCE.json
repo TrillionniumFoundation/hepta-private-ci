@@ -1,0 +1,59 @@
+{
+  "schema": "hcsn-r16-global-acceptance-v1",
+  "all_seven_blockers_closed": false,
+  "production_activation": false,
+  "primary_D_minus_B_passes": false,
+  "no_auxiliary_result_rescues_primary": true,
+  "blockers": [
+    {
+      "id": "content_addressing",
+      "status": "OPEN",
+      "finite_profile_passes": ["learned_cross_view_binding", "three_registered_content_quality_gates"],
+      "remaining": ["real_semantic_content", "strong_modern_ssm_or_gru", "integration_with_hidden_HX_owner_and_fair_end_to_end_cost"],
+      "evidence": "content/run_confirm_01/SUMMARY.json"
+    },
+    {
+      "id": "joint_state_compression",
+      "status": "OPEN_WITH_FAILED_COST_GATE",
+      "finite_profile_passes": ["positive_history_equal_marginal_witness_in_three_of_four_families", "support_preserving_projection", "quality_noninferiority", "fast_versus_old_engineering_speed"],
+      "remaining": ["net_cost_advantage_against_full_state", "closed_reduced_state_propagation", "population_decision_gain"],
+      "evidence": "fast_run_01/SUMMARY.json"
+    },
+    {
+      "id": "boundary_value_control",
+      "status": "OPEN",
+      "finite_profile_passes": ["four_registered_fully_observed_finite_control_gain_tests"],
+      "remaining": ["continuous_free_boundary_optimality", "partial_observation_and_content_integration"],
+      "evidence": "control/run_01/CONFIRMATION.json"
+    },
+    {
+      "id": "value_risk_channels",
+      "status": "OPEN_WITH_FAILED_GAIN_GATE",
+      "finite_profile_passes": ["equal_action_capability", "actual_lazy_feature_cost_audit"],
+      "remaining": ["independent_positive_net_gain_at_same_capability_and_real_feature_cost"],
+      "evidence": "channel/run_confirm_01/SUMMARY.json"
+    },
+    {
+      "id": "regeneration_recovery_learning",
+      "status": "OPEN",
+      "finite_profile_passes": ["real_reset_state_mutation", "kernel_timing_and_recovery_candidates_evaluated"],
+      "remaining": ["independent_recovery_state_gain", "joint_learning_and_generalization_in_partial_observation"],
+      "evidence": "control/run_01/CONFIRMATION.json"
+    },
+    {
+      "id": "HX_core",
+      "status": "OPEN_WITH_FAILED_PRIMARY_GATE",
+      "finite_profile_passes": ["complete_two_by_two", "same_operator_equivalence_audit", "frozen_design_p_value_lower_bound"],
+      "remaining": ["identifiable_HX_specific_gain_against_strong_ordinary_models", "real_content_and_cross_family_generalization"],
+      "evidence": "results/CONFIRMATION_SUMMARY.json"
+    },
+    {
+      "id": "numerics_cost_production",
+      "status": "OPEN",
+      "finite_profile_passes": ["fixed_zero_drift_boundary_PDE_convergence", "integer_Q24_conformance", "hybrid_original_one_percent_contract", "trusted_full_filter_state_cross_process_restore"],
+      "remaining": ["full_HX_continuum_and_control", "pure_Q24_continuous_admission", "native_planner_and_production_owner", "authentication_and_antirollback", "energy_and_network_measurement"],
+      "evidence": "numerics/NUMERICS_ACCEPTANCE.json"
+    }
+  ],
+  "interpretation": "PASS applies only to each named finite profile. Negative results, rejected precision events and failed development attempts are retained. No blanket scientific, CI or production acceptance is asserted."
+}

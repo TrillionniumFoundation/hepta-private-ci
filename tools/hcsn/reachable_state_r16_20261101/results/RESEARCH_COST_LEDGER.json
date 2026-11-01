@@ -1,0 +1,953 @@
+{
+  "aggregation_rules": [
+    "Every entry below is included exactly once. A complete child receipt supersedes its nested worker/function timers.",
+    "Repeatedly restated costs in SUMMARY, audit and report files are provenance, not new compute.",
+    "Hybrid outer child CPU includes waited-for native descendants. Replay/native/full/prefix/resume components are not added to their encompassing receipts.",
+    "Numeric 12-attempt rollup is added once. Its formal full-execution costs are nested and never added again.",
+    "Function-body-only entries are strict measured lower bounds: unmetered startup, imports, final writes or orchestration are not fabricated.",
+    "Historical R15 training is reported once per unique fit in a separate old-host scope. Nested calibration/selection/learned timers are not addends.",
+    "Historical costs are not added to current-host total or mixed into speed ratios; all deployments still owe their own preparation/training costs.",
+    "Wall times of concurrent workers are not summed as elapsed campaign duration.",
+    "Archive copies and restored files are not extra executions. fresh_161102719/733 duplicate development aliases are counted once.",
+    "Synthetic task fees and CPU seconds have different units; no conversion to energy, money or real deployment net benefit is implied."
+  ],
+  "all_seven_scientific_blocker_categories_closed": false,
+  "complete_project_cost": false,
+  "created_utc": "2026-11-01T17:37:29.238156+00:00",
+  "current_environment": {
+    "by_research_line_cpu_seconds_lower_bound": {
+      "content": 39.107004725,
+      "control_and_reset": 4.51186983,
+      "fast_compression": 90.229779854,
+      "joint_and_compression": 3.2824503590000003,
+      "main": 417.86972404600004,
+      "numerics_and_recovery": 46.959745456,
+      "value_risk": 60.07362603
+    },
+    "entries": 25,
+    "recorded_cpu_seconds_lower_bound": 662.0342003000001,
+    "records": [
+      {
+        "id": "reachable_development",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/cost/cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 0.052394795000000105,
+        "phase": "development",
+        "research_line": "joint_and_compression",
+        "scope": "Function CPU for all four attempted families and independent series; excludes imports/final serialization.",
+        "source": "development/REACHABLE_DEVELOPMENT.json"
+      },
+      {
+        "id": "main_development_iid",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/process_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 0.541942162,
+        "nested_breakdowns_not_additive": {
+          "world_generation_cpu_seconds": 0.006674673999999936
+        },
+        "phase": "development",
+        "research_line": "main",
+        "scope": "Worker function body, two development worlds; no outer complete-process receipt.",
+        "source": "development/campaign_iid_01/RESULT.json"
+      },
+      {
+        "id": "main_development_ood",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/process_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 0.772609939,
+        "nested_breakdowns_not_additive": {
+          "world_generation_cpu_seconds": 0.013144393000000032
+        },
+        "phase": "development",
+        "research_line": "main",
+        "scope": "Worker function body, two development worlds; no outer complete-process receipt.",
+        "source": "development/campaign_ood_01/RESULT.json"
+      },
+      {
+        "id": "support_compression_contract_validation",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/process_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 3.17228632,
+        "phase": "contract_validation",
+        "research_line": "joint_and_compression",
+        "scope": "Recorded validation function CPU including invariant and owner-history checks; startup/final write excluded.",
+        "source": "results/COMPRESSION_VALIDATION.json"
+      },
+      {
+        "id": "reachable_registered_families",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/cost/cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 0.05776924400000005,
+        "phase": "registered_numerical_witness",
+        "research_line": "joint_and_compression",
+        "scope": "All four registered laws, including the no-witness family; root attempts and independent series; imports excluded.",
+        "source": "results/REACHABLE_WITNESSES.json"
+      },
+      {
+        "arms": 9,
+        "failed_workers": 0,
+        "id": "main_confirmation_children",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/child_cpu_seconds; verified against sum(process/*.json user+system)",
+        "measured_cpu_seconds_lower_bound": 403.835366,
+        "nested_breakdowns_not_additive": {
+          "worker_function_cpu_seconds": 395.749232213,
+          "worker_function_source": "results/CONFIRMATION_SUMMARY.json",
+          "world_generation_cpu_seconds": 6.188326032000008
+        },
+        "phase": "confirmation",
+        "research_line": "main",
+        "scope": "Complete 16 worker children including imports, all nine arms, world generation, checkpoints and final archives; supervisor CPU is unmeasured.",
+        "source": "run_01/SUPERVISOR.json",
+        "wall_seconds": 200.20597413699943,
+        "worlds": 1024
+      },
+      {
+        "id": "content_development",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 0.5018823810000002,
+        "phase": "development",
+        "research_line": "content",
+        "scope": "Development fit function only, outside registered fit/confirmation seeds; process startup and output serialization excluded.",
+        "source": "content/dev_01/DEVELOPMENT.json"
+      },
+      {
+        "exit_code": 0,
+        "id": "content_training_child",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/child_user_cpu_seconds + /child_system_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 7.218998,
+        "nested_breakdowns_not_additive": {
+          "function_cpu_seconds": 4.6795036450000005,
+          "json_pointer": "/measured_training_cpu_seconds",
+          "source": "content/run_train_01/FROZEN_MODELS.json"
+        },
+        "phase": "training",
+        "research_line": "content",
+        "scope": "Complete child including startup/imports and final file writes; supervisor startup/self CPU not recorded.",
+        "source": "content/TRAIN_PROCESS_RECEIPT.json",
+        "wall_seconds": 14.93484573800015
+      },
+      {
+        "exit_code": 0,
+        "id": "content_confirmation_child",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/child_user_cpu_seconds + /child_system_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 20.265841,
+        "nested_breakdowns_not_additive": {
+          "function_cpu_seconds": 17.760534545,
+          "json_pointer": "/cpu_seconds_including_raw_serialization",
+          "source": "content/run_confirm_01/SUMMARY.json"
+        },
+        "phase": "confirmation",
+        "research_line": "content",
+        "scope": "Complete child including startup/imports and final file writes; supervisor startup/self CPU not recorded.",
+        "source": "content/CONFIRM_PROCESS_RECEIPT.json",
+        "wall_seconds": 44.14915135800038
+      },
+      {
+        "id": "control_development_contract",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/process_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 1.474599699,
+        "phase": "development",
+        "research_line": "control_and_reset",
+        "scope": "Development contract function CPU, including scalar Bellman/threshold dominance/actual reset checks; no outer child receipt.",
+        "source": "control/DEVELOPMENT_CHECKS.json"
+      },
+      {
+        "id": "control_training_body",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/total_training_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 0.7380317709999997,
+        "nested_breakdowns_not_additive": {
+          "common_model_preparation_cpu_seconds": 0.016710899999999862
+        },
+        "phase": "training",
+        "research_line": "control_and_reset",
+        "scope": "Function-body lower bound only. Includes common model preparation once and recorded candidate/rollout work; no complete-process receipt. Imports and final summary write are excluded.",
+        "source": "control/run_01/TRAINING.json"
+      },
+      {
+        "id": "control_confirmation_body",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/total_confirmation_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 2.2992383600000004,
+        "nested_breakdowns_not_additive": {
+          "common_model_preparation_cpu_seconds": 0.009953213999999821
+        },
+        "phase": "confirmation",
+        "research_line": "control_and_reset",
+        "scope": "Function-body lower bound only. Includes common model preparation once and recorded candidate/rollout work; no complete-process receipt. Imports and final summary write are excluded.",
+        "source": "control/run_01/CONFIRMATION.json"
+      },
+      {
+        "id": "channel_development_equivalence",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 1.613066909,
+        "phase": "development",
+        "research_line": "value_risk",
+        "scope": "Development namespace 917 comparison body; includes old/new executions; does not add independent confirmation samples.",
+        "source": "channel/DEVELOPMENT_EQUIVALENCE.json"
+      },
+      {
+        "arms": 4,
+        "id": "channel_confirmation_children",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "sum(/receipts/*/child_cpu_seconds)",
+        "measured_cpu_seconds_lower_bound": 44.97484099999999,
+        "nested_breakdowns_not_additive": {
+          "source": "channel/run_confirm_01/SUMMARY.json",
+          "worker_function_cpu_seconds": 25.28436751
+        },
+        "phase": "confirmation",
+        "research_line": "value_risk",
+        "scope": "Complete 16 worker children, including imports/final archive writes, separate per-arm restoration/real feature preparation, all four owner paths and world generation.",
+        "source": "channel/run_confirm_01/PROCESS_RECEIPTS.json",
+        "worlds": 1024
+      },
+      {
+        "id": "channel_supervisor_recorded_self",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/supervisor_self_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 0.020662819,
+        "phase": "confirmation_supervision",
+        "research_line": "value_risk",
+        "scope": "Supervisor self CPU is disjoint from child CPU; sampled before final receipt write and excludes supervisor interpreter startup.",
+        "source": "channel/run_confirm_01/PROCESS_RECEIPTS.json"
+      },
+      {
+        "exit_code": 0,
+        "id": "channel_statistics_child",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/child_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 2.6633310000000074,
+        "phase": "statistics",
+        "research_line": "value_risk",
+        "scope": "Separate complete statistics child; not included in confirmation workers.",
+        "source": "channel/run_confirm_01/STATISTICS_PROCESS_RECEIPT.json",
+        "wall_seconds": 2.7812830029979523
+      },
+      {
+        "id": "fast_old_data_engineering_replay",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/process_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 25.273669131000002,
+        "phase": "engineering_replay",
+        "research_line": "fast_compression",
+        "scope": "Old-data engineering replay and serial microbenchmarks function CPU; independent work, not new scientific samples; startup/final write excluded.",
+        "source": "results/FAST_ENGINEERING_REPLAY_01.json"
+      },
+      {
+        "arms": 3,
+        "exit_code": 0,
+        "id": "fast_confirmation_child",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/user_cpu_seconds + /system_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 64.11369499999999,
+        "nested_breakdowns_not_additive": {
+          "function_body_cpu_seconds": 59.185616792000005,
+          "source": "fast_run_01/SUMMARY.json"
+        },
+        "phase": "confirmation",
+        "research_line": "fast_compression",
+        "scope": "Complete child includes interpreter startup/imports and all 16 workers/archives; not deployment throughput.",
+        "source": "results/FAST_PROCESS_RECEIPT.json",
+        "wall_seconds": 121.46321370900114,
+        "worlds": 512
+      },
+      {
+        "id": "numerics_all_recorded_attempts",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/recorded_cpu_seconds_lower_bound",
+        "measured_cpu_seconds_lower_bound": 45.838639815,
+        "nested_breakdowns_not_additive": {
+          "formal_hybrid_full_execution_cpu_seconds": {
+            "163211": 2.7616540000000005,
+            "163213": 2.6801380000000004
+          },
+          "full_execution_cost_is_subset_of_validation": true,
+          "per_attempt_breakdowns": [
+            {
+              "attempt": "development_support_floor_01",
+              "includes_failed_computation": true,
+              "kind": "pure_q24",
+              "measured_cpu_seconds_lower_bound": 2.341207792,
+              "passed_finite_arithmetic_gate": false,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/development_support_floor_01/Q24_VALIDATION.json"
+            },
+            {
+              "attempt": "development_support_bitmap_02",
+              "includes_failed_computation": true,
+              "kind": "pure_q24",
+              "measured_cpu_seconds_lower_bound": 2.379750555,
+              "passed_finite_arithmetic_gate": true,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/development_support_bitmap_02/Q24_VALIDATION.json"
+            },
+            {
+              "attempt": "development_161102719",
+              "includes_failed_computation": true,
+              "kind": "pure_q24",
+              "measured_cpu_seconds_lower_bound": 2.4672104669999992,
+              "passed_finite_arithmetic_gate": true,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/development_161102719/Q24_VALIDATION.json"
+            },
+            {
+              "attempt": "development_161102733",
+              "includes_failed_computation": true,
+              "kind": "pure_q24",
+              "measured_cpu_seconds_lower_bound": 2.705760819,
+              "passed_finite_arithmetic_gate": true,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/development_161102733/Q24_VALIDATION.json"
+            },
+            {
+              "attempt": "qualification_163201",
+              "includes_failed_computation": true,
+              "kind": "pure_q24",
+              "measured_cpu_seconds_lower_bound": 2.7728123959999986,
+              "passed_finite_arithmetic_gate": true,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/qualification_163201/Q24_VALIDATION.json"
+            },
+            {
+              "attempt": "qualification_163203",
+              "includes_failed_computation": true,
+              "kind": "pure_q24",
+              "measured_cpu_seconds_lower_bound": 2.8662178129999996,
+              "passed_finite_arithmetic_gate": true,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/qualification_163203/Q24_VALIDATION.json"
+            },
+            {
+              "attempt": "hybrid_development_163201",
+              "includes_failed_computation": true,
+              "kind": "hybrid",
+              "measured_cpu_seconds_lower_bound": 2.2922780599999997,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/hybrid_development_163201/RUN.json",
+              "scope": "First development direct driver clock plus native child CPU. Startup, manual compile/unit commands and final receipt write are unmeasured."
+            },
+            {
+              "attempt": "hybrid_development_163203",
+              "includes_failed_computation": true,
+              "kind": "hybrid",
+              "measured_cpu_seconds_lower_bound": 9.258875671,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/hybrid_development_163203/HYBRID_VALIDATION.json",
+              "scope": "Outer validation children (including their waited-for native descendants) plus disjoint orchestrator CPU; no summation of nested driver/replay breakdowns."
+            },
+            {
+              "attempt": "hybrid_qualification_163211",
+              "includes_failed_computation": true,
+              "kind": "hybrid",
+              "measured_cpu_seconds_lower_bound": 9.283144292000001,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/hybrid_qualification_163211/HYBRID_VALIDATION.json",
+              "scope": "Outer validation children (including their waited-for native descendants) plus disjoint orchestrator CPU; no summation of nested driver/replay breakdowns."
+            },
+            {
+              "attempt": "hybrid_qualification_163213",
+              "includes_failed_computation": true,
+              "kind": "hybrid",
+              "measured_cpu_seconds_lower_bound": 8.950339882,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/hybrid_qualification_163213/HYBRID_VALIDATION.json",
+              "scope": "Outer validation children (including their waited-for native descendants) plus disjoint orchestrator CPU; no summation of nested driver/replay breakdowns."
+            },
+            {
+              "attempt": "PDE_CONVERGENCE.development_before_tail_bound_fix.json",
+              "kind": "pde",
+              "measured_cpu_seconds_lower_bound": 0.24774577200000003,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/PDE_CONVERGENCE.development_before_tail_bound_fix.json"
+            },
+            {
+              "attempt": "PDE_CONVERGENCE.json",
+              "kind": "pde",
+              "measured_cpu_seconds_lower_bound": 0.27329629600000005,
+              "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/PDE_CONVERGENCE.json"
+            }
+          ]
+        },
+        "phase": "development_and_qualification",
+        "research_line": "numerics_and_recovery",
+        "scope": "Disjoint 12-attempt lower-bound rollup: failed support-floor implementation, support bitmap/development, pure-Q24 qualification, hybrid development/qualification, and both PDE attempts. Details are copied below. Outer hybrid child usage already includes waited-for native descendants.",
+        "source": "numerics/NUMERICS_COST_LEDGER.json"
+      },
+      {
+        "id": "main_independent_audit",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/process_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 12.719805945,
+        "phase": "independent_audit",
+        "research_line": "main",
+        "scope": "Separate independent audit function CPU; not included in the campaign or numerical validation rollups. Imports/final receipt write are not metered here. Restated campaign costs inside the audit are references, not additional charges.",
+        "source": "results/INDEPENDENT_MAIN_AUDIT.json"
+      },
+      {
+        "id": "content_preconfirmation_audit",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/process_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 0.05556498700000001,
+        "phase": "independent_audit",
+        "research_line": "content",
+        "scope": "Separate independent audit function CPU; not included in the campaign or numerical validation rollups. Imports/final receipt write are not metered here. Restated campaign costs inside the audit are references, not additional charges.",
+        "source": "content/INDEPENDENT_PREFLIGHT_AUDIT.json"
+      },
+      {
+        "id": "content_independent_confirmation_audit",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/process_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 11.064718357,
+        "phase": "independent_audit",
+        "research_line": "content",
+        "scope": "Separate independent audit function CPU; not included in the campaign or numerical validation rollups. Imports/final receipt write are not metered here. Restated campaign costs inside the audit are references, not additional charges.",
+        "source": "content/INDEPENDENT_CONFIRMATION_AUDIT.json"
+      },
+      {
+        "id": "channel_independent_confirmation_audit",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/process_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 10.801724302,
+        "phase": "independent_audit",
+        "research_line": "value_risk",
+        "scope": "Separate independent audit function CPU; not included in the campaign or numerical validation rollups. Imports/final receipt write are not metered here. Restated campaign costs inside the audit are references, not additional charges.",
+        "source": "channel/INDEPENDENT_CONFIRMATION_AUDIT.json"
+      },
+      {
+        "id": "fast_independent_confirmation_audit",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 0.8424157230000002,
+        "phase": "independent_audit",
+        "research_line": "fast_compression",
+        "scope": "Separate independent audit function CPU; not included in the campaign or numerical validation rollups. Imports/final receipt write are not metered here. Restated campaign costs inside the audit are references, not additional charges.",
+        "source": "fast_run_01/INDEPENDENT_AUDIT.json"
+      },
+      {
+        "id": "hybrid_independent_audit",
+        "included_once_in_current_environment_sum": true,
+        "json_pointer_or_formula": "/audit_cpu_seconds",
+        "measured_cpu_seconds_lower_bound": 1.121105641,
+        "phase": "independent_audit",
+        "research_line": "numerics_and_recovery",
+        "scope": "Separate independent audit function CPU; not included in the campaign or numerical validation rollups. Imports/final receipt write are not metered here. Restated campaign costs inside the audit are references, not additional charges.",
+        "source": "numerics/results/HYBRID_INDEPENDENT_AUDIT.json"
+      }
+    ]
+  },
+  "evidence_storage": {
+    "duplicated_development_aliases": "numerics/DUPLICATE_DEVELOPMENT_PATHS.json",
+    "hybrid_formal_bundles": [
+      {
+        "archive_bytes": 1306870,
+        "archive_sha256": "11d007f9000ddcf1ca901fccd62dc305f6a7e0271eda30f4367ee1b081c81c3c",
+        "archived_original_files": 257,
+        "index": "numerics/results/hybrid_qualification_163211/EVIDENCE_INDEX.json",
+        "maximum_part_bytes": 480000,
+        "original_raw_bytes": 6468595,
+        "packaging_cpu_included_in_numeric_orchestration_lower_bound": true,
+        "parts": 3,
+        "publication_list": "numerics/results/hybrid_qualification_163211/PUBLICATION_FILES.json",
+        "published_files": 6,
+        "seed": 163211
+      },
+      {
+        "archive_bytes": 1268297,
+        "archive_sha256": "842ad207f3adbf4bd0178c7e5700dbe6fdadf4a77907e3b4723c2afc0c38b861",
+        "archived_original_files": 247,
+        "index": "numerics/results/hybrid_qualification_163213/EVIDENCE_INDEX.json",
+        "maximum_part_bytes": 480000,
+        "original_raw_bytes": 6387032,
+        "packaging_cpu_included_in_numeric_orchestration_lower_bound": true,
+        "parts": 3,
+        "publication_list": "numerics/results/hybrid_qualification_163213/PUBLICATION_FILES.json",
+        "published_files": 6,
+        "seed": 163213
+      }
+    ],
+    "main_raw": {
+      "bytes": 38584784,
+      "files": 128,
+      "maximum_file_bytes": 368577,
+      "publication": "Direct Git blobs",
+      "publication_commit": "dd9eaf8d1d10de0261514655343dc476e901cfb3"
+    },
+    "publication_rule": "Publish content/control/channel/fast raw via INDEX plus bounded parts, without publishing the original raw files a second time. For each hybrid profile follow its own PUBLICATION_FILES.json; pure-Q24 other files are direct assets.",
+    "raw_bundles": [
+      {
+        "archive_bytes": 1072266,
+        "archive_sha256": "d31d37b04b96d7c260b9d0890a0ccf87e86217deb4161907ebd4356ed3d439c8",
+        "archived_original_files": 24,
+        "index": "content/raw_evidence/INDEX.json",
+        "maximum_part_bytes": 480000,
+        "original_raw_bytes": 1067797,
+        "original_raw_uploaded_twice": false,
+        "packaging_cpu_seconds": null,
+        "parts": 3,
+        "restore": "archive_evidence.py restore --bundle <bundle-directory> --destination <repository-root>"
+      },
+      {
+        "archive_bytes": 1340739,
+        "archive_sha256": "340b769e6c71cae94feafa91abf7c2afa40c41611a169e3c200ee58b98acfbe3",
+        "archived_original_files": 16,
+        "index": "control/raw_evidence/INDEX.json",
+        "maximum_part_bytes": 480000,
+        "original_raw_bytes": 1348902,
+        "original_raw_uploaded_twice": false,
+        "packaging_cpu_seconds": null,
+        "parts": 3,
+        "restore": "archive_evidence.py restore --bundle <bundle-directory> --destination <repository-root>"
+      },
+      {
+        "archive_bytes": 10513859,
+        "archive_sha256": "ae909c11bda487c37df870a637cd65132f03ed27084164f565818723c71dc75d",
+        "archived_original_files": 128,
+        "index": "channel/raw_evidence/INDEX.json",
+        "maximum_part_bytes": 480000,
+        "original_raw_bytes": 10819136,
+        "original_raw_uploaded_twice": false,
+        "packaging_cpu_seconds": null,
+        "parts": 22,
+        "restore": "archive_evidence.py restore --bundle <bundle-directory> --destination <repository-root>"
+      },
+      {
+        "archive_bytes": 7780976,
+        "archive_sha256": "3392f462e4299973f324f418cc8c1383728457e7d160bc37d2a84eb5f0516414",
+        "archived_original_files": 64,
+        "index": "fast_raw_evidence/INDEX.json",
+        "maximum_part_bytes": 480000,
+        "original_raw_bytes": 7771073,
+        "original_raw_uploaded_twice": false,
+        "packaging_cpu_seconds": null,
+        "parts": 17,
+        "restore": "archive_evidence.py restore --bundle <bundle-directory> --destination <repository-root>"
+      }
+    ],
+    "representation_only_not_extra_samples": true
+  },
+  "historical_r15": {
+    "counted_in_current_environment_total": false,
+    "fit_records": [
+      {
+        "nested_calibration_search_cpu_seconds": 0.904534483,
+        "nested_learned_controller_cpu_seconds": 0.28765233000000023,
+        "nested_selection_cpu_seconds": 1.9272306819999998,
+        "nested_world_cpu_seconds": 0.2846643870000001,
+        "path": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151101.json.gz",
+        "seed": 151101,
+        "sha256": "fb363dd8b7b09881ad93f784ec8b65aed68157236909d2352f365c7bb9412c4d",
+        "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+        "whole_training_function_cpu_seconds": 3.413979843
+      },
+      {
+        "nested_calibration_search_cpu_seconds": 0.491819513,
+        "nested_learned_controller_cpu_seconds": 0.2727500650000003,
+        "nested_selection_cpu_seconds": 1.9841444939999997,
+        "nested_world_cpu_seconds": 0.33528519999999995,
+        "path": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151103.json.gz",
+        "seed": 151103,
+        "sha256": "cd3f0990be5ceae1ca5957676b4ad23b7b68961d7be7f65e2d2848e635b8ec54",
+        "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+        "whole_training_function_cpu_seconds": 3.092734846
+      },
+      {
+        "nested_calibration_search_cpu_seconds": 0.8728199970000001,
+        "nested_learned_controller_cpu_seconds": 0.23305955499999964,
+        "nested_selection_cpu_seconds": 2.367349912,
+        "nested_world_cpu_seconds": 0.29600677200000014,
+        "path": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151107.json.gz",
+        "seed": 151107,
+        "sha256": "668934006a25b5888d353ed8f9a7b4eaf84332b085aa777c7a14e8534e14b59a",
+        "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+        "whole_training_function_cpu_seconds": 3.7797726560000005
+      },
+      {
+        "nested_calibration_search_cpu_seconds": 0.37330855500000004,
+        "nested_learned_controller_cpu_seconds": 0.263033702,
+        "nested_selection_cpu_seconds": 1.9548130479999999,
+        "nested_world_cpu_seconds": 0.318813192,
+        "path": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151109.json.gz",
+        "seed": 151109,
+        "sha256": "77d2596f95a16809cbf697352b2aeff73fb697688884eafdb2e72727e572b66a",
+        "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+        "whole_training_function_cpu_seconds": 2.919632238
+      },
+      {
+        "nested_calibration_search_cpu_seconds": 0.463014809,
+        "nested_learned_controller_cpu_seconds": 0.22879776900000026,
+        "nested_selection_cpu_seconds": 2.107149756,
+        "nested_world_cpu_seconds": 0.3418037060000001,
+        "path": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151113.json.gz",
+        "seed": 151113,
+        "sha256": "b3eb578ac4ba91f769aaa65f8aea1311ad8217dbea0f24096b2fa8b3199d6e33",
+        "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+        "whole_training_function_cpu_seconds": 3.150427819
+      },
+      {
+        "nested_calibration_search_cpu_seconds": 0.43104725499999996,
+        "nested_learned_controller_cpu_seconds": 0.236670465,
+        "nested_selection_cpu_seconds": 2.0542649739999996,
+        "nested_world_cpu_seconds": 0.311218843,
+        "path": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151117.json.gz",
+        "seed": 151117,
+        "sha256": "c0b88fa6a2158f988dcbd8d5fbcde80d1b7b1d12301c9c70cd9c8a153166457a",
+        "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+        "whole_training_function_cpu_seconds": 3.041591277
+      },
+      {
+        "nested_calibration_search_cpu_seconds": 0.883073459,
+        "nested_learned_controller_cpu_seconds": 0.25214770100000017,
+        "nested_selection_cpu_seconds": 1.8877743260000002,
+        "nested_world_cpu_seconds": 0.29523079900000004,
+        "path": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151119.json.gz",
+        "seed": 151119,
+        "sha256": "5f44641e2b511a9ef5837349550fa4f65cea52f3dbe2d50263d95817de76db9c",
+        "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+        "whole_training_function_cpu_seconds": 3.327724364
+      },
+      {
+        "nested_calibration_search_cpu_seconds": 0.37513994799999995,
+        "nested_learned_controller_cpu_seconds": 0.2469249040000001,
+        "nested_selection_cpu_seconds": 2.0828239880000003,
+        "nested_world_cpu_seconds": 0.2756165680000001,
+        "path": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151123.json.gz",
+        "seed": 151123,
+        "sha256": "bb5033efe564e836eb68d499351e88bb1be743323fa82606737fba2e1e0f4ad1",
+        "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+        "whole_training_function_cpu_seconds": 2.989007567
+      }
+    ],
+    "host_scope": "Inherited R15 host/function measurements; not remeasured on this host",
+    "nested_calibration_search_cpu_seconds": 4.794758019,
+    "nested_learned_controller_cpu_seconds": 2.0210364910000007,
+    "scope": "The calibration input reused in main/fast and learned weights reused in channel originate within these same training runs. Standalone equal-calibration alternatives in old receipts are comparison scenarios, not extra charges.",
+    "unique_fits": 8,
+    "whole_training_function_cpu_seconds": 25.71487061
+  },
+  "measured_cost_outcomes": {
+    "deployment_cost_limitations": "Main/fast 1000-use profiles include measured cold preparation and online owner/checkpoint work; channel current-use profiles include input decode/restoration/required banks and warm owner. Historical fitting, energy, network and production integration are outside these estimates.",
+    "fast": {
+      "iid": {
+        "engineering_speed_gate": true,
+        "fast_over": {
+          "D_full": {
+            "online": 1.5712684208062195,
+            "preparation_and_1000_owner_uses": 1.5645781671962564
+          },
+          "old_block2": {
+            "online": 0.35360945835519414,
+            "preparation_and_1000_owner_uses": 0.36767296331421767
+          }
+        },
+        "full_state_benefit_gate": false,
+        "measured_cpu": {
+          "D_full": {
+            "online": 3.4928243909999876,
+            "preparation_and_1000_owner_uses": 116.3594668444985
+          },
+          "fast_block2": {
+            "online": 5.488164664999996,
+            "preparation_and_1000_owner_uses": 182.05348137149903
+          },
+          "old_block2": {
+            "online": 15.520412521000036,
+            "preparation_and_1000_owner_uses": 495.1505809142511
+          }
+        },
+        "quality": {
+          "rewards": {
+            "mean": 0.0,
+            "passes": true,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "simultaneous_lower": 0.0
+          },
+          "utilities": {
+            "mean": 2.636718749998712e-05,
+            "passes": true,
+            "per_fit": [
+              0.0004726562500000364,
+              -0.00013411458333334458,
+              0.0,
+              0.0,
+              0.0,
+              0.0001302083333332149,
+              0.0,
+              -0.00025781250000000977
+            ],
+            "simultaneous_lower": -0.000188158956139024
+          }
+        }
+      },
+      "ood": {
+        "engineering_speed_gate": true,
+        "fast_over": {
+          "D_full": {
+            "online": 1.555031855565056,
+            "preparation_and_1000_owner_uses": 1.5456466056091478
+          },
+          "old_block2": {
+            "online": 0.3594899376871547,
+            "preparation_and_1000_owner_uses": 0.372531684035765
+          }
+        },
+        "full_state_benefit_gate": false,
+        "measured_cpu": {
+          "D_full": {
+            "online": 3.576052088000038,
+            "preparation_and_1000_owner_uses": 118.89727820275195
+          },
+          "fast_block2": {
+            "online": 5.560874913999992,
+            "preparation_and_1000_owner_uses": 183.77317447025007
+          },
+          "old_block2": {
+            "online": 15.468791560000021,
+            "preparation_and_1000_owner_uses": 493.30884417500147
+          }
+        },
+        "quality": {
+          "rewards": {
+            "mean": 0.0006510416666666713,
+            "passes": true,
+            "per_fit": [
+              0.00520833333333337,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "simultaneous_lower": -0.0011987267243412916
+          },
+          "utilities": {
+            "mean": 0.00034609374999997056,
+            "passes": true,
+            "per_fit": [
+              0.0038989583333333133,
+              -0.000743750000000043,
+              5.78125000000318e-05,
+              0.0,
+              0.0001135416666666611,
+              0.0,
+              -0.0002640625000001062,
+              -0.00029375000000009255
+            ],
+            "simultaneous_lower": -0.0011228717804356893
+          }
+        }
+      }
+    },
+    "main_compression": {
+      "block2": {
+        "iid": {
+          "full_cpu_at_1000_uses": 4.134524582480136,
+          "online_cpu": 4.319888376518644
+        },
+        "ood": {
+          "full_cpu_at_1000_uses": 4.2128608256819735,
+          "online_cpu": 4.3972486620512345
+        }
+      },
+      "block4": {
+        "iid": {
+          "full_cpu_at_1000_uses": 6.023058760881679,
+          "online_cpu": 6.3256605856716615
+        },
+        "ood": {
+          "full_cpu_at_1000_uses": 6.205455149049733,
+          "online_cpu": 6.509028251949464
+        }
+      },
+      "block5": {
+        "iid": {
+          "full_cpu_at_1000_uses": 6.888029333266283,
+          "online_cpu": 7.24279296456622
+        },
+        "ood": {
+          "full_cpu_at_1000_uses": 7.106068563741085,
+          "online_cpu": 7.465499226428848
+        }
+      }
+    },
+    "main_compression_cost_gates": {
+      "block2": false,
+      "block4": false,
+      "block5": false
+    },
+    "synthetic_fee_scope": "Action prices are already deducted from the corresponding recorded utilities; they are not CPU seconds.",
+    "value_risk_current_costs": {
+      "iid": {
+        "ordinary_dual": {
+          "mean_cold_cpu_seconds": 0.059482317500000034,
+          "mean_feature_cpu_per_query": 4.059374153646011e-05,
+          "mean_online_cpu_seconds": 0.002772279730468755,
+          "reused_current_cpu": {
+            "1": 0.06225459723046879,
+            "100": 0.3367102905468755,
+            "1000": 2.831762047968755,
+            "10000": 27.78227962218755
+          }
+        },
+        "state_confidence": {
+          "mean_cold_cpu_seconds": 0.06043820549999995,
+          "mean_feature_cpu_per_query": 3.7163680664067356e-05,
+          "mean_online_cpu_seconds": 0.0027165096835937473,
+          "reused_current_cpu": {
+            "1": 0.0631547151835937,
+            "100": 0.3320891738593747,
+            "1000": 2.7769478890937473,
+            "10000": 27.22553504143747
+          }
+        },
+        "stop_value": {
+          "mean_cold_cpu_seconds": 0.05946568137499997,
+          "mean_feature_cpu_per_query": 5.081063606770829e-05,
+          "mean_online_cpu_seconds": 0.0028320503554687473,
+          "reused_current_cpu": {
+            "1": 0.062297731730468715,
+            "100": 0.3426707169218747,
+            "1000": 2.8915160368437474,
+            "10000": 28.379969236062472
+          }
+        },
+        "value_risk": {
+          "mean_cold_cpu_seconds": 0.06011454962499986,
+          "mean_feature_cpu_per_query": 0.00010106474967448256,
+          "mean_online_cpu_seconds": 0.0030849608652343775,
+          "reused_current_cpu": {
+            "1": 0.06319951049023424,
+            "100": 0.3686106361484376,
+            "1000": 3.1450754148593774,
+            "10000": 30.909723201968774
+          }
+        }
+      },
+      "ood": {
+        "ordinary_dual": {
+          "mean_cold_cpu_seconds": 0.049484157374999865,
+          "mean_feature_cpu_per_query": 3.9196056315098224e-05,
+          "mean_online_cpu_seconds": 0.0026890446015624936,
+          "reused_current_cpu": {
+            "1": 0.05217320197656236,
+            "100": 0.31838861753124925,
+            "1000": 2.7385287589374934,
+            "10000": 26.939930172999937
+          }
+        },
+        "state_confidence": {
+          "mean_cold_cpu_seconds": 0.05019172349999998,
+          "mean_feature_cpu_per_query": 3.4445175130210816e-05,
+          "mean_online_cpu_seconds": 0.0025856486328124937,
+          "reused_current_cpu": {
+            "1": 0.05277737213281247,
+            "100": 0.3087565867812494,
+            "1000": 2.6358403563124932,
+            "10000": 25.906678051624937
+          }
+        },
+        "stop_value": {
+          "mean_cold_cpu_seconds": 0.049386866624999914,
+          "mean_feature_cpu_per_query": 4.652033658853524e-05,
+          "mean_online_cpu_seconds": 0.002716155906250004,
+          "reused_current_cpu": {
+            "1": 0.05210302253124992,
+            "100": 0.3210024572500003,
+            "1000": 2.765542772875004,
+            "10000": 27.21094592912504
+          }
+        },
+        "value_risk": {
+          "mean_cold_cpu_seconds": 0.05002907874999993,
+          "mean_feature_cpu_per_query": 8.757516438802088e-05,
+          "mean_online_cpu_seconds": 0.0028869872246093833,
+          "reused_current_cpu": {
+            "1": 0.05291606597460931,
+            "100": 0.33872780121093826,
+            "1000": 2.9370163033593832,
+            "10000": 28.919901324843835
+          }
+        }
+      }
+    },
+    "value_risk_gain_gate": false
+  },
+  "measured_quantity": "CPU seconds, process user+system where an outer receipt exists; otherwise process_time function/body lower bound",
+  "production_activation": false,
+  "runtime_measurement_availability": {
+    "cpu_seconds": null,
+    "read_only_probe": {
+      "cpu_count": 9,
+      "energy_measured": false,
+      "energy_uj_entries": 0,
+      "energy_uj_readable": 0,
+      "network_service_benchmark": false,
+      "nvidia_smi_available": false,
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "powercap_directory_exists": false,
+      "scope": "read-only runtime availability inspection; no energy values or network throughput measured"
+    },
+    "scope": "Availability inspection only, no energy or network performance measurement; CPU not included because no timing receipt.",
+    "source": "results/RUNTIME_MEASUREMENT_AVAILABILITY.json"
+  },
+  "schema": "hcsn-r16-combined-research-cost-ledger-v1",
+  "scope": "Recorded current-environment research CPU lower bound, including separately metered development, failed attempts, validation and independent audit. This is not whole-project cost, energy, monetary cost, deployment latency or a scientific success score.",
+  "source_reference_sha256": {
+    "channel/DEVELOPMENT_EQUIVALENCE.json": "de5f0fdc6cf1b24c83f9a54128d9eb65b7bd25d8c2ee41682c402908dce2f4ca",
+    "channel/INDEPENDENT_CONFIRMATION_AUDIT.json": "acd8f2ee297942b80eca548776e0b86c6fbf536e5d466e795c2f9b2a3a562dec",
+    "channel/raw_evidence/INDEX.json": "d044a2537f3abc64400f4f5e98b2e230e44f916b2a313cb869d3be5dd5f7de5f",
+    "channel/run_confirm_01/PROCESS_RECEIPTS.json": "789664c3270446f002ce3d87289df0727a78241846eeb739562ea64e4bc1f5a1",
+    "channel/run_confirm_01/STATISTICS_PROCESS_RECEIPT.json": "0ec9d4d7d0e35c8701079f15fe5d89b6a384b4db3ba87ae61016aa5cea883bd1",
+    "channel/run_confirm_01/SUMMARY.json": "8b4f9cdaa82db8390847375e6177af546d569a452a8346a9a3ea4dfd72f597fe",
+    "content/CONFIRM_PROCESS_RECEIPT.json": "f746812774a2f6e73853b24bb58ef4a97ad31c4b9c02907899a0c3f22a81c007",
+    "content/INDEPENDENT_CONFIRMATION_AUDIT.json": "1cc0061dadc5909795c41b9930162771444f61a812327f5bb74255464b2283cf",
+    "content/INDEPENDENT_PREFLIGHT_AUDIT.json": "b9d4be521c316fa728a0168206144206635b627cc812a13f437f4f31f84ff179",
+    "content/TRAIN_PROCESS_RECEIPT.json": "18fcd9a95c4e128aa2e876501eb1e7b2ffa1b38f57b175a91ca55f5f7501ce54",
+    "content/dev_01/DEVELOPMENT.json": "cf1ca21025afb9afc37675528c8fd4a29c522d2b48cee5f1cf084bbf6090c2dd",
+    "content/raw_evidence/INDEX.json": "10930e520185720f73aedf1fafee61a6e71aa209a99c9b7d8780fecdbd14014d",
+    "content/run_confirm_01/SUMMARY.json": "d73814f80e4474930842ea59a02410df439f3e569490cc06cb59e692c53fb24a",
+    "content/run_train_01/FROZEN_MODELS.json": "6b21ad8c039f70d34e18ec4ba768dfb8a7a3335dd27ef8f0946cb37ef9bc3745",
+    "control/DEVELOPMENT_CHECKS.json": "5efb5f8e29f9cfc40c1bd3e5de294275b7c52219f2acc8562648a48cf1769a92",
+    "control/raw_evidence/INDEX.json": "96335048f4ea2e0b6a7f6838c1fc78626d9785f079b37ea90781768e3b6fad71",
+    "control/run_01/CONFIRMATION.json": "90f0c27a1a39a3113a2f4d8e8acc6303607ad065999bd5c98db5ab7e82bc728d",
+    "control/run_01/TRAINING.json": "a78eeae0ccb12730b2f41eac5428d1ca86349a1e9e2242b09cfe2edef45b5b56",
+    "development/REACHABLE_DEVELOPMENT.json": "a7f72eb3eccdee66ff62e00f80e488e73fce878df2a098cd2f3208fdefafc1c8",
+    "development/campaign_iid_01/RESULT.json": "eb2887dbe9aadb5ac49a3be2dc321d899c78e739879c6a5ef93d9a6d0203b798",
+    "development/campaign_ood_01/RESULT.json": "633e752927efc9ba1030a0af07afb47ab828c8322f143af2e0fff9d46e986281",
+    "fast_raw_evidence/INDEX.json": "057c99969c54d104afebd021cdccf50fd9cbe79867ddf7fc87796bf8cf13bb14",
+    "fast_run_01/INDEPENDENT_AUDIT.json": "68d0c60b6938f265bd67af478eb350d3aae1b7cea572aa29edea2a48e58844dd",
+    "fast_run_01/SUMMARY.json": "df91e1f59fee7ebb62ded299378a35c0dafed211b2e5819224887b2edd39101b",
+    "numerics/DUPLICATE_DEVELOPMENT_PATHS.json": "31f790ebaac250388a51bbdbbdef7e2cbc65a28615fd28a4f82be66c96f465bf",
+    "numerics/NUMERICS_COST_LEDGER.json": "2dd93526c08bb13a15659d81295e7a500f95a5702d4065c54594ce5cf30283a1",
+    "numerics/results/HYBRID_INDEPENDENT_AUDIT.json": "e89dbe39de6e27815f1c06e92d06b884c91b584965ea9ed6058c7fe6cf54aa09",
+    "numerics/results/hybrid_qualification_163211/EVIDENCE_INDEX.json": "612dcf7c941cc0426258ac2c067cd99c88421a7b4848ae2fd86d782dcd0a6334",
+    "numerics/results/hybrid_qualification_163211/PUBLICATION_FILES.json": "f5e4aacab0b6b175791db74b3e507a6705c93f45b2696b54c52bd8ce9d688029",
+    "numerics/results/hybrid_qualification_163213/EVIDENCE_INDEX.json": "96227e9c9a57a30bd59ff82bf7a5d831b1ed5fac62fa3e10a632f50ae865cfe4",
+    "numerics/results/hybrid_qualification_163213/PUBLICATION_FILES.json": "f5e4aacab0b6b175791db74b3e507a6705c93f45b2696b54c52bd8ce9d688029",
+    "results/COMPRESSION_VALIDATION.json": "f9915bd50c5eddc02aacbc71b824895c49db26191cb2ae7339efbaa4a00ad878",
+    "results/CONFIRMATION_SUMMARY.json": "1c621a6be342d0da12b2fa4726ac7343aa4a372aa5e75b9fd9634f138113c1b8",
+    "results/FAST_ENGINEERING_REPLAY_01.json": "349c9cf28f53c2b3e84ade1892d6ab761eb167fadde5c6bd9f40a3bb46f996b6",
+    "results/FAST_PROCESS_RECEIPT.json": "53388c05fbe25f1dc401b476dcb9f56bb58efc376c26cde447df0512ea42eedb",
+    "results/INDEPENDENT_MAIN_AUDIT.json": "13839cffcadf019d55220b2b63b137d13e41075a1695de72cc915c677ce63793",
+    "results/REACHABLE_WITNESSES.json": "c6c5cc627051b7a4c20ce052ed26a60e483b4190bbcaa59e151a2f7f87c2fe5d",
+    "results/RUNTIME_MEASUREMENT_AVAILABILITY.json": "ba7f93d481d45b369fa766e1a6ebd6bbae5b36415bb181383e14b28976eb746e",
+    "run_01/SUPERVISOR.json": "7b770f89092eb91493d3ae5902dca355a2ae8a1f478b8ec823068747359ef0df"
+  },
+  "unmeasured_scopes": [
+    "Human/agent research, reasoning, editing, coordination, tool/backend execution and remote Git/API/network work.",
+    "Complete interpreter/import/final-output costs where only function timers exist, notably finite control training and confirmation.",
+    "Early standalone commands, failed compile/setup attempts and repeated checks without receipts; they remain unknown, not zero.",
+    "Main supervisor self CPU and main statistics/identifiability computation without a separate outer receipt.",
+    "Content exact-episode descriptive diagnostic and channel descriptive-detail aggregation without separate timing receipts.",
+    "Content/control/channel/fast publication archive packaging, upload and archive readback verification without timing receipts.",
+    "Any independent control or documentation checks not separately metered; final ledger serialization.",
+    "Complete earlier R15 project costs beyond the inherited unique fit-function measurements.",
+    "Hardware energy, GPU use, production network traffic/latency, monetary costs, real-owner integration and long-run throughput."
+  ]
+}

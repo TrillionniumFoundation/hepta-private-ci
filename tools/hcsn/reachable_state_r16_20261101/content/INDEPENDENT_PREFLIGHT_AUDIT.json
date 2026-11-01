@@ -1,0 +1,42 @@
+{
+  "candidate_results_checked": 192,
+  "confirmation_randomness_not_generated": true,
+  "disjoint_pool_sizes": [
+    96,
+    64,
+    96
+  ],
+  "duplicate_seed_ids": 0,
+  "findings": [
+    "No supplied key/slot/target enters Memory or predict; private owner data are used by scorer and labeled privileged oracle only.",
+    "All encoder candidates, memory candidates, and family selection are frozen using selection data only.",
+    "Strong ordinary cosine/ridge slot memory retained; gated_delta accurately described as selected linear recurrence, not a BPTT-trained GRU or modern selective SSM.",
+    "Fit-level n=8 and fixed Bonferroni three-domain lower-bound rule are correctly implemented; selected family is not changed on confirmation.",
+    "Shared model selection process CPU and per-candidate CPU exist; memory object/RSS, energy, network and production costs remain outside measured scope."
+  ],
+  "fits_checked": 8,
+  "frozen_models_sha256": "b681230afcf21d526600bc6d864c27f610557110d3f40b244c96c27439d349fa",
+  "frozen_source_commit": "578a2cd37299cb5b299a8a1a4a7eca7c50a77b56",
+  "maximum_ridge_normal_equation_residual": 1.7763568394002505e-14,
+  "maximum_selection_mse_reconstruction_error": 0.0,
+  "model_file_sha256": "6b21ad8c039f70d34e18ec4ba768dfb8a7a3335dd27ef8f0946cb37ef9bc3745",
+  "passed": true,
+  "process_cpu_seconds": 0.05556498700000001,
+  "query_public_keys": [
+    "kind",
+    "feature",
+    "dt"
+  ],
+  "reviewer": "support_compression",
+  "schema": "hcsn-r16-content-independent-preflight-v1",
+  "scope": "Pre-confirmation source/selection audit. Confirms finite synthetic paired-view binding scope and raw-interface isolation; not an end-to-end GRU/SSM, real semantic-memory, or HX advantage test.",
+  "seed_ids_checked": 3344,
+  "selection_candidate_episodes_checked": 6144,
+  "source_hashes": {
+    "PROTOCOL.json": "ef32fdd130af2b1cecb7b992d7cacee1e1d3dcc673344a3911014fe885218017",
+    "__init__.py": "b2c5781387bc924523800577d30ce0f5c6f3fafb16b2a2e1da7224549b65b1da",
+    "campaign.py": "e5b85c0dc88750702dd7bc7ac5c01a45a743a35aca39fdce406b22d8aa9ab1b8",
+    "models.py": "cecebc7c3c2103c5d9553271608b2b3b7a57a34df00188fbe88d22389425804d",
+    "task.py": "a2e9528906dbe87394a7441f045c901b8d0875c85a5ba8f2251bf0d6a9741630"
+  }
+}

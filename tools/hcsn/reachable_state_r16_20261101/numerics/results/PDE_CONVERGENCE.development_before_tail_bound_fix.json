@@ -1,0 +1,410 @@
+{
+  "cpu_seconds": 0.24774577200000003,
+  "gates": {
+    "finest_l1_below_2e_minus_4": true,
+    "independent_series_stability": true,
+    "nonnegative_with_float_roundoff": true,
+    "spatial_last_two_orders_at_least_1p8": true,
+    "temporal_last_two_orders_between_0p9_and_1p1": true
+  },
+  "parameters": {
+    "diffusion": 0.045,
+    "initial_point": 0.3,
+    "length": 0.8
+  },
+  "passed": true,
+  "schema": "hcsn-r16-fixed-boundary-pde-v1",
+  "scope": "Constant diffusion, zero drift, fixed absorbing lower and reflecting upper faces; no recovery, moving boundary, control or full HX PDE.",
+  "source_sha256": "8dd43612c326aa365bb2b34b79113166b5592481a1c8a715582b71e52789b2df",
+  "spatial": [
+    {
+      "active_l1": 0.011986561031789415,
+      "cells": 16,
+      "doubled_series_difference": 0.0,
+      "duration": 0.15,
+      "exact_first_hit": 0.009823274507518964,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 0.003034304088722184,
+      "numerical_first_hit": 0.012857578596241148,
+      "probability_l1": 0.015020865120511599,
+      "smallest_active_mass": 0.00015076640859866888
+    },
+    {
+      "active_l1": 0.003032185609214033,
+      "cells": 16,
+      "doubled_series_difference": 0.0,
+      "duration": 0.45,
+      "exact_first_hit": 0.13603712821901826,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 0.0012616923287955828,
+      "numerical_first_hit": 0.13729882054781384,
+      "probability_l1": 0.004293877938009616,
+      "smallest_active_mass": 0.009853918996056145
+    },
+    {
+      "active_l1": 0.001190011599189987,
+      "cells": 16,
+      "doubled_series_difference": 0.0,
+      "duration": 1.05,
+      "exact_first_hit": 0.3291374689766209,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 1.1970874271960419e-05,
+      "numerical_first_hit": 0.3291254981023489,
+      "probability_l1": 0.0012019824734619475,
+      "smallest_active_mass": 0.006391676426798301
+    },
+    {
+      "active_l1": 0.0007948462043725602,
+      "cells": 16,
+      "doubled_series_difference": 0.0,
+      "duration": 2.1,
+      "exact_first_hit": 0.49292774026326336,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 8.634694395603937e-06,
+      "numerical_first_hit": 0.49291910556886775,
+      "probability_l1": 0.0008034808987681641,
+      "smallest_active_mass": 0.003052017460618529
+    },
+    {
+      "active_l1": 0.0030393663407763108,
+      "cells": 32,
+      "doubled_series_difference": 0.0,
+      "duration": 0.15,
+      "exact_first_hit": 0.009823274507518964,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 0.0007914500450713069,
+      "numerical_first_hit": 0.010614724552590271,
+      "probability_l1": 0.0038308163858476177,
+      "smallest_active_mass": 2.8166134675405852e-05
+    },
+    {
+      "active_l1": 0.0007431489119031874,
+      "cells": 32,
+      "doubled_series_difference": 0.0,
+      "duration": 0.45,
+      "exact_first_hit": 0.13603712821901826,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 0.00030965867579824113,
+      "numerical_first_hit": 0.1363467868948165,
+      "probability_l1": 0.0010528075877014285,
+      "smallest_active_mass": 0.003010695429787831
+    },
+    {
+      "active_l1": 0.00029963821204917994,
+      "cells": 32,
+      "doubled_series_difference": 0.0,
+      "duration": 1.05,
+      "exact_first_hit": 0.3291374689766209,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 3.97374886829116e-06,
+      "numerical_first_hit": 0.3291334952277526,
+      "probability_l1": 0.0003036119609174711,
+      "smallest_active_mass": 0.0016001421269990245
+    },
+    {
+      "active_l1": 0.0001985214582023154,
+      "cells": 32,
+      "doubled_series_difference": 0.0,
+      "duration": 2.1,
+      "exact_first_hit": 0.49292774026326336,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 2.098818427720417e-06,
+      "numerical_first_hit": 0.49292564144483564,
+      "probability_l1": 0.00020062027663003581,
+      "smallest_active_mass": 0.0007624006590864764
+    },
+    {
+      "active_l1": 0.000768347004360127,
+      "cells": 64,
+      "doubled_series_difference": 0.0,
+      "duration": 0.15,
+      "exact_first_hit": 0.009823274507518964,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 0.0002000867838040099,
+      "numerical_first_hit": 0.010023361291322974,
+      "probability_l1": 0.0009684337881641369,
+      "smallest_active_mass": 9.549235344697912e-06
+    },
+    {
+      "active_l1": 0.0001855339260475071,
+      "cells": 64,
+      "doubled_series_difference": 0.0,
+      "duration": 0.45,
+      "exact_first_hit": 0.13603712821901826,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 7.705037632266265e-05,
+      "numerical_first_hit": 0.13611417859534092,
+      "probability_l1": 0.00026258430237016976,
+      "smallest_active_mass": 0.0007546444214594402
+    },
+    {
+      "active_l1": 7.506396851630676e-05,
+      "cells": 64,
+      "doubled_series_difference": 0.0,
+      "duration": 1.05,
+      "exact_first_hit": 0.3291374689766209,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 1.053485988000702e-06,
+      "numerical_first_hit": 0.3291364154906329,
+      "probability_l1": 7.611745450430746e-05,
+      "smallest_active_mass": 0.0004001700638420568
+    },
+    {
+      "active_l1": 4.969333063043808e-05,
+      "cells": 64,
+      "doubled_series_difference": 0.0,
+      "duration": 2.1,
+      "exact_first_hit": 0.49292774026326336,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 5.207968247766814e-07,
+      "numerical_first_hit": 0.4929272194664386,
+      "probability_l1": 5.021412745521476e-05,
+      "smallest_active_mass": 0.00019056198643939114
+    },
+    {
+      "active_l1": 0.0001921805517438228,
+      "cells": 128,
+      "doubled_series_difference": 0.0,
+      "duration": 0.15,
+      "exact_first_hit": 0.009823274507518964,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 5.016268932644952e-05,
+      "numerical_first_hit": 0.009873437196845414,
+      "probability_l1": 0.0002423432410702723,
+      "smallest_active_mass": 4.255639112704483e-06
+    },
+    {
+      "active_l1": 4.636418214748022e-05,
+      "cells": 128,
+      "doubled_series_difference": 0.0,
+      "duration": 0.45,
+      "exact_first_hit": 0.13603712821901826,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 1.9239785084002037e-05,
+      "numerical_first_hit": 0.13605636800410226,
+      "probability_l1": 6.560396723148226e-05,
+      "smallest_active_mass": 0.00018878401387096454
+    },
+    {
+      "active_l1": 1.8780662675286613e-05,
+      "cells": 128,
+      "doubled_series_difference": 0.0,
+      "duration": 1.05,
+      "exact_first_hit": 0.3291374689766209,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 2.6710536293883536e-07,
+      "numerical_first_hit": 0.32913720187125795,
+      "probability_l1": 1.9047768038225448e-05,
+      "smallest_active_mass": 0.00010005085721273053
+    },
+    {
+      "active_l1": 1.2422244837940053e-05,
+      "cells": 128,
+      "doubled_series_difference": 0.0,
+      "duration": 2.1,
+      "exact_first_hit": 0.49292774026326336,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 1.2995236065016513e-07,
+      "numerical_first_hit": 0.4929276103109027,
+      "probability_l1": 1.2552197198590219e-05,
+      "smallest_active_mass": 4.7638103579056126e-05
+    },
+    {
+      "active_l1": 4.808420823443961e-05,
+      "cells": 256,
+      "doubled_series_difference": 0.0,
+      "duration": 0.15,
+      "exact_first_hit": 0.009823274507518964,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 1.2549511578918704e-05,
+      "numerical_first_hit": 0.009835824019097883,
+      "probability_l1": 6.063371981335831e-05,
+      "smallest_active_mass": 2.0644881209792637e-06
+    },
+    {
+      "active_l1": 1.1587557868292546e-05,
+      "cells": 256,
+      "doubled_series_difference": 0.0,
+      "duration": 0.45,
+      "exact_first_hit": 0.13603712821901826,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 4.808520079113698e-06,
+      "numerical_first_hit": 0.13604193673909737,
+      "probability_l1": 1.6396077947406244e-05,
+      "smallest_active_mass": 4.7203681118292716e-05
+    },
+    {
+      "active_l1": 4.695695155759018e-06,
+      "cells": 256,
+      "doubled_series_difference": 0.0,
+      "duration": 1.05,
+      "exact_first_hit": 0.3291374689766209,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 6.70095070542942e-08,
+      "numerical_first_hit": 0.32913740196711383,
+      "probability_l1": 4.762704662813312e-06,
+      "smallest_active_mass": 2.5013234591593468e-05
+    },
+    {
+      "active_l1": 3.1054931684386038e-06,
+      "cells": 256,
+      "doubled_series_difference": 0.0,
+      "duration": 2.1,
+      "exact_first_hit": 0.49292774026326336,
+      "exact_series_tail_bound": 0.0,
+      "first_hit_absolute_error": 3.2472682431894384e-08,
+      "numerical_first_hit": 0.4929277077905809,
+      "probability_l1": 3.137965850870498e-06,
+      "smallest_active_mass": 1.1909376223131208e-05
+    }
+  ],
+  "spatial_orders": [
+    {
+      "coarse": 16,
+      "duration": 0.15,
+      "fine": 32,
+      "order": 1.9712441236869045
+    },
+    {
+      "coarse": 32,
+      "duration": 0.15,
+      "fine": 64,
+      "order": 1.983926557642984
+    },
+    {
+      "coarse": 64,
+      "duration": 0.15,
+      "fine": 128,
+      "order": 1.9986015686746592
+    },
+    {
+      "coarse": 128,
+      "duration": 0.15,
+      "fine": 256,
+      "order": 1.9988596083869388
+    },
+    {
+      "coarse": 16,
+      "duration": 0.45,
+      "fine": 32,
+      "order": 2.0280393884268437
+    },
+    {
+      "coarse": 32,
+      "duration": 0.45,
+      "fine": 64,
+      "order": 2.003389214144524
+    },
+    {
+      "coarse": 64,
+      "duration": 0.45,
+      "fine": 128,
+      "order": 2.00092570675725
+    },
+    {
+      "coarse": 128,
+      "duration": 0.45,
+      "fine": 256,
+      "order": 2.000432307046297
+    },
+    {
+      "coarse": 16,
+      "duration": 1.05,
+      "fine": 32,
+      "order": 1.9851153272008153
+    },
+    {
+      "coarse": 32,
+      "duration": 1.05,
+      "fine": 64,
+      "order": 1.9959294060517943
+    },
+    {
+      "coarse": 64,
+      "duration": 1.05,
+      "fine": 128,
+      "order": 1.9986053594352096
+    },
+    {
+      "coarse": 128,
+      "duration": 1.05,
+      "fine": 256,
+      "order": 1.9997689623327943
+    },
+    {
+      "coarse": 16,
+      "duration": 2.1,
+      "fine": 32,
+      "order": 2.001796300908405
+    },
+    {
+      "coarse": 32,
+      "duration": 2.1,
+      "fine": 64,
+      "order": 1.9983022057377726
+    },
+    {
+      "coarse": 64,
+      "duration": 2.1,
+      "fine": 128,
+      "order": 2.0001533924692447
+    },
+    {
+      "coarse": 128,
+      "duration": 2.1,
+      "fine": 256,
+      "order": 2.000038365470429
+    }
+  ],
+  "temporal": [
+    {
+      "dt": 0.065625,
+      "minimum": 0.00010488164513365467,
+      "probability_l1": 0.027365730303990927,
+      "steps": 16,
+      "survival": 0.6783520061137646
+    },
+    {
+      "dt": 0.0328125,
+      "minimum": 0.00010253978923020803,
+      "probability_l1": 0.013857456714858985,
+      "steps": 32,
+      "survival": 0.6746579138119788
+    },
+    {
+      "dt": 0.01640625,
+      "minimum": 0.00010131085581181638,
+      "probability_l1": 0.006972128522668328,
+      "steps": 64,
+      "survival": 0.6727723769551242
+    },
+    {
+      "dt": 0.008203125,
+      "minimum": 0.00010068437903691615,
+      "probability_l1": 0.0034969155444758617,
+      "steps": 128,
+      "survival": 0.6718205130692417
+    },
+    {
+      "dt": 0.0041015625,
+      "minimum": 0.0001003684538220753,
+      "probability_l1": 0.0017512123662327046,
+      "steps": 256,
+      "survival": 0.6713423768678203
+    },
+    {
+      "dt": 0.00205078125,
+      "minimum": 0.00010020985884508736,
+      "probability_l1": 0.0008762946162358721,
+      "steps": 512,
+      "survival": 0.6711027665453364
+    }
+  ],
+  "temporal_orders": [
+    0.9817078567539121,
+    0.9909914320895735,
+    0.9955162107259449,
+    0.9977289060057896,
+    0.9988661468742914
+  ]
+}

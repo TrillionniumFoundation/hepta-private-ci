@@ -1,0 +1,162 @@
+{
+  "addresses": 4,
+  "causal_tape_seed": 161102719,
+  "certificate_violations": 0,
+  "checked_address_states": 2200,
+  "checked_probability_counts": 88000,
+  "child_cpu_seconds": 2.111566999999999,
+  "content_argmax_disagreements": 0,
+  "continuous_model_convergence_claim": false,
+  "environment": {
+    "numpy": "2.3.5",
+    "rustc": "/tmp/trnm-original-budget-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc"
+  },
+  "events": 549,
+  "float_reference_l1_max": 1.2272990852179342e-05,
+  "float_reference_l1_p99": 6.367127389288424e-06,
+  "gates": {
+    "certified_radius_valid": true,
+    "float_reference_l1_below_1e_minus_4": true,
+    "integer_reference_exact": true,
+    "malformed_checkpoint_rejection": true,
+    "mass_and_structural_support": true,
+    "restart_exact": true,
+    "strict_guard_refuses_without_reset": true
+  },
+  "invalid_checkpoints": {
+    "checksum": {
+      "reason": "checkpoint checksum mismatch",
+      "rejected": true
+    },
+    "model": {
+      "reason": "checkpoint model mismatch",
+      "rejected": true
+    },
+    "truncated": {
+      "reason": "checkpoint schema or length mismatch",
+      "rejected": true
+    }
+  },
+  "model_bytes_sha256": "7cb7800d35f392732afd66b673df424581f1ade43d4556cd2aa8c24e6d576595",
+  "passed": true,
+  "probability_scale": 16777216,
+  "process_restart_bitwise_equal": true,
+  "production_activation": false,
+  "python_cpu_seconds": 0.355643467,
+  "receipts": [
+    {
+      "child_cpu_seconds": 1.6758479999999998,
+      "name": "compile_native",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.5941916570009198
+    },
+    {
+      "child_cpu_seconds": 0.3619239999999998,
+      "name": "compile_tests",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.266133147997607
+    },
+    {
+      "child_cpu_seconds": 0.004733999999999794,
+      "name": "rust_tests",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "de39d63dff37bfbb0b95917ee47679c516682ad1a63db56480fab8723441f1e2",
+      "wall_seconds": 0.003504214000713546
+    },
+    {
+      "child_cpu_seconds": 0.02634000000000014,
+      "name": "full_diagnostic_tape",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e90e4992715edb2bb887e1120821204391bcfde618b97545e7bb1573105f612c",
+      "wall_seconds": 0.03153021500111208
+    },
+    {
+      "child_cpu_seconds": 0.011447999999999903,
+      "name": "prefix_process",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "1344c84c4a392934efd885b0f807701b3d585acedd7bb6499b0f4a5eb11464dd",
+      "wall_seconds": 0.01300404599896865
+    },
+    {
+      "child_cpu_seconds": 0.01226299999999969,
+      "name": "resumed_process",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "4df04cc0dc6825f8a52114964f121d3b7041b05b2332ae80a4721c509202f546",
+      "wall_seconds": 0.014222838999558007
+    },
+    {
+      "child_cpu_seconds": 0.004523000000000055,
+      "name": "strict_one_percent_guard",
+      "returncode": 2,
+      "stderr": "operation line 28: precision required: observation error budget\n",
+      "stdout_sha256": "68316da47f2bcd39d8d088fc65f568a47942c713e0e45efef2d56cd3f19b6479",
+      "wall_seconds": 0.004817815999558661
+    },
+    {
+      "child_cpu_seconds": 0.003813000000000122,
+      "name": "restart_cannot_reset_error_budget",
+      "returncode": 2,
+      "stderr": "precision required: restored or initial error budget\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.003966026000853162
+    },
+    {
+      "child_cpu_seconds": 0.0035669999999999313,
+      "name": "reject_checksum",
+      "returncode": 2,
+      "stderr": "checkpoint checksum mismatch\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.003684981002152199
+    },
+    {
+      "child_cpu_seconds": 0.004087000000000229,
+      "name": "reject_truncated",
+      "returncode": 2,
+      "stderr": "checkpoint schema or length mismatch\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.0042132579983444884
+    },
+    {
+      "child_cpu_seconds": 0.003019999999999856,
+      "name": "reject_changed_model_bytes",
+      "returncode": 2,
+      "stderr": "checkpoint model mismatch\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.003157611001370242
+    }
+  ],
+  "restart_does_not_reset_error_budget": {
+    "reason": "precision required: restored or initial error budget",
+    "rejected": true
+  },
+  "schema": "hcsn-r16-native-q24-v1",
+  "scope": "Q24 replay/filter/write and four-address memory checkpoint for one R15 finite operator; no native planner, owner integration, network, energy or quality claim.",
+  "source_conversion_l1_max": 2.0336315786387144e-15,
+  "source_fixture_scale": 1208925819614629174706176,
+  "source_hashes": {
+    "q24_checkpoint.rs": "d0e452370fb2d69e86a8c2d8a131bd6e80d9bf60b2f2a254ba1f8fac284ec91f",
+    "q24_core.rs": "4775a7f335dc2e606c7c357a3682b0dad6200cd468b9d117336c696bfcc4164d",
+    "q24_main.rs": "04cddd06fce249cc271cc3763892f0fd97594d8e7090ee471df9c85f8931b451",
+    "q24_sha256.rs": "2d081f2c1d1574be5ea2bae267da3fee1c46ebd490500fd217473b83b14b2071",
+    "q24_tests.rs": "1b146026214e49635be5921ea717134a0ffd00db4e41fdcfb71dbceb75d201df"
+  },
+  "source_law_identity": "f9bbedf121707d5d78515698c05c2bc5f915f8a8fac78df42e5664f4d842ddf7",
+  "source_operator_identity": "c3ad72d9b902f2896b9324b5d0308ee88ca8901dd46a2cc586b2f2cc346b059e",
+  "strict_guard": {
+    "checkpoint_written": false,
+    "completed": 27,
+    "maximum_l1": 0.009999990463256836,
+    "maximum_l1_units": 167772,
+    "reason": "operation line 28: precision required: observation error budget",
+    "returncode": 2
+  },
+  "structurally_possible_zero_count_coordinates": 925
+}

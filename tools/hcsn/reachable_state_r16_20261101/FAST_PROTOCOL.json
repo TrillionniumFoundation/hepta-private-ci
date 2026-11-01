@@ -1,0 +1,23 @@
+{
+  "schema": "hcsn-r16-fast-projection-v1",
+  "baseline_commit": "74144a3f5d5c77c953ecdc4708d3d90b56b67d3c",
+  "main_confirmation_source": "416a8a47199c129b788875da06d965a52b8fab45",
+  "scope": "Engineering replacement of the same grouped probability projection. It changes neither dynamics nor approximation family. Original main results and 4-7x overhead failures remain valid and preserved.",
+  "implementation": "Validate the legal input at one public projection boundary, vectorize contiguous group sums and gather conditional content; reject positive-support underflow explicitly. Keep the exact group definition and existing support/likelihood mathematics. No lowered precision, smoothing, unchecked public mode, altered Q or reduced-dimensional propagator.",
+  "replay": "All 128 prior raw archives: compare old and fast block2/block4/block5 on all 221184 archived address beliefs; tolerance 2e-14. Check nonnegative support, current emission likelihood, invalid/underflow rejection, all 6144 old block2 first actions and STOP answers. This reuses old worlds and is not fresh scientific confirmation.",
+  "microbenchmark": "First 1024 archived beliefs in sorted worker/shard order; batch 1 and 32, five serial repeats, alternate old/fast ordering; report raw CPU timings and median ratios. These are engineering projections, not owner latency or deployment benefit.",
+  "fit_seeds": [151101, 151103, 151107, 151109, 151113, 151117, 151119, 151123],
+  "domains": ["iid", "ood"],
+  "episodes_per_fit_domain": 32,
+  "namespace": 18,
+  "seed_formula": "18*10^12 + fit_seed*10^5 + (10000 if OOD else 0) + episode_index",
+  "arms": ["D_full", "old_block2", "fast_block2"],
+  "model": "Each arm separately restores the same frozen R15 HX fit, with the same unchanged value controller, owner, emissions and fees. No fit or selection changes. Actor order is deterministically shuffled within each fresh world.",
+  "execution": "All 8 fits x 2 domains x 32 worlds (512 fresh worlds) must complete. Preserve full owner tapes, all query actions/targets/fees and six checkpoint states per arm. Check old/fast full query traces exactly after removing state digests, with checkpoint beliefs agreeing within 2e-11. Preserve partial worlds and CPU receipts on failure; never calculate successful-subset statistics.",
+  "cost": "Measure cold model restoration, actual run_episode process CPU including all planner branches and checkpoint capture, real local checkpoint serialization/fsync/restore and compact encode/decode, world generation and archive serialization. All candidate attempts remain charged. Process-body totals exclude interpreter startup/imports; no energy, network or production claim. Historical R15 calibration costs remain separately attributed, not added as current-host measurements.",
+  "statistics": "Fit is the independent unit, n=8. Old/fast action equality is a deterministic engineering gate. Compare fast to full using four simultaneous one-sided Bonferroni t lower bounds (utility and reward x two domains), margin -0.01. Report all per-fit values. Serial online and preparation+checkpoint+1000-use CPU ratios are reported against both old and full. Engineering speed target: both ratios to old <=0.90 in both domains. Full-state benefit additionally requires both ratios to full <=0.90 and quality guards; failures remain failures.",
+  "freeze": "Publish FAST_SOURCE_FREEZE.json, new source and protocol before generating namespace18; verify new and inherited source/model hashes before execution.",
+  "source_files": ["fast_compression.py", "fast_checks.py", "fast_campaign.py", "FAST_PROTOCOL.json"],
+  "no_primary_rescue": "This auxiliary engineering comparison cannot pass the original D-B gate or establish an HX-specific contribution.",
+  "production_activation": false
+}

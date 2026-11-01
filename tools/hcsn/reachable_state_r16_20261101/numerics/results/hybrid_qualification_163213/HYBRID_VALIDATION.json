@@ -1,0 +1,621 @@
+{
+  "cache_corruption_rejected": true,
+  "changed_tape_rejected": true,
+  "content_argmax_disagreements": 0,
+  "cost_rule": "Outer child CPU includes the driver and its waited-for native descendants. Do not add driver replay/native breakdowns again. Full execution cost is separate from compile, unit checks and recovery verification.",
+  "events": 549,
+  "evidence": {
+    "archive_bytes": 1268297,
+    "archive_sha256": "842ad207f3adbf4bd0178c7e5700dbe6fdadf4a77907e3b4723c2afc0c38b861",
+    "index": "EVIDENCE_INDEX.json",
+    "parts": [
+      {
+        "bytes": 480000,
+        "path": "EVIDENCE.tar.gz.part000",
+        "sha256": "85d2dfcc0598152d96351574dbd060c7daa285b58221e5509815ae52e9ed7357"
+      },
+      {
+        "bytes": 480000,
+        "path": "EVIDENCE.tar.gz.part001",
+        "sha256": "736a9a7397227911644dfc986a07d425fe996ae8f7b9398c1ce5267fc0ca3fd6"
+      },
+      {
+        "bytes": 308297,
+        "path": "EVIDENCE.tar.gz.part002",
+        "sha256": "98a27202b4c5fdbdb8fb4b83fdbecb1e2b2eae034d7aca5bba7217e77759838c"
+      }
+    ],
+    "raw_bytes": 6387032
+  },
+  "float_reference_l1_max": 1.3546827413115669e-05,
+  "frozen_native_commit": "4c51e9a068a887fcf80573628e7692a1f84f9c18",
+  "full_execution": {
+    "completed": 549,
+    "cumulative_checkpoint_cost_is_a_lower_bound": true,
+    "events_committed": 549,
+    "fallbacks": [
+      {
+        "cache_bytes": 27604,
+        "interval_cache_sha256": "5aa4f637651d0307ad4cee14e8fe3337cc083707f6725eaf677a52f86920e630",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          8,
+          11,
+          13,
+          11
+        ],
+        "refused_event": 21,
+        "replay_from": 0,
+        "replay_to": 21,
+        "replayed_events": 21
+      },
+      {
+        "cache_bytes": 27767,
+        "interval_cache_sha256": "1e1c48ccdd8f01812d797ca6b919cda0d06dda9e3b8c5e83e57826454ce02e7c",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          10,
+          10,
+          10,
+          11
+        ],
+        "refused_event": 60,
+        "replay_from": 21,
+        "replay_to": 60,
+        "replayed_events": 39
+      },
+      {
+        "cache_bytes": 29117,
+        "interval_cache_sha256": "0c1830558d559cbe07b42a45ee11619e09212f8aa13a9617b5556ac0d138061d",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          10,
+          13,
+          12,
+          10
+        ],
+        "refused_event": 96,
+        "replay_from": 60,
+        "replay_to": 96,
+        "replayed_events": 36
+      },
+      {
+        "cache_bytes": 27543,
+        "interval_cache_sha256": "72e79d43527fa613ade4e02fb259e64a2308939cc7807be817a0e254767d08f5",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          12,
+          7,
+          11,
+          9
+        ],
+        "refused_event": 120,
+        "replay_from": 96,
+        "replay_to": 120,
+        "replayed_events": 24
+      },
+      {
+        "cache_bytes": 29240,
+        "interval_cache_sha256": "1d4f1f39d3615c5161ffd90c696574625546079dfb738f0097e93b5fc0ff652a",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          12,
+          9,
+          8,
+          11
+        ],
+        "refused_event": 146,
+        "replay_from": 120,
+        "replay_to": 146,
+        "replayed_events": 26
+      },
+      {
+        "cache_bytes": 23803,
+        "interval_cache_sha256": "1e27612fd5b3784f46c93db614288166331cb92ad1d7504b46be243eebe8c056",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          12,
+          10,
+          2,
+          10
+        ],
+        "refused_event": 167,
+        "replay_from": 146,
+        "replay_to": 167,
+        "replayed_events": 21
+      },
+      {
+        "cache_bytes": 26448,
+        "interval_cache_sha256": "03a7cacfbe873d78ba217082dcafb648ef64cad24fbc8024e3d0b9f6f86f657c",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          9,
+          10,
+          10,
+          6
+        ],
+        "refused_event": 197,
+        "replay_from": 167,
+        "replay_to": 197,
+        "replayed_events": 30
+      },
+      {
+        "cache_bytes": 29000,
+        "interval_cache_sha256": "a6c8f7d3a9ef3318e79b5901e8653ef525efeee38775c8f77d1d8ad40410a0df",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          10,
+          10,
+          9,
+          11
+        ],
+        "refused_event": 229,
+        "replay_from": 197,
+        "replay_to": 229,
+        "replayed_events": 32
+      },
+      {
+        "cache_bytes": 22848,
+        "interval_cache_sha256": "d4095875b66e8f64d6e9a4498f18a48a6989ca9dd0a532f2fcd399d3e960fa39",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          10,
+          9,
+          14,
+          4
+        ],
+        "refused_event": 251,
+        "replay_from": 229,
+        "replay_to": 251,
+        "replayed_events": 22
+      },
+      {
+        "cache_bytes": 29036,
+        "interval_cache_sha256": "c115462eaf7ee49a4e56e9c0195c3da62d03e26c6e728d069a2a5fad095eea1e",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          10,
+          9,
+          11,
+          12
+        ],
+        "refused_event": 266,
+        "replay_from": 251,
+        "replay_to": 266,
+        "replayed_events": 15
+      },
+      {
+        "cache_bytes": 27612,
+        "interval_cache_sha256": "257827d092738f5506d66dbd6d249b09d7557c0d90a7b06a1bc6b89ad48ee536",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          9,
+          12,
+          7,
+          10
+        ],
+        "refused_event": 302,
+        "replay_from": 266,
+        "replay_to": 302,
+        "replayed_events": 36
+      },
+      {
+        "cache_bytes": 29114,
+        "interval_cache_sha256": "13480ce6150f7bd8722cc2959ccb9a185d5694655ca889f410f91904d5861234",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          9,
+          12,
+          14,
+          3
+        ],
+        "refused_event": 326,
+        "replay_from": 302,
+        "replay_to": 326,
+        "replayed_events": 24
+      },
+      {
+        "cache_bytes": 27650,
+        "interval_cache_sha256": "e8c19d582f663a7d356c2b8f0c2aea15a277c1f2d45a7785023876c2494b916a",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          8,
+          13,
+          11,
+          8
+        ],
+        "refused_event": 362,
+        "replay_from": 326,
+        "replay_to": 362,
+        "replayed_events": 36
+      },
+      {
+        "cache_bytes": 28998,
+        "interval_cache_sha256": "b2601b483466e01044d390d33e0402644f59851490d2ff64842fca8ced1eaddc",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          9,
+          9,
+          11,
+          9
+        ],
+        "refused_event": 388,
+        "replay_from": 362,
+        "replay_to": 388,
+        "replayed_events": 26
+      },
+      {
+        "cache_bytes": 27541,
+        "interval_cache_sha256": "af0d9e80d33e923f96930f9ac216db1264f853c556651646fca7ab87618ee5d1",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          12,
+          12,
+          8,
+          9
+        ],
+        "refused_event": 435,
+        "replay_from": 388,
+        "replay_to": 435,
+        "replayed_events": 47
+      },
+      {
+        "cache_bytes": 27773,
+        "interval_cache_sha256": "9446fef3a41841a9169e8d84887d6f0b774cb9035cbb6613775ad28e4399aa1a",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          12,
+          9,
+          13,
+          10
+        ],
+        "refused_event": 454,
+        "replay_from": 435,
+        "replay_to": 454,
+        "replayed_events": 19
+      },
+      {
+        "cache_bytes": 27691,
+        "interval_cache_sha256": "2f9d322a3669e782f6670571e163b43715ff7ad53ce44e9e5bd37ad0de2ff589",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          11,
+          3,
+          9,
+          11
+        ],
+        "refused_event": 491,
+        "replay_from": 454,
+        "replay_to": 491,
+        "replayed_events": 37
+      },
+      {
+        "cache_bytes": 27697,
+        "interval_cache_sha256": "c1ee317eee0db4c5fd66f4917f7c7611a68e628f79a46e3adcd94ae270edd73a",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          13,
+          10,
+          10,
+          8
+        ],
+        "refused_event": 510,
+        "replay_from": 491,
+        "replay_to": 510,
+        "replayed_events": 19
+      },
+      {
+        "cache_bytes": 28969,
+        "interval_cache_sha256": "e78ef41ddb61036eb95b164316d502343f1b3f85fa50908a02fd8ed59c6f161e",
+        "q24_checkpoint_bytes": 772,
+        "q24_radius_units": [
+          9,
+          6,
+          11,
+          10
+        ],
+        "refused_event": 538,
+        "replay_from": 510,
+        "replay_to": 538,
+        "replayed_events": 28
+      }
+    ],
+    "final_checkpoint_bytes": 26578,
+    "final_native_checkpoint_sha256": "f054edb1ccca5ea795f60dfe060562a998da9560ec1bdb5b2a27929dfc984d2d",
+    "fixture_bytes": 222421,
+    "maximum_error_units": 167772,
+    "maximum_interval_radius_units": 228,
+    "maximum_native_radius_units": 135904,
+    "maximum_replay_buffer_events": 47,
+    "model": "7cb7800d35f392732afd66b673df424581f1ade43d4556cd2aa8c24e6d576595",
+    "native_calls": [
+      {
+        "call": 0,
+        "cpu_seconds": 0.005513,
+        "returncode": 2,
+        "start": 0,
+        "stderr": "operation line 21: precision required: observation error budget",
+        "stdout_sha256": "fa12e38084c37981edaa055ce13316f8096ffdde2e9067f7f184dceea18881ab",
+        "wall_seconds": 0.01141187899702345
+      },
+      {
+        "call": 1,
+        "cpu_seconds": 0.004187000000000001,
+        "returncode": 2,
+        "start": 21,
+        "stderr": "operation line 39: precision required: observation error budget",
+        "stdout_sha256": "330721c249f702e387b3d83f177918ca6a958fe90564e7617a8ebc08de03b6ae",
+        "wall_seconds": 0.009877590000542114
+      },
+      {
+        "call": 2,
+        "cpu_seconds": 0.005906,
+        "returncode": 2,
+        "start": 60,
+        "stderr": "operation line 36: precision required: observation error budget",
+        "stdout_sha256": "aaf144f9ecb462e5e4b569c2e81bfb4d246339bc16d5ec848cafc5ff12e5a8b4",
+        "wall_seconds": 0.009385002002090914
+      },
+      {
+        "call": 3,
+        "cpu_seconds": 0.005522999999999998,
+        "returncode": 2,
+        "start": 96,
+        "stderr": "operation line 24: precision required: observation error budget",
+        "stdout_sha256": "ab75b14ceafe351468434733a88176036d5f1070b8c671f0c9b7a0918851b969",
+        "wall_seconds": 0.009132928000326501
+      },
+      {
+        "call": 4,
+        "cpu_seconds": 0.004036999999999999,
+        "returncode": 2,
+        "start": 120,
+        "stderr": "operation line 26: precision required: observation error budget",
+        "stdout_sha256": "527e4944ff4932fe8c86f3d06e585fdecf210e3e8992a3de4d3660dfce2dd163",
+        "wall_seconds": 0.015007076999609126
+      },
+      {
+        "call": 5,
+        "cpu_seconds": 0.005533,
+        "returncode": 2,
+        "start": 146,
+        "stderr": "operation line 21: precision required: observation error budget",
+        "stdout_sha256": "98faca8c0f94b03a443c06351bd4e3e44325ac712e5ee14b3d8ec4829f50ca50",
+        "wall_seconds": 0.011212513996724738
+      },
+      {
+        "call": 6,
+        "cpu_seconds": 0.005884,
+        "returncode": 2,
+        "start": 167,
+        "stderr": "operation line 30: precision required: observation error budget",
+        "stdout_sha256": "c1eaa5d572a436a5ee9cf87537bc5b923fd48ce188f61be34373fceaaf384242",
+        "wall_seconds": 0.009838563000812428
+      },
+      {
+        "call": 7,
+        "cpu_seconds": 0.005761999999999996,
+        "returncode": 2,
+        "start": 197,
+        "stderr": "operation line 32: precision required: observation error budget",
+        "stdout_sha256": "9d7a0a6f518dee0d426d8f0f802ee3bcc302ba8d2a39fbdefa83fefdd825e042",
+        "wall_seconds": 0.027206391998333856
+      },
+      {
+        "call": 8,
+        "cpu_seconds": 0.004560999999999999,
+        "returncode": 2,
+        "start": 229,
+        "stderr": "operation line 22: precision required: observation error budget",
+        "stdout_sha256": "3af0370bbb4d91cb4e24e5011187c3deef3f86576d7225c7a9d74b6715d91889",
+        "wall_seconds": 0.02062491600008798
+      },
+      {
+        "call": 9,
+        "cpu_seconds": 0.003700000000000002,
+        "returncode": 2,
+        "start": 251,
+        "stderr": "operation line 15: precision required: observation error budget",
+        "stdout_sha256": "8c91027bd0b2ea83e75a236f4aceff4c724334e61bd4378e03e0171a2f45e452",
+        "wall_seconds": 0.00642670600063866
+      },
+      {
+        "call": 10,
+        "cpu_seconds": 0.005982000000000001,
+        "returncode": 2,
+        "start": 266,
+        "stderr": "operation line 36: precision required: observation error budget",
+        "stdout_sha256": "1cf5e99d5fbdc3e9d960ecaad45cb27b339392f4d9a32861003db27ab1333ffb",
+        "wall_seconds": 0.015878827001870377
+      },
+      {
+        "call": 11,
+        "cpu_seconds": 0.0038759999999999975,
+        "returncode": 2,
+        "start": 302,
+        "stderr": "operation line 24: precision required: observation error budget",
+        "stdout_sha256": "2fc2a7d05b70c2e1155342b79669cb983133e2a1691b6b4861eb07452f81fa7c",
+        "wall_seconds": 0.0098614760026976
+      },
+      {
+        "call": 12,
+        "cpu_seconds": 0.00593599999999999,
+        "returncode": 2,
+        "start": 326,
+        "stderr": "operation line 36: precision required: observation error budget",
+        "stdout_sha256": "9edfe6f3bfaa615f0ca617f44209522a6a038777e81a46660264f79795498d4d",
+        "wall_seconds": 0.013247674000012921
+      },
+      {
+        "call": 13,
+        "cpu_seconds": 0.005503000000000001,
+        "returncode": 2,
+        "start": 362,
+        "stderr": "operation line 26: precision required: observation error budget",
+        "stdout_sha256": "05d2ddec6f93ca372fea28e0aebf64b4bd4e7527870fc013289a34562d1c5e5b",
+        "wall_seconds": 0.012488611999287969
+      },
+      {
+        "call": 14,
+        "cpu_seconds": 0.004467999999999993,
+        "returncode": 2,
+        "start": 388,
+        "stderr": "operation line 47: precision required: observation error budget",
+        "stdout_sha256": "eb2217ee08b5434bee7bf13c919d38a11ca834ce819e3fb3798157506a0b6e1f",
+        "wall_seconds": 0.011535893001564546
+      },
+      {
+        "call": 15,
+        "cpu_seconds": 0.004137999999999996,
+        "returncode": 2,
+        "start": 435,
+        "stderr": "operation line 19: precision required: observation error budget",
+        "stdout_sha256": "0abb346b93172f3a33d7b360f729cea23a6fb644a24294ca5037dbb1f6b6b3c9",
+        "wall_seconds": 0.011537926002347376
+      },
+      {
+        "call": 16,
+        "cpu_seconds": 0.0061270000000000005,
+        "returncode": 2,
+        "start": 454,
+        "stderr": "operation line 37: precision required: observation error budget",
+        "stdout_sha256": "3886e955a1e8cd36d4d749b47290b1129c69a75f5ac0d5d3acdcdd41acef5629",
+        "wall_seconds": 0.022479160001239507
+      },
+      {
+        "call": 17,
+        "cpu_seconds": 0.003825000000000002,
+        "returncode": 2,
+        "start": 491,
+        "stderr": "operation line 19: precision required: observation error budget",
+        "stdout_sha256": "847bdd09b1a672e9aedadfcdfb0a6dff0128786ccd22177fc379d3932218e56f",
+        "wall_seconds": 0.01324330799980089
+      },
+      {
+        "call": 18,
+        "cpu_seconds": 0.004487000000000007,
+        "returncode": 2,
+        "start": 510,
+        "stderr": "operation line 28: precision required: observation error budget",
+        "stdout_sha256": "3a8f1a4c746199c9dc7b940e592d9f0c49ca983e14c915d68eca3a3fdb017d36",
+        "wall_seconds": 0.011037004998797784
+      },
+      {
+        "call": 19,
+        "cpu_seconds": 0.005664999999999991,
+        "returncode": 0,
+        "start": 538,
+        "stderr": "",
+        "stdout_sha256": "b0f9764e33dfd935a7c6026ba251b68559f9aab6909aba567bf08b87d1d91813",
+        "wall_seconds": 0.015618461002304684
+      }
+    ],
+    "native_cpu_seconds": 0.10061299999999998,
+    "python_cpu_seconds": 2.1564574480000003,
+    "recorded_artifact_bytes_before_run_receipt": 2897722,
+    "replay_cpu_seconds": 2.0496412370000003,
+    "replayed_events": 549,
+    "requested_stop": 549,
+    "retained_full_tape_bytes": 3294,
+    "schema": "hcsn-r16-hybrid-run-v1",
+    "source_scope": "Exact integer-weight fixture; trusted cache only; no expm/PDE or owner authorization claim",
+    "start": 0,
+    "tape": "170855f68f9a41feeb2aa3d4188e3ac0fa9019ca3064cb23c89a378d72f084c7"
+  },
+  "gates": {
+    "all_events_once": true,
+    "complete_recovery": true,
+    "float_l1_below_1e_minus_4": true,
+    "interval_replay_covers_every_consumed_event": true,
+    "original_one_percent_budget": true,
+    "refusal_integrity": true
+  },
+  "independent_units": "Numerical deterministic trajectories; no statistical quality inference from visited states.",
+  "orchestration_cpu_scope": "Through evidence packaging, excluding final summary serialization; a recorded lower bound.",
+  "orchestration_cpu_seconds": 0.38268988200000004,
+  "outer_child_cpu_seconds": 8.56765,
+  "passed": true,
+  "prior_namespace_rejected_intact": true,
+  "receipts": [
+    {
+      "child_cpu_seconds": 1.5400919999999998,
+      "name": "compile_frozen_native",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 1.752881675001845
+    },
+    {
+      "child_cpu_seconds": 0.3766330000000002,
+      "name": "exact_fraction_unit_tests",
+      "returncode": 0,
+      "stderr": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.008s\n\nOK\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.7090524609993736
+    },
+    {
+      "child_cpu_seconds": 2.6801380000000004,
+      "name": "full_hybrid_execution",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "1eaaee3fefd03d5897d16820af3252845ff45601ae3253beb75da6337a718ce8",
+      "wall_seconds": 4.249588832000882
+    },
+    {
+      "child_cpu_seconds": 1.4100899999999996,
+      "name": "prefix_hybrid_execution",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "6034f8b5dd3e3a14e8d41440f77b2cc60004abede6386689bc27716366bd2060",
+      "wall_seconds": 1.6840158689992677
+    },
+    {
+      "child_cpu_seconds": 1.3965510000000003,
+      "name": "fresh_process_hybrid_restore",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "6bf6c176fbd8931334f0b315313ef515f1bf42d158b913513bcb700414bec1fe",
+      "wall_seconds": 1.727238742998452
+    },
+    {
+      "child_cpu_seconds": 0.37759099999999995,
+      "name": "reject_corrupt_hybrid_cache",
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/workspace/scratch/59fb76f718be/hepta-hcsn/tools/hcsn/reachable_state_r16_20261101/numerics/hybrid_driver.py\", line 230, in <module>\n    result = run(args.model, args.ops, args.native, args.output, args.stop_after, args.restore)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/59fb76f718be/hepta-hcsn/tools/hcsn/reachable_state_r16_20261101/numerics/hybrid_driver.py\", line 79, in run\n    raise ValueError(\"Hybrid recovery checksum mismatch\")\nValueError: Hybrid recovery checksum mismatch\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.3987306119997811
+    },
+    {
+      "child_cpu_seconds": 0.4074109999999997,
+      "name": "reject_changed_tape",
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/workspace/scratch/59fb76f718be/hepta-hcsn/tools/hcsn/reachable_state_r16_20261101/numerics/hybrid_driver.py\", line 230, in <module>\n    result = run(args.model, args.ops, args.native, args.output, args.stop_after, args.restore)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/59fb76f718be/hepta-hcsn/tools/hcsn/reachable_state_r16_20261101/numerics/hybrid_driver.py\", line 82, in run\n    raise ValueError(\"Hybrid model/tape/profile mismatch\")\nValueError: Hybrid model/tape/profile mismatch\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.4151518280013988
+    },
+    {
+      "child_cpu_seconds": 0.37914400000000004,
+      "name": "reject_reused_output_namespace",
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/workspace/scratch/59fb76f718be/hepta-hcsn/tools/hcsn/reachable_state_r16_20261101/numerics/hybrid_driver.py\", line 230, in <module>\n    result = run(args.model, args.ops, args.native, args.output, args.stop_after, args.restore)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/59fb76f718be/hepta-hcsn/tools/hcsn/reachable_state_r16_20261101/numerics/hybrid_driver.py\", line 62, in run\n    output.mkdir(parents=True, exist_ok=False)\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1311, in mkdir\n    os.mkdir(self, mode)\nFileExistsError: [Errno 17] File exists: '/workspace/scratch/59fb76f718be/hepta-hcsn/tools/hcsn/reachable_state_r16_20261101/numerics/results/hybrid_qualification_163213/full'\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.4048966680020385
+    }
+  ],
+  "resume_interval_cache_exact": true,
+  "resume_native_checkpoint_exact": true,
+  "resume_trace_exact": true,
+  "resumed_cumulative_replayed_events_exact": true,
+  "schema": "hcsn-r16-hybrid-validation-v1",
+  "scope": "80-digit interval replay of the exact integer fixture, four-address finite tape, trusted snapshot recovery. No pure-Q24 admission, expm/PDE certificate, native planner, production owner, anti-rollback, network or energy claim.",
+  "seed": 163213,
+  "source_commit": "44443bbdc2b6e6695bdca2ec728e923c7cdbea22",
+  "source_fixture_conversion_l1_max": 2.0336315786387144e-15,
+  "source_hashes": {
+    "HYBRID_PROTOCOL.json": "497a9298f0d6a31a1b11624ee80a0a5381a6690067d1b5cd2344d17651c35b24",
+    "hybrid_driver.py": "b20b9d4ddb2c857fb139b8e59ed4299673f78342c6ecd19e6fe900808cb2549e",
+    "interval_replay.py": "b8e7070bb6179c1c4657857c7aa14df485e1f1f0824fbfb2a6c241d83c66fcef",
+    "test_interval_replay.py": "aa80a4ac2506cbaf4b2918a299253dbaf84c53da82be8a8e21ea159972c788d1",
+    "validate_hybrid.py": "207ef2df41f0c7ad80c8027374a2e625c863f4d2764e904f89464aeab3f039e8"
+  }
+}

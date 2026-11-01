@@ -1,0 +1,30 @@
+{
+  "schema": "hcsn-r16-lazy-channels-v1",
+  "base_commit": "74144a3f5d5c77c953ecdc4708d3d90b56b67d3c",
+  "question": "Do the already-fitted R15 value/risk features improve one-action controller utility when only needed features are computed and their real cold/warm costs are paid?",
+  "fit_seeds": [151101, 151103, 151107, 151109, 151113, 151117, 151119, 151123],
+  "domains": ["iid", "ood"],
+  "arms": ["state_confidence", "stop_value", "value_risk", "ordinary_dual"],
+  "namespace": 17,
+  "development_namespace": 917,
+  "episodes_per_fit_domain": 64,
+  "development_episodes_per_fit_domain": 2,
+  "seed_formula": "namespace*10^12 + fit_seed*10^5 + (10000 if OOD else 0) + episode_index",
+  "inputs": "The complete R15 run_01/training/<fit>.json.gz files are reused byte-for-byte, including fitted HX law, all four learned model weights, old raw training and cost. No retraining, parameter selection or source change after new confirmation opens.",
+  "capability": "All four arms use the same fixed one-action capability: initial STOP, READ then STOP, or REFRESH then STOP. Every observation and answer refers to the original fixed deadline and actual owner tape. This is not the three-slot exact planner or unrestricted Q-pi.",
+  "features": "The first eight public causal state/confidence features are shared. stop_value computes terminal STOP correctness; value_risk additionally computes natural first-passage probability; ordinary_dual has two matched-count ordinary transforms. These are not financial equity/default values.",
+  "cold_preparation": "Each arm restores a separate law with empty caches. Common answer/propagation transition bank is prepared for all public domain intervals and remaining 0..3. Only value_risk prepares the three required first-hit augmented matrix exponentials. Restoration, common bank and risk bank CPU are separate and all charged.",
+  "warm_execution": "Each actor is fully prepared before the first scored world. Online owner CPU includes actual needed features, weight application, all beliefs, observations, answers, causal snapshots and checkpoint hashes. No unused risk work is charged to other feature sets. Shared world generation and archive I/O are separately metered.",
+  "statistics": {
+    "independent_unit": "Eight paired frozen fits; average queries in episode, episodes in fit. Fresh worlds do not create additional training replicates.",
+    "primary_contrasts": ["value_risk-minus-stop_value", "value_risk-minus-ordinary_dual"],
+    "tests": "Two-sided exhaustive sign-flip on eight per-fit utility differences; Holm over two contrasts x two domains, four tests total. Also report Student-t 95% paired intervals.",
+    "gain_gate": "All four registered comparisons must have mean >= .001, t95 lower > 0, and Holm-adjusted p < .05. Failure is retained; no secondary rescue.",
+    "secondary": "All four per-arm quality, task fees, real feature/owner CPU, first action and answer differences. Cold+warm costs at N=1,100,1000,10000 are descriptive, not a deployment gain gate or a monetary net-benefit proof."
+  },
+  "historical_cost": "Retain R15 full training-function and learned-controller CPU separately, with nested scopes and original source SHA. These are inherited old-host measurements, not current-host retraining or free knowledge. Do not add nested timers or claim current cold+warm totals include historical life-cycle costs.",
+  "failure_policy": "All four arms must finish every world. Preserve completed shards, the failing owner tape and completed actor prefixes, exception and full process costs; never average a successful subset into confirmation.",
+  "freeze": "Publish source/protocol and exact input hashes before formal namespace17 generation. Independent development equivalence compares the new owner and each feature vector against the original frozen R15 code; no global monkeypatching.",
+  "limits": ["Old one-action controller only", "Typed supplied addresses and four synthetic content values", "OOD changes only intervals", "No new fitting", "No continuum optimality", "No energy/network/production claim"],
+  "production_activation": false
+}

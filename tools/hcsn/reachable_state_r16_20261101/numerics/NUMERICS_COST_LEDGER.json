@@ -1,0 +1,111 @@
+{
+  "attempts": [
+    {
+      "attempt": "development_support_floor_01",
+      "includes_failed_computation": true,
+      "kind": "pure_q24",
+      "measured_cpu_seconds_lower_bound": 2.341207792,
+      "passed_finite_arithmetic_gate": false,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/development_support_floor_01/Q24_VALIDATION.json"
+    },
+    {
+      "attempt": "development_support_bitmap_02",
+      "includes_failed_computation": true,
+      "kind": "pure_q24",
+      "measured_cpu_seconds_lower_bound": 2.379750555,
+      "passed_finite_arithmetic_gate": true,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/development_support_bitmap_02/Q24_VALIDATION.json"
+    },
+    {
+      "attempt": "development_161102719",
+      "includes_failed_computation": true,
+      "kind": "pure_q24",
+      "measured_cpu_seconds_lower_bound": 2.4672104669999992,
+      "passed_finite_arithmetic_gate": true,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/development_161102719/Q24_VALIDATION.json"
+    },
+    {
+      "attempt": "development_161102733",
+      "includes_failed_computation": true,
+      "kind": "pure_q24",
+      "measured_cpu_seconds_lower_bound": 2.705760819,
+      "passed_finite_arithmetic_gate": true,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/development_161102733/Q24_VALIDATION.json"
+    },
+    {
+      "attempt": "qualification_163201",
+      "includes_failed_computation": true,
+      "kind": "pure_q24",
+      "measured_cpu_seconds_lower_bound": 2.7728123959999986,
+      "passed_finite_arithmetic_gate": true,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/qualification_163201/Q24_VALIDATION.json"
+    },
+    {
+      "attempt": "qualification_163203",
+      "includes_failed_computation": true,
+      "kind": "pure_q24",
+      "measured_cpu_seconds_lower_bound": 2.8662178129999996,
+      "passed_finite_arithmetic_gate": true,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/qualification_163203/Q24_VALIDATION.json"
+    },
+    {
+      "attempt": "hybrid_development_163201",
+      "includes_failed_computation": true,
+      "kind": "hybrid",
+      "measured_cpu_seconds_lower_bound": 2.2922780599999997,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/hybrid_development_163201/RUN.json",
+      "scope": "First development direct driver clock plus native child CPU. Startup, manual compile/unit commands and final receipt write are unmeasured."
+    },
+    {
+      "attempt": "hybrid_development_163203",
+      "includes_failed_computation": true,
+      "kind": "hybrid",
+      "measured_cpu_seconds_lower_bound": 9.258875671,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/hybrid_development_163203/HYBRID_VALIDATION.json",
+      "scope": "Outer validation children (including their waited-for native descendants) plus disjoint orchestrator CPU; no summation of nested driver/replay breakdowns."
+    },
+    {
+      "attempt": "hybrid_qualification_163211",
+      "includes_failed_computation": true,
+      "kind": "hybrid",
+      "measured_cpu_seconds_lower_bound": 9.283144292000001,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/hybrid_qualification_163211/HYBRID_VALIDATION.json",
+      "scope": "Outer validation children (including their waited-for native descendants) plus disjoint orchestrator CPU; no summation of nested driver/replay breakdowns."
+    },
+    {
+      "attempt": "hybrid_qualification_163213",
+      "includes_failed_computation": true,
+      "kind": "hybrid",
+      "measured_cpu_seconds_lower_bound": 8.950339882,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/hybrid_qualification_163213/HYBRID_VALIDATION.json",
+      "scope": "Outer validation children (including their waited-for native descendants) plus disjoint orchestrator CPU; no summation of nested driver/replay breakdowns."
+    },
+    {
+      "attempt": "PDE_CONVERGENCE.development_before_tail_bound_fix.json",
+      "kind": "pde",
+      "measured_cpu_seconds_lower_bound": 0.24774577200000003,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/PDE_CONVERGENCE.development_before_tail_bound_fix.json"
+    },
+    {
+      "attempt": "PDE_CONVERGENCE.json",
+      "kind": "pde",
+      "measured_cpu_seconds_lower_bound": 0.27329629600000005,
+      "receipt": "tools/hcsn/reachable_state_r16_20261101/numerics/results/PDE_CONVERGENCE.json"
+    }
+  ],
+  "complete_project_cost": false,
+  "duplicate_paths": "fresh_161102719/fresh_161102733 are aliases of development_* executions if present; counted exactly once, see DUPLICATE_DEVELOPMENT_PATHS.json.",
+  "full_execution_cpu_for_formal_hybrid": {
+    "163211": 2.7616540000000005,
+    "163213": 2.6801380000000004
+  },
+  "performance_superiority_claim": false,
+  "recorded_cpu_seconds_lower_bound": 45.838639815,
+  "schema": "hcsn-r16-numerics-research-cost-ledger-v1",
+  "unmeasured_scopes": [
+    "Manual development and early separate compile/test commands, including initial Rust type-inference compile failure",
+    "Tool/backend CPU, source editing and independent archive re-read verification",
+    "Whole upstream project preparation, production owner/network work, hardware energy and monetary cost",
+    "Final ledger/summary self-serialization"
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "compressed_encoding_bytes_per_address": {
+    "block2": 144,
+    "block4": 208,
+    "block5": 240
+  },
+  "current_owner_state_bytes_per_address": 320,
+  "finite_precision_scope": "Positive float64 support is checked; unrepresentable lifts are rejected without smoothing. Exact-arithmetic support proof does not certify all float64 propagation operations.",
+  "float64_underflow_fail_closed_modes": [
+    "block2",
+    "block4",
+    "block5"
+  ],
+  "formats": {
+    "block2": {
+      "degrees_of_freedom_interior": 15,
+      "groups": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "lifted_float64_per_address": 40,
+      "mode": "block2",
+      "preserves_group_content_marginal": true,
+      "preserves_phase_marginal": true,
+      "preserves_r15_current_emission_likelihoods": true,
+      "propagates_and_plans_in_lifted_40_states": true,
+      "stored_float64_per_address": 18
+    },
+    "block4": {
+      "degrees_of_freedom_interior": 21,
+      "groups": [
+        [
+          0,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          5
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "lifted_float64_per_address": 40,
+      "mode": "block4",
+      "preserves_group_content_marginal": true,
+      "preserves_phase_marginal": true,
+      "preserves_r15_current_emission_likelihoods": true,
+      "propagates_and_plans_in_lifted_40_states": true,
+      "stored_float64_per_address": 26
+    },
+    "block5": {
+      "degrees_of_freedom_interior": 24,
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "lifted_float64_per_address": 40,
+      "mode": "block5",
+      "preserves_group_content_marginal": true,
+      "preserves_phase_marginal": true,
+      "preserves_r15_current_emission_likelihoods": true,
+      "propagates_and_plans_in_lifted_40_states": true,
+      "stored_float64_per_address": 30
+    }
+  },
+  "invariant_beliefs_per_mode": 556,
+  "law_identity": "f9bbedf121707d5d78515698c05c2bc5f915f8a8fac78df42e5664f4d842ddf7",
+  "maximum_absolute_errors": {
+    "block2": {
+      "content": 2.220446049250313e-16,
+      "group_content": 2.220446049250313e-16,
+      "idempotence": 2.220446049250313e-16,
+      "mass": 4.440892098500626e-16,
+      "phase": 2.220446049250313e-16,
+      "read_likelihood": 3.3306690738754696e-16,
+      "refresh_likelihood": 4.440892098500626e-16
+    },
+    "block4": {
+      "content": 3.3306690738754696e-16,
+      "group_content": 2.220446049250313e-16,
+      "idempotence": 2.220446049250313e-16,
+      "mass": 4.440892098500626e-16,
+      "phase": 2.220446049250313e-16,
+      "read_likelihood": 3.3306690738754696e-16,
+      "refresh_likelihood": 4.440892098500626e-16
+    },
+    "block5": {
+      "content": 2.220446049250313e-16,
+      "group_content": 2.220446049250313e-16,
+      "idempotence": 1.1102230246251565e-16,
+      "mass": 3.3306690738754696e-16,
+      "phase": 1.1102230246251565e-16,
+      "read_likelihood": 2.220446049250313e-16,
+      "refresh_likelihood": 2.220446049250313e-16
+    }
+  },
+  "no_task_utility_or_speed_claim": true,
+  "old_mean_regression": {
+    "new_erasure": {
+      "block2": 0.1,
+      "block4": 0.1,
+      "block5": 0.1
+    },
+    "old_mean_erasure": 0.0,
+    "original_erasure": 0.1
+  },
+  "operator_identity": "c3ad72d9b902f2896b9324b5d0308ee88ca8901dd46a2cc586b2f2cc346b059e",
+  "passed": true,
+  "process_cpu_seconds": 3.17228632,
+  "real_owner_histories": {
+    "impossible_observations": 0,
+    "legal_observations": 576,
+    "minimum_likelihood": {
+      "block2": 0.039206475278269017,
+      "block4": 0.03870792381494598,
+      "block5": 0.038445236814146744
+    },
+    "paired_checkpoint_continuations": 1728,
+    "recovery_erasure_observations": 37,
+    "support_checks": 1728,
+    "worlds": 32
+  },
+  "schema": "hcsn-r16-compression-validation-v1",
+  "source_sha256": {
+    "compression.py": "e6544dd3678e81d4c09448cbdb6e2c22a343a6b154ebd93d953c9a98bc02864f",
+    "compression_checks.py": "231adf1eff740e483d2fac9f5bbe3faf5c89c4642f6376b4e9a5a927dd0345f7"
+  },
+  "trace": {
+    "bytes": 301139,
+    "path": "COMPRESSION_TRACES.jsonl",
+    "sha256": "492a720c43631a9a3a512351f5205e771279aac64f04e56d92683d8f6e7890ae"
+  }
+}

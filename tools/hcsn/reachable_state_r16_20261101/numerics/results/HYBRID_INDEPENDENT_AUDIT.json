@@ -1,0 +1,72 @@
+{
+  "audit_cpu_seconds": 1.121105641,
+  "blocking_findings": [],
+  "exact_fraction_checks": {
+    "coordinate_enclosures": 13824,
+    "events": 1152,
+    "exact_l1_certificates": 2304,
+    "exact_restores": 24,
+    "fixtures": 24,
+    "namespace": "918400..918423, independent tiny fixtures; no formal seed executed"
+  },
+  "formal_saved_evidence": [
+    {
+      "archive_sha256": "11d007f9000ddcf1ca901fccd62dc305f6a7e0271eda30f4367ee1b081c81c3c",
+      "corruption_and_identity_refusals": true,
+      "full_fallbacks": 20,
+      "max_float_l1": 1.3872150748668104e-05,
+      "max_interval_units": 233,
+      "max_native_units": 158447,
+      "outer_child_cpu_seconds": 8.922256,
+      "precision_refusals_checked": 40,
+      "raw_files_checked": 257,
+      "raw_recovery_exact": true,
+      "saved_frames_checked": 1101,
+      "seed": 163211,
+      "source_commit": "44443bbdc2b6e6695bdca2ec728e923c7cdbea22",
+      "unchanged_budget_units": 167772
+    },
+    {
+      "archive_sha256": "842ad207f3adbf4bd0178c7e5700dbe6fdadf4a77907e3b4723c2afc0c38b861",
+      "corruption_and_identity_refusals": true,
+      "full_fallbacks": 19,
+      "max_float_l1": 1.3546827413115669e-05,
+      "max_interval_units": 228,
+      "max_native_units": 135904,
+      "outer_child_cpu_seconds": 8.56765,
+      "precision_refusals_checked": 38,
+      "raw_files_checked": 247,
+      "raw_recovery_exact": true,
+      "saved_frames_checked": 1101,
+      "seed": 163213,
+      "source_commit": "44443bbdc2b6e6695bdca2ec728e923c7cdbea22",
+      "unchanged_budget_units": 167772
+    }
+  ],
+  "formal_tapes_executed_by_this_audit": false,
+  "frozen_source_changed": false,
+  "limits": [
+    "Small independent Fraction fixtures test implementation; static interval reasoning supports enclosure induction",
+    "Formal evidence audit uses saved traces/caches and exact Fraction endpoint certificates; it does not regenerate formal seeds",
+    "No claim that interval radii are dominated by every native declared radius; both are independently checked against the fixed budget",
+    "Float-reference comparison is descriptive and is not an expm or continuous-PDE error certificate",
+    "Checksums bind trusted snapshots only; no authentication, antirollback, production owner, energy or network claim",
+    "Original pure-Q24 refusal and compression cost failures remain valid"
+  ],
+  "passed": true,
+  "reviewed_claims": [
+    "80-digit directed interval arithmetic encloses exact normalized integer-weight fixture",
+    "Bayes lower numerator / upper denominator and upper numerator / strictly positive lower denominator",
+    "Simplex complement intersection and exact endpoint-derived Q24 L1 rebase certificate",
+    "Committed native events and interval-cache events are each traversed once in their own state streams",
+    "Complete trusted native/cache snapshot plus model/full public tape identity; exact restart"
+  ],
+  "schema": "hcsn-r16-hybrid-independent-audit-v1",
+  "source_hashes": {
+    "HYBRID_PROTOCOL.json": "497a9298f0d6a31a1b11624ee80a0a5381a6690067d1b5cd2344d17651c35b24",
+    "hybrid_driver.py": "b20b9d4ddb2c857fb139b8e59ed4299673f78342c6ecd19e6fe900808cb2549e",
+    "interval_replay.py": "b8e7070bb6179c1c4657857c7aa14df485e1f1f0824fbfb2a6c241d83c66fcef",
+    "test_interval_replay.py": "aa80a4ac2506cbaf4b2918a299253dbaf84c53da82be8a8e21ea159972c788d1",
+    "validate_hybrid.py": "207ef2df41f0c7ad80c8027374a2e625c863f4d2764e904f89464aeab3f039e8"
+  }
+}

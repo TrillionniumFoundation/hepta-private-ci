@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "tools.hcsn.reachable_state_r16_20261101.content.campaign",
+    "train",
+    "--source-commit",
+    "578a2cd37299cb5b299a8a1a4a7eca7c50a77b56",
+    "--output",
+    "tools/hcsn/reachable_state_r16_20261101/content/run_train_01"
+  ],
+  "exit_code": 0,
+  "child_user_cpu_seconds": 7.063237,
+  "child_system_cpu_seconds": 0.15576099999999998,
+  "wall_seconds": 14.93484573800015,
+  "stdout": "{\"stage\": \"train\", \"seed\": 160101, \"selected\": \"cosine\"}\n{\"stage\": \"train\", \"seed\": 160103, \"selected\": \"cosine\"}\n{\"stage\": \"train\", \"seed\": 160107, \"selected\": \"cosine\"}\n{\"stage\": \"train\", \"seed\": 160109, \"selected\": \"cosine\"}\n{\"stage\": \"train\", \"seed\": 160113, \"selected\": \"cosine\"}\n{\"stage\": \"train\", \"seed\": 160117, \"selected\": \"cosine\"}\n{\"stage\": \"train\", \"seed\": 160119, \"selected\": \"cosine\"}\n{\"stage\": \"train\", \"seed\": 160123, \"selected\": \"cosine\"}\n",
+  "stderr": "",
+  "scope": "Full child process including imports and final file writes; supervisor Python startup excluded."
+}

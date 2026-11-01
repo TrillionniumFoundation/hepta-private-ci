@@ -1,0 +1,23 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "tools.hcsn.reachable_state_r16_20261101.content.campaign",
+    "confirm",
+    "--source-commit",
+    "578a2cd37299cb5b299a8a1a4a7eca7c50a77b56",
+    "--model-commit",
+    "038b848df088654323dbbd190d96f79fdace662c",
+    "--frozen",
+    "tools/hcsn/reachable_state_r16_20261101/content/run_train_01/FROZEN_MODELS.json",
+    "--output",
+    "tools/hcsn/reachable_state_r16_20261101/content/run_confirm_01"
+  ],
+  "exit_code": 0,
+  "child_user_cpu_seconds": 19.915503,
+  "child_system_cpu_seconds": 0.350338,
+  "wall_seconds": 44.14915135800038,
+  "stdout": "{\"stage\": \"confirm\", \"seed\": 160101, \"domain\": \"iid\"}\n{\"stage\": \"confirm\", \"seed\": 160101, \"domain\": \"long_gap\"}\n{\"stage\": \"confirm\", \"seed\": 160101, \"domain\": \"noise_interference\"}\n{\"stage\": \"confirm\", \"seed\": 160103, \"domain\": \"iid\"}\n{\"stage\": \"confirm\", \"seed\": 160103, \"domain\": \"long_gap\"}\n{\"stage\": \"confirm\", \"seed\": 160103, \"domain\": \"noise_interference\"}\n{\"stage\": \"confirm\", \"seed\": 160107, \"domain\": \"iid\"}\n{\"stage\": \"confirm\", \"seed\": 160107, \"domain\": \"long_gap\"}\n{\"stage\": \"confirm\", \"seed\": 160107, \"domain\": \"noise_interference\"}\n{\"stage\": \"confirm\", \"seed\": 160109, \"domain\": \"iid\"}\n{\"stage\": \"confirm\", \"seed\": 160109, \"domain\": \"long_gap\"}\n{\"stage\": \"confirm\", \"seed\": 160109, \"domain\": \"noise_interference\"}\n{\"stage\": \"confirm\", \"seed\": 160113, \"domain\": \"iid\"}\n{\"stage\": \"confirm\", \"seed\": 160113, \"domain\": \"long_gap\"}\n{\"stage\": \"confirm\", \"seed\": 160113, \"domain\": \"noise_interference\"}\n{\"stage\": \"confirm\", \"seed\": 160117, \"domain\": \"iid\"}\n{\"stage\": \"confirm\", \"seed\": 160117, \"domain\": \"long_gap\"}\n{\"stage\": \"confirm\", \"seed\": 160117, \"domain\": \"noise_interference\"}\n{\"stage\": \"confirm\", \"seed\": 160119, \"domain\": \"iid\"}\n{\"stage\": \"confirm\", \"seed\": 160119, \"domain\": \"long_gap\"}\n{\"stage\": \"confirm\", \"seed\": 160119, \"domain\": \"noise_interference\"}\n{\"stage\": \"confirm\", \"seed\": 160123, \"domain\": \"iid\"}\n{\"stage\": \"confirm\", \"seed\": 160123, \"domain\": \"long_gap\"}\n{\"stage\": \"confirm\", \"seed\": 160123, \"domain\": \"noise_interference\"}\n",
+  "stderr": "",
+  "scope": "Full child process including imports and final file writes; supervisor Python startup excluded."
+}
