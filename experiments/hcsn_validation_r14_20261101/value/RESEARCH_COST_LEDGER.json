@@ -1,0 +1,80 @@
+{
+  "schema": "hcsn.r14.value.measured-research-costs.v1",
+  "scope": "Non-overlapping explicitly measured scopes for value audit and repair; not a complete cumulative project/development cost claim.",
+  "energy_joules": null,
+  "historical_shared_once": {
+    "cpu_seconds": 494.924698,
+    "source": "INHERITED_COST_PROVENANCE.json",
+    "incurred_again": false
+  },
+  "new_scientific_and_audit_scopes": [
+    {
+      "name": "Original actual-Qpi campaign full process",
+      "cpu_seconds": 84.879569,
+      "source": "CONFIRMATION_PROCESS.json"
+    },
+    {
+      "name": "Original raw tree arithmetic reconciliation body only",
+      "cpu_seconds": 1.835462198,
+      "source": "RAW_RECONCILIATION.json",
+      "includes_interpreter_startup": false
+    },
+    {
+      "name": "Repair actual workers full processes",
+      "cpu_seconds": 121.19173,
+      "source": "rollout_repair/evidence/confirmation_01/PROCESS.json"
+    },
+    {
+      "name": "Repair full-clock workers full processes",
+      "cpu_seconds": 42.1193,
+      "source": "rollout_repair/evidence/confirmation_01/PROCESS.json"
+    },
+    {
+      "name": "Repair scheduler parent body only",
+      "cpu_seconds": 0.213330814,
+      "source": "rollout_repair/evidence/confirmation_01/PROCESS.json",
+      "includes_interpreter_startup": false
+    },
+    {
+      "name": "Independent repair result audit full process",
+      "cpu_seconds": 1.210343,
+      "source": "rollout_repair/review/RESULT_AUDIT_01_PROCESS.json"
+    },
+    {
+      "name": "Historical old-tape execution parity full process",
+      "cpu_seconds": 6.549208,
+      "source": "evidence/historical_replay/PROCESS.json",
+      "new_confirmatory_sample": false
+    }
+  ],
+  "publication_only_scopes": [
+    {
+      "name": "build",
+      "cpu_seconds": 1.173258,
+      "source": "publication/BUILD_PROCESS.json"
+    },
+    {
+      "name": "restore",
+      "cpu_seconds": 0.358197,
+      "source": "publication/RESTORE_PROCESS.json"
+    },
+    {
+      "name": "source_verify",
+      "cpu_seconds": 0.6720729999999999,
+      "source": "publication/SOURCE_VERIFY_PROCESS.json"
+    }
+  ],
+  "new_fits": 0,
+  "unmeasured_items": [
+    "Development/unit-test processes except stored body timing",
+    "Source review and interactive editing overhead",
+    "Any inference deployment-only peak RSS (worker RSS includes research diagnostics)",
+    "Physical device energy",
+    "Some parent interpreter startup before body timing"
+  ],
+  "do_not_add": [
+    "Nested actor/controller/estimator/audit timings to their full worker/process receipts",
+    "Historical shared training more than once",
+    "Audit body CPU again when full audit process is counted"
+  ]
+}

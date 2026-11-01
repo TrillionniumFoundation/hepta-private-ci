@@ -1,0 +1,244 @@
+{
+  "behavioral_source_checks": {
+    "actual_actor": "Only active rows and already paid prefixes are supplied to each backend. Prefix recomputation is executed and included in actual CPU measurement; offline full-sequence evaluation is diagnostic.",
+    "complete_backend_freeze": "requires_grad_(False) applies to the entire backend including encoder/core/readout. Frozen parameters are excluded from Adam; selected backend state hashes must remain identical to inherited initial hashes.",
+    "controller_information": "Predicted class probabilities, entropy, margin, public elapsed/remaining time, remaining steps and fixed tariffs; no label, future payload, architecture ID, teacher state or latent dynamics state.",
+    "factorial": "A/B share a single ordinary backend, C/D a single analytic backend; both value arms use identical critic weights within the group. All five factorial contrasts are computed.",
+    "heldout_separation": "train and val are the only generated splits in training. The candidates stage requires all twelve trained group summaries before constructing the selected-group freeze used by heldout evaluation.",
+    "initial_stop": "Zero-observation prediction is readout of a zero hidden vector; actor can stop without passing raw frames to encoder/core.",
+    "joint_estimand": "In joint_backend, A/C are read-all execution ablations of value-trained backend weights; B/D use the same weights with the common value critic. B-A, D-C and the interaction are execution-control effects conditional on that training regime, not total effects of separately training light and value policies. D-B compares cores under the same value-training objective, shared critic and execution rule.",
+    "joint_training": "Eight backends and the common critic learn from matched sampled indices and the same summed objective; both modes start from identical R12 joint selected checkpoints for each task/family/seed.",
+    "one_shared_controller": "One ValueController object per task/seed/mode; all eight backends call that object. Selected evaluation reconstructs one controller, computes its hash once and records that common identity for each backend.",
+    "ordinary_selection": "Matched ordinary_dual and the validation-selected best of seven ordinary families are both reported. The selected ordinary family remains the same in A and B; no test-based family selection.",
+    "sample_path_qpi": "STOP target is actual prefix correctness. READ pays one actual frame/time tariff and follows the current later decisions. Labels and future observations enter detached evaluator targets only. Terminal READ is excluded from critic loss.",
+    "source_tests": "Six existing behavioral tests were reviewed, including causal prefix outputs, initial STOP with NaN future payload, always READ fees, sample Q-pi continuation, complete freezing/gradients and replay/actor agreement. The owner reported these passed; this reviewer did not rerun them."
+  },
+  "execution_followup": {
+    "development_and_weight_audit": "results/formal_01/review/DEVELOPMENT_AND_WEIGHT_AUDIT.json",
+    "development_and_weight_audit_sha256": "83f8f750d1296c3097e05941f51779fa4eaf88f79545982e148864cc75ece351",
+    "formal_results_audit": "results/formal_01/review/INDEPENDENT_RESULTS_AUDIT_01.json",
+    "formal_results_audit_sha256": "f994e2cec53b638d2e85031733d5b4fb71231f9e60db88fd01ff3226fa0661bd",
+    "new_training_or_inference_by_reviewer": false
+  },
+  "execution_requirements": [
+    "Run behavior and pipeline development checks after fixes when the serialized cost measurement window ends.",
+    "Freeze actual current source/runtime/input identities before formal training.",
+    "Preserve every failure and keep runtime alignment failures ineligible for accepted aggregation.",
+    "Re-review changed reviewed source bytes; this record covers only the SHA256 identities listed here."
+  ],
+  "review_method": "Read current implementation after fixes; inspect inherited model and source-freeze behavior; parse six Python modules with ast. No training, tensor forward, scientific evaluation, or behavior-test rerun was executed by this reviewer.",
+  "review_revisions": [
+    {
+      "previous_record_sha256": "6e27e853b39c62174a89823ec71fd5062f1753e5da5c6cfe91dce637f8615243",
+      "previous_source_entries": [
+        {
+          "ast_parse": "passed",
+          "bytes": 15096,
+          "git_blob_sha1": "d769681be70899cf1e261847853eca97f8da572f",
+          "path": "experiments/hcsn_validation_r14_20261101/content/study.py",
+          "sha256": "4a0782f126ffa87098b5ae615fb2ec88cd07176deec640ba112fad1c005f0b45"
+        },
+        {
+          "ast_parse": "not_applicable",
+          "bytes": 4325,
+          "git_blob_sha1": "4c19fb3e22c1c4b5ee5d7489f0b1c60575ace049",
+          "path": "experiments/hcsn_validation_r14_20261101/content/README.md",
+          "sha256": "82b9aff6e351dfbd0d728832e9c58226dc2092a80785cbe0e36828bc881affcc"
+        }
+      ],
+      "reason": "Owner added protocol and README estimand clarification before formal source freeze; no computation changed. All other reviewed source SHA values unchanged.",
+      "reviewed_at_utc": "2026-11-01T07:45:17.782826+00:00"
+    },
+    {
+      "previous_record_sha256": "80093d9479fd520f0caf0cbed46d2a6166f2c67fca99c27f4a72d22667cba1d1",
+      "previous_source_entries": [
+        {
+          "ast_parse": "passed",
+          "bytes": 15505,
+          "git_blob_sha1": "ae689d4cb4677ca696801e3c2d6a676122665fe6",
+          "path": "experiments/hcsn_validation_r14_20261101/content/study.py",
+          "sha256": "5b65412c50a453475d74f9f0a109c91928dd2e774893349b6d94ebf9608a658c"
+        }
+      ],
+      "reason": "Development execution exposed Long/Bool mean error. Verified by reversing the single .float() cast and recovering the exact previously reviewed study.py SHA; all other reviewed files unchanged.",
+      "reviewed_at_utc": "2026-11-01T07:52:11.922464+00:00"
+    },
+    {
+      "previous_record_sha256": "ab15928525679ccd23665641c98f0ea549a57a38cd143bdc415c56570f465a5c",
+      "previous_source_entries": [],
+      "reason": "Independent formal outcome audit and retained-development tensor audit completed; reviewed source bytes unchanged.",
+      "reviewed_at_utc": "2026-11-01T08:06:09.921483+00:00"
+    }
+  ],
+  "reviewed_at_utc": "2026-11-01T08:06:09.921483+00:00",
+  "reviewed_findings": [
+    {
+      "id": "R14-CONTENT-01",
+      "original_problem": "Protocol recorded 48 inherited input identities but the training path initially trusted the current old candidate freeze rather than those fixed identities.",
+      "resolution": "freeze records inherited PROTOCOL, SOURCE_FREEZE and CANDIDATE_FREEZE digests and all 48 checkpoint paths/digests. verified checks every manifest and checkpoint. train compares the loaded candidate SHA with the declared job input. evaluate checks both candidate-freeze and selected-payload protocol SHA.",
+      "source_functions": [
+        "study.freeze",
+        "study.verified",
+        "study.train",
+        "evaluate.one"
+      ],
+      "status": "resolved_in_source",
+      "title": "Frozen inherited checkpoint and manifest identity"
+    },
+    {
+      "id": "R14-CONTENT-02",
+      "original_problem": "public_times uses the complete dt schedule before initial STOP; this would leak future arrival information if that schedule were not public.",
+      "remaining_scope": "This is not a validation of causal control with unannounced future arrival times.",
+      "resolution": "Protocol and README explicitly declare all observation timestamps and the finite observation budget public before initial STOP; payload remains hidden until READ. Unknown future arrival times are expressly excluded.",
+      "source_functions": [
+        "engine.public_times",
+        "engine.online_rollout",
+        "study.freeze"
+      ],
+      "status": "resolved_by_explicit_scope",
+      "title": "Future timestamp schedule is public by contract"
+    },
+    {
+      "aggregation_bypass_followup": "The initial followup patch wrote SUMMARY before raising; aggregation originally ignored FAILED. The current summarize explicitly closes that bypass.",
+      "id": "R14-CONTENT-03",
+      "original_problem": "Offline/online action mismatches were initially only diagnostic, so selected-policy Q-pi and utility claims could survive a mismatch.",
+      "remaining_scope": "Selected validation and heldout executed paths are guarded. This static review does not assert every unchosen training counterfactual prefix has already been numerically checked.",
+      "resolution": "After group selection, train restores the selected backend and controller states, checks all eight validation actors, writes ONLINE_VALIDATION_ALIGNMENT and refuses SUMMARY on a mismatch. Heldout keeps raw results, writes FAILED and exits nonzero on mismatch. summarize rejects FAILED, any row mismatch, changed source/candidate identities, and absent or nonzero supervisor receipts.",
+      "source_functions": [
+        "study.train",
+        "evaluate.one",
+        "evaluate.summarize"
+      ],
+      "status": "resolved_in_source_with_runtime_gate",
+      "title": "Offline prefix evaluator versus actual online actor"
+    },
+    {
+      "id": "R14-CONTENT-04",
+      "original_problem": "The new source freeze did not initially bind the third-party CfC source or ncps version.",
+      "resolution": "freeze records actual Python, Torch, NumPy, CUDA-visibility, ncps version and inspect-resolved CfCCell file SHA256. verified recomputes the same runtime identity and requires exact equality. README names the intended PyTorch 2.8.0+cpu and ncps 1.0.1 setup.",
+      "source_functions": [
+        "study.freeze",
+        "study.verified"
+      ],
+      "status": "resolved_in_source",
+      "title": "Third-party CfC and runtime provenance"
+    },
+    {
+      "id": "R14-CONTENT-05",
+      "original_problem": "A/C and B/D share value-trained weights, so the joint factorial cannot identify the total effect of independently training light and value networks.",
+      "remaining_scope": "Separate light-policy training is not included and is not counted as a closed validation requirement; no test-dependent decision to add training arms.",
+      "resolution": "Before formal freeze, study protocol and README explicitly define the joint cells as same-weight execution ablations and retain D-B as the core comparison under common value training/control.",
+      "source_functions": [
+        "study.freeze protocol.estimand",
+        "README estimand paragraph"
+      ],
+      "status": "resolved_by_explicit_scope",
+      "title": "Joint-training factorial estimand"
+    },
+    {
+      "development_failure_owner_report": {
+        "attempt": "development_01",
+        "evidence": "Original source snapshot, stderr and FAILED_ATTEMPT.json retained by owner; this reviewer has not rerun the pipeline.",
+        "full_child_cpu_seconds": 3.931498,
+        "heldout_opened": false
+      },
+      "id": "R14-CONTENT-06",
+      "original_problem": "Development step-zero validation attempted Tensor.mean() on Long read_count and Bool initial_selected, which is unsupported; static source review did not catch this runtime dtype defect.",
+      "remaining_scope": "Original failed development attempt remains retained and charged. Independent audits execute no new training or inference.",
+      "resolution": "validation now applies stats[k].float().mean() before Python float conversion for each metric. This defines intended metric averages without changing target construction, data or selection rule.",
+      "runtime_verification": "Development02 freeze and both two-update workers exit0; formal12train+12heldout exit0. Independent result audit24479 checks and development/weight audit106 checks passed without any failures.",
+      "source_functions": [
+        "study.validation"
+      ],
+      "status": "resolved_in_source_and_runtime_verified",
+      "title": "Validation means for integer and Boolean metrics"
+    }
+  ],
+  "reviewer_role": "Independent numerical-review agent; not the author of this content implementation",
+  "schema": "hcsn.r14.content.independent-source-review.v1",
+  "scientific_scope": {
+    "analytic_backend": "The inherited fixed-coefficient renewal activity gate remains the actual analytic network component.",
+    "conditional_expected_regret_established": false,
+    "cost_scope": "READ/time tariffs are synthetic task costs. Logical READ releases a pre-generated raw frame; no external sensor or online service acquisition cost is measured. Actual prefix-recomputation CPU is recorded separately. Full worker costs contain nested forward timings.",
+    "descriptive_results_only": true,
+    "energy_joules": null,
+    "financial_he_xiong_full_kernel_or_free_boundary_qvi_integrated": false,
+    "fit_seed_ids": [
+      12031,
+      12032,
+      12033
+    ],
+    "fresh_training_replications": false,
+    "frozen_vs_joint_interpretation": "This compares the complete stated training procedures. Joint optimization changes backend weights, shared targets and the common gradient-clipping environment; it does not isolate one mathematical content mechanism by itself.",
+    "full_conditional_distribution_integrated": false,
+    "group_training_allocation": "A shared eight-backend training process cannot be divided by eight to infer the cost of independently training one candidate.",
+    "independent_fitting_units": 3,
+    "independent_light_policy_training_total_effect_established": false,
+    "joint_factorial_estimand": "In joint_backend, A/C are read-all execution ablations of value-trained backend weights; B/D use the same weights with the common value critic. B-A, D-C and the interaction are execution-control effects conditional on that training regime, not total effects of separately training light and value policies. D-B compares cores under the same value-training objective, shared critic and execution rule.",
+    "new_data_seeds": {
+      "binding_task_seed_offset": 100,
+      "test": 141103,
+      "train": 141101,
+      "validation": 141102
+    },
+    "optimized_incremental_or_gpu_execution_established": false,
+    "positive_D_minus_B_or_foundation_core_acceptance_established": false,
+    "positive_delay_recovery_age_network_integration": false,
+    "r14_zero_delay_solver_integrated": false,
+    "replication_interpretation": "Three inherited fitting seeds are not eight fresh seeds. Eight architecture families, two modes, domains, prefixes, sample rows and repeated timing calls do not increase the number of independent fitting units.",
+    "sample_path_hindsight_gap": "A single realized future per prefix is an evaluator target and hindsight diagnostic, not conditional expected regret or an independently estimated Q expectation."
+  },
+  "source_files": [
+    {
+      "ast_parse": "passed",
+      "bytes": 6825,
+      "git_blob_sha1": "b90e336d1925d1f595c2f899f6015003e6334d8b",
+      "path": "experiments/hcsn_validation_r14_20261101/content/engine.py",
+      "sha256": "cafcb019de4fcb4d2dfdafa9d398737d41f439072d7e9a956f4a3a0f8b993b99"
+    },
+    {
+      "ast_parse": "passed",
+      "bytes": 15513,
+      "git_blob_sha1": "2f05104e41d276a7637cd9df53d113a5a7aaa289",
+      "path": "experiments/hcsn_validation_r14_20261101/content/study.py",
+      "sha256": "25a60a094934a60bd2b2bc9eff5a301a1a71759452b7128a354526eb8792a974"
+    },
+    {
+      "ast_parse": "passed",
+      "bytes": 11803,
+      "git_blob_sha1": "c4038a3c72cc05edadeeee44eef400982e4bcde1",
+      "path": "experiments/hcsn_validation_r14_20261101/content/evaluate.py",
+      "sha256": "9c6d9795bc0743098b5193105f80a9411b54e2d1aca7dcca640d2b57acee0e37"
+    },
+    {
+      "ast_parse": "passed",
+      "bytes": 4685,
+      "git_blob_sha1": "e1502568d281412db4b3dee3d1a000f7b6bb6d34",
+      "path": "experiments/hcsn_validation_r14_20261101/content/data.py",
+      "sha256": "1ddc9685a38731f31647e8dcba12ea5fdf8b68d126e842f0a29efbc01742f8a2"
+    },
+    {
+      "ast_parse": "passed",
+      "bytes": 5026,
+      "git_blob_sha1": "a05e58b7260d60dc98b6324a984e0c8340a55ca2",
+      "path": "experiments/hcsn_validation_r14_20261101/content/tests.py",
+      "sha256": "a000e2d678869c07457b06eb24250db732efa4198da73b93ab65f285573e2cae"
+    },
+    {
+      "ast_parse": "passed",
+      "bytes": 2699,
+      "git_blob_sha1": "92a95150ef9376ce5925986973234a931c3b7872",
+      "path": "experiments/hcsn_validation_r14_20261101/content/launch.py",
+      "sha256": "8ab3ac8a2bd58e5f29bcecd7674633f97aaaa80483ccf920d0f566bd663f2cb7"
+    },
+    {
+      "ast_parse": "not_applicable",
+      "bytes": 4983,
+      "git_blob_sha1": "de3b06f417eca3c951ec29d5afd59ebf56b55e6a",
+      "path": "experiments/hcsn_validation_r14_20261101/content/README.md",
+      "sha256": "ce49fe4e0f86662726edf825b3be09a1b5a9d3138b99c9aad06005c93d11a575"
+    }
+  ],
+  "status": "source_review_and_registered_execution_audits_passed_with_declared_scientific_scope",
+  "unresolved_source_findings_in_review_scope": []
+}

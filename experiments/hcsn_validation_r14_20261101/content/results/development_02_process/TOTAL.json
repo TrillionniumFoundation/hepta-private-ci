@@ -1,0 +1,73 @@
+{
+  "records": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "experiments.hcsn_validation_r14_20261101.content.study",
+        "freeze",
+        "--output",
+        "/workspace/scratch/a9c697f48433/hepta-validation/experiments/hcsn_validation_r14_20261101/content/results/development_02",
+        "--updates",
+        "2"
+      ],
+      "exit_code": 0,
+      "cpu_seconds": 1.6174689999999998,
+      "wall_seconds": 1.6372074249993602,
+      "max_rss_bytes": 203309056,
+      "energy_joules": null,
+      "heldout_opened": false
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "experiments.hcsn_validation_r14_20261101.content.study",
+        "train",
+        "--output",
+        "/workspace/scratch/a9c697f48433/hepta-validation/experiments/hcsn_validation_r14_20261101/content/results/development_02",
+        "--task",
+        "recall",
+        "--seed",
+        "12031",
+        "--mode",
+        "frozen_backend"
+      ],
+      "exit_code": 0,
+      "cpu_seconds": 2.733122,
+      "wall_seconds": 2.7837686330021825,
+      "max_rss_bytes": 292036608,
+      "energy_joules": null,
+      "heldout_opened": false
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "experiments.hcsn_validation_r14_20261101.content.study",
+        "train",
+        "--output",
+        "/workspace/scratch/a9c697f48433/hepta-validation/experiments/hcsn_validation_r14_20261101/content/results/development_02",
+        "--task",
+        "recall",
+        "--seed",
+        "12031",
+        "--mode",
+        "joint_backend"
+      ],
+      "exit_code": 0,
+      "cpu_seconds": 3.007029,
+      "wall_seconds": 3.0441418910013454,
+      "max_rss_bytes": 310501376,
+      "energy_joules": null,
+      "heldout_opened": false
+    }
+  ],
+  "child_cpu_seconds": 7.35762,
+  "coordinator_cpu_seconds": 0.0025265909999999947,
+  "wall_seconds": 7.466350512997451,
+  "heldout_opened": false
+}

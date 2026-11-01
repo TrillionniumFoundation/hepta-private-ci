@@ -1,0 +1,64 @@
+{
+  "schema": "hcsn.r14.actual-qpi-audit.v1",
+  "seeds": [
+    121101,
+    121103,
+    121107,
+    121109,
+    121113,
+    121117,
+    121119,
+    121123
+  ],
+  "episodes_per_seed_domain": 128,
+  "horizon": 3,
+  "budget": 2,
+  "domains": {
+    "iid": [
+      0.15,
+      0.45,
+      1.05
+    ],
+    "ood": [
+      0.05,
+      0.75,
+      2.1
+    ]
+  },
+  "tape_seed_offsets": {
+    "iid": 140110000,
+    "ood": 140210000
+  },
+  "arms": {
+    "A": [
+      "ordinary",
+      "fixed_read"
+    ],
+    "B": [
+      "ordinary",
+      "value"
+    ],
+    "C": [
+      "hx_distribution",
+      "fixed_read"
+    ],
+    "D": [
+      "hx_distribution",
+      "value"
+    ]
+  },
+  "ordinary_selection": "unchanged PR4542 validation-selected kind per fit",
+  "audit_prefixes": "root and every actually visited predecision prefix for all four arms; each legal first action followed by the exact original actor policy",
+  "max_time_intervals": 3,
+  "statistical_unit": "eight inherited paired fit seeds; new evaluation tapes do not create new fits",
+  "model_fit": "none; all inherited checkpoints frozen unchanged",
+  "source_publication": "local source SHA freeze before new evaluation, parent publishes complete artifacts",
+  "inference": "all factorial contrasts descriptive paired-fit t intervals; no declaration of new architecture superiority",
+  "prices": {
+    "time": 0.01,
+    "reset": 0.04,
+    "read_multiplier": 1
+  },
+  "scope": "finite 20-state synthetic CTMC; true world independent of fitted actor/planner; not a continuum or natural-media result",
+  "candidate_controller_repair": "none in mandatory audit; no post-result tuning"
+}

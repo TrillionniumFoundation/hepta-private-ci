@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/scratch/a9c697f48433/hepta-validation/experiments/hcsn_validation_r14_20261101/cost/package_results.py",
+    "--restore-index",
+    "/workspace/scratch/a9c697f48433/hepta-validation/experiments/hcsn_validation_r14_20261101/cost/archives/inputs_01/INDEX.json",
+    "--output",
+    "/tmp/hcsn-r14-portability-qvg6h1gi/repo"
+  ],
+  "cpu_seconds": 0.581456,
+  "device_energy_joules": null,
+  "energy_sensor_available": false,
+  "input_blocks": 0,
+  "involuntary_context_switches": 91,
+  "log_sha256": "27520c969259dbcebd01a55934edef1e05849a9d23c7bcea4660b1c567d1aaa0",
+  "output_blocks": 24656,
+  "peak_rss_bytes": 51150848,
+  "returncode": 0,
+  "scope": "Linux wait4 fresh process and waited descendants; imports/loading/evaluation/output included",
+  "timing_environment": "Single thread, shared host; other tenants cannot be excluded",
+  "voluntary_context_switches": 1,
+  "wall_seconds": 0.5944697339982667
+}

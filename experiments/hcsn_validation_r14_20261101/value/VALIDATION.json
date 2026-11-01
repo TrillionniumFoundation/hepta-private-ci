@@ -1,0 +1,52 @@
+{
+  "unit_tests": {
+    "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -B -m experiments.hcsn_validation_r14_20261101.value.tests -v",
+    "exit_code": 0,
+    "count": 6,
+    "tests": [
+      "independent endpoint enumeration with mismatched world",
+      "same-model HX actual actor equals Bayes DP",
+      "counterfactual preserves recurrent state and tree sums",
+      "evaluator-only information cannot change actor decision",
+      "complete decomposition and initial STOP values",
+      "hidden/current clone independence"
+    ],
+    "record": "Observed completed unittest invocation before SOURCE_FREEZE; test-run stdout was delivered by executor."
+  },
+  "development_failure": {
+    "stage": "before source freeze and before new tapes",
+    "test": "test_clone_hidden_memory_is_independent",
+    "cause": "assertNotEqual applied to ndarray row, causing ambiguous truth-value ValueError",
+    "repair": "np.array_equal comparison; no inference or numerical algorithm changed",
+    "final": "all six checks passed"
+  },
+  "formal_confirmation": {
+    "command": [
+      "python",
+      "-B",
+      "-m",
+      "experiments.hcsn_validation_r14_20261101.value.run",
+      "run",
+      "--out",
+      "experiments/hcsn_validation_r14_20261101/value/evidence/confirmation_01"
+    ],
+    "exit_code": 0,
+    "child_cpu_seconds": 84.879569,
+    "child_user_seconds": 84.674373,
+    "child_system_seconds": 0.205196,
+    "wall_seconds": 84.89021446300103,
+    "supervisor_cpu_seconds": 0.0005173380000000026,
+    "max_rss_kib": 132524,
+    "energy_joules": null,
+    "scope": "Entire fresh process including interpreter startup, imports, all original actor execution, exact forced-action trees, evidence I/O and exit; do not add nested body or actor times."
+  },
+  "raw_reconciliation": "RAW_RECONCILIATION.json",
+  "remaining_scope": [
+    "finite 20-state synthetic process only",
+    "eight inherited fits, not eight new fits",
+    "no true-world belief passed to actor",
+    "no new controller candidate selected",
+    "no energy measurement",
+    "RESET remained unused and never strictly best under actual one-step deviations at visited prefixes"
+  ]
+}

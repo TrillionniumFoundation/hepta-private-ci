@@ -1,0 +1,81 @@
+{
+  "binding_frozen_iid": "Both matched ordinary_dual and analytic choose initial STOP for every row in all three fits: zero READs and zero backend forward calls. Their actor-time ratio is not a core-computation speed comparison.",
+  "candidate_freeze_sha256": "980d77b6718fd3c559475cd074b8c3d3f64f43d2cf4cd9e799742f65a8ab12d9",
+  "complete_frozen_backends": 48,
+  "development": {
+    "first_attempt": "Validation Long/Bool means failed before first update; source snapshot, stderr and nonzero receipt retained.",
+    "first_attempt_child_cpu_seconds": 3.9314980000000004,
+    "fix": "A single stats[k].float().mean() cast; targets/data/selection unchanged.",
+    "second_attempt": "Two updates, recall seed12031, both frozen/joint; freeze and both training children exit zero; no heldout.",
+    "second_attempt_child_cpu_seconds": 7.35762,
+    "second_attempt_selected_steps": {
+      "frozen_backend": 0,
+      "joint_backend": 0
+    }
+  },
+  "development_and_weights_audit": {
+    "checks": 106,
+    "full_child_cpu_seconds": 1.272319,
+    "path": "results/formal_01/review/DEVELOPMENT_AND_WEIGHT_AUDIT.json",
+    "sha256": "83f8f750d1296c3097e05941f51779fa4eaf88f79545982e148864cc75ece351"
+  },
+  "estimand": "A/B and C/D execute identical backend weights within each mode. In joint_backend these weights were jointly value-trained: B-A, D-C and the interaction are execution-control effects conditional on that training regime. They are not total effects of separately training light and value policies. D-B compares cores under the same value-training objective, shared critic and execution rule.",
+  "every_joint_component_nonzero_gradient_steps": 256,
+  "full_results_audit": {
+    "checks": 24479,
+    "failed_checks": 0,
+    "full_child_cpu_seconds": 3.869906,
+    "path": "results/formal_01/review/INDEPENDENT_RESULTS_AUDIT_01.json",
+    "sha256": "f994e2cec53b638d2e85031733d5b4fb71231f9e60db88fd01ff3226fa0661bd"
+  },
+  "joint_backends_changed_at_selected_and_final": 48,
+  "joint_components_changed": 144,
+  "joint_selected_steps": [
+    {
+      "seed": 12031,
+      "selected_step": 256,
+      "task": "binding"
+    },
+    {
+      "seed": 12032,
+      "selected_step": 256,
+      "task": "binding"
+    },
+    {
+      "seed": 12033,
+      "selected_step": 192,
+      "task": "binding"
+    },
+    {
+      "seed": 12031,
+      "selected_step": 256,
+      "task": "recall"
+    },
+    {
+      "seed": 12032,
+      "selected_step": 192,
+      "task": "recall"
+    },
+    {
+      "seed": 12033,
+      "selected_step": 256,
+      "task": "recall"
+    }
+  ],
+  "schema": "hcsn.r14.content.review-summary.v1",
+  "scientific_cost": {
+    "development_child_cpu_seconds": 11.289118,
+    "energy_joules": null,
+    "formal_admin_child_cpu_seconds": {
+      "candidates": 1.230907,
+      "freeze": 1.605481,
+      "summarize": 1.2058740000000001
+    },
+    "formal_evaluation_child_cpu_seconds": 57.143774,
+    "formal_training_child_cpu_seconds": 137.198712,
+    "independent_audits_child_cpu_seconds": 5.142225
+  },
+  "scope": "Audit verifies saved outcomes, checkpoints, identities and logs. Three inherited fits, fixed renewal gate, synthetic read tariffs, unoptimized online prefix recomputation, no conditional expected regret or foundation-core acceptance.",
+  "source_freeze_sha256": "541d09b930e102b2bb07ad1d857e1b88f8b89264e9a785a82751eb3d51bfbc60",
+  "status": "pass"
+}

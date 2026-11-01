@@ -1,0 +1,36 @@
+{
+  "allowed_cpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "cpu_models": [
+    "AMD EPYC 9V74 80-Core Processor"
+  ],
+  "energy_joules": null,
+  "logical_cpu_count": 9,
+  "nvidia_smi_executable": null,
+  "observed_at_utc": "2026-11-01T07:22:21.639974+00:00",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "scope": "Current container visibility and CPU identity; no energy integration or exclusive-host claim",
+  "telemetry_roots": [
+    {
+      "exists": false,
+      "path": "/sys/class/powercap"
+    },
+    {
+      "exists": false,
+      "path": "/sys/devices/virtual/powercap"
+    },
+    {
+      "exists": false,
+      "path": "/sys/class/hwmon"
+    }
+  ]
+}

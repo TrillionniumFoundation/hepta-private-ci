@@ -1,0 +1,231 @@
+{
+  "commit": "b0802dc314251f5332bd026cb2984a0b5c75f768",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_line": "PR4542 independently inherited; not PR4544 R13 value results",
+  "files": [
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/cell.py",
+      "destination": "upstream/cell.py",
+      "original_sha256": "c76e6d128ecefe871b14ee3855e44420cfdfd4553e4afb588142db9a60931345",
+      "copied_sha256": "154dbc4c1352fb9dec2225a778f64e00ed02d6842517c841d8db714034157610",
+      "change": "import path only"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/estimators.py",
+      "destination": "upstream/estimators.py",
+      "original_sha256": "0b25e4f39e5e1137bccae6f378a88506dd15e40e26bd87207f25b53530a32645",
+      "copied_sha256": "0b25e4f39e5e1137bccae6f378a88506dd15e40e26bd87207f25b53530a32645",
+      "change": "byte identical"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/recurrent.py",
+      "destination": "upstream/recurrent.py",
+      "original_sha256": "75770e822ea5cf32a0a4019082e5304cf5c72212ab0244d5a84a7fcfb129170b",
+      "copied_sha256": "75770e822ea5cf32a0a4019082e5304cf5c72212ab0244d5a84a7fcfb129170b",
+      "change": "byte identical"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/data.py",
+      "destination": "upstream/data.py",
+      "original_sha256": "189c7689235933b9cc40848e0e3a6b25dc0c820c68ddb476c7ab46006dc94621",
+      "copied_sha256": "189c7689235933b9cc40848e0e3a6b25dc0c820c68ddb476c7ab46006dc94621",
+      "change": "byte identical"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/task_value.py",
+      "destination": "upstream/task_value.py",
+      "original_sha256": "551f2853b7a785b759d516a18c00c896ed97dba2106c7689d9a2bbe5e2e6ca3c",
+      "copied_sha256": "551f2853b7a785b759d516a18c00c896ed97dba2106c7689d9a2bbe5e2e6ca3c",
+      "change": "byte identical"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/PROTOCOL.json",
+      "destination": "upstream/PROTOCOL.json",
+      "original_sha256": "e14f397784e0c3b80edbbcf85e68b8d86f39d15004e375ee92a1f4a22b4c3621",
+      "copied_sha256": "e14f397784e0c3b80edbbcf85e68b8d86f39d15004e375ee92a1f4a22b4c3621",
+      "change": "byte identical"
+    },
+    {
+      "original_path": "tools/hcsn/calibrated_operator_r11_20261031/numerics/kernel.py",
+      "destination": "upstream/kernel.py",
+      "original_sha256": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+      "copied_sha256": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+      "change": "byte identical"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121101/hx_distribution.json",
+      "destination": "upstream/checkpoints/121101/hx_distribution.json",
+      "original_sha256": "bdf65f2f49038d1fd04ac44c72e6ade077455dc15b688ecc0a7be1a53d0e9ac5",
+      "copied_sha256": "bdf65f2f49038d1fd04ac44c72e6ade077455dc15b688ecc0a7be1a53d0e9ac5",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121101/gru.json",
+      "destination": "upstream/checkpoints/121101/gru.json",
+      "original_sha256": "47ab02c95708baaaa6cd1a23a3bc052d4a6229fd341eed9898fdf632a6c08095",
+      "copied_sha256": "47ab02c95708baaaa6cd1a23a3bc052d4a6229fd341eed9898fdf632a6c08095",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121101/continuous_diagonal_ssm.json",
+      "destination": "upstream/checkpoints/121101/continuous_diagonal_ssm.json",
+      "original_sha256": "ff946337b65d09398b1bd882223ac0200f2aebb93a3517bd82319e181b81114a",
+      "copied_sha256": "ff946337b65d09398b1bd882223ac0200f2aebb93a3517bd82319e181b81114a",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121103/hx_distribution.json",
+      "destination": "upstream/checkpoints/121103/hx_distribution.json",
+      "original_sha256": "19bff2e3dc8ce40df38dcd6a9d09f3713500ef205645b3a29efc996bdaeb386a",
+      "copied_sha256": "19bff2e3dc8ce40df38dcd6a9d09f3713500ef205645b3a29efc996bdaeb386a",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121103/gru.json",
+      "destination": "upstream/checkpoints/121103/gru.json",
+      "original_sha256": "1916527311d07e180a03710c1a4c576e2a2bb699e47f6714cc313d0a2dcf9c48",
+      "copied_sha256": "1916527311d07e180a03710c1a4c576e2a2bb699e47f6714cc313d0a2dcf9c48",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121103/continuous_diagonal_ssm.json",
+      "destination": "upstream/checkpoints/121103/continuous_diagonal_ssm.json",
+      "original_sha256": "8f849abdcaf54c68b70b1a274eedb10ac838b8667a6d00088e6ee50ef04f5a46",
+      "copied_sha256": "8f849abdcaf54c68b70b1a274eedb10ac838b8667a6d00088e6ee50ef04f5a46",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121107/hx_distribution.json",
+      "destination": "upstream/checkpoints/121107/hx_distribution.json",
+      "original_sha256": "cce8600d536ce81e80b4406bacaec978c87c510749f9e3eb370429c5c0f95a08",
+      "copied_sha256": "cce8600d536ce81e80b4406bacaec978c87c510749f9e3eb370429c5c0f95a08",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121107/gru.json",
+      "destination": "upstream/checkpoints/121107/gru.json",
+      "original_sha256": "a906ee6b3edb08c079c7acdfae09e441665dee4c45e2ed228763ea60ecfbfa86",
+      "copied_sha256": "a906ee6b3edb08c079c7acdfae09e441665dee4c45e2ed228763ea60ecfbfa86",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121107/continuous_diagonal_ssm.json",
+      "destination": "upstream/checkpoints/121107/continuous_diagonal_ssm.json",
+      "original_sha256": "988ed02f6aa2b25dc3451f382539f8bd9f57f605deb1db5cac6d636061add339",
+      "copied_sha256": "988ed02f6aa2b25dc3451f382539f8bd9f57f605deb1db5cac6d636061add339",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121109/hx_distribution.json",
+      "destination": "upstream/checkpoints/121109/hx_distribution.json",
+      "original_sha256": "db6bc073ab1292532ed62a85c32cc1870afbc1eb369b914b330547ad6905426d",
+      "copied_sha256": "db6bc073ab1292532ed62a85c32cc1870afbc1eb369b914b330547ad6905426d",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121109/gru.json",
+      "destination": "upstream/checkpoints/121109/gru.json",
+      "original_sha256": "6b5dd1d867d744f5fed7abe94128d8cdad5d7b12cafcda8e09af2f979245747f",
+      "copied_sha256": "6b5dd1d867d744f5fed7abe94128d8cdad5d7b12cafcda8e09af2f979245747f",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121109/continuous_diagonal_ssm.json",
+      "destination": "upstream/checkpoints/121109/continuous_diagonal_ssm.json",
+      "original_sha256": "0bd85865f8e45047b4eea47d787e61ddf90bcbd87cad5468112f2926397e8b6a",
+      "copied_sha256": "0bd85865f8e45047b4eea47d787e61ddf90bcbd87cad5468112f2926397e8b6a",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121113/hx_distribution.json",
+      "destination": "upstream/checkpoints/121113/hx_distribution.json",
+      "original_sha256": "f9ae8a2d0f1b05d16399d8bc1caa6a6c4b35f69e6717e443afce15bdf64b3ce1",
+      "copied_sha256": "f9ae8a2d0f1b05d16399d8bc1caa6a6c4b35f69e6717e443afce15bdf64b3ce1",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121113/gru.json",
+      "destination": "upstream/checkpoints/121113/gru.json",
+      "original_sha256": "d90ff5f9a88970586b1801490cae9e50aaee97cf2543d4713b1f0cc8f46fd416",
+      "copied_sha256": "d90ff5f9a88970586b1801490cae9e50aaee97cf2543d4713b1f0cc8f46fd416",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121113/continuous_diagonal_ssm.json",
+      "destination": "upstream/checkpoints/121113/continuous_diagonal_ssm.json",
+      "original_sha256": "e8ab3da95cd044f2440231a3ecb9bee81d754209a81fa097cf18592246e86568",
+      "copied_sha256": "e8ab3da95cd044f2440231a3ecb9bee81d754209a81fa097cf18592246e86568",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121117/hx_distribution.json",
+      "destination": "upstream/checkpoints/121117/hx_distribution.json",
+      "original_sha256": "0c8465c490afb1bb3925bfa79b8a5385667e372819fdf6c288410b4e410f9bb9",
+      "copied_sha256": "0c8465c490afb1bb3925bfa79b8a5385667e372819fdf6c288410b4e410f9bb9",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121117/gru.json",
+      "destination": "upstream/checkpoints/121117/gru.json",
+      "original_sha256": "35e7e63715bd2785bdf202043247e845433af6501ffd6b94f46572910f468141",
+      "copied_sha256": "35e7e63715bd2785bdf202043247e845433af6501ffd6b94f46572910f468141",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121117/continuous_diagonal_ssm.json",
+      "destination": "upstream/checkpoints/121117/continuous_diagonal_ssm.json",
+      "original_sha256": "5f9dd61ad8e259fa3a855622336f1e3265d64679c53d66bd7edda6c6bb472199",
+      "copied_sha256": "5f9dd61ad8e259fa3a855622336f1e3265d64679c53d66bd7edda6c6bb472199",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121119/hx_distribution.json",
+      "destination": "upstream/checkpoints/121119/hx_distribution.json",
+      "original_sha256": "60ed402a207ec7294b4bafb50879b33d1f0efedab34dbfdaf0d9635718aacd52",
+      "copied_sha256": "60ed402a207ec7294b4bafb50879b33d1f0efedab34dbfdaf0d9635718aacd52",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121119/gru.json",
+      "destination": "upstream/checkpoints/121119/gru.json",
+      "original_sha256": "79bb9739f064cb0aed18d7e9c9534f3c56e74ede48014554d1c1e39b44d3696a",
+      "copied_sha256": "79bb9739f064cb0aed18d7e9c9534f3c56e74ede48014554d1c1e39b44d3696a",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121119/continuous_diagonal_ssm.json",
+      "destination": "upstream/checkpoints/121119/continuous_diagonal_ssm.json",
+      "original_sha256": "26a806924415f907b58afa0dc6a1baa0f0fb8d98e1f0b9b43a13ddec10204cbd",
+      "copied_sha256": "26a806924415f907b58afa0dc6a1baa0f0fb8d98e1f0b9b43a13ddec10204cbd",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121123/hx_distribution.json",
+      "destination": "upstream/checkpoints/121123/hx_distribution.json",
+      "original_sha256": "a013566780d999d94c6bc539a25a46e2710648b256d4757c327d5223c030a762",
+      "copied_sha256": "a013566780d999d94c6bc539a25a46e2710648b256d4757c327d5223c030a762",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121123/gru.json",
+      "destination": "upstream/checkpoints/121123/gru.json",
+      "original_sha256": "07e314fead0b313045fdc75825e80c8bf4775e6464e40efeb1cf2312fb2ae879",
+      "copied_sha256": "07e314fead0b313045fdc75825e80c8bf4775e6464e40efeb1cf2312fb2ae879",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/121123/continuous_diagonal_ssm.json",
+      "destination": "upstream/checkpoints/121123/continuous_diagonal_ssm.json",
+      "original_sha256": "20cfaf2f997aa2ceccc25f55bbf636afec60b8524f83727f07720a7d53d013a2",
+      "copied_sha256": "20cfaf2f997aa2ceccc25f55bbf636afec60b8524f83727f07720a7d53d013a2",
+      "change": "byte identical frozen fit"
+    },
+    {
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/runs/task_flow_r13/FREEZE.json",
+      "destination": "upstream/CANDIDATE_FREEZE.json",
+      "original_sha256": "0d9c882950ff0c6c06970cf5004a6e537a78eb9c2c8bf9187cf2007a9a1a8fa9",
+      "copied_sha256": "0d9c882950ff0c6c06970cf5004a6e537a78eb9c2c8bf9187cf2007a9a1a8fa9",
+      "change": "byte identical"
+    }
+  ]
+}

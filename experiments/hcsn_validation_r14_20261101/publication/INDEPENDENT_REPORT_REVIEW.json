@@ -1,0 +1,180 @@
+{
+  "checks": [
+    {
+      "check": "builder_report_exact_bytes",
+      "detail": "Builder writes were replaced with in-memory capture; no report/scientific input file was modified.",
+      "passed": true
+    },
+    {
+      "check": "builder_acceptance_exact_bytes",
+      "detail": "Machine-readable acceptance exactly matches current builder output.",
+      "passed": true
+    },
+    {
+      "check": "acceptance_identity_hashes",
+      "detail": "All declared current input identity hashes verified.",
+      "passed": true
+    },
+    {
+      "check": "acceptance_limits",
+      "detail": "Engineering completion remains separate from foundation-core acceptance and full user-requirement closure.",
+      "passed": true
+    },
+    {
+      "check": "disjoint_primary_scientific_cpu_sum",
+      "detail": "Seven scopes verified directly from receipts/summary. Nested timers, old training, development, extra audits, publication and parents are excluded; not a complete project R&D total.",
+      "passed": true
+    },
+    {
+      "check": "local_favorable_actor_cpu",
+      "detail": "The favorable ratios are scoped to original finite-task actor work, not total service/training or content-network cost.",
+      "passed": true
+    },
+    {
+      "check": "fit_units",
+      "detail": "Repeated action batches do not become24fits; content families, domains, samples and modes do not increase3inherited fit units.",
+      "passed": true
+    },
+    {
+      "check": "historical_cost_ratio_table",
+      "detail": "Recomputed from180paired raw CSV rows; ordinary comparator is ordinary_dual.",
+      "passed": true
+    },
+    {
+      "check": "historical_pareto_example",
+      "detail": "The specific historical joint/IID recall comparison supports the stated higher-quality/lower-CPU example, without extrapolation to new actors.",
+      "passed": true
+    },
+    {
+      "check": "five_requested_clarifications_present",
+      "detail": "Re-read actual new report bytes and matching builder strings after owner corrections.",
+      "passed": true
+    },
+    {
+      "check": "fixed_content_delivery_untouched",
+      "detail": "This review only read content artifacts; its fixed98-file publication list remains unchanged.",
+      "passed": true
+    }
+  ],
+  "output_mutation_scope": "Only this new root publication review JSON. No already fixed content98files or scientific input/result modified.",
+  "remaining_source_report_blockers": [],
+  "resolved_findings": [
+    {
+      "id": "root_grid_scope",
+      "original": "Table classified all rows as finest-grid evidence; semigroup maximum covers12cases and finite-difference tangent check uses middle grid.",
+      "resolution": "Table now separates finest-grid rows, all12partition checks and middle-grid tangent check.",
+      "status": "resolved"
+    },
+    {
+      "id": "root_shared_critic_scope",
+      "original": "All groups sharing identical critic hashes could be read as one controller across12groups.",
+      "resolution": "Exact sharing is stated within each group of8; task/seed/mode groups own distinct weights.",
+      "status": "resolved"
+    },
+    {
+      "id": "root_iid_comparator_columns",
+      "original": "A/B columns could be confused with the separate validation-selected ordinary difference.",
+      "resolution": "A/B headers explicitly label matched dual-head; selected ordinary remains a separate D-B column.",
+      "status": "resolved"
+    },
+    {
+      "id": "root_utility_units",
+      "original": "Content utility unit was not spelled out next to its table.",
+      "resolution": "Correctness0/1 minus0.0025perREAD and0.0005time explicitly separated from action-task state rewards.",
+      "status": "resolved"
+    },
+    {
+      "id": "root_cost_comparator",
+      "original": "Generic ordinary in cost table might imply strongest selected baseline.",
+      "resolution": "CPU ratio table explicitly names ordinary_dual.",
+      "status": "resolved"
+    }
+  ],
+  "review_method": "Read current report, acceptance and builder plus branch-specific primary reports/receipts. Perform light JSON/CSV arithmetic and AST/in-memory document regeneration only. No numerical simulation, model forward, training, heavy scientific re-run or upload.",
+  "reviewed_at_utc": "2026-11-01T08:14:56.314636+00:00",
+  "reviewed_input_sha256": {
+    "ACCEPTANCE.json": "4ea4008668fe569decfb6180b2cf935574e2e00b2cc717d23f9ffe3069f44bcd",
+    "REPORT_ZH.md": "c88101905c41ff870130dfaf6d072254a0d712e45fd509125388d647a3e23f3e",
+    "SOURCE_BASELINE.json": "4cf187bfa055c1e1cd4c2f01abe6b20e6cd2b00740bd6b34f46c8d1b026f8100",
+    "content/PUBLISH_FILES.json": "f82f2d08c5045670891e6b8b856ef119184f816d7b207b832f5f6edea1be1236",
+    "content/RESULTS_ZH.md": "8f100a2f4785f4747790fd5d14a8dd29420f337996111d2b8843fb018cdabed3",
+    "content/results/formal_01/RESULTS.json": "0dbd1d38e8d0d82eba7cc43380a81311fd1d3231c9b5860053b2cd55bdb36427",
+    "content/results/formal_01/receipts/evaluate_TOTAL.json": "da72492fc75e038bec323c70af4141f9d0fe602bb294e6112a9576574eebb94a",
+    "content/results/formal_01/receipts/train_TOTAL.json": "250683d114791d65f0c61521699f8ebb98280fb076b3168542593262f5c3ec27",
+    "content/results/formal_01/review/INDEPENDENT_RESULTS_AUDIT_01.json": "f994e2cec53b638d2e85031733d5b4fb71231f9e60db88fd01ff3226fa0661bd",
+    "cost/archives/PUBLICATION_SUMMARY.json": "9f198c76fb0f037dc5de7ae90d6ec8ec0a262e6f977a9c49137d03ecc4658ca8",
+    "cost/results/formal_02/FINAL_REPORT_ZH.md": "4575e7a7e0aa7dff1613bf37a69a7632aa5a36839190036ca40e53249c2a0c05",
+    "cost/results/formal_02/SUMMARY.json": "6dfe4b30e069d96e85b3e7ca08b31f85c97c004f49bbcccbd7b2967ea4884b4f",
+    "cost/results/formal_02/paired_analytic_ordinary.csv": "811ef218c7de105ac4e6294bafc72b5b12cf338b2b8ffa84da64bace67a96ccd",
+    "cost/results/formal_02/per_seed_quality_cost.csv": "761190e7300e2343fdd057838f2d2ca3fcfeed422c295ee9a7d1efa414fa7084",
+    "numerics/RESULTS_ZH.md": "79c68f8e22efecff5bb1767924ee2c1723881671edd561d386caf274556cd2f9",
+    "numerics/results/development_01/PROCESS_RECEIPT.json": "735a37d9ff64828fb06be0677b8f477be016a414522ba2cc218016421688506a",
+    "publication/build_report.py": "523dabe3adca42923cdffd8065376253980409d8c80d9d4c370bb0895fd9f9bc",
+    "value/CONFIRMATION_PROCESS.json": "fe91e84369000d078ea3f37e53358100fcee3f7ba29b759f19baefb9e6af7743",
+    "value/RESEARCH_COST_LEDGER.json": "13ebb0c98a27242dbb04fcce7c4ae7370f8b76e7b776fe1afa077c7fcd02a3b5",
+    "value/RESULTS_ZH.md": "88a84c20953b5e02b0dd663ad0ecbea730e7dea1c7834bad7ea9a19a6116855d",
+    "value/rollout_repair/evidence/confirmation_01/PROCESS.json": "2c79ecafee58aee04bedbc54d7a348d38b3b257ef211f4b8dba57e8cc963fd5d",
+    "value/rollout_repair/evidence/confirmation_01/SUMMARY.json": "111197f97bdea84fddbde33342f5e6aed57aa4c7d121df711b2853e065f765f3",
+    "value/rollout_repair/review/INDEPENDENT_RESULTS_AUDIT_01.json": "7ac89e400108e4288a5be3cf9227cec41d896e63a8968e554a0313bec63c48b6"
+  },
+  "reviewer": "/root/numerics_audit",
+  "schema": "hcsn.r14.independent-cross-stream-report-review.v1",
+  "science_interpretation_checks": [
+    "PR4544base and PR4542action source lineages are kept distinct. Numerical full distribution, finite CTMC actor and fixed renewal content gate are not pooled.",
+    "Actual sampled trajectories and uniform finite27-clock expectations remain separate; positive finite expectations do not erase OOD sampled negative results or old negative evidence.",
+    "Base-tail rollout scores are not repaired Qpi. Independent fullclock result audit aggregates stored exact finite expectation rows and does not claim a second policy-tree execution.",
+    "Joint content factorial is a same-weight execution intervention after value training; separate light/value training total effect remains uncovered.",
+    "All joint stress domains and both baselines retain positive and negative means, including clock4x sign reversal by comparator. Full frozen-domain outcomes are present in linked content tables and four-panel figure.",
+    "Frozen binding initialSTOP has zero backend calls; timing ratios there are not core speed evidence.",
+    "Science cost subtotal includes only7disjoint measured scopes. Old training, development, audit, plots, archive/restore, parent and unmetered activities are not silently declared zero.",
+    "No physical Joules, unifiedGPU/service frontier, full-distribution content integration, active recovery benefit, general learned boundary coverage or foundation-core acceptance is claimed."
+  ],
+  "status": "pass",
+  "verified_cost": {
+    "complete_project_cost": false,
+    "components": {
+      "content_evaluation": 57.143774,
+      "content_training": 137.198712,
+      "cost_workers": 1098.278577,
+      "first_action_campaign": 84.879569,
+      "numerics": 21.229662,
+      "repair_actual": 121.19172999999999,
+      "repair_full_clock": 42.1193
+    },
+    "subtotal_cpu_seconds": 1562.041324
+  },
+  "verified_historical_cost_ratios": {
+    "1": {
+      "all_analytic_slower": true,
+      "maximum": 7.6600823283859,
+      "median": 2.7045525005888624,
+      "minimum": 1.2089817549411606,
+      "pairs": 90
+    },
+    "32": {
+      "all_analytic_slower": true,
+      "maximum": 19.949728186636072,
+      "median": 6.433375807398832,
+      "minimum": 2.9695427502025082,
+      "pairs": 90
+    }
+  },
+  "verified_historical_joint_recall_example": {
+    "analytic": {
+      "accuracy": 0.5078125,
+      "cpu_ms_per_sample": 1.8930983333333333
+    },
+    "ordinary_dual": {
+      "accuracy": 0.5052083333333334,
+      "cpu_ms_per_sample": 0.6661905
+    },
+    "transformer": {
+      "accuracy": 0.6171875,
+      "cpu_ms_per_sample": 0.356676
+    }
+  },
+  "verified_local_actor_D_over_B": {
+    "iid": 0.8525655899213164,
+    "ood": 0.8374048809048155
+  }
+}
