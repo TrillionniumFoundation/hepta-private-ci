@@ -1,0 +1,92 @@
+{
+  "schema": "hcsn-r14-task-aligned-preregistration-v1",
+  "parent_commit": "b0802dc314251f5332bd026cb2984a0b5c75f768",
+  "parent_pull_request": 4542,
+  "purpose": "Test actual frozen-policy Q-pi training and useful external maintenance under a shared controller; primary efficacy is paired D-minus-B.",
+  "development_seed": 141000,
+  "fit_seeds": [
+    141101,
+    141103,
+    141107,
+    141109,
+    141113,
+    141117,
+    141119,
+    141123
+  ],
+  "train_sequences": 192,
+  "validation_sequences": 64,
+  "selection_episodes": 256,
+  "q_sequences": 48,
+  "common_calibration_cpu_seconds": 4.0,
+  "warmup_cpu_seconds": 3.0,
+  "candidate_cpu_seconds": 12.0,
+  "ce_weight": 0.1,
+  "q_weight": 20.0,
+  "task_objective": "0.1 joint posterior CE + 20 cost-weighted mean squared Q-pi error. Each legal action weight is legal_count*softmax(true net Qpi/0.1); weights and alpha are stop-gradient. Actual finite-world alpha vectors include every fee and follow each frozen warm actor real recurrent continuation under the same planner. One frozen cost-aware policy-evaluation stage, not policy-gradient or a guarantee of optimizing actual net utility.",
+  "training_budget_scope": "Each candidate's 12 process-CPU seconds includes construction, warmup, snapshot, exact policy-target generation, target storage and Q-pi optimization. One update may overshoot. Validation/selection and common calibration are separately charged in the full cost. Every candidate must complete at least one Q-pi update. Final checkpoints are used without confirmation-dependent selection.",
+  "ordinary_candidates": [
+    "generic_hmm",
+    "gru",
+    "continuous_ssm",
+    "dual_head",
+    "matched_slope"
+  ],
+  "ordinary_selection": "Choose highest actual validation utility using 256 common random tapes per fit; tie order generic_hmm, gru, continuous_ssm, dual_head, matched_slope. Retain and charge every candidate. HMM uses the common fitted matrix model; final-HX-matrix HMM is an additional mandatory equivalence reference.",
+  "common_controller": "ExactBeliefDP on one common calibrated TaskModel per fit. All primary arms share the same planning model identity; only causal posterior estimators differ. Each measured execution reconstructs a cold isolated planner and includes its construction.",
+  "arms": {
+    "A": "selected ordinary, fixed two-READ control",
+    "B": "selected ordinary, common value control",
+    "C": "task-trained HX, fixed two-READ control",
+    "D": "task-trained HX, common value control"
+  },
+  "physical_parameterization": "Learn sigma/liquidity only, fix maturity=1.3, center each six-logit emission row. Effective dimension12, stored14. Fault prior and hazard are public task constants, not estimated physical parameters.",
+  "task": "40-state finite CTMC, sensor regime x original20-state phase/content. RESET repairs only the external sensor, preserves physical phase and content, costs0.025 plus elapsed time, and consumes the full interval. Natural absorption/recovery is unchanged. Public READ price0.03, latency price0.01; reward is current terminal-bit correctness. No RESET reward bonus.",
+  "information": "Only11 public features:8 symbol indicators,READ mask,duration,RESET indicator. Initial dummy row is zero; streaming start computes it once. Teacher posterior,latent state,unread observations,Q-target vectors and labels are training/evaluator-only. Remaining schedule,read budget and prices are public controller inputs.",
+  "horizon": 3,
+  "read_budget": 2,
+  "iid_durations": [
+    0.15,
+    0.45,
+    1.05
+  ],
+  "ood_durations": [
+    0.05,
+    0.75,
+    2.1
+  ],
+  "ood_scope": "New irregular time intervals only, same finite task parameter point; not unseen physical-model families or semantic content.",
+  "confirmation_episodes_per_domain": 512,
+  "confirmation_seed_offsets": {
+    "iid": 10000000,
+    "ood": 20000000
+  },
+  "audit_sequences_per_domain": 8,
+  "audit_seed_offset": 30000000,
+  "confirmatory_primary": "D-B utility, independently in IID and OOD, paired fit seed is the independent unit (n=8). Exact two-sided sign-flip test, Holm across the two domains; paired t95% interval descriptive. All four simple effects and interaction are retained.",
+  "quality_gain_rule": "Both domains: mean D-B>=0.01, t95% lower>0, Holm-adjusted p<0.05. A positive B-A does not satisfy this rule.",
+  "quality_noninferiority_margin": 0.01,
+  "cost_ratio_maximum": 0.9,
+  "cost_rule": "Both domains: simultaneous one-sided97.5% lower bounds for utility AND raw correctness above-0.01, plus online CPU D/B<=0.90 and full cost D/B<=0.90 at1000 uses. Report 1/100/1000/10000 reuse separately. Existence of a cheaper equivalent final-matrix HMM prevents an HX-exclusive efficiency claim.",
+  "cost_scope": "Measured research-host process CPU and wall time; training, common prep/calibration, all candidates/selection, model construction, propagation, control, simulator and trace serialization are recorded. Task fees include READ/RESET/time. No communication occurs in this in-process task; production communication,recovery I/O,GPU energy and native Rust costs are unmeasured, so deployment-economy admission remains open.",
+  "secondary": [
+    "D minus D with all future RESET disabled",
+    "D minus its equal-CPU CE-only continuation",
+    "B minus its corresponding equal-CPU CE-only continuation",
+    "all ordinary value-controlled candidates",
+    "common-calibration HMM",
+    "final-HX-matrix HMM action/posterior identity",
+    "actual deployed Q-pi versus planned Q-star calibration"
+  ],
+  "negative_controls": "Deterministic reachable-history witnesses and owner samples for clean,unrepairable,high-reset-price profiles; these are development structural tests, not additional primary confirmatory effects.",
+  "freeze": "Publish source+protocol before formal training. Publish source hashes,common datasets,all targets and models,selection and FREEZE before generating any confirmation tape. Do not alter source,weights,seeds,selection or thresholds after confirmation. Any correction requiring rerun must preserve the run and use a new independently frozen protocol.",
+  "prior_and_capacity_limit": "Equal raw information and candidate CPU caps do not equalize structural priors or parameter counts. Synthetic truth lies in the HX/CTMC family; all methods receive common supervised exact posterior labels during training. Generic HMM matrix equivalence is mandatory. No claim of a privileged analytic inference operator follows from this profile.",
+  "production_activation": false,
+  "full_financial_fp32_admitted": false,
+  "production_rust_ownership_admitted": false,
+  "multilayer_semantic_or_long_term_memory_proved": false,
+  "objective_ablation": "For every trainable core, branch from the identical warm snapshot into an equal total CPU CE-only continuation on the identical q subset and minibatch seed, same final learning rate. Its unused Q-target computation time is available for extra CE updates. Freeze both checkpoints. Additional actual experiment CPU is recorded, while hypothetical shared warm cost is counted once per method. Warm-only comparisons are not evidence of objective benefit.",
+  "q_temperature": 0.1,
+  "cost_weight_reason": "Unweighted normalized-belief Q error is invariant to a state-independent per-action fee shift. Fixed true-net-Qpi softmax weights retain such fees in the learning priority. This choice is frozen before formal fits and confirmation; no formal outcome selected temperature.",
+  "calibration_audit": "Report actual final-policy Qpi versus common planner Qstar on two separately named cohorts:8 independent exploratory histories and every actually visited decision prefix in the first8 confirmation episodes (no outcome filtering). These diagnostics do not change selection or policies."
+}
