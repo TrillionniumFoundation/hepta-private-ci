@@ -39,10 +39,10 @@
       "status": "closed_remote_research_profile"
     },
     {
-      "detail": "Published source candidate ran48 original plus22 continuation tests and source-cleanliness successfully.",
-      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
+      "detail": "At cf74634b actual48 R14 plus22 R15 tests and source cleanliness pass. e225 exact floating-count failure and the failed local matrix probe are preserved; only two floating expectation assertions use16*float64 eps, categorical action and algorithms/quality gates unchanged.",
+      "evidence": "evidence/ci_cf746/REMOTE_REGRESSION.json",
       "id": "r14_regression_workflow",
-      "status": "closed_remote_research_profile"
+      "status": "closed_remote_after_float_expectation_assertion_repair"
     },
     {
       "detail": "R13 numerical contract and repository build-test passed remotely; original YAML meaning retained.",
@@ -220,15 +220,21 @@
     },
     {
       "id": "fixed_physical_state_boundary_learning",
-      "status": "in_progress_separate_asset_coordinate_candidate",
-      "detail": "Fixed-x V1 rescales implicit V with b(theta); changing b alone does not demonstrate threshold motion relative to fixed physical state. A separate fixed-z/asset-mode dynamical family is being defined with complete boundary parameter chain and terminal loss only on z/a. Original V1 result remains nearly flat.",
-      "evidence": "../hx_recurrent_r16_20261101/RESULTS.md"
+      "status": "closed_for_separately_frozen_short_asset_coordinate_protocol",
+      "detail": "Remote786e535 checkpoint precedes first fixed-z evaluation. Fixed z0/rest/targets, terminal loss onlyz/a, complete asset boundary/exp chain.5 fixtures15 contracts8 temporal comparisons pass; independent2057-state reassembly.9 theta update; b67.4415 to68.3124, fixed five assets unchanged, common margin shift agrees with-log(b_after/b_before), one physical fixture enters default. Loss improves only0.0234864percent; no causal quality gain.",
+      "evidence": "../hx_asset_recurrent_r16_20261101/RESULTS.md"
     },
     {
       "id": "actual_bp_bptt_remote_regression",
-      "status": "workflow_ready_pending_new_head_execution",
-      "detail": "A read-only source-head workflow runs the actual V3 adapter audit/training and V1 recurrent audit/training plus independent result checker with sealed hashes/create-only temporary outputs. Actual formatter, shell/CLI preflight and independent review pass; no remote execution admitted yet.",
-      "evidence": "evidence/BP_BPTT_WORKFLOW_REVIEW.json"
+      "status": "closed_for_v3_and_signed_v1_remote_replay_asset_extension_pending",
+      "detail": "At cf74634b actual runner job124931932431 passes all V3 and signed-V1 audit/training/checker steps, artifacts and source cleanliness. Original invalid job.env context run41334191519 retained; real actionlint red/green and explicit review corrections published. Fixed-z extension has own exact workflow/hash/CLI checks and needs new-head execution.",
+      "evidence": "evidence/ci_cf746/REMOTE_REGRESSION.json"
+    },
+    {
+      "id": "recurrent_default_saturation",
+      "status": "open_negative_training_evidence",
+      "detail": "Fixed-z12-update functional run shifts default occupancy107/136 to127/136 and sampled transitions8 to4; loss improves only0.0234864percent. Q/R parameter gradients vanish in default; changing nine parameters confounds boundary movement with shape change. No efficacy gain or reduction in saturation established.",
+      "evidence": "../hx_asset_recurrent_r16_20261101/RESULTS.md"
     }
   ],
   "new_confirmation_opened": false,
@@ -238,7 +244,7 @@
   "published_research_head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
   "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4550",
   "followup_ci_scope": "Final source and prospective-merge tree identities must be checked. Published prior-head green jobs do not qualify new native source repairs.",
-  "latest_assessed_head": "889e7acebd14ecb05018c1d8c6ae4d26287cbcf8",
+  "latest_assessed_head": "cf74634be5c1d7de8d2b0f24a1c4a8a4ab361b20",
   "confirmation_scope": "new_confirmation_opened concerns the original R14 efficacy task only; R16 numerical validation is separate.",
   "independent_numerical_validation_r16_opened": true,
   "executor_recovery": {
@@ -249,5 +255,6 @@
     "later_keyring_crypto_raw_archives_recovered": false
   },
   "compiled_recovery_checkpoint": "bfd3a5a6f9445ae681b27d3947865ad67ef5651e",
-  "recurrent_source_checkpoint": "a629f9b1a9a1539f5360f8e44d2b81a09fdcf6ae"
+  "recurrent_source_checkpoint": "a629f9b1a9a1539f5360f8e44d2b81a09fdcf6ae",
+  "fixed_asset_source_checkpoint": "786e535bd2a396b14e9ffab4504bc855c6f4d6b1"
 }
