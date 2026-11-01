@@ -1,0 +1,81 @@
+{
+  "base_commit": "3937a5f68aa455433ecfce6f8f045f57e7c07b4b",
+  "build": [
+    "rustc",
+    "--edition=2024",
+    "-D",
+    "warnings",
+    "main.rs",
+    "-o",
+    "<isolated-binary>"
+  ],
+  "criteria": "All native final opaque numeric states and full traces equal frozen Python R17, whose query traces equal old R16 execute. Native integer nanosecond clock and microcredit charges must match Python rational values. Stateful provider effect count and purchase balance equal unique actual READ/REFRESH purchases across real crashes. Entireowner inbox equals provider durable effects; no duplicate operation IDs.",
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "durability": "Atomic new-file write, file sync_all, rename, directory sync_all on local filesystem; std File locks. Provider poisons/fails process on storage uncertainty. Atomicity under actual hardware power loss is not tested. FNV64 checksums detect accidental corruption and are not authentication against hostile local writers.",
+  "failure_rule": "Preserve all attempts and stop on a protocol/trace/resource assertion; no dropping failed candidates. Developer failures/socket limitations separately retained. CPU is never joules.",
+  "fencing": "Real old process pauses after acquiring lease; fresh owner completes at higher provider generation; released old process must exit2 without overwriting state. File-lock/CAS ordering and provider generation reject new stale effects.",
+  "fits": [
+    151101,
+    151103
+  ],
+  "negative_checks": [
+    "stale provider generation",
+    "wrong run",
+    "unknown operation",
+    "altered duplicate content",
+    "duplicate identical call returns exact durable receipt",
+    "injected ENOSPC fails provider closed before any success acknowledgement; restart executes effect exactly once"
+  ],
+  "owner_faults": [
+    "owner_prepared",
+    "owner_elapsed",
+    "owner_received_before_commit",
+    "owner_received",
+    "owner_applied",
+    "owner_boundary"
+  ],
+  "policies": [
+    [
+      "fixed",
+      "wait_read"
+    ],
+    [
+      "fixed",
+      "refresh"
+    ]
+  ],
+  "production_activation": false,
+  "provider_faults": [
+    "provider_committed",
+    "provider_storage_error"
+  ],
+  "representations": [
+    "full",
+    "anchored"
+  ],
+  "rustc": "/tmp/trnm-original-budget-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+  "rustc_version": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "schema": "hcsn-native-owner-r18-v1",
+  "scope": "Opt-in Rust local durable-mailbox owner/provider engineering replay. Actual persistent external billing/dedup/lease effects; opaque numerical states and actions replay frozen Python R17 CTMC traces. This is not native CTMC integration, scientific core gain, production neural activation, or socket/network qualification.",
+  "seed": 180620000000001,
+  "training_pattern": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/{fit}.json.gz",
+  "unmeasured": [
+    "native CTMC matrix exponential/planner",
+    "live neural/content inference",
+    "production model dispatch authority",
+    "network/socket transport",
+    "real media acquisition",
+    "GPU",
+    "joules",
+    "OS reboot or power cut",
+    "hostile storage rewrite",
+    "cross-host ownership"
+  ],
+  "world_theta": [
+    0.3,
+    0.018
+  ]
+}
