@@ -1,0 +1,560 @@
+{
+  "schema": "hcsn.freeze-publication.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/hcsn-addressed-flow-20261101",
+  "baseline_commit": "7226bd94c6f30d113b2abb8dcf3678e63eb81f38",
+  "main_source": {
+    "commit": "63b348005c468e29e89f9f309d525d87661ee06b",
+    "readback": [
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/ADDRESSING.md",
+        "expected": "fcd84c33ade5daa72508e8d7bb7ef35488dee518",
+        "actual": "fcd84c33ade5daa72508e8d7bb7ef35488dee518",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/BASELINE_VERIFICATION.json",
+        "expected": "fb7198622b65377728f6c30a03ff677ec5c53ca5",
+        "actual": "fb7198622b65377728f6c30a03ff677ec5c53ca5",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/README.md",
+        "expected": "2b46cfd91b1a7fb9e09c9b66683c73a34609c07b",
+        "actual": "2b46cfd91b1a7fb9e09c9b66683c73a34609c07b",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/STATISTICAL_PLAN.json",
+        "expected": "4ebc7a87a6480274f52dd98f274746079b839861",
+        "actual": "4ebc7a87a6480274f52dd98f274746079b839861",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/__init__.py",
+        "expected": "b6b340e7dd54bf56d3b3a615e7429ce0d7ee6c19",
+        "actual": "b6b340e7dd54bf56d3b3a615e7429ce0d7ee6c19",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/addressed_models.py",
+        "expected": "11242c21ec327598f47209558694163236819e96",
+        "actual": "11242c21ec327598f47209558694163236819e96",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/addressing_checks.py",
+        "expected": "da01051a9cf8984bc571295172e9d40d38e7cb6b",
+        "actual": "da01051a9cf8984bc571295172e9d40d38e7cb6b",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/control_checks.py",
+        "expected": "feef1c05e585dfd71a1f8e3a2696437537ff363b",
+        "actual": "feef1c05e585dfd71a1f8e3a2696437537ff363b",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/control_study.py",
+        "expected": "37c73d383ee4732f72c256555e960a5c7d32d927",
+        "actual": "37c73d383ee4732f72c256555e960a5c7d32d927",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/data.py",
+        "expected": "2839c02e04091399de8e4a61357c239f6fe4c624",
+        "actual": "2839c02e04091399de8e4a61357c239f6fe4c624",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/operator_fastpath.py",
+        "expected": "2ce2db323fae855394aa7e13c2acb712981ce5f8",
+        "actual": "2ce2db323fae855394aa7e13c2acb712981ce5f8",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/operator_fastpath_checks.py",
+        "expected": "8e985b8b0074dd0c2b2e33af27d79f092d4168b5",
+        "actual": "8e985b8b0074dd0c2b2e33af27d79f092d4168b5",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/study.py",
+        "expected": "fa8b9b85d2a51323678b167beaaeb10031f385a3",
+        "actual": "fa8b9b85d2a51323678b167beaaeb10031f385a3",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/operator_audit/FASTPATH_REPORT.md",
+        "expected": "ba488cac6c339ea6985f10d4c862f0efc6777939",
+        "actual": "ba488cac6c339ea6985f10d4c862f0efc6777939",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/operator_audit/full_model_benchmark.py",
+        "expected": "4f9e422e0998187e0e1fac001054841373585a9a",
+        "actual": "4f9e422e0998187e0e1fac001054841373585a9a",
+        "matches": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/campaign001/PROTOCOL.json",
+        "expected": "084c7fe1a1578a49423bd3ea51c330f3061ce3bd",
+        "actual": "084c7fe1a1578a49423bd3ea51c330f3061ce3bd",
+        "matches": true
+      }
+    ]
+  },
+  "main_candidates": {
+    "commit": "c2ca527065f1010fc19d828329bbaf718af0c5e5",
+    "manifest_sha256": "4ed955c533a124c968494436e8600956a0b2e65467d2712b2701dea83709d836",
+    "policies_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+    "readback": [
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/analyze.py",
+        "expected": "0a4116d41e924ea553fca71340b7ea3fb20728e8",
+        "actual": "0a4116d41e924ea553fca71340b7ea3fb20728e8"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/acquire_confirmation.py",
+        "expected": "a120bc51eac70a9763e824146ff2c8f3acf2d965",
+        "actual": "a120bc51eac70a9763e824146ff2c8f3acf2d965"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/campaign001/ALL_CHECKPOINTS.json",
+        "expected": "7e8ccff53c68a69f8b83cad01480d07cbec55f4d",
+        "actual": "7e8ccff53c68a69f8b83cad01480d07cbec55f4d"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/campaign001/TRAIN_RECEIPT.json",
+        "expected": "641e9f8ad985f8f5c852fcb7d8f51ac1b09f8e7a",
+        "actual": "641e9f8ad985f8f5c852fcb7d8f51ac1b09f8e7a"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/campaign001/TRAINING_SOURCE.json",
+        "expected": "98ad37406b922ebdf1d30e7ff61863b1e7690a8d",
+        "actual": "98ad37406b922ebdf1d30e7ff61863b1e7690a8d"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/campaign001/REMOTE_SOURCE_VERIFICATION.json",
+        "expected": "7acd8a6859bbd06aca73b705ab0f894107bedc1b",
+        "actual": "7acd8a6859bbd06aca73b705ab0f894107bedc1b"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/campaign001_train_meter.receipt.json",
+        "expected": "223ecc3d7f86f4e7e5fd1ef1b78befe19e724c50",
+        "actual": "223ecc3d7f86f4e7e5fd1ef1b78befe19e724c50"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/control001/POLICY_FREEZE.json",
+        "expected": "dc067760c471e4abebeedb30fffcd8d66361b1b8",
+        "actual": "dc067760c471e4abebeedb30fffcd8d66361b1b8"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/control001_train_meter.receipt.json",
+        "expected": "7d12e83584969cb5ea517412031f57303925ec32",
+        "actual": "7d12e83584969cb5ea517412031f57303925ec32"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/CANDIDATE_ARCHIVE.json",
+        "expected": "7e1aed47aa2907589ad8c78601fddba06e281ff9",
+        "actual": "7e1aed47aa2907589ad8c78601fddba06e281ff9"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/candidate_weights.tar.gz.part000",
+        "expected": "fc1e3f62d164e57cf34f3c4dfb6b9d8cf7e2e112",
+        "actual": "fc1e3f62d164e57cf34f3c4dfb6b9d8cf7e2e112"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/candidate_weights.tar.gz.part001",
+        "expected": "aebbaf472cf3996529cb34ac1a0ff9ae491da423",
+        "actual": "aebbaf472cf3996529cb34ac1a0ff9ae491da423"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/candidate_weights.tar.gz.part002",
+        "expected": "d854dd21af6976f53ff1c78466b0e7c7e8c69583",
+        "actual": "d854dd21af6976f53ff1c78466b0e7c7e8c69583"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/candidate_weights.tar.gz.part003",
+        "expected": "698d60f5c7af85befa49ef2817fba25811a7232b",
+        "actual": "698d60f5c7af85befa49ef2817fba25811a7232b"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/candidate_weights.tar.gz.part004",
+        "expected": "da123d80ef184df6cfc2042e62494e4dcc3ea69d",
+        "actual": "da123d80ef184df6cfc2042e62494e4dcc3ea69d"
+      }
+    ]
+  },
+  "av_source": {
+    "commit": "2d0f427bea28c787f15a17648c09640d94d532cc",
+    "readback": [
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/AV_TRAINING_ARCHIVE.json",
+        "sha": "b4671402a35dacd483744a093f9ddd23b0fd51d3",
+        "remote_sha": "b4671402a35dacd483744a093f9ddd23b0fd51d3"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/av_core_study.py",
+        "sha": "2c7af76ce09abe45c77ddfc8a662f9e66899841e",
+        "remote_sha": "2c7af76ce09abe45c77ddfc8a662f9e66899841e"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/av_frontend.py",
+        "sha": "775f474f73f3cb52c3f3cb6fe2a39acad4084f46",
+        "remote_sha": "775f474f73f3cb52c3f3cb6fe2a39acad4084f46"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/av_frontend_checks.py",
+        "sha": "17f7c35c2e72e5e4a919804864b38e0ee5162b17",
+        "remote_sha": "17f7c35c2e72e5e4a919804864b38e0ee5162b17"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/av_frontend_protocol.json",
+        "sha": "2c658c1546aabc65359da26c90a703737a0e2426",
+        "remote_sha": "2c658c1546aabc65359da26c90a703737a0e2426"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_core001/CANDIDATES.json",
+        "sha": "b78ff47cc4f8011e685b25fbf59b51dc1ca76bdc",
+        "remote_sha": "b78ff47cc4f8011e685b25fbf59b51dc1ca76bdc"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_core001/PROTOCOL.json",
+        "sha": "bb69baa8aea58317514f2e654c3d3b03e24b79b0",
+        "remote_sha": "bb69baa8aea58317514f2e654c3d3b03e24b79b0"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/ATTRIBUTION.json",
+        "sha": "49244a0410337a116ad61e42b521e8fd4daaff91",
+        "remote_sha": "49244a0410337a116ad61e42b521e8fd4daaff91"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/CREMA-D-LICENSE.txt",
+        "sha": "941b7e9eb2ccbc86efb34d5d2f94a1e744d2e56a",
+        "remote_sha": "941b7e9eb2ccbc86efb34d5d2f94a1e744d2e56a"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/INDEPENDENT_COHORT.json",
+        "sha": "d4ec48864104415dc6489b642ca6e54fda5f0754",
+        "remote_sha": "d4ec48864104415dc6489b642ca6e54fda5f0754"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/INDEPENDENT_COHORT_FROZEN_METADATA.json",
+        "sha": "78a6e04f71b77a8dec141a9566d5274cb99f13b9",
+        "remote_sha": "78a6e04f71b77a8dec141a9566d5274cb99f13b9"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/INDEPENDENT_COHORT_PLAN.json",
+        "sha": "9cf59a8d0e0793abe12498c2fdac13cb4c34c391",
+        "remote_sha": "9cf59a8d0e0793abe12498c2fdac13cb4c34c391"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/fit003/CANDIDATES.json",
+        "sha": "b78ff47cc4f8011e685b25fbf59b51dc1ca76bdc",
+        "remote_sha": "b78ff47cc4f8011e685b25fbf59b51dc1ca76bdc"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/fit003/DEVELOPMENT.json",
+        "sha": "dcd7f0c2e05eb2c3c37c90c25559cb97b4a7c3ec",
+        "remote_sha": "dcd7f0c2e05eb2c3c37c90c25559cb97b4a7c3ec"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/fit003/SUBSET_CONTROLS.json",
+        "sha": "f337dde73d55b877018a4405b0097390b3661b36",
+        "remote_sha": "f337dde73d55b877018a4405b0097390b3661b36"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/fit003/TRAINING_SOURCE.py",
+        "sha": "48f51fe60bcf944fc329185d996442f60b55c334",
+        "remote_sha": "48f51fe60bcf944fc329185d996442f60b55c334"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/av_training_inputs.tar.gz.part000",
+        "sha": "f46f8e4b1e9a44497a3bd72a0def6e1ac0bcfe9c",
+        "remote_sha": "f46f8e4b1e9a44497a3bd72a0def6e1ac0bcfe9c"
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/av_training_inputs.tar.gz.part001",
+        "sha": "5fb21c34828be89722e508c32b07033b58970bac",
+        "remote_sha": "5fb21c34828be89722e508c32b07033b58970bac"
+      }
+    ]
+  },
+  "av_candidates": {
+    "commit": "3e8c5d3dbab86048d9fd155ff560f6184fe0b89d",
+    "manifest_sha256": "50163923f4312b63aefc29af4135279ba7da77cb251466eae29a9467b259e0fc"
+  },
+  "retention_and_blind_source": {
+    "commit": "6809dd449cecaad4f192b5bd176a11f91223769c",
+    "readback": [
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/typed_retention.py",
+        "expected": "69152b9f3b5d149cec327a71e16c288b89cb9d93",
+        "remote": "69152b9f3b5d149cec327a71e16c288b89cb9d93",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/retention_study.py",
+        "expected": "5ea870699f9ceaf98ba93525f0eecfe8cde6ed21",
+        "remote": "5ea870699f9ceaf98ba93525f0eecfe8cde6ed21",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/retention001/PROTOCOL.json",
+        "expected": "fd2dfde78bd0272cb0c4943dbd54790f2404aee9",
+        "remote": "fd2dfde78bd0272cb0c4943dbd54790f2404aee9",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/av_confirmation_guard.py",
+        "expected": "28e86e13403af4b4b0f5a6653c4a7fb954ec98ac",
+        "remote": "28e86e13403af4b4b0f5a6653c4a7fb954ec98ac",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/GUARD_PREFLIGHT_LOCKED002.json",
+        "expected": "033ab27cb58e7bf6dadf610030bf65f6b0f38096",
+        "remote": "033ab27cb58e7bf6dadf610030bf65f6b0f38096",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/GUARD_PREFLIGHT_BLIND002.json",
+        "expected": "7a1fc1e7a28a2e4899fc4d64a4fc4ea7258655a4",
+        "remote": "7a1fc1e7a28a2e4899fc4d64a4fc4ea7258655a4",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/INDEPENDENT_REVIEW.json",
+        "expected": "321aacd0b482d91cc0efea5263adf1df7461a3a8",
+        "remote": "321aacd0b482d91cc0efea5263adf1df7461a3a8",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/av_blind_core_evaluate.py",
+        "expected": "6dc9f47b1ef4eac175680bbec0dfaa647ebdae03",
+        "remote": "6dc9f47b1ef4eac175680bbec0dfaa647ebdae03",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_core001/PLAN.json",
+        "expected": "379187c9eda50020576281684be03c94a69d4708",
+        "remote": "379187c9eda50020576281684be03c94a69d4708",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/AV_SCOPE.json",
+        "expected": "c1c84e7a50d26cfc25d643ffc79469b09505aab1",
+        "remote": "c1c84e7a50d26cfc25d643ffc79469b09505aab1",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/AV_CANDIDATE_ARCHIVE.json",
+        "expected": "06a70515a3d175085b5a8efa3a36d8f099e9a785",
+        "remote": "06a70515a3d175085b5a8efa3a36d8f099e9a785",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/av_confirmation_guard_checks.py",
+        "expected": "bb283dbcb4ba4842b2899485ad5c743026e8827c",
+        "remote": "bb283dbcb4ba4842b2899485ad5c743026e8827c",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/BLIND_PROTOCOL.json",
+        "expected": "1906653539dad5fbeb304ac6fbc52a31f5a7c155",
+        "remote": "1906653539dad5fbeb304ac6fbc52a31f5a7c155",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/CANDIDATES.json",
+        "expected": "6b2fbe5f70f2aa11c4e453a1ebed6b154e313348",
+        "remote": "6b2fbe5f70f2aa11c4e453a1ebed6b154e313348",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/DEVELOPMENT.json",
+        "expected": "dcd7f0c2e05eb2c3c37c90c25559cb97b4a7c3ec",
+        "remote": "dcd7f0c2e05eb2c3c37c90c25559cb97b4a7c3ec",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/GUARD_PREFLIGHT_BLIND001.json",
+        "expected": "7a61a6006bf59c3a8d3ac6799e233400b0c20f72",
+        "remote": "7a61a6006bf59c3a8d3ac6799e233400b0c20f72",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/QUALIFICATION.json",
+        "expected": "958b5d6746f8b6680dd59ff80a7c6802d722b979",
+        "remote": "958b5d6746f8b6680dd59ff80a7c6802d722b979",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/SUBSET_CONTROLS.json",
+        "expected": "f337dde73d55b877018a4405b0097390b3661b36",
+        "remote": "f337dde73d55b877018a4405b0097390b3661b36",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_core001/ALL_CHECKPOINTS.json",
+        "expected": "1fc301ba0965a148aa43eae66a4ad668b84dab37",
+        "remote": "1fc301ba0965a148aa43eae66a4ad668b84dab37",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_core001/TRAINING_SOURCE.json",
+        "expected": "f7ce99b44374bca2c14ee49d1b04c02dcee8fa7b",
+        "remote": "f7ce99b44374bca2c14ee49d1b04c02dcee8fa7b",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_core001_train_meter.receipt.json",
+        "expected": "d146d4618ee652293aa2ed785401e25abd22be13",
+        "remote": "d146d4618ee652293aa2ed785401e25abd22be13",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/BLIND_ACTOR1019_COHORT.json",
+        "expected": "f11fc645b617dc44f3b7abbb32e7a35f79bb5fdc",
+        "remote": "f11fc645b617dc44f3b7abbb32e7a35f79bb5fdc",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/BLIND_ACTOR1019_COHORT_METADATA.json",
+        "expected": "2532fc7fd36b9b788f7a12135b93b4895b6893de",
+        "remote": "2532fc7fd36b9b788f7a12135b93b4895b6893de",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/HISTORICAL_ACTOR_UNION_PROOF.json",
+        "expected": "8b3e2bb91128e4b2ccd2c42543e75bf625404ddf",
+        "remote": "8b3e2bb91128e4b2ccd2c42543e75bf625404ddf",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/av_development/fit003/QUALIFICATION.json",
+        "expected": "f188a24c6ba92bf748a5d642b0281526da12753b",
+        "remote": "f188a24c6ba92bf748a5d642b0281526da12753b",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/av_candidate_weights.tar.gz.part000",
+        "expected": "8992795dc25f79df2b122c1947b089cee8f751b1",
+        "remote": "8992795dc25f79df2b122c1947b089cee8f751b1",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/av_candidate_weights.tar.gz.part001",
+        "expected": "0e2a950a579100650c3ee34acf30e24a5efc1e66",
+        "remote": "0e2a950a579100650c3ee34acf30e24a5efc1e66",
+        "match": true
+      }
+    ]
+  },
+  "retention_candidates": {
+    "commit": "c64b2c42e8c3cea352e6d5bff51e39abadcac77b",
+    "manifest_sha256": "468459cd0353f7a84dd108edd5c7b416dc2beda0e972cdca87224d9e135c59a4",
+    "readback": [
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/retention001/ALL_CHECKPOINTS.json",
+        "expected": "591885b11bc01693f06df00a3cdab2d235330026",
+        "remote": "591885b11bc01693f06df00a3cdab2d235330026",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/retention001/TRAINING_SOURCE.json",
+        "expected": "381f2bc4cb6ee3f4a9f7242a6de16868d2f6b860",
+        "remote": "381f2bc4cb6ee3f4a9f7242a6de16868d2f6b860",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/retention001_train_meter.receipt.json",
+        "expected": "7c27359d28a0aa0efd357f35b8e5b469f5680687",
+        "remote": "7c27359d28a0aa0efd357f35b8e5b469f5680687",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/retention001/REVIEW.json",
+        "expected": "dc4cffff22335e4a84e13526f4d617830f29704e",
+        "remote": "dc4cffff22335e4a84e13526f4d617830f29704e",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/independent_retention_review.py",
+        "expected": "6a5934e68c3810b87c13eb6ee14ffa2d575c436a",
+        "remote": "6a5934e68c3810b87c13eb6ee14ffa2d575c436a",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/RETENTION_CANDIDATE_ARCHIVE.json",
+        "expected": "73413d3531e64f247d022ee53a8d8fcbeea26534",
+        "remote": "73413d3531e64f247d022ee53a8d8fcbeea26534",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/retention_candidate_weights.tar.gz.part000",
+        "expected": "3764e59ef4774113107c15ca1fabc6763f69c382",
+        "remote": "3764e59ef4774113107c15ca1fabc6763f69c382",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/artifacts/retention_candidate_weights.tar.gz.part001",
+        "expected": "22385aaba80686d83310fb43d6e1893058a6581f",
+        "remote": "22385aaba80686d83310fb43d6e1893058a6581f",
+        "match": true
+      }
+    ]
+  },
+  "retention_control_source": {
+    "commit": "0ba19482533b0d714eebe4fa58b4544ca03aac6f",
+    "readback": [
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/retention_control.py",
+        "sha": "8786f6a47467144f7cce0c786e97f2f088262781",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/retention_control001/PROTOCOL.json",
+        "sha": "d6e07bfab2fcd962dc8951c12f04a89ca11f55b2",
+        "match": true
+      }
+    ]
+  },
+  "retention_control_policies": {
+    "commit": "26b6f97174f6628a28395461c5658a35a34d905a",
+    "policy_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+    "readback": [
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/retention_control001/POLICY_FREEZE.json",
+        "sha": "eec360cab79bcb8f797223602f7dced9866e2079",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/retention_control001/CALIBRATION_SOURCE.json",
+        "sha": "1eeb3abc6495f9d99cb1bbe070604598aa924994",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/retention_control001_train_meter.receipt.json",
+        "sha": "4b0fa14431b64e6b98ed1814f3dc6baed0549bb6",
+        "match": true
+      }
+    ]
+  },
+  "distribution_diagnostic_source": {
+    "commit": "2b11523fba1dc4015688d646770a3e5d7563b474",
+    "readback": [
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/distribution_probe.py",
+        "sha": "9493c5396df05eaa1a236a543f73b93fff244d16",
+        "match": true
+      },
+      {
+        "path": "experiments/hcsn_addressed_flow_20261101/results/distribution_probe001/PLAN.json",
+        "sha": "bcc18c808343a672bc01fe028253ec74dac89c91",
+        "match": true
+      }
+    ]
+  }
+}

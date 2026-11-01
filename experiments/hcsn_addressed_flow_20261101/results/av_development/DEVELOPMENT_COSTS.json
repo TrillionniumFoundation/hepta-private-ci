@@ -1,0 +1,123 @@
+{
+  "schema": "hcsn.av.development.costs.v1",
+  "stages": [
+    {
+      "stage": "temporal_preparation",
+      "receipt": "results/av_features/PREPARE_train_validation.json",
+      "cpu_seconds": 84.13847306599999,
+      "wall_seconds": 83.61977884899898,
+      "sha256": "3604a8910a8dcad447253f0334b6317afb97bc111e1ad7379f18a51b7a1385ee"
+    },
+    {
+      "stage": "mouth_preparation",
+      "receipt": "results/av_mouth_features/PREPARE_train_validation.json",
+      "cpu_seconds": 69.673022186,
+      "wall_seconds": 70.23950936699839,
+      "sha256": "3685617bbd2c99cf76ac63782df48f5572f1c28eb2a3a757c6c20d933f361547"
+    },
+    {
+      "stage": "first_development_41_candidates",
+      "receipt": "results/av_development/fit002/DEVELOPMENT.json",
+      "cpu_seconds": 2.664900159,
+      "wall_seconds": 2.6670520560001023,
+      "sha256": "ac9c4ce03e11634bb28e45ec7398ab8df6c40913f4ad889e5ddbd2728f6ce0cd"
+    },
+    {
+      "stage": "final_development_52_candidates",
+      "receipt": "results/av_development/fit003/DEVELOPMENT.json",
+      "cpu_seconds": 3.820883436,
+      "wall_seconds": 3.834104658999422,
+      "sha256": "01683399f639b6855ef5804ec63480ec5f7e5e473636127ed8ab084bdec5f3d1"
+    },
+    {
+      "stage": "separate_modality_subset_heads",
+      "receipt": "results/av_development/fit003/SUBSET_CONTROLS.json",
+      "cpu_seconds": 0.043030218000000175,
+      "wall_seconds": 0.043071890999272,
+      "sha256": "172bff745a56cffdc9e8de6cdd13e2af70d66cc9ea9a80083644e9a5be05ccd4"
+    },
+    {
+      "stage": "initial_20_baseline_probes",
+      "cpu_seconds": 0.20884970200000041,
+      "wall_seconds": null,
+      "receipt": "results/av_development/baseline_probes.json"
+    }
+  ],
+  "metered_cpu_seconds_sum": 160.549158767,
+  "failed_attempts": [
+    {
+      "stage": "fit001",
+      "failure": "Initial data-root path did not exist; no training or test opened",
+      "stderr": "results/av_development/fit001.stderr.log",
+      "cpu_seconds": null,
+      "note": "Not metered, not assumed zero"
+    }
+  ],
+  "resident_checkpoints": {
+    "audio_encoder.npz": {
+      "stored_bytes": 4313,
+      "resident_array_bytes": 3104,
+      "arrays": {
+        "kind": [],
+        "mean": [
+          128
+        ],
+        "scale": [
+          128
+        ],
+        "intercept": [],
+        "cal_coef": [],
+        "cal_intercept": [],
+        "coef": [
+          128
+        ]
+      }
+    },
+    "text_encoder.npz": {
+      "stored_bytes": 1394,
+      "resident_array_bytes": 608,
+      "arrays": {
+        "kind": [],
+        "mean": [
+          24
+        ],
+        "scale": [
+          24
+        ],
+        "intercept": [],
+        "cal_coef": [],
+        "cal_intercept": [],
+        "coef": [
+          24
+        ]
+      }
+    },
+    "video_encoder.npz": {
+      "stored_bytes": 785180,
+      "resident_array_bytes": 1419344,
+      "arrays": {
+        "kind": [],
+        "mean": [
+          684
+        ],
+        "scale": [
+          684
+        ],
+        "intercept": [],
+        "cal_coef": [],
+        "cal_intercept": [],
+        "support": [
+          257,
+          684
+        ],
+        "dual": [
+          257
+        ],
+        "gamma": []
+      }
+    }
+  },
+  "energy_joules": null,
+  "unmeasured": "Device energy; historical original-feature preparation/acquisition reused as cache; failed path/import overhead",
+  "scope": "These are nonoverlapping development body clocks, including waited decoder children; not full deployment economics or energy. External process import/startup is excluded. Final core training and confirmation will be separate records."
+}

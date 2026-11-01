@@ -1,0 +1,297 @@
+{
+  "child_cpu_seconds": 51.189949,
+  "cost_scope": "Parent+children phase CPU, including worker startup; nested fit timers not added again",
+  "failed": 0,
+  "fits": [
+    {
+      "arm": "diagonal",
+      "checkpoint": "fits/diagonal_17/checkpoint.pt",
+      "checkpoint_sha256": "7ffe7ba4678d93d4c7dc43241de1234ddb6d4beb1d4c2aeac8b214c2ad08e626",
+      "cpu_seconds": 1.8400948160000006,
+      "final_loss": 0.6946215033531189,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": null,
+        "parameters": 10845,
+        "persistent_state_scalars": 120,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 17,
+      "status": "completed",
+      "training_index_sha256": "575589fd871c5972016bce8c0ee1296364cfd6fb484ef9c28a783daffe2dc209",
+      "wall_seconds": 1.8751584060009918
+    },
+    {
+      "arm": "diagonal",
+      "checkpoint": "fits/diagonal_29/checkpoint.pt",
+      "checkpoint_sha256": "0983d01f750951877d40e680a548ac43c8ca2b5aab54efe94659e44fff68e944",
+      "cpu_seconds": 2.106179664999999,
+      "final_loss": 0.6999430656433105,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": null,
+        "parameters": 10845,
+        "persistent_state_scalars": 120,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 29,
+      "status": "completed",
+      "training_index_sha256": "ac9635d1e42dbc6a7836f4c1a8a9d84b7e67965d3b7886faf88c15e46792ae92",
+      "wall_seconds": 2.159120168998925
+    },
+    {
+      "arm": "diagonal",
+      "checkpoint": "fits/diagonal_43/checkpoint.pt",
+      "checkpoint_sha256": "4a23ea2b33baa3ff35699cb97af0cb97217cd28872045c1702452e5f88561ee3",
+      "cpu_seconds": 1.7325659580000004,
+      "final_loss": 0.6932464241981506,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": null,
+        "parameters": 10845,
+        "persistent_state_scalars": 120,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 43,
+      "status": "completed",
+      "training_index_sha256": "5b6ae6c72b2a023d46ee5647c201bfd636ac1e3db8a2bbb6784ca1252cbf4247",
+      "wall_seconds": 1.7334185670006264
+    },
+    {
+      "arm": "flow",
+      "checkpoint": "fits/flow_17/checkpoint.pt",
+      "checkpoint_sha256": "74c27aa2432551a38daab19c953575bf58cebf0efd7aede21376a2c274730594",
+      "cpu_seconds": 8.620622317999999,
+      "final_loss": 0.3645577132701874,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": "float64",
+        "parameters": 10770,
+        "persistent_state_scalars": 127,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 17,
+      "status": "completed",
+      "training_index_sha256": "575589fd871c5972016bce8c0ee1296364cfd6fb484ef9c28a783daffe2dc209",
+      "wall_seconds": 8.774654674998601
+    },
+    {
+      "arm": "flow",
+      "checkpoint": "fits/flow_29/checkpoint.pt",
+      "checkpoint_sha256": "46936533a9cc17c5388deff4ecc69a1930dbe315b2950a569f708632221f65ce",
+      "cpu_seconds": 8.914383979,
+      "final_loss": 0.7043890953063965,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": "float64",
+        "parameters": 10770,
+        "persistent_state_scalars": 127,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 29,
+      "status": "completed",
+      "training_index_sha256": "ac9635d1e42dbc6a7836f4c1a8a9d84b7e67965d3b7886faf88c15e46792ae92",
+      "wall_seconds": 9.118231786000251
+    },
+    {
+      "arm": "flow",
+      "checkpoint": "fits/flow_43/checkpoint.pt",
+      "checkpoint_sha256": "20f100160b5c722c6eab7ebb3e5dfb22a0f956731ab63490179af648ee77bb4a",
+      "cpu_seconds": 6.914958470000002,
+      "final_loss": 0.46395614743232727,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": "float64",
+        "parameters": 10770,
+        "persistent_state_scalars": 127,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 43,
+      "status": "completed",
+      "training_index_sha256": "5b6ae6c72b2a023d46ee5647c201bfd636ac1e3db8a2bbb6784ca1252cbf4247",
+      "wall_seconds": 6.974896102998173
+    },
+    {
+      "arm": "gru",
+      "checkpoint": "fits/gru_17/checkpoint.pt",
+      "checkpoint_sha256": "f92f7a4593099382c6f9549c7402a7b5ed0ede6463c1cc0bef10f60ec359a7d7",
+      "cpu_seconds": 1.8469692880000004,
+      "final_loss": 0.3911460340023041,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": null,
+        "parameters": 23938,
+        "persistent_state_scalars": 64,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 17,
+      "status": "completed",
+      "training_index_sha256": "575589fd871c5972016bce8c0ee1296364cfd6fb484ef9c28a783daffe2dc209",
+      "wall_seconds": 1.8751417080020474
+    },
+    {
+      "arm": "gru",
+      "checkpoint": "fits/gru_29/checkpoint.pt",
+      "checkpoint_sha256": "ef24bc3faef8b38614c30f58fc9e322160a7aa179a1e0a1bbc088a59ee3b5a51",
+      "cpu_seconds": 1.8977637699999974,
+      "final_loss": 0.7026649117469788,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": null,
+        "parameters": 23938,
+        "persistent_state_scalars": 64,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 29,
+      "status": "completed",
+      "training_index_sha256": "ac9635d1e42dbc6a7836f4c1a8a9d84b7e67965d3b7886faf88c15e46792ae92",
+      "wall_seconds": 1.9094183669985796
+    },
+    {
+      "arm": "gru",
+      "checkpoint": "fits/gru_43/checkpoint.pt",
+      "checkpoint_sha256": "29606d4aa78c724f68ce4c38a5c39fa65d9bf5b3a87b5af5a0ee5f74d9dc1d68",
+      "cpu_seconds": 2.206102605999998,
+      "final_loss": 0.3721637725830078,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": null,
+        "parameters": 23938,
+        "persistent_state_scalars": 64,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 43,
+      "status": "completed",
+      "training_index_sha256": "5b6ae6c72b2a023d46ee5647c201bfd636ac1e3db8a2bbb6784ca1252cbf4247",
+      "wall_seconds": 2.2479874050004582
+    },
+    {
+      "arm": "mlp",
+      "checkpoint": "fits/mlp_17/checkpoint.pt",
+      "checkpoint_sha256": "98ea81aeb56f2558d960f35ce532a9c1c9d428e3bc45f659063dfa53dba146c0",
+      "cpu_seconds": 1.1352969880000003,
+      "final_loss": 0.37080487608909607,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "parameters": 290,
+        "persistent_state_scalars": 6,
+        "sequence_length": 4
+      },
+      "seed": 17,
+      "status": "completed",
+      "training_index_sha256": "575589fd871c5972016bce8c0ee1296364cfd6fb484ef9c28a783daffe2dc209",
+      "wall_seconds": 1.1609180230007041
+    },
+    {
+      "arm": "mlp",
+      "checkpoint": "fits/mlp_29/checkpoint.pt",
+      "checkpoint_sha256": "1581d2883e2922fa84a002b54dfd91f0ef423bc19009707c2a76fdb505d3b0be",
+      "cpu_seconds": 0.6971838539999986,
+      "final_loss": 0.7095635533332825,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "parameters": 290,
+        "persistent_state_scalars": 6,
+        "sequence_length": 4
+      },
+      "seed": 29,
+      "status": "completed",
+      "training_index_sha256": "ac9635d1e42dbc6a7836f4c1a8a9d84b7e67965d3b7886faf88c15e46792ae92",
+      "wall_seconds": 0.7022736850012734
+    },
+    {
+      "arm": "mlp",
+      "checkpoint": "fits/mlp_43/checkpoint.pt",
+      "checkpoint_sha256": "e23da362802894737ea25090379e6b7476504ec27c8824323a6ddef09fb723a1",
+      "cpu_seconds": 0.9152117739999994,
+      "final_loss": 0.3629760444164276,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "parameters": 290,
+        "persistent_state_scalars": 6,
+        "sequence_length": 4
+      },
+      "seed": 43,
+      "status": "completed",
+      "training_index_sha256": "5b6ae6c72b2a023d46ee5647c201bfd636ac1e3db8a2bbb6784ca1252cbf4247",
+      "wall_seconds": 0.9191710179984511
+    },
+    {
+      "arm": "transformer",
+      "checkpoint": "fits/transformer_17/checkpoint.pt",
+      "checkpoint_sha256": "ffcf33233133b72229265f21147cbe71eb233aa8e8fc3b6346042a2739750440",
+      "cpu_seconds": 2.6318753059999977,
+      "final_loss": 0.34976035356521606,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": null,
+        "parameters": 15386,
+        "persistent_state_scalars": 384,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 17,
+      "status": "completed",
+      "training_index_sha256": "575589fd871c5972016bce8c0ee1296364cfd6fb484ef9c28a783daffe2dc209",
+      "wall_seconds": 2.6618535870002233
+    },
+    {
+      "arm": "transformer",
+      "checkpoint": "fits/transformer_29/checkpoint.pt",
+      "checkpoint_sha256": "3a1d2d5ffb0f86a68edef91121cc1626331b23af4d06ffe204126453bc4e635f",
+      "cpu_seconds": 2.5155324039999982,
+      "final_loss": 0.733973503112793,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": null,
+        "parameters": 15386,
+        "persistent_state_scalars": 384,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 29,
+      "status": "completed",
+      "training_index_sha256": "ac9635d1e42dbc6a7836f4c1a8a9d84b7e67965d3b7886faf88c15e46792ae92",
+      "wall_seconds": 2.543780976000562
+    },
+    {
+      "arm": "transformer",
+      "checkpoint": "fits/transformer_43/checkpoint.pt",
+      "checkpoint_sha256": "01015e18dd1b7f9ad3d8c4f3ed305e8bb556913fe4962a67c40764b01c3dc9e8",
+      "cpu_seconds": 2.2641575439999997,
+      "final_loss": 0.37853068113327026,
+      "resources": {
+        "compiled": false,
+        "content_precision": "float32",
+        "matrix_precision": null,
+        "parameters": 15386,
+        "persistent_state_scalars": 384,
+        "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+      },
+      "seed": 43,
+      "status": "completed",
+      "training_index_sha256": "5b6ae6c72b2a023d46ee5647c201bfd636ac1e3db8a2bbb6784ca1252cbf4247",
+      "wall_seconds": 2.2886126230005175
+    }
+  ],
+  "frontend_candidate_sha256": "18cf5752c049656156a1b87c05be95fa463f37c885cbc2188901f8fd0b46a495",
+  "matched_training_indices": true,
+  "parent_cpu_seconds": 0.013515743000000136,
+  "protocol_sha256": "ace6bb71403f5179c53b394e5b9695dcd49faff9687ea5ff6bc3ad26044618c5",
+  "protocol_unchanged": true,
+  "source_commit": "2d0f427bea28c787f15a17648c09640d94d532cc",
+  "source_unchanged": true,
+  "wall_seconds": 26.391580768002314
+}

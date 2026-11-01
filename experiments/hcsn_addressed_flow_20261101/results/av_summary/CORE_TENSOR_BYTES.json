@@ -1,0 +1,143 @@
+{
+  "fits": [
+    {
+      "arm": "diagonal",
+      "checkpoint_sha256": "7ffe7ba4678d93d4c7dc43241de1234ddb6d4beb1d4c2aeac8b214c2ad08e626",
+      "seed": 17,
+      "tensor_bytes": 43380,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 10845
+      }
+    },
+    {
+      "arm": "diagonal",
+      "checkpoint_sha256": "0983d01f750951877d40e680a548ac43c8ca2b5aab54efe94659e44fff68e944",
+      "seed": 29,
+      "tensor_bytes": 43380,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 10845
+      }
+    },
+    {
+      "arm": "diagonal",
+      "checkpoint_sha256": "4a23ea2b33baa3ff35699cb97af0cb97217cd28872045c1702452e5f88561ee3",
+      "seed": 43,
+      "tensor_bytes": 43380,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 10845
+      }
+    },
+    {
+      "arm": "flow",
+      "checkpoint_sha256": "74c27aa2432551a38daab19c953575bf58cebf0efd7aede21376a2c274730594",
+      "seed": 17,
+      "tensor_bytes": 43080,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 10770
+      }
+    },
+    {
+      "arm": "flow",
+      "checkpoint_sha256": "46936533a9cc17c5388deff4ecc69a1930dbe315b2950a569f708632221f65ce",
+      "seed": 29,
+      "tensor_bytes": 43080,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 10770
+      }
+    },
+    {
+      "arm": "flow",
+      "checkpoint_sha256": "20f100160b5c722c6eab7ebb3e5dfb22a0f956731ab63490179af648ee77bb4a",
+      "seed": 43,
+      "tensor_bytes": 43080,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 10770
+      }
+    },
+    {
+      "arm": "gru",
+      "checkpoint_sha256": "f92f7a4593099382c6f9549c7402a7b5ed0ede6463c1cc0bef10f60ec359a7d7",
+      "seed": 17,
+      "tensor_bytes": 95752,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 23938
+      }
+    },
+    {
+      "arm": "gru",
+      "checkpoint_sha256": "ef24bc3faef8b38614c30f58fc9e322160a7aa179a1e0a1bbc088a59ee3b5a51",
+      "seed": 29,
+      "tensor_bytes": 95752,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 23938
+      }
+    },
+    {
+      "arm": "gru",
+      "checkpoint_sha256": "29606d4aa78c724f68ce4c38a5c39fa65d9bf5b3a87b5af5a0ee5f74d9dc1d68",
+      "seed": 43,
+      "tensor_bytes": 95752,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 23938
+      }
+    },
+    {
+      "arm": "mlp",
+      "checkpoint_sha256": "98ea81aeb56f2558d960f35ce532a9c1c9d428e3bc45f659063dfa53dba146c0",
+      "seed": 17,
+      "tensor_bytes": 1160,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 290
+      }
+    },
+    {
+      "arm": "mlp",
+      "checkpoint_sha256": "1581d2883e2922fa84a002b54dfd91f0ef423bc19009707c2a76fdb505d3b0be",
+      "seed": 29,
+      "tensor_bytes": 1160,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 290
+      }
+    },
+    {
+      "arm": "mlp",
+      "checkpoint_sha256": "e23da362802894737ea25090379e6b7476504ec27c8824323a6ddef09fb723a1",
+      "seed": 43,
+      "tensor_bytes": 1160,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 290
+      }
+    },
+    {
+      "arm": "transformer",
+      "checkpoint_sha256": "ffcf33233133b72229265f21147cbe71eb233aa8e8fc3b6346042a2739750440",
+      "seed": 17,
+      "tensor_bytes": 61544,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 15386
+      }
+    },
+    {
+      "arm": "transformer",
+      "checkpoint_sha256": "3a1d2d5ffb0f86a68edef91121cc1626331b23af4d06ffe204126453bc4e635f",
+      "seed": 29,
+      "tensor_bytes": 61544,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 15386
+      }
+    },
+    {
+      "arm": "transformer",
+      "checkpoint_sha256": "01015e18dd1b7f9ad3d8c4f3ed305e8bb556913fe4962a67c40764b01c3dc9e8",
+      "seed": 43,
+      "tensor_bytes": 61544,
+      "tensor_numel_by_dtype": {
+        "torch.float32": 15386
+      }
+    }
+  ],
+  "inference_performed": false,
+  "manifest_sha256": "50163923f4312b63aefc29af4135279ba7da77cb251466eae29a9467b259e0fc",
+  "schema": "hcsn.av.checkpoint.tensor.bytes.v1",
+  "scope": "Read-only frozen state_dict metadata. Tensor bytes exclude Python/library runtime, optimizer state, intermediate activation/matrices, input arrays and encoder residency; not a measured process resident-set increment."
+}

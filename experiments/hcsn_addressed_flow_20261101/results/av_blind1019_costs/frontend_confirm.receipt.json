@@ -1,0 +1,75 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python",
+    "-m",
+    "experiments.hcsn_addressed_flow_20261101.av_frontend",
+    "confirm",
+    "--data-root",
+    "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_data",
+    "--temporal-root",
+    "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_temporal",
+    "--mouth-root",
+    "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_mouth",
+    "--out",
+    "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_confirm001",
+    "--candidate-freeze",
+    "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/CANDIDATES.json",
+    "--split",
+    "independent_test"
+  ],
+  "cwd": "/workspace/scratch/ad699f1b2b79/hepta-csn-next",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-01T07:55:32.291088+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_costs/frontend_confirm.stdout.log",
+  "stderr_path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_costs/frontend_confirm.stderr.log",
+  "pid": 7,
+  "finished_utc": "2026-11-01T07:55:33.419471+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 1.128180143001373,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 1.00593,
+  "system_cpu_seconds": 0.061010999999999996,
+  "total_cpu_seconds": 1.066941,
+  "peak_rss_bytes": 88489984,
+  "peak_rss_native_units": 86416,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_costs/frontend_confirm.stdout.log",
+      "is_file": true,
+      "bytes": 9312,
+      "sha256": "9cd5d4ec97726d10dc0dda28376e3157c4d08bcdae3f1556e8e33b2e4c568556"
+    },
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_costs/frontend_confirm.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_confirm001/CONFIRMATION.json",
+      "is_file": true,
+      "bytes": 9312,
+      "sha256": "42cbfff2954409e1236a4ca857ed495459a1866d377253317be16bb427e42174"
+    },
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_confirm001/predictions.npz",
+      "is_file": true,
+      "bytes": 1411,
+      "sha256": "42dfab42532db1344bb75e4b23cf0f3b172e1d75e60aaaac086f207e2c2ac265"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0007523960000000024,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

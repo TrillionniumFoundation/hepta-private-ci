@@ -1,0 +1,23 @@
+{
+  "schema": "hcsn.av.frontend.v2",
+  "baseline_head": "7226bd94c6f30d113b2abb8dcf3678e63eb81f38",
+  "upstream_crema_commit": "1658cd342dff90010aa843eaeebd53610a08b1dc",
+  "scope": "Closed two-sentence supervised frontend and relational consistency diagnostic; not open-domain understanding or analytic-core contribution.",
+  "cohort": "Use prior immutable COHORT.json actor split: 24 train, 6 validation, 8 test. Test is locked reevaluation of previously studied actors, not a fresh cohort.",
+  "accepted_prefix_seconds": 1.0,
+  "video": "Original frames at or before ten cutoffs 0.1..1.0 seconds after common media origin; scale each frame to 64x48 grayscale, crop fixed x[16:48], y[12:40], frame-wise 8x8 low-frequency DCT, concatenate original temporal sequence and within-clip time-centered sequence.",
+  "audio": "Crop native samples for fixed 1.0 second after common origin before local resampling to 16kHz, 32-band log-mel averaged into twenty equal temporal bins; no duration or identity inputs.",
+  "text": "Actual transcript token bag from original data contract, with learned sentence decoder.",
+  "auxiliary_supervision": "Training-only sentence identity labels supervise per-modality decoders. This is additional supervision relative to old end-to-end consistency-only experiment, and must be given identically to all subsequent compared cores.",
+  "candidates": {"feature": ["baseline", "temporal", "video-only mouth_motion"], "estimator": ["logistic", "rbf"], "C": [0.01, 0.1, 1.0, 10.0, 100.0]},
+  "development_extension": "After initial temporal video validation remained57%, inspected only training actor1007/1029 prefixes and confirmed mouth movement before1s. Add one fixed1s mouth descriptor: at ten cutoffs crop64x48 frame to x[24:42],y[21:34], subtract pixelwise temporal median within accepted prefix, divide by max(prefix crop std,0.01), retain6x6 DCT residual and adjacent differences. Keep all initial failed results. No change in sensing budget; no confirmation data before final freeze.",
+  "fixed_alignment_candidate": "For mouth_motion only, add one DTW decoder: first10x36 residual coefficients, training-only per-coefficient normalization shared across time, squared Euclidean local costs, bandwidth2, mean of three nearest training distances per class, actor-crossfit logistic score calibration. No DTW hyperparameter sweep. This candidate was added before reading mouth-extension validation results.",
+  "selection": "For audio and video separately maximize validation sentence accuracy, then minimize validation log loss, then candidate enumeration index; no test access. Text uses logistic C=1. RBF SVC uses probability=False. StandardScaler is fit on train only. Decoder score calibration uses logistic C=1 on four-fold actor-group crossfit training scores, followed by a full-train decoder refit. The learned relation head is fitted on those actor-crossfit training probabilities.",
+  "relation_heads": ["product-based weighted consistency rule from three decoded sentence distributions, assuming conditional independence; not claimed to be the true posterior under shared actor/emotion nuisance", "train-fitted weighted logistic regression C=1 on multilinear decoder probability features", "eight separately trained weighted logistic C=1 heads, one per available-modality subset, fitted on actor-crossfit train probabilities"],
+  "confirmation": "Require content-hashed candidate freeze containing source, protocol, checkpoints, training/validation results before reading test media or features. Report every modality subset, exact metadata information ceilings, actor-clustered bootstrap, and all candidate development costs.",
+  "frontend_gate": {"audio_sentence_accuracy": 0.9, "video_sentence_accuracy": 0.9, "full_consistency_accuracy_lower_actor_bootstrap_95": 0.8333333333333334},
+  "metrics": "Sentence accuracy; weighted consistency accuracy, balanced confusion, Brier score; actor bootstrap 10000 resamples seed 71; single episode and batched latency from 31 repeats after 5 warmups.",
+  "energy_joules": null,
+  "energy_reason": "No attributable energy meter available; CPU seconds are not joules.",
+  "license": "CREMA-D database ODbL-1.0, contents DbCL-1.0; retained upstream attribution in old data/CREMA-D-LICENSE.txt."
+}

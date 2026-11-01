@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "/workspace/scratch/52a69008c60c/.venv/bin/python",
+    "-m",
+    "experiments.hcsn_four_stage_flow_20261031.operator_audit",
+    "--out",
+    "experiments/hcsn_addressed_flow_20261101/results/operator_regression001",
+    "--stage",
+    "formal",
+    "--frozen-commit",
+    "7226bd94c6f30d113b2abb8dcf3678e63eb81f38"
+  ],
+  "cwd": "/workspace/scratch/ad699f1b2b79/hepta-csn-next",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-01T07:27:12.369327+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_addressed_flow_20261101/results/operator_regression_meter.stdout.log",
+  "stderr_path": "experiments/hcsn_addressed_flow_20261101/results/operator_regression_meter.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-01T07:27:14.791732+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 2.42221026200059,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 2.211353,
+  "system_cpu_seconds": 0.190384,
+  "total_cpu_seconds": 2.401737,
+  "peak_rss_bytes": 284733440,
+  "peak_rss_native_units": 278060,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/operator_regression_meter.stdout.log",
+      "is_file": true,
+      "bytes": 580,
+      "sha256": "b18eb6a23996ea22067a268cd49ee16695c541431e31dae5365aa9d4b8124a63"
+    },
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/operator_regression_meter.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0005998899999999988,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

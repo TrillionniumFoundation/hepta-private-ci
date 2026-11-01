@@ -1,0 +1,1491 @@
+{
+  "candidate_freeze_sha256": "50163923f4312b63aefc29af4135279ba7da77cb251466eae29a9467b259e0fc",
+  "cpu_seconds": 2.226170044,
+  "encoder_probabilities_sha256": "f1ae41e548509c05190b166e4b82b0301ecfb32bcfcaab8e1fc4fff1d18dd95b",
+  "energy_joules": null,
+  "frontend_confirmation_sha256": "18572fb5f96e70efbf10818adbb46931afeed1a5f1832bcf0a3a214f6baf4543",
+  "gpu": null,
+  "reference_predictions_sha256": "06eedb072712b2974241df2b7996e643b8240e96442f35d7e66dbcc0fce77829",
+  "references": {
+    "constructed": {
+      "actor_bootstrap_95": [
+        0.6545138955116272,
+        0.7586805820465088
+      ],
+      "actors": 8,
+      "cross_entropy": 0.5712653180391052,
+      "episodes": 384,
+      "weighted_accuracy": 0.7100694444444444
+    },
+    "learned_relation": {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7673611044883728
+      ],
+      "actors": 8,
+      "cross_entropy": 0.5743386079349151,
+      "episodes": 384,
+      "weighted_accuracy": 0.71875
+    }
+  },
+  "results": [
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "7ffe7ba4678d93d4c7dc43241de1234ddb6d4beb1d4c2aeac8b214c2ad08e626",
+      "condition": "base",
+      "cross_entropy": 0.6947640819497969,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 2022.5596209614355,
+          "median_seconds": 0.0004944230022374541,
+          "seconds": [
+            0.00046814400047878735,
+            0.0004999310003768187,
+            0.0004594409983837977,
+            0.0007186160000856034,
+            0.0006841340000391938,
+            0.00047234000157914124,
+            0.0005044179997639731,
+            0.0004610129981301725,
+            0.0004944230022374541
+          ]
+        },
+        "24": {
+          "episodes_per_second": 36787.416221719475,
+          "median_seconds": 0.0006523970005218871,
+          "seconds": [
+            0.0006710550005664118,
+            0.0005965950003883336,
+            0.000628452002274571,
+            0.000626319000730291,
+            0.0006523970005218871,
+            0.0006438349992095027,
+            0.0006617010003537871,
+            0.0006931370007805526,
+            0.0006635230020037852
+          ]
+        }
+      },
+      "raw_file": "diagonal_17_base.npz",
+      "raw_sha256": "69ffdffc71e397c4078d8554384eb2982287d5abccf944c99cff378726a047c0",
+      "seed": 17,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "7ffe7ba4678d93d4c7dc43241de1234ddb6d4beb1d4c2aeac8b214c2ad08e626",
+      "condition": "delay8",
+      "cross_entropy": 0.6947410917842374,
+      "episodes": 384,
+      "raw_file": "diagonal_17_delay8.npz",
+      "raw_sha256": "33cd13271b63c419d5257feb511bf3df8d8a5a04cbf1278354a8f8630ad3e8dc",
+      "seed": 17,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "7ffe7ba4678d93d4c7dc43241de1234ddb6d4beb1d4c2aeac8b214c2ad08e626",
+      "condition": "delay32",
+      "cross_entropy": 0.6947326568594482,
+      "episodes": 384,
+      "raw_file": "diagonal_17_delay32.npz",
+      "raw_sha256": "d80b2bbf2ca000b88bf958f38887116130b1e5d22be68167465555358d59c6e1",
+      "seed": 17,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "7ffe7ba4678d93d4c7dc43241de1234ddb6d4beb1d4c2aeac8b214c2ad08e626",
+      "condition": "resample",
+      "cross_entropy": 0.6947640819497969,
+      "episodes": 384,
+      "raw_file": "diagonal_17_resample.npz",
+      "raw_sha256": "69ffdffc71e397c4078d8554384eb2982287d5abccf944c99cff378726a047c0",
+      "resampling_error": 0.0,
+      "seed": 17,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "0983d01f750951877d40e680a548ac43c8ca2b5aab54efe94659e44fff68e944",
+      "condition": "base",
+      "cross_entropy": 0.6933874783219548,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 1992.8893657836502,
+          "median_seconds": 0.0005017840012442321,
+          "seconds": [
+            0.000547431998711545,
+            0.0004646990018954966,
+            0.0005017840012442321,
+            0.000453712997114053,
+            0.00048653100020601414,
+            0.0006419210003514308,
+            0.000809190001746174,
+            0.0006374760014296044,
+            0.00046917500003473833
+          ]
+        },
+        "24": {
+          "episodes_per_second": 36168.926931075155,
+          "median_seconds": 0.0006635530007770285,
+          "seconds": [
+            0.0007944979988678824,
+            0.0008332560028065927,
+            0.0006807289973949082,
+            0.0006014819991833065,
+            0.0006369750008161645,
+            0.0006208599988895003,
+            0.0007572520007670391,
+            0.0006635530007770285,
+            0.0006292320031207055
+          ]
+        }
+      },
+      "raw_file": "diagonal_29_base.npz",
+      "raw_sha256": "90de500bb8b96ccb8045c2de09244f113bb3d9009f608dbbb6045bd2732cdded",
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "0983d01f750951877d40e680a548ac43c8ca2b5aab54efe94659e44fff68e944",
+      "condition": "delay8",
+      "cross_entropy": 0.6933826919072933,
+      "episodes": 384,
+      "raw_file": "diagonal_29_delay8.npz",
+      "raw_sha256": "0c6e72c59dab859fdd3a5221f9fc39007d03d21d3394a9871e259f87e0b7896d",
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "0983d01f750951877d40e680a548ac43c8ca2b5aab54efe94659e44fff68e944",
+      "condition": "delay32",
+      "cross_entropy": 0.6933814292601506,
+      "episodes": 384,
+      "raw_file": "diagonal_29_delay32.npz",
+      "raw_sha256": "3e1f3984c559e07a3b6b003d1791b55a28e11bc69ac4c2eb226fa5b599d1ed31",
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "0983d01f750951877d40e680a548ac43c8ca2b5aab54efe94659e44fff68e944",
+      "condition": "resample",
+      "cross_entropy": 0.6933874783219548,
+      "episodes": 384,
+      "raw_file": "diagonal_29_resample.npz",
+      "raw_sha256": "90de500bb8b96ccb8045c2de09244f113bb3d9009f608dbbb6045bd2732cdded",
+      "resampling_error": 0.0,
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "4a23ea2b33baa3ff35699cb97af0cb97217cd28872045c1702452e5f88561ee3",
+      "condition": "base",
+      "cross_entropy": 0.6933063341689818,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 1967.9112399980604,
+          "median_seconds": 0.0005081529998278711,
+          "seconds": [
+            0.0005259389981802087,
+            0.000807095999334706,
+            0.0005259190002107061,
+            0.0005081529998278711,
+            0.00045514499652199447,
+            0.0005006320025131572,
+            0.00045559600039268844,
+            0.0004902669970761053,
+            0.0005789679998997599
+          ]
+        },
+        "24": {
+          "episodes_per_second": 34745.14435768023,
+          "median_seconds": 0.0006907440001668874,
+          "seconds": [
+            0.0006361339983413927,
+            0.0006395879972842522,
+            0.0005986280011711642,
+            0.0008083479988272302,
+            0.000787306998972781,
+            0.0006386770000972319,
+            0.0007229519978864118,
+            0.0008001559981494211,
+            0.0006907440001668874
+          ]
+        }
+      },
+      "raw_file": "diagonal_43_base.npz",
+      "raw_sha256": "215e80f590e5322b84562203c3533b6eca23217bfafb3b722c194a2a3a50d69f",
+      "seed": 43,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "4a23ea2b33baa3ff35699cb97af0cb97217cd28872045c1702452e5f88561ee3",
+      "condition": "delay8",
+      "cross_entropy": 0.6932997971308993,
+      "episodes": 384,
+      "raw_file": "diagonal_43_delay8.npz",
+      "raw_sha256": "744432a0dbb47e13017c429cddcccd2d1a1e0dde8da09822b5b89160ccbe6fa9",
+      "seed": 43,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "4a23ea2b33baa3ff35699cb97af0cb97217cd28872045c1702452e5f88561ee3",
+      "condition": "delay32",
+      "cross_entropy": 0.6932976596916175,
+      "episodes": 384,
+      "raw_file": "diagonal_43_delay32.npz",
+      "raw_sha256": "1b1b801f7859317b52251f8bd99f9aca71acced3710b0d2de78d43b49a90df72",
+      "seed": 43,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "diagonal",
+      "checkpoint_sha256": "4a23ea2b33baa3ff35699cb97af0cb97217cd28872045c1702452e5f88561ee3",
+      "condition": "resample",
+      "cross_entropy": 0.6933063341689818,
+      "episodes": 384,
+      "raw_file": "diagonal_43_resample.npz",
+      "raw_sha256": "215e80f590e5322b84562203c3533b6eca23217bfafb3b722c194a2a3a50d69f",
+      "resampling_error": 0.0,
+      "seed": 43,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6684027910232544,
+        0.7621527910232544
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "74c27aa2432551a38daab19c953575bf58cebf0efd7aede21376a2c274730594",
+      "condition": "base",
+      "cross_entropy": 0.588675669178823,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 235.96069259457832,
+          "median_seconds": 0.0042379940023238305,
+          "seconds": [
+            0.004527162000158569,
+            0.004421534998982679,
+            0.004118906999792671,
+            0.004153067999141058,
+            0.004291361998184584,
+            0.0042289900011383,
+            0.00414360300055705,
+            0.0042379940023238305,
+            0.00456349600062822
+          ]
+        },
+        "24": {
+          "episodes_per_second": 4529.828353048012,
+          "median_seconds": 0.005298214000504231,
+          "seconds": [
+            0.005384312000387581,
+            0.00529231600012281,
+            0.00534611699913512,
+            0.005319666997820605,
+            0.005298214000504231,
+            0.005218977999902563,
+            0.005343336997611914,
+            0.003876386999763781,
+            0.0033599919988773763
+          ]
+        }
+      },
+      "raw_file": "flow_17_base.npz",
+      "raw_sha256": "be25c70c55e10cdfdb89d2a1ce8753601ae063c881faa82d228db6f607402827",
+      "seed": 17,
+      "weighted_accuracy": 0.7152777777777778
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5763888955116272,
+        0.6319444179534912
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "74c27aa2432551a38daab19c953575bf58cebf0efd7aede21376a2c274730594",
+      "condition": "delay8",
+      "cross_entropy": 0.7210834694540047,
+      "episodes": 384,
+      "raw_file": "flow_17_delay8.npz",
+      "raw_sha256": "c804d7b8c3a1f2a3ff58f44a45ec6514e531ffbc07b0c3cb56b0d87fb524fd01",
+      "seed": 17,
+      "weighted_accuracy": 0.6041666666666666
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5850694179534912,
+        0.6319444179534912
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "74c27aa2432551a38daab19c953575bf58cebf0efd7aede21376a2c274730594",
+      "condition": "delay32",
+      "cross_entropy": 0.62812987183376,
+      "episodes": 384,
+      "raw_file": "flow_17_delay32.npz",
+      "raw_sha256": "3f09146177d6cf64dade2bdd63aaa7ca864dbd6ad8e646b82b4151e4ffc4c5d4",
+      "seed": 17,
+      "weighted_accuracy": 0.609375
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6684027910232544,
+        0.7621527910232544
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "74c27aa2432551a38daab19c953575bf58cebf0efd7aede21376a2c274730594",
+      "condition": "resample",
+      "cross_entropy": 0.5886757085321653,
+      "episodes": 384,
+      "raw_file": "flow_17_resample.npz",
+      "raw_sha256": "c7b00a845a585d4a2482a37c91099ca74ea891e3ec7fa938f9dbb39d81041de7",
+      "resampling_error": 1.5497207641601562e-06,
+      "seed": 17,
+      "weighted_accuracy": 0.7152777777777778
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "46936533a9cc17c5388deff4ecc69a1930dbe315b2950a569f708632221f65ce",
+      "condition": "base",
+      "cross_entropy": 0.6938265508934063,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 262.5148717043963,
+          "median_seconds": 0.0038093079965619836,
+          "seconds": [
+            0.0029376960010267794,
+            0.0025633509976614732,
+            0.002897366000979673,
+            0.004012729001260595,
+            0.0029117570011294447,
+            0.0038093079965619836,
+            0.0048306520002370235,
+            0.004146167000726564,
+            0.004087559998879442
+          ]
+        },
+        "24": {
+          "episodes_per_second": 4638.954069860441,
+          "median_seconds": 0.005173580000700895,
+          "seconds": [
+            0.005775221998192137,
+            0.005571839999902295,
+            0.005976060001557926,
+            0.005173580000700895,
+            0.0038505190022988245,
+            0.004575394003040856,
+            0.003853163001622306,
+            0.004496305999055039,
+            0.005390381000324851
+          ]
+        }
+      },
+      "raw_file": "flow_29_base.npz",
+      "raw_sha256": "33e76cd188b0edc91aac9ca5e8e840a28c9507c5efb5f249816ebcba8e6a5e70",
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "46936533a9cc17c5388deff4ecc69a1930dbe315b2950a569f708632221f65ce",
+      "condition": "delay8",
+      "cross_entropy": 0.6938243793199841,
+      "episodes": 384,
+      "raw_file": "flow_29_delay8.npz",
+      "raw_sha256": "b046029cfb9387b76dc334b60ffce7c44b87b141ed0d760ee543c0251976f317",
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "46936533a9cc17c5388deff4ecc69a1930dbe315b2950a569f708632221f65ce",
+      "condition": "delay32",
+      "cross_entropy": 0.6938234122333939,
+      "episodes": 384,
+      "raw_file": "flow_29_delay32.npz",
+      "raw_sha256": "58ab530f2c3c5e2902d6195e5f9821c7e70a8215cd0a5bfae1ab581058425800",
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "46936533a9cc17c5388deff4ecc69a1930dbe315b2950a569f708632221f65ce",
+      "condition": "resample",
+      "cross_entropy": 0.6938265509163506,
+      "episodes": 384,
+      "raw_file": "flow_29_resample.npz",
+      "raw_sha256": "238bcd21e0b2250095258cd4de2c3530fafbf60349f6a5520f8f826befd6beb8",
+      "resampling_error": 7.450580596923828e-09,
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5954861044883728,
+        0.7152777910232544
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "20f100160b5c722c6eab7ebb3e5dfb22a0f956731ab63490179af648ee77bb4a",
+      "condition": "base",
+      "cross_entropy": 0.6431861773861224,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 348.51414455831696,
+          "median_seconds": 0.0028693240019492805,
+          "seconds": [
+            0.0028683929995168,
+            0.0027755249975598417,
+            0.002678079999895999,
+            0.0027592810001806356,
+            0.003768947000935441,
+            0.003941893999581225,
+            0.0028693240019492805,
+            0.0032414859997516032,
+            0.004518204001215054
+          ]
+        },
+        "24": {
+          "episodes_per_second": 5461.37838217136,
+          "median_seconds": 0.004394495001179166,
+          "seconds": [
+            0.004643924999982119,
+            0.004394495001179166,
+            0.0036457950009207707,
+            0.004615272999217268,
+            0.004912102998787304,
+            0.0036824499984504655,
+            0.003349865997734014,
+            0.004043293996801367,
+            0.00468806500066421
+          ]
+        }
+      },
+      "raw_file": "flow_43_base.npz",
+      "raw_sha256": "96b35054c6398b8939bace640281015ac1e234716a95211eb0ff8e81658b2245",
+      "seed": 43,
+      "weighted_accuracy": 0.6579861111111112
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5833333134651184,
+        0.6319444179534912
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "20f100160b5c722c6eab7ebb3e5dfb22a0f956731ab63490179af648ee77bb4a",
+      "condition": "delay8",
+      "cross_entropy": 0.686397725418278,
+      "episodes": 384,
+      "raw_file": "flow_43_delay8.npz",
+      "raw_sha256": "598b520ad2411977902e93c535e0d288de36ca33444c06529ab2e889eb0eec6a",
+      "seed": 43,
+      "weighted_accuracy": 0.609375
+    },
+    {
+      "actor_bootstrap_95": [
+        0.546875,
+        0.5902777910232544
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "20f100160b5c722c6eab7ebb3e5dfb22a0f956731ab63490179af648ee77bb4a",
+      "condition": "delay32",
+      "cross_entropy": 0.7911367527905429,
+      "episodes": 384,
+      "raw_file": "flow_43_delay32.npz",
+      "raw_sha256": "88da3233d5b60d7a54b309c1f5d97a596290d4c7e4cb8d202ddf2af7a36e6430",
+      "seed": 43,
+      "weighted_accuracy": 0.5677083333333334
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5954861044883728,
+        0.7152777910232544
+      ],
+      "actors": 8,
+      "arm": "flow",
+      "checkpoint_sha256": "20f100160b5c722c6eab7ebb3e5dfb22a0f956731ab63490179af648ee77bb4a",
+      "condition": "resample",
+      "cross_entropy": 0.6431861740238374,
+      "episodes": 384,
+      "raw_file": "flow_43_resample.npz",
+      "raw_sha256": "0aa1f0e673f32e9203fec1dbc235371f18383ab19d205e95ba63de2a4d19d992",
+      "resampling_error": 7.152557373046875e-07,
+      "seed": 43,
+      "weighted_accuracy": 0.6579861111111112
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6545138955116272,
+        0.7708333134651184
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "f92f7a4593099382c6f9549c7402a7b5ed0ede6463c1cc0bef10f60ec359a7d7",
+      "condition": "base",
+      "cross_entropy": 0.5800488617474762,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 1661.4276332056031,
+          "median_seconds": 0.0006018919993948657,
+          "seconds": [
+            0.0006140510013210587,
+            0.0005638660004478879,
+            0.0005174469988560304,
+            0.0006116869990364648,
+            0.0005377070010581519,
+            0.0006441450022975914,
+            0.0005421339992608409,
+            0.0006286520001594909,
+            0.0006018919993948657
+          ]
+        },
+        "24": {
+          "episodes_per_second": 27307.078366305435,
+          "median_seconds": 0.000878892999025993,
+          "seconds": [
+            0.0008480070027871989,
+            0.0007842919985705521,
+            0.0008419279984082095,
+            0.0009619059965189081,
+            0.000878892999025993,
+            0.0008258740017481614,
+            0.0009550260001560673,
+            0.0009136840017163195,
+            0.000935176998609677
+          ]
+        }
+      },
+      "raw_file": "gru_17_base.npz",
+      "raw_sha256": "9c3edacd34689cb1d8ffa1ce828ec442a9946dd519032a00d2e859ec2ac55b48",
+      "seed": 17,
+      "weighted_accuracy": 0.7170138888888888
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6545138955116272,
+        0.7673611044883728
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "f92f7a4593099382c6f9549c7402a7b5ed0ede6463c1cc0bef10f60ec359a7d7",
+      "condition": "delay8",
+      "cross_entropy": 0.5824671464251137,
+      "episodes": 384,
+      "raw_file": "gru_17_delay8.npz",
+      "raw_sha256": "c59da233c699c387fb37d4983a5d2e3634d523225754fa85eb48390a8787bf2e",
+      "seed": 17,
+      "weighted_accuracy": 0.7135416666666666
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6614583134651184,
+        0.7534722089767456
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "f92f7a4593099382c6f9549c7402a7b5ed0ede6463c1cc0bef10f60ec359a7d7",
+      "condition": "delay32",
+      "cross_entropy": 0.6380015055579482,
+      "episodes": 384,
+      "raw_file": "gru_17_delay32.npz",
+      "raw_sha256": "0a3b8d32514b3a9a71ddb9bc9a3d4414b3f5e5093c148dee471c62e3fb7773c6",
+      "seed": 17,
+      "weighted_accuracy": 0.7083333333333334
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6545138955116272,
+        0.7708333134651184
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "f92f7a4593099382c6f9549c7402a7b5ed0ede6463c1cc0bef10f60ec359a7d7",
+      "condition": "resample",
+      "cross_entropy": 0.5800488617474762,
+      "episodes": 384,
+      "raw_file": "gru_17_resample.npz",
+      "raw_sha256": "9c3edacd34689cb1d8ffa1ce828ec442a9946dd519032a00d2e859ec2ac55b48",
+      "resampling_error": 0.0,
+      "seed": 17,
+      "weighted_accuracy": 0.7170138888888888
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "ef24bc3faef8b38614c30f58fc9e322160a7aa179a1e0a1bbc088a59ee3b5a51",
+      "condition": "base",
+      "cross_entropy": 0.6935900719322535,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 1902.989398707886,
+          "median_seconds": 0.0005254890020296443,
+          "seconds": [
+            0.0004228469988447614,
+            0.0005200710002100095,
+            0.00041580700053600594,
+            0.0005783279993920587,
+            0.0005254890020296443,
+            0.0005948819998593535,
+            0.0007340880001720507,
+            0.0004202530035399832,
+            0.0005562139995163307
+          ]
+        },
+        "24": {
+          "episodes_per_second": 31711.13257963221,
+          "median_seconds": 0.000756832003389718,
+          "seconds": [
+            0.0010993089999828953,
+            0.0007055960013531148,
+            0.0007764110014250036,
+            0.000756832003389718,
+            0.0005767849979747552,
+            0.0007297010015463457,
+            0.001011549000395462,
+            0.0007981029993970878,
+            0.0005782070002169348
+          ]
+        }
+      },
+      "raw_file": "gru_29_base.npz",
+      "raw_sha256": "bbc7b4fd8a94cd5e108d67d4a07f24f447ee8cc8e652886d7173815f7c9d2be0",
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "ef24bc3faef8b38614c30f58fc9e322160a7aa179a1e0a1bbc088a59ee3b5a51",
+      "condition": "delay8",
+      "cross_entropy": 0.6935847666106849,
+      "episodes": 384,
+      "raw_file": "gru_29_delay8.npz",
+      "raw_sha256": "30fb700ef9a98e0313d2cb6cb74d1961383ef0af77c5a8962ee672f15e1dbf88",
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "ef24bc3faef8b38614c30f58fc9e322160a7aa179a1e0a1bbc088a59ee3b5a51",
+      "condition": "delay32",
+      "cross_entropy": 0.6935774438696721,
+      "episodes": 384,
+      "raw_file": "gru_29_delay32.npz",
+      "raw_sha256": "bc26a7e3e3f9d1438ec540e1335ab8a841fbf15e765d05a1577c87dcd9a701f3",
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.5,
+        0.5
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "ef24bc3faef8b38614c30f58fc9e322160a7aa179a1e0a1bbc088a59ee3b5a51",
+      "condition": "resample",
+      "cross_entropy": 0.6935900719322535,
+      "episodes": 384,
+      "raw_file": "gru_29_resample.npz",
+      "raw_sha256": "bbc7b4fd8a94cd5e108d67d4a07f24f447ee8cc8e652886d7173815f7c9d2be0",
+      "resampling_error": 0.0,
+      "seed": 29,
+      "weighted_accuracy": 0.5
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6597222089767456,
+        0.7586805820465088
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "29606d4aa78c724f68ce4c38a5c39fa65d9bf5b3a87b5af5a0ee5f74d9dc1d68",
+      "condition": "base",
+      "cross_entropy": 0.5964965067540283,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 2052.7473990107874,
+          "median_seconds": 0.0004871519995504059,
+          "seconds": [
+            0.0005725579976569861,
+            0.00043043800178566016,
+            0.0004044900015287567,
+            0.000772585000959225,
+            0.0004871519995504059,
+            0.0005193899996811524,
+            0.0006764729987480678,
+            0.0004112700007681269,
+            0.00047025700041558594
+          ]
+        },
+        "24": {
+          "episodes_per_second": 37312.62069083239,
+          "median_seconds": 0.000643213999865111,
+          "seconds": [
+            0.0006005899995216168,
+            0.0006081720021029469,
+            0.0005604910002148245,
+            0.000720657997590024,
+            0.0009464529975957703,
+            0.0009455019971937872,
+            0.0006723970000166446,
+            0.0006055379999452271,
+            0.000643213999865111
+          ]
+        }
+      },
+      "raw_file": "gru_43_base.npz",
+      "raw_sha256": "b3c4cecc81801f22a8f50d0731a2d56030eb6f5e9cc76bffc1c3816aa562b8ae",
+      "seed": 43,
+      "weighted_accuracy": 0.7118055555555556
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6597222089767456,
+        0.7586805820465088
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "29606d4aa78c724f68ce4c38a5c39fa65d9bf5b3a87b5af5a0ee5f74d9dc1d68",
+      "condition": "delay8",
+      "cross_entropy": 0.5730241780631815,
+      "episodes": 384,
+      "raw_file": "gru_43_delay8.npz",
+      "raw_sha256": "369a2ae7acc3bbf2eda4eac6d1f51be1443cfa05f10420b762eb49a5f1e371e0",
+      "seed": 43,
+      "weighted_accuracy": 0.7118055555555556
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6527777910232544,
+        0.7725694179534912
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "29606d4aa78c724f68ce4c38a5c39fa65d9bf5b3a87b5af5a0ee5f74d9dc1d68",
+      "condition": "delay32",
+      "cross_entropy": 0.6070069066084071,
+      "episodes": 384,
+      "raw_file": "gru_43_delay32.npz",
+      "raw_sha256": "f2fedc8a7139080e0f0ff5e35ec57250d13e6a6ac5c05645223d1bf9002667ad",
+      "seed": 43,
+      "weighted_accuracy": 0.7170138888888888
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6597222089767456,
+        0.7586805820465088
+      ],
+      "actors": 8,
+      "arm": "gru",
+      "checkpoint_sha256": "29606d4aa78c724f68ce4c38a5c39fa65d9bf5b3a87b5af5a0ee5f74d9dc1d68",
+      "condition": "resample",
+      "cross_entropy": 0.5964965067540283,
+      "episodes": 384,
+      "raw_file": "gru_43_resample.npz",
+      "raw_sha256": "b3c4cecc81801f22a8f50d0731a2d56030eb6f5e9cc76bffc1c3816aa562b8ae",
+      "resampling_error": 0.0,
+      "seed": 43,
+      "weighted_accuracy": 0.7118055555555556
+    },
+    {
+      "actor_bootstrap_95": [
+        0.65625,
+        0.7673611044883728
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "98ea81aeb56f2558d960f35ce532a9c1c9d428e3bc45f659063dfa53dba146c0",
+      "condition": "base",
+      "cross_entropy": 0.5839308702205559,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 2439.512289642603,
+          "median_seconds": 0.0004099180005141534,
+          "seconds": [
+            0.000466902998596197,
+            0.0004099180005141534,
+            0.0004651300005207304,
+            0.0004757759998028632,
+            0.0004765570010931697,
+            0.0004034280027553905,
+            0.00040220599839813076,
+            0.0003237099990656134,
+            0.00028658500013989396
+          ]
+        },
+        "24": {
+          "episodes_per_second": 66484.75714394945,
+          "median_seconds": 0.0003609849991335068,
+          "seconds": [
+            0.0003558080024959054,
+            0.0004563869988487568,
+            0.0003609849991335068,
+            0.0003754460012714844,
+            0.00031694999779574573,
+            0.0003131040029984433,
+            0.0003535840005497448,
+            0.00047917000119923614,
+            0.0005690439975296613
+          ]
+        }
+      },
+      "raw_file": "mlp_17_base.npz",
+      "raw_sha256": "c026595fbf17e073d9df468aa7a73ea253a29521b60d4ed909f84dea26e3dea1",
+      "seed": 17,
+      "weighted_accuracy": 0.7152777777777778
+    },
+    {
+      "actor_bootstrap_95": [
+        0.65625,
+        0.7673611044883728
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "98ea81aeb56f2558d960f35ce532a9c1c9d428e3bc45f659063dfa53dba146c0",
+      "condition": "delay8",
+      "cross_entropy": 0.5839308702205559,
+      "episodes": 384,
+      "raw_file": "mlp_17_delay8.npz",
+      "raw_sha256": "c026595fbf17e073d9df468aa7a73ea253a29521b60d4ed909f84dea26e3dea1",
+      "seed": 17,
+      "weighted_accuracy": 0.7152777777777778
+    },
+    {
+      "actor_bootstrap_95": [
+        0.65625,
+        0.7673611044883728
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "98ea81aeb56f2558d960f35ce532a9c1c9d428e3bc45f659063dfa53dba146c0",
+      "condition": "delay32",
+      "cross_entropy": 0.5839308702205559,
+      "episodes": 384,
+      "raw_file": "mlp_17_delay32.npz",
+      "raw_sha256": "c026595fbf17e073d9df468aa7a73ea253a29521b60d4ed909f84dea26e3dea1",
+      "seed": 17,
+      "weighted_accuracy": 0.7152777777777778
+    },
+    {
+      "actor_bootstrap_95": [
+        0.65625,
+        0.7673611044883728
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "98ea81aeb56f2558d960f35ce532a9c1c9d428e3bc45f659063dfa53dba146c0",
+      "condition": "resample",
+      "cross_entropy": 0.5839308702205559,
+      "episodes": 384,
+      "raw_file": "mlp_17_resample.npz",
+      "raw_sha256": "c026595fbf17e073d9df468aa7a73ea253a29521b60d4ed909f84dea26e3dea1",
+      "resampling_error": 0.0,
+      "seed": 17,
+      "weighted_accuracy": 0.7152777777777778
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7673611044883728
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "1581d2883e2922fa84a002b54dfd91f0ef423bc19009707c2a76fdb505d3b0be",
+      "condition": "base",
+      "cross_entropy": 0.5787035382266144,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 2552.250971894784,
+          "median_seconds": 0.0003918109978258144,
+          "seconds": [
+            0.000502124003105564,
+            0.00045311199937714264,
+            0.0004092660019523464,
+            0.0002991130022564903,
+            0.00028766700052074157,
+            0.00033656900268397294,
+            0.0003918109978258144,
+            0.0002969599991047289,
+            0.00048618099754094146
+          ]
+        },
+        "24": {
+          "episodes_per_second": 54837.21339011339,
+          "median_seconds": 0.00043765900045400485,
+          "seconds": [
+            0.00046037199717829935,
+            0.00032587299938313663,
+            0.00043765900045400485,
+            0.0004072439987794496,
+            0.0003562890015018638,
+            0.00033353400067426264,
+            0.0005052189990237821,
+            0.0005441670000436716,
+            0.0004783490003319457
+          ]
+        }
+      },
+      "raw_file": "mlp_29_base.npz",
+      "raw_sha256": "d0e16ae791b6c4dd45602b34357a698ca390e5fbd3658c87dc81c1e6d1a28e8b",
+      "seed": 29,
+      "weighted_accuracy": 0.71875
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7673611044883728
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "1581d2883e2922fa84a002b54dfd91f0ef423bc19009707c2a76fdb505d3b0be",
+      "condition": "delay8",
+      "cross_entropy": 0.5787035382266144,
+      "episodes": 384,
+      "raw_file": "mlp_29_delay8.npz",
+      "raw_sha256": "d0e16ae791b6c4dd45602b34357a698ca390e5fbd3658c87dc81c1e6d1a28e8b",
+      "seed": 29,
+      "weighted_accuracy": 0.71875
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7673611044883728
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "1581d2883e2922fa84a002b54dfd91f0ef423bc19009707c2a76fdb505d3b0be",
+      "condition": "delay32",
+      "cross_entropy": 0.5787035382266144,
+      "episodes": 384,
+      "raw_file": "mlp_29_delay32.npz",
+      "raw_sha256": "d0e16ae791b6c4dd45602b34357a698ca390e5fbd3658c87dc81c1e6d1a28e8b",
+      "seed": 29,
+      "weighted_accuracy": 0.71875
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7673611044883728
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "1581d2883e2922fa84a002b54dfd91f0ef423bc19009707c2a76fdb505d3b0be",
+      "condition": "resample",
+      "cross_entropy": 0.5787035382266144,
+      "episodes": 384,
+      "raw_file": "mlp_29_resample.npz",
+      "raw_sha256": "d0e16ae791b6c4dd45602b34357a698ca390e5fbd3658c87dc81c1e6d1a28e8b",
+      "resampling_error": 0.0,
+      "seed": 29,
+      "weighted_accuracy": 0.71875
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7638888955116272
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "e23da362802894737ea25090379e6b7476504ec27c8824323a6ddef09fb723a1",
+      "condition": "base",
+      "cross_entropy": 0.5864282024738128,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 2271.1168437124843,
+          "median_seconds": 0.0004403120001370553,
+          "seconds": [
+            0.00043312200068612583,
+            0.0004494560016610194,
+            0.0005021139986638445,
+            0.0004403120001370553,
+            0.000496676002512686,
+            0.000510477002535481,
+            0.0003792319985223003,
+            0.00030027500179130584,
+            0.00028545399982249364
+          ]
+        },
+        "24": {
+          "episodes_per_second": 62798.29186507803,
+          "median_seconds": 0.00038217600013013,
+          "seconds": [
+            0.0005366149998735636,
+            0.0005395299995143432,
+            0.0005761639986303635,
+            0.0005417329994088504,
+            0.00032934800037764944,
+            0.0003103199996985495,
+            0.00038217600013013,
+            0.00031477599986828864,
+            0.0003112209997198079
+          ]
+        }
+      },
+      "raw_file": "mlp_43_base.npz",
+      "raw_sha256": "5ec31f5b381038fc2b946f9a4199925e0cceddab675b16a60098f3bce0aa12c8",
+      "seed": 43,
+      "weighted_accuracy": 0.7152777777777778
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7638888955116272
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "e23da362802894737ea25090379e6b7476504ec27c8824323a6ddef09fb723a1",
+      "condition": "delay8",
+      "cross_entropy": 0.5864282024738128,
+      "episodes": 384,
+      "raw_file": "mlp_43_delay8.npz",
+      "raw_sha256": "5ec31f5b381038fc2b946f9a4199925e0cceddab675b16a60098f3bce0aa12c8",
+      "seed": 43,
+      "weighted_accuracy": 0.7152777777777778
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7638888955116272
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "e23da362802894737ea25090379e6b7476504ec27c8824323a6ddef09fb723a1",
+      "condition": "delay32",
+      "cross_entropy": 0.5864282024738128,
+      "episodes": 384,
+      "raw_file": "mlp_43_delay32.npz",
+      "raw_sha256": "5ec31f5b381038fc2b946f9a4199925e0cceddab675b16a60098f3bce0aa12c8",
+      "seed": 43,
+      "weighted_accuracy": 0.7152777777777778
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7638888955116272
+      ],
+      "actors": 8,
+      "arm": "mlp",
+      "checkpoint_sha256": "e23da362802894737ea25090379e6b7476504ec27c8824323a6ddef09fb723a1",
+      "condition": "resample",
+      "cross_entropy": 0.5864282024738128,
+      "episodes": 384,
+      "raw_file": "mlp_43_resample.npz",
+      "raw_sha256": "5ec31f5b381038fc2b946f9a4199925e0cceddab675b16a60098f3bce0aa12c8",
+      "resampling_error": 0.0,
+      "seed": 43,
+      "weighted_accuracy": 0.7152777777777778
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7569444179534912
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "ffcf33233133b72229265f21147cbe71eb233aa8e8fc3b6346042a2739750440",
+      "condition": "base",
+      "cross_entropy": 0.6059097081463185,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 1417.2616792586489,
+          "median_seconds": 0.0007055860005493741,
+          "seconds": [
+            0.000736671998311067,
+            0.0006139799988886807,
+            0.0005256100012047682,
+            0.0004546039999695495,
+            0.0004887950017291587,
+            0.0007055860005493741,
+            0.000720998999895528,
+            0.0007071079999150243,
+            0.0007144289993448183
+          ]
+        },
+        "24": {
+          "episodes_per_second": 22599.84894148028,
+          "median_seconds": 0.001061954000761034,
+          "seconds": [
+            0.001102104000892723,
+            0.0008086690031632315,
+            0.0010327609998057596,
+            0.0011673299995891284,
+            0.001061954000761034,
+            0.0007994949992280453,
+            0.00108993600224494,
+            0.001153239998529898,
+            0.0010518089984543622
+          ]
+        }
+      },
+      "raw_file": "transformer_17_base.npz",
+      "raw_sha256": "99050a66ad10ece4d96633f56e580643a14ad9e85093783fd7889a9a8f1be8f4",
+      "seed": 17,
+      "weighted_accuracy": 0.7118055555555556
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6597222089767456,
+        0.7552083134651184
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "ffcf33233133b72229265f21147cbe71eb233aa8e8fc3b6346042a2739750440",
+      "condition": "delay8",
+      "cross_entropy": 0.6166208099636793,
+      "episodes": 384,
+      "raw_file": "transformer_17_delay8.npz",
+      "raw_sha256": "f7b3ab2fc36c4075d46dc09c55a7270d9f5456d5971abde80ceffe37b50620fc",
+      "seed": 17,
+      "weighted_accuracy": 0.7083333333333334
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7621527910232544
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "ffcf33233133b72229265f21147cbe71eb233aa8e8fc3b6346042a2739750440",
+      "condition": "delay32",
+      "cross_entropy": 0.6083615490511289,
+      "episodes": 384,
+      "raw_file": "transformer_17_delay32.npz",
+      "raw_sha256": "e75563bdb36cfeedd939de410ca8849193dbc1452b43ffeda10a4c0bf4850357",
+      "seed": 17,
+      "weighted_accuracy": 0.7135416666666666
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7569444179534912
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "ffcf33233133b72229265f21147cbe71eb233aa8e8fc3b6346042a2739750440",
+      "condition": "resample",
+      "cross_entropy": 0.6059097098719193,
+      "episodes": 384,
+      "raw_file": "transformer_17_resample.npz",
+      "raw_sha256": "f9a69c85876820016ae9d7e9b4cea2d0ab52c917a4d887afcb46f4edc17e9a27",
+      "resampling_error": 3.5762786865234375e-07,
+      "seed": 17,
+      "weighted_accuracy": 0.7118055555555556
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7586805820465088
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "3a1d2d5ffb0f86a68edef91121cc1626331b23af4d06ffe204126453bc4e635f",
+      "condition": "base",
+      "cross_entropy": 0.623658690706331,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 2081.8066807236137,
+          "median_seconds": 0.00048035199870355427,
+          "seconds": [
+            0.00045306199899641797,
+            0.0005159649990673643,
+            0.00045233000128064305,
+            0.00048301599963451736,
+            0.0004439779986569192,
+            0.00048035199870355427,
+            0.0004956949996994808,
+            0.0004851499979849905,
+            0.0004433369977050461
+          ]
+        },
+        "24": {
+          "episodes_per_second": 31794.438385263868,
+          "median_seconds": 0.0007548489993496332,
+          "seconds": [
+            0.0008048529998632148,
+            0.0007579940029245336,
+            0.000757713001803495,
+            0.0007314739996218123,
+            0.0007227119967865292,
+            0.0007955200017022435,
+            0.0007548489993496332,
+            0.0007369729974016082,
+            0.0007134180013963487
+          ]
+        }
+      },
+      "raw_file": "transformer_29_base.npz",
+      "raw_sha256": "486b43ca0cddb51efbd1728d13e2578e915d943e21124d063c36948b5d383444",
+      "seed": 29,
+      "weighted_accuracy": 0.7118055555555556
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7586805820465088
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "3a1d2d5ffb0f86a68edef91121cc1626331b23af4d06ffe204126453bc4e635f",
+      "condition": "delay8",
+      "cross_entropy": 0.6192787553243841,
+      "episodes": 384,
+      "raw_file": "transformer_29_delay8.npz",
+      "raw_sha256": "596298bfc230c63d1a7e910918c7fbac87d96a555a23595319ae772725ce2ae4",
+      "seed": 29,
+      "weighted_accuracy": 0.7118055555555556
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6684027910232544,
+        0.7569444179534912
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "3a1d2d5ffb0f86a68edef91121cc1626331b23af4d06ffe204126453bc4e635f",
+      "condition": "delay32",
+      "cross_entropy": 0.605138448097652,
+      "episodes": 384,
+      "raw_file": "transformer_29_delay32.npz",
+      "raw_sha256": "f93ee9237538d7d8be15a297730c960ae44baa32b75e0e97a0c4a66a17323d36",
+      "seed": 29,
+      "weighted_accuracy": 0.7135416666666666
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6631944179534912,
+        0.7586805820465088
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "3a1d2d5ffb0f86a68edef91121cc1626331b23af4d06ffe204126453bc4e635f",
+      "condition": "resample",
+      "cross_entropy": 0.6236586854591113,
+      "episodes": 384,
+      "raw_file": "transformer_29_resample.npz",
+      "raw_sha256": "70ea4adb2bbb7b919c19285d734eab7a8b3877e13c0e51e56cdfb9420f066921",
+      "resampling_error": 3.5762786865234375e-07,
+      "seed": 29,
+      "weighted_accuracy": 0.7118055555555556
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6579861044883728,
+        0.7604166865348816
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "01015e18dd1b7f9ad3d8c4f3ed305e8bb556913fe4962a67c40764b01c3dc9e8",
+      "condition": "base",
+      "cross_entropy": 0.6224924797425397,
+      "episodes": 384,
+      "head_only_latency": {
+        "1": {
+          "episodes_per_second": 2080.9402510628715,
+          "median_seconds": 0.00048055200022645295,
+          "seconds": [
+            0.00048055200022645295,
+            0.0005146629991941154,
+            0.00048426800276502036,
+            0.0004583099980663974,
+            0.0004422050005814526,
+            0.000482605002616765,
+            0.0004410740002640523,
+            0.0004827759985346347,
+            0.0004431469969858881
+          ]
+        },
+        "24": {
+          "episodes_per_second": 32198.557755392336,
+          "median_seconds": 0.0007453750004060566,
+          "seconds": [
+            0.0007076689980749507,
+            0.0007358909970207606,
+            0.0007887790015956853,
+            0.000760807997721713,
+            0.0007150199999159668,
+            0.0007442040005116723,
+            0.0007453750004060566,
+            0.00074722800127347,
+            0.0007546390006609727
+          ]
+        }
+      },
+      "raw_file": "transformer_43_base.npz",
+      "raw_sha256": "0144788dc9f16ae0ea85b7fe16fe81118d8efaedc3421f74bafc6ae1eba90ca7",
+      "seed": 43,
+      "weighted_accuracy": 0.7100694444444444
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6527777910232544,
+        0.7534722089767456
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "01015e18dd1b7f9ad3d8c4f3ed305e8bb556913fe4962a67c40764b01c3dc9e8",
+      "condition": "delay8",
+      "cross_entropy": 0.6119394554492578,
+      "episodes": 384,
+      "raw_file": "transformer_43_delay8.npz",
+      "raw_sha256": "aa311bb7d0dbcb12b204291600bbd5c292156015a5fcc24614899dd559ba24db",
+      "seed": 43,
+      "weighted_accuracy": 0.7048611111111112
+    },
+    {
+      "actor_bootstrap_95": [
+        0.65625,
+        0.7569444179534912
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "01015e18dd1b7f9ad3d8c4f3ed305e8bb556913fe4962a67c40764b01c3dc9e8",
+      "condition": "delay32",
+      "cross_entropy": 0.6158805243373825,
+      "episodes": 384,
+      "raw_file": "transformer_43_delay32.npz",
+      "raw_sha256": "47e36baa1fcf1cafd9f85fd3b1cfba6e511eb60f62c67275067f32492d25f581",
+      "seed": 43,
+      "weighted_accuracy": 0.7083333333333334
+    },
+    {
+      "actor_bootstrap_95": [
+        0.6579861044883728,
+        0.7604166865348816
+      ],
+      "actors": 8,
+      "arm": "transformer",
+      "checkpoint_sha256": "01015e18dd1b7f9ad3d8c4f3ed305e8bb556913fe4962a67c40764b01c3dc9e8",
+      "condition": "resample",
+      "cross_entropy": 0.6224924823628684,
+      "episodes": 384,
+      "raw_file": "transformer_43_resample.npz",
+      "raw_sha256": "ab84a85a52aff3a093bad9038c3f6e05e05ef4398c581eb28b2a3eee8d452f87",
+      "resampling_error": 4.76837158203125e-07,
+      "seed": 43,
+      "weighted_accuracy": 0.7100694444444444
+    }
+  ],
+  "scope": "Real-AV common-encoder closed-vocabulary consistency; head costs separate from frontend acquisition and encoding",
+  "source_unchanged": true,
+  "wall_seconds": 2.2299046899970563
+}

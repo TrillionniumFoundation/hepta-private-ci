@@ -1,0 +1,1027 @@
+{
+  "cohorts": {
+    "blind_1019": {
+      "actors": [
+        "1019"
+      ],
+      "clips": 12,
+      "core_result_sha256": "d20cb1ced8f856c9f5d791093ec596f2ae9c33fdbcac378000d2a615d5d9fd4c",
+      "cores": {
+        "diagonal": {
+          "by_seed": {
+            "17": 0.5,
+            "29": 0.5,
+            "43": 0.5
+          },
+          "head_latency_median_average_seconds": {
+            "1": 0.0005109443348677208,
+            "24": 0.0006392646670671335
+          },
+          "maximum_resampling_error": 0.0,
+          "mean_accuracy": {
+            "base": 0.5,
+            "delay32": 0.5,
+            "delay8": 0.5,
+            "resample": 0.5
+          }
+        },
+        "flow": {
+          "by_seed": {
+            "17": 0.7777777777777778,
+            "29": 0.5,
+            "43": 0.7222222222222222
+          },
+          "head_latency_median_average_seconds": {
+            "1": 0.0027086296649940778,
+            "24": 0.0033686143348556166
+          },
+          "maximum_resampling_error": 1.1920928955078125e-06,
+          "mean_accuracy": {
+            "base": 0.6666666666666666,
+            "delay32": 0.5740740740740741,
+            "delay8": 0.5925925925925926,
+            "resample": 0.6666666666666666
+          }
+        },
+        "gru": {
+          "by_seed": {
+            "17": 0.7777777777777778,
+            "29": 0.5,
+            "43": 0.8055555555555556
+          },
+          "head_latency_median_average_seconds": {
+            "1": 0.0004494996683206409,
+            "24": 0.0007024249995689994
+          },
+          "maximum_resampling_error": 0.0,
+          "mean_accuracy": {
+            "base": 0.6944444444444443,
+            "delay32": 0.6944444444444443,
+            "delay8": 0.6944444444444443,
+            "resample": 0.6944444444444443
+          }
+        },
+        "mlp": {
+          "by_seed": {
+            "17": 0.8055555555555556,
+            "29": 0.8055555555555556,
+            "43": 0.8055555555555556
+          },
+          "head_latency_median_average_seconds": {
+            "1": 0.00033242933326012764,
+            "24": 0.00034123933194981265
+          },
+          "maximum_resampling_error": 0.0,
+          "mean_accuracy": {
+            "base": 0.8055555555555557,
+            "delay32": 0.8055555555555557,
+            "delay8": 0.8055555555555557,
+            "resample": 0.8055555555555557
+          }
+        },
+        "transformer": {
+          "by_seed": {
+            "17": 0.8055555555555556,
+            "29": 0.7916666666666666,
+            "43": 0.7777777777777778
+          },
+          "head_latency_median_average_seconds": {
+            "1": 0.000501369999255985,
+            "24": 0.0008098739987569085
+          },
+          "maximum_resampling_error": 2.5331974029541016e-07,
+          "mean_accuracy": {
+            "base": 0.7916666666666666,
+            "delay32": 0.7870370370370371,
+            "delay8": 0.7824074074074074,
+            "resample": 0.7916666666666666
+          }
+        }
+      },
+      "episodes": 48,
+      "frontend_preextracted_latency": {
+        "1": {
+          "batch": 1,
+          "episodes_per_second": 8022.141224205933,
+          "median_seconds": 0.00012465499821701087,
+          "p95_seconds": 0.0001426660001015989,
+          "repetitions": 31
+        },
+        "48": {
+          "batch": 48,
+          "episodes_per_second": 80816.10796173022,
+          "median_seconds": 0.0005939410002611112,
+          "p95_seconds": 0.0007389805014099693,
+          "repetitions": 31
+        }
+      },
+      "frontend_result_sha256": "42cbfff2954409e1236a4ca857ed495459a1866d377253317be16bb427e42174",
+      "frontend_rule_passed": false,
+      "frontend_sentence_accuracy": {
+        "audio": 0.9166666666666666,
+        "text": 1.0,
+        "video": 0.5
+      },
+      "guard_sha256": "4c8a598c2a46b71b22056d6b1192a1c380e89aea4df786ee43ce94aafc54d85c",
+      "maximum_child_peak_rss_bytes": 293072896,
+      "population_adoption_qualification": false,
+      "population_interval_reported": false,
+      "qualified_result_sha256": "4e65db563c88a1da0199508ca89c77c26ad209fef78ee97693bea8cc2ca0a62e",
+      "sampling_clusters": 1,
+      "scientific_status": "one_documented_unseen_actor_blind_probe",
+      "strong_head_accuracy": {
+        "audio": {
+          "construction": 0.5,
+          "learned": 0.5,
+          "subset_trained": 0.5
+        },
+        "audio+text": {
+          "construction": 0.7777777777777778,
+          "learned": 0.8055555555555556,
+          "subset_trained": 0.8055555555555556
+        },
+        "audio+video": {
+          "construction": 0.5,
+          "learned": 0.5,
+          "subset_trained": 0.5
+        },
+        "audio+video+text": {
+          "construction": 0.7777777777777778,
+          "learned": 0.8055555555555556,
+          "subset_trained": 0.8055555555555556
+        },
+        "none": {
+          "construction": 0.5,
+          "learned": 0.5,
+          "subset_trained": 0.5
+        },
+        "text": {
+          "construction": 0.5,
+          "learned": 0.5,
+          "subset_trained": 0.5
+        },
+        "video": {
+          "construction": 0.5,
+          "learned": 0.5,
+          "subset_trained": 0.5
+        },
+        "video+text": {
+          "construction": 0.5,
+          "learned": 0.5,
+          "subset_trained": 0.5
+        }
+      },
+      "video_accuracy_increment": {
+        "construction": 0.0,
+        "learned": 0.0,
+        "subset_trained": 0.0
+      },
+      "video_brier_difference": {
+        "construction": -0.00833112486149401,
+        "learned": -0.002711827738750061,
+        "subset_trained": -0.0028008894409075336
+      },
+      "whole_child_cpu_seconds": 15.660236,
+      "whole_child_phases": [
+        {
+          "file": "results/av_blind1019_costs/baseline_prepare.receipt.json",
+          "peak_rss_bytes": 85807104,
+          "sha256": "38a819b2b9c6a7064f8367f5f520c0355dbcd509ea92a549b25c0d220d71c5e0",
+          "stage": "baseline_prepare",
+          "total_cpu_seconds": 3.8154609999999995,
+          "wall_seconds": 3.849918672000058,
+          "wrapper_cpu_seconds": 0.0008679300000000029
+        },
+        {
+          "file": "results/av_blind1019_costs/core_confirm.receipt.json",
+          "peak_rss_bytes": 293072896,
+          "sha256": "fe68f93d15c744e7d3a763aac8ae3660fe2e73669a3e0e75de944264c5eb4f33",
+          "stage": "core_confirm",
+          "total_cpu_seconds": 2.771475,
+          "wall_seconds": 2.80620665600145,
+          "wrapper_cpu_seconds": 0.0008882189999999957
+        },
+        {
+          "file": "results/av_blind1019_costs/frontend_confirm.receipt.json",
+          "peak_rss_bytes": 88489984,
+          "sha256": "21a20f5ff46b90ce07873987b637a056cafad219248ffe92ff9e7d56f2436904",
+          "stage": "frontend_confirm",
+          "total_cpu_seconds": 1.066941,
+          "wall_seconds": 1.128180143001373,
+          "wrapper_cpu_seconds": 0.0007523960000000024
+        },
+        {
+          "file": "results/av_blind1019_costs/guard.receipt.json",
+          "peak_rss_bytes": 85508096,
+          "sha256": "186169337a4cb20f139dcc5e30d4f46297d1c3be3de51963a52abad25d35dc4a",
+          "stage": "guard",
+          "total_cpu_seconds": 0.8746149999999999,
+          "wall_seconds": 1.9894732700013265,
+          "wrapper_cpu_seconds": 0.0011841300000000055
+        },
+        {
+          "file": "results/av_blind1019_costs/mouth_prepare.receipt.json",
+          "peak_rss_bytes": 85176320,
+          "sha256": "58a43a20fc2bb9998ee818312f14fbfca012b4dae447fada0ab146185fcb36a3",
+          "stage": "mouth_prepare",
+          "total_cpu_seconds": 3.1746350000000003,
+          "wall_seconds": 3.2553493289997277,
+          "wrapper_cpu_seconds": 0.001224386000000001
+        },
+        {
+          "file": "results/av_blind1019_costs/temporal_prepare.receipt.json",
+          "peak_rss_bytes": 86020096,
+          "sha256": "1ee54f1ed29ba3654d17182d40875fdf1496b08cb01bbe7d26f5dbd63fa4f24c",
+          "stage": "temporal_prepare",
+          "total_cpu_seconds": 3.957109,
+          "wall_seconds": 4.05093884300004,
+          "wrapper_cpu_seconds": 0.0006769449999999982
+        }
+      ],
+      "whole_child_wall_seconds_sum": 17.080066913003975
+    },
+    "locked_eight": {
+      "actors": [
+        "1001",
+        "1003",
+        "1004",
+        "1005",
+        "1008",
+        "1011",
+        "1012",
+        "1015"
+      ],
+      "clips": 96,
+      "core_result_sha256": "704ad92950304bb7082a294632e2b9e5cdbe78ce80c153c46ef8ebf05f563f6c",
+      "cores": {
+        "diagonal": {
+          "by_seed": {
+            "17": 0.5,
+            "29": 0.5,
+            "43": 0.5
+          },
+          "head_latency_median_average_seconds": {
+            "1": 0.0005014533344365191,
+            "24": 0.000668898000488601
+          },
+          "maximum_resampling_error": 0.0,
+          "mean_accuracy": {
+            "base": 0.5,
+            "delay32": 0.5,
+            "delay8": 0.5,
+            "resample": 0.5
+          }
+        },
+        "flow": {
+          "by_seed": {
+            "17": 0.7152777777777778,
+            "29": 0.5,
+            "43": 0.6579861111111112
+          },
+          "head_latency_median_average_seconds": {
+            "1": 0.0036388753336116983,
+            "24": 0.004955429667461431
+          },
+          "maximum_resampling_error": 1.5497207641601562e-06,
+          "mean_accuracy": {
+            "base": 0.6244212962962963,
+            "delay32": 0.5590277777777778,
+            "delay8": 0.5711805555555555,
+            "resample": 0.6244212962962963
+          }
+        },
+        "gru": {
+          "by_seed": {
+            "17": 0.7170138888888888,
+            "29": 0.5,
+            "43": 0.7118055555555556
+          },
+          "head_latency_median_average_seconds": {
+            "1": 0.0005381776669916386,
+            "24": 0.0007596463340936074
+          },
+          "maximum_resampling_error": 0.0,
+          "mean_accuracy": {
+            "base": 0.6429398148148148,
+            "delay32": 0.6417824074074074,
+            "delay8": 0.6417824074074073,
+            "resample": 0.6429398148148148
+          }
+        },
+        "mlp": {
+          "by_seed": {
+            "17": 0.7152777777777778,
+            "29": 0.71875,
+            "43": 0.7152777777777778
+          },
+          "head_latency_median_average_seconds": {
+            "1": 0.0004140136661590077,
+            "24": 0.0003936066665725472
+          },
+          "maximum_resampling_error": 0.0,
+          "mean_accuracy": {
+            "base": 0.7164351851851851,
+            "delay32": 0.7164351851851851,
+            "delay8": 0.7164351851851851,
+            "resample": 0.7164351851851851
+          }
+        },
+        "transformer": {
+          "by_seed": {
+            "17": 0.7118055555555556,
+            "29": 0.7118055555555556,
+            "43": 0.7100694444444444
+          },
+          "head_latency_median_average_seconds": {
+            "1": 0.0005554966664931271,
+            "24": 0.0008540593335055746
+          },
+          "maximum_resampling_error": 4.76837158203125e-07,
+          "mean_accuracy": {
+            "base": 0.7112268518518517,
+            "delay32": 0.7118055555555555,
+            "delay8": 0.7083333333333334,
+            "resample": 0.7112268518518517
+          }
+        }
+      },
+      "episodes": 384,
+      "frontend_preextracted_latency": {
+        "1": {
+          "batch": 1,
+          "episodes_per_second": 7983.649511864718,
+          "median_seconds": 0.00012525599959190004,
+          "p95_seconds": 0.00023867849995440338,
+          "repetitions": 31
+        },
+        "384": {
+          "batch": 384,
+          "episodes_per_second": 63576.42208761332,
+          "median_seconds": 0.0060399750000215136,
+          "p95_seconds": 0.007086190998961683,
+          "repetitions": 31
+        }
+      },
+      "frontend_result_sha256": "18572fb5f96e70efbf10818adbb46931afeed1a5f1832bcf0a3a214f6baf4543",
+      "frontend_rule_passed": false,
+      "frontend_sentence_accuracy": {
+        "audio": 0.8125,
+        "text": 1.0,
+        "video": 0.53125
+      },
+      "guard_sha256": "c589a6a9ad870632d7e325983a791e8d9c250e17b217765f04567f729817a272",
+      "maximum_child_peak_rss_bytes": 292421632,
+      "population_adoption_qualification": false,
+      "population_interval_reported": false,
+      "qualified_result_sha256": "0e161541b1ef0307020483f57038cd8bbb01cef2c4ed7575c9028abb8c2ccb5c",
+      "sampling_clusters": 8,
+      "scientific_status": "locked_cross_cohort_reevaluation",
+      "strong_head_accuracy": {
+        "audio": {
+          "construction": 0.5,
+          "learned": 0.5,
+          "subset_trained": 0.5
+        },
+        "audio+text": {
+          "construction": 0.7083333333333334,
+          "learned": 0.71875,
+          "subset_trained": 0.71875
+        },
+        "audio+video": {
+          "construction": 0.4861111111111111,
+          "learned": 0.5,
+          "subset_trained": 0.5
+        },
+        "audio+video+text": {
+          "construction": 0.7100694444444444,
+          "learned": 0.71875,
+          "subset_trained": 0.71875
+        },
+        "none": {
+          "construction": 0.5,
+          "learned": 0.5,
+          "subset_trained": 0.5
+        },
+        "text": {
+          "construction": 0.5,
+          "learned": 0.5,
+          "subset_trained": 0.5
+        },
+        "video": {
+          "construction": 0.5,
+          "learned": 0.5,
+          "subset_trained": 0.5
+        },
+        "video+text": {
+          "construction": 0.5208333333333334,
+          "learned": 0.5,
+          "subset_trained": 0.5243055555555556
+        }
+      },
+      "video_accuracy_increment": {
+        "construction": 0.0017361111111110494,
+        "learned": 0.0,
+        "subset_trained": 0.0
+      },
+      "video_brier_difference": {
+        "construction": 0.0007364491091381986,
+        "learned": 3.1447417260688226e-05,
+        "subset_trained": 0.00010408001441614134
+      },
+      "whole_child_cpu_seconds": 85.69778,
+      "whole_child_phases": [
+        {
+          "file": "results/av_independent_costs/baseline_prepare.receipt.json",
+          "peak_rss_bytes": 86798336,
+          "sha256": "55b04617f622ef50d2eb56376d3e01c598d580107de110031cc9220ed64ea5d5",
+          "stage": "baseline_prepare",
+          "total_cpu_seconds": 29.031605,
+          "wall_seconds": 31.410463101998175,
+          "wrapper_cpu_seconds": 0.0010774789999999992
+        },
+        {
+          "file": "results/av_independent_costs/core_confirm.receipt.json",
+          "peak_rss_bytes": 292421632,
+          "sha256": "8c9312246e24ec914d88f3762c08bcedd8856d00f1be47235190211d91ffe767",
+          "stage": "core_confirm",
+          "total_cpu_seconds": 4.704037,
+          "wall_seconds": 4.733428234998428,
+          "wrapper_cpu_seconds": 0.001011030000000003
+        },
+        {
+          "file": "results/av_independent_costs/frontend_confirm.receipt.json",
+          "peak_rss_bytes": 98840576,
+          "sha256": "811a93e53309c62038b4be1029007a63859089b7db5a4d4285ebdc20300db5cf",
+          "stage": "frontend_confirm",
+          "total_cpu_seconds": 1.556568,
+          "wall_seconds": 1.6193436020002991,
+          "wrapper_cpu_seconds": 0.001018032000000002
+        },
+        {
+          "file": "results/av_independent_costs/guard.receipt.json",
+          "peak_rss_bytes": 86708224,
+          "sha256": "b044f65288a4ee3fbc7d5c80ae9eac24e7b450f333406831f11cdf66cffd7d9f",
+          "stage": "guard",
+          "total_cpu_seconds": 1.110585,
+          "wall_seconds": 1.1309941069994238,
+          "wrapper_cpu_seconds": 0.0011938709999999991
+        },
+        {
+          "file": "results/av_independent_costs/mouth_prepare.receipt.json",
+          "peak_rss_bytes": 85356544,
+          "sha256": "239797cdb9c5dca373a501321d9f4a0035390657031a48d838360facc05985f4",
+          "stage": "mouth_prepare",
+          "total_cpu_seconds": 21.863616,
+          "wall_seconds": 23.698754353998083,
+          "wrapper_cpu_seconds": 0.000873897999999998
+        },
+        {
+          "file": "results/av_independent_costs/temporal_prepare.receipt.json",
+          "peak_rss_bytes": 86376448,
+          "sha256": "4eaeb98008170efc2b9dffd055f72708b86db715fe4139568e6cd8e473bee5cc",
+          "stage": "temporal_prepare",
+          "total_cpu_seconds": 27.431368999999997,
+          "wall_seconds": 29.763552656000684,
+          "wrapper_cpu_seconds": 0.0010088369999999985
+        }
+      ],
+      "whole_child_wall_seconds_sum": 92.3565360559951
+    }
+  },
+  "core_resource_shapes": {
+    "diagonal": {
+      "compiled": false,
+      "content_precision": "float32",
+      "matrix_precision": null,
+      "parameters": 10845,
+      "persistent_state_scalars": 120,
+      "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+    },
+    "flow": {
+      "compiled": false,
+      "content_precision": "float32",
+      "matrix_precision": "float64",
+      "parameters": 10770,
+      "persistent_state_scalars": 127,
+      "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+    },
+    "gru": {
+      "compiled": false,
+      "content_precision": "float32",
+      "matrix_precision": null,
+      "parameters": 23938,
+      "persistent_state_scalars": 64,
+      "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+    },
+    "mlp": {
+      "compiled": false,
+      "content_precision": "float32",
+      "parameters": 290,
+      "persistent_state_scalars": 6,
+      "sequence_length": 4
+    },
+    "transformer": {
+      "compiled": false,
+      "content_precision": "float32",
+      "matrix_precision": null,
+      "parameters": 15386,
+      "persistent_state_scalars": 384,
+      "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+    }
+  },
+  "core_tensor_bytes": {
+    "fits": [
+      {
+        "arm": "diagonal",
+        "checkpoint_sha256": "7ffe7ba4678d93d4c7dc43241de1234ddb6d4beb1d4c2aeac8b214c2ad08e626",
+        "seed": 17,
+        "tensor_bytes": 43380,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 10845
+        }
+      },
+      {
+        "arm": "diagonal",
+        "checkpoint_sha256": "0983d01f750951877d40e680a548ac43c8ca2b5aab54efe94659e44fff68e944",
+        "seed": 29,
+        "tensor_bytes": 43380,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 10845
+        }
+      },
+      {
+        "arm": "diagonal",
+        "checkpoint_sha256": "4a23ea2b33baa3ff35699cb97af0cb97217cd28872045c1702452e5f88561ee3",
+        "seed": 43,
+        "tensor_bytes": 43380,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 10845
+        }
+      },
+      {
+        "arm": "flow",
+        "checkpoint_sha256": "74c27aa2432551a38daab19c953575bf58cebf0efd7aede21376a2c274730594",
+        "seed": 17,
+        "tensor_bytes": 43080,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 10770
+        }
+      },
+      {
+        "arm": "flow",
+        "checkpoint_sha256": "46936533a9cc17c5388deff4ecc69a1930dbe315b2950a569f708632221f65ce",
+        "seed": 29,
+        "tensor_bytes": 43080,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 10770
+        }
+      },
+      {
+        "arm": "flow",
+        "checkpoint_sha256": "20f100160b5c722c6eab7ebb3e5dfb22a0f956731ab63490179af648ee77bb4a",
+        "seed": 43,
+        "tensor_bytes": 43080,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 10770
+        }
+      },
+      {
+        "arm": "gru",
+        "checkpoint_sha256": "f92f7a4593099382c6f9549c7402a7b5ed0ede6463c1cc0bef10f60ec359a7d7",
+        "seed": 17,
+        "tensor_bytes": 95752,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 23938
+        }
+      },
+      {
+        "arm": "gru",
+        "checkpoint_sha256": "ef24bc3faef8b38614c30f58fc9e322160a7aa179a1e0a1bbc088a59ee3b5a51",
+        "seed": 29,
+        "tensor_bytes": 95752,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 23938
+        }
+      },
+      {
+        "arm": "gru",
+        "checkpoint_sha256": "29606d4aa78c724f68ce4c38a5c39fa65d9bf5b3a87b5af5a0ee5f74d9dc1d68",
+        "seed": 43,
+        "tensor_bytes": 95752,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 23938
+        }
+      },
+      {
+        "arm": "mlp",
+        "checkpoint_sha256": "98ea81aeb56f2558d960f35ce532a9c1c9d428e3bc45f659063dfa53dba146c0",
+        "seed": 17,
+        "tensor_bytes": 1160,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 290
+        }
+      },
+      {
+        "arm": "mlp",
+        "checkpoint_sha256": "1581d2883e2922fa84a002b54dfd91f0ef423bc19009707c2a76fdb505d3b0be",
+        "seed": 29,
+        "tensor_bytes": 1160,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 290
+        }
+      },
+      {
+        "arm": "mlp",
+        "checkpoint_sha256": "e23da362802894737ea25090379e6b7476504ec27c8824323a6ddef09fb723a1",
+        "seed": 43,
+        "tensor_bytes": 1160,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 290
+        }
+      },
+      {
+        "arm": "transformer",
+        "checkpoint_sha256": "ffcf33233133b72229265f21147cbe71eb233aa8e8fc3b6346042a2739750440",
+        "seed": 17,
+        "tensor_bytes": 61544,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 15386
+        }
+      },
+      {
+        "arm": "transformer",
+        "checkpoint_sha256": "3a1d2d5ffb0f86a68edef91121cc1626331b23af4d06ffe204126453bc4e635f",
+        "seed": 29,
+        "tensor_bytes": 61544,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 15386
+        }
+      },
+      {
+        "arm": "transformer",
+        "checkpoint_sha256": "01015e18dd1b7f9ad3d8c4f3ed305e8bb556913fe4962a67c40764b01c3dc9e8",
+        "seed": 43,
+        "tensor_bytes": 61544,
+        "tensor_numel_by_dtype": {
+          "torch.float32": 15386
+        }
+      }
+    ],
+    "inference_performed": false,
+    "manifest_sha256": "50163923f4312b63aefc29af4135279ba7da77cb251466eae29a9467b259e0fc",
+    "schema": "hcsn.av.checkpoint.tensor.bytes.v1",
+    "scope": "Read-only frozen state_dict metadata. Tensor bytes exclude Python/library runtime, optimizer state, intermediate activation/matrices, input arrays and encoder residency; not a measured process resident-set increment."
+  },
+  "costs": {
+    "acquisition": {
+      "blind_1019": {
+        "cpu_seconds": 0.06753451900000002,
+        "downloaded_bytes": 3337303,
+        "failed": 0,
+        "wall_seconds": 1.2739969529975497
+      },
+      "locked_eight": {
+        "cpu_seconds": 0.489453328,
+        "downloaded_bytes": 32139778,
+        "failed": 0,
+        "wall_seconds": 8.490981369002839
+      }
+    },
+    "acquisition_body_cpu_seconds": 0.556987847,
+    "complete_deployment_cost_verified": false,
+    "core_training_phase_cpu_including_workers_nested": 51.203464743,
+    "development_body_cpu_seconds": 160.549158767,
+    "energy_joules": null,
+    "gpu": null,
+    "observed_nonoverlapping_cpu_sum": 315.99356561400003,
+    "original_fifteen_core_training_whole_child_cpu_seconds": 53.529402999999995,
+    "scope": "Whole-child phase timers include subprocess startup/imports/writes. Development/acquisition are separately labeled body clocks. Do not add nested application or per-fit timers again. Historical feature-cache creation and unmetered initial path failure/import overhead are not zero; no joule conversion.",
+    "wholly_metered_training_and_confirmation_child_cpu_seconds": 154.887419
+  },
+  "history": {
+    "all_dataset_actors": [
+      "1001",
+      "1002",
+      "1003",
+      "1004",
+      "1005",
+      "1006",
+      "1007",
+      "1008",
+      "1009",
+      "1010",
+      "1011",
+      "1012",
+      "1013",
+      "1014",
+      "1015",
+      "1016",
+      "1017",
+      "1018",
+      "1019",
+      "1020",
+      "1021",
+      "1022",
+      "1023",
+      "1024",
+      "1025",
+      "1026",
+      "1027",
+      "1028",
+      "1029",
+      "1030",
+      "1031",
+      "1032",
+      "1033",
+      "1034",
+      "1035",
+      "1036",
+      "1037",
+      "1038",
+      "1039",
+      "1040",
+      "1041",
+      "1042",
+      "1043",
+      "1044",
+      "1045",
+      "1046",
+      "1047",
+      "1048",
+      "1049",
+      "1050",
+      "1051",
+      "1052",
+      "1053",
+      "1054",
+      "1055",
+      "1056",
+      "1057",
+      "1058",
+      "1059",
+      "1060",
+      "1061",
+      "1062",
+      "1063",
+      "1064",
+      "1065",
+      "1066",
+      "1067",
+      "1068",
+      "1069",
+      "1070",
+      "1071",
+      "1072",
+      "1073",
+      "1074",
+      "1075",
+      "1076",
+      "1077",
+      "1078",
+      "1079",
+      "1080",
+      "1081",
+      "1082",
+      "1083",
+      "1084",
+      "1085",
+      "1086",
+      "1087",
+      "1088",
+      "1089",
+      "1090",
+      "1091"
+    ],
+    "conclusion": "Unused actor IDs require exact file eligibility and source pointers before revised prospective freeze.",
+    "csv_blob": "0ec7ce3bf0d3b8b92242b47d96a77f571757b4a6",
+    "current_cohort_actor_count": 38,
+    "dataset_actor_count": 91,
+    "historical_actor_count": 60,
+    "proposed_actor_count": 8,
+    "proposed_actors": [
+      "1001",
+      "1003",
+      "1004",
+      "1005",
+      "1008",
+      "1011",
+      "1012",
+      "1015"
+    ],
+    "proposed_overlap_historical": [
+      "1001",
+      "1003",
+      "1004",
+      "1005",
+      "1008",
+      "1011",
+      "1012",
+      "1015"
+    ],
+    "schema": "hcsn.av.historical.actor.union.v1",
+    "scope": "Metadata-only audit before any media/features/results from proposed eight actors were accessed this turn; CSV and cohort metadata only.",
+    "source_commit": "1658cd342dff90010aa843eaeebd53610a08b1dc",
+    "source_evidence": {
+      "audit_path": "/workspace/scratch/52a69008c60c/hepta-hcsn/experiments/hcsn_content_economics_v4/audit/AV_COHORT.json",
+      "audit_sha256": "f44489285c43990c8d1ada2189a9caaf595e096ced28246c9abae21f42d11ec1",
+      "cohort_path": "/workspace/scratch/52a69008c60c/hepta-hcsn/experiments/hcsn_content_economics_v4/configs/av/COHORT.json",
+      "cohort_sha256": "b65adcd877528b7cb5b81962ff3662c59ee1e144c26034b8a4e1d5e6426cf37a",
+      "current": [
+        "1002",
+        "1006",
+        "1007",
+        "1009",
+        "1010",
+        "1013",
+        "1014",
+        "1017",
+        "1018",
+        "1020",
+        "1021",
+        "1022",
+        "1026",
+        "1028",
+        "1029",
+        "1030",
+        "1033",
+        "1035",
+        "1037",
+        "1042",
+        "1044",
+        "1045",
+        "1048",
+        "1049",
+        "1052",
+        "1054",
+        "1055",
+        "1056",
+        "1058",
+        "1068",
+        "1070",
+        "1071",
+        "1074",
+        "1075",
+        "1079",
+        "1081",
+        "1088",
+        "1090"
+      ],
+      "historical": [
+        "1001",
+        "1002",
+        "1003",
+        "1004",
+        "1005",
+        "1008",
+        "1010",
+        "1011",
+        "1012",
+        "1014",
+        "1015",
+        "1016",
+        "1022",
+        "1023",
+        "1024",
+        "1025",
+        "1027",
+        "1031",
+        "1032",
+        "1034",
+        "1035",
+        "1036",
+        "1038",
+        "1039",
+        "1040",
+        "1041",
+        "1043",
+        "1044",
+        "1046",
+        "1047",
+        "1048",
+        "1050",
+        "1051",
+        "1052",
+        "1053",
+        "1057",
+        "1059",
+        "1060",
+        "1061",
+        "1062",
+        "1063",
+        "1064",
+        "1065",
+        "1066",
+        "1067",
+        "1069",
+        "1072",
+        "1073",
+        "1076",
+        "1077",
+        "1078",
+        "1080",
+        "1082",
+        "1083",
+        "1084",
+        "1085",
+        "1086",
+        "1087",
+        "1089",
+        "1091"
+      ],
+      "historical_sources": {
+        "experiments/hcsn_real_av_v1/data/COHORT_PLAN.json": "ac896bfb2643f22234c9917794347e2aa443836122b5950541335fdc002e3874",
+        "larger_commit": "7cf647fbcb99014bb85e9fa251d84d2b7afac35e",
+        "larger_path": "experiments/hcsn_blocker_closure_v1/av/COHORT_PLAN.json"
+      }
+    },
+    "supersedes": "PRIOR_COHORT_METADATA_AUDIT.json first pass examined only direct splits/records and missed prior-history fields; that file is retained as an incomplete first-pass record.",
+    "union_actor_count": 90,
+    "unused_actors": [
+      "1019"
+    ]
+  },
+  "identities": {
+    "core_manifest_sha256": "50163923f4312b63aefc29af4135279ba7da77cb251466eae29a9467b259e0fc",
+    "core_training_source": "2d0f427bea28c787f15a17648c09640d94d532cc",
+    "one_actor_core_plan_sha256": "2b8c415cd3eac91751190deea2279d95a96794f5c42c4e821334ec4a35409c8e",
+    "one_actor_frontend_sha256": "e15355f634395a67fd30e90aec3919b37d41be41a63e88055da400150a27b68e",
+    "original_frontend_sha256": "18cf5752c049656156a1b87c05be95fa463f37c885cbc2188901f8fd0b46a495"
+  },
+  "no_retuning": true,
+  "one_actor_population_intervals": false,
+  "outcomes": {
+    "energy_qualification": false,
+    "foundation_model_qualification": false,
+    "full_three_modality_quality_gate": false,
+    "raw_to_feature_input_guards": true,
+    "shared_encoder_core_execution": true,
+    "stable_analytic_core_gain": false,
+    "video_content_gate": false
+  },
+  "schema": "hcsn.av.stage4.summary.v1",
+  "shared_encoder_resident_arrays": {
+    "audio_encoder.npz": {
+      "arrays": {
+        "cal_coef": [],
+        "cal_intercept": [],
+        "coef": [
+          128
+        ],
+        "intercept": [],
+        "kind": [],
+        "mean": [
+          128
+        ],
+        "scale": [
+          128
+        ]
+      },
+      "resident_array_bytes": 3104,
+      "stored_bytes": 4313
+    },
+    "text_encoder.npz": {
+      "arrays": {
+        "cal_coef": [],
+        "cal_intercept": [],
+        "coef": [
+          24
+        ],
+        "intercept": [],
+        "kind": [],
+        "mean": [
+          24
+        ],
+        "scale": [
+          24
+        ]
+      },
+      "resident_array_bytes": 608,
+      "stored_bytes": 1394
+    },
+    "video_encoder.npz": {
+      "arrays": {
+        "cal_coef": [],
+        "cal_intercept": [],
+        "dual": [
+          257
+        ],
+        "gamma": [],
+        "intercept": [],
+        "kind": [],
+        "mean": [
+          684
+        ],
+        "scale": [
+          684
+        ],
+        "support": [
+          257,
+          684
+        ]
+      },
+      "resident_array_bytes": 1419344,
+      "stored_bytes": 785180
+    }
+  },
+  "timing_scope": "All modality features require a complete accepted one-second prefix; dt=[1,0,0,0] is computational ingestion. Codec decoding is offline whole-file work. Encoder and core microbenchmarks on prepared arrays are not streaming end-to-end latency. Delays are virtual state propagation without new media."
+}

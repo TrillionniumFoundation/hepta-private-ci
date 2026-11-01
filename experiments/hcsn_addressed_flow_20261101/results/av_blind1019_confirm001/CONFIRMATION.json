@@ -1,0 +1,486 @@
+{
+  "actors": [
+    "1019"
+  ],
+  "candidate_freeze_sha256": "e15355f634395a67fd30e90aec3919b37d41be41a63e88055da400150a27b68e",
+  "confirmation_status": "Independent actor confirmation",
+  "consistency": {
+    "audio": {
+      "construction": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            36.0
+          ],
+          [
+            0.0,
+            36.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.26304865983334014,
+        "weighted_confusion": [
+          [
+            36.0,
+            0.0
+          ],
+          [
+            36.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            36.0
+          ],
+          [
+            0.0,
+            36.0
+          ]
+        ]
+      }
+    },
+    "audio+text": {
+      "construction": {
+        "accuracy": 0.7777777777777778,
+        "actor_bootstrap_95": [
+          0.7777777777777778,
+          0.7777777777777778
+        ],
+        "brier": 0.13736514633386107,
+        "weighted_confusion": [
+          [
+            23.0,
+            13.0
+          ],
+          [
+            3.0,
+            33.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.8055555555555556,
+        "actor_bootstrap_95": [
+          0.8055555555555556,
+          0.8055555555555556
+        ],
+        "brier": 0.14199929006657486,
+        "weighted_confusion": [
+          [
+            25.0,
+            11.0
+          ],
+          [
+            3.0,
+            33.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.8055555555555556,
+        "actor_bootstrap_95": [
+          0.8055555555555556,
+          0.8055555555555556
+        ],
+        "brier": 0.14208835176873233,
+        "weighted_confusion": [
+          [
+            25.0,
+            11.0
+          ],
+          [
+            3.0,
+            33.0
+          ]
+        ]
+      }
+    },
+    "audio+video": {
+      "construction": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.23721544787498505,
+        "weighted_confusion": [
+          [
+            15.0,
+            21.0
+          ],
+          [
+            15.0,
+            21.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.26274562134451074,
+        "weighted_confusion": [
+          [
+            36.0,
+            0.0
+          ],
+          [
+            36.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.24707310570839022,
+        "weighted_confusion": [
+          [
+            18.0,
+            18.0
+          ],
+          [
+            18.0,
+            18.0
+          ]
+        ]
+      }
+    },
+    "audio+video+text": {
+      "construction": {
+        "accuracy": 0.7777777777777778,
+        "actor_bootstrap_95": [
+          0.7777777777777778,
+          0.7777777777777778
+        ],
+        "brier": 0.12903402147236706,
+        "weighted_confusion": [
+          [
+            23.0,
+            13.0
+          ],
+          [
+            3.0,
+            33.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.8055555555555556,
+        "actor_bootstrap_95": [
+          0.8055555555555556,
+          0.8055555555555556
+        ],
+        "brier": 0.1392874623278248,
+        "weighted_confusion": [
+          [
+            25.0,
+            11.0
+          ],
+          [
+            3.0,
+            33.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.8055555555555556,
+        "actor_bootstrap_95": [
+          0.8055555555555556,
+          0.8055555555555556
+        ],
+        "brier": 0.1392874623278248,
+        "weighted_confusion": [
+          [
+            25.0,
+            11.0
+          ],
+          [
+            3.0,
+            33.0
+          ]
+        ]
+      }
+    },
+    "none": {
+      "construction": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            36.0
+          ],
+          [
+            0.0,
+            36.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.26318356972216544,
+        "weighted_confusion": [
+          [
+            36.0,
+            0.0
+          ],
+          [
+            36.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            36.0
+          ],
+          [
+            0.0,
+            36.0
+          ]
+        ]
+      }
+    },
+    "text": {
+      "construction": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            36.0
+          ],
+          [
+            0.0,
+            36.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.26327971789137145,
+        "weighted_confusion": [
+          [
+            36.0,
+            0.0
+          ],
+          [
+            36.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            36.0
+          ],
+          [
+            0.0,
+            36.0
+          ]
+        ]
+      }
+    },
+    "video": {
+      "construction": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            36.0
+          ],
+          [
+            0.0,
+            36.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.2647399680842648,
+        "weighted_confusion": [
+          [
+            36.0,
+            0.0
+          ],
+          [
+            36.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            36.0
+          ],
+          [
+            0.0,
+            36.0
+          ]
+        ]
+      }
+    },
+    "video+text": {
+      "construction": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.23677438599137104,
+        "weighted_confusion": [
+          [
+            18.0,
+            18.0
+          ],
+          [
+            18.0,
+            18.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.26088144382562817,
+        "weighted_confusion": [
+          [
+            36.0,
+            0.0
+          ],
+          [
+            36.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.24487090101956868,
+        "weighted_confusion": [
+          [
+            18.0,
+            18.0
+          ],
+          [
+            18.0,
+            18.0
+          ]
+        ]
+      }
+    }
+  },
+  "cpu_seconds": 0.06714260500000002,
+  "data_sha256": "f108e83074a5c168bd73e2d28af0db1d52db226a12fe3958c4c604d1c1ec997c",
+  "energy_joules": null,
+  "frontend_qualified": false,
+  "latency": {
+    "1": {
+      "batch": 1,
+      "episodes_per_second": 8022.141224205933,
+      "median_seconds": 0.00012465499821701087,
+      "p95_seconds": 0.0001426660001015989,
+      "repetitions": 31
+    },
+    "48": {
+      "batch": 48,
+      "episodes_per_second": 80816.10796173022,
+      "median_seconds": 0.0005939410002611112,
+      "p95_seconds": 0.0007389805014099693,
+      "repetitions": 31
+    }
+  },
+  "schema": "hcsn.av.confirmation.v2",
+  "scope": "Closed vocabulary auxiliary-supervised frontend; ordinary shared baseline; no dynamic-core attribution",
+  "sentence_accuracy": {
+    "audio": 0.9166666666666666,
+    "text": 1.0,
+    "video": 0.5
+  },
+  "split": "independent_test",
+  "wall_seconds": 0.06734393899751012
+}

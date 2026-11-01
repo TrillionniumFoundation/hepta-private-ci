@@ -1,0 +1,16 @@
+{
+  "schema": "hcsn.av.exposure-scope.v1",
+  "decision_made_before_media_acquisition": true,
+  "frozen_eight_actor_cohort": ["1001", "1003", "1004", "1005", "1008", "1011", "1012", "1015"],
+  "scope": "Locked cross-cohort reevaluation: disjoint from this frontend's original 38-actor cohort, but all eight actors occur in older research exposure records.",
+  "global_novelty_claim": false,
+  "original_candidate_freeze_sha256": "18cf5752c049656156a1b87c05be95fa463f37c885cbc2188901f8fd0b46a495",
+  "history_proof": "results/av_development/HISTORICAL_ACTOR_UNION_PROOF.json",
+  "observed_union_actor_count": 90,
+  "upstream_actor_count": 91,
+  "documented_unused_actor": "1019",
+  "correction": "Initial metadata selection excluded only the immediate 38-actor cohort. The deeper historical actor union was checked before any selected raw media or prepared confirmation feature was accessed.",
+  "eight_actor_execution": "Keep the original frozen source, models and candidate identities unchanged. Permit execution only with explicit historical-exposure qualification; do not relabel it globally unseen confirmation.",
+  "one_actor_extension": "Actor 1019 may be separately preregistered as a blind check using the same fixed encoders and trained cores. One actor cannot support a population confidence interval or close broad independent AV generalization.",
+  "open_gate": "A sufficiently large genuinely external audiovisual confirmation remains outstanding. No source-control or numerical pass can close this evidence requirement."
+}

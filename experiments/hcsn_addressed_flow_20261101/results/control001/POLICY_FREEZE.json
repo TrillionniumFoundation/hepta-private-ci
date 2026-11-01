@@ -1,0 +1,165 @@
+{
+  "action": "First query is observed without answering; READ spends 0.1 time for one missing final raw write, then answers a zero-time repeated query",
+  "candidate_freeze_sha256": "4ed955c533a124c968494436e8600956a0b2e65467d2712b2701dea83709d836",
+  "checkpoint_sha256": {
+    "binding__addressed_diagonal__17": "2dbe9bf90847be75596acb1a52c86d78097a7eac3d31badd44a68afbc7b5e5ba",
+    "binding__addressed_diagonal__29": "23556cdac62ad89a6590c8eb7cf3be9eb1cb4e26a6cd504a2e79e581c6daae55",
+    "binding__addressed_diagonal__43": "eeb81e0a358afc4e6390f6c7cead76037e782959823432b8dcc487d914b0b446",
+    "binding__addressed_flow__17": "85b30ba5ad6f69c650063de6e8aedf0b678c00ee40dea1f09a9b916a41deccff",
+    "binding__addressed_flow__29": "6c6c451cc2dc6c0c5cfdceaf3296190995c207fa45d4eaa9dedf2874f3231b48",
+    "binding__addressed_flow__43": "5124e1c6f74cdd4aec682e7c191e53cf6568eae4109bf9bc9e9cc29eece10cc7",
+    "mqar__addressed_diagonal__17": "77d81c942473988fcac2f2b9b21c54ce1194934ce951bf061737e60d451fd4c6",
+    "mqar__addressed_diagonal__29": "6dc9813ebf2239ef1fbffdb7cd5cdfc2875cb470b574a59b06e97f518c336c58",
+    "mqar__addressed_diagonal__43": "157d72b1442146e987a748d878cb712eba73a506476957deb8e27b115bb9931e",
+    "mqar__addressed_flow__17": "d2f4dcc83ccf92aadedeb6c799a692b114bd38152e8b95140f9af35b4a5bff60",
+    "mqar__addressed_flow__29": "37c8babb8b7c704fb802ce0061c96a2bd0a01ccd55cca7223945e341cf95a03d",
+    "mqar__addressed_flow__43": "205704a43c231b6895b700171a506bafef070d031931f86ae250b6d7fc7c1b5a",
+    "selective__addressed_diagonal__17": "4ba6166025e4aebddaaea2cd90292d8bf57c4bd7f136e50d5e20c71a04911bb0",
+    "selective__addressed_diagonal__29": "5229dee1fb43efc3c1d018b23b5d1e3eedc3f944ea9dc136837cb84fc592c707",
+    "selective__addressed_diagonal__43": "c68ebdcd95a9830ff294db2540cdc0dc6cd88439951e38ede236ea92fe1321d5",
+    "selective__addressed_flow__17": "58c4280b80c1085acd5bc3bd01ef397770c7046aa37c40a09231e043f3889281",
+    "selective__addressed_flow__29": "213a7764a07639dab301abc9578a75f1c204537bec4abec75124b218b34012a0",
+    "selective__addressed_flow__43": "a82634f25c034ebc1afe67aa82f2f20f1315e0e6a9a5c007dff53b1a3d88bb52"
+  },
+  "confirm_seed": 88101,
+  "confirmation_episodes": 1024,
+  "cpu_seconds": 12.421665448999999,
+  "data_sha256": "165307e71c12d2e57c4e27933e8d739745e3fe6cfc03853f4e58c50eaa0ec5e6",
+  "features": "First-query top two probabilities, entropy, elapsed time and missing fraction; no future query logits",
+  "fixed_selection": "Best fixed price threshold by pooled development utility, deterministic first tie",
+  "limits": [
+    "Restricted one-opportunity READ/STOP controller, not general WAIT/RESET",
+    "Physical wall/CPU and symbolic read price are separate ledgers; no joule conversion",
+    "Missing-final-write intervention is structured and announced by missing observations"
+  ],
+  "objective": "Mean of four query correctness indicators minus explicit read price",
+  "policies": {
+    "binding": {
+      "calibration_note": "Repeated trajectories across six frozen models are paired, not independent episodes",
+      "common_controller": "One coefficient vector shared across both cores and all seeds",
+      "development_utilities": [
+        0.7718098958333334,
+        0.7718098958333334,
+        0.8117643229166668,
+        0.8447037760416665,
+        0.8601367187499999,
+        0.8596093749999999,
+        0.8421777343749998
+      ],
+      "independent_training_episodes": 384,
+      "lightweight_threshold": 0.24,
+      "ridge_penalty": 0.01,
+      "thresholds": [
+        -1.0,
+        0.02,
+        0.08,
+        0.16,
+        0.24,
+        0.32,
+        1.0
+      ],
+      "training_rows": 2304,
+      "value_coefficients": [
+        0.18456280712486076,
+        0.010641566481217536,
+        0.08482523295737898,
+        -0.015135015089384193,
+        0.07640301278194458,
+        -1.8596021286499068e-11
+      ]
+    },
+    "mqar": {
+      "calibration_note": "Repeated trajectories across six frozen models are paired, not independent episodes",
+      "common_controller": "One coefficient vector shared across both cores and all seeds",
+      "development_utilities": [
+        0.7738444010416666,
+        0.7738444010416666,
+        0.8135546875,
+        0.8499934895833331,
+        0.8643684895833332,
+        0.8600162760416666,
+        0.8420963541666664
+      ],
+      "independent_training_episodes": 384,
+      "lightweight_threshold": 0.24,
+      "ridge_penalty": 0.01,
+      "thresholds": [
+        -1.0,
+        0.02,
+        0.08,
+        0.16,
+        0.24,
+        0.32,
+        1.0
+      ],
+      "training_rows": 2304,
+      "value_coefficients": [
+        0.18918963911154807,
+        0.04051163655145248,
+        0.09896540457790565,
+        -0.003383537274956439,
+        0.004084405654229716,
+        1.2103678097397778e-10
+      ]
+    },
+    "selective": {
+      "calibration_note": "Repeated trajectories across six frozen models are paired, not independent episodes",
+      "common_controller": "One coefficient vector shared across both cores and all seeds",
+      "development_utilities": [
+        0.766357421875,
+        0.766357421875,
+        0.8055794270833334,
+        0.8445410156249998,
+        0.8598111979166666,
+        0.8587955729166666,
+        0.8419335937499998
+      ],
+      "independent_training_episodes": 384,
+      "lightweight_threshold": 0.24,
+      "ridge_penalty": 0.01,
+      "thresholds": [
+        -1.0,
+        0.02,
+        0.08,
+        0.16,
+        0.24,
+        0.32,
+        1.0
+      ],
+      "training_rows": 2304,
+      "value_coefficients": [
+        0.47312999833099184,
+        -0.2328782902943438,
+        -0.13643951627928816,
+        -0.13551672606482495,
+        0.0035253525098552815,
+        1.2820195618991286e-10
+      ]
+    }
+  },
+  "prices": [
+    0.02,
+    0.08,
+    0.16,
+    0.24,
+    0.32
+  ],
+  "schema": "hcsn.addressed.control.v1",
+  "source_hashes": {
+    "experiments/hcsn_addressed_flow_20261101/STATISTICAL_PLAN.json": "87c22c3671866b920791a569484f4696f84580c7778fb84a00f87545e1eedcdf",
+    "experiments/hcsn_addressed_flow_20261101/addressed_models.py": "2c2c434c567f66d5e0f48d5befc05e54c201c724f0b2b5d6f211f3784612f25e",
+    "experiments/hcsn_addressed_flow_20261101/control_study.py": "69033a8879a66bc02a2fcd7ee341f0c78d7a74755c0163bfe95a4677d48278f9",
+    "experiments/hcsn_addressed_flow_20261101/data.py": "165307e71c12d2e57c4e27933e8d739745e3fe6cfc03853f4e58c50eaa0ec5e6",
+    "experiments/hcsn_addressed_flow_20261101/study.py": "06b650f82d75e6677651a109cee8ef89a7f21d41c8852981153c0a88e080b3b1",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_four_stage_flow_20261031/dynamic_data.py": "df016a6142ecc5a9fffaa45956ec253169ce33adb7101f8b18d41b4a845102c7",
+    "experiments/hcsn_four_stage_flow_20261031/extended_eval.py": "9c6f9633225625e9696871c4396e5b52f872ac117b8a4d47cba6f125cf53f84d",
+    "experiments/hcsn_four_stage_flow_20261031/marked_flow.py": "f7ccf2ea965b77ed08da488142d1023fb1c7a6a11580b13e8e7aba2dd861836c",
+    "experiments/hcsn_four_stage_flow_20261031/models.py": "d8d47ea1e2b1a3bfad4a55c99ce1322bc1583dc73b69b8a645da38f4d07797b6",
+    "experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e"
+  },
+  "source_sha256": "69033a8879a66bc02a2fcd7ee341f0c78d7a74755c0163bfe95a4677d48278f9",
+  "training_seed": 77101,
+  "value_selection": "Predicted paired gain > current price; gain clipped to [-1,1]",
+  "wall_seconds": 12.64886356200077
+}

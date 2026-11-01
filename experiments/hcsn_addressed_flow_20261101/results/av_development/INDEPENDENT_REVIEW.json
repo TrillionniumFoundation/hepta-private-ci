@@ -1,0 +1,74 @@
+{
+  "schema": "hcsn.av.independent.review.v1",
+  "review_scope": "Read-only review of frozen source, candidate, development artifacts and prospective cohort metadata. No confirmation media, features or results were read.",
+  "verified_source_sha256": "a53f2290e5ac89a82adc2d78268c79d79d8f9abc091491377135072605771513",
+  "verified_candidate_sha256": "18cf5752c049656156a1b87c05be95fa463f37c885cbc2188901f8fd0b46a495",
+  "verified_independent_metadata_sha256": "286cd5c87ddcef74787418b22e188fd4ed5b8443e1d42a135840c46e32d95f38",
+  "verified_core_records_sha256": "bcf0ef0d80c4f0938091fe1abf8b3fa1be72b85c6fd596eb5ec292e796dc45ac",
+  "actual_artifact_checks": {
+    "all_checkpoints": true,
+    "development_evidence": true,
+    "training_source_snapshot": true,
+    "subset_control_evidence": true,
+    "independent_metadata_and_records": true,
+    "independent_core_records": true,
+    "actors_disjoint_from_all_prior_cohort_splits": true
+  },
+  "synthetic_frontend_checks": {
+    "passed": 11,
+    "failed": 0,
+    "wall_seconds_reported_by_unittest": 0.780,
+    "media_access": false
+  },
+  "findings": [
+    {
+      "kind": "guard_coverage",
+      "finding": "load_freeze does not verify training_source_snapshot_sha256 or subset_control_evidence_sha256 although both are stored in CANDIDATES.",
+      "reproduction": "In an isolated temporary copy, changing TRAINING_SOURCE.py and SUBSET_CONTROLS.json is accepted by load_freeze. The original artifacts both match their frozen hashes.",
+      "resolution": "Separate av_confirmation_guard.py verifies both fields before confirmation without changing the frozen model source."
+    },
+    {
+      "kind": "provenance_guard",
+      "finding": "confirm trusts supplied prepared feature/split archives beyond its independent-actor set check.",
+      "resolution": "Separate pre-confirmation guard verifies candidate/cohort, raw media sizes/hashes, extraction receipts and source identities, split metadata/hash, alias identity and reconstruction from verified clip features."
+    },
+    {
+      "kind": "calibration_scope",
+      "finding": "Base decoder scores exclude each held actor using GroupKFold. The calibrator then fits all training out-of-fold scores and labels and is applied back to those training rows.",
+      "qualification": "This is actor-out-of-fold base scores plus full-training calibration, not a nested out-of-fold entire encoder pipeline. It does not use fresh-actor data, and all compared cores receive the same probabilities."
+    },
+    {
+      "kind": "posterior_scope",
+      "finding": "The product consistency rule explicitly assumes conditional independence. Shared actor/emotion nuisance prevents treating it as an established true posterior.",
+      "qualification": "Separately trained full and subset relation heads remain valid ordinary controls."
+    },
+    {
+      "kind": "latency_scope",
+      "finding": "confirm latency measures portable decoders and the construction rule after feature extraction.",
+      "qualification": "Whole-file decoding and fixed-prefix extraction costs are separate. This is not complete online media latency."
+    }
+  ],
+  "direct_label_or_actor_input_leak_found": false,
+  "fixed_prefix_causality_fault_found": false,
+  "model_or_protocol_modified_by_review": false,
+  "confirmation_outcomes_opened_by_review": false,
+  "subsequent_historical_cohort_correction": {
+    "history_proof_sha256": "7af9b818d9f33c4ef09cbb1f92f8a145e2514669380ca35e48a115d47d51631b",
+    "immediate_prior_cohort_disjointness_remains_true": true,
+    "all_eight_proposed_actors_have_earlier_documented_research_exposure": true,
+    "correct_scientific_status": "locked_cross_cohort_reevaluation",
+    "globally_fresh_claim_allowed": false,
+    "separate_blind_actor": "1019",
+    "blind_actor_scope": "One actor absent from the explicitly audited 90-actor history union; point estimates only, no population confidence or adoption claim",
+    "blind_candidate_sha256": "e15355f634395a67fd30e90aec3919b37d41be41a63e88055da400150a27b68e"
+  },
+  "guard_closure": {
+    "guard_source": "av_confirmation_guard.py",
+    "focused_checks": "dev/av_guard002/SUMMARY.json",
+    "passed": 19,
+    "failed": 0,
+    "scientific_model_source_changed": false,
+    "covered": "Actual frozen candidate/cohort/history identities plus synthetic raw/feature/split chains, corrected-hash label tampering, historical artifact tampering and rejection of an unseen-actor claim for the eight exposed actors",
+    "metadata_preflight_is_not_prepared_data_clearance": true
+  }
+}

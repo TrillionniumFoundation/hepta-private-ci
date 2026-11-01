@@ -1,0 +1,61 @@
+{
+  "inputs": {
+    "experiments/hcsn_addressed_flow_20261101/results/campaign001/confirmation/RESULTS.json": "6b39abc6bc7c1dc047909c4829591efd821c76284e8c205a8fe2777c87aec8be",
+    "experiments/hcsn_addressed_flow_20261101/results/retention001/confirmation/SUMMARY.json": "b36a1018b9b625554a5cf5893a5668ef72cd808419677254fe925ea9182eeadd",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/SUMMARY.json": "ff856f26931ee4436ba928effe6bc4f9bc6b0b74139e2974c15923a628b11db9",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/POLICY_FREEZE.json": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+    "experiments/hcsn_addressed_flow_20261101/results/campaign001_train_meter.receipt.json": "4ddd81b8493baf31c811e81683f6a972d656b48d0fd73a6cfdc07ba820fa741d",
+    "experiments/hcsn_addressed_flow_20261101/results/campaign001_confirmation_meter.receipt.json": "97f11c6dee7cccf1b4acd7970acf37a93ef8067c58272697409486a4f8fa9930",
+    "experiments/hcsn_addressed_flow_20261101/results/control001_train_meter.receipt.json": "9d931e4c6f2bd80df3f66c04ba83f1c6a187e9196d3eaf31537b51f778ea30c3",
+    "experiments/hcsn_addressed_flow_20261101/results/control001_confirmation_meter.receipt.json": "015aae83ec1edc882db315d57c4e130a267bd346ac3316f4b80294961ebe6225",
+    "experiments/hcsn_addressed_flow_20261101/results/retention001_train_meter.receipt.json": "4bee36cccbf331b9f2d8d803e61ee9c6b86a43465e0024cd7e4181a7374c0fcf",
+    "experiments/hcsn_addressed_flow_20261101/results/retention001_confirm_meter.receipt.json": "16eb42501356cd10853039cedce6abf69fcb16cfbfce5ce8747681d8ea9ef85f",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001_train_meter.receipt.json": "a73b875f41ce2131949c5a87b77b86005a5d5c42583b673444f9a1fa11e47592",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001_confirm_meter.receipt.json": "61d076ca1d52f6f83c7016cc623548a8ac58043f0a632e6293138395f2250e6d",
+    "experiments/hcsn_addressed_flow_20261101/results/retention001/INDEPENDENT_ACCEPTANCE.json": "eb30bbd485376185c63fb2205c635e1c6be32340cd66a38947a8efdfe012b8e7",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/INDEPENDENT_REVIEW.json": "afc036ef9723f16695e03c128da36ea2fadcc3390e355b179e44b74a87cb4b23"
+  },
+  "report_sha256": "48a6662358bfe7bbc279896cd60d01c3fc34827bd7e446cb8cb235508feb6cef",
+  "cost_ledger": {
+    "campaign001_train_meter": {
+      "total_cpu_seconds": 714.581908,
+      "wall_seconds": 244.76526979799746,
+      "returncode": 0
+    },
+    "campaign001_confirmation_meter": {
+      "total_cpu_seconds": 278.292731,
+      "wall_seconds": 283.5950123829971,
+      "returncode": 0
+    },
+    "control001_train_meter": {
+      "total_cpu_seconds": 14.097558,
+      "wall_seconds": 15.067108630999428,
+      "returncode": 0
+    },
+    "control001_confirmation_meter": {
+      "total_cpu_seconds": 17.978894,
+      "wall_seconds": 18.116497541999706,
+      "returncode": 0
+    },
+    "retention001_train_meter": {
+      "total_cpu_seconds": 397.559356,
+      "wall_seconds": 208.0085775100015,
+      "returncode": 0
+    },
+    "retention001_confirm_meter": {
+      "total_cpu_seconds": 155.31317900000002,
+      "wall_seconds": 167.52197133200025,
+      "returncode": 0
+    },
+    "retention_control001_train_meter": {
+      "total_cpu_seconds": 13.56695,
+      "wall_seconds": 13.640013976000773,
+      "returncode": 0
+    },
+    "retention_control001_confirm_meter": {
+      "total_cpu_seconds": 16.166379,
+      "wall_seconds": 22.7284837110019,
+      "returncode": 0
+    }
+  }
+}

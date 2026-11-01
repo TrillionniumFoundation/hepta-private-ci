@@ -1,0 +1,23 @@
+{
+  "schema": "hcsn.runtime.v1",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "torch": "2.9.0+cpu",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "scikit_learn": "1.8.0",
+  "cuda_available": false,
+  "cuda_version": null,
+  "threads": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "energy_joules": null,
+  "energy_note": "No attributable GPU or power meter in this run; CPU seconds are not joules",
+  "packaging_validation": {
+    "fixture_roundtrip": true,
+    "conflicting_restore_refused": true,
+    "corrupted_part_refused": true
+  }
+}

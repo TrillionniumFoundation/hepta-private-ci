@@ -1,0 +1,493 @@
+{
+  "actors": [
+    "1001",
+    "1003",
+    "1004",
+    "1005",
+    "1008",
+    "1011",
+    "1012",
+    "1015"
+  ],
+  "candidate_freeze_sha256": "18cf5752c049656156a1b87c05be95fa463f37c885cbc2188901f8fd0b46a495",
+  "confirmation_status": "Independent actor confirmation",
+  "consistency": {
+    "audio": {
+      "construction": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            288.0
+          ],
+          [
+            0.0,
+            288.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.2634340498994021,
+        "weighted_confusion": [
+          [
+            288.0,
+            0.0
+          ],
+          [
+            288.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            288.0
+          ],
+          [
+            0.0,
+            288.0
+          ]
+        ]
+      }
+    },
+    "audio+text": {
+      "construction": {
+        "accuracy": 0.7083333333333334,
+        "actor_bootstrap_95": [
+          0.6527777777777778,
+          0.7638888888888888
+        ],
+        "brier": 0.19339467746973069,
+        "weighted_confusion": [
+          [
+            174.0,
+            114.0
+          ],
+          [
+            54.0,
+            234.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.71875,
+        "actor_bootstrap_95": [
+          0.6631944444444444,
+          0.7673611111111112
+        ],
+        "brier": 0.1951241783913614,
+        "weighted_confusion": [
+          [
+            192.0,
+            96.0
+          ],
+          [
+            66.0,
+            222.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.71875,
+        "actor_bootstrap_95": [
+          0.6631944444444444,
+          0.7673611111111112
+        ],
+        "brier": 0.19505154579420594,
+        "weighted_confusion": [
+          [
+            192.0,
+            96.0
+          ],
+          [
+            66.0,
+            222.0
+          ]
+        ]
+      }
+    },
+    "audio+video": {
+      "construction": {
+        "accuracy": 0.4861111111111111,
+        "actor_bootstrap_95": [
+          0.43732638888888903,
+          0.5416666666666666
+        ],
+        "brier": 0.2507600045592713,
+        "weighted_confusion": [
+          [
+            133.0,
+            155.0
+          ],
+          [
+            141.0,
+            147.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.26353626242510253,
+        "weighted_confusion": [
+          [
+            288.0,
+            0.0
+          ],
+          [
+            288.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.4444444444444444,
+          0.5590277777777778
+        ],
+        "brier": 0.24975629484328626,
+        "weighted_confusion": [
+          [
+            144.0,
+            144.0
+          ],
+          [
+            144.0,
+            144.0
+          ]
+        ]
+      }
+    },
+    "audio+video+text": {
+      "construction": {
+        "accuracy": 0.7100694444444444,
+        "actor_bootstrap_95": [
+          0.6545138888888888,
+          0.7586805555555556
+        ],
+        "brier": 0.19413112657886888,
+        "weighted_confusion": [
+          [
+            178.0,
+            110.0
+          ],
+          [
+            57.0,
+            231.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.71875,
+        "actor_bootstrap_95": [
+          0.6631944444444444,
+          0.7673611111111112
+        ],
+        "brier": 0.19515562580862209,
+        "weighted_confusion": [
+          [
+            192.0,
+            96.0
+          ],
+          [
+            66.0,
+            222.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.71875,
+        "actor_bootstrap_95": [
+          0.6631944444444444,
+          0.7673611111111112
+        ],
+        "brier": 0.19515562580862209,
+        "weighted_confusion": [
+          [
+            192.0,
+            96.0
+          ],
+          [
+            66.0,
+            222.0
+          ]
+        ]
+      }
+    },
+    "none": {
+      "construction": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            288.0
+          ],
+          [
+            0.0,
+            288.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.2631835697221654,
+        "weighted_confusion": [
+          [
+            288.0,
+            0.0
+          ],
+          [
+            288.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            288.0
+          ],
+          [
+            0.0,
+            288.0
+          ]
+        ]
+      }
+    },
+    "text": {
+      "construction": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            288.0
+          ],
+          [
+            0.0,
+            288.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.2632797178913715,
+        "weighted_confusion": [
+          [
+            288.0,
+            0.0
+          ],
+          [
+            288.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            288.0
+          ],
+          [
+            0.0,
+            288.0
+          ]
+        ]
+      }
+    },
+    "video": {
+      "construction": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            288.0
+          ],
+          [
+            0.0,
+            288.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.26348477957049316,
+        "weighted_confusion": [
+          [
+            288.0,
+            0.0
+          ],
+          [
+            288.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.25,
+        "weighted_confusion": [
+          [
+            0.0,
+            288.0
+          ],
+          [
+            0.0,
+            288.0
+          ]
+        ]
+      }
+    },
+    "video+text": {
+      "construction": {
+        "accuracy": 0.5208333333333334,
+        "actor_bootstrap_95": [
+          0.4444444444444444,
+          0.5972222222222222
+        ],
+        "brier": 0.24834077764889478,
+        "weighted_confusion": [
+          [
+            147.0,
+            141.0
+          ],
+          [
+            135.0,
+            153.0
+          ]
+        ]
+      },
+      "learned": {
+        "accuracy": 0.5,
+        "actor_bootstrap_95": [
+          0.5,
+          0.5
+        ],
+        "brier": 0.26231015187165097,
+        "weighted_confusion": [
+          [
+            288.0,
+            0.0
+          ],
+          [
+            288.0,
+            0.0
+          ]
+        ]
+      },
+      "subset_trained": {
+        "accuracy": 0.5243055555555556,
+        "actor_bootstrap_95": [
+          0.4444444444444444,
+          0.6006944444444444
+        ],
+        "brier": 0.24855629973581717,
+        "weighted_confusion": [
+          [
+            149.0,
+            139.0
+          ],
+          [
+            135.0,
+            153.0
+          ]
+        ]
+      }
+    }
+  },
+  "cpu_seconds": 0.4235998080000001,
+  "data_sha256": "22bd0c1e1b57a812850467d34afc4bcec906354751b38c7cd6296fa87778f9a4",
+  "energy_joules": null,
+  "frontend_qualified": false,
+  "latency": {
+    "1": {
+      "batch": 1,
+      "episodes_per_second": 7983.649511864718,
+      "median_seconds": 0.00012525599959190004,
+      "p95_seconds": 0.00023867849995440338,
+      "repetitions": 31
+    },
+    "384": {
+      "batch": 384,
+      "episodes_per_second": 63576.42208761332,
+      "median_seconds": 0.0060399750000215136,
+      "p95_seconds": 0.007086190998961683,
+      "repetitions": 31
+    }
+  },
+  "schema": "hcsn.av.confirmation.v2",
+  "scope": "Closed vocabulary auxiliary-supervised frontend; ordinary shared baseline; no dynamic-core attribution",
+  "sentence_accuracy": {
+    "audio": 0.8125,
+    "text": 1.0,
+    "video": 0.53125
+  },
+  "split": "independent_test",
+  "wall_seconds": 0.43016510999950697
+}

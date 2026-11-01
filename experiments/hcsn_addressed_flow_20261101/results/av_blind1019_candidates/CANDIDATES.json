@@ -1,0 +1,84 @@
+{
+  "checkpoints": [
+    {
+      "file": "audio_encoder.npz",
+      "sha256": "8d06f6a608c8f93b81cc62a5d70a99535365ea7cae9b3f028b8274217c4c35c9"
+    },
+    {
+      "file": "text_encoder.npz",
+      "sha256": "bb0dd9dd533b3c9647818b1f56c7935d31326492f456753dd4473a0df0d8d566"
+    },
+    {
+      "file": "video_encoder.npz",
+      "sha256": "27fa33e3b26881f04a88f59b617a9818b5b00e630cac25808b478110da6ab02c"
+    },
+    {
+      "file": "relation_head.npz",
+      "sha256": "c6bc949f83bc7997efdb9d40251e8ac3f1c92e4c67dd021463a8348c5d2d26f2"
+    },
+    {
+      "file": "subset_heads.npz",
+      "sha256": "9ad3701a9a6e5e2d3a90a0310164d930268f92f2de2716663677fb89d6b6f773"
+    }
+  ],
+  "development_sha256": "01683399f639b6855ef5804ec63480ec5f7e5e473636127ed8ab084bdec5f3d1",
+  "independent_cohort": {
+    "actors": [
+      "1019"
+    ],
+    "core_records_sha256": "c7cf385278d07da3082ae688431c58c929da81a65da5eff5209efe52efbfe383",
+    "records_sha256": "f643033a65e3f728721d00f20ed58713e68e475b3f6ba24722508b4cbf2a40f1",
+    "sha256": "5e2bb0b9efca5f90148d31098bd5aee67e853c940bb00a138cc758d5e790634b"
+  },
+  "prospective_cohort_handoff": {
+    "blind_protocol_sha256": "f66e38aade9574a46ba696017248b319ae841d71f1b2f9e8ca2ae0351b616416",
+    "checkpoints_changed": false,
+    "encoder_selection_changed": false,
+    "origin_candidate_sha256": "18cf5752c049656156a1b87c05be95fa463f37c885cbc2188901f8fd0b46a495",
+    "population_confirmation_claim_allowed": false,
+    "scientific_status": "one_documented_unseen_actor_blind_probe"
+  },
+  "protocol_sha256": "3786efb932c81209f264b6d3e1afaf4528f405b275def8163b80f78d4b58ffb6",
+  "schema": "hcsn.av.candidate.freeze.v2",
+  "selected": {
+    "audio": {
+      "C": 0.1,
+      "checkpoint": "audio_encoder.npz",
+      "cpu_seconds": 0.015729116000000154,
+      "estimator": "logistic",
+      "feature": "baseline",
+      "modality": "audio",
+      "sha256": "8d06f6a608c8f93b81cc62a5d70a99535365ea7cae9b3f028b8274217c4c35c9",
+      "train_accuracy": 0.9548611111111112,
+      "validation_accuracy": 0.9583333333333334,
+      "validation_log_loss": 0.1665816600108646
+    },
+    "text": {
+      "C": 1.0,
+      "checkpoint": "text_encoder.npz",
+      "cpu_seconds": 0.009657564000000285,
+      "estimator": "logistic",
+      "feature": "baseline",
+      "modality": "text",
+      "sha256": "bb0dd9dd533b3c9647818b1f56c7935d31326492f456753dd4473a0df0d8d566",
+      "train_accuracy": 1.0,
+      "validation_accuracy": 1.0,
+      "validation_log_loss": 0.00046728828957772806
+    },
+    "video": {
+      "C": 100.0,
+      "checkpoint": "video_encoder.npz",
+      "cpu_seconds": 0.06533373099999995,
+      "estimator": "rbf",
+      "feature": "mouth_motion",
+      "modality": "video",
+      "sha256": "27fa33e3b26881f04a88f59b617a9818b5b00e630cac25808b478110da6ab02c",
+      "train_accuracy": 1.0,
+      "validation_accuracy": 0.5694444444444444,
+      "validation_log_loss": 0.6960951256903509
+    }
+  },
+  "source_sha256": "a53f2290e5ac89a82adc2d78268c79d79d8f9abc091491377135072605771513",
+  "subset_control_evidence_sha256": "172bff745a56cffdc9e8de6cdd13e2af70d66cc9ea9a80083644e9a5be05ccd4",
+  "training_source_snapshot_sha256": "d74add005c54d16a94f888aa3f391973f350b183dab6f4a779f77adc8556397d"
+}

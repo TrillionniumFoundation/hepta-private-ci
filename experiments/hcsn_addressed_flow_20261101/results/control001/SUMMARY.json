@@ -1,0 +1,692 @@
+{
+  "cpu_seconds": 16.153280091000003,
+  "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+  "records": [
+    {
+      "checkpoint_sha256": "77d81c942473988fcac2f2b9b21c54ce1194934ce951bf061737e60d451fd4c6",
+      "core": "addressed_diagonal",
+      "feature_extraction_cpu_seconds": 0.0007650150000000355,
+      "lightweight_controller_cpu_seconds": 8.291999999965327e-06,
+      "measured_gain_mse": 0.004919477199648084,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.902099609375,
+          "all4": 0.6083984375,
+          "read_rate": 0.5703125,
+          "utility": 0.856962890625
+        },
+        "never_read": {
+          "accuracy": 0.771484375,
+          "all4": 0.0859375,
+          "read_rate": 0.0,
+          "utility": 0.771484375
+        },
+        "value": {
+          "accuracy": 0.902587890625,
+          "all4": 0.6103515625,
+          "read_rate": 0.572265625,
+          "utility": 0.856982421875
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "3c4524e69b0973250113baaf8dcba9289572896daa0924dcfc321567147418cd",
+      "seed": 17,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 8.647800000005645e-05
+    },
+    {
+      "checkpoint_sha256": "6dc9813ebf2239ef1fbffdb7cd5cdfc2875cb470b574a59b06e97f518c336c58",
+      "core": "addressed_diagonal",
+      "feature_extraction_cpu_seconds": 0.0009095910000000984,
+      "lightweight_controller_cpu_seconds": 4.74699999974959e-06,
+      "measured_gain_mse": 0.005091559162768744,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.902099609375,
+          "all4": 0.6083984375,
+          "read_rate": 0.5703125,
+          "utility": 0.856962890625
+        },
+        "never_read": {
+          "accuracy": 0.7724609375,
+          "all4": 0.08984375,
+          "read_rate": 0.0,
+          "utility": 0.7724609375
+        },
+        "value": {
+          "accuracy": 0.903076171875,
+          "all4": 0.6123046875,
+          "read_rate": 0.57421875,
+          "utility": 0.8570019531249999
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "b24cea6b324f52047f84c58615966990ffc938e45b958f8f9d253aa5e1dff5f5",
+      "seed": 29,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 6.992399999994348e-05
+    },
+    {
+      "checkpoint_sha256": "157d72b1442146e987a748d878cb712eba73a506476957deb8e27b115bb9931e",
+      "core": "addressed_diagonal",
+      "feature_extraction_cpu_seconds": 0.0007397779999998022,
+      "lightweight_controller_cpu_seconds": 2.8240000000678833e-06,
+      "measured_gain_mse": 0.0052011783400870565,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.902587890625,
+          "all4": 0.6103515625,
+          "read_rate": 0.5703125,
+          "utility": 0.857451171875
+        },
+        "never_read": {
+          "accuracy": 0.77294921875,
+          "all4": 0.091796875,
+          "read_rate": 0.0,
+          "utility": 0.77294921875
+        },
+        "value": {
+          "accuracy": 0.903076171875,
+          "all4": 0.6123046875,
+          "read_rate": 0.572265625,
+          "utility": 0.857470703125
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "bcbb887dba13a13bc60ea8ccafd2e6c48fff325f265a3005e0dcc7bc440fe87d",
+      "seed": 43,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 4.623900000000347e-05
+    },
+    {
+      "checkpoint_sha256": "d2f4dcc83ccf92aadedeb6c799a692b114bd38152e8b95140f9af35b4a5bff60",
+      "core": "addressed_flow",
+      "feature_extraction_cpu_seconds": 0.0006371560000002496,
+      "lightweight_controller_cpu_seconds": 2.823999999623794e-06,
+      "measured_gain_mse": 0.0050738278409696086,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.90234375,
+          "all4": 0.609375,
+          "read_rate": 0.5703125,
+          "utility": 0.85720703125
+        },
+        "never_read": {
+          "accuracy": 0.772216796875,
+          "all4": 0.0888671875,
+          "read_rate": 0.0,
+          "utility": 0.772216796875
+        },
+        "value": {
+          "accuracy": 0.90380859375,
+          "all4": 0.615234375,
+          "read_rate": 0.5771484375,
+          "utility": 0.85703125
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "86d7ece08b5b42c9bbf2be2459c7002ecfd4ad27b4745855e4fabea17995f419",
+      "seed": 17,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 4.676999999997378e-05
+    },
+    {
+      "checkpoint_sha256": "37c8babb8b7c704fb802ce0061c96a2bd0a01ccd55cca7223945e341cf95a03d",
+      "core": "addressed_flow",
+      "feature_extraction_cpu_seconds": 0.0008541280000002871,
+      "lightweight_controller_cpu_seconds": 4.857000000413336e-06,
+      "measured_gain_mse": 0.005173619813943563,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.902587890625,
+          "all4": 0.6103515625,
+          "read_rate": 0.5703125,
+          "utility": 0.857451171875
+        },
+        "never_read": {
+          "accuracy": 0.772705078125,
+          "all4": 0.0908203125,
+          "read_rate": 0.0,
+          "utility": 0.772705078125
+        },
+        "value": {
+          "accuracy": 0.904052734375,
+          "all4": 0.6162109375,
+          "read_rate": 0.576171875,
+          "utility": 0.857509765625
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "9df1f08e66b222dfe0c6cec1219a176ac594548a3effb3b91b7721170b4ad94f",
+      "seed": 29,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 7.051499999999322e-05
+    },
+    {
+      "checkpoint_sha256": "205704a43c231b6895b700171a506bafef070d031931f86ae250b6d7fc7c1b5a",
+      "core": "addressed_flow",
+      "feature_extraction_cpu_seconds": 0.0008154410000003054,
+      "lightweight_controller_cpu_seconds": 3.22400000030143e-06,
+      "measured_gain_mse": 0.005145223188271285,
+      "policies": {
+        "always_read": {
+          "accuracy": 0.99951171875,
+          "all4": 0.998046875,
+          "read_rate": 1.0,
+          "utility": 0.833515625
+        },
+        "lightweight": {
+          "accuracy": 0.902099609375,
+          "all4": 0.609375,
+          "read_rate": 0.5703125,
+          "utility": 0.856962890625
+        },
+        "never_read": {
+          "accuracy": 0.77197265625,
+          "all4": 0.08984375,
+          "read_rate": 0.0,
+          "utility": 0.77197265625
+        },
+        "value": {
+          "accuracy": 0.903076171875,
+          "all4": 0.61328125,
+          "read_rate": 0.5751953125,
+          "utility": 0.8567675781249999
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "03ad05038caf858a303bef507abc8efdaa903e5a935e7adccd824acf3a290196",
+      "seed": 43,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 4.749000000003889e-05
+    },
+    {
+      "checkpoint_sha256": "4ba6166025e4aebddaaea2cd90292d8bf57c4bd7f136e50d5e20c71a04911bb0",
+      "core": "addressed_diagonal",
+      "feature_extraction_cpu_seconds": 0.0009304009999997476,
+      "lightweight_controller_cpu_seconds": 4.446999999352386e-06,
+      "measured_gain_mse": 0.002132309264247425,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.89599609375,
+          "all4": 0.583984375,
+          "read_rate": 0.5703125,
+          "utility": 0.850859375
+        },
+        "never_read": {
+          "accuracy": 0.759033203125,
+          "all4": 0.0361328125,
+          "read_rate": 0.0,
+          "utility": 0.759033203125
+        },
+        "value": {
+          "accuracy": 0.94091796875,
+          "all4": 0.763671875,
+          "read_rate": 0.755859375,
+          "utility": 0.8512500000000001
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "7ae49b5d376737ecc98f33c6af2dc7cc82cb6ece52550439237edf63c03c7027",
+      "seed": 17,
+      "task": "selective",
+      "value_controller_cpu_seconds": 9.82250000003404e-05
+    },
+    {
+      "checkpoint_sha256": "5229dee1fb43efc3c1d018b23b5d1e3eedc3f944ea9dc136837cb84fc592c707",
+      "core": "addressed_diagonal",
+      "feature_extraction_cpu_seconds": 0.00104747500000002,
+      "lightweight_controller_cpu_seconds": 3.14499999998219e-06,
+      "measured_gain_mse": 0.0021376632812907504,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.89599609375,
+          "all4": 0.583984375,
+          "read_rate": 0.5703125,
+          "utility": 0.850859375
+        },
+        "never_read": {
+          "accuracy": 0.759033203125,
+          "all4": 0.0361328125,
+          "read_rate": 0.0,
+          "utility": 0.759033203125
+        },
+        "value": {
+          "accuracy": 0.94140625,
+          "all4": 0.765625,
+          "read_rate": 0.7578125,
+          "utility": 0.85126953125
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "e631cbfd0c8168efc51995301dc1b77a7f66cc663d84008df33a42e53db3ac9c",
+      "seed": 29,
+      "task": "selective",
+      "value_controller_cpu_seconds": 5.7155000000364e-05
+    },
+    {
+      "checkpoint_sha256": "c68ebdcd95a9830ff294db2540cdc0dc6cd88439951e38ede236ea92fe1321d5",
+      "core": "addressed_diagonal",
+      "feature_extraction_cpu_seconds": 0.0009152079999994456,
+      "lightweight_controller_cpu_seconds": 5.527999999976885e-06,
+      "measured_gain_mse": 0.0021593573908418487,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.89599609375,
+          "all4": 0.583984375,
+          "read_rate": 0.5703125,
+          "utility": 0.850859375
+        },
+        "never_read": {
+          "accuracy": 0.759033203125,
+          "all4": 0.0361328125,
+          "read_rate": 0.0,
+          "utility": 0.759033203125
+        },
+        "value": {
+          "accuracy": 0.941162109375,
+          "all4": 0.7646484375,
+          "read_rate": 0.7568359375,
+          "utility": 0.8512597656249999
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "f3a7a610dda426ad0c55b28ce7933d70c6605504fff837934a6bca4ab6aa0615",
+      "seed": 43,
+      "task": "selective",
+      "value_controller_cpu_seconds": 7.200699999998506e-05
+    },
+    {
+      "checkpoint_sha256": "58c4280b80c1085acd5bc3bd01ef397770c7046aa37c40a09231e043f3889281",
+      "core": "addressed_flow",
+      "feature_extraction_cpu_seconds": 0.0007427419999999074,
+      "lightweight_controller_cpu_seconds": 4.897000000170237e-06,
+      "measured_gain_mse": 0.0021749820049392823,
+      "policies": {
+        "always_read": {
+          "accuracy": 0.99951171875,
+          "all4": 0.998046875,
+          "read_rate": 1.0,
+          "utility": 0.833515625
+        },
+        "lightweight": {
+          "accuracy": 0.8955078125,
+          "all4": 0.58203125,
+          "read_rate": 0.5703125,
+          "utility": 0.85037109375
+        },
+        "never_read": {
+          "accuracy": 0.758544921875,
+          "all4": 0.0361328125,
+          "read_rate": 0.0,
+          "utility": 0.758544921875
+        },
+        "value": {
+          "accuracy": 0.942138671875,
+          "all4": 0.7685546875,
+          "read_rate": 0.7646484375,
+          "utility": 0.850361328125
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "30edf9e4abbf0dbe957849147b73c993fd4b1335a41731e16e08d4a072b3af70",
+      "seed": 17,
+      "task": "selective",
+      "value_controller_cpu_seconds": 9.611299999967571e-05
+    },
+    {
+      "checkpoint_sha256": "213a7764a07639dab301abc9578a75f1c204537bec4abec75124b218b34012a0",
+      "core": "addressed_flow",
+      "feature_extraction_cpu_seconds": 0.0007077609999992518,
+      "lightweight_controller_cpu_seconds": 3.2650000001410717e-06,
+      "measured_gain_mse": 0.0022303325005242573,
+      "policies": {
+        "always_read": {
+          "accuracy": 0.999755859375,
+          "all4": 0.9990234375,
+          "read_rate": 1.0,
+          "utility": 0.833759765625
+        },
+        "lightweight": {
+          "accuracy": 0.895751953125,
+          "all4": 0.583984375,
+          "read_rate": 0.5703125,
+          "utility": 0.850615234375
+        },
+        "never_read": {
+          "accuracy": 0.759033203125,
+          "all4": 0.037109375,
+          "read_rate": 0.0,
+          "utility": 0.759033203125
+        },
+        "value": {
+          "accuracy": 0.943115234375,
+          "all4": 0.7724609375,
+          "read_rate": 0.767578125,
+          "utility": 0.850634765625
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "54c7f7605cb7e1c34774af359b8088179ca2440ddd458c796f653f2ce774c8f4",
+      "seed": 29,
+      "task": "selective",
+      "value_controller_cpu_seconds": 5.040499999964254e-05
+    },
+    {
+      "checkpoint_sha256": "a82634f25c034ebc1afe67aa82f2f20f1315e0e6a9a5c007dff53b1a3d88bb52",
+      "core": "addressed_flow",
+      "feature_extraction_cpu_seconds": 0.0007136489999997053,
+      "lightweight_controller_cpu_seconds": 3.43499999999608e-06,
+      "measured_gain_mse": 0.0022235220060126183,
+      "policies": {
+        "always_read": {
+          "accuracy": 0.999755859375,
+          "all4": 0.9990234375,
+          "read_rate": 1.0,
+          "utility": 0.833759765625
+        },
+        "lightweight": {
+          "accuracy": 0.89599609375,
+          "all4": 0.583984375,
+          "read_rate": 0.5703125,
+          "utility": 0.850859375
+        },
+        "never_read": {
+          "accuracy": 0.759033203125,
+          "all4": 0.037109375,
+          "read_rate": 0.0,
+          "utility": 0.759033203125
+        },
+        "value": {
+          "accuracy": 0.943115234375,
+          "all4": 0.7724609375,
+          "read_rate": 0.7666015625,
+          "utility": 0.850869140625
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "143973b970a6ccd23a72989e656be478a101946460e3bffcae8c219c3bb26e15",
+      "seed": 43,
+      "task": "selective",
+      "value_controller_cpu_seconds": 5.3709999999540514e-05
+    },
+    {
+      "checkpoint_sha256": "2dbe9bf90847be75596acb1a52c86d78097a7eac3d31badd44a68afbc7b5e5ba",
+      "core": "addressed_diagonal",
+      "feature_extraction_cpu_seconds": 0.0008102220000001381,
+      "lightweight_controller_cpu_seconds": 3.1850000006272694e-06,
+      "measured_gain_mse": 0.005164350413147737,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.902099609375,
+          "all4": 0.6083984375,
+          "read_rate": 0.5703125,
+          "utility": 0.856962890625
+        },
+        "never_read": {
+          "accuracy": 0.772705078125,
+          "all4": 0.0908203125,
+          "read_rate": 0.0,
+          "utility": 0.772705078125
+        },
+        "value": {
+          "accuracy": 0.906005859375,
+          "all4": 0.6240234375,
+          "read_rate": 0.5869140625,
+          "utility": 0.856884765625
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "6a0aca0d3e829857cf76131f92e648e2ebb798a10e60de751d019c5dc4a5d87a",
+      "seed": 17,
+      "task": "binding",
+      "value_controller_cpu_seconds": 5.467100000089431e-05
+    },
+    {
+      "checkpoint_sha256": "23556cdac62ad89a6590c8eb7cf3be9eb1cb4e26a6cd504a2e79e581c6daae55",
+      "core": "addressed_diagonal",
+      "feature_extraction_cpu_seconds": 0.0007156120000004762,
+      "lightweight_controller_cpu_seconds": 3.394999998462822e-06,
+      "measured_gain_mse": 0.005026556972627957,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.901611328125,
+          "all4": 0.6064453125,
+          "read_rate": 0.5703125,
+          "utility": 0.856474609375
+        },
+        "never_read": {
+          "accuracy": 0.77197265625,
+          "all4": 0.087890625,
+          "read_rate": 0.0,
+          "utility": 0.77197265625
+        },
+        "value": {
+          "accuracy": 0.906005859375,
+          "all4": 0.6240234375,
+          "read_rate": 0.5888671875,
+          "utility": 0.856416015625
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "3343a47bbad760f11b83ac5b0a9927a105506540bd60cb7724678aca0bc9b8ea",
+      "seed": 29,
+      "task": "binding",
+      "value_controller_cpu_seconds": 4.4835999998937837e-05
+    },
+    {
+      "checkpoint_sha256": "eeb81e0a358afc4e6390f6c7cead76037e782959823432b8dcc487d914b0b446",
+      "core": "addressed_diagonal",
+      "feature_extraction_cpu_seconds": 0.0008740070000001765,
+      "lightweight_controller_cpu_seconds": 3.3550000004822778e-06,
+      "measured_gain_mse": 0.00520101399496207,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.90185546875,
+          "all4": 0.607421875,
+          "read_rate": 0.5703125,
+          "utility": 0.85671875
+        },
+        "never_read": {
+          "accuracy": 0.772705078125,
+          "all4": 0.0908203125,
+          "read_rate": 0.0,
+          "utility": 0.772705078125
+        },
+        "value": {
+          "accuracy": 0.90625,
+          "all4": 0.625,
+          "read_rate": 0.58984375,
+          "utility": 0.85642578125
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "536e2320ffddaa75693d4bf6953a0b752630365137640bf8720e5a0c3c235f77",
+      "seed": 43,
+      "task": "binding",
+      "value_controller_cpu_seconds": 5.434100000023534e-05
+    },
+    {
+      "checkpoint_sha256": "85b30ba5ad6f69c650063de6e8aedf0b678c00ee40dea1f09a9b916a41deccff",
+      "core": "addressed_flow",
+      "feature_extraction_cpu_seconds": 0.0007538090000007713,
+      "lightweight_controller_cpu_seconds": 3.4049999992902258e-06,
+      "measured_gain_mse": 0.0052161940930155705,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83400390625
+        },
+        "lightweight": {
+          "accuracy": 0.902587890625,
+          "all4": 0.6103515625,
+          "read_rate": 0.5703125,
+          "utility": 0.857451171875
+        },
+        "never_read": {
+          "accuracy": 0.772705078125,
+          "all4": 0.0908203125,
+          "read_rate": 0.0,
+          "utility": 0.772705078125
+        },
+        "value": {
+          "accuracy": 0.908935546875,
+          "all4": 0.6357421875,
+          "read_rate": 0.59765625,
+          "utility": 0.8572363281250001
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "c6cd2bf09618294c422e8b476060cd5e53af3cd0727d87551089402eb52d8b3c",
+      "seed": 17,
+      "task": "binding",
+      "value_controller_cpu_seconds": 4.4076000000004e-05
+    },
+    {
+      "checkpoint_sha256": "6c6c451cc2dc6c0c5cfdceaf3296190995c207fa45d4eaa9dedf2874f3231b48",
+      "core": "addressed_flow",
+      "feature_extraction_cpu_seconds": 0.0007221719999996878,
+      "lightweight_controller_cpu_seconds": 3.3649999977569678e-06,
+      "measured_gain_mse": 0.005161555507605175,
+      "policies": {
+        "always_read": {
+          "accuracy": 0.999755859375,
+          "all4": 0.9990234375,
+          "read_rate": 1.0,
+          "utility": 0.833759765625
+        },
+        "lightweight": {
+          "accuracy": 0.902099609375,
+          "all4": 0.609375,
+          "read_rate": 0.5703125,
+          "utility": 0.856962890625
+        },
+        "never_read": {
+          "accuracy": 0.772216796875,
+          "all4": 0.08984375,
+          "read_rate": 0.0,
+          "utility": 0.772216796875
+        },
+        "value": {
+          "accuracy": 0.908447265625,
+          "all4": 0.634765625,
+          "read_rate": 0.5966796875,
+          "utility": 0.856982421875
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "7e42b72b86e6fa7c6a04ba9762da9e2e2c518362126818a1fb17d1f6f6708b04",
+      "seed": 29,
+      "task": "binding",
+      "value_controller_cpu_seconds": 6.159100000147077e-05
+    },
+    {
+      "checkpoint_sha256": "5124e1c6f74cdd4aec682e7c191e53cf6568eae4109bf9bc9e9cc29eece10cc7",
+      "core": "addressed_flow",
+      "feature_extraction_cpu_seconds": 0.0007394779999998491,
+      "lightweight_controller_cpu_seconds": 3.4759999998357216e-06,
+      "measured_gain_mse": 0.004945083972423523,
+      "policies": {
+        "always_read": {
+          "accuracy": 0.99951171875,
+          "all4": 0.998046875,
+          "read_rate": 1.0,
+          "utility": 0.833515625
+        },
+        "lightweight": {
+          "accuracy": 0.901123046875,
+          "all4": 0.6064453125,
+          "read_rate": 0.5703125,
+          "utility": 0.855986328125
+        },
+        "never_read": {
+          "accuracy": 0.77099609375,
+          "all4": 0.0859375,
+          "read_rate": 0.0,
+          "utility": 0.77099609375
+        },
+        "value": {
+          "accuracy": 0.907470703125,
+          "all4": 0.6318359375,
+          "read_rate": 0.5966796875,
+          "utility": 0.856005859375
+        }
+      },
+      "policy_freeze_sha256": "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62",
+      "raw_sha256": "fb07962d9147d3afe73ad97870b0e234c0b06fef58741f4a5a61c61fca8bec77",
+      "seed": 43,
+      "task": "binding",
+      "value_controller_cpu_seconds": 5.1435999999682736e-05
+    }
+  ],
+  "scope": "Offline execution of both actual continuations, plus frozen policy selection; no deployment energy claim",
+  "wall_seconds": 16.230268618997798
+}
