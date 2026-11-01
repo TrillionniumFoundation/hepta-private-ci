@@ -1,0 +1,20 @@
+--- a/codex-rs/third_party/aws-config-1.8.12/Cargo.toml
++++ b/codex-rs/third_party/aws-config-1.8.12/Cargo.toml
+@@ -167,14 +167,15 @@
+ version = "1"
+ 
+ [dependencies.p256]
+-version = "0.13.2"
++version = "0.14.0"
+ optional = true
+ 
+ [dependencies.rand]
+-version = "0.8.5"
++version = "0.10.3"
+ features = [
+     "std",
+     "std_rng",
++    "sys_rng",
+ ]
+ optional = true
+ default-features = false

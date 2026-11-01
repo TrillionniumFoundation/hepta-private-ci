@@ -1,0 +1,11 @@
+[package]
+name = "anymap2"
+version = "0.13.0"
+edition = "2021"
+license = "Apache-2.0"
+publish = false
+description = "Hepta compatibility facade backed entirely by maintained anymap3"
+
+[dependencies]
+anymap3 = { version = "1.1.0", default-features = false, features = ["std"] }
+

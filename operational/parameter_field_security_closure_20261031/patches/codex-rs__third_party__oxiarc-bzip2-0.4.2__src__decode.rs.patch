@@ -1,0 +1,129 @@
+--- a/codex-rs/third_party/oxiarc-bzip2-0.4.2/src/decode.rs
++++ b/codex-rs/third_party/oxiarc-bzip2-0.4.2/src/decode.rs
+@@ -36,6 +36,7 @@
+ /// [`BzDecoder::with_progress`] / [`BzDecoder::with_cancel`] builders.
+ pub struct BzDecoder<R: Read> {
+     reader: MsbBitReader<R>,
++    single_stream: bool,
+     block_size: usize,
+     combined_crc: u32,
+     finished: bool,
+@@ -52,33 +53,30 @@
+ 
+ impl<R: Read> BzDecoder<R> {
+     /// Create a new decoder.
+-    pub fn new(mut reader: R) -> Result<Self> {
+-        let mut header = [0u8; 4];
+-        reader.read_exact(&mut header)?;
+-
+-        // Check magic
+-        if header[0] != BZIP2_MAGIC[0] || header[1] != BZIP2_MAGIC[1] {
+-            return Err(OxiArcError::invalid_magic(
+-                BZIP2_MAGIC.to_vec(),
+-                header[0..2].to_vec(),
+-            ));
+-        }
+-
+-        // Check 'h' marker
+-        if header[2] != b'h' {
+-            return Err(OxiArcError::invalid_header("Invalid BZip2 version marker"));
+-        }
+-
+-        // Get block size (1-9)
+-        let level = header[3].saturating_sub(b'0');
+-        if !(1..=9).contains(&level) {
+-            return Err(OxiArcError::invalid_header("Invalid block size"));
+-        }
+-
+-        let block_size = level as usize * 100_000;
+-
++    pub fn new(reader: R) -> Result<Self> {
++        Self::new_with_mode(reader, false).map_err(|(error, _)| error)
++    }
++
++    /// Create a decoder for one embedded stream, returning the reader on error.
++    ///
++    /// This mode never reads ahead past the BZip2 stream. It is intended for
++    /// container formats whose next header follows the compressed bytes.
++    pub fn try_new_single_stream(reader: R) -> std::result::Result<Self, (OxiArcError, R)> {
++        Self::new_with_mode(reader, true)
++    }
++
++    fn new_with_mode(mut reader: R, single_stream: bool) -> std::result::Result<Self, (OxiArcError, R)> {
++        let block_size = match Self::read_header(&mut reader) {
++            Ok(size) => size,
++            Err(error) => return Err((error, reader)),
++        };
++        let mut reader = MsbBitReader::new(reader);
++        if single_stream {
++            reader.disable_read_ahead();
++        }
+         Ok(Self {
+-            reader: MsbBitReader::new(reader),
++            reader,
++            single_stream,
+             block_size,
+             combined_crc: 0,
+             finished: false,
+@@ -87,6 +85,45 @@
+             bytes_processed: 0,
+             crc: Bz2Crc::new(),
+         })
++    }
++
++    fn read_header(reader: &mut R) -> Result<usize> {
++        let mut header = [0u8; 4];
++        reader.read_exact(&mut header)?;
++
++        // Check magic
++        if header[0] != BZIP2_MAGIC[0] || header[1] != BZIP2_MAGIC[1] {
++            return Err(OxiArcError::invalid_magic(
++                BZIP2_MAGIC.to_vec(),
++                header[0..2].to_vec(),
++            ));
++        }
++
++        // Check 'h' marker
++        if header[2] != b'h' {
++            return Err(OxiArcError::invalid_header("Invalid BZip2 version marker"));
++        }
++
++        // Get block size (1-9)
++        let level = header[3].saturating_sub(b'0');
++        if !(1..=9).contains(&level) {
++            return Err(OxiArcError::invalid_header("Invalid block size"));
++        }
++
++        Ok(level as usize * 100_000)
++    }
++
++    /// Borrow the underlying reader without changing its position.
++    pub fn get_ref(&self) -> &R {
++        self.reader.get_ref()
++    }
++
++    /// Return the underlying reader.
++    ///
++    /// The single-stream constructor guarantees no read-ahead. The ordinary
++    /// multi-stream constructor may already have buffered additional bytes.
++    pub fn into_inner(self) -> R {
++        self.reader.into_inner()
+     }
+ 
+     /// Attach a progress sink.
+@@ -141,6 +178,15 @@
+             let stored_crc = self.reader.read_bits(32)?;
+             if stored_crc != self.combined_crc {
+                 return Err(OxiArcError::crc_mismatch(stored_crc, self.combined_crc));
++            }
++
++            if self.single_stream {
++                self.reader.align_to_byte();
++                self.finished = true;
++                if let Some(ref handle) = self.progress {
++                    handle.on_finish();
++                }
++                return Ok(None);
+             }
+ 
+             // Probe for a concatenated follow-up stream; on clean end of

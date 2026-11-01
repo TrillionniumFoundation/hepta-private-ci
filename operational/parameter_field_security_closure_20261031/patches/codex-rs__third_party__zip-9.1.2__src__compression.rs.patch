@@ -1,0 +1,24 @@
+--- a/codex-rs/third_party/zip-9.1.2/src/compression.rs
++++ b/codex-rs/third_party/zip-9.1.2/src/compression.rs
+@@ -411,7 +411,11 @@
+             deflate64::Deflate64Decoder::with_buffer(reader),
+         )),
+         #[cfg(feature = "_bzip2_any")]
+-        CompressionMethod::Bzip2 => Ok(Decompressor::Bzip2(bzip2::bufread::BzDecoder::new(reader))),
++        CompressionMethod::Bzip2 => {
++            let decoder = crate::bzip2::BzDecoder::new(reader)
++                .map_err(|(error, reader)| (ZipError::from(error), Some(reader)))?;
++            Ok(Decompressor::Bzip2(decoder))
++        }
+         #[cfg(feature = "zstd")]
+         CompressionMethod::Zstd => {
+             let decoder = zstd::Decoder::try_with_buffer(reader)
+@@ -567,7 +571,7 @@
+     #[cfg(feature = "deflate64")]
+     Deflate64(deflate64::Deflate64Decoder<R>),
+     #[cfg(feature = "_bzip2_any")]
+-    Bzip2(bzip2::bufread::BzDecoder<R>),
++    Bzip2(crate::bzip2::BzDecoder<R>),
+     #[cfg(feature = "zstd")]
+     Zstd(zstd::Decoder<'static, R>),
+     #[cfg(feature = "lzma")]

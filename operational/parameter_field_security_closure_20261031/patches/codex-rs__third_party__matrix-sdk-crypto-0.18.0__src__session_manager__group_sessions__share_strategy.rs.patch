@@ -1,0 +1,24 @@
+--- a/codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/group_sessions/share_strategy.rs
++++ b/codex-rs/third_party/matrix-sdk-crypto-0.18.0/src/session_manager/group_sessions/share_strategy.rs
+@@ -616,7 +616,9 @@
+                         allowed_devices.push(device.clone());
+                     }
+                 } else {
+-                    panic!("Should have verification violation if device_owner_identity is None")
++                    // Device owner has no identity, so the device is considered
++                    // to be unverified
++                    blocked_devices.push((device.clone(), WithheldCode::Unverified));
+                 }
+             }
+         }
+@@ -726,7 +728,9 @@
+                     device_owner_identity,
+                 ))
+             } else {
+-                panic!("Should have verification violation if device_owner_identity is None")
++                // Device owner has no identity, so the device is considered
++                // to be unverified
++                Ok(Some(WithheldCode::Unverified))
+             }
+         }
+         CollectStrategy::OnlyTrustedDevices => {

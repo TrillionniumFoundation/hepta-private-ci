@@ -1,0 +1,32 @@
+--- a/codex-rs/third_party/oxiarc-bzip2-0.4.2/src/encode.rs
++++ b/codex-rs/third_party/oxiarc-bzip2-0.4.2/src/encode.rs
+@@ -379,6 +379,29 @@
+         })
+     }
+ 
++    /// Borrow the wrapped writer.
++    pub fn get_ref(&self) -> &W {
++        self.writer.get_ref()
++    }
++
++    /// Mutably borrow the wrapped writer without flushing buffered input.
++    pub fn get_mut(&mut self) -> &mut W {
++        self.writer.get_mut()
++    }
++
++    /// Emit buffered input as a block and flush complete bytes without ending
++    /// or padding the stream. Further writes remain valid BZip2 input.
++    pub fn flush(&mut self) -> Result<()> {
++        if !self.buffer.is_empty() {
++            if let Some(ref token) = self.cancel {
++                token.check()?;
++            }
++            let tail = std::mem::take(&mut self.buffer);
++            self.emit_block(&tail)?;
++        }
++        self.writer.flush_complete_bytes()
++    }
++
+     /// Attach a progress sink.
+     ///
+     /// The sink's `on_progress(cumulative_uncompressed_bytes, None)` is

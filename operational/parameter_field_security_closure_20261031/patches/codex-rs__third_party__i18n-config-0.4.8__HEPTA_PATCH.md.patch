@@ -1,0 +1,14 @@
+--- a/codex-rs/third_party/i18n-config-0.4.8/HEPTA_PATCH.md
++++ b/codex-rs/third_party/i18n-config-0.4.8/HEPTA_PATCH.md
+@@ -18,8 +18,9 @@
+ 
+ ## Compatibility and features
+ 
+-Both manifests use upstream's `toml = "1.1.6"` requirement. The product lock
+-already contains the compatible `1.1.8+spec-1.1.0`; this patch reuses that version.
++Both manifests use upstream's `toml = "1.1.6"` requirement. The current base
++contains `1.1.4+spec-1.1.0`; the candidate resolver selects the previously
++reviewed compatible `1.1.8+spec-1.1.0` release.
+ Only `std`, `serde`, and `parse` are enabled. Serialization and other optional
+ features are not needed by either parsing call.
+ 

@@ -1,0 +1,73 @@
+--- a/codex-rs/third_party/oxiarc-bzip2-0.4.2/src/bitio.rs
++++ b/codex-rs/third_party/oxiarc-bzip2-0.4.2/src/bitio.rs
+@@ -16,6 +16,7 @@
+ /// An MSB-first bit reader over any [`Read`] implementation.
+ pub(crate) struct MsbBitReader<R: Read> {
+     reader: R,
++    read_ahead: bool,
+     /// Byte chunk buffer.
+     chunk: [u8; CHUNK_SIZE],
+     /// Valid bytes in `chunk`.
+@@ -33,6 +34,7 @@
+     pub(crate) fn new(reader: R) -> Self {
+         Self {
+             reader,
++            read_ahead: true,
+             chunk: [0u8; CHUNK_SIZE],
+             chunk_len: 0,
+             chunk_pos: 0,
+@@ -41,11 +43,29 @@
+         }
+     }
+ 
++    pub(crate) fn disable_read_ahead(&mut self) {
++        self.read_ahead = false;
++    }
++
++    pub(crate) fn get_ref(&self) -> &R {
++        &self.reader
++    }
++
++    pub(crate) fn into_inner(self) -> R {
++        self.reader
++    }
++
+     /// Pull the next byte from the chunk buffer, refilling it if needed.
+     /// Returns `Ok(None)` on a clean end of input.
+     fn try_next_byte(&mut self) -> Result<Option<u8>> {
+         if self.chunk_pos >= self.chunk_len {
+-            let n = self.reader.read(&mut self.chunk)?;
++            let capacity = if self.read_ahead { CHUNK_SIZE } else { 1 };
++            let n = loop {
++                match self.reader.read(&mut self.chunk[..capacity]) {
++                    Err(error) if error.kind() == std::io::ErrorKind::Interrupted => continue,
++                    result => break result?,
++                }
++            };
+             if n == 0 {
+                 return Ok(None);
+             }
+@@ -155,6 +175,23 @@
+             buffer: 0,
+             bits: 0,
+         }
++    }
++
++    pub(crate) fn get_ref(&self) -> &W {
++        &self.writer
++    }
++
++    pub(crate) fn get_mut(&mut self) -> &mut W {
++        &mut self.writer
++    }
++
++    pub(crate) fn flush_complete_bytes(&mut self) -> Result<()> {
++        if !self.pending.is_empty() {
++            self.writer.write_all(&self.pending)?;
++            self.pending.clear();
++        }
++        self.writer.flush()?;
++        Ok(())
+     }
+ 
+     /// Write the low `count` bits (0-32) of `value`, MSB first.

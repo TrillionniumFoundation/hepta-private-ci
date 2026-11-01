@@ -1,0 +1,37 @@
+--- a/codex-rs/third_party/zip-9.1.2/Cargo.toml
++++ b/codex-rs/third_party/zip-9.1.2/Cargo.toml
+@@ -85,16 +85,8 @@
+     "dep:sha1",
+     "dep:zeroize",
+ ]
+-bzip2 = [
+-    "dep:bzip2",
+-    "bzip2/default",
+-    "_bzip2_any",
+-]
+-bzip2-rs = [
+-    "dep:bzip2",
+-    "bzip2/bzip2-sys",
+-    "_bzip2_any",
+-]
++bzip2 = ["dep:oxiarc-bzip2", "dep:oxiarc-core", "_bzip2_any"]
++bzip2-rs = ["bzip2"]
+ chrono = ["dep:chrono"]
+ default = [
+     "aes-crypto",
+@@ -163,8 +155,13 @@
+ version = "4.9"
+ optional = true
+ 
+-[dependencies.bzip2]
+-version = "0.6"
++[dependencies.oxiarc-bzip2]
++version = "0.4.2"
++optional = true
++default-features = false
++
++[dependencies.oxiarc-core]
++version = "0.4.2"
+ optional = true
+ default-features = false
+ 

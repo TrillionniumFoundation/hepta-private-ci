@@ -1,0 +1,37 @@
+--- a/codex-rs/third_party/keyring-3.6.3/Cargo.toml.orig
++++ b/codex-rs/third_party/keyring-3.6.3/Cargo.toml.orig
+@@ -24,7 +24,7 @@
+ crypto-rust = ["dbus-secret-service?/crypto-rust", "secret-service?/crypto-rust"]
+ crypto-openssl = ["dbus-secret-service?/crypto-openssl", "secret-service?/crypto-openssl"]
+ tokio = ["zbus?/tokio"]
+-async-io = ["zbus?/async-io"]
++async-io = ["zbus?/default-rt"]
+ vendored = ["dbus-secret-service?/vendored", "openssl?/vendored"]
+ 
+ [dependencies]
+@@ -38,19 +38,19 @@
+ security-framework = { version = "2", optional = true }
+ 
+ [target.'cfg(target_os = "linux")'.dependencies]
+-secret-service = { version = "4", optional = true }
+-zbus = { version = "4", optional = true }
++secret-service = { version = "6", optional = true }
++zbus = { version = "6", optional = true }
+ linux-keyutils = { version = "0.2", features = ["std"], optional = true }
+ dbus-secret-service = { version = "4.0.0-rc.2", optional = true }
+ 
+ [target.'cfg(target_os = "freebsd")'.dependencies]
+-secret-service = { version = "4", optional = true }
+-zbus = { version = "4", optional = true }
++secret-service = { version = "6", optional = true }
++zbus = { version = "6", optional = true }
+ dbus-secret-service = { version = "4.0.1", optional = true }
+ 
+ [target.'cfg(target_os = "openbsd")'.dependencies]
+-secret-service = { version = "4", optional = true }
+-zbus = { version = "4", optional = true }
++secret-service = { version = "6", optional = true }
++zbus = { version = "6", optional = true }
+ dbus-secret-service = { version = "4.0.0-rc.1", optional = true }
+ 
+ [target.'cfg(target_os = "windows")'.dependencies]

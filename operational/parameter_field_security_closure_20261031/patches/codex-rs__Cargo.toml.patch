@@ -1,0 +1,37 @@
+--- a/codex-rs/Cargo.toml
++++ b/codex-rs/Cargo.toml
+@@ -367,7 +367,7 @@
+ async-channel = "2.3.1"
+ async-io = "2.6.0"
+ async-stream = "0.3.6"
+-aws-config = "1"
++aws-config = "=1.8.12"
+ aws-credential-types = "1"
+ aws-sigv4 = "1"
+ aws-types = "1"
+@@ -427,7 +427,7 @@
+ itertools = "0.14.0"
+ jsonptr = { version = "0.7.1", default-features = false }
+ jsonwebtoken = "9.3.1"
+-keyring = { version = "3.6", default-features = false }
++keyring = { version = "=3.6.3", default-features = false }
+ landlock = "0.4.4"
+ lazy_static = "1"
+ libc = "0.2.182"
+@@ -661,6 +661,16 @@
+ opt-level = 0
+ 
+ [patch.crates-io]
++# Narrow dependency repairs: retain the product APIs and all enabled capabilities.
++# Each vendor directory records its exact upstream source and local changes.
++anymap2 = { path = "third_party/anymap2-compat" }
++aws-config = { path = "third_party/aws-config-1.8.12" }
++i18n-config = { path = "third_party/i18n-config-0.4.8" }
++keyring = { path = "third_party/keyring-3.6.3" }
++matrix-sdk-crypto = { path = "third_party/matrix-sdk-crypto-0.18.0" }
++oxiarc-bzip2 = { path = "third_party/oxiarc-bzip2-0.4.2" }
++secret-service = { path = "third_party/secret-service-6.0.0" }
++zip = { path = "third_party/zip-9.1.2" }
+ # Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
+ # bitmap import and patched chunk dependency without changing their public API.
+ imbl = { path = "third_party/imbl-6.1.0" }

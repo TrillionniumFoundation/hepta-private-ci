@@ -1,0 +1,30 @@
+--- a/codex-rs/third_party/zip-9.1.2/Cargo.toml.orig
++++ b/codex-rs/third_party/zip-9.1.2/Cargo.toml.orig
+@@ -25,7 +25,8 @@
+ [dependencies]
+ arbitrary = { version = "1.4", features = ["derive"], optional = true }
+ aes = { version = "0.9", optional = true }
+-bzip2 = { version = "0.6", default-features = false, optional = true }
++oxiarc-bzip2 = { version = "0.4.2", default-features = false, optional = true }
++oxiarc-core = { version = "0.4.2", default-features = false, optional = true }
+ chrono = { version = "^0.4.27", optional = true, default-features = false, features = ["std"] }
+ constant_time_eq = { version = "^0.6.1", optional = true }
+ crc32fast = "1.5"
+@@ -108,7 +109,7 @@
+ unreserved = []
+ xz = ["dep:lzma-rust2"]
+ _bzip2_any = []
+-bzip2 = ["dep:bzip2", "bzip2/default", "_bzip2_any"]
++bzip2 = ["dep:oxiarc-bzip2", "dep:oxiarc-core", "_bzip2_any"]
+ legacy-zip = ["bitstream-io"]
+ time = ["dep:time"]
+ default = [
+@@ -142,7 +143,7 @@
+ ]
+ 
+ # The following features are not supported on wasm
+-bzip2-rs = ["dep:bzip2", "bzip2/bzip2-sys", "_bzip2_any"]
++bzip2-rs = ["bzip2"]
+ # Pull in flate2 and the zlib backend; only use this if you need a dynamically linked system zlib
+ deflate-flate2-zlib = ["deflate-flate2", "flate2/zlib"]
+ # Pull in flate2 and the zlib-ng backend; a modern fork of zlib

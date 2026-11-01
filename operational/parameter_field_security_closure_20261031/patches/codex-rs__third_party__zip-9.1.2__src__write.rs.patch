@@ -1,0 +1,42 @@
+--- a/codex-rs/third_party/zip-9.1.2/src/write.rs
++++ b/codex-rs/third_party/zip-9.1.2/src/write.rs
+@@ -144,7 +144,7 @@
+     #[cfg(feature = "deflate-zopfli")]
+     BufferedZopfliDeflater(std::io::BufWriter<zopfli::DeflateEncoder<MaybeEncrypted<W>>>),
+     #[cfg(feature = "_bzip2_any")]
+-    Bzip2(bzip2::write::BzEncoder<MaybeEncrypted<W>>),
++    Bzip2(crate::bzip2::BzEncoder<MaybeEncrypted<W>>),
+     #[cfg(feature = "zstd")]
+     Zstd(zstd::stream::write::Encoder<'static, MaybeEncrypted<W>>),
+     #[cfg(feature = "xz")]
+@@ -2003,15 +2003,15 @@
+             #[cfg(feature = "_bzip2_any")]
+             CompressionMethod::Bzip2 => {
+                 let level: u32 = validate_value_in_range(
+-                    compression_level.unwrap_or(i64::from(bzip2::Compression::default().level())),
++                    compression_level.unwrap_or(i64::from(crate::bzip2::Compression::default().level())),
+                     bzip2_compression_level_range(),
+                 )
+                 .ok_or(UnsupportedArchive("Unsupported compression level"))?;
+                 Ok(Box::new(move |bare, _| {
+-                    Ok(GenericZipWriter::Bzip2(bzip2::write::BzEncoder::new(
++                    Ok(GenericZipWriter::Bzip2(crate::bzip2::BzEncoder::new(
+                         bare,
+-                        bzip2::Compression::new(level),
+-                    )))
++                        crate::bzip2::Compression::new(level),
++                    )?))
+                 }))
+             }
+             CompressionMethod::AES => Err(UnsupportedArchive(
+@@ -2430,8 +2430,8 @@
+ 
+ #[cfg(feature = "_bzip2_any")]
+ fn bzip2_compression_level_range() -> std::ops::RangeInclusive<u32> {
+-    let min = bzip2::Compression::fast().level();
+-    let max = bzip2::Compression::best().level();
++    let min = crate::bzip2::Compression::fast().level();
++    let max = crate::bzip2::Compression::best().level();
+     min..=max
+ }
+ 

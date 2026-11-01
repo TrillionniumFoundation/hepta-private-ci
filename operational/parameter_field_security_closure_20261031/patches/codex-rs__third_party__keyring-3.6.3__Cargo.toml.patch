@@ -1,0 +1,53 @@
+--- a/codex-rs/third_party/keyring-3.6.3/Cargo.toml
++++ b/codex-rs/third_party/keyring-3.6.3/Cargo.toml
+@@ -55,7 +55,7 @@
+ 
+ [features]
+ apple-native = ["dep:security-framework"]
+-async-io = ["zbus?/async-io"]
++async-io = ["zbus?/default-rt"]
+ async-secret-service = [
+     "dep:secret-service",
+     "dep:zbus",
+@@ -149,11 +149,11 @@
+ optional = true
+ 
+ [target.'cfg(target_os = "freebsd")'.dependencies.secret-service]
+-version = "4"
++version = "6"
+ optional = true
+ 
+ [target.'cfg(target_os = "freebsd")'.dependencies.zbus]
+-version = "4"
++version = "6"
+ optional = true
+ 
+ [target.'cfg(target_os = "ios")'.dependencies.security-framework]
+@@ -170,11 +170,11 @@
+ optional = true
+ 
+ [target.'cfg(target_os = "linux")'.dependencies.secret-service]
+-version = "4"
++version = "6"
+ optional = true
+ 
+ [target.'cfg(target_os = "linux")'.dependencies.zbus]
+-version = "4"
++version = "6"
+ optional = true
+ 
+ [target.'cfg(target_os = "macos")'.dependencies.security-framework]
+@@ -186,11 +186,11 @@
+ optional = true
+ 
+ [target.'cfg(target_os = "openbsd")'.dependencies.secret-service]
+-version = "4"
++version = "6"
+ optional = true
+ 
+ [target.'cfg(target_os = "openbsd")'.dependencies.zbus]
+-version = "4"
++version = "6"
+ optional = true
+ 
+ [target.'cfg(target_os = "windows")'.dependencies.byteorder]

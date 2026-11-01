@@ -1,0 +1,11 @@
+--- a/codex-rs/third_party/zip-9.1.2/src/lib.rs
++++ b/codex-rs/third_party/zip-9.1.2/src/lib.rs
+@@ -29,6 +29,8 @@
+ pub use aes::AesSalt;
+ #[cfg(feature = "aes-crypto")]
+ mod aes_ctr;
++#[cfg(feature = "_bzip2_any")]
++mod bzip2;
+ mod compression;
+ mod cp437;
+ mod crc32;
