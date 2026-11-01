@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_missing_posterior_r16_20261101.confirm",
+    "--source-commit",
+    "cf15dfe62476b0081c0d5d329671e345033794c7",
+    "--out",
+    "/workspace/scratch/aa31261a8f57/hepta-csn-content-r16/experiments/hcsn_missing_posterior_r16_20261101/confirmation_01"
+  ],
+  "cpu_seconds": 19.116588999999998,
+  "energy_joules": null,
+  "exit_code": 0,
+  "finished_unix": 1793553212.3302674,
+  "gpu": null,
+  "meter_cpu_seconds": 0.0006805579999999978,
+  "peak_rss_kib": 435612,
+  "schema": "hcsn.missing.confirmation.process.v1",
+  "scope": "Fresh entire confirmation subprocess, including startup, imports, checkpoint validation, all model/reference/READ work and final serialization; nested timers must not be added",
+  "source_commit": "cf15dfe62476b0081c0d5d329671e345033794c7",
+  "source_manifest_sha256": "2d5586ee961576c0e67c748fd2a6c7dcb8d13b61215762574d22088886194378",
+  "started_unix": 1793553192.1033967,
+  "stderr_file": "confirmation_01.stderr.log",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_file": "confirmation_01.stdout.log",
+  "stdout_sha256": "4cd3773401326773fc8515dedd7ffe1735553f55bdbeb30bc0f18c111bbb7e1f",
+  "system_cpu_seconds": 0.437419,
+  "user_cpu_seconds": 18.67917,
+  "wall_seconds": 20.22686976299883
+}

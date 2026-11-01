@@ -64,3 +64,19 @@ exit code, CPU, wall time and peak RSS in addition to its nested execution
 timers. On failure retain the entire output directory and outer process receipt;
 an absent or incomplete summary is not acceptance. No new result may be pooled
 with the opened development stream.
+
+## Independent confirmation audit
+
+`audit_confirm_independent.py` reads the single completed `confirmation_01`,
+reconstructs all 3,072 causal posteriors independently, recomputes proper-score
+bounds and episode reliability from raw arrays, and checks the actual READ
+successors. It imports no project inference or statistics helper. Run it from
+the repository root with:
+
+```bash
+python -B -m experiments.hcsn_missing_posterior_r16_20261101.audit_confirm_independent
+```
+
+Its evidence and separate entire-process cost are retained in
+`INDEPENDENT_CONFIRMATION_AUDIT.json` and `INDEPENDENT_AUDIT_PROCESS_RECEIPT.json`.
+The source freeze, opened development and confirmation remain distinct.
