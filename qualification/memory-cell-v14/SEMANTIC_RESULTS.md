@@ -1,6 +1,6 @@
 # V14 semantic 原始运行审计：没有达到候选净收益验收
 
-本报告只审计已经冻结并完成的原始 semantic 运行，记录不可覆盖的负结果和数据构造缺陷。后续去除项目名显式标签线索的运行必须作为**同一留出集的 bug 修复配对复核**另列，不能替代本记录、算作新的独立留出样本，或用于重新选择超参数。
+第1—7节保留已经冻结并完成的原始 semantic 运行审计，记录不可覆盖的负结果和数据构造缺陷。第8节另列已完成的**同一留出集 bug 修复配对复核**，不能替代原记录、算作新的独立留出样本，或用于重新选择超参数。
 
 ## 1. 结论和证据身份
 
@@ -136,9 +136,9 @@ V13完整历史探索总量仍缺失，保留为null。package安装、checkout�
 
 已检查实际推理边界：选择器得到 `[row["text"] ...]`；label、skill、expected、fixture_id均不进入feature构造或路由函数。组合选择器只接收step文字，`oracle_skills`用于独立fixture核对；实际组合执行并不把它传给选择器。此次显式cue来自query文本内部，因而仅剥离metadata并不能发现它。
 
-必要修复限定为：保留原始96条数据和本轮全部结果，只将项目ID改为由固定salt与原请求语义正文生成的独立短码；正文、payload、expected、标签、组合、train/calibration、模型与超参数均不得改变。新protocol和manifest先提交，再进行同一任务的配对复核。新运行必须标注为bug修复复核，不能新增独立样本数、替换原负结果或在复核结果上选择超参数。修复后的结果尚不属于本报告。
+必要修复限定为：保留原始96条数据和本轮全部结果，只将项目ID改为由固定salt与原请求语义正文生成的独立短码；正文、payload、expected、标签、组合、train/calibration、模型与超参数均不得改变。新protocol和manifest先提交，再进行同一任务的配对复核。新运行必须标注为bug修复复核，不能新增独立样本数、替换原负结果或在复核结果上选择超参数。原审计阶段尚无修复后结果；现另列于第8节。
 
-这项修复已准备完成，尚未在修复后的文本上运行任何模型。`semantic_holdout_labelcue_original.json` 和 `semantic_protocol_labelcue_original.json` 保留原文件字节；`semantic_project_ids.py` 仅以固定 salt `hepta-semantic-v14-project-cue-repair-v1` 与原语义正文生成八位十六进制短码；`semantic_project_id_mapping.json` 固定96个正文到ID的映射，不接收类别、行号、fixture或其他gold字段。七项契约检查验证原正文与非项目字段完全相同、组合不变、ID不受oracle元数据或行序影响、实际推理调用只传文本、训练／校准及六个模型／执行源码文件未变。契约检查只运行fixture与spy，未评估模型质量。
+以下保留修复准备阶段的记录；当时尚未在修复后的文本上运行任何模型。`semantic_holdout_labelcue_original.json` 和 `semantic_protocol_labelcue_original.json` 保留原文件字节；`semantic_project_ids.py` 仅以固定 salt `hepta-semantic-v14-project-cue-repair-v1` 与原语义正文生成八位十六进制短码；`semantic_project_id_mapping.json` 固定96个正文到ID的映射，不接收类别、行号、fixture或其他gold字段。七项契约检查验证原正文与非项目字段完全相同、组合不变、ID不受oracle元数据或行序影响、实际推理调用只传文本、训练／校准及六个模型／执行源码文件未变。契约检查只运行fixture与spy，未评估模型质量。
 
 - 修复后的 holdout canonical SHA256：`dae2bbc83c954a4dc8ebb1efceed95ed63eb5629390aae29cbd2983ae430d1a6`。
 - 配对复核 protocol canonical SHA256：`1bdeb2425e6f72dd12a5614386ffd8171f1f5dce39465861830847c5d1739060`。
@@ -158,3 +158,124 @@ V13完整历史探索总量仍缺失，保留为null。package安装、checkout�
 | seed-43/process.json | `2561848136e40c0442a276a6a878a8d1a4ed287124f3c8e319b4f4c3f8afef42` |
 
 INDEX来源记录的source commit与运行记录一致。上述六个文件既匹配Git blob身份，也匹配归档清单的SHA256和字节数；本审计没有从结果重建或重新格式化原始JSON。
+
+## 8. 同一留出集的项目 ID 修复配对复核
+
+### 8.1 执行身份与验收结论
+
+修复协议／数据先提交为 [`c991ad02f1cba86471cbba59c9756a678a18ecf7`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/c991ad02f1cba86471cbba59c9756a678a18ecf7)，随后 [Actions run 41261379136](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41261379136) 的三个实验及 preserve job 全部成功。证据保全提交是 [`58f1037f3850c834f49052e755f880a192406dfd`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/58f1037f3850c834f49052e755f880a192406dfd)，对应 [INDEX.json](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/58f1037f3850c834f49052e755f880a192406dfd/qualification/memory-cell-v14/evidence/semantic-41261379136-1/INDEX.json)。原始结果和本节结果并列保留。此处仍是相同96条请求、相同12个组合、相同3个优化器种子，新增独立语言样本数为0。
+
+**修复后仍未通过 P0 质量或净效用验收。** MiniLM ridge 为84/96，词法 ridge 为81/96；指定候选 LoRA 为35/39/58，MLP 为64/60/67，fast weights 为55/40/59。没有任何指定候选在任一种子上超过最强实际对照；也没有在任一预注册读取次数上超过该种子的最佳对照效用。
+
+- Seed 17：[semantic_run.json](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/58f1037f3850c834f49052e755f880a192406dfd/qualification/memory-cell-v14/evidence/semantic-41261379136-1/readable/v14-semantic-17-41261379136-1/semantic_run.json)、[process.json](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/58f1037f3850c834f49052e755f880a192406dfd/qualification/memory-cell-v14/evidence/semantic-41261379136-1/readable/v14-semantic-17-41261379136-1/process.json)。
+- Seed 29：[semantic_run.json](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/58f1037f3850c834f49052e755f880a192406dfd/qualification/memory-cell-v14/evidence/semantic-41261379136-1/readable/v14-semantic-29-41261379136-1/semantic_run.json)、[process.json](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/58f1037f3850c834f49052e755f880a192406dfd/qualification/memory-cell-v14/evidence/semantic-41261379136-1/readable/v14-semantic-29-41261379136-1/process.json)。
+- Seed 43：[semantic_run.json](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/58f1037f3850c834f49052e755f880a192406dfd/qualification/memory-cell-v14/evidence/semantic-41261379136-1/readable/v14-semantic-43-41261379136-1/semantic_run.json)、[process.json](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/58f1037f3850c834f49052e755f880a192406dfd/qualification/memory-cell-v14/evidence/semantic-41261379136-1/readable/v14-semantic-43-41261379136-1/process.json)。
+
+三个runner均通过全部7项契约，核对的holdout、protocol与ID映射哈希均为第6节预先冻结的值。全部六份JSON及六个原／配对checkpoint归档均按Git blob、归档分片SHA256及INDEX中的文件哈希核验；审计没有重训模型或在本地运行模型质量评估。
+
+### 8.2 全部14臂：原始与修复后结果
+
+单步列按种子17 / 29 / 43列出，每个分母都是96；组合列分母为12。相同种子下逐题比较，不能将两轮合计成192条独立请求。
+
+| 方法 | 原始单步成功数 | 修复后单步成功数 | 修复后描述均值 | 修复后组合成功数 |
+| --- | --- | --- | --- | --- |
+| `exact_kv` | 2 / 2 / 2 | 2 / 2 / 2 | 2.08% | 0 / 0 / 0 |
+| `bm25` | 67 / 67 / 67 | 67 / 67 / 67 | 69.79% | 9 / 9 / 9 |
+| `kv_bm25` | 67 / 67 / 67 | 67 / 67 / 67 | 69.79% | 10 / 10 / 10 |
+| `lexical_ridge` | 81 / 81 / 81 | 81 / 81 / 81 | 84.38% | 12 / 12 / 12 |
+| `bert_nearest` | 53 / 53 / 53 | 56 / 56 / 56 | 58.33% | 7 / 7 / 7 |
+| `bert_centroid` | 60 / 60 / 60 | 63 / 63 / 63 | 65.62% | 7 / 7 / 7 |
+| `bert_ridge` | 62 / 62 / 62 | 62 / 62 / 62 | 64.58% | 6 / 6 / 6 |
+| `bert_linear` | 63 / 58 / 54 | 68 / 60 / 59 | 64.93% | 6 / 6 / 5 |
+| `bert_mlp` | 59 / 53 / 63 | 64 / 60 / 67 | 66.32% | 4 / 6 / 6 |
+| `bert_fast_weights` | 50 / 42 / 60 | 55 / 40 / 59 | 53.47% | 5 / 3 / 6 |
+| `bert_lora` | 31 / 33 / 55 | 35 / 39 / 58 | 45.83% | 6 / 5 / 5 |
+| `minilm_nearest` | 82 / 82 / 82 | 80 / 80 / 80 | 83.33% | 8 / 8 / 8 |
+| `minilm_centroid` | 83 / 83 / 83 | 81 / 81 / 81 | 84.38% | 12 / 12 / 12 |
+| `minilm_ridge` | 85 / 85 / 85 | 84 / 84 / 84 | 87.50% | 12 / 12 / 12 |
+
+所有42组“方法×种子”的组合输出与原轮完全相同，因为组合步骤文本没有项目ID修改。单步BERT方法对项目干扰词较敏感；例如LoRA分别有7/17/12题由错变对、3/11/9题由对变错。词法ridge的全部预测保持不变，MiniLM ridge每个种子都是1题由错变对、2题由对变错。下面的数值复现检查说明，这些差异不能被称为严格固定权重的ID因果效应。
+
+### 8.3 训练选择相同，但跨runner权重不逐位相同
+
+六个训练／模型／成本／数据源码文件、依赖版本、训练与校准数据、基础BERT tensor hash和全部神经初始化hash均与原轮一致。所有基线候选的校准历史与选择值一致；27个神经候选的完整校准预测和执行输出也一致。选中步骤如下，两轮相同：
+
+| 方法 | Seed 17 | Seed 29 | Seed 43 |
+| --- | --- | --- | --- |
+| BERT linear | 160 | 80 | 160 |
+| BERT MLP | 160 | 320 | 160 |
+| BERT LoRA | 80 | 80 | 320 |
+
+然而，9个已选神经模型的参数tensor hash和optimizer tensor hash都与原轮不同。这里比较的是tensor原始数值的hash，不是受protocol元数据影响的checkpoint文件hash。审计直接读取已保全的27对PyTorch checkpoint tensor payload，用NumPy重算hash并与运行receipt匹配；已选模型的真实数值差如下：
+
+| 方法 | 已选参数最大绝对差：17 / 29 / 43 | 已选校准概率最大绝对差：17 / 29 / 43 |
+| --- | --- | --- |
+| `bert_linear` | 4.619e-07 / 2.310e-07 / 5.700e-07 | 5.364e-07 / 4.172e-07 / 7.749e-07 |
+| `bert_mlp` | 5.886e-07 / 2.116e-06 / 1.356e-06 | 9.537e-07 / 2.235e-06 / 5.364e-07 |
+| `bert_lora` | 1.490e-06 / 2.524e-07 / 6.706e-07 | 9.835e-07 / 1.073e-06 / 2.742e-06 |
+
+全部记录训练loss的最大跨轮差为4.768×10⁻⁷；已选optimizer tensor最大绝对差为8.196×10⁻⁸。基线也出现微小数值变化：词法ridge≤2.113×10⁻¹⁴、BERT ridge≤3.622×10⁻⁷、MiniLM ridge≤8.830×10⁻⁹。跨runner浮点计算路径差异是与这些观测相容的解释，但没有记录CPU型号与底层kernel选择，不能宣称已定位唯一原因，也不能宣称跨机器逐位复现。
+
+每个运行内部的42项checkpoint恢复验证仍全部通过。这建立了各自模型的准确恢复性，与两次独立训练之间逐位相同是不同的要求。因此，本轮是预先冻结的同任务配对重跑和cue修复敏感性复核；它没有通过“同一权重、仅替换ID”的严格因果隔离条件。质量与效用验收仍是明确的负结果，不能用很小的浮点差为大幅落后的候选制造成功声明。
+
+修复后同一模型内部的LoRA干预结果为：开启35/39/58，关闭LoRA但保留训练reader为34/32/15，全部可训练参数重置为6/9/10。该干预证明LoRA更新实际参与了决策；与强对照的采用收益仍未建立。
+
+### 8.4 修复后的服务账与Q敏感性
+
+费用公式、独立部署的完整基础模型收费、共享模型只在实际共用时收取一次、所有训练候选与恢复成本、48次顺序query计时等边界与第4节相同。持久化总字节逐臂与原轮相同；下面只补充实际发生变化的时间项。
+
+| 方法 | 启动、写入、候选选择、恢复合计秒：17 / 29 / 43 | 单query均值毫秒：17 / 29 / 43 |
+| --- | --- | --- |
+| `exact_kv` | 0.003687 / 0.002864 / 0.003491 | 0.039872 / 0.031117 / 0.037157 |
+| `bm25` | 0.032898 / 0.024149 / 0.026756 | 0.563725 / 0.403319 / 0.439898 |
+| `kv_bm25` | 0.032872 / 0.023977 / 0.026888 | 0.557446 / 0.404907 / 0.438716 |
+| `lexical_ridge` | 0.155372 / 0.112759 / 0.131488 | 1.173436 / 0.836752 / 1.077584 |
+| `bert_nearest` | 0.864826 / 1.054946 / 1.170442 | 1.514298 / 1.085996 / 1.233264 |
+| `bert_centroid` | 0.859947 / 1.051789 / 1.160930 | 1.479048 / 1.077190 / 1.223633 |
+| `bert_ridge` | 0.863234 / 1.054138 / 1.164154 | 1.488632 / 1.063397 / 1.238732 |
+| `bert_linear` | 1.062806 / 1.191089 / 1.300385 | 1.466518 / 1.087551 / 1.196386 |
+| `bert_mlp` | 1.130285 / 1.248392 / 1.373920 | 1.509105 / 1.094333 / 1.237054 |
+| `bert_fast_weights` | 0.881834 / 1.066852 / 1.177841 | 1.499215 / 1.073192 / 1.237797 |
+| `bert_lora` | 4.949135 / 5.036478 / 3.764589 | 1.809648 / 1.346158 / 1.468771 |
+| `minilm_nearest` | 2.171712 / 2.656282 / 3.453126 | 5.429791 / 4.642322 / 3.716679 |
+| `minilm_centroid` | 2.168659 / 2.651592 / 3.440302 | 5.277507 / 4.603923 / 3.684275 |
+| `minilm_ridge` | 2.179692 / 2.665579 / 3.462508 | 5.242606 / 4.761362 / 4.002050 |
+
+下表仍是同一96条请求下三个优化器种子的描述均值，不代表独立任务重采样。
+
+| Q | MiniLM ridge 对照 | 词法 ridge 对照 | LoRA 候选 | MLP 候选 | Fast weights 候选 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 0.84717597 | 0.84240697 | 0.41246688 | 0.65065601 | 0.52427094 |
+| 10 | 0.87217558 | 0.84360643 | 0.45373281 | 0.66192908 | 0.53366566 |
+| 100 | 0.87467554 | 0.84372638 | 0.45785941 | 0.66305639 | 0.53460514 |
+| 1000 | 0.87492554 | 0.84373837 | 0.45827207 | 0.66316912 | 0.53469908 |
+| 10000 | 0.87495054 | 0.84373957 | 0.45831333 | 0.66318039 | 0.53470848 |
+
+单个种子中，Q=1时seed43由更便宜的词法ridge取得最高效用，其余种子／Q组合由MiniLM ridge取得最高效用。各指定候选在全部15个种子×Q场景中都低于最佳对照。LoRA相对MiniLM ridge的纯时间break-even约807、695、120次读取；它们不是质量或总效用的break-even。不同runner的时延与下载速度也不同，本表是已执行场景的服务账，不能据此推断普遍硬件性能排序。
+
+### 8.5 新增进程成本及严格去重累计
+
+| 种子 | exit | command wall秒 | child CPU秒 | peak RSS字节 | runner RX / TX字节 |
+| --- | --- | --- | --- | --- | --- |
+| 17 | 0 | 16.392281569 | 24.695844 | 672923648 | 223356374 / 737916 |
+| 29 | 0 | 15.678920649 | 22.086679 | 675037184 | 223399082 / 823532 |
+| 43 | 0 | 14.919196288 | 18.398725 | 670892032 | 223741556 / 1336488 |
+
+本轮新增command wall **46.990398506秒**、child CPU **65.181248秒**。计入六个language进程、原始三个semantic进程及本次三个semantic进程，按run+seed去重后的这条实验轨道已知累计为wall **199.960275605秒**、CPU **299.247398秒**。每份paired结果嵌入的152.969877099秒prior只计一次。
+
+新增runner接口观测合计RX 670,497,012字节、TX 2,897,936字节，仍包含其他runner流量。V13完整历史、安装／checkout／preserve外围时间、能耗和真实云账单继续保留为未知；此累计不是整个Hepta项目的所有历史成本。同期另一个language/routing workflow的科学任务全部skipped，不虚构重训成本，其changes/checkout外围开销也不在实验子进程receipt内。
+
+冻结运行时使用的`semantic_prior_costs.json`没有在结果出来后回写，以免触发无必要的新实验，也避免改写本轮实际使用的输入账。完整去重条目、原／配对各项比对及真实权重差已保存于同目录`SEMANTIC_PAIRED_AUDIT.json`，其未知历史条目仍为null。
+
+### 8.6 配对原始JSON身份
+
+| 文件 | SHA256 |
+| --- | --- |
+| seed-17/semantic_run.json | `1a3e7cffadc4b6f78e520fa08d88379824366195794335254e262da864d257c8` |
+| seed-17/process.json | `2d484108e5d191588c90832e931b6cf35d1c793e020795590b2651f9c61ae733` |
+| seed-29/semantic_run.json | `2d4f8df185a6f2947a9709307071563ddc895c884dde7790631979f623837ad8` |
+| seed-29/process.json | `ebca27440f743f0fd4ac0c848ff8abaa5dcb36aaf9e477131d3fcb7fb90f0e2f` |
+| seed-43/semantic_run.json | `c62bf36a849a54c5698b76b9145ce8a671643f802b55bf9fbf62d0f7923751e8` |
+| seed-43/process.json | `6516ed027f4c01b971b14155d029c9394685e37a18a36c8608a70a8bb72a419c` |
+
+以上数据均来自保全的原始bytes；模型与优化器检查点保存在同一INDEX所列的六个原／配对归档中。修复消除了已知的显式编号cue，尚未建立新独立留出集上的泛化或候选正收益。
