@@ -1,0 +1,112 @@
+{
+  "all_blockers_closed": false,
+  "base_commit": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "items": [
+    {
+      "detail": "Reject nonfinite transitions and optimal/actual-policy values",
+      "evidence": "test_planner_safety.py",
+      "id": "numerical_finiteness",
+      "status": "closed_local"
+    },
+    {
+      "detail": "Preserve permanently restricted actions and absent reset channel",
+      "evidence": "test_planner_safety.py",
+      "id": "no_reset_channels",
+      "status": "closed_local"
+    },
+    {
+      "detail": "Preserve original sequential tolerance and use the same guarded action selector",
+      "evidence": "test_planner_safety.py",
+      "id": "tie_and_channel_action_identity",
+      "status": "closed_local"
+    },
+    {
+      "detail": "19927 reachable decisions match; 192 measured full executions preserve all records",
+      "evidence": "evidence/PLANNER_EXHAUSTIVE.json",
+      "id": "policy_preserving_shared_acceleration",
+      "status": "closed_in_frozen_profile"
+    },
+    {
+      "detail": "Oracle-minus-fixed-B below0.01 in both domains; original quality gate remains failed",
+      "evidence": "evidence/ATTAINABILITY_SUMMARY.json",
+      "id": "fixed_task_effect_headroom",
+      "status": "diagnosed_below_original_floor"
+    },
+    {
+      "detail": "Nine original ZIPs replaced by26 genuine gzip containers; all original bytes recoverable",
+      "evidence": "transport_evidence/VALIDATION.json",
+      "id": "oversized_archives",
+      "status": "repaired_local_pending_remote"
+    },
+    {
+      "detail": "Actual R14/R15 suites configured; no new-head remote run yet",
+      "evidence": "../../../../.github/workflows/hcsn-task-flow-r14.yml",
+      "id": "r14_regression_workflow",
+      "status": "implemented_pending_remote"
+    },
+    {
+      "detail": "Prettier3.5.3 passes and YAML meaning unchanged",
+      "evidence": "evidence/UPSTREAM_CI_SUMMARY.json",
+      "id": "r13_workflow_format",
+      "status": "repaired_local_pending_remote"
+    },
+    {
+      "detail": "Original both-domain mean0.01/CI/Holm acceptance unmet; no threshold change",
+      "evidence": "../task_aligned_r14_20261101/PROTOCOL.json",
+      "id": "r14_quality_gain",
+      "status": "failed_unchanged"
+    },
+    {
+      "detail": "Original OOD utility/correctness bounds fail; equivalent acceleration does not repair quality",
+      "evidence": "../task_aligned_r14_20261101/REPORT_ZH.md",
+      "id": "r14_quality_guarded_cost",
+      "status": "failed_unchanged"
+    },
+    {
+      "detail": "Final-matrix ordinary HMM is behaviorally identical; shared acceleration is available to both",
+      "evidence": "../task_aligned_r14_20261101/models.py",
+      "id": "hx_exclusive_inference_claim",
+      "status": "unsupported_in_this_model"
+    },
+    {
+      "detail": "No new FP32 qualification or mixed precision relabeling",
+      "evidence": "../task_aligned_r14_20261101/REPORT_ZH.md",
+      "id": "full_financial_fp32",
+      "status": "open"
+    },
+    {
+      "detail": "No production NeuronRuntime/state ownership replacement or integration qualification",
+      "evidence": null,
+      "id": "production_rust_ownership",
+      "status": "open"
+    },
+    {
+      "detail": "Finite dynamic-bit task cannot qualify general semantic binding or long-term memory",
+      "evidence": null,
+      "id": "multimodal_and_long_term_content",
+      "status": "open"
+    },
+    {
+      "detail": "No accelerator, joule or production communication/recovery benchmark",
+      "evidence": null,
+      "id": "gpu_and_energy",
+      "status": "unmeasured"
+    },
+    {
+      "detail": "Inherited Codespell, Rust API/lint and cargo-deny failures remain separately tracked",
+      "evidence": "evidence/UPSTREAM_CI_SUMMARY.json",
+      "id": "repository_wide_ci",
+      "status": "open"
+    },
+    {
+      "detail": "Concrete local commits and reviewable evidence prepared; remote write/CI not claimed",
+      "evidence": null,
+      "id": "remote_publication_and_verification",
+      "status": "pending"
+    }
+  ],
+  "new_confirmation_opened": false,
+  "production_activation": false,
+  "schema": "hcsn.r15.blockers.v1",
+  "scientific_acceptance_changed": false
+}
