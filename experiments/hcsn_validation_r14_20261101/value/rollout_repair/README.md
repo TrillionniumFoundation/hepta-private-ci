@@ -30,9 +30,18 @@ there is no new fit and no measured device energy.
 From repository root, with NumPy and SciPy available:
 
 ```bash
+python experiments/hcsn_validation_r14_20261101/value/publication/pack.py restore
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -B -m experiments.hcsn_validation_r14_20261101.value.rollout_repair.tests -v
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -B -m experiments.hcsn_validation_r14_20261101.value.rollout_repair.run run --out experiments/hcsn_validation_r14_20261101/value/rollout_repair/evidence/reproduction_02
 ```
 
 Use a new output path. Existing source and result freezes must not be replaced.
 The original value audit and its negative/near-zero findings stay unchanged.
+
+
+The final independent result audit is
+`review/INDEPENDENT_RESULTS_AUDIT_01.json`: 162,036 checks passed, no failures.
+It independently reconstructs every actual episode's environment and charges,
+then aggregates every stored full-clock row. It does not independently re-run
+the full expectation recursion. The reviewer process receipt is separate from
+actor/worker timing. Both final results and limitations are in `RESULTS_ZH.md`.

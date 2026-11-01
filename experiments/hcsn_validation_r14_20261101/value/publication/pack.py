@@ -37,7 +37,10 @@ def archived_paths():
     names = [row["destination"] for row in upstream["files"]
              if row["destination"].startswith("upstream/checkpoints/")]
     names += [row["destination"] for row in inherited["files"].values()]
-    names += [str(p.relative_to(BASE)) for p in sorted((BASE/"evidence").rglob("*.jsonl.gz"))]
+    for evidence in (BASE/"evidence",BASE/"rollout_repair/evidence"):
+        if evidence.exists():
+            names += [str(p.relative_to(BASE)) for p in sorted(evidence.rglob("*"))
+                      if p.is_file() and len(p.relative_to(evidence).parts)>2]
     return sorted(set(names))
 
 
@@ -48,9 +51,9 @@ def publish_list(complete):
         if not path.is_file() or "__pycache__" in path.parts or path.suffix==".pyc":
             continue
         relative = str(path.relative_to(BASE))
-        if relative in archived or relative=="publication/RESTORE_CHECK.json":
+        if relative in archived:
             continue
-        if path.stat().st_size > 512000:
+        if path.stat().st_size > MAX_TRANSPORT_BYTES:
             raise ValueError("An unarchived publication file is too large: "+relative)
         files.append(str(path.relative_to(ROOT)))
     own = str((BASE/"PUBLISH_FILES.json").relative_to(ROOT))
@@ -95,12 +98,17 @@ def build():
     write(manifest_path,dict(schema="hcsn.r14.value.gzip-transport.v1",parts=parts,
           tar_bytes=len(raw_tar),tar_sha256=sha(raw_tar),members=members,
           gzip_containers="Each part is a complete independent gzip stream; concatenate decompressed parts to reconstruct tar.",
-          source_freeze_sha256=sha((BASE/"SOURCE_FREEZE.json").read_bytes())))
+          source_freeze_sha256=sha((BASE/"SOURCE_FREEZE.json").read_bytes()),
+          repair_source_freeze_sha256=sha((BASE/"rollout_repair/SOURCE_FREEZE.json").read_bytes())))
     publish_list(True)
 
 
 def restore(destination):
     manifest=json.loads((PUB/"MANIFEST.json").read_text())
+    if sha((BASE/"SOURCE_FREEZE.json").read_bytes())!=manifest["source_freeze_sha256"]:
+        raise ValueError("Publication belongs to a different scientific source freeze")
+    if sha((BASE/"rollout_repair/SOURCE_FREEZE.json").read_bytes())!=manifest["repair_source_freeze_sha256"]:
+        raise ValueError("Publication belongs to a different repair source freeze")
     chunks=[]
     for part in manifest["parts"]:
         name=PurePosixPath(part["path"])

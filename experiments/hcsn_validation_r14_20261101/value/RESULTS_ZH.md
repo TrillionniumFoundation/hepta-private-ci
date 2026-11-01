@@ -109,3 +109,18 @@ HX 的 fitted-world 分布与 Bayes 更新一致，因此状态估计和 fitted-
 继续保留：解析核心达到预定正收益或保质量成本门槛；主动 RESET/恢复收益；连续过程误差；长期语义内容及真实多模态学习；部署 GPU/能耗与生产 Rust 路径。这些范围不能由此次有限状态动作审计代替。
 
 复核入口：`README.md`、`PROTOCOL.json`、`SOURCE_FREEZE.json`、`evidence/confirmation_01/SUMMARY.json`、`RAW_RECONCILIATION.json`、`CONFIRMATION_PROCESS.json`。科学原始文件原样封装到 `publication` 的独立 gzip 容器；恢复命令与每个文件 hash 见 `publication/MANIFEST.json`。
+
+
+## 7. 原 PR #4542 样本的逐执行复现
+
+为区分“新样本结果改变”和“执行器改变”，本轮额外回放了原 PR #4542 的 8 个 fit、两个 domain、共 8,192 个原始 episode。它们是旧样本复现，不是新增独立确认或新增拟合；原始确认输入 JSON 均按字节保留并记录路径/hash。
+
+全部动作序列、终止状态、标签、正确性、步数和查询计数均完全相同，mismatch 为 0；utility、reward、cost、elapsed、final probability 以及汇总均值的最大误差都为 0。原 IID D−B = −0.017034079425746418、OOD D−B = −0.001982490682216953 完整复现。本轮新样本与旧样本的差别不能归因于本次固定执行器的改写；旧负向证据不因此失效。完整有限模型的期望诊断也不替换历史样本结论。
+
+复现全进程 CPU 6.549208 秒、墙钟 6.571009 秒、最大 RSS 154,588 KiB，独立于新确认、拟合和在线 actor 成本。证据见 `evidence/historical_replay/INPUT_MANIFEST.json`、`SUMMARY.json`、`PROCESS.json`，逐 case 原输入和重放结果在可恢复归档中。脚本是 `publication/replay_historical.py`。
+
+## 8. 后续修复与完整发布
+
+另立 `rollout_repair` 命名空间固定并执行了保留实际 actor hidden 的新评分规则，保留原 A/B/C/D，新增 B′/D′。其 12,288 条新实际轨迹与全部 27 个公开时钟的 2,592 条有限模型期望记录均已完成；该候选没有获得部署接受，结果与费用见 `rollout_repair/RESULTS_ZH.md`。它不改写本报告的原始审计。
+
+发布归档包含 665 个原始文件，共 37,097,767 字节，分装为 80 个完整独立 gzip 容器，最大 470,163 字节。所有原科学 gzip 文件的原始字节与 hash 均保留。只用发布文件重建新目录后，665 个 member 的 SHA256 全部相同，原审计及新修复两套 source freeze 与必需输入都通过验证。压缩、恢复和新目录验证合计实测 CPU 2.203528 秒，属于出版成本。恢复命令与安全边界见 `publication/README.md`；完整发布清单为 `PUBLISH_FILES.json`。

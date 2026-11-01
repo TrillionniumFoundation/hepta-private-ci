@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/a9c697f48433/value-publication-restored/experiments/hcsn_validation_r14_20261101/value/publication/pack.py",
+    "restore"
+  ],
+  "exit_code": 0,
+  "child_cpu_seconds": 0.358197,
+  "wall_seconds": 0.3591450200001418,
+  "max_rss_kib": 122184,
+  "scope": "Publication/restore verification only, not scientific performance",
+  "stdout": "{\"restored_members\": 665, \"tar_sha256\": \"28f67cefd3f6cb41075b194e9f3d49769f989d50538df2822d10e25a10edd46d\", \"target\": \"/workspace/scratch/a9c697f48433/value-publication-restored/experiments/hcsn_validation_r14_20261101/value\", \"total_original_bytes\": 37097767, \"unchanged_source_freeze_sha256\": \"4ca2ad93eedc063b2bdcc81dd7d87677237c54dd7da0950a79fe7324721750ff\"}\n",
+  "stderr": ""
+}

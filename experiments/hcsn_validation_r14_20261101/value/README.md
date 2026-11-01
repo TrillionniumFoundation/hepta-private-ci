@@ -35,6 +35,7 @@ architecture or a positive acceptance claim.
 From the repository root, with NumPy and SciPy available:
 
 ```bash
+python experiments/hcsn_validation_r14_20261101/value/publication/pack.py restore
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -B -m experiments.hcsn_validation_r14_20261101.value.tests -v
 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -B -m experiments.hcsn_validation_r14_20261101.value.run run --out experiments/hcsn_validation_r14_20261101/value/evidence/reproduction_02
 ```
@@ -67,3 +68,17 @@ no device energy reading is available.
 - `VALIDATION.json`: passed behavior checks and the retained pre-freeze test
   fixture assertion failure.
 - `RESULTS_ZH.md`: findings, limits, costs and remaining blockers.
+
+
+The historical PR #4542 tape replay is in `evidence/historical_replay/` and
+`publication/replay_historical.py`. All 8,192 original episode action/terminal
+records and numerical values were reproduced exactly; this is not a new fit or
+independent confirmation. The separately frozen actor-aware candidate, including
+its new tapes, complete finite 27-clock expectations, negative/small effects,
+and substantial actor CPU costs, is documented in `rollout_repair/RESULTS_ZH.md`.
+
+Publication restores 665 original members from 80 complete independent gzip
+containers. `publication/RESTORE_CHECK.json` records fresh-tree input/source
+verification and exact member hash equality. See `publication/README.md` for the
+transport details, and `RESEARCH_COST_LEDGER.json` for non-overlapping measured
+research scopes and explicit unmeasured items.
