@@ -1,0 +1,121 @@
+FFFFF
+======================================================================
+FAIL: test_authenticated_native_msvc_keeps_cache_and_matching_compiler (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_authenticated_native_msvc_keeps_cache_and_matching_compiler) (command='build')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/d87ad18a3bba/tmp_r15_windows_abi/.github/scripts/test_run_bazel_native_msvc_toolchain.py", line 12, in test_authenticated_native_msvc_keeps_cache_and_matching_compiler
+    self.assertEqual(
+AssertionError: Lists differ: ['bui[90 chars], '--config=ci-windows', '--host_platform=//:l[75 chars]get'] != ['bui[90 chars], '--extra_toolchains=//:local_windows_msvc_cc[182 chars]get']
+
+First differing element 3:
+'--config=ci-windows'
+'--extra_toolchains=//:local_windows_msvc_cc_toolchain'
+
+Second list contains 2 additional elements.
+First extra element 8:
+'--'
+
+  ['build',
+   '--config=buildbuddy-generic',
+   '--remote_header=x-buildbuddy-api-key=test-only-token',
++  '--extra_toolchains=//:local_windows_msvc_cc_toolchain',
++  '--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0',
+   '--config=ci-windows',
+   '--host_platform=//:local_windows_msvc',
+   '--platforms=//:windows_x86_64_msvc',
+   '--',
+   '//fake:target']
+
+======================================================================
+FAIL: test_authenticated_native_msvc_keeps_cache_and_matching_compiler (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_authenticated_native_msvc_keeps_cache_and_matching_compiler) (command='test')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/d87ad18a3bba/tmp_r15_windows_abi/.github/scripts/test_run_bazel_native_msvc_toolchain.py", line 12, in test_authenticated_native_msvc_keeps_cache_and_matching_compiler
+    self.assertEqual(
+AssertionError: Lists differ: ['tes[89 chars], '--config=ci-windows', '--host_platform=//:l[75 chars]get'] != ['tes[89 chars], '--extra_toolchains=//:local_windows_msvc_cc[182 chars]get']
+
+First differing element 3:
+'--config=ci-windows'
+'--extra_toolchains=//:local_windows_msvc_cc_toolchain'
+
+Second list contains 2 additional elements.
+First extra element 8:
+'--'
+
+  ['test',
+   '--config=buildbuddy-generic',
+   '--remote_header=x-buildbuddy-api-key=test-only-token',
++  '--extra_toolchains=//:local_windows_msvc_cc_toolchain',
++  '--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0',
+   '--config=ci-windows',
+   '--host_platform=//:local_windows_msvc',
+   '--platforms=//:windows_x86_64_msvc',
+   '--',
+   '//fake:target']
+
+======================================================================
+FAIL: test_authenticated_native_msvc_keeps_cache_and_matching_compiler (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_authenticated_native_msvc_keeps_cache_and_matching_compiler) (command='cquery')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/d87ad18a3bba/tmp_r15_windows_abi/.github/scripts/test_run_bazel_native_msvc_toolchain.py", line 12, in test_authenticated_native_msvc_keeps_cache_and_matching_compiler
+    self.assertEqual(
+AssertionError: Lists differ: ['cqu[91 chars], '--config=ci-windows', '--host_platform=//:l[75 chars]get'] != ['cqu[91 chars], '--extra_toolchains=//:local_windows_msvc_cc[182 chars]get']
+
+First differing element 3:
+'--config=ci-windows'
+'--extra_toolchains=//:local_windows_msvc_cc_toolchain'
+
+Second list contains 2 additional elements.
+First extra element 8:
+'--'
+
+  ['cquery',
+   '--config=buildbuddy-generic',
+   '--remote_header=x-buildbuddy-api-key=test-only-token',
++  '--extra_toolchains=//:local_windows_msvc_cc_toolchain',
++  '--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0',
+   '--config=ci-windows',
+   '--host_platform=//:local_windows_msvc',
+   '--platforms=//:windows_x86_64_msvc',
+   '--',
+   '//fake:target']
+
+======================================================================
+FAIL: test_authenticated_native_msvc_keeps_cache_and_matching_compiler (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_authenticated_native_msvc_keeps_cache_and_matching_compiler) (command='aquery')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/d87ad18a3bba/tmp_r15_windows_abi/.github/scripts/test_run_bazel_native_msvc_toolchain.py", line 12, in test_authenticated_native_msvc_keeps_cache_and_matching_compiler
+    self.assertEqual(
+AssertionError: Lists differ: ['aqu[91 chars], '--config=ci-windows', '--host_platform=//:l[75 chars]get'] != ['aqu[91 chars], '--extra_toolchains=//:local_windows_msvc_cc[182 chars]get']
+
+First differing element 3:
+'--config=ci-windows'
+'--extra_toolchains=//:local_windows_msvc_cc_toolchain'
+
+Second list contains 2 additional elements.
+First extra element 8:
+'--'
+
+  ['aquery',
+   '--config=buildbuddy-generic',
+   '--remote_header=x-buildbuddy-api-key=test-only-token',
++  '--extra_toolchains=//:local_windows_msvc_cc_toolchain',
++  '--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0',
+   '--config=ci-windows',
+   '--host_platform=//:local_windows_msvc',
+   '--platforms=//:windows_x86_64_msvc',
+   '--',
+   '//fake:target']
+
+======================================================================
+FAIL: test_authenticated_native_msvc_keeps_matching_compiler_through_both_wrappers (test_run_bazel_ci.RunBazelCiIntegrationTest.test_authenticated_native_msvc_keeps_matching_compiler_through_both_wrappers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/d87ad18a3bba/tmp_r15_windows_abi/.github/scripts/test_run_bazel_ci.py", line 283, in test_authenticated_native_msvc_keeps_matching_compiler_through_both_wrappers
+    self.assertIn("--extra_toolchains=//:local_windows_msvc_cc_toolchain", args)
+AssertionError: '--extra_toolchains=//:local_windows_msvc_cc_toolchain' not found in ['--noexperimental_remote_repo_contents_cache', 'test', '--config=buildbuddy-generic', '--remote_header=x-buildbuddy-api-key=test-only-token', '--platforms=//:windows_x86_64_msvc', '--config=ci-windows', '--host_platform=//:local_windows_msvc', '--repo_contents_cache=job scoped cache', '--action_env=INCLUDE', '--host_action_env=INCLUDE', '--action_env=LIB', '--host_action_env=LIB', '--action_env=LIBPATH', '--host_action_env=LIBPATH', '--action_env=UniversalCRTSdkDir', '--host_action_env=UniversalCRTSdkDir', '--action_env=VCToolsInstallDir', '--host_action_env=VCToolsInstallDir', '--action_env=WindowsSdkDir', '--host_action_env=WindowsSdkDir', '--action_env=PATH=C:\\Program Files\\PowerShell\\7;C:\\Program Files\\Git\\bin', '--host_action_env=PATH=C:\\Program Files\\PowerShell\\7;C:\\Program Files\\Git\\bin', '--test_env=PATH=C:\\Program Files\\PowerShell\\7;C:\\Program Files\\Git\\bin', '--', '//fake:target']
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.072s
+
+FAILED (failures=5)

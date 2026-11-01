@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "scope": "Isolated candidate; current main source identities verified; no main-worktree edits or Windows native build",
+  "original_failure": {
+    "pr": 4550,
+    "head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+    "merge_commit": "bc17c8c6b6970908b6992bf3b9023f6eedd36bc3",
+    "run_id": 41289063949,
+    "release_job": 124796762041,
+    "shard3_job": 124796762065
+  },
+  "main_head_at_final_read_only_identity_check": "91afb9b88d6ec3ce159c261a635e05ef32394158",
+  "findings": [
+    {
+      "id": "native_windows_compiler_selection",
+      "status": "reproduced wrapper wiring defect; candidate locally passes wrapper regression",
+      "observed": "Credentialed native Windows commands select remote cache while omitting the local MSVC C/C++ override and compiler detection flag that the keyless branch injects. Failed jobs explicitly have credentials and consume MinGW objects in an MSVC Rust configuration.",
+      "change": "Reuse the existing local Windows ABI normalization for credentialed cache-only builds; leave authenticated RBE arguments untouched.",
+      "validation": "Two new regression tests on original wrapper: exit1, five failures including Bash/Python end-to-end. Candidate complete four-module wrapper suite: exit0,46 tests passed. Recording Bazel subprocess tests argument transport only, not native compilation.",
+      "risks": "Actual Windows toolchain resolution, native archive ABI and full native jobs require new-head CI."
+    },
+    {
+      "id": "v8_feature_contract",
+      "status": "source configuration drift identified; native confirmation pending",
+      "observed": "MODULE v8 annotation and pinned Windows archives enable sandbox, but v8-poc BUILD supplies no sandbox crate feature for MSVC. The existing sandbox_feature_matches_linked_v8 test fails in job124796762065.",
+      "change": "Enable the existing sandbox feature on v8-poc for all supported Bazel target variants; preserve the test assertion and native sandbox setting."
+    },
+    {
+      "id": "v8_first_allocator_initialization",
+      "status": "source-backed race hypothesis addressed in test fixture; native confirmation pending",
+      "observed": "The same job terminates in PartitionAddressSpace::InitConfigurablePool at the once-only check. Pinned v8-150.4.0 uses unsynchronized lazy initialization of its shared default allocator backend. Two expression tests may construct their first default allocators concurrently after the existing Once has only initialized V8.",
+      "change": "Construct and drop a default allocator inside the existing initialization Once, before any parallel expression test creates an isolate. The allocator wrapper destructor leaves the default isolate-group backend owned by V8; all existing tests and their default concurrency remain.",
+      "qualification": "No decoded native call stack or Windows reproduction is available locally; this is a source-backed causal diagnosis, not proof the remote process is repaired."
+    }
+  ],
+  "validation": {
+    "wrapper_red": "WRAPPER_RED.json",
+    "wrapper_green": "WRAPPER_GREEN.json",
+    "formatters": "FORMATTER_CHECKS.json",
+    "source_provenance": "SOURCE_PROVENANCE.json",
+    "patch_identities": "PATCH_IDENTITIES.json",
+    "v8_archive_identity": "V8_PINNED_SOURCE.json",
+    "bounded_logs": "EXACT_HEAD_WINDOWS_LOG_DIAGNOSTIC.json"
+  },
+  "preserved_requirements": [
+    "No fake runtime symbol libraries",
+    "No stack-protector disablement",
+    "No sandbox disablement",
+    "No skipped or removed tests",
+    "No CI workflow gate relaxation",
+    "No dependency or lockfile changes",
+    "No scientific candidate changes"
+  ],
+  "required_closure_gates": [
+    "Apply after review and run actual repository just fmt",
+    "New-head Windows MSVC release job and all native test shards",
+    "At minimum existing v8-poc six tests must complete, including both expression tests and sandbox_feature_matches_linked_v8",
+    "Inspect new-head linker diagnostics; no MinGW objects linked into MSVC Rust targets"
+  ],
+  "environment": {
+    "host": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "windows_native_test": "not run",
+    "reason": "Linux host; no native Windows/MSVC execution environment. Parent requested no large V8 builds; new-head remote job is authoritative.",
+    "transient_disk_full": "Observed0 available; this review added only320KB text and did not expand V8. Root recovered2.56GB; small text work then resumed."
+  },
+  "patch": "windows_native_abi_and_v8.patch",
+  "patch_application_checks": [
+    {
+      "location": "main sparse checkout",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "windows_native_abi_and_v8.patch"
+      ],
+      "exit_code": 1,
+      "diagnostic": "Three .github/scripts inputs not materialized; current tree identities match originals. No main file was changed."
+    },
+    {
+      "location": "isolated original tree with exact blob bytes",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "windows_native_abi_and_v8.patch"
+      ],
+      "exit_code": 0,
+      "diagnostic": "No output; patch applies cleanly to all five exact originals."
+    }
+  ],
+  "main_apply_instructions": "Materialize the three affected .github/scripts files from their verified originals (preserve Git file modes; run_bazel_with_buildbuddy.py is executable), then apply. Main source modifications are parent-owned."
+}

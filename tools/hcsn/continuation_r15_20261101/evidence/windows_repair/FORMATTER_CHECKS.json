@@ -1,0 +1,45 @@
+{
+  "validation": [
+    {
+      "argv": [
+        "/tmp/hcsn-r15-fmt-tools/bin/buildifier",
+        "-mode=check",
+        "codex-rs/v8-poc/BUILD.bazel"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/hepta-digital-rust195/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--check",
+        "codex-rs/v8-poc/src/lib.rs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "versions": [
+    {
+      "argv": [
+        "/tmp/hcsn-r15-fmt-tools/bin/buildifier",
+        "-version"
+      ],
+      "exit_code": 0,
+      "output": "buildifier version: 8.5.1-3-g0951e28 \nbuildifier scm revision: 0951e28ad5a191e4d421d3899f3259e3e0f1aa54"
+    },
+    {
+      "argv": [
+        "/tmp/hepta-digital-rust195/bin/rustfmt",
+        "--version"
+      ],
+      "exit_code": 0,
+      "output": "rustfmt 1.9.0-stable (59807616e1 2026-04-14)"
+    }
+  ],
+  "notes": "Actual installed tools; read-only checks in isolated candidate. Parent must run repository-prescribed just fmt after applying the reviewed patch."
+}

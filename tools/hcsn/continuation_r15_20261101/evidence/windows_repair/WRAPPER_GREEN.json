@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    ".github/scripts",
+    "-p",
+    "test_run_bazel*.py"
+  ],
+  "relative_cwd": ".",
+  "exit_code": 0,
+  "wall_seconds": 1.0437023819977185,
+  "scope": "actual repository Python and Bash wrappers; test-only recording Bazel subprocess, no native compiler",
+  "log": "WRAPPER_GREEN.log"
+}

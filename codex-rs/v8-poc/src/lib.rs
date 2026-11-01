@@ -36,6 +36,9 @@ mod tests {
         INIT.call_once(|| {
             v8::V8::initialize_platform(v8::new_default_platform(0, false).make_shared());
             v8::V8::initialize();
+            // The pinned V8 allocator initializes its process-wide sandbox pool
+            // lazily. Initialize it here before parallel tests create isolates.
+            drop(v8::new_default_allocator());
         });
     }
 

@@ -1,0 +1,32 @@
+[
+  {
+    "synthetic_key_present": false,
+    "actual": [
+      "build",
+      "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+      "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
+      "--config=ci-windows",
+      "--host_platform=//:local_windows_msvc",
+      "--platforms=//:windows_x86_64_msvc",
+      "--",
+      "//fake:target"
+    ],
+    "has_msvc_cc_toolchain": true,
+    "has_compiler_detection": true
+  },
+  {
+    "synthetic_key_present": true,
+    "actual": [
+      "build",
+      "--config=buildbuddy-generic",
+      "--remote_header=x-buildbuddy-api-key=synthetic-test-key",
+      "--config=ci-windows",
+      "--host_platform=//:local_windows_msvc",
+      "--platforms=//:windows_x86_64_msvc",
+      "--",
+      "//fake:target"
+    ],
+    "has_msvc_cc_toolchain": false,
+    "has_compiler_detection": false
+  }
+]

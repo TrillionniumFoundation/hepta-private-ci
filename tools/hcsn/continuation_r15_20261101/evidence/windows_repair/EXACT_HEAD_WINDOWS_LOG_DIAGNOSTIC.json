@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "run_id": 41289063949,
+  "status": "first publication failures; not evidence of latest follow-up status",
+  "logs": [
+    {
+      "job_id": 124796762041,
+      "head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+      "merge_commit": "bc17c8c6b6970908b6992bf3b9023f6eedd36bc3",
+      "logged_characters": 4170222,
+      "cache_mode": [
+        {
+          "line": 1059,
+          "text": "BuildBuddy API key is available; using remote Bazel configuration."
+        }
+      ],
+      "mingw_in_msvc_configuration": [
+        {
+          "line": 1389,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr90.def.in_undecorated:1490:"
+        },
+        {
+          "line": 1397,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr90d.def.in_undecorated:1556:"
+        },
+        {
+          "line": 1405,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr120.def.in_undecorated:2255:"
+        },
+        {
+          "line": 1413,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr110.def.in_undecorated:2017:"
+        },
+        {
+          "line": 1421,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr120d.def.in_undecorated:2320:"
+        },
+        {
+          "line": 1429,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr80d.def.in_undecorated:1577:"
+        }
+      ],
+      "linker_symbols": [
+        "__stack_chk_fail",
+        "__stack_chk_guard",
+        "___chkstk_ms",
+        "__mingw_fprintf",
+        "__mingw_snprintf",
+        "RtlSecureZeroMemory",
+        "__declspec(dllimport) strerror",
+        "_vsnprintf",
+        "__memcpy_chk",
+        "__memset_chk",
+        "__declspec(dllimport) _beginthreadex",
+        "__declspec(dllimport) _endthreadex",
+        "__memmove_chk",
+        "__declspec(dllimport) _fdopen",
+        "__mingw_vsnprintf",
+        "__declspec(dllimport) isprint",
+        "__declspec(dllimport) isdigit"
+      ],
+      "symbol_evidence": [
+        {
+          "line": 2808,
+          "text": "rust-lld: error: undefined symbol: __stack_chk_fail"
+        },
+        {
+          "line": 2814,
+          "text": "rust-lld: error: undefined symbol: __stack_chk_guard"
+        },
+        {
+          "line": 2819,
+          "text": "rust-lld: error: undefined symbol: ___chkstk_ms"
+        },
+        {
+          "line": 2825,
+          "text": "rust-lld: error: undefined symbol: __mingw_fprintf"
+        },
+        {
+          "line": 2889,
+          "text": "rust-lld: error: undefined symbol: __stack_chk_fail"
+        },
+        {
+          "line": 2895,
+          "text": "rust-lld: error: undefined symbol: __stack_chk_guard"
+        },
+        {
+          "line": 2900,
+          "text": "rust-lld: error: undefined symbol: ___chkstk_ms"
+        },
+        {
+          "line": 2906,
+          "text": "rust-lld: error: undefined symbol: __mingw_fprintf"
+        }
+      ],
+      "v8_fatal": null,
+      "v8_failed_test": []
+    },
+    {
+      "job_id": 124796762065,
+      "head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+      "merge_commit": "bc17c8c6b6970908b6992bf3b9023f6eedd36bc3",
+      "logged_characters": 1689642,
+      "cache_mode": [
+        {
+          "line": 1105,
+          "text": "BuildBuddy API key is available; using remote Bazel configuration."
+        }
+      ],
+      "mingw_in_msvc_configuration": [
+        {
+          "line": 1338,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr90d.def.in_undecorated:1556:"
+        },
+        {
+          "line": 1353,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr90.def.in_undecorated:1490:"
+        },
+        {
+          "line": 1370,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr80d.def.in_undecorated:1577:"
+        },
+        {
+          "line": 1385,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr80.def.in_undecorated:1505:"
+        },
+        {
+          "line": 1393,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr120d.def.in_undecorated:2320:"
+        },
+        {
+          "line": 1401,
+          "text": "In file included from bazel-out/windows_x86_64_msvc-fastbuild/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr120.def.in_undecorated:2255:"
+        }
+      ],
+      "linker_symbols": [
+        "__stack_chk_fail",
+        "___chkstk_ms",
+        "__mingw_fprintf",
+        "__mingw_snprintf",
+        "__stack_chk_guard",
+        "RtlSecureZeroMemory",
+        "__declspec(dllimport) strerror",
+        "_vsnprintf",
+        "__memcpy_chk",
+        "__memset_chk",
+        "__declspec(dllimport) _beginthreadex",
+        "__declspec(dllimport) _endthreadex",
+        "__memmove_chk",
+        "__declspec(dllimport) _fdopen",
+        "__mingw_vsnprintf"
+      ],
+      "symbol_evidence": [
+        {
+          "line": 2746,
+          "text": "rust-lld: error: undefined symbol: __stack_chk_fail"
+        },
+        {
+          "line": 2752,
+          "text": "rust-lld: error: undefined symbol: ___chkstk_ms"
+        },
+        {
+          "line": 2758,
+          "text": "rust-lld: error: undefined symbol: __mingw_fprintf"
+        },
+        {
+          "line": 2770,
+          "text": "rust-lld: error: undefined symbol: __stack_chk_guard"
+        },
+        {
+          "line": 2838,
+          "text": "rust-lld: error: undefined symbol: ___chkstk_ms"
+        },
+        {
+          "line": 2844,
+          "text": "rust-lld: error: undefined symbol: __stack_chk_fail"
+        },
+        {
+          "line": 2850,
+          "text": "rust-lld: error: undefined symbol: __stack_chk_guard"
+        },
+        {
+          "line": 2855,
+          "text": "rust-lld: error: undefined symbol: __mingw_fprintf"
+        }
+      ],
+      "v8_fatal": {
+        "line": 4944,
+        "text": "[FATAL:partition_address_space.cc(301)] Check failed: !IsConfigurablePoolInitialized()."
+      },
+      "v8_failed_test": [
+        {
+          "line": 4981,
+          "text": "test tests::sandbox_feature_matches_linked_v8 ... FAILED"
+        }
+      ]
+    }
+  ]
+}
