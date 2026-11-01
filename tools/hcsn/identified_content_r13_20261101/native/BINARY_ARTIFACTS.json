@@ -1,0 +1,106 @@
+{
+  "schema": "exact-tested-native-artifacts-v1",
+  "artifacts": [
+    {
+      "target": "native/evidence/build/libhcsn_prepared.so",
+      "mode": 420,
+      "bytes": 4372632,
+      "sha256": "19299f8802da6932f9a0e08025f265c38b855be8e9417b17f2c558115ef50ad2",
+      "parts": [
+        {
+          "file": "NATIVE_OPERATOR_01.bin.gz",
+          "offset": 0,
+          "uncompressed_bytes": 750000,
+          "bytes": 311445,
+          "sha256": "09298edf945153916fc83cf3d8627f798ced881adc21cee676cdb6a4f10ad308"
+        },
+        {
+          "file": "NATIVE_OPERATOR_02.bin.gz",
+          "offset": 750000,
+          "uncompressed_bytes": 750000,
+          "bytes": 231281,
+          "sha256": "3e00a2f57184b7a6a100f923a1246fbf25e12751f49befe9315c1f190b94eac5"
+        },
+        {
+          "file": "NATIVE_OPERATOR_03.bin.gz",
+          "offset": 1500000,
+          "uncompressed_bytes": 750000,
+          "bytes": 90216,
+          "sha256": "a1e61e72651f86d6e0ab7f8ec55bb78a66b7f4ff118621c07cb25affbfb70e02"
+        },
+        {
+          "file": "NATIVE_OPERATOR_04.bin.gz",
+          "offset": 2250000,
+          "uncompressed_bytes": 750000,
+          "bytes": 149068,
+          "sha256": "e243d57ae9efb23a43b580a80a7453acdb95ffb1de3c1f8ed5d5bae595d3f1a0"
+        },
+        {
+          "file": "NATIVE_OPERATOR_05.bin.gz",
+          "offset": 3000000,
+          "uncompressed_bytes": 750000,
+          "bytes": 147772,
+          "sha256": "43c57b0af3e501c365d3387b7c1d1816e4cf838cb887a73581b0d59983845b07"
+        },
+        {
+          "file": "NATIVE_OPERATOR_06.bin.gz",
+          "offset": 3750000,
+          "uncompressed_bytes": 622632,
+          "bytes": 206026,
+          "sha256": "5a2ea7bd7c14d2694012c4de8e45700c55c3e0e244e31ff2a72427f21dfbcbb5"
+        }
+      ]
+    },
+    {
+      "target": "native/evidence/build/hcsn-events-r13",
+      "mode": 493,
+      "bytes": 4480248,
+      "sha256": "9bf0be69618c1e022cef1b3f6026d656109e58e7d6a2cd838d4f66d131e3a08d",
+      "parts": [
+        {
+          "file": "NATIVE_EVENTS_01.bin.gz",
+          "offset": 0,
+          "uncompressed_bytes": 750000,
+          "bytes": 331736,
+          "sha256": "1f68b0be765545bccd8ac604a09464e06f85b12d2af7b1c77df7b770a83e2016"
+        },
+        {
+          "file": "NATIVE_EVENTS_02.bin.gz",
+          "offset": 750000,
+          "uncompressed_bytes": 750000,
+          "bytes": 242289,
+          "sha256": "a4ef26d52ae4b1dc8e3a489e8997b3a899581303808c528fe9ac62f9cea93613"
+        },
+        {
+          "file": "NATIVE_EVENTS_03.bin.gz",
+          "offset": 1500000,
+          "uncompressed_bytes": 750000,
+          "bytes": 104322,
+          "sha256": "13a986cadcb37cf839679a975f52fa7a791b9316ba5cda08447eb31162f8f911"
+        },
+        {
+          "file": "NATIVE_EVENTS_04.bin.gz",
+          "offset": 2250000,
+          "uncompressed_bytes": 750000,
+          "bytes": 148361,
+          "sha256": "60845ae3160e824a6d4991fb30f7db5c83a4ff82869f7430a604684eed1e1906"
+        },
+        {
+          "file": "NATIVE_EVENTS_05.bin.gz",
+          "offset": 3000000,
+          "uncompressed_bytes": 750000,
+          "bytes": 147950,
+          "sha256": "54adb44a5d0afbc57a764462499b0f9d2a8769cd46e0738ea41b412253972381"
+        },
+        {
+          "file": "NATIVE_EVENTS_06.bin.gz",
+          "offset": 3750000,
+          "uncompressed_bytes": 730248,
+          "bytes": 226977,
+          "sha256": "55d03812ed04c9767942f893907844374c2777c50c8a973152fc0e2582a02126"
+        }
+      ]
+    }
+  ],
+  "scope": "Exact newly formatted and revalidated Linux x86_64 binaries used by R13 confirmation; portable source build is separately available."
+}
