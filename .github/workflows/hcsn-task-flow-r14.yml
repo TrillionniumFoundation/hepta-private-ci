@@ -1,0 +1,90 @@
+# Research regression lane; successful checks do not establish model superiority.
+name: HCSN task flow R14 and R15
+
+"on":
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/hcsn-task-flow-r14.yml
+      - tools/hcsn/task_aligned_r14_20261101/**
+      - tools/hcsn/continuation_r15_20261101/**
+      - tools/hcsn/unified_cell_r12_20261031/**
+      - tools/hcsn/calibrated_operator_r11_20261031/numerics/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-task-flow-r14-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  finite-model-regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            tools/hcsn/task_aligned_r14_20261101
+            tools/hcsn/continuation_r15_20261101
+            tools/hcsn/unified_cell_r12_20261031
+            tools/hcsn/calibrated_operator_r11_20261031/numerics
+
+      - name: Install the declared numerical runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3.12 -m venv "$RUNNER_TEMP/hcsn-r14-python"
+          "$RUNNER_TEMP/hcsn-r14-python/bin/python" -m pip install --disable-pip-version-check \
+            -r tools/hcsn/unified_cell_r12_20261031/requirements-numpy.txt
+          git rev-parse HEAD
+
+      - name: Run the frozen R14 behavioral regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/hcsn-r14-python/bin/python" - <<'PY'
+          import unittest
+
+          suite = unittest.defaultTestLoader.discover(
+              "tools/hcsn/task_aligned_r14_20261101", top_level_dir="."
+          )
+          if suite.countTestCases() < 48:
+              raise RuntimeError("Incomplete R14 regression discovery")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(not result.wasSuccessful())
+          PY
+
+      - name: Run the R15 continuation regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/hcsn-r14-python/bin/python" - <<'PY'
+          import unittest
+
+          suite = unittest.defaultTestLoader.discover(
+              "tools/hcsn/continuation_r15_20261101", top_level_dir="."
+          )
+          if not suite.countTestCases():
+              raise RuntimeError("No R15 continuation regressions discovered")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(not result.wasSuccessful())
+          PY
+
+      - name: Verify source bytes were not modified
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"

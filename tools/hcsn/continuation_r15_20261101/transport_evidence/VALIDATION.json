@@ -1,0 +1,74 @@
+{
+  "all_containers_less_than_500000_bytes": true,
+  "archives": 9,
+  "containers": 26,
+  "development_members": 14,
+  "largest_container_bytes": 450151,
+  "original_frozen_indexes_modified": false,
+  "remote_ci_observed": false,
+  "schema": "hcsn-r15-transport-validation-v1",
+  "source_commit": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "source_manifest_sha256": "5a66dd67edd204e6382c0216e74f4484100e234793ce0d4aa601904c6196c06d",
+  "tests": {
+    "command": "python -m unittest tools.hcsn.continuation_r15_20261101.test_transport -v",
+    "passed": 8
+  },
+  "training_members": 120,
+  "validation": "independent standard-library gzip.decompress + raw original byte equality + frozen member hashes",
+  "verified": [
+    {
+      "bitwise_original_zip_equal": true,
+      "original_git_blob": "f65febafd683c517f9578bbac2c6afa9c869af92",
+      "original_path": "tools/hcsn/task_aligned_r14_20261101/archives/training_141101.zip",
+      "verified_members": 15
+    },
+    {
+      "bitwise_original_zip_equal": true,
+      "original_git_blob": "ba1c1249cfa5f3f38b373b17094e9888283331c1",
+      "original_path": "tools/hcsn/task_aligned_r14_20261101/archives/training_141103.zip",
+      "verified_members": 15
+    },
+    {
+      "bitwise_original_zip_equal": true,
+      "original_git_blob": "740faa94858b1cf41d8827a90b808eec730b2548",
+      "original_path": "tools/hcsn/task_aligned_r14_20261101/archives/training_141107.zip",
+      "verified_members": 15
+    },
+    {
+      "bitwise_original_zip_equal": true,
+      "original_git_blob": "0e25a613b09c9d98355ae5e9517bdf34d87cc44a",
+      "original_path": "tools/hcsn/task_aligned_r14_20261101/archives/training_141109.zip",
+      "verified_members": 15
+    },
+    {
+      "bitwise_original_zip_equal": true,
+      "original_git_blob": "0bcdd5a8b7546de63164041f5007c9b8a0e41a5c",
+      "original_path": "tools/hcsn/task_aligned_r14_20261101/archives/training_141113.zip",
+      "verified_members": 15
+    },
+    {
+      "bitwise_original_zip_equal": true,
+      "original_git_blob": "afffece08218e0aa536a4685015e0417740ed53b",
+      "original_path": "tools/hcsn/task_aligned_r14_20261101/archives/training_141117.zip",
+      "verified_members": 15
+    },
+    {
+      "bitwise_original_zip_equal": true,
+      "original_git_blob": "9ad972f903525431a0b0128857033fc2d57e1247",
+      "original_path": "tools/hcsn/task_aligned_r14_20261101/archives/training_141119.zip",
+      "verified_members": 15
+    },
+    {
+      "bitwise_original_zip_equal": true,
+      "original_git_blob": "d48e2a0efeea20e965e07e4cab6317b06d3ffcc1",
+      "original_path": "tools/hcsn/task_aligned_r14_20261101/archives/training_141123.zip",
+      "verified_members": 15
+    },
+    {
+      "bitwise_original_zip_equal": true,
+      "original_git_blob": "6418240cf8c22c96d7c30d8528a44cf4487a4785",
+      "original_path": "tools/hcsn/task_aligned_r14_20261101/development_archives/training_141001.zip",
+      "verified_members": 14
+    }
+  ]
+}
