@@ -6,6 +6,7 @@
     "factorial": "A/B share a single ordinary backend, C/D a single analytic backend; both value arms use identical critic weights within the group. All five factorial contrasts are computed.",
     "heldout_separation": "train and val are the only generated splits in training. The candidates stage requires all twelve trained group summaries before constructing the selected-group freeze used by heldout evaluation.",
     "initial_stop": "Zero-observation prediction is readout of a zero hidden vector; actor can stop without passing raw frames to encoder/core.",
+    "joint_estimand": "In joint_backend, A/C are read-all execution ablations of value-trained backend weights; B/D use the same weights with the common value critic. B-A, D-C and the interaction are execution-control effects conditional on that training regime, not total effects of separately training light and value policies. D-B compares cores under the same value-training objective, shared critic and execution rule.",
     "joint_training": "Eight backends and the common critic learn from matched sampled indices and the same summed objective; both modes start from identical R12 joint selected checkpoints for each task/family/seed.",
     "one_shared_controller": "One ValueController object per task/seed/mode; all eight backends call that object. Selected evaluation reconstructs one controller, computes its hash once and records that common identity for each backend.",
     "ordinary_selection": "Matched ordinary_dual and the validation-selected best of seven ordinary families are both reported. The selected ordinary family remains the same in A and B; no test-based family selection.",
@@ -19,7 +20,30 @@
     "Re-review changed reviewed source bytes; this record covers only the SHA256 identities listed here."
   ],
   "review_method": "Read current implementation after fixes; inspect inherited model and source-freeze behavior; parse six Python modules with ast. No training, tensor forward, scientific evaluation, or behavior-test rerun was executed by this reviewer.",
-  "reviewed_at_utc": "2026-11-01T07:30:26.605233+00:00",
+  "review_revisions": [
+    {
+      "previous_record_sha256": "6e27e853b39c62174a89823ec71fd5062f1753e5da5c6cfe91dce637f8615243",
+      "previous_source_entries": [
+        {
+          "ast_parse": "passed",
+          "bytes": 15096,
+          "git_blob_sha1": "d769681be70899cf1e261847853eca97f8da572f",
+          "path": "experiments/hcsn_validation_r14_20261101/content/study.py",
+          "sha256": "4a0782f126ffa87098b5ae615fb2ec88cd07176deec640ba112fad1c005f0b45"
+        },
+        {
+          "ast_parse": "not_applicable",
+          "bytes": 4325,
+          "git_blob_sha1": "4c19fb3e22c1c4b5ee5d7489f0b1c60575ace049",
+          "path": "experiments/hcsn_validation_r14_20261101/content/README.md",
+          "sha256": "82b9aff6e351dfbd0d728832e9c58226dc2092a80785cbe0e36828bc881affcc"
+        }
+      ],
+      "reason": "Owner added protocol and README estimand clarification before formal source freeze; no computation changed. All other reviewed source SHA values unchanged.",
+      "reviewed_at_utc": "2026-11-01T07:45:17.782826+00:00"
+    }
+  ],
+  "reviewed_at_utc": "2026-11-01T07:45:17.782826+00:00",
   "reviewed_findings": [
     {
       "id": "R14-CONTENT-01",
@@ -71,6 +95,18 @@
       ],
       "status": "resolved_in_source",
       "title": "Third-party CfC and runtime provenance"
+    },
+    {
+      "id": "R14-CONTENT-05",
+      "original_problem": "A/C and B/D share value-trained weights, so the joint factorial cannot identify the total effect of independently training light and value networks.",
+      "remaining_scope": "Separate light-policy training is not included and is not counted as a closed validation requirement; no test-dependent decision to add training arms.",
+      "resolution": "Before formal freeze, study protocol and README explicitly define the joint cells as same-weight execution ablations and retain D-B as the core comparison under common value training/control.",
+      "source_functions": [
+        "study.freeze protocol.estimand",
+        "README estimand paragraph"
+      ],
+      "status": "resolved_by_explicit_scope",
+      "title": "Joint-training factorial estimand"
     }
   ],
   "reviewer_role": "Independent numerical-review agent; not the author of this content implementation",
@@ -92,6 +128,8 @@
     "full_conditional_distribution_integrated": false,
     "group_training_allocation": "A shared eight-backend training process cannot be divided by eight to infer the cost of independently training one candidate.",
     "independent_fitting_units": 3,
+    "independent_light_policy_training_total_effect_established": false,
+    "joint_factorial_estimand": "In joint_backend, A/C are read-all execution ablations of value-trained backend weights; B/D use the same weights with the common value critic. B-A, D-C and the interaction are execution-control effects conditional on that training regime, not total effects of separately training light and value policies. D-B compares cores under the same value-training objective, shared critic and execution rule.",
     "new_data_seeds": {
       "binding_task_seed_offset": 100,
       "test": 141103,
@@ -115,10 +153,10 @@
     },
     {
       "ast_parse": "passed",
-      "bytes": 15096,
-      "git_blob_sha1": "d769681be70899cf1e261847853eca97f8da572f",
+      "bytes": 15505,
+      "git_blob_sha1": "ae689d4cb4677ca696801e3c2d6a676122665fe6",
       "path": "experiments/hcsn_validation_r14_20261101/content/study.py",
-      "sha256": "4a0782f126ffa87098b5ae615fb2ec88cd07176deec640ba112fad1c005f0b45"
+      "sha256": "5b65412c50a453475d74f9f0a109c91928dd2e774893349b6d94ebf9608a658c"
     },
     {
       "ast_parse": "passed",
@@ -150,10 +188,10 @@
     },
     {
       "ast_parse": "not_applicable",
-      "bytes": 4325,
-      "git_blob_sha1": "4c19fb3e22c1c4b5ee5d7489f0b1c60575ace049",
+      "bytes": 4983,
+      "git_blob_sha1": "de3b06f417eca3c951ec29d5afd59ebf56b55e6a",
       "path": "experiments/hcsn_validation_r14_20261101/content/README.md",
-      "sha256": "82b9aff6e351dfbd0d728832e9c58226dc2092a80785cbe0e36828bc881affcc"
+      "sha256": "ce49fe4e0f86662726edf825b3be09a1b5a9d3138b99c9aad06005c93d11a575"
     }
   ],
   "status": "source_review_passed_with_declared_scientific_scope; experiment_execution_pending",

@@ -4,6 +4,10 @@ This experiment adds a complete-content-backend frozen stratum and a joint-backe
 
 The complete timestamp schedule and finite observation budget are public in advance. This experiment does not model unknown future arrival times. READ acquires exactly one next raw frame; STOP submits the current classifier. The label and future payload enter evaluator targets only. The current policy is followed when constructing sample-path Q-pi returns; these individual futures do not establish conditional expected regret.
 
+## What the factorial identifies
+
+A/B and C/D execute identical content weights within each stratum. In the joint stratum, A and C are read-all execution ablations of the value-trained backends. Consequently B−A, D−C and the interaction identify execution-control effects conditional on this common training regime. They do not identify the total effect of separately training light-policy and value-policy networks. D−B remains a core comparison under the same value-training objective, exactly shared critic and execution rule. Separate light-policy training is not included in this experiment and is not counted as a closed validation requirement.
+
 ## Scope
 
 - The three seed identities are inherited from the old trained backends. They are not eight fresh training repetitions and not independent copies of the same dataset.
