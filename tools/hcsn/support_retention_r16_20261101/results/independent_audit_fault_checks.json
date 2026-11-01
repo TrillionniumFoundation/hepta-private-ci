@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn-independent-audit-fault-check-v1",
+  "audit_source_sha256": "c482d69402042f14b0d52cb3a2a23bfb9c0971ee79b12c40c83e7dc24d29c9e4",
+  "baseline_archive": 151119,
+  "domain": "ood",
+  "world_seed": 16062015111910096,
+  "all_rejected": true,
+  "faults": [
+    {
+      "injected_fault": "target",
+      "rejected": true,
+      "detected_by": [
+        "pre-WRITE deadline target"
+      ]
+    },
+    {
+      "injected_fault": "fee",
+      "rejected": true,
+      "detected_by": [
+        "all executed action fees"
+      ]
+    },
+    {
+      "injected_fault": "token",
+      "rejected": true,
+      "detected_by": [
+        "owner keyed observation token"
+      ]
+    },
+    {
+      "injected_fault": "tape_identity",
+      "rejected": true,
+      "detected_by": [
+        "arm owner identity"
+      ]
+    }
+  ],
+  "scope": "In-memory corruption only; published raw evidence and frozen experiment source unchanged."
+}
