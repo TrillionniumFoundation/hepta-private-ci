@@ -1,0 +1,92 @@
+{
+  "source_commit": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "observed_job": 124796330066,
+  "codespell_version": "2.4.3",
+  "total_findings": 2649,
+  "text_findings": 41,
+  "text_files": 19,
+  "unique_literal_lines": 31,
+  "payload_findings": 2608,
+  "payload_files": 219,
+  "decoded_base64_payloads": 200,
+  "binary_payloads": 19,
+  "payloads_bound_to_transport_manifest": 218,
+  "binary_identity_only": [
+    "experiments/analytic_event_neuron/round4/evidence/confirmation/CALIBRATION_CONFIRMATION_2017.tar.gz.part001"
+  ],
+  "all_fetched_git_blobs_verified": true,
+  "all_observed_payload_bytes_verified": true,
+  "reason_counts": {
+    "first passage time acronym": 22,
+    "uniformization expected event variable": 2,
+    "update vector bias parameter identifier": 12,
+    "verbatim historical spelling diagnostic": 3,
+    "data digest variable identifier": 2
+  },
+  "scientific_bytes_changed": false,
+  "main_worktree_modified": false,
+  "behavioral_check_count": 12,
+  "final_scope_guard_passed_after_restoration": true,
+  "candidate_files": {
+    ".codespell-reviewed-lines": "2d5248027510daa82b94eb09ed7166ea4c04d12ad06102b4499d5ae1fc033618",
+    ".codespellrc": "dbd402342044737119f961855909b70656d46d4b886e54046857e9ff873927de",
+    ".github/workflows/codespell.yml": "8b88c3964de90e9a5e19f16d861f793eb9ad966146199d41e9a5d0f9b5f7a841",
+    "tools/check_frozen_codespell.py": "bff6ed6b37ac2d58bb12e5229bdad626e8aa7411c6324b46385299dc5bff1413",
+    "tools/codespell_frozen_review.json": "a12aa67f14635bb5ac5930b9ab2281841f48bfff134ea47a7095b56e1a4f6b99"
+  },
+  "base_files_sha256": {
+    ".codespellrc": "6f94d915eaace4a1ae8d11ef24b6980545fe62dfa558b4797a4ad9515d211e06",
+    ".github/workflows/codespell.yml": "4bc889fafcd9d8437d16be7e79a3f15b928039a775df26338c759a41a00809c2"
+  },
+  "patch_sha256": "20359da7e5f0449841b0cb2cb00dce376fcff5201552c064752babd5a628cedf",
+  "patch_bytes": 199540,
+  "candidate_file_sizes": {
+    ".codespell-reviewed-lines": {
+      "bytes": 3434,
+      "lines": 31
+    },
+    ".codespellrc": {
+      "bytes": 34751,
+      "lines": 8
+    },
+    ".github/workflows/codespell.yml": {
+      "bytes": 1019,
+      "lines": 34
+    },
+    "tools/check_frozen_codespell.py": {
+      "bytes": 5761,
+      "lines": 124
+    },
+    "tools/codespell_frozen_review.json": {
+      "bytes": 142003,
+      "lines": 2645
+    }
+  },
+  "limitations": [
+    "Original findings reproduced from pinned job; new remote CI has not yet run.",
+    "The single Round4 tail fragment has verified original Git bytes and binary content, without claiming a transport manifest binding.",
+    "This review does not change scientific acceptance or any quality gate."
+  ],
+  "schema": "codespell.review.summary.v1",
+  "behavioral_checks": [
+    "unmodified_engine_reproduces_all_41_text_findings",
+    "all_original_technical_and_quoted_lines_pass",
+    "all_238_original_finding_paths_and_new_control_files_pass",
+    "exact_scope_and_all_payload_identities_pass",
+    "ordinary_typo_remains_identical_failure",
+    "new_typo_appended_to_reviewed_sentence_fails",
+    "six_tokens_remain_checked_outside_literal_contexts",
+    "frozen_source_edit_rejected",
+    "literal_list_expansion_rejected",
+    "unreviewed_directory_skip_rejected",
+    "global_short_word_dictionary_change_rejected",
+    "payload_corruption_rejected"
+  ],
+  "receipt_archive": {
+    "file": "REVIEW_RECEIPT.json.gz",
+    "bytes": 4457,
+    "sha256": "fb17f232de2f8de8621a8e1a38a69904be23956e06de9f9eeddadc89eafd4f86",
+    "uncompressed_bytes": 19424,
+    "uncompressed_sha256": "84271b9d1450555b2da9ad1e78509847727105b38ce9745d8f58d9039317b433"
+  }
+}
