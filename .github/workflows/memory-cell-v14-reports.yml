@@ -22,7 +22,7 @@ jobs:
           python3 - <<'PY'
           import hashlib, io, json, tarfile
           from pathlib import Path
-          wanted = {'RESULTS.json', 'SELECTION.json', 'SUMMARY.json', 'encoder_manifest.json', 'FREEZE.json', 'process.json', 'language_failure.json', 'language_run.json'}
+          wanted = {'RESULTS.json', 'SELECTION.json', 'SUMMARY.json', 'encoder_manifest.json', 'FREEZE.json', 'process.json', 'language_failure.json', 'language_run.json', 'INPUT_IDENTITIES.json'}
           root = Path('qualification/memory-cell-v14/evidence')
           for path in root.glob('*/INDEX.json'):
               index = json.loads(path.read_text())
@@ -37,13 +37,17 @@ jobs:
                   with tarfile.open(fileobj=io.BytesIO(payload), mode='r:gz') as packed:
                       for member in packed:
                           relative = Path(member.name)
-                          if relative.name not in wanted:
+                          selected_centroid = relative.parent.name == 'centroid' and relative.name in ('arrays.npz', 'metadata.json')
+                          source_features = relative.name in ('train_features.npz', 'train_rows.json', 'calibration_features.npz', 'calibration_rows.json')
+                          frozen_runtime = 'EXECUTED_SOURCE' in relative.parts and relative.parts[0] == 'routing'
+                          if relative.name not in wanted and not selected_centroid and not source_features and not frozen_runtime:
                               continue
                           assert not relative.is_absolute() and '..' not in relative.parts and member.isfile()
                           data = packed.extractfile(member).read()
                           identity = archive['files'][member.name]
                           assert len(data) == identity['bytes'] and hashlib.sha256(data).hexdigest() == identity['sha256']
-                          json.loads(data)
+                          if relative.suffix == '.json':
+                              json.loads(data)
                           destination = path.parent / 'readable' / archive['name'] / relative
                           destination.parent.mkdir(parents=True, exist_ok=True)
                           if destination.exists():
