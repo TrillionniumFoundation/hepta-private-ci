@@ -1,0 +1,15 @@
+{
+  "V1": {
+    "outcome": "Failed after zero-likelihood observation produced NaN, JSON refused serialization",
+    "source": "SOURCE_FREEZE_V1.json",
+    "raw_partial": "FAILED_V1_PARTIAL.json",
+    "cpu_seconds": null
+  },
+  "V2": {
+    "outcome": "Terminated Python verification after excessively strict long-time ODE tolerance caused >3min runtime with no completed output",
+    "source": "SOURCE_FREEZE_V2.json",
+    "signal": "SIGTERM",
+    "cpu_seconds": null
+  },
+  "cost_scope": "Unrecorded V1/V2 exact CPU is unknown and never zero; final outer-process receipt does not include these development attempts."
+}

@@ -1,0 +1,386 @@
+{
+  "schema": "hcsn-r17-perpetual-put-boundary-v1",
+  "scope": "Deterministic numerical development: GBM perpetual American put only; no scientific holdout, finite-horizon HX, regeneration, neural training, or production admission.",
+  "protocol": {
+    "schema": "hcsn-r17-perpetual-put-boundary-v1",
+    "cases": [
+      {
+        "strike": 100.0,
+        "discount": 0.05,
+        "drift": 0.03,
+        "volatility": 0.3
+      },
+      {
+        "strike": 100.0,
+        "discount": 0.08,
+        "drift": 0.01,
+        "volatility": 0.22
+      },
+      {
+        "strike": 100.0,
+        "discount": 0.04,
+        "drift": 0.04,
+        "volatility": 0.4
+      }
+    ],
+    "intervals": [
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "log_asset_domain": [
+      -7.0,
+      9.0
+    ],
+    "max_policy_iterations": 10000,
+    "policy_tolerance": 1e-11,
+    "gates": {
+      "finest_boundary_relative_error": 0.005,
+      "finest_value_relative_error": 0.0001,
+      "finest_smooth_pasting_error": 0.02,
+      "lcp_residual": 1e-07
+    },
+    "scope": "Deterministic numerical development: GBM perpetual American put only; no scientific holdout, finite-horizon HX, regeneration, neural training, or production admission."
+  },
+  "source_sha256": "2fed565eecf0bb3158b7ef9f4b8c013bbb75ae1b88c8d5c4aa5735291e0de602",
+  "gates": {
+    "boundary_relative_error": true,
+    "value_relative_error": true,
+    "smooth_pasting_error": true,
+    "lcp_residual": true,
+    "refinement_reduces_value_error": true
+  },
+  "analytical": [
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.05,
+        "drift": 0.03,
+        "volatility": 0.3
+      },
+      "beta": -0.9005207062388081,
+      "boundary": 47.38284109626817,
+      "value_matching_error": 0.0,
+      "smooth_pasting_error": 4.75125269905341e-06,
+      "continuation_pde_residual": 7.295528215597911e-16,
+      "exercise_residual_min": 4.052343178074636,
+      "transversality_exponent_negative": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.08,
+        "drift": 0.01,
+        "volatility": 0.22
+      },
+      "beta": -1.548312385983032,
+      "boundary": 60.75834322744376,
+      "value_matching_error": 0.0,
+      "smooth_pasting_error": 6.3707005403257355e-06,
+      "continuation_pde_residual": 0.0,
+      "exercise_residual_min": 3.746915974078936,
+      "transversality_exponent_negative": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.04,
+        "drift": 0.04,
+        "volatility": 0.4
+      },
+      "beta": -0.49999999999999983,
+      "boundary": 33.33333333333333,
+      "value_matching_error": 0.0,
+      "smooth_pasting_error": 3.7499697782550356e-06,
+      "continuation_pde_residual": 4.623618037915987e-16,
+      "exercise_residual_min": 4.0,
+      "transversality_exponent_negative": true
+    }
+  ],
+  "rows": [
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.05,
+        "drift": 0.03,
+        "volatility": 0.3
+      },
+      "intervals": 512,
+      "mesh_log_spacing": 0.03125,
+      "iterations": 25,
+      "grid_last_exercise_asset": 47.236655274101466,
+      "grid_first_continuation_asset": 48.736107671361914,
+      "boundary_estimate": 47.98638147273169,
+      "exact_boundary": 47.38284109626817,
+      "boundary_relative_error": 0.006035403764635206,
+      "value_relative_error": 7.946295069451992e-06,
+      "continuation_slope": -0.920096618387651,
+      "smooth_pasting_error": 0.079903381612349,
+      "lcp_residual": 4.476419235288631e-13,
+      "obstacle_violation": 0.0,
+      "continuation_violation": 2.2737367544323206e-13,
+      "monotone_stencil": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.05,
+        "drift": 0.03,
+        "volatility": 0.3
+      },
+      "intervals": 1024,
+      "mesh_log_spacing": 0.015625,
+      "iterations": 49,
+      "grid_last_exercise_asset": 47.236655274101466,
+      "grid_first_continuation_asset": 47.98052435596775,
+      "boundary_estimate": 47.608589815034605,
+      "exact_boundary": 47.38284109626817,
+      "boundary_relative_error": 0.0022574871876643245,
+      "value_relative_error": 4.149900668366513e-06,
+      "continuation_slope": -0.9620461860286413,
+      "smooth_pasting_error": 0.03795381397135866,
+      "lcp_residual": 9.094947017729282e-13,
+      "obstacle_violation": 0.0,
+      "continuation_violation": 9.094947017729282e-13,
+      "monotone_stencil": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.05,
+        "drift": 0.03,
+        "volatility": 0.3
+      },
+      "intervals": 2048,
+      "mesh_log_spacing": 0.0078125,
+      "iterations": 97,
+      "grid_last_exercise_asset": 47.236655274101466,
+      "grid_first_continuation_asset": 47.60713695312372,
+      "boundary_estimate": 47.42189611361259,
+      "exact_boundary": 47.38284109626817,
+      "boundary_relative_error": 0.0003905501734441685,
+      "value_relative_error": 4.257332563994964e-06,
+      "continuation_slope": -0.9837231356385939,
+      "smooth_pasting_error": 0.016276864361406074,
+      "lcp_residual": 3.637978807091713e-12,
+      "obstacle_violation": 0.0,
+      "continuation_violation": 3.637978807091713e-12,
+      "monotone_stencil": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.05,
+        "drift": 0.03,
+        "volatility": 0.3
+      },
+      "intervals": 4096,
+      "mesh_log_spacing": 0.00390625,
+      "iterations": 192,
+      "grid_last_exercise_asset": 47.42153431555798,
+      "grid_first_continuation_asset": 47.60713695312372,
+      "boundary_estimate": 47.51433563434085,
+      "exact_boundary": 47.38284109626817,
+      "boundary_relative_error": 0.0013149453807267974,
+      "value_relative_error": 3.000190247348655e-07,
+      "continuation_slope": -0.987391508719475,
+      "smooth_pasting_error": 0.012608491280524992,
+      "lcp_residual": 2.100364326906856e-11,
+      "obstacle_violation": 2.100364326906856e-11,
+      "continuation_violation": 1.4551915228366852e-11,
+      "monotone_stencil": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.08,
+        "drift": 0.01,
+        "volatility": 0.22
+      },
+      "intervals": 512,
+      "mesh_log_spacing": 0.03125,
+      "iterations": 17,
+      "grid_last_exercise_asset": 60.653065971263345,
+      "grid_first_continuation_asset": 62.57840096045911,
+      "boundary_estimate": 61.615733465861226,
+      "exact_boundary": 60.75834322744376,
+      "boundary_relative_error": 0.008573902384174659,
+      "value_relative_error": 2.001675132534686e-05,
+      "continuation_slope": -0.8912631479457364,
+      "smooth_pasting_error": 0.10873685205426364,
+      "lcp_residual": 2.8421709430404007e-13,
+      "obstacle_violation": 2.8421709430404007e-13,
+      "continuation_violation": 1.1368683772161603e-13,
+      "monotone_stencil": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.08,
+        "drift": 0.01,
+        "volatility": 0.22
+      },
+      "intervals": 1024,
+      "mesh_log_spacing": 0.015625,
+      "iterations": 33,
+      "grid_last_exercise_asset": 60.653065971263345,
+      "grid_first_continuation_asset": 61.60821277906783,
+      "boundary_estimate": 61.130639375165586,
+      "exact_boundary": 60.75834322744376,
+      "boundary_relative_error": 0.003722961477218263,
+      "value_relative_error": 4.4263513166775684e-06,
+      "continuation_slope": -0.9461698647014576,
+      "smooth_pasting_error": 0.053830135298542414,
+      "lcp_residual": 4.547473508864641e-13,
+      "obstacle_violation": 4.121147867408581e-13,
+      "continuation_violation": 4.547473508864641e-13,
+      "monotone_stencil": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.08,
+        "drift": 0.01,
+        "volatility": 0.22
+      },
+      "intervals": 2048,
+      "mesh_log_spacing": 0.0078125,
+      "iterations": 65,
+      "grid_last_exercise_asset": 60.653065971263345,
+      "grid_first_continuation_asset": 61.128773863545064,
+      "boundary_estimate": 60.890919917404204,
+      "exact_boundary": 60.75834322744376,
+      "boundary_relative_error": 0.0013257668996044458,
+      "value_relative_error": 2.258668922578977e-06,
+      "continuation_slope": -0.9748663405321085,
+      "smooth_pasting_error": 0.025133659467891478,
+      "lcp_residual": 1.8189894035458565e-12,
+      "obstacle_violation": 0.0,
+      "continuation_violation": 1.8189894035458565e-12,
+      "monotone_stencil": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.08,
+        "drift": 0.01,
+        "volatility": 0.22
+      },
+      "intervals": 4096,
+      "mesh_log_spacing": 0.00390625,
+      "iterations": 129,
+      "grid_last_exercise_asset": 60.653065971263345,
+      "grid_first_continuation_asset": 60.890455359506355,
+      "boundary_estimate": 60.771760665384846,
+      "exact_boundary": 60.75834322744376,
+      "boundary_relative_error": 0.00013417437941086517,
+      "value_relative_error": 2.3096671641553712e-06,
+      "continuation_slope": -0.9895356991101507,
+      "smooth_pasting_error": 0.010464300889849287,
+      "lcp_residual": 7.275957614183426e-12,
+      "obstacle_violation": 7.069900220812997e-12,
+      "continuation_violation": 7.275957614183426e-12,
+      "monotone_stencil": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.04,
+        "drift": 0.04,
+        "volatility": 0.4
+      },
+      "intervals": 512,
+      "mesh_log_spacing": 0.03125,
+      "iterations": 36,
+      "grid_last_exercise_asset": 33.4958042925295,
+      "grid_first_continuation_asset": 34.55907525769745,
+      "boundary_estimate": 34.02743977511348,
+      "exact_boundary": 33.33333333333333,
+      "boundary_relative_error": 0.006941064417801499,
+      "value_relative_error": 5.915261220224011e-06,
+      "continuation_slope": -0.9252749184559351,
+      "smooth_pasting_error": 0.07472508154406488,
+      "lcp_residual": 2.2595258997171186e-12,
+      "obstacle_violation": 0.0,
+      "continuation_violation": 9.094947017729282e-13,
+      "monotone_stencil": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.04,
+        "drift": 0.04,
+        "volatility": 0.4
+      },
+      "intervals": 1024,
+      "mesh_log_spacing": 0.015625,
+      "iterations": 71,
+      "grid_last_exercise_asset": 33.4958042925295,
+      "grid_first_continuation_asset": 34.02328645740491,
+      "boundary_estimate": 33.7595453749672,
+      "exact_boundary": 33.33333333333333,
+      "boundary_relative_error": 0.004262120416338746,
+      "value_relative_error": 5.915261308473418e-06,
+      "continuation_slope": -0.9584188178367331,
+      "smooth_pasting_error": 0.041581182163266894,
+      "lcp_residual": 6.565414878423326e-12,
+      "obstacle_violation": 6.565414878423326e-12,
+      "continuation_violation": 3.637978807091713e-12,
+      "monotone_stencil": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.04,
+        "drift": 0.04,
+        "volatility": 0.4
+      },
+      "intervals": 2048,
+      "mesh_log_spacing": 0.0078125,
+      "iterations": 142,
+      "grid_last_exercise_asset": 33.23513787550223,
+      "grid_first_continuation_asset": 33.4958042925295,
+      "boundary_estimate": 33.365471084015866,
+      "exact_boundary": 33.33333333333333,
+      "boundary_relative_error": 0.00032137750682537103,
+      "value_relative_error": 2.1651449328885517e-06,
+      "continuation_slope": -0.986927754182439,
+      "smooth_pasting_error": 0.013072245817560946,
+      "lcp_residual": 1.4551915228366852e-11,
+      "obstacle_violation": 3.0269120543380268e-12,
+      "continuation_violation": 1.4551915228366852e-11,
+      "monotone_stencil": true
+    },
+    {
+      "case": {
+        "strike": 100.0,
+        "discount": 0.04,
+        "drift": 0.04,
+        "volatility": 0.4
+      },
+      "intervals": 4096,
+      "mesh_log_spacing": 0.00390625,
+      "iterations": 282,
+      "grid_last_exercise_asset": 33.36521652729167,
+      "grid_first_continuation_asset": 33.4958042925295,
+      "boundary_estimate": 33.43051040991058,
+      "exact_boundary": 33.33333333333333,
+      "boundary_relative_error": 0.0009717707657725328,
+      "value_relative_error": 1.5214708679067713e-06,
+      "continuation_slope": -0.9898286219989012,
+      "smooth_pasting_error": 0.010171378001098796,
+      "lcp_residual": 6.468781066359952e-11,
+      "obstacle_violation": 0.0,
+      "continuation_violation": 5.820766091346741e-11,
+      "monotone_stencil": true
+    }
+  ],
+  "cpu_seconds": 0.203213915,
+  "wall_seconds": 0.20355611800187035,
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  }
+}

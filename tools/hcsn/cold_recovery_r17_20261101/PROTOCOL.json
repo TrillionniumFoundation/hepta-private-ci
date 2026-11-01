@@ -1,0 +1,70 @@
+{
+  "base_commit": "0fd894118c47f38c2acf2532b8242fd16df76c47",
+  "criteria": "Every requested SIGKILL actually occurs. Each fresh interpreter reconstructs model and owner from immutable payload with empty caches. Resumed complete queries, fees, cursor, effect IDs and owned memory are byte-for-byte equivalent to uninterrupted state. Uninterrupted query traces equal old R16 execute. All registered corruption/identity/stale replay rejections pass.",
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "fault_events": {
+    "refresh": [
+      "after:prepared:REFRESH",
+      "after:elapsed:REFRESH",
+      "after:received:REFRESH",
+      "after:applied:REFRESH",
+      "before:received:REFRESH",
+      "before:applied:REFRESH"
+    ],
+    "wait_read": [
+      "after:prepared:WAIT",
+      "after:elapsed:WAIT",
+      "after:received:WAIT",
+      "after:applied:WAIT",
+      "after:prepared:READ",
+      "after:elapsed:READ",
+      "after:received:READ",
+      "after:applied:READ",
+      "before:received:WAIT",
+      "before:applied:WAIT",
+      "before:received:READ",
+      "before:applied:READ"
+    ]
+  },
+  "policies": [
+    [
+      "fixed",
+      "wait_read"
+    ],
+    [
+      "fixed",
+      "refresh"
+    ],
+    [
+      "value",
+      "stop"
+    ]
+  ],
+  "production_activation": false,
+  "representations": [
+    "full",
+    "anchored"
+  ],
+  "resource_scope": "Linux wait4 records complete child CPU and max RSS including interpreter, imports, model/owner reconstruction, SQLite state reads, all execution, fsync and output. Parent reference generation and developer/audit CPU are separate; CPU seconds are not joules.",
+  "schema": "hcsn-r17-cold-recovery-protocol-v1",
+  "scope": "Engineering process-death qualification for a finite synthetic six-query research owner. Deterministic replay of the frozen R16 model, not scientific superiority confirmation or production ownership.",
+  "seed": 170610000000001,
+  "training_file": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151101.json.gz",
+  "unmeasured": [
+    "OS reboot or power loss",
+    "concurrent owners or distributed fencing",
+    "hostile storage rewrite with recomputed hashes",
+    "external stateful RPC effects",
+    "production Rust ownership",
+    "GPU",
+    "joules",
+    "open-domain multimodal quality"
+  ],
+  "world_theta": [
+    0.3,
+    0.018
+  ]
+}

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/4464023fd803/project/tools/hcsn/symmetric_fastpath_r17_20261101/study.py", line 219, in <module>
+    audit(protocol)
+  File "/workspace/scratch/4464023fd803/project/tools/hcsn/symmetric_fastpath_r17_20261101/study.py", line 113, in audit
+    raise RuntimeError("Operator or rejection gate failed; inspect retained records")
+RuntimeError: Operator or rejection gate failed; inspect retained records

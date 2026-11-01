@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/4464023fd803/project/tools/hcsn/symmetric_fastpath_r17_20261101/study.py", line 228, in <module>
+    campaign(protocol)
+  File "/workspace/scratch/4464023fd803/project/tools/hcsn/symmetric_fastpath_r17_20261101/study.py", line 167, in campaign
+    save(raw_path,dict(fit=fit,preparation_cpu_seconds=prep,rows=rows))
+  File "/workspace/scratch/4464023fd803/project/tools/hcsn/symmetric_fastpath_r17_20261101/study.py", line 42, in save
+    stream.write(raw)
+OSError: [Errno 28] No space left on device

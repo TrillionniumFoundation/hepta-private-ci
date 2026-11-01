@@ -1,0 +1,46 @@
+{
+  "schema": "hcsn-r17-parameter-flow-inherited-dependencies-v1",
+  "written_utc": "2026-11-01T18:36:41.023368+00:00",
+  "status": "Supplementary post-run provenance manifest; not relabeled as pre-run source freeze",
+  "base_commit": "0fd894118c47f38c2acf2532b8242fd16df76c47",
+  "root_precheck_receipt": {
+    "path": "tools/hcsn/four_stage_r17_20261101/BASELINE_READBACK.json",
+    "sha256": "2393bdbf989651dcf97da91f7c771d628ab1011ec6abdb2975a9fe6cdef4d59f",
+    "files_checked": 53,
+    "all_matches": true,
+    "timing_basis": "Root established the 53-match dependency readback before numerical checks; this manifest extracts relevant inherited paths after checks."
+  },
+  "files": [
+    {
+      "path": "tools/hcsn/calibrated_operator_r11_20261031/numerics/kernel.py",
+      "sha256": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+      "source_commit": "0fd894118c47f38c2acf2532b8242fd16df76c47",
+      "matches_precheck_root_receipt": true
+    },
+    {
+      "path": "tools/hcsn/unified_cell_r12_20261031/cell.py",
+      "sha256": "c76e6d128ecefe871b14ee3855e44420cfdfd4553e4afb588142db9a60931345",
+      "source_commit": "0fd894118c47f38c2acf2532b8242fd16df76c47",
+      "matches_precheck_root_receipt": true
+    },
+    {
+      "path": "tools/hcsn/unified_cell_r12_20261031/PROTOCOL.json",
+      "sha256": "e14f397784e0c3b80edbbcf85e68b8d86f39d15004e375ee92a1f4a22b4c3621",
+      "source_commit": "0fd894118c47f38c2acf2532b8242fd16df76c47",
+      "matches_precheck_root_receipt": true
+    },
+    {
+      "path": "tools/hcsn/addressed_decision_r15_20261101/law.py",
+      "sha256": "d405c6dc629173b338828fef9bbe2b639cdc5a24de89023266786369d8997ef8",
+      "source_commit": "0fd894118c47f38c2acf2532b8242fd16df76c47",
+      "matches_precheck_root_receipt": true
+    },
+    {
+      "path": "tools/hcsn/addressed_decision_r15_20261101/__init__.py",
+      "sha256": "176b49d47d06af0e4e71ec723aa0576e94d208812f450f66491d2aa6eb4ca54e",
+      "source_commit": "0fd894118c47f38c2acf2532b8242fd16df76c47",
+      "matches_precheck_root_receipt": true
+    }
+  ],
+  "libraries": "NumPy/SciPy/Python versions recorded in RESULTS_V3.json; no reimplementation of their libraries is claimed."
+}

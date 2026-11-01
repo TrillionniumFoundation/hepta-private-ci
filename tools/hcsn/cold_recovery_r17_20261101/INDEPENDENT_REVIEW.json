@@ -1,0 +1,53 @@
+{
+  "audit_output": "../four_stage_r17_20261101/equivalence_cold_recovery_independent.json",
+  "audit_passed": true,
+  "checked_effects": 728,
+  "checked_queries": 456,
+  "checked_recovery_cases": 76,
+  "cold_start_processes": 164,
+  "complete_child_cpu_seconds": 59.976592,
+  "corrected_finding": {
+    "issue": "Original manifest did not bind transitive financial kernel or unified cell protocol read at import",
+    "resolution": "Original run01 and manifest retained. Separate 32-file SOURCE_MANIFEST_V2.json frozen before run02; runtime/campaign audited against that new identity",
+    "status": "corrected_for_run02"
+  },
+  "killed_child_cpu_seconds": 22.427258,
+  "negative_rejections": {
+    "duplicate_effect": true,
+    "invalid_model_payload": true,
+    "stale_sequence_replay": true,
+    "state_corruption": true,
+    "state_history_rollback": true,
+    "state_wrong_run": true,
+    "wrong_model_config": true,
+    "wrong_owner_config": true,
+    "wrong_owner_world": true
+  },
+  "note": "Saved-record auditor was independently invoked after source review; its implementation intentionally imports no experiment runtime/planner. This is not a fresh independent mathematical rederivation of the owner generator.",
+  "reviewed_behaviors": [
+    "Every worker reconstructs model and owner in a fresh interpreter with empty transition/event caches",
+    "Prepared, elapsed, received, applied phases keep belief changes, fees and effect IDs atomic with local SQLite cursor",
+    "Owner observations are keyed deterministic and repeatable; no external mutable RPC exactly-once claim",
+    "Complete resumed state and query records equal uninterrupted implementation; uninterrupted query records equal frozen R16 executor",
+    "Old sequence replay, duplicate effect, model/owner mismatch, stored state checksum/history corruption are rejected within stated threat scope"
+  ],
+  "role": "Independent source review and invocation of saved-record auditor; deterministic engineering qualification, no scientific utility confirmation",
+  "schema": "hcsn-r17-cold-recovery-independent-review-v1",
+  "scope_limits": [
+    "OS reboot or power loss",
+    "concurrent owners or distributed fencing",
+    "hostile storage rewrite with recomputed hashes",
+    "external stateful RPC effects",
+    "production Rust ownership",
+    "GPU",
+    "joules",
+    "open-domain multimodal quality"
+  ],
+  "sources": {
+    "SOURCE_MANIFEST_V2.json": "ba88bf7ebfaa215fc2da247e9ba6956ff074316395bf81d85b4f46618ab4fd0f",
+    "audit.py": "81ce46e7b21ad48b3981eb3116dc12e3b6736618bab9f88477f84f399b742c80",
+    "campaign.py": "c4aad78ab5a61d4f7caa93cb6ed0927263a73133546a2d18cacad21f92b7c0a8",
+    "runtime.py": "07be27fab5b14f360381ec9c6e58134bfa37602006e0c23d4aa2897abee7bc70"
+  },
+  "unresolved_critical_source_issues": []
+}

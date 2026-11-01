@@ -1,0 +1,73 @@
+{
+  "caution": "Frozen summary mean_net_accuracy is hypothetical forced argmax across all keys, including abstained keys; use this selective payoff for actual refusal behavior",
+  "raw_sha256": "7b657481ab305feeee931028eb0028edb8041075930178d1f0bdf01cc9954c02",
+  "role": "postrun_arithmetic_from_unchanged_frozen_raw",
+  "rows": [
+    {
+      "actual_selective_payoff_mean": 0.6561111111111111,
+      "attempts": 144,
+      "generator": "without_replacement",
+      "invalid": 0,
+      "invalid_at_actual_READ": 0,
+      "payoff_definition": "Mean over four queries of +1 correct accepted,-1 incorrect accepted,0 abstain; subtract actual READ fee",
+      "policy": "known_exact",
+      "uncertain_accepted_queries": 117,
+      "zero_probability_true_labels_in_valid_queries": 0
+    },
+    {
+      "actual_selective_payoff_mean": 0.6561111111111111,
+      "attempts": 144,
+      "generator": "without_replacement",
+      "invalid": 0,
+      "invalid_at_actual_READ": 0,
+      "payoff_definition": "Mean over four queries of +1 correct accepted,-1 incorrect accepted,0 abstain; subtract actual READ fee",
+      "policy": "fixed_without_replacement",
+      "uncertain_accepted_queries": 117,
+      "zero_probability_true_labels_in_valid_queries": 0
+    },
+    {
+      "actual_selective_payoff_mean": 0.7443055555555556,
+      "attempts": 144,
+      "generator": "without_replacement",
+      "invalid": 0,
+      "invalid_at_actual_READ": 0,
+      "payoff_definition": "Mean over four queries of +1 correct accepted,-1 incorrect accepted,0 abstain; subtract actual READ fee",
+      "policy": "unknown_finite_set",
+      "uncertain_accepted_queries": 0,
+      "zero_probability_true_labels_in_valid_queries": 0
+    },
+    {
+      "actual_selective_payoff_mean": 0.5962500000000001,
+      "attempts": 144,
+      "generator": "with_replacement",
+      "invalid": 0,
+      "invalid_at_actual_READ": 0,
+      "payoff_definition": "Mean over four queries of +1 correct accepted,-1 incorrect accepted,0 abstain; subtract actual READ fee",
+      "policy": "known_exact",
+      "uncertain_accepted_queries": 129,
+      "zero_probability_true_labels_in_valid_queries": 0
+    },
+    {
+      "actual_selective_payoff_mean": null,
+      "attempts": 144,
+      "generator": "with_replacement",
+      "invalid": 71,
+      "invalid_at_actual_READ": 15,
+      "payoff_definition": "Mean over four queries of +1 correct accepted,-1 incorrect accepted,0 abstain; subtract actual READ fee",
+      "policy": "fixed_without_replacement",
+      "uncertain_accepted_queries": 78,
+      "zero_probability_true_labels_in_valid_queries": 16
+    },
+    {
+      "actual_selective_payoff_mean": 0.750763888888889,
+      "attempts": 144,
+      "generator": "with_replacement",
+      "invalid": 0,
+      "invalid_at_actual_READ": 15,
+      "payoff_definition": "Mean over four queries of +1 correct accepted,-1 incorrect accepted,0 abstain; subtract actual READ fee",
+      "policy": "unknown_finite_set",
+      "uncertain_accepted_queries": 0,
+      "zero_probability_true_labels_in_valid_queries": 0
+    }
+  ]
+}
