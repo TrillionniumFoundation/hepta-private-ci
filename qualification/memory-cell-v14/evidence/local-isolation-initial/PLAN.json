@@ -1,0 +1,166 @@
+{
+  "batch_size": 20,
+  "correction_resource_limited_candidate": {
+    "lr": 1e-06,
+    "steps": 1
+  },
+  "fresh_parameters_for_each_source": true,
+  "input_sha256": {
+    "FREEZE.json": "a49c625073887fc000373c156933360ff3f8f6bf438354220c022377aecb7c61",
+    "INVENTORY.json": "a7d198452e582629e59a3d9b7ee89da00924f960795e6b294353acf028c68996",
+    "calibration_features.npz": "9f040d87938bff80b4f3eb0daa94405c5886ef527fca70db275beb968d1015e6",
+    "calibration_rows.json": "09f2b715d0cf405e79b73b6161037285446a79533a2e40bb0a1f9615c7a6c0e7",
+    "composition_features.npz": "a3479b703208638aa5010551b0859c7265e0537d17a4ac3545e1a90e4c25d1cd",
+    "composition_rows.json": "f6afe41eb56e33df239836840fb1d50b50c39183ff7319a13ca02d089bbe2617",
+    "encoder_manifest.json": "504c25fe0ff8202a1409a885ce46f7e3df6082141081c348963084f8aefdf978",
+    "hybrid_features.npz": "e16fa3cea00047fc905b22a3c55b5727029181a7da4f37e800026f58d6c58c30",
+    "hybrid_rows.json": "08669345cfb46765b429e25ca002f5fed7da92b11413ca47fcee065e5f129411",
+    "profile-3-calibration_features.npz": "c43c0ff54f2e86edb324d4ae4392d653201650040a7ce4bf937d26941b387003",
+    "profile-3-calibration_rows.json": "34406782be3aaa9e48aa9a6bba0d6a1df7c41476a6abc9c778eb7ba292b2af6f",
+    "profile-3-test_features.npz": "7567d51595567a057803406a9010b7e600066912edd8abe76503989ef1f9a841",
+    "profile-3-test_rows.json": "b9c17ed1d87fbd5a6273762c2573749d969d274399b0459318f066ca0e3d509d",
+    "profile-3-train_features.npz": "e181c60e5b05a0834eebe6b388ca3a6ed7b21d8600b524e1507ee72f6a8e9227",
+    "profile-3-train_rows.json": "3db43182f9e0ba6545d579a6bd36af7c3c5448a2272b4b567216c9671910d057",
+    "profile-4-calibration_features.npz": "f054589a4f13296f31cac2d24daeb9815aae653527aec6e6377d3ecfa1299047",
+    "profile-4-calibration_rows.json": "2d8b7231c1d23b814c91f14fb0bdb1dcafd016b5746cbd6df3dc837da952bba3",
+    "profile-4-test_features.npz": "adc52f694cfff97b21fae51748d77db0a8aad595fb5457d7ead7fbd4c4fce89b",
+    "profile-4-test_rows.json": "4c0e4ee04b64ebeb8e9d108d45db02f1068c3d9e5241294ad8c4944994b3f024",
+    "profile-4-train_features.npz": "7ef9b994340f8020e5913a8e89dbb056fccbb20dedbe1d013778e599cb788375",
+    "profile-4-train_rows.json": "238b64e4fcf07becb3ad7858b3c6807b97e48eb32054e6e97dba3ad676edcaf6",
+    "profile-5-calibration_features.npz": "7e671d3dc821df0fc7478d1d8641e80441de6e2fa459985b14c83b50450191ff",
+    "profile-5-calibration_rows.json": "35083e9bb4f346efd0466f96b6d8a5feb61fd0d8cb70954d0a1daf8f2786a58a",
+    "profile-5-test_features.npz": "75c16b2fbdc4cee46847ef2eeaec0ebf79e96241f73161ee4885b217ffa27d46",
+    "profile-5-test_rows.json": "171d1489ada6754ecabf605a9cc7ac418e508c3a65f759418e4b8eb13e395063",
+    "profile-5-train_features.npz": "3b45659c5ed54b0117566097fb3f8adc0ee0ff90198a7993fa174ef1f0d4df53",
+    "profile-5-train_rows.json": "97db9b742cd14c24355da91a244979d766b75d5b71f5ba72f5682f15132e4a36",
+    "profile-6-calibration_features.npz": "3e5382544109940a4e04141edc7fda16d71815a8aea834fe99efb82930d77f92",
+    "profile-6-calibration_rows.json": "239b7f50a2810958709eb083e6510d7137badea46ff10d2be315b07bf55a409f",
+    "profile-6-test_features.npz": "9bd29584c4b99b1b0dcfc97a7bbf0da5bce96d445f9e500b22d73bfe63ac2f76",
+    "profile-6-test_rows.json": "db7bf0951da23aa8600a83483d5023dd68bffe83749a13698f0855f29ce5720e",
+    "profile-6-train_features.npz": "ad7ba1ebf6c99221e71d6eccfdb3f82dc2eb1cb72117884b9e431ac1ea3c9230",
+    "profile-6-train_rows.json": "96e54cf1517cea2d31c044568bbe32eaca6aad8200505a81d6c737f44ebea27c",
+    "test_features.npz": "484da13377fd61a32f31317c58c479708f00ee6b273f497236b966d3da61a06f",
+    "test_rows.json": "3edff327885f4b56973dc03583e808780e8180f69705869ba980d271aedb283f",
+    "train_features.npz": "69ec1a8c3d7eda6f9602a3bfddfbcaa7f0cfe4cabe40c90d2ef524998afe02ab",
+    "train_rows.json": "28d9333c70f9da7cb6266b31a994840ec52c9100e426431becb53d9c79ce9858"
+  },
+  "no_new_encoder_inference": true,
+  "note": "V13 pretrained features reused; encoder preparation costs are inherited, not timed as zero.",
+  "original_backend": {
+    "cpu_seconds": 2.375312928,
+    "encoder": {
+      "backend": "onnxruntime-cpu",
+      "embedding_dimension": 384,
+      "files": {
+        "1_Pooling/config.json": {
+          "bytes": 190,
+          "sha256": "4be450dde3b0273bb9787637cfbd28fe04a7ba6ab9d36ac48e92b11e350ffc23",
+          "source_digest": "d1514c3162bbe87b343f565fadc62e6c06f04f03",
+          "source_digest_kind": "git"
+        },
+        "config.json": {
+          "bytes": 612,
+          "sha256": "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41",
+          "source_digest": "72b987fd805cfa2b58c4c8c952b274a11bfd5a00",
+          "source_digest_kind": "git"
+        },
+        "modules.json": {
+          "bytes": 349,
+          "sha256": "84e40c8e006c9b1d6c122e02cba9b02458120b5fb0c87b746c41e0207cf642cf",
+          "source_digest": "952a9b81c0bfd99800fabf352f69c7ccd46c5e43",
+          "source_digest_kind": "git"
+        },
+        "onnx/model.onnx": {
+          "bytes": 90405214,
+          "sha256": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452",
+          "source_digest": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452",
+          "source_digest_kind": "sha256"
+        },
+        "sentence_bert_config.json": {
+          "bytes": 53,
+          "sha256": "fc1993fde0a95c24ec6c022539d41cf6e2f7c9721e5415d6fb6897472a9cd4b7",
+          "source_digest": "59d594003bf59880a884c574bf88ef7555bb0202",
+          "source_digest_kind": "git"
+        },
+        "special_tokens_map.json": {
+          "bytes": 112,
+          "sha256": "303df45a03609e4ead04bc3dc1536d0ab19b5358db685b6f3da123d05ec200e3",
+          "source_digest": "e7b0375001f109a6b8873d756ad4f7bbb15fbaa5",
+          "source_digest_kind": "git"
+        },
+        "tokenizer.json": {
+          "bytes": 466247,
+          "sha256": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
+          "source_digest": "cb202bfe2e3c98645018a6d12f182a434c9d3e02",
+          "source_digest_kind": "git"
+        },
+        "tokenizer_config.json": {
+          "bytes": 350,
+          "sha256": "acb92769e8195aabd29b7b2137a9e6d6e25c476a4f15aa4355c233426c61576b",
+          "source_digest": "c79f2b6a0cea6f4b564fed1938984bace9d30ff0",
+          "source_digest_kind": "git"
+        }
+      },
+      "inter_op_threads": 1,
+      "intra_op_threads": 1,
+      "max_length": 256,
+      "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+      "packages": {
+        "numpy": "2.3.5",
+        "onnxruntime": "1.23.2",
+        "tokenizers": "0.21.4"
+      },
+      "pooling": "attention-masked-mean-then-l2",
+      "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+      "schema": "hepta-frozen-encoder-v1"
+    },
+    "encoder_hash": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+    "frozen_source_digest": "4d1f319613cc69e47dac51e92fc6970c0cba8a9743e4fb05f692261f52e1ce48",
+    "generative_language_model": false,
+    "production_traffic": false,
+    "source_kind": "authored executable standard-library fixtures",
+    "source_version": "19ebe0c1c2686688df7327baf7334165b18d5d95c8fac4f3ce013809a8ae328f",
+    "split_sizes": {
+      "calibration": 48,
+      "profile-3-calibration": 6,
+      "profile-3-test": 12,
+      "profile-3-train": 18,
+      "profile-4-calibration": 6,
+      "profile-4-test": 12,
+      "profile-4-train": 18,
+      "profile-5-calibration": 6,
+      "profile-5-test": 12,
+      "profile-5-train": 18,
+      "profile-6-calibration": 6,
+      "profile-6-test": 12,
+      "profile-6-train": 18,
+      "test": 72,
+      "train": 120
+    },
+    "stats": {
+      "calls": 17,
+      "encode_seconds": 1.9511335769784637,
+      "encoded_tokens": 6286,
+      "examples": 420,
+      "input_tokens": 6286,
+      "load_seconds": 0.29982085899973754,
+      "padded_tokens": 8088,
+      "truncated_examples": 0
+    },
+    "wall_seconds": 2.2946990359923802
+  },
+  "project_gate": "all current project calibration outputs",
+  "project_steps": 240,
+  "seeds": [
+    713,
+    971,
+    1237
+  ],
+  "shared_skill_weights_never_project_trained": true,
+  "skill_gate": "40/48 calibration",
+  "skill_steps": 240,
+  "source_sha256": {
+    "isolation.py": "ba0b7ad56ee3b89cf9b145c1e7d58573b09db236d7318b965598c3401e4c4a09",
+    "isolation_experiment.py": "31c0c2c6e26104840d2f6d52d3271b1e90a32cc4f5cd1211d45797a27568ac35"
+  }
+}
