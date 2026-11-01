@@ -1,0 +1,160 @@
+{
+  "analytic_new_fault_probability": 0.0838727456553458,
+  "checks": {
+    "clean_no_reset": true,
+    "full_reset_interval": true,
+    "high_fee_no_reset": true,
+    "independent_transition": true,
+    "mass": true,
+    "no_reset_decreases_value": true,
+    "repair_preserves_content": true,
+    "reset_strictly_useful": true,
+    "segmentation": true,
+    "unrepairable_no_reset": true
+  },
+  "factored_vs_independent_dense_expm_max_error": 4.440892098500626e-16,
+  "purpose": "development-only; not confirmation",
+  "repair_phase_bit_max_error": 0.0,
+  "repaired_then_evolved_fault_mass": 0.08387274565534589,
+  "schema": "hcsn-r14-task-validation-v1",
+  "split_transition_max_error": 6.661338147750939e-16,
+  "stochastic_mass_error": 1.3322676295501878e-15,
+  "witnesses": {
+    "clean": {
+      "action_values": {
+        "READ": 0.7440536222258998,
+        "RESET": 0.7104150330976587,
+        "STOP0": 0.5,
+        "STOP1": 0.5,
+        "WAIT": 0.7354150330976588
+      },
+      "available_vs_unavailable_value": 0.0,
+      "chosen_action": "READ",
+      "history": [
+        [
+          "READ",
+          0.15,
+          7
+        ]
+      ],
+      "history_probability": 0.010000000000000002,
+      "model_identity": "c771bf9015d5fca85337b4e1e84952938f06d2cf3e9f01f94773851783f9f7b1",
+      "no_reset_values": {
+        "READ": 0.7440536222258998,
+        "STOP0": 0.5,
+        "STOP1": 0.5,
+        "WAIT": 0.7354150330976588
+      },
+      "posterior_fault_probability": 0.0,
+      "remaining_read_budget": 2,
+      "remaining_schedule": [
+        0.25,
+        0.35,
+        0.45
+      ],
+      "reset_vs_best_other": -0.033638589128241025
+    },
+    "high_fee": {
+      "action_values": {
+        "READ": 0.47029880448485273,
+        "RESET": -0.2879838724527667,
+        "STOP0": 0.5,
+        "STOP1": 0.49999999999999994,
+        "WAIT": 0.4974999999999999
+      },
+      "available_vs_unavailable_value": 0.0,
+      "chosen_action": "STOP0",
+      "history": [
+        [
+          "READ",
+          0.15,
+          7
+        ]
+      ],
+      "history_probability": 0.39503899945274773,
+      "model_identity": "df1ed2466f1c208d72595c9efceda1abf74f6e3ea956710d7944e9506be5e331",
+      "no_reset_values": {
+        "READ": 0.47029880448485273,
+        "STOP0": 0.5,
+        "STOP1": 0.49999999999999994,
+        "WAIT": 0.4974999999999999
+      },
+      "posterior_fault_probability": 0.9888119283115464,
+      "remaining_read_budget": 2,
+      "remaining_schedule": [
+        0.25,
+        0.35,
+        0.45
+      ],
+      "reset_vs_best_other": -0.7879838724527667
+    },
+    "repairable": {
+      "action_values": {
+        "READ": 0.6324849866892244,
+        "RESET": 0.6870161275472333,
+        "STOP0": 0.5,
+        "STOP1": 0.49999999999999994,
+        "WAIT": 0.6620471585889376
+      },
+      "available_vs_unavailable_value": 0.1870161275472333,
+      "chosen_action": "RESET",
+      "history": [
+        [
+          "READ",
+          0.15,
+          7
+        ]
+      ],
+      "history_probability": 0.39503899945274773,
+      "model_identity": "45bc88c4c17f9cb0980a9ef23beb9c598c5207c76dc9914aa982074d062b2c62",
+      "no_reset_values": {
+        "READ": 0.47029880448485273,
+        "STOP0": 0.5,
+        "STOP1": 0.49999999999999994,
+        "WAIT": 0.4974999999999999
+      },
+      "posterior_fault_probability": 0.9888119283115464,
+      "remaining_read_budget": 2,
+      "remaining_schedule": [
+        0.25,
+        0.35,
+        0.45
+      ],
+      "reset_vs_best_other": 0.0249689689582957
+    },
+    "unrepairable": {
+      "action_values": {
+        "READ": 0.47029880448485273,
+        "RESET": 0.47249999999999986,
+        "STOP0": 0.5,
+        "STOP1": 0.49999999999999994,
+        "WAIT": 0.4974999999999999
+      },
+      "available_vs_unavailable_value": 0.0,
+      "chosen_action": "STOP0",
+      "history": [
+        [
+          "READ",
+          0.15,
+          7
+        ]
+      ],
+      "history_probability": 0.39503899945274773,
+      "model_identity": "f8017eb9ea6c9799f022c0f7626569cbe0c6d2277e448117a0ad1630d4bbb954",
+      "no_reset_values": {
+        "READ": 0.47029880448485273,
+        "STOP0": 0.5,
+        "STOP1": 0.49999999999999994,
+        "WAIT": 0.4974999999999999
+      },
+      "posterior_fault_probability": 0.9888119283115464,
+      "remaining_read_budget": 2,
+      "remaining_schedule": [
+        0.25,
+        0.35,
+        0.45
+      ],
+      "reset_vs_best_other": -0.027500000000000135
+    }
+  }
+}

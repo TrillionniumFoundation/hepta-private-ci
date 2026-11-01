@@ -1,0 +1,128 @@
+R14 independent source, identity, and scope review
+Reviewer role: identifiability/model-gradient agent. This note is outside the frozen source tree.
+
+1. Frozen source and inherited baseline
+
+Published source commit: 1ce8b88f483d9fed5d96145300b1a81cc7f98ffa
+Published tree: a53608a1a0545a578e39a009eb32cdbd630e6bb3
+Remote commit parent: 40a44bf9dd7f2f53cfbf146594c5085525dd1f43
+Remote commit timestamp: 2026-11-01T07:05:56Z
+Inherited scientific baseline: b0802dc314251f5332bd026cb2984a0b5c75f768 (PR #4542)
+SOURCE_MANIFEST.json creation: 2026-11-01T07:05:45Z
+First four formal TRAINING_START timestamps: 2026-11-01T07:06:25Z
+SOURCE_MANIFEST.json SHA-256: 0949896e7b66f9dccbf9461d6074d313d762f19ce08215ceca9f4fa0de2c483d
+Remote manifest Git blob: 73ff4629bf127c7edfc7f151024a5a1d7a42996f
+
+Read-only verification findings:
+- All 45 source-manifest entries exactly match current local SHA-256 values.
+- All 45 source entries plus the manifest (46 Git blobs) match the remote frozen source or explicitly inherited baseline records; no missing or mismatched blob.
+- The 26 inherited R13 Python/protocol entries and R11 kernel were separately checked at both b0802dc3 and 1ce8b88f; unchanged at both commits.
+- Importing the frozen campaign with Python -B loads 15 local repository Python modules, all represented in the source manifest. The ephemeral checking <stdin> module is not a repository source and is excluded.
+- Remote tools/, tools/hcsn/, calibrated_operator_r11_20261031/, and its numerics/ directory have no untracked-by-the-manifest package __init__.py file that would alter the local namespace-package imports.
+- The published source commit predates all inspected formal training launch records.
+- This is a repository-source closure and version identity check. It does not assert bit-identical execution on another numerical runtime or deployment platform.
+
+2. Existing audit evidence remains tied to the frozen source
+
+identifiability.json source hashes all match the current frozen files.
+Its SHA-256 remains 2a3433806ca44834c4b97f091c435b57fe68d07758a6d8b97fa69b29ffed762c.
+model_gradient_audit.json records 23 passed tests with zero errors/failures; its four recorded source hashes all match current frozen files.
+The current refreshed gradient-evidence SHA-256 is b33ebb6257c8eec53aa916bdb1321a941aef50fffe6f26278665dc703dd64bc7.
+
+3. Completed training identity check (first batch only at this observation)
+
+The four completed fits 141101, 141103, 141107, 141109 were independently reconstructed from common_model.json. For every fit:
+- reconstructed TaskModel identity equals common_model.json and TRAINING.json;
+- reconstructed common planner identity equals common_model.json and TRAINING.json;
+- all five trainable candidates use that same planner identity;
+- validation, matched-CPU CE validation, warm validation and ordinary HMM reference use the same actual world identity, common planner, and selection random-tape identity;
+- training, validation, Q-subset, and selection-tape array hashes recompute exactly;
+- each candidate's stored alpha/legal/weights target hash recomputes exactly;
+- weights are zero for illegal actions, positive for legal actions, and sum to legal_count per prefix;
+- each candidate completed at least one Q-pi update;
+- ordinary selection reproduces the preregistered score and tie order;
+- training launch source identity equals the published 1ce8b88f source.
+There were no failed identity comparisons. This is an evidence reconciliation, not a new efficacy experiment or a count of additional scientific tests.
+
+Actual task-world identity shared across these fits:
+45bc88c4c17f9cb0980a9ef23beb9c598c5207c76dc9914aa982074d062b2c62
+
+Seed 141101; selected generic_hmm
+common TaskModel 1ad79efc214176f07103d10e35892d0f2d9456d225f97a071c600d7876a186d1
+common planner 523fd90fd8118eb776d6a0a0f4bdc27bb5904bf0fd3cd45e051298e6e2c63880
+Seed 141103; selected dual_head
+common TaskModel 127dbfab550eec4377dd35cb87debd4a58931b81706280b46e5fe1ec397d2413
+common planner b894c06cc231c0738fadc50da08c216aba91d3d7c2d75ef1b4b78e1d9ba60621
+Seed 141107; selected matched_slope
+common TaskModel 4ad231b422b249dc518d18048007672be10b174fc3abf4aa1f5d99b33991e5f5
+common planner 96544250dc8f9f65e368815843ff2f2fe9a6bba33299eddbd5281456e26b8972
+Seed 141109; selected generic_hmm
+common TaskModel 5493752f54cc38c11949bba7ee13551ead0d12c3a462f3601ccc848728ab9d16
+common planner 62454fb658f6e64f786a3d71c6d87da10afc65fe07370a9c5a22d4882325ca62
+
+Subsequent checkpoint: all eight training fits are now complete and were independently reconciled by the same procedure, with no failed comparison. Frozen selection also matches every TRAINING.json. Candidate FREEZE.json contains 122 immutable artifacts and 45 source entries; verify_freeze recomputes all hashes successfully.
+Candidate freeze created: 2026-11-01T07:11:01Z
+Candidate freeze SHA-256: 0af6d81c45e485efac0bb27b8bdbc907947996b4b36f4db2b90d0b273dfe229a
+The source commit recorded by the freeze is exactly 1ce8b88f483d9fed5d96145300b1a81cc7f98ffa.
+
+Seed 141113; selected generic_hmm
+common TaskModel 791a5d21d6c4a3c8a0c33a664676692927275ef1b84ba7f74b955631f3d2a5bc
+common planner 3adcf62feff0f0f324315b2dad95b55273ec287e2f4bcc7ec97cf0d3b7ed14ec
+Seed 141117; selected gru
+common TaskModel ef42217ac3f95d7a74f3a6249dc717355efd19509d2156c908bd941d4aa0682b
+common planner bebaf45675a92a05a71e35e48bf2dd63d57c54d57106bbd33a1cd5a523231316
+Seed 141119; selected gru
+common TaskModel b4f42762210104e5a3035c91360e986c55d06c98c85b0f0266a2e5f0c98d3792
+common planner 926ed4671b631dfafa24994b10271b5f23a365da40002a748e20cef27d2a6049
+Seed 141123; selected gru
+common TaskModel 40c3043e15f8737c97e41d7e04c24ac471f22528f29939df2dc87fd529e551f5
+common planner 0181ae1a0990e011c133e322c45fc7d3dd8e17334ae2fd29a3301ee604630e1a
+
+The subsequent complete confirmation review is recorded in section 5 below; the earlier pending state is superseded.
+
+4. Required boundaries for the final report
+
+A. Fixed maturity is a model convention, not recovery of maturity from data. Conditional on fixed emissions, R13 flow's three physical coordinates have rank two; after fixing maturity and removing two emission row-shift gauges, the twelve-dimensional joint local raw-law derivative has full rank at the declared point/design. Discrete bit-label permutation remains and requires labeled training outcomes. None of this is global identification, finite-sample recovery, or continuum identification.
+
+B. The equal-flow/different-fee witness is a statement about R13's financial payoff/read-cost mapping. R14 deliberately supplies public synthetic task prices (READ .03, RESET .025, elapsed-time .01) and terminal current-bit correctness. It does not learn or identify the original financial fees. Equal flow alone does not justify an inferred task-cost model.
+
+C. R14 RESET repairs an external sensor while preserving the physical/content state and consuming a full interval. It is separate from natural first-passage absorption/recovery and from resetting internal memory. Every baseline has the same maintenance permission. A useful maintenance witness is not proof that intrinsic neuron reset is necessary for semantics.
+
+D. The learning objective is frozen actual-policy evaluation supervision: 0.1 posterior CE plus 20 weighted Q-pi projection error. A true-net-Qpi softmax with temperature .1 determines fixed action weights. Per-action state-independent fees cancel from an unweighted normalized-belief Q-error; these fixed net-value weights retain fee effects in the priority. This is not a policy gradient, exact policy optimization, or a guaranteed improvement in realized task utility.
+
+E. The common planner identity must match across A/B/C/D within a fit. The final HX core's fitted dynamics can differ from the common planner, intentionally. A final-matrix generic HMM must still reproduce D's filtering/actions with the same planner; equality blocks any HX-exclusive filtering interpretation. Any positive D-B would remain conditional on the chosen ordinary candidate and this finite synthetic family.
+
+F. The OOD split changes time intervals only. It is not a new physical family, new semantic contents, a multilayer language model, or long-term memory evidence. Financial pure FP32, native Rust ownership and deployment economy stay outside admission.
+
+No frozen Python source, protocol, training data, model, or confirmation seed was modified by this review.
+
+5. Final published-freeze and complete confirmation identity reconciliation
+
+Published candidate-freeze commit: b94a6a7ee7730fa0930f69658ef0ea2444a1878f
+Published candidate-freeze tree: 92ac22bc7309ce24e9b899faf7ce63d2ab30fb78
+Remote published-freeze timestamp: 2026-11-01T07:12:25Z
+Remote FREEZE.json Git blob: 19ede336c140b3cd9addb3104f5e0213d9f16573
+That blob matches the exact local FREEZE.json bytes and the previously recorded SHA-256 0af6d81c45e485efac0bb27b8bdbc907947996b4b36f4db2b90d0b273dfe229a.
+
+The remote Git comparison 1ce8b88f...b94a6a7e reports source commit 1ce8b88f as the merge base, two later commits, and 32 changed evidence files. None of the 45 frozen source/protocol paths changed. Thus the published source is an ancestor of the published candidate freeze and its executed source closure remains intact.
+
+Exactly the preregistered 8 seeds x 2 domains = 16 confirmation files and corresponding .opened records exist, with no missing or extra pair.
+Earliest .opened: 2026-11-01T07:12:47Z (22 seconds after remote freeze publication)
+Latest .opened: 2026-11-01T07:13:00Z
+Every .opened references b94a6a7ee7730fa0930f69658ef0ea2444a1878f and the correct seed/domain.
+
+For all 16 confirmation runs:
+- source_commit is 1ce8b88f483d9fed5d96145300b1a81cc7f98ffa;
+- freeze_commit is the published b94a6a7ee7730fa0930f69658ef0ea2444a1878f;
+- freeze_sha256 is the exact frozen 0af6d81c... digest;
+- the embedded training record equals its immutable TRAINING.json;
+- selected ordinary core equals both TRAINING.json and FREEZE.json;
+- primary A/C are fixed_read and B/D are value-controlled, A/B use the same ordinary kind, and C/D use hx_distribution;
+- the final-HX-matrix HMM identity independently reconstructs from the frozen HX final model;
+- that HMM's recorded actions and utilities equal D exactly.
+
+All 208 serialized result blocks across arms, references, objective controls and no-reset ablation have the correct shared world identity, per-fit common planning-model identity, and independently regenerated preregistered random-tape hash. Each block contains 512 episodes. Some reference/control blocks alias the same execution; 208 is an integrity-record count, not a count of independent experiments.
+
+All 45 source hashes and 122 frozen-artifact hashes were rechecked before and after this reconciliation. No mismatch or mutation was observed. No new efficacy run, new formal seed, source edit, or raw-result edit was performed.
+
+Scope of this conclusion: the source -> training -> published candidate freeze -> confirmation execution identity chain is consistent. It does not itself establish a positive D-B effect or close the scientific/production exclusions listed in section 4.

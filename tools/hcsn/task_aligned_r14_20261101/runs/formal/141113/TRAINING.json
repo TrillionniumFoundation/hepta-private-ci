@@ -1,0 +1,49 @@
+{
+  "ce_counterfactual_additional_actual_cpu_seconds": 45.001780933000006,
+  "common_calibration_cpu_seconds": 4.01415393,
+  "common_planner_identity": "3adcf62feff0f0f324315b2dad95b55273ec287e2f4bcc7ec97cf0d3b7ed14ec",
+  "common_task_identity": "791a5d21d6c4a3c8a0c33a664676692927275ef1b84ba7f74b955631f3d2a5bc",
+  "hx_candidate_and_validation_cpu_seconds": 12.608549987,
+  "ordinary_candidate_and_selection_cpu_seconds": 50.79701954100001,
+  "preparation_cpu_seconds": 0.040203881,
+  "q_data_hash": "ae07052d010676d90c3309ee02d28526bad5465296e98eb02478ab2ed051dfd3",
+  "q_mse": {
+    "continuous_ssm": {
+      "after": 1.961081154672134e-06,
+      "before": 3.080343636535449e-05
+    },
+    "dual_head": {
+      "after": 6.723980067212204e-06,
+      "before": 9.932158617501512e-05
+    },
+    "gru": {
+      "after": 1.0792029270950206e-07,
+      "before": 1.4670381033636985e-05
+    },
+    "hx_distribution": {
+      "after": 1.6678962429284117e-09,
+      "before": 4.926757727021458e-08
+    },
+    "matched_slope": {
+      "after": 7.72271942265914e-06,
+      "before": 4.041780459294377e-05
+    }
+  },
+  "schema": "hcsn-r14-training-v1",
+  "seed": 141113,
+  "selected_ordinary": "generic_hmm",
+  "selection_scores": {
+    "continuous_ssm": 0.6530371093749999,
+    "dual_head": 0.6222792968749999,
+    "generic_hmm": 0.6665644531249999,
+    "gru": 0.6187988281249999,
+    "matched_slope": 0.6650253906249999
+  },
+  "selection_tape_hash": "2f085e563f0176623f5481664d9fdb1ddbe2743131c432d04437a432977a0e0d",
+  "status": "completed",
+  "total_process_cpu_seconds": 112.55386688099999,
+  "train_hash": "acd73f15de87d0144726a82a1d2d96a2b53bbcd4de64737d8af13248b6424d1f",
+  "validation_hash": "bd3f92f13895e2c069165469241be953c59d9042b40943e27f40a42053a81692",
+  "wall_seconds": 112.69899977900059,
+  "world_identity": "45bc88c4c17f9cb0980a9ef23beb9c598c5207c76dc9914aa982074d062b2c62"
+}
