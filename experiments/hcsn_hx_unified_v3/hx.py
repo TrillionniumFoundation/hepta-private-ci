@@ -75,8 +75,8 @@ class HX:
 def _exp_cdf(exponent: float, argument: float) -> float:
     """Evaluate exp(exponent) Phi(argument) without avoidable overflow."""
     log_value = exponent + float(log_ndtr(argument))
-    if log_value < -745:
-        return 0.0
+    # Delegate negative-side underflow to exp: values below -745 can
+    # still round to the smallest positive f64 subnormal.
     if log_value > 709:
         raise OverflowError('HX normal-tail combination outside finite f64 domain')
     return math.exp(log_value)
