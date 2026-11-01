@@ -8,6 +8,7 @@ name: HCSN financial BP and recurrent BPTT R16
       - .github/workflows/hcsn-financial-autograd-r16.yml
       - tools/hcsn/hx_autograd_r16_20261101/**
       - tools/hcsn/hx_recurrent_r16_20261101/**
+      - tools/hcsn/hx_asset_recurrent_r16_20261101/**
       - tools/hcsn/compiled_fp32_r16_20261101/recovery/**
 
 permissions:
@@ -28,9 +29,11 @@ jobs:
       PYTHONDONTWRITEBYTECODE: "1"
       ADAPTER_ROOT: tools/hcsn/hx_autograd_r16_20261101
       RECURRENT_ROOT: tools/hcsn/hx_recurrent_r16_20261101
+      ASSET_ROOT: tools/hcsn/hx_asset_recurrent_r16_20261101
       FINANCIAL_ROOT: tools/hcsn/compiled_fp32_r16_20261101/recovery
       ADAPTER_PROTOCOL_SHA256: 9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72
       RECURRENT_PROTOCOL_SHA256: 87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241
+      ASSET_PROTOCOL_SHA256: 7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa
     steps:
       - name: Check out exact source candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -40,6 +43,7 @@ jobs:
           sparse-checkout: |
             tools/hcsn/hx_autograd_r16_20261101
             tools/hcsn/hx_recurrent_r16_20261101
+            tools/hcsn/hx_asset_recurrent_r16_20261101
             tools/hcsn/compiled_fp32_r16_20261101/recovery
 
       - name: Initialize runner-local paths
@@ -66,12 +70,15 @@ jobs:
 
           adapter = Path(os.environ["ADAPTER_ROOT"])
           recurrent = Path(os.environ["RECURRENT_ROOT"])
+          asset = Path(os.environ["ASSET_ROOT"])
           financial = Path(os.environ["FINANCIAL_ROOT"])
           expected = {
               adapter / "ADAPTER_PROTOCOL.json": os.environ["ADAPTER_PROTOCOL_SHA256"],
               adapter / "requirements.txt": "c8038849aaa1710f940a6c70bfb9a6739c67c132abdc56c4d19d37c4126e945d",
               recurrent / "RECURRENT_PROTOCOL.json": os.environ["RECURRENT_PROTOCOL_SHA256"],
               recurrent / "check_recurrent_results.py": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+              asset / "ASSET_PROTOCOL.json": os.environ["ASSET_PROTOCOL_SHA256"],
+              asset / "check_asset_results.py": "6bfdadae171d833d32039d892fe26d9687aa9b888351c8a3f19111e68293c369",
               financial / "RECOVERY_PROTOCOL_V1.json": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
               financial / "recovered.so": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
           }
@@ -152,6 +159,43 @@ jobs:
             --audit "$HCSN_RESULTS/recurrent-audit.json.gz" \
             --training "$HCSN_RESULTS/recurrent-training.json.gz" \
             --output "$HCSN_RESULTS/recurrent-check.json"
+
+      - name: Audit gradients at fixed physical potential
+        id: asset_audit
+        if: always() && !cancelled() && steps.runtime.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HCSN_PYTHON" -B "$ASSET_ROOT/audit_asset.py" \
+            --adapter-root "$ADAPTER_ROOT" \
+            --financial-root "$FINANCIAL_ROOT" \
+            --protocol-sha256 "$ASSET_PROTOCOL_SHA256" \
+            --output "$HCSN_RESULTS/asset-audit.json.gz"
+
+      - name: Train with the fixed physical potential and moving boundary
+        id: asset_training
+        if: always() && !cancelled() && steps.runtime.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HCSN_PYTHON" -B "$ASSET_ROOT/train_asset.py" \
+            --adapter-root "$ADAPTER_ROOT" \
+            --financial-root "$FINANCIAL_ROOT" \
+            --protocol-sha256 "$ASSET_PROTOCOL_SHA256" \
+            --output "$HCSN_RESULTS/asset-training.json.gz"
+
+      - name: Check fixed-potential records and raw boundary branches
+        if: always() && !cancelled() && steps.asset_audit.outcome == 'success' && steps.asset_training.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HCSN_PYTHON" -B "$ASSET_ROOT/check_asset_results.py" \
+            --root "$ASSET_ROOT" \
+            --protocol-sha256 "$ASSET_PROTOCOL_SHA256" \
+            --audit "$HCSN_RESULTS/asset-audit.json.gz" \
+            --training "$HCSN_RESULTS/asset-training.json.gz" \
+            --financial-root "$FINANCIAL_ROOT" \
+            --output "$HCSN_RESULTS/asset-check.json"
 
       - name: Preserve complete BP and BPTT outputs
         if: always() && !cancelled()
