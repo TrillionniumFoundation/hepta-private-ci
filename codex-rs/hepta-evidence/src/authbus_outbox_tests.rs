@@ -622,3 +622,6 @@ async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
         Err(AuthBusOutboxError::Capacity)
     ));
 }
+
+#[path = "authbus_policy_contention_tests.rs"]
+mod policy_contention;
