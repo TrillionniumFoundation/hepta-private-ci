@@ -1,0 +1,51 @@
+{
+  "schema": "hcsn.r13.independent-cost-review.v1",
+  "reviewed_at_utc": "2026-11-01T01:15:42.849005+00:00",
+  "reviewer_role": "propagation_audit independent read-only review of cost_baselines outputs",
+  "disposition": "No unresolved blocker in the stated historical accounting scope",
+  "source_manifest": {
+    "path": "experiments/hcsn_validation_r13_20261031/cost/results/historical_002/SOURCE_MANIFEST.json",
+    "sha256": "d6ab2389344229a53ff14e4fdc0c986fce9a1ea6fcc870f7dcccc0be4d8cfc4c"
+  },
+  "input_manifest_sha256": "b41f2b7a3ad5fe0147444da543abf8cc730d4114b08d541da95b290734993a0b",
+  "summary_sha256": "095c048a08e0c7e217a3842e1eb4b748757bad7a3a76ee2f58044201d6852369",
+  "reviewed_implementation": [
+    "cost/audit.py",
+    "cost/figures.py",
+    "cost/sensors.py",
+    "R12 content/study.py profile and fit timing scopes",
+    "R12 process_meter.py wait4 scope"
+  ],
+  "resolved_finding": {
+    "problem": "Receipts originally assumed every stage had --job; one standalone audit receipt caused the retained historical_001 failure.",
+    "resolution": "historical_002 records 294 model-phase receipts plus one historical audit receipt; 4.6045 CPU seconds are separately reported, excluded from candidate-training amortization."
+  },
+  "independent_checks": {
+    "current_cost_source_matches_frozen_manifest": true,
+    "model_candidates": 96,
+    "quality_domain_rows": 720,
+    "receipt_rows": 295,
+    "duplicate_exact_receipt_hashes": 0,
+    "donor_users_each": 16,
+    "donor_count": 6,
+    "median12_cpu_profile_recomputed_max_abs_error_seconds": 0.0,
+    "standalone_donor_plus_fit_max_abs_error_seconds": 8.881784197001252e-16,
+    "allocated_training_cpu_seconds": 361.400232,
+    "original_worker_ledger_cpu_seconds": 361.400232,
+    "stress_domain_cpu_fields_wrongly_populated": 0,
+    "pareto_batch1_batch32_recomputation_discrepancies": 0,
+    "plot_axis_cuts_recorded_iid_seed_accuracy": false,
+    "nested_training_cpu_not_added_to_full_process_cpu": true,
+    "historical_energy_not_imputed_from_current_sensor_probe": true
+  },
+  "interpretation": "Per-fit profiling medians are averaged across three fits. Batch32 is divided by 32 once. Standalone candidate cost includes its full shared-encoder donor; 1/16 donor allocation is only for the aggregate research ledger. Pareto is a descriptive frontier of means on IID shape; no confidence or accelerator claim.",
+  "not_checked": [
+    "No training or inference rerun",
+    "No checkpoint weight payload loading or hash recomputation",
+    "No independent recomputation of all 720 raw softmax score tables in this review",
+    "No remote publication audit",
+    "No physical energy measurement or production service cost extrapolation",
+    "No claim that every failed attempt outside supplied evidence was discovered"
+  ],
+  "mutation_scope": "Only this independent review JSON is new; no cost source, inputs, frozen manifests or results changed. This JSON is not part of the numerical scientific source freeze."
+}

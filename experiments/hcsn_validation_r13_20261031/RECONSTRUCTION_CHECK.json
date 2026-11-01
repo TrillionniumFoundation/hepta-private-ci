@@ -1,0 +1,497 @@
+{
+  "schema": "hcsn.r13.clean-reconstruction.v1",
+  "started_utc": "2026-11-01T01:25:03.385246+00:00",
+  "purpose": "Verify previously archived inputs plus explicitly enumerated published source can execute outside the original checkout; deterministic reproduction, not a new scientific sample.",
+  "source_commit": "04436032a808a5a1bbda10a66e487a32b8c654ff",
+  "input_root": "/workspace/scratch/8382c90a89f9/reconstructed-inputs",
+  "original_checkout": "/workspace/scratch/8382c90a89f9/hepta-validation",
+  "initial_restored_file_count": 1934,
+  "attempt": "attempt001",
+  "added_sources": [
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/__init__.py",
+      "sha256": "eaa05868a5b846e8180226cb5c914b4d96c4107e8b2eef044e85703ff5a5d0a5",
+      "bytes": 58,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/numerics/age_pde.py",
+      "sha256": "1655fe6f7b4d8434daae62b4f5ae77ec8a03c39a0291786b5770bdf5da23ce4f",
+      "bytes": 10464,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/numerics/age_reference.py",
+      "sha256": "f2f45760c6370867fd7644d24a4ace337ba7b657243dddffbe8943892b648255",
+      "bytes": 1962,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/numerics/PROTOCOL.json",
+      "sha256": "17175bde1cf415076f1dfe6521a1cf71c306bebc2ba12d4690b2b44cd9138c60",
+      "bytes": 3790,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/numerics/audit.py",
+      "sha256": "ffa9452ed1d5cc9d81a5dc047779a4bdb7bc52ed206caea13cb12b6ac57b0490",
+      "bytes": 14930,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/numerics/launch.py",
+      "sha256": "8dab9a4b25c96b49b6d0e300b5eb19688a32fde81cef7f5dd7488b7da509bb40",
+      "bytes": 3036,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/numerics/resume.py",
+      "sha256": "cd69222beee1aa972c5af5f384f81516195cdb8bdb59f344a022a0cf779d709e",
+      "bytes": 1085,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/numerics/README.md",
+      "sha256": "904225ba1aab014e6c31f810e9d421e8448a52ebc223c2fc50a47cb34fb72bbc",
+      "bytes": 4641,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/cost/__init__.py",
+      "sha256": "2b14d44a07129769a52091c43a2a49bf1aaa62f8120456c0a7bfd33c1b209a70",
+      "bytes": 74,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/cost/audit.py",
+      "sha256": "4fb19e85ac898de30af6c081f175d5e5f80cd0fb66bb566b9bd2410d1da9fa9e",
+      "bytes": 26884,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/cost/figures.py",
+      "sha256": "d6c89c8ee54010d3da8487844557f36f287a7d8b860cf59ed3edafcffe653e08",
+      "bytes": 4984,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/cost/sensors.py",
+      "sha256": "c8bed3bec17222c44d4c88d99d87d67ca010bc51a08215a2b06dc122daf1fc2b",
+      "bytes": 2650,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/cost/README.md",
+      "sha256": "c2795fa9811c01cf720b4f81688000b649d33a56c9c3cfb1afb2e5fa9fe0ca30",
+      "bytes": 4001,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/value/__init__.py",
+      "sha256": "e8554d84efca2b8be45349087d7cc861782f2f72007a4c56d63a5c8f637bb5ab",
+      "bytes": 84,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/value/guard.py",
+      "sha256": "d534bd89aef0069f413029903718f78471c8f90562ee5a511e7291573a766a67",
+      "bytes": 3339,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/value/dominance.py",
+      "sha256": "494c06f7c774948e1ae27adece634d981b6f4ee177cf6dfe6792ec859b814471",
+      "bytes": 2286,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/value/tests.py",
+      "sha256": "997783169194d6c948f8a4cc2d6cebde9bb0baa3dd5197c12e09ffd98c6ccc52",
+      "bytes": 6356,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/value/run.py",
+      "sha256": "323cbec70ee80fe689f5328f791cd38b4d5df3ce481cadca5ef7c27b7769a755",
+      "bytes": 13791,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/value/analysis.py",
+      "sha256": "735637df7c5f68b597deb0f2894dfa2034a3836db7199c27878245cdc2e55058",
+      "bytes": 6155,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/value/retrospective.py",
+      "sha256": "4af84bebeef86349b0ddda52a0026e2c4fbb4226b9ee5b8ae69b18b71fb72bda",
+      "bytes": 3046,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/value/PROTOCOL.json",
+      "sha256": "bd2d122d6e7cae2dd294ee1a77a82ea0d0b74cefd90a76775b8072fb8b9ffff0",
+      "bytes": 4660,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/value/README.md",
+      "sha256": "c50d086f201b6898e2b0398ccffc6f75d9ae8b17b72af8b38d065aa7264b0784",
+      "bytes": 4127,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/value/SOURCE_FREEZE.json",
+      "sha256": "ff2fc7489b3d114d0641627ed87e63a8fa0254fc996e5fb5f2d1cdf302e18012",
+      "bytes": 19073,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/README.md",
+      "sha256": "0db27f0983ec0e3d1b58ad09c666fe7849a82ac2e11a5008da75cb519a3fe240",
+      "bytes": 4833,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/SOURCE_BASELINE.json",
+      "sha256": "71a316fbe52cb703dd197b3a60395fc406073ec20a34b9e4cd06a9dd1cf4d926",
+      "bytes": 1663,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/REMOTE_BASELINE_TREE.json",
+      "sha256": "43bad2e72a10e549a4bd473e1041d527fede40236e218f8fb2861fbe807ef22c",
+      "bytes": 13400,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/BASELINE_READBACK.json",
+      "sha256": "4e3d6c931bdb8e34b672bc17e34e87caefff2f21fc34da2ce6ed4326b90dd8af",
+      "bytes": 24598,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/RUNTIME.json",
+      "sha256": "ff066676e7a57e581feb3abc51fbc44a465de5f69f21104d081e400e50f7eb86",
+      "bytes": 498,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/evidence.py",
+      "sha256": "a8a971b8d77f025422418491f1f14a1b2be5f384a600eca999c5d7c767c67cb9",
+      "bytes": 6399,
+      "status": "added",
+      "provenance": "R13 fixed-commit actual UTF-8 bytes/Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r12_20261031/numerics/dynamics.py",
+      "sha256": "03310843be21f9d6499694fbe262e26446656bde8b5410c53f4874a3d219579a",
+      "bytes": 5805,
+      "status": "added",
+      "provenance": "R12 fixed-commit baseline Git blob readback"
+    },
+    {
+      "path": "experiments/hcsn_validation_r12_20261031/__init__.py",
+      "sha256": "b2cb1e3c585cd0cae992786cd8559392c3977b588b34cfa6a57499dac46d2af6",
+      "bytes": 71,
+      "status": "added",
+      "provenance": "Independently fetched at 1eb979ff62499abf82118b6a4196c44324c11242; Git blob 0986af37125753509e07a9c76d87d939ad43a230"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/SOURCE_PUBLICATION_READBACK.json",
+      "sha256": "10828789445b2b07249fc55b244d5b052cdcd28cdc51d548167fc49e911f6a8a",
+      "bytes": 10521,
+      "status": "added",
+      "provenance": "Already verified publication receipt required for loader identity checks"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/value/SOURCE_PUBLICATION_READBACK.json",
+      "sha256": "66fe99e0971bd64ac0b5ca5d5adf93c882134379fbdd28fdf593cbd640b5e1e1",
+      "bytes": 1671,
+      "status": "added",
+      "provenance": "Already verified publication receipt required for loader identity checks"
+    }
+  ],
+  "commands": [
+    {
+      "name": "value_tests",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-c",
+        "\nimport unittest\nsuite=unittest.defaultTestLoader.loadTestsFromName('experiments.hcsn_validation_r13_20261031.value.tests')\nresult=unittest.TextTestRunner(verbosity=2).run(suite)\nif not result.wasSuccessful():raise RuntimeError('Reconstructed value tests failed')\nprint('RECONSTRUCTION_VALUE_TESTS_PASSED',result.testsRun)\n\nfrom pathlib import Path\nimport json,sys\nroot=Path.cwd().resolve()\nproject_files={name:str(Path(mod.__file__).resolve()) for name,mod in sys.modules.items() if name.startswith('experiments') and getattr(mod,'__file__',None)}\nexternal_project=[(name,path) for name,path in project_files.items() if not Path(path).is_relative_to(root)]\nif external_project:raise RuntimeError('Project module escaped reconstructed root: '+str(external_project))\nif any('hepta-validation' in str(p) for p in sys.path):raise RuntimeError('Original checkout is in import path')\nprint(json.dumps({'project_module_files':project_files,'sys_path':sys.path,'project_imports_all_inside_reconstructed_root':True},sort_keys=True))\n"
+      ],
+      "cwd": "/workspace/scratch/8382c90a89f9/reconstructed-inputs",
+      "returncode": 0,
+      "wall_seconds": 0.5095858180002324,
+      "cpu_seconds": 0.504756,
+      "peak_rss_bytes": 49868800,
+      "stdout": {
+        "path": "experiments/hcsn_validation_r13_20261031/reconstruction_checks/attempt001/value_tests.stdout.log",
+        "sha256": "5ba32cfc974923b0f27a5760471df830f30c7e1aae669ec82272cf4f25e92b8f",
+        "bytes": 3745
+      },
+      "stderr": {
+        "path": "experiments/hcsn_validation_r13_20261031/reconstruction_checks/attempt001/value_tests.stderr.log",
+        "sha256": "515454df9d095b502e1ee188639114081b1b7d39dd69d31fbdaf2d0fbba46d18",
+        "bytes": 1389
+      }
+    },
+    {
+      "name": "value_publication_verify",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-c",
+        "\nfrom experiments.hcsn_validation_r13_20261031.value.run import verify\nfreeze=verify(publication=True)\nprint('RECONSTRUCTION_VALUE_PUBLICATION_VERIFY_PASSED',len(freeze['source_sha256']),len(freeze['inherited_input_sha256']))\n\nfrom pathlib import Path\nimport json,sys\nroot=Path.cwd().resolve()\nproject_files={name:str(Path(mod.__file__).resolve()) for name,mod in sys.modules.items() if name.startswith('experiments') and getattr(mod,'__file__',None)}\nexternal_project=[(name,path) for name,path in project_files.items() if not Path(path).is_relative_to(root)]\nif external_project:raise RuntimeError('Project module escaped reconstructed root: '+str(external_project))\nif any('hepta-validation' in str(p) for p in sys.path):raise RuntimeError('Original checkout is in import path')\nprint(json.dumps({'project_module_files':project_files,'sys_path':sys.path,'project_imports_all_inside_reconstructed_root':True},sort_keys=True))\n"
+      ],
+      "cwd": "/workspace/scratch/8382c90a89f9/reconstructed-inputs",
+      "returncode": 0,
+      "wall_seconds": 0.36470138399999996,
+      "cpu_seconds": 0.35459899999999994,
+      "peak_rss_bytes": 48615424,
+      "stdout": {
+        "path": "experiments/hcsn_validation_r13_20261031/reconstruction_checks/attempt001/value_publication_verify.stdout.log",
+        "sha256": "3a4f3097f2749350746204181301800e5f238ebca4da598e652a9f7fe4b64fc7",
+        "bytes": 3427
+      },
+      "stderr": {
+        "path": "experiments/hcsn_validation_r13_20261031/reconstruction_checks/attempt001/value_publication_verify.stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    },
+    {
+      "name": "numerics_clean_reconstruction",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "experiments/hcsn_validation_r13_20261031/numerics/launch.py",
+        "--out",
+        "experiments/hcsn_validation_r13_20261031/numerics/results/clean_reconstruction_01",
+        "--stage",
+        "formal",
+        "--frozen-commit",
+        "04436032a808a5a1bbda10a66e487a32b8c654ff"
+      ],
+      "cwd": "/workspace/scratch/8382c90a89f9/reconstructed-inputs",
+      "returncode": 0,
+      "wall_seconds": 4.46602054899995,
+      "cpu_seconds": 3.53764,
+      "peak_rss_bytes": 84635648,
+      "stdout": {
+        "path": "experiments/hcsn_validation_r13_20261031/reconstruction_checks/attempt001/numerics_clean_reconstruction.stdout.log",
+        "sha256": "f4298d44d9d0f46e58f66c09f22d979322cff7229e1a962ebfb29fdb255fbc4b",
+        "bytes": 1652
+      },
+      "stderr": {
+        "path": "experiments/hcsn_validation_r13_20261031/reconstruction_checks/attempt001/numerics_clean_reconstruction.stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    }
+  ],
+  "success": true,
+  "input_archive": {
+    "index_sha256": "9253d818341e8962836413f0bfd60c75a66326dcc90dd4943e3de2edd865ac35",
+    "compressed_sha256": "2e18712d5b5af6ca8e3887401ed1a1f13619ace00ad89a34a99362bc1fe87104",
+    "compressed_bytes": 35939155,
+    "manifest_file_count": 1934,
+    "restoration_hash_verified_before_this_task": true
+  },
+  "new_source_count": 33,
+  "file_count_after_explicit_sources": 1967,
+  "environment": {
+    "PYTHONPATH": "/workspace/scratch/a46a5a0f4b65/hcsn_deps",
+    "PYTHONNOUSERSITE": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "cwd": "/workspace/scratch/8382c90a89f9/reconstructed-inputs",
+    "project_import_rule": "All loaded experiments.* module files must be within reconstructed-inputs; original checkout is not added to sys.path"
+  },
+  "numerical_reconstruction": {
+    "role": "Deterministic clean reconstruction of the existing registered protocol, not a fresh sample or a changed scientific candidate",
+    "summary": {
+      "schema": "hcsn.r13.age-checkpoint.summary.v1",
+      "stage": "formal",
+      "success": true,
+      "frozen_commit": "04436032a808a5a1bbda10a66e487a32b8c654ff",
+      "rows": 80,
+      "expected_rows": 80,
+      "groups": {
+        "independent_age_reference": {
+          "rows": 2,
+          "passed": 2
+        },
+        "complete_age_successor_pde": {
+          "rows": 6,
+          "passed": 6
+        },
+        "checkpoint_roundtrip": {
+          "rows": 24,
+          "passed": 24
+        },
+        "complete_state_partition": {
+          "rows": 6,
+          "passed": 6
+        },
+        "unaligned_time_refusal": {
+          "rows": 6,
+          "passed": 6
+        },
+        "damaged_recovery_negative": {
+          "rows": 12,
+          "passed": 0
+        },
+        "damaged_recovery_detected": {
+          "rows": 12,
+          "passed": 12
+        },
+        "checkpoint_refusal": {
+          "rows": 10,
+          "passed": 10
+        },
+        "fresh_process_recovery": {
+          "rows": 2,
+          "passed": 2
+        }
+      },
+      "unexpected_failed_rows": 0,
+      "retained_negative_control_failures": 12,
+      "self_cpu_seconds_excluding_imports": 2.206142894,
+      "waited_descendant_cpu_seconds": 0.46192999999999995,
+      "wall_seconds_excluding_imports": 3.593757030999768,
+      "process_metering": "See launcher wait4 receipt; self and waited-descendant counters must not be added again to that inclusive receipt",
+      "not_established": [
+        "uniform continuum error bound",
+        "arbitrary change of numerical grid at observation times",
+        "zero refractory or initial boundary atom",
+        "random, state-dependent or learned moving boundary",
+        "financial stopping-kernel equivalence to regeneration",
+        "training-path integration or neural quality gain",
+        "hardware energy or GPU performance"
+      ]
+    },
+    "receipt": {
+      "schema": "hcsn.r13.age-checkpoint.wait4.v1",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "/workspace/scratch/8382c90a89f9/reconstructed-inputs/experiments/hcsn_validation_r13_20261031/numerics/audit.py",
+        "--out",
+        "/workspace/scratch/8382c90a89f9/reconstructed-inputs/experiments/hcsn_validation_r13_20261031/numerics/results/clean_reconstruction_01",
+        "--stage",
+        "formal",
+        "--frozen-commit",
+        "04436032a808a5a1bbda10a66e487a32b8c654ff"
+      ],
+      "started_utc": "2026-11-01T01:25:04.339961+00:00",
+      "finished_utc": "2026-11-01T01:25:08.765654+00:00",
+      "returncode": 0,
+      "wall_seconds": 4.425707618999695,
+      "child_user_cpu_seconds": 3.366488,
+      "child_system_cpu_seconds": 0.130584,
+      "child_total_cpu_seconds": 3.4970719999999997,
+      "peak_rss_bytes": 84635648,
+      "limits": {
+        "threads": 1,
+        "address_space_bytes": 536870912,
+        "cpu_seconds": 120
+      },
+      "scope": "Linux wait4 accounting for the scientific child and its waited fresh-process recovery descendants; includes imports and evidence writes; excludes this launcher and unrelated concurrent work. Peak RSS is the maximum process RSS, not a sum or energy reading.",
+      "logs": [
+        {
+          "path": "/workspace/scratch/8382c90a89f9/reconstructed-inputs/experiments/hcsn_validation_r13_20261031/numerics/results/clean_reconstruction_01.stdout.log",
+          "sha256": "4642506ee66a5dab009a0448239271176e54f69661733195cf66c70ef87e7258",
+          "bytes": 1399
+        },
+        {
+          "path": "/workspace/scratch/8382c90a89f9/reconstructed-inputs/experiments/hcsn_validation_r13_20261031/numerics/results/clean_reconstruction_01.stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ]
+    },
+    "direct_state_matches_original_formal": [
+      {
+        "file": "case_0_grid_0/direct_final.json",
+        "clean_sha256": "50c26d514ad9673ca428b948d49f119b641890625682dc963b8e6862e21fafaa",
+        "original_formal_sha256": "50c26d514ad9673ca428b948d49f119b641890625682dc963b8e6862e21fafaa",
+        "equal": true
+      },
+      {
+        "file": "case_0_grid_1/direct_final.json",
+        "clean_sha256": "ba477bda642bb6fd7a1c5b4d15fb9a13fb14b1f01b0f6ca746f979ce281a85b2",
+        "original_formal_sha256": "ba477bda642bb6fd7a1c5b4d15fb9a13fb14b1f01b0f6ca746f979ce281a85b2",
+        "equal": true
+      },
+      {
+        "file": "case_0_grid_2/direct_final.json",
+        "clean_sha256": "345c5a2ae96cd34962afa9cec68b8df304f217777212c23b56ff6dab4ec06091",
+        "original_formal_sha256": "345c5a2ae96cd34962afa9cec68b8df304f217777212c23b56ff6dab4ec06091",
+        "equal": true
+      },
+      {
+        "file": "case_1_grid_0/direct_final.json",
+        "clean_sha256": "e17ec69d2759408ffd617da71b797659b2bbc95576352f88f16ae5a2e96babb6",
+        "original_formal_sha256": "e17ec69d2759408ffd617da71b797659b2bbc95576352f88f16ae5a2e96babb6",
+        "equal": true
+      },
+      {
+        "file": "case_1_grid_1/direct_final.json",
+        "clean_sha256": "86f104d5afd70ebf67d18083caff8640e03252138ae5ccd41f42e8a8027308f0",
+        "original_formal_sha256": "86f104d5afd70ebf67d18083caff8640e03252138ae5ccd41f42e8a8027308f0",
+        "equal": true
+      },
+      {
+        "file": "case_1_grid_2/direct_final.json",
+        "clean_sha256": "95c29bf476b2b9bbbf5bb113f7ab8bfb9e40b7ebb07b4a1a6d76ecb426f4a44f",
+        "original_formal_sha256": "95c29bf476b2b9bbbf5bb113f7ab8bfb9e40b7ebb07b4a1a6d76ecb426f4a44f",
+        "equal": true
+      }
+    ],
+    "retained_output_directory": "experiments/hcsn_validation_r13_20261031/reconstruction_checks/attempt001/numerical_outputs"
+  },
+  "source_files_unchanged_after_execution": true,
+  "numeric_executed_source_hashes_equal_original": true,
+  "tests_result": {
+    "passed": true,
+    "tests": 7,
+    "fresh_value_24_case_confirmation_rerun": false,
+    "publication_verify_passed": true
+  },
+  "interpretation": "Archived input bytes plus the 33 explicitly enumerated source/receipt additions and the declared numerical runtime dependencies reproduced loader checks, behavioral tests, and the numerical suite without project modules imported from the original checkout.",
+  "finished_utc": "2026-11-01T01:25:08.785938+00:00",
+  "scope": "This verifies dependency completeness for the executed verification/tests/numerical suite. It does not rerun 24 value cases, retrain content models, measure energy or constitute new scientific samples."
+}

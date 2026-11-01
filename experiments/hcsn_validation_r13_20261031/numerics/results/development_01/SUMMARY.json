@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn.r13.age-checkpoint.summary.v1",
+  "stage": "development",
+  "success": true,
+  "frozen_commit": null,
+  "rows": 80,
+  "expected_rows": 80,
+  "groups": {
+    "independent_age_reference": {
+      "rows": 2,
+      "passed": 2
+    },
+    "complete_age_successor_pde": {
+      "rows": 6,
+      "passed": 6
+    },
+    "checkpoint_roundtrip": {
+      "rows": 24,
+      "passed": 24
+    },
+    "complete_state_partition": {
+      "rows": 6,
+      "passed": 6
+    },
+    "unaligned_time_refusal": {
+      "rows": 6,
+      "passed": 6
+    },
+    "damaged_recovery_negative": {
+      "rows": 12,
+      "passed": 0
+    },
+    "damaged_recovery_detected": {
+      "rows": 12,
+      "passed": 12
+    },
+    "checkpoint_refusal": {
+      "rows": 10,
+      "passed": 10
+    },
+    "fresh_process_recovery": {
+      "rows": 2,
+      "passed": 2
+    }
+  },
+  "unexpected_failed_rows": 0,
+  "retained_negative_control_failures": 12,
+  "self_cpu_seconds_excluding_imports": 2.107184738,
+  "waited_descendant_cpu_seconds": 0.49893099999999996,
+  "wall_seconds_excluding_imports": 2.6900150810001833,
+  "process_metering": "See launcher wait4 receipt; self and waited-descendant counters must not be added again to that inclusive receipt",
+  "not_established": [
+    "uniform continuum error bound",
+    "arbitrary change of numerical grid at observation times",
+    "zero refractory or initial boundary atom",
+    "random, state-dependent or learned moving boundary",
+    "financial stopping-kernel equivalence to regeneration",
+    "training-path integration or neural quality gain",
+    "hardware energy or GPU performance"
+  ]
+}
