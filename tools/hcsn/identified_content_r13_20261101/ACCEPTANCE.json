@@ -1,0 +1,88 @@
+{
+  "schema": "hcsn-r13-acceptance-v1",
+  "protocol_commit": "168ed5ea20c98a9f313d2e1b5b41bd26d284c958",
+  "before_confirmation_commit": "37911e4eb7e5376e84d7f770656d47a4a364d40a",
+  "research_cpu_artifact_ready": true,
+  "production_default_eligible": false,
+  "all_requested_scientific_gates_pass": false,
+  "engineering": {
+    "unified_finite_generator_training_planning_execution": true,
+    "actual_text_on_causal_read": true,
+    "duplicate_disjoint_corpus_partitions": true,
+    "stable_near_tie_rule_integrated": true,
+    "native_hmm_all_confirmation_actions_equal": true,
+    "local_two_parameter_Q_rank": 2,
+    "long_chain_gradient_checks_pass": true,
+    "prepared_native_batches_and_bounded_cache": true,
+    "cross_process_event_and_posterior_resume": true,
+    "model_version_change_checkpoint_contract": true,
+    "complete_fit_process_cpu_accounting": true,
+    "confirmation_source_and_weights_freeze_verified": true,
+    "actual_frozen_fit_event_checkpoint_binding": true
+  },
+  "science": {
+    "quality_gain_pass_by_domain": {
+      "text_iid": false,
+      "text_ood_time": false
+    },
+    "noninferiority_pass_by_domain": {
+      "text_iid": true,
+      "text_ood_time": true
+    },
+    "preregistered_unique_deployment_cost_pass_by_domain": {
+      "text_iid": true,
+      "text_ood_time": true
+    },
+    "generic_same_model_HMM_advantage_demonstrated": false,
+    "single_word_fp32_qualified": false,
+    "two_word_fp32_finite_precision_qualified": true,
+    "two_word_fp32_storage_bits_per_real": 64,
+    "two_word_fp32_speed_advantage": false,
+    "continuous_first_hit_accuracy_improved": true,
+    "full_continuous_financial_Q_or_policy_certificate": false,
+    "natural_text_temporal_dynamics_validated": false,
+    "joint_end_to_end_text_encoder_gradient": false,
+    "GPU_executed": false,
+    "global_observational_parameter_identifiability_proved": false,
+    "heterogeneous_CPU_models_executed": [
+      1,
+      16,
+      64,
+      256
+    ],
+    "single_process_live_model_limit": 128,
+    "original_fp64_inputs_to_single32_DS_grid_total_pass": 440,
+    "actual_grid_points": 448,
+    "posthoc_split64_input_adapter_pass": 448,
+    "split64_is_pure_single32_input": false,
+    "split64_entire_SNN_training_verified": false
+  },
+  "decisions": [
+    {
+      "item": "New default core on quality superiority",
+      "status": "no_go_on_frozen_evidence",
+      "reason": "Both D-B quality gates fail, Holm p=1; generic HMM gives identical actions and utility."
+    },
+    {
+      "item": "Optional calibrated finite-state CPU module",
+      "status": "supported_with_scope",
+      "reason": "Conditional noninferiority and unique deployment cost pass; main savings is reuse of the calibration fit."
+    },
+    {
+      "item": "Continuous-model optimal action guarantee",
+      "status": "blocked",
+      "reason": "No complete continuous financial Q error bound; an actual default-grid counterexample changes the optimal action. Certification API refuses missing evidence."
+    },
+    {
+      "item": "Single-word FP32 backend",
+      "status": "not_admitted",
+      "reason": "New test failures remain; double-single has different storage and measured CPU cost."
+    },
+    {
+      "item": "GPU and natural temporal text production claims",
+      "status": "blocked",
+      "reason": "No executed GPU workload or independent natural temporal content benchmark in this environment."
+    }
+  ],
+  "statistical_scope": "Eight paired fit seeds conditional on one fixed corpus. Sign-flip exactness assumes sign exchangeability/symmetry under its null; Student intervals use the registered small-sample model. Noninferiority is utility margin .01, not exact equality."
+}
