@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn.hx-autograd-protocol.v2",
+  "frozen_utc": "2026-11-01T17:10:30.503521+00:00",
+  "financial_protocol_sha256": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+  "financial_binary_sha256": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+  "source_sha256": {
+    "hx_autograd.py": "51eebb33a39340d680afbb7a560f17fb2dbe9f17ec74e16dcf9dab6d7a7eefdf",
+    "adapter_common.py": "6921dfae93b6ecd7bf28724b10b4d2823c4b21bd7c237b022c075aa9f76fab5a",
+    "audit_gradients.py": "02b731f2508d614bb5da0366eb1734685933db57628585c378b75165016f5757",
+    "training_smoke.py": "f91ea1ac624681aedd90ce72644a9c7fac8ac123a5e720cf28ae28fb24569c03",
+    "freeze_adapter.py": "8f6566cbb402716be92d88339a0c7eecc799a54044166c31ee8b0d07465d75f5",
+    "revise_protocol.py": "fc6b507d7ea0c4ce22aa3a1b5630fe6286c0743bca5a0ed4bdf9db5fde4568a1"
+  },
+  "fixture_sha256": "c94ccdbc02f783c99c5de47032ebc883d7de0b6ff9efc02857ac846547c43bee",
+  "input_contract": "Only CPU torch.float32, packed[...,10]=nine financial parameters plus state. No float64 input downcast. Positive V for asset; independent x>=0 for log_distance.",
+  "output_contract": "Five original financial outputs float64; features append new R=1-(1-F)^2 and information-preserving x. Financial evaluation always uses frozen FP64 mode.",
+  "gradient_contract": "First-order VJP of continuous real formulas evaluated at represented FP32 inputs; float64 contraction, float32 leaf gradient. Not derivative of the rounding map. No double backward/JVP/torch.compile/GPU support claimed.",
+  "boundary_contract": "Asset V<=b uses original default-branch derivatives; positive V remains visible in x. Original F/G are not globally C1. Log x=0 uses a continuation-side right derivative; R is an additional C1 observable, not a C2 force.",
+  "finite_difference_steps": [
+    0.001,
+    0.0005
+  ],
+  "finite_difference_rule": "Scale each direction coordinate by max(.01,abs(input)); quantize both endpoints to FP32, use actual effective central direction and record midpoint offset. Boundary state basis uses nonuniform-node three-point right derivative; all asset endpoints must remain on base branch. No financial MP80 oracle imported.",
+  "gates": {
+    "feature_value_scaled": 1e-12,
+    "chain_jacobian_scaled": 1e-06,
+    "directional_difference_scaled": 0.0005
+  },
+  "gate_scope": "Integration finite-step checks only; these thresholds do not modify or replace the frozen R16 financial values/Jacobian gates.",
+  "training_smoke": {
+    "seed": 2026110141,
+    "batch_size": 32,
+    "steps": 80,
+    "learning_rate": 0.02,
+    "optimizer": "Adam",
+    "pass_rule": "All gradients/parameters finite; all named parameter tensors update; final loss below initial loss. Same synthetic training grid only."
+  },
+  "retention": "Keep every directional record and failure. No source or threshold edits after opening without a new version. Fixed integration checks do not establish generalization.",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "torch": "2.15.0+cpu",
+    "cuda_available": false
+  },
+  "supporting_docs": [
+    "https://docs.pytorch.org/docs/2.15/notes/extending.html"
+  ],
+  "forbidden_claims": [
+    "ordinary FP32 financial qualification",
+    "original F/G are C1",
+    "smooth observation proves C2 force",
+    "higher-order BP",
+    "GPU or model/task superiority"
+  ],
+  "revision": {
+    "previous_protocol_sha256": "c633073b4ce6ac71468cb92c96edbd895956d10d8f3f7d3b122b778bc15e7c52",
+    "retained_failure_sha256": "a37fad28f79d340f905642b380f91b654fae0b621761a2067180b967b6eb857c",
+    "reason": "Initial evidence serialization rejected numpy.int64. Only receipt predicates are converted to Python bool. Financial kernel, adapter, fixtures, finite-difference steps and all thresholds are unchanged.",
+    "evaluation_scope": "The same opened fixed integration fixtures are rerun; no new independent financial validation is claimed."
+  }
+}

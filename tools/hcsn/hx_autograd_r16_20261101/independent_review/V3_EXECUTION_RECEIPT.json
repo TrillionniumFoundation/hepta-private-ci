@@ -1,0 +1,9 @@
+{
+  "schema": "hcsn.independent-v3-contract-execution.v1",
+  "command": "PYTHONPATH=/tmp/hcsn-torch-runtime python -u /tmp/hcsn-autograd-independent-review/check_v3_contract.py",
+  "actual_exit_code": 0,
+  "wall_time_seconds": 1.616415929,
+  "stdout": "{\n  \"output\": \"/tmp/hcsn-autograd-independent-review/V3_INDEPENDENT_CONTRACT_REVIEW.json\",\n  \"sha256\": \"fee1aae6248e6b8aa657fc4fdbb5b82b6da553003fc37f7ad4bdfc5d956fa082\",\n  \"passed\": true,\n  \"rows\": 48,\n  \"first_order_bit_identity_passed\": 48,\n  \"first_create_graph_refusals\": 48,\n  \"financial_calls\": 48\n}\n",
+  "financial_oracle_calls": 0,
+  "frozen_sources_modified": false
+}

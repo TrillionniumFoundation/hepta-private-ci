@@ -1,0 +1,37 @@
+{
+  "schema": "hcsn.hx-autograd-results-summary.v2",
+  "protocol_sha256": "d3ada27411e77ebc4be99dd96e7f6895fbd844e0fd985e7506d682088ee3f4ce",
+  "gradient_gate_passed": true,
+  "gradient_summary": {
+    "cases": 6,
+    "directional_checks": 168,
+    "passed_directional_checks": 168,
+    "max_directional_error": 9.51369304901294e-05,
+    "max_chain_error": 5.270680520615516e-08,
+    "contract_checks": 16,
+    "contract_passed": 16
+  },
+  "training_smoke_passed": true,
+  "training_parameter_count": 28,
+  "initial_training_loss": 1.2916021347045898,
+  "final_training_loss": 0.10680591315031052,
+  "gradient_runtime": {
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "cuda_available": false,
+    "wall_seconds": 0.23034742799791275,
+    "process_cpu_seconds": 0.052660270000000065,
+    "financial_calls": 352,
+    "financial_states": 353
+  },
+  "training_runtime": {
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "cuda_available": false,
+    "wall_seconds": 1.3007173570003943,
+    "process_cpu_seconds": 0.351533721,
+    "financial_calls": 164,
+    "financial_states": 5248
+  },
+  "claims": "First-order API and optimizer wiring only; no optimal boundary policy, temporal mechanism, generalization, ordinary-FP32 or model advantage."
+}

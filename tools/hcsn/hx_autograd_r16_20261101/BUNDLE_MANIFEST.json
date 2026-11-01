@@ -1,0 +1,268 @@
+{
+  "schema": "hcsn.hx-autograd-publication-bundle.v3",
+  "active_protocol_sha256": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+  "financial_binary_sha256": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+  "scope": "First-order eager CPU adapter and small same-grid optimizer smoke only. All prior defects retained. No temporal dynamics or model-quality admission.",
+  "files": [
+    {
+      "path": "ADAPTER_FIXTURES.json",
+      "bytes": 20178,
+      "sha256": "c94ccdbc02f783c99c5de47032ebc883d7de0b6ff9efc02857ac846547c43bee"
+    },
+    {
+      "path": "ADAPTER_PROTOCOL.json",
+      "bytes": 5006,
+      "sha256": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72"
+    },
+    {
+      "path": "ATTEMPTS.json",
+      "bytes": 1436,
+      "sha256": "af0b7115c268d732b68dfc965aff8e944e163ab3ecf95d1d7f2350713426f957"
+    },
+    {
+      "path": "FIRST_ORDER_IDENTITY_V3.json",
+      "bytes": 1435,
+      "sha256": "abd4e0713573400dca2c6d1b7dabb3688d21d3eddc15a8fc69d56e910670c8f4"
+    },
+    {
+      "path": "GRADIENT_AUDIT_V3.json.gz",
+      "bytes": 67548,
+      "sha256": "b00099d2260a4b906ad13e7c8dfdc340d2069117dd8343cc1ac52b6f4b138c0d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9790,
+      "sha256": "b71233d9bdcf66d861bf5c8ef6c7352f88177b31e3c02403a48e07ea1e714f58"
+    },
+    {
+      "path": "READOUT_VJP_EVIDENCE_V3.json",
+      "bytes": 12798,
+      "sha256": "166127ba5fc5706a8683d475b916b74e1822ba0708f7610f3749709715664492"
+    },
+    {
+      "path": "RESULTS_SUMMARY.json",
+      "bytes": 1298,
+      "sha256": "235d97af8b65f61863c9d912624efa1a87d53c27a714acf44e2a1d6c32023452"
+    },
+    {
+      "path": "RUNTIME.json",
+      "bytes": 725,
+      "sha256": "d3bfc224fc996bc4d3b8c11bd27401f90cc9b9bc9988b1eb455f4bcbf23d1948"
+    },
+    {
+      "path": "TRAINING_SMOKE_V3.json.gz",
+      "bytes": 34960,
+      "sha256": "bfba8c4a99d5fa2e3b3f957d70e29651d6a8497e8202897f05467a30a728d909"
+    },
+    {
+      "path": "adapter_common.py",
+      "bytes": 1086,
+      "sha256": "6921dfae93b6ecd7bf28724b10b4d2823c4b21bd7c237b022c075aa9f76fab5a"
+    },
+    {
+      "path": "audit_gradients.py",
+      "bytes": 14390,
+      "sha256": "9d4e4ec2ee1bb6d05c4931c4692703cb018928aaacab00046b93e7764e320fc4"
+    },
+    {
+      "path": "freeze_first_order_v3.py",
+      "bytes": 2897,
+      "sha256": "db50e30052c77f0db9214d0a729e7344c363e977d05a02a0c0e5928d1160c000"
+    },
+    {
+      "path": "hx_autograd.py",
+      "bytes": 7828,
+      "sha256": "8117df2cae6b17612d7537b96d72ca74a340bb5356e61bbc3f73b9fe478aa870"
+    },
+    {
+      "path": "readout_evidence.py",
+      "bytes": 4981,
+      "sha256": "671ecd0fc548d4ce77118a12beea107f5ad0eda079c857c0cd28c3502d664a5c"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 86,
+      "sha256": "c8038849aaa1710f940a6c70bfb9a6739c67c132abdc56c4d19d37c4126e945d"
+    },
+    {
+      "path": "training_smoke.py",
+      "bytes": 6370,
+      "sha256": "f91ea1ac624681aedd90ce72644a9c7fac8ac123a5e720cf28ae28fb24569c03"
+    },
+    {
+      "path": "verify_first_order_identity.py",
+      "bytes": 2589,
+      "sha256": "f180c7762b7d71e66a54479f22f07d094655258a52d78e7cc570a608dab4ad4f"
+    },
+    {
+      "path": "attempt_v1/ADAPTER_FIXTURES.json",
+      "bytes": 20178,
+      "sha256": "c94ccdbc02f783c99c5de47032ebc883d7de0b6ff9efc02857ac846547c43bee"
+    },
+    {
+      "path": "attempt_v1/ADAPTER_PROTOCOL.json",
+      "bytes": 3304,
+      "sha256": "c633073b4ce6ac71468cb92c96edbd895956d10d8f3f7d3b122b778bc15e7c52"
+    },
+    {
+      "path": "attempt_v1/GRADIENT_AUDIT_V1.json.gz",
+      "bytes": 177,
+      "sha256": "a37fad28f79d340f905642b380f91b654fae0b621761a2067180b967b6eb857c"
+    },
+    {
+      "path": "attempt_v1/adapter_common.py",
+      "bytes": 1086,
+      "sha256": "6921dfae93b6ecd7bf28724b10b4d2823c4b21bd7c237b022c075aa9f76fab5a"
+    },
+    {
+      "path": "attempt_v1/audit_gradients.py",
+      "bytes": 13280,
+      "sha256": "b5bb8201e4bccc8cb8713d5330a1eef6d87c903f7edfc5fff14f44341da70d28"
+    },
+    {
+      "path": "attempt_v1/freeze_adapter.py",
+      "bytes": 4931,
+      "sha256": "8f6566cbb402716be92d88339a0c7eecc799a54044166c31ee8b0d07465d75f5"
+    },
+    {
+      "path": "attempt_v1/hx_autograd.py",
+      "bytes": 7600,
+      "sha256": "51eebb33a39340d680afbb7a560f17fb2dbe9f17ec74e16dcf9dab6d7a7eefdf"
+    },
+    {
+      "path": "attempt_v1/training_smoke.py",
+      "bytes": 6370,
+      "sha256": "f91ea1ac624681aedd90ce72644a9c7fac8ac123a5e720cf28ae28fb24569c03"
+    },
+    {
+      "path": "attempt_v2/ADAPTER_FIXTURES.json",
+      "bytes": 20178,
+      "sha256": "c94ccdbc02f783c99c5de47032ebc883d7de0b6ff9efc02857ac846547c43bee"
+    },
+    {
+      "path": "attempt_v2/ADAPTER_PROTOCOL.json",
+      "bytes": 3969,
+      "sha256": "d3ada27411e77ebc4be99dd96e7f6895fbd844e0fd985e7506d682088ee3f4ce"
+    },
+    {
+      "path": "attempt_v2/GRADIENT_AUDIT_V2.json.gz",
+      "bytes": 67490,
+      "sha256": "ac15ecd17abecb7cc4e18058f464689ff07cd7478bf5a33f735290af7c9cf022"
+    },
+    {
+      "path": "attempt_v2/README.md",
+      "bytes": 8797,
+      "sha256": "01887e9f7b6a5cb7e3041d8be75e22e2f998ebc44b4d948f6d26698debb77fab"
+    },
+    {
+      "path": "attempt_v2/READOUT_VJP_EVIDENCE.json",
+      "bytes": 12798,
+      "sha256": "8f6ebd643691ac71635d94fca0e7a4a48a4e2fb72d8e31d7f486963b52426edb"
+    },
+    {
+      "path": "attempt_v2/RESULTS_SUMMARY.json",
+      "bytes": 1252,
+      "sha256": "7c7996345e7b1343a3a076a09f02f4316873855a1bb123a86ed630db10554c75"
+    },
+    {
+      "path": "attempt_v2/RUNTIME.json",
+      "bytes": 628,
+      "sha256": "ff42b9d1d20576bf310e7dcffed6115235c3a4508dedab2a89db6a4c8e59cb42"
+    },
+    {
+      "path": "attempt_v2/TRAINING_SMOKE_V2.json.gz",
+      "bytes": 34960,
+      "sha256": "1a00a8aa7b4e3756811b18cf3fc9f60dbe2ef6c0e4e068184bc79a14a2d110a7"
+    },
+    {
+      "path": "attempt_v2/adapter_common.py",
+      "bytes": 1086,
+      "sha256": "6921dfae93b6ecd7bf28724b10b4d2823c4b21bd7c237b022c075aa9f76fab5a"
+    },
+    {
+      "path": "attempt_v2/audit_gradients.py",
+      "bytes": 13433,
+      "sha256": "02b731f2508d614bb5da0366eb1734685933db57628585c378b75165016f5757"
+    },
+    {
+      "path": "attempt_v2/freeze_adapter.py",
+      "bytes": 4931,
+      "sha256": "8f6566cbb402716be92d88339a0c7eecc799a54044166c31ee8b0d07465d75f5"
+    },
+    {
+      "path": "attempt_v2/hx_autograd.py",
+      "bytes": 7600,
+      "sha256": "51eebb33a39340d680afbb7a560f17fb2dbe9f17ec74e16dcf9dab6d7a7eefdf"
+    },
+    {
+      "path": "attempt_v2/readout_evidence.py",
+      "bytes": 4981,
+      "sha256": "7f866c57b1f1e0c3bc86e0cb1b50c9c6224b5784e6d8cac70b10444b840ec2d7"
+    },
+    {
+      "path": "attempt_v2/requirements.txt",
+      "bytes": 86,
+      "sha256": "c8038849aaa1710f940a6c70bfb9a6739c67c132abdc56c4d19d37c4126e945d"
+    },
+    {
+      "path": "attempt_v2/revise_protocol.py",
+      "bytes": 1826,
+      "sha256": "fc6b507d7ea0c4ce22aa3a1b5630fe6286c0743bca5a0ed4bdf9db5fde4568a1"
+    },
+    {
+      "path": "attempt_v2/training_smoke.py",
+      "bytes": 6370,
+      "sha256": "f91ea1ac624681aedd90ce72644a9c7fac8ac123a5e720cf28ae28fb24569c03"
+    },
+    {
+      "path": "independent_review/reproduce_v2_higher_order.py",
+      "bytes": 4946,
+      "sha256": "6483669ecd101f76d1377b3342fc6901d8b093374a116bd8599b3c6d993d1f6f"
+    },
+    {
+      "path": "independent_review/V2_HIGHER_ORDER_DEFECT.json",
+      "bytes": 9282,
+      "sha256": "2a8e827c04c7d60ffff377fd18337f75c8ffd4362fac55f068055bccfeb7a42f"
+    },
+    {
+      "path": "independent_review/V2_DEFECT_RUN.log",
+      "bytes": 281,
+      "sha256": "4ccc69ebeba94da657fde97c2ffd7a849bd8b7a67d3bf17411ddd73143e6a774"
+    },
+    {
+      "path": "independent_review/V2_EXECUTION_RECEIPT.json",
+      "bytes": 799,
+      "sha256": "e374c5f3396bf638e2eeb7eff8023c1e438d7389342fa2d5e9322a1e0038b7bf"
+    },
+    {
+      "path": "independent_review/V2_INDEPENDENT_FIRST_ORDER_REVIEW.json",
+      "bytes": 6739,
+      "sha256": "df9a27c899fb2a024d874407b53328f7d6cd6f7df49af5e6f2fcb39bce5ed770"
+    },
+    {
+      "path": "independent_review/check_v3_contract.py",
+      "bytes": 6079,
+      "sha256": "c0b3f02a4b0fdb1907b561140525ce656f8c2cfecdfe06a7f3a3ca02c35e9867"
+    },
+    {
+      "path": "independent_review/V3_INDEPENDENT_CONTRACT_REVIEW.json",
+      "bytes": 25935,
+      "sha256": "fee1aae6248e6b8aa657fc4fdbb5b82b6da553003fc37f7ad4bdfc5d956fa082"
+    },
+    {
+      "path": "independent_review/V3_EXECUTION_RECEIPT.json",
+      "bytes": 658,
+      "sha256": "ea67b39c8f0e25712a4303d70dd21898943da3e4ad8905f1fa92d046ad14e21f"
+    },
+    {
+      "path": "independent_review/INDEPENDENT_REVIEW_MANIFEST.json",
+      "bytes": 1529,
+      "sha256": "7ffbe9d6107d8443064298dacfb438d76f3fdba1d40be9efd070bf129c3afdd9"
+    },
+    {
+      "path": "independent_review/INDEPENDENT_AUTOGRAD_REVIEW.zip",
+      "bytes": 12610,
+      "sha256": "c3120050bd939417dd4ed8fa38814ee9a37e902faef035959bdd0b40f0ec0b15"
+    }
+  ]
+}
