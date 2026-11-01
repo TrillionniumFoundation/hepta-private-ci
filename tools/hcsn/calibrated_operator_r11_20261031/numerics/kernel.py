@@ -264,3 +264,4 @@ def evaluate(theta, state, *, coordinate="asset", mode="float64"):
     output_dtype = np.float32 if mode == "mixed32" else internal_dtype
     return (np.asarray([v.v for v in result], dtype=output_dtype),
             np.asarray([v.g for v in result], dtype=output_dtype))
+
