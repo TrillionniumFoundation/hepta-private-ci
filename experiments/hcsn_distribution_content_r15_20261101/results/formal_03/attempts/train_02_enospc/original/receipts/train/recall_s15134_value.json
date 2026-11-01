@@ -1,0 +1,25 @@
+{
+  "name": "recall_s15134_value",
+  "task": "recall",
+  "seed": 15134,
+  "train_mode": "value",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distribution_content_r15_20261101.campaign",
+    "train",
+    "--output",
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/results/formal_03",
+    "--task",
+    "recall",
+    "--seed",
+    "15134",
+    "--mode",
+    "value"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 299.61741847899975,
+  "cpu_user_seconds": 295.739314,
+  "cpu_system_seconds": 3.568542,
+  "maximum_rss_kib": 689636
+}

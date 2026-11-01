@@ -1,0 +1,150 @@
+{
+  "active_fit_contents_read": false,
+  "all_source_and_destination_bytes_equal": true,
+  "all_sources_stable_during_copy": true,
+  "archive_shards_copied": false,
+  "canonical_fit_or_receipt_writes": false,
+  "completed_at_utc": "2026-11-01T18:57:37.726158+00:00",
+  "confirmation_or_test_contents_read": false,
+  "copied_file_count": 7,
+  "copied_files": [
+    {
+      "byte_equality_verified": true,
+      "bytes": 6864,
+      "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/development/hcsn_posterior_val16_check.py",
+      "existing_identical_destination": false,
+      "purpose": "historical posterior helper; retain original bytes and use development02 source snapshot when deliberately rerunning",
+      "sha256": "31e98369232f7f4a17861eace24792b3a8068e28403d6bebea23668ee2c95ef1",
+      "source": "/tmp/hcsn_posterior_val16_check.py",
+      "source_signature_before_and_after": [
+        27,
+        1877890,
+        6864,
+        1793553787688237974,
+        1793553787688237974
+      ]
+    },
+    {
+      "byte_equality_verified": true,
+      "bytes": 9028,
+      "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15131/manifest.json",
+      "existing_identical_destination": false,
+      "purpose": "prior partial checkpoint member/shard inventory; no archive shards copied",
+      "sha256": "c66f2643f2c2df64c7a0f2efc900568ab4bb43859573d74ad8768de48a64b73e",
+      "source": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/manifest.json",
+      "source_signature_before_and_after": [
+        27,
+        5661,
+        9028,
+        0,
+        1793556309749160170
+      ]
+    },
+    {
+      "byte_equality_verified": true,
+      "bytes": 80,
+      "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15131/manifest.sha256",
+      "existing_identical_destination": false,
+      "purpose": "prior partial checkpoint manifest checksum",
+      "sha256": "1f4a1a2f7ff62d72c6e7a3119d4b6fe25a9696968d4beaeb21f491e017a0f9cb",
+      "source": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/manifest.sha256",
+      "source_signature_before_and_after": [
+        27,
+        5662,
+        80,
+        0,
+        1793556309749663885
+      ]
+    },
+    {
+      "byte_equality_verified": true,
+      "bytes": 21420,
+      "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15132_15134/manifest.json",
+      "existing_identical_destination": false,
+      "purpose": "prior partial checkpoint member/shard inventory; no archive shards copied",
+      "sha256": "24eb5795d4ddb249659e904369a3135ef75d61e110651665370114e59c3a4ea7",
+      "source": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134/manifest.json",
+      "source_signature_before_and_after": [
+        27,
+        48914,
+        21420,
+        0,
+        1793557493634624613
+      ]
+    },
+    {
+      "byte_equality_verified": true,
+      "bytes": 80,
+      "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15132_15134/manifest.sha256",
+      "existing_identical_destination": false,
+      "purpose": "prior partial checkpoint manifest checksum",
+      "sha256": "5389da6be7191b84f8ed4daa885c2efabd3638ac05fdf6a44f65af46d0a83b06",
+      "source": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134/manifest.sha256",
+      "source_signature_before_and_after": [
+        27,
+        48915,
+        80,
+        0,
+        1793557493635162489
+      ]
+    },
+    {
+      "byte_equality_verified": true,
+      "bytes": 18674,
+      "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15135_15137light/manifest.json",
+      "existing_identical_destination": false,
+      "purpose": "prior partial checkpoint member/shard inventory; no archive shards copied",
+      "sha256": "464a3eae6e0cbf0d7e62f5e19fee9365b99d0f170a9b04713264cbd640a29512",
+      "source": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15135_15137light/manifest.json",
+      "source_signature_before_and_after": [
+        27,
+        35901,
+        18674,
+        0,
+        1793558820729377079
+      ]
+    },
+    {
+      "byte_equality_verified": true,
+      "bytes": 80,
+      "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15135_15137light/manifest.sha256",
+      "existing_identical_destination": false,
+      "purpose": "prior partial checkpoint manifest checksum",
+      "sha256": "9f191f725727d5c4c5cd251a1c81840e32b47e7ba1a0b47344e508645b54b55b",
+      "source": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15135_15137light/manifest.sha256",
+      "source_signature_before_and_after": [
+        27,
+        35902,
+        80,
+        0,
+        1793558820729841897
+      ]
+    }
+  ],
+  "copied_total_bytes": 56226,
+  "final_success_evidence": false,
+  "frozen_science_sources_changed": false,
+  "full_fresh_restore_started": false,
+  "full_pack_started": false,
+  "notes": [
+    "The preserved posterior helper contains historical absolute paths and imports. It is evidence, not an automatically executed verification; deliberate reruns must use the recorded development02 snapshot and explicit relocated paths.",
+    "Prior checkpoint metadata records partial 2, 6 and 5-group backups; copying these manifests does not establish completion of the 32-group campaign.",
+    "All copied destinations sit within the planned complete R15 source-root mapping. No additional staging tree was created."
+  ],
+  "plan_path": "experiments/hcsn_distribution_content_r15_20261101/publication/FINAL_ARCHIVE_PLAN.json",
+  "plan_sha256": "ecd043a8f6e6769ff6b5e5fb19061bf3969fa162f9036d09fa67e7a4f201af1e",
+  "plan_unchanged": true,
+  "prior_checkpoint_partial_counts_unchanged": true,
+  "requirements_analysis": {
+    "bytes": 258,
+    "original_science_requirements_unchanged": true,
+    "path": "experiments/hcsn_distribution_content_r15_20261101/publication/requirements-analysis.txt",
+    "sha256": "bbda4517b8d0e956697e87c4197ff3fc58f4c091bc1bdba204b5028b169db232",
+    "versions": {
+      "matplotlib": "3.10.8",
+      "mpmath": "1.3.0"
+    }
+  },
+  "schema": "hcsn.r15.publication.final-archive-preparation.v1",
+  "scope": "Small immutable provenance preparation only; separate from the unchanged source-root plan and any later final archive."
+}

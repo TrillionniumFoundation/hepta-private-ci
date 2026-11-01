@@ -1,0 +1,271 @@
+{
+  "schema": "hcsn.r15.publication.final-archive-source-plan.v1",
+  "created_at_utc": "2026-11-01T18:55:48.120120+00:00",
+  "status": "plan only: no full archive or restore started; current writers are not declared complete",
+  "scope": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "baseline_sha": "c0949e9cde89a54609a5133c0fb7f9c65bc80f4a",
+    "confirmation_output_contents_read": false,
+    "active_fit_contents_read": false,
+    "science_sources_changed": false,
+    "contents_read_categories": [
+      "source code",
+      "immutable source/protocol registration metadata",
+      "known nonconfirmation numerical/development diagnostic reports",
+      "prior completed checkpoint verification receipts and manifests",
+      "installed package metadata"
+    ]
+  },
+  "source_roots": [
+    {
+      "archive_prefix": "repository/experiments/hcsn_distribution_content_r15_20261101",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101",
+      "include": "all regular files except documented packer omissions",
+      "reason": "Entire R15 study, including every retained run, failed/partial attempt, registration, source_snapshot, numerical check and publication source/receipt; package only after all writers exit."
+    },
+    {
+      "archive_prefix": "repository/experiments/hcsn_regeneration_content_20261031",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_regeneration_content_20261031",
+      "include": "all regular files except documented packer omissions",
+      "reason": "renewal.py is required by R12 dynamics and R14 continuous_reference."
+    },
+    {
+      "archive_prefix": "repository/experiments/hcsn_validation_r12_20261031",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_validation_r12_20261031",
+      "include": "all regular files except documented packer omissions",
+      "reason": "Content encoder, baseline implementations, raw synthetic task generator, and numerical dynamics imported by R15/R14."
+    },
+    {
+      "archive_prefix": "repository/experiments/hcsn_validation_r13_20261031",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_validation_r13_20261031",
+      "include": "all regular files except documented packer omissions",
+      "reason": "evidence.py is in all five frozen source inventories and UPSTREAM_FILES.json; retain even though it is not a direct R15 runtime import."
+    },
+    {
+      "archive_prefix": "repository/experiments/hcsn_validation_r14_20261101",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_validation_r14_20261101",
+      "include": "all regular files except documented packer omissions",
+      "reason": "R14 ZeroDelayFlow/continuous_reference and value-controller/content engine, with recovered baseline documentation and provenance."
+    },
+    {
+      "archive_prefix": "repository/experiments/hcsn_distribution_content_r15_20261101/development/development01",
+      "source_directory": "/workspace/scratch/e8334174d4c2/development01",
+      "include": "entire stopped development directory: registrations, fit files and source_snapshot",
+      "reason": "Historical development evidence, never confirmation; map directly without an extra staging copy."
+    },
+    {
+      "archive_prefix": "repository/experiments/hcsn_distribution_content_r15_20261101/development/development02",
+      "source_directory": "/workspace/scratch/e8334174d4c2/development02",
+      "include": "entire stopped development directory: registrations, fit files and source_snapshot",
+      "reason": "Historical development evidence, never confirmation; map directly without an extra staging copy."
+    }
+  ],
+  "completeness": {
+    "method": "Union of formal01/02/03 and development01/02 SOURCE_FREEZE paths, UPSTREAM_FILES inventory, static AST imports of current R15 top-level/publication Python plus recovered inherited Python.",
+    "current_python_source_files_checked": 52,
+    "local_import_sites_checked": 74,
+    "unresolved_local_imports": [],
+    "all_local_dependency_directories_covered": true,
+    "namespace_ancestors": "experiments and several inherited parents intentionally have no __init__.py; Python namespace packages resolve from restored repository root.",
+    "upstream_files_verified_against_git_blob": 29,
+    "upstream_manifest": "experiments/hcsn_distribution_content_r15_20261101/UPSTREAM_FILES.json",
+    "historical_source_files_verified": 168,
+    "freezes": [
+      {
+        "name": "formal_01",
+        "source_freeze_sha256": "e374e81cba4e752c4e69ef0e379d8d991fb775c53fb21e891e8718dfb76bfad8",
+        "source_files": 34,
+        "all_snapshot_hashes_verified": true,
+        "protocol_sha256": "3dfe51511792e18f86720be4047b69cb5356f10b02d8969cf3083b98e43a848c"
+      },
+      {
+        "name": "formal_02",
+        "source_freeze_sha256": "80d79ad880c275b43f51e4903ded904e21fa201be5919e04b5f816bf861665f1",
+        "source_files": 36,
+        "all_snapshot_hashes_verified": true,
+        "protocol_sha256": "22ac32d5eecf24dd90e6930368fa2ed7bc5459419adcccc75730c78826ce45c5"
+      },
+      {
+        "name": "formal_03",
+        "source_freeze_sha256": "80d79ad880c275b43f51e4903ded904e21fa201be5919e04b5f816bf861665f1",
+        "source_files": 36,
+        "all_snapshot_hashes_verified": true,
+        "protocol_sha256": "22ac32d5eecf24dd90e6930368fa2ed7bc5459419adcccc75730c78826ce45c5"
+      },
+      {
+        "name": "development01",
+        "source_freeze_sha256": "e92d4520ba554a9925324b504e70a5b6a3ca53899a6089f5bb4fa403e3093380",
+        "source_files": 29,
+        "all_snapshot_hashes_verified": true,
+        "protocol_sha256": "dc30f77efb5f634912f1de6231fc8ca82122f4d8427ee98158869d23e3981c8a"
+      },
+      {
+        "name": "development02",
+        "source_freeze_sha256": "7e4aff1d642add4c7c6e08c6a0a393aa16b793c6343d1ac0c149426c81f39821",
+        "source_files": 33,
+        "all_snapshot_hashes_verified": true,
+        "protocol_sha256": "47b1e2fe6cc755568d2be1616d377e97d50d0eddd95e67a9700d2d8b84b26090"
+      }
+    ],
+    "boundary": "Local source/import completeness for this R15 campaign and preserved development evidence. This does not claim full reproduction of every older R12/R14 study or unused legacy model/task branch.",
+    "exact_static_scope": {
+      "frozen_base_file_list": "results/formal_03/SOURCE_FREEZE.json files (36)",
+      "additional_source_files": [
+        "experiments/hcsn_distribution_content_r15_20261101/online_confirm.py",
+        "experiments/hcsn_distribution_content_r15_20261101/train_execution_cross.py",
+        "experiments/hcsn_distribution_content_r15_20261101/write_tail_evidence.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/build_report.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/continue_addendum.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/continue_addendum_v3.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/continue_registered_run.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/pack_results.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/plot_results.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/resume_training.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/resume_training_selfcheck.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/runtime_ledger.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/runtime_ledger_v2.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/runtime_ledger_v3.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/runtime_ledger_v3_checks.py",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/validate_packaging.py"
+      ],
+      "sorted_path_sha256_map_digest": "b4e6773c6df8f45c4e0c1972fcc58d5c8de7101f5d484e87d2247660d769fb93",
+      "digest_format": "SHA256(JSON(mapping source-relative path to current file SHA256), sort_keys=True, separators=(comma,colon)). Scope is these exact 52 files, not later publication additions."
+    },
+    "later_publication_additions": "Mapped automatically by the entire study root. A new synthetic runtime_ledger_v3_fixture_01_source.py appeared after this exact 52-file/74-import audit and is not silently added to its count."
+  },
+  "external_development_inventory": {
+    "development01": {
+      "files_excluding_caches": 36,
+      "logical_bytes_metadata_only": 576763,
+      "fit_directories": [
+        "recall_s15100_value"
+      ]
+    },
+    "development02": {
+      "files_excluding_caches": 46,
+      "logical_bytes_metadata_only": 5569636,
+      "fit_directories": [
+        "binding_s15100_value",
+        "recall_s15100_value"
+      ]
+    },
+    "no_fit_or_array_contents_read_for_this_plan": true
+  },
+  "preparation_before_pack": [
+    "Wait until every training, recovery, evaluation, audit, report and plotting writer has exited. Stop packaging-source edits before invoking pack; metadata inventories above are not a live-run completeness certificate.",
+    "Preserve formal_01, formal_02, formal_03 completely, including failed candidates, original incomplete receipts, attempts/train_resume_* work roots and source snapshots. Do not select only successful runs or overwrite an earlier attempt.",
+    "Keep all top-level numerical/development evidence, including tail_numerics_01/02/03, both independent-tail-review records, original posterior diagnostic, migration comparison, and benchmark/fixture failures. The R15 root mapping includes them automatically.",
+    "Keep full-online and training/execution-cross SELF_REGISTRATION files and source_snapshot directories, recovery registration/model artifacts, process receipts/stdout/stderr and raw .npz/.pt evidence. Their output contents were not inspected for this plan.",
+    "Keep all publication sources, operational notes, artificial fixtures, verification receipts, environment records and final generated reports/figures. Publication helper hashes are final-manifest provenance, not part of the formal scientific source freeze.",
+    "The entire publication mapping also includes resume_training_selfcheck.py and its passing synthetic-check receipt/provenance, plus subsequently preserved fixture sources. No /tmp copy or additional scientific execution is required for that already-preserved helper. Recheck newly added local imports if later publication code introduces a different experiment directory.",
+    "Copy the one small external posterior helper listed below into its proposed provenance destination. Preserve its bytes; reproduction must deliberately retarget its two historical absolute paths and use development02/source_snapshot in a separate process, rather than substitute the later tail model.",
+    "Copy only the three prior checkpoint manifest/checksum pairs below to the proposed small metadata directories. Existing archive shard trees stay excluded; canonical fits plus backup verification receipts remain included. The coordinator reports remote readback of all 13 saved groups at commit dab4976e; this plan did not independently query GitHub.",
+    "After writers stop, check required free space against the final input inventory and fresh-restore needs. Direct external root mappings avoid duplicate development staging. XZ dictionary 128 MiB can use about a gigabyte or more of encoder memory; choose and record a smaller dictionary if needed before packing.",
+    "Choose a new private FINAL_BUNDLE directory and a new private RESTORE directory. Keep pack/restore stdout and later verification receipts outside all mapped roots during packing; include the receipt in a subsequent publication commit, not by rewriting an archive member."
+  ],
+  "small_external_helper": {
+    "source_file": "/tmp/hcsn_posterior_val16_check.py",
+    "bytes": 6864,
+    "sha256": "31e98369232f7f4a17861eace24792b3a8068e28403d6bebea23668ee2c95ef1",
+    "matches_existing_development_report": true,
+    "proposed_destination": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/provenance/development/hcsn_posterior_val16_check.py",
+    "copied_now": false
+  },
+  "already_preserved_external_evidence": [
+    {
+      "source": "/tmp/hcsn-r15-independent-tail-review.json",
+      "already_preserved_as": "tail_independent_review_initial.json",
+      "byte_identical_verified": true,
+      "sha256": "5e1d2f45b183a4f8316e9a81e2655d77bd9ef712ab7da61554eeffc06c44b874"
+    },
+    {
+      "source": "/tmp/hcsn_tail_json_writer.py",
+      "already_preserved_as": "tail_numerics_03.json serialization.wrapper_source and wrapper_source_sha256; reusable write_tail_evidence.py also included",
+      "additional_copy_required": false
+    },
+    {
+      "source": "temporary checkpoint/cleanup helpers",
+      "already_preserved_as": "publication verification JSON embeds original helper sources and hashes",
+      "additional_copy_required": false
+    }
+  ],
+  "prior_checkpoint_metadata_to_preserve": [
+    {
+      "bundle": "checkpoint_recall_15131",
+      "manifest_sha256": "c66f2643f2c2df64c7a0f2efc900568ab4bb43859573d74ad8768de48a64b73e",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131",
+      "copy_only": [
+        "manifest.json",
+        "manifest.sha256"
+      ],
+      "destination_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15131"
+    },
+    {
+      "bundle": "checkpoint_recall_15132_15134",
+      "manifest_sha256": "24eb5795d4ddb249659e904369a3135ef75d61e110651665370114e59c3a4ea7",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134",
+      "copy_only": [
+        "manifest.json",
+        "manifest.sha256"
+      ],
+      "destination_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15132_15134"
+    },
+    {
+      "bundle": "checkpoint_recall_15135_15137light",
+      "manifest_sha256": "464a3eae6e0cbf0d7e62f5e19fee9365b99d0f170a9b04713264cbd640a29512",
+      "source_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15135_15137light",
+      "copy_only": [
+        "manifest.json",
+        "manifest.sha256"
+      ],
+      "destination_directory": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15135_15137light"
+    }
+  ],
+  "exclusions": {
+    "automatic": [
+      "__pycache__",
+      ".git",
+      ".pytest_cache",
+      "archive/archives descendants",
+      "existing archive extensions",
+      "sockets"
+    ],
+    "keep_binary_evidence": [
+      ".npz",
+      ".pt"
+    ],
+    "refuse": [
+      "symlinks",
+      "nonregular special files",
+      "unsafe/duplicate archive paths"
+    ],
+    "never_map": [
+      "all of /tmp",
+      "all of /workspace",
+      "unrelated HCSN checkouts",
+      "development/runtime package trees",
+      "prior checkpoint staging/fresh_restore copies"
+    ],
+    "notes": "The entire explicit R15 root is included except packer omissions. Do not add a generic results/failure/attempt/fixture exclusion."
+  },
+  "runtime": {
+    "observed_python": "3.12.14",
+    "scientific_requirements": "requirements-cpu.txt unchanged: numpy==2.3.5, scipy==1.17.0, torch==2.15.0+cpu",
+    "additional_analysis_requirements": "publication/requirements-analysis.txt: mpmath==1.3.0 and matplotlib==3.10.8, verified installed metadata",
+    "legacy_optional": "ncps is unavailable and only needed by inherited CfC branches; sklearn digits is outside the registered recall/binding tasks. Neither branch is claimed reproduced.",
+    "environment_boundary": "No site-packages/wheels are bundled. Run import verification in a separately provisioned environment containing the recorded packages; do not rely on an old checkout on PYTHONPATH."
+  },
+  "future_commands": {
+    "parameters": {
+      "FINAL_BUNDLE": "new path, recommended publication/archives/final_bundle_<unique_id>",
+      "RESTORE": "new path outside every mapped root",
+      "MANIFEST_SHA256": "exact SHA256 returned by the completed pack operation; pin in publication receipt"
+    },
+    "pack": "python -B /workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/pack_results.py pack \\\n  --root \"repository/experiments/hcsn_distribution_content_r15_20261101=/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101\" \\\n  --root \"repository/experiments/hcsn_regeneration_content_20261031=/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_regeneration_content_20261031\" \\\n  --root \"repository/experiments/hcsn_validation_r12_20261031=/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_validation_r12_20261031\" \\\n  --root \"repository/experiments/hcsn_validation_r13_20261031=/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_validation_r13_20261031\" \\\n  --root \"repository/experiments/hcsn_validation_r14_20261101=/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_validation_r14_20261101\" \\\n  --root \"repository/experiments/hcsn_distribution_content_r15_20261101/development/development01=/workspace/scratch/e8334174d4c2/development01\" \\\n  --root \"repository/experiments/hcsn_distribution_content_r15_20261101/development/development02=/workspace/scratch/e8334174d4c2/development02\" \\\n  --output \"$FINAL_BUNDLE\" --chunk-bytes 49152 --dict-mib 128",
+    "restore": "python -B /workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/pack_results.py restore --bundle \"$FINAL_BUNDLE\" --destination \"$RESTORE\" --manifest-sha256 \"$MANIFEST_SHA256\"",
+    "fresh_restore_import_check": "cd \"$RESTORE/repository\"\nOPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=\"$PWD\" python -B - <<'VERIFY'\nimport hashlib, importlib, json\nfrom pathlib import Path\nroot = Path.cwd().resolve()\nstudy = root / 'experiments/hcsn_distribution_content_r15_20261101'\nrun = study / 'results/formal_03'\nfreeze = json.loads((run / 'SOURCE_FREEZE.json').read_text())\nfor relative, expected in freeze['files'].items():\n    assert hashlib.sha256((root / relative).read_bytes()).hexdigest() == expected, relative\nhistorical = [study / 'results' / n for n in ('formal_01', 'formal_02', 'formal_03')]\nhistorical += [study / 'development' / n for n in ('development01', 'development02')]\nfor location in historical:\n    registered = json.loads((location / 'SOURCE_FREEZE.json').read_text())\n    for relative, expected in registered['files'].items():\n        assert hashlib.sha256((location / 'source_snapshot' / relative).read_bytes()).hexdigest() == expected, (location, relative)\nmodules = {name[:-3].replace('/', '.').removesuffix('.__init__') for name in freeze['files']}\nprefix = 'experiments.hcsn_distribution_content_r15_20261101.'\nmodules.update(prefix + name for name in ('online_confirm', 'train_execution_cross', 'write_tail_evidence', 'publication.pack_results', 'publication.build_report', 'publication.plot_results', 'publication.runtime_ledger_v3', 'publication.resume_training'))\nfor name in sorted(modules):\n    module = importlib.import_module(name)\n    assert Path(module.__file__).resolve().is_relative_to(root), (name, module.__file__)\nfor directory, filename in (('full_online_confirmation', 'online_confirm.py'), ('train_execution_cross', 'train_execution_cross.py')):\n    registration = json.loads((run / directory / 'SELF_REGISTRATION.json').read_text())\n    assert hashlib.sha256((run / directory / registration['source_snapshot']).read_bytes()).hexdigest() == registration['source_sha256']\n    assert hashlib.sha256((study / filename).read_bytes()).hexdigest() == registration['source_sha256']\nimport numpy, scipy, torch, mpmath, matplotlib\nprint(json.dumps({'scope': 'source hashes and imports only; no dataset/model execution or result inspection', 'local_modules_imported': len(modules), 'historical_snapshots_checked': sum(len(json.loads((p / 'SOURCE_FREEZE.json').read_text())['files']) for p in historical), 'versions': {'numpy': numpy.__version__, 'scipy': scipy.__version__, 'torch': torch.__version__, 'mpmath': mpmath.__version__, 'matplotlib': matplotlib.__version__}}))\nVERIFY",
+    "import_check_executed_now": false,
+    "import_check_note": "This future command hashes registration/source files and imports modules only. It does not generate a split, load a trained checkpoint, execute a model, or read confirmation arrays/results."
+  },
+  "final_verification": "After actual pack and fresh restore, preserve exact manifest SHA256, every shard SHA256/Git blob SHA1 and restore receipt; run the import check from RESTORE/repository. A mechanical archive/import pass does not establish scientific success or close user requirements."
+}

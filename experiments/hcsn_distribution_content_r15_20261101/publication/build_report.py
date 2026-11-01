@@ -376,7 +376,7 @@ def alignment_summary(online):
 
 
 def runtime_check(ledger, online, cross, run):
-    require(ledger.get("schema") == "hcsn.r15.publication.runtime-ledger.v2", "Require the six-stage runtime-ledger.v2, including added LV execution")
+    require(ledger.get("schema") == "hcsn.r15.publication.runtime-ledger.v3", "Require runtime-ledger.v3, including the six stages and preserved ENOSPC attempts")
     require(ledger.get("formal_run") == run.name and Path(ledger.get("result_root", "")).resolve()/run.name == run,
             "Runtime ledger identifies another run")
     complete = boolean(ledger.get("formal_stage_receipts_complete"), "ledger stage coverage")
@@ -406,7 +406,43 @@ def runtime_check(ledger, online, cross, run):
     partial_waste = numeric(totals.get("abandoned_attempt_interrupted_process_cpu_lower_bound_seconds"), "abandoned snapshot CPU", 0)
     waste = numeric(totals.get("abandoned_attempt_cpu_lower_bound_seconds"), "abandoned CPU lower bound", 0)
     total = numeric(totals.get("successful_failed_and_abandoned_cpu_lower_bound_seconds"), "all-attempt CPU lower bound", 0)
-    require(close(waste, complete_waste+partial_waste) and close(total, math.fsum(observed)+waste), "All-attempt accounting is not disjoint")
+    recovery = ledger.get("enospc_training_recovery")
+    require(isinstance(recovery,dict) and recovery.get("original_launcher_completed") is False
+            and recovery.get("same_scientific_freeze_and_contexts") is True, "Missing disclosed same-freeze ENOSPC recovery")
+    retained = integer(recovery.get("retained_original_success_count"),"retained original successful groups")
+    resumed = integer(recovery.get("resumed_success_count"),"resumed successful groups")
+    require(retained+resumed == recovery.get("canonical_success_count") == stages[("train",)]["recorded_jobs"],
+            "Retained plus resumed groups do not cover canonical training")
+    unknown = recovery.get("unknown_process_attempts")
+    require(isinstance(unknown,list) and recovery.get("unknown_process_attempt_count")==len(unknown),"Missing ENOSPC unknown-attempt inventory")
+    require(all(row.get("cpu_seconds") is None and row.get("measurement_status")=="not_measured" for row in unknown)
+            and recovery.get("missing_process_cpu_seconds") is None and totals.get("enospc_unknown_process_cpu_seconds") is None,
+            "Missing process CPU was incorrectly replaced by a number")
+    require(totals.get("enospc_unknown_process_attempt_count")==len(unknown),"Unknown-attempt totals disagree")
+    charges = recovery.get("additional_measured_processes")
+    addends = recovery.get("additional_observed_cpu_addends")
+    require(isinstance(charges,list) and isinstance(addends,list) and len(charges)==len(addends),"Missing distinct additional attempt accounting")
+    for charge,value in zip(charges,addends):
+        require(close(numeric(charge.get("cpu_seconds"),"additional attempt CPU",0),numeric(value,"additional CPU addend",0)),
+                "Additional attempt CPU differs from its additive ledger")
+    measured = math.fsum(addends) if addends else None
+    for field,actual in (("additional_observed_cpu_lower_bound_seconds",measured),):
+        require(field in recovery and ((recovery[field] is None) if actual is None else close(numeric(recovery[field],field,0),actual)),
+                "Missing/incorrect additional observed CPU subtotal")
+    require("enospc_additional_observed_cpu_lower_bound_seconds" in totals
+            and ((totals["enospc_additional_observed_cpu_lower_bound_seconds"] is None) if measured is None else
+                 close(numeric(totals["enospc_additional_observed_cpu_lower_bound_seconds"],"ENOSPC additional total",0),measured)),
+            "ENOSPC additional total disagrees")
+    for field in ("additional_complete_wait4_cpu_seconds","additional_partial_cpu_lower_bound_seconds"):
+        require(field in recovery and "enospc_"+field in totals,"Missing additional complete/partial CPU status")
+        first,second=recovery[field],totals["enospc_"+field]
+        require((first is None and second is None) or (first is not None and second is not None and close(numeric(first,field,0),numeric(second,"enospc_"+field,0))),
+                "Additional complete/partial CPU subtotal differs")
+    require(close(waste, complete_waste+partial_waste) and close(total, math.fsum([*observed,waste,*addends])), "All-attempt accounting is not disjoint")
+    training=stages[("train",)]
+    require(training.get("original_launcher_completed") is False and training.get("accounting_kind")=="resumed_consolidated"
+            and training.get("wall_scope")=="elapsed_since_original_restart_including_interruption_and_resume",
+            "Resumed training must label its consolidated receipts and interrupted wall span")
     require(close(numeric(totals.get("hours_lower_bound"), "CPU hours lower bound", 0), total/3600), "CPU hours disagree")
     for key in ("group_cpu_seconds", "nested_actor_cpu_seconds"):
         numeric(online.get(key), "full online " + key, 0)
@@ -426,7 +462,9 @@ def runtime_check(ledger, online, cross, run):
     require(isinstance(receipt, dict) and receipt.get("stage") == "train_execution_cross", "Missing added LV wait4 receipt")
     require(close(numeric(receipt.get("process_cpu_seconds"), "added LV worker CPU", 0), stages[("train_execution_cross",)]["observed_worker_cpu_seconds"]),
             "Additional LV summary differs from runtime worker ledger")
-    return dict(stages=stages, every_formal_worker_successful=all(row["failed_jobs"] == 0 for row in stages.values()))
+    return dict(stages=stages,every_canonical_formal_worker_successful=all(row["failed_jobs"]==0 for row in stages.values()),
+                original_training_launcher_completed=False,all_process_attempts_successful=False,
+                enospc_unknown_process_attempts=len(unknown))
 
 
 def recovery_evidence(inputs, run, protocol, summary):
@@ -665,7 +703,9 @@ def assemble(run, ledger_path, source_commit=None, study=None):
         runtime_alignment=alignment, audit=audit,
         audit_pass_is_arithmetic_identity_coverage_not_science=True,
         runtime=dict(whole_cohort_actual={key: online[key] for key in ("conditions", "expected_conditions", "object_executions", "expected_object_executions", "actual_reads", "processed_prefix_tokens", "model_calls", "controller_batch_calls", "group_cpu_seconds", "nested_actor_cpu_seconds", "process_receipt")},
-            ledger=ledger, every_formal_worker_successful=runtime["every_formal_worker_successful"], nested_times_added_to_worker_total=False),
+            ledger=ledger,every_canonical_formal_worker_successful=runtime["every_canonical_formal_worker_successful"],
+            original_training_launcher_completed=False,all_process_attempts_successful=False,
+            canonical_success_is_not_all_historical_attempt_success=True,nested_times_added_to_worker_total=False),
         recovery=recovery, posterior_qualification=posterior if posterior is not None else {"status": UNAVAILABLE},
         numerical_qualification=numerical,
         actual_online_direct_state_tail_qualification=dict(status=UNAVAILABLE,
@@ -900,23 +940,29 @@ def render(context, artificial=False):
             ("LV group CPU 秒（包含 actor）", fnum(context['cross']['resources']['group_cpu_seconds'],3)),
             ("LV worker CPU 秒（完整 wait4）", fnum(context['cross']['resources']['process_receipt']['process_cpu_seconds'],3))]), "",
         "actor 是全部注册对象的 batch-32 执行，包含条件首块的 transition-cache 准备；group 另含 checkpoint、数据生成、比较与 IO；worker 另含进程导入等。三层互相嵌套，只单列解释，不相加。该测量没有将 core 快慢和动作数量混淆为相同计算量的硬件效率。", "",
-        table(["stage","完成/应有 jobs","失败 jobs","worker CPU 秒","stage wall 秒","workers","最大单进程 RSS KiB"], [(row["stage"],f"{row['recorded_jobs']}/{row['expected_jobs']}",row["failed_jobs"],fnum(row["observed_worker_cpu_seconds"],3),fnum(row["elapsed_wall_seconds"],3),row.get("launcher_total",{}).get("workers",UNAVAILABLE),fnum(row["maximum_individual_worker_rss_kib"],0)) for row in ledger["formal_03_stages"]]), ""]
+        table(["stage","canonical 完成/应有 jobs","canonical 失败 jobs","canonical worker CPU 秒","wall 秒（train为含中断span）","workers","最大单进程 RSS KiB"], [(row["stage"],f"{row['recorded_jobs']}/{row['expected_jobs']}",row["failed_jobs"],fnum(row["observed_worker_cpu_seconds"],3),fnum(row["elapsed_wall_seconds"],3),row.get("launcher_total",{}).get("workers",UNAVAILABLE),fnum(row["maximum_individual_worker_rss_kib"],0)) for row in ledger["formal_03_stages"]]), ""]
     totals = ledger["totals"]
-    lines += [table(["非重复计费范围", "CPU 秒"], [("formal_03 已成功进程", fnum(totals["formal_03_successful_completed_process_cpu_seconds"],3)),
-        ("formal_03 已结束失败进程", fnum(totals["formal_03_failed_completed_process_cpu_seconds"],3)),
+    enospc = ledger["enospc_training_recovery"]
+    lines += [table(["非重复计费范围", "CPU 秒"], [("formal_03 canonical 成功进程", fnum(totals["formal_03_successful_completed_process_cpu_seconds"],3)),
+        ("formal_03 canonical 已结束失败进程", fnum(totals["formal_03_failed_completed_process_cpu_seconds"],3)),
         ("废弃 OOM attempt 的完整 wait4", fnum(totals["abandoned_attempt_complete_wait4_cpu_seconds"],3)),
         ("废弃 attempt 存活 worker 的 /proc 快照下界", "≥ "+fnum(totals["abandoned_attempt_interrupted_process_cpu_lower_bound_seconds"],3)),
+        ("未被 canonical 引用的独立 ENOSPC/恢复进程 wait4",fnum(totals["enospc_additional_complete_wait4_cpu_seconds"],3)),
+        ("独立 ENOSPC/恢复进程的部分 CPU 下界",fnum(totals["enospc_additional_partial_cpu_lower_bound_seconds"],3)),
+        ("丢失完整收据的历史 process-attempt CPU", "未测（null）；"+str(enospc["unknown_process_attempt_count"])+" 个已记录未知 attempt"),
         ("所有已记录成功、失败、废弃 worker 的总下界", "≥ "+fnum(totals["successful_failed_and_abandoned_cpu_lower_bound_seconds"],3)),
         ("对应 CPU 小时下界", "≥ "+fnum(totals["hours_lower_bound"],6))]), "",
         "六 worker 的原尝试发生 OOM 后，以两个 worker 重启；源码/协议身份核对结果：" + (str(review["restart_freeze_identity"]["same_registered_source_and_protocol"]) if review["restart_freeze_identity"]["available"] else "not_available，未提供旧 freeze 元数据") + "。比较的是两个冻结记录中的源码清单与协议 SHA，完整记录 SHA 另保留在 ACCEPTANCE_REVIEW.json.restart_freeze_identity；不能凭目录名认定同冻结。",
         "废弃 CPU 按 canonical formal_02/attempts/train_01_oom 的完整 wait4，加未被完整收据覆盖的 /proc 快照计入；formal_02 根重复副本、TOTAL 聚合以及 body/actor 不重复相加。快照后的终止尾部 CPU 未测，所以给下界而不是精确总成本。",
-        "stage wall 是启动器记录的经过时间；并发 job wall 不相加。RSS 是最大单进程峰值，不是全容器并发峰值。六模型联合训练组的 CPU 不除以六冒充各家族单独实测成本。",
+        f"随后 formal_03 的原训练启动器在保住 {enospc['retained_original_success_count']} 个完整组后遇到 ENOSPC 写收据故障。原完整组不重训，其余 {enospc['resumed_success_count']} 组在相同科学源码、协议与训练上下文冻结下，于独立工作根从原登记初始化重新执行；未加载旧残缺产物。包括零字节 final.pt 在内的旧文件只保留字节与 SHA 证据，不视为有效模型，不替代 selected，也不能根据字节不同推断模型状态不同。原残缺产物、零字节收据和日志已经隔离保留。",
+        "训练 TOTAL 是恢复后的 canonical 成功收据汇总，original_launcher_completed=false，不能称原启动器正常完成。13 个旧成功与 19 个恢复成功各计一次；新工作根和 canonical 的相同 receipt SHA 是同一进程的副本。相同 job 的另一次失败或失联进程具有不同 process_attempt_id，其已测 CPU 另加、未知 CPU 保持 null，不能被后来的成功进程抵消。",
+        "train 的 wall 数值是从原 RESTART_REGISTRATION 的时间到恢复汇总结束的 elapsed span，包含中断、等待和恢复；不是连续运行的原启动器 wall，也不是各并行 job wall 之和。其他 stage 使用其启动器记录的经过时间。RSS 是最大单进程峰值，不是全容器并发峰值。六模型联合训练组的 CPU 不除以六冒充各家族单独实测成本。",
         "旧 first-1/16 的 cold/warm_median3 微基准仍在冻结 SUMMARY.cpu_comparisons，作为另一组小样本描述；cold 只清理 transition cache，不等于冷进程或冷操作系统。主要运行证据为本节全对象执行，不能用微基准均值替代总体延迟或吞吐。",
-        "未测：中断后尾部 CPU、launcher parent CPU、没有独立收据的开发/分析/出版开销、GPU、物理 Joules、真实获取/服务账单、竞争性的优化部署。归一化 tariff 不是物理成本，CPU 秒不能换算成未测 GPU、能耗或账单。", "",
+        "未测：原 ENOSPC 少数未保住 wait4 的进程 CPU、中断后尾部 CPU、原/恢复 launcher 的准备与复制/校验 CPU、没有独立收据的开发/分析/出版开销、GPU、物理 Joules、真实获取/服务账单、竞争性的优化部署。表中 null/not_available 不等于零；归一化 tariff 不是物理成本，CPU 秒不能换算成未测 GPU、能耗或账单。", "",
         "## 9. 训练身份、独立审计与最终接受范围", "",
         table(["任务","seed","同初始化","独立路径","selected 相同家族","final 相同家族","light/value selected step"], [(pair["task"],pair["seed"],pair["identical_initialization"],pair["separate_checkpoint_paths"],",".join(f for f,v in pair["selected_hashes_equal"].items() if v) or "无",",".join(f for f,v in pair["final_hashes_equal"].items() if v) or "无",str(pair.get("selected_steps",UNAVAILABLE))) for pair in frozen["resources"]["independent_training_pairs"]]), "",
         "独立优化与独立 checkpoint 路径不保证最终选中的权重不同：step zero 可合法被选中。上表分别报告 selected/final 的实际相等性；完整 checkpoint SHA 在 ACCEPTANCE_REVIEW.json.training_resources 中保留，不混用。",
-        f"冻结主实验工件的独立审计：**{yes(context['audit']['passed'])}**，{context['audit']['checks']} 个检查，{len(context['audit']['failures'])} 项失败；收据矩阵完整与进程成功是两件事，正式 worker 全部 exit=0：{context['runtime']['every_formal_worker_successful']}。该审计验证主工件的算术、身份和覆盖；全在线补充的身份/完整性检查属于其独立的 combine 路径，不能把主审计扩称为另一轮全在线独立审计。两者均不认证科学收益或一般性。", ""]
+        f"冻结主实验工件的独立审计：**{yes(context['audit']['passed'])}**，{context['audit']['checks']} 个检查，{len(context['audit']['failures'])} 项失败；最终 canonical worker 收据全部 exit=0：{context['runtime']['every_canonical_formal_worker_successful']}。这不表示所有历史 worker/launcher 成功；原 OOM/ENOSPC 失败与缺失 CPU 仍按第 8 节保留。该审计验证主工件的算术、身份和覆盖；全在线补充的身份/完整性检查属于其独立的 combine 路径，不能把主审计扩称为另一轮全在线独立审计。两者均不认证科学收益或一般性。", ""]
     if context["audit"]["failures"]:
         lines += [table(["失败检查","详情"], [(row.get("check",UNAVAILABLE),json.dumps(row.get("detail",UNAVAILABLE),ensure_ascii=False)) for row in context["audit"]["failures"]]), ""]
     lines += [table(["最终字段","结论"], [("registered_quality_effect_pressure_gate_pass（actual）", verdict["registered_quality_effect_pressure_gate_pass"]),
@@ -1082,8 +1128,21 @@ def fixture_inputs(root):
         jobs = 16 if stage.startswith("recovery_") or stage=="train_execution_cross" else 32
         stage_rows.append(dict(stage=stage,expected_jobs=jobs,recorded_jobs=jobs,failed_jobs=0,coverage="complete",observed_worker_cpu_seconds=10.*jobs,successful_completed_worker_cpu_seconds=10.*jobs,failed_completed_worker_cpu_seconds=0.,elapsed_wall_seconds=8.*jobs,maximum_individual_worker_rss_kib=100000.,launcher_total=dict(workers=2)))
     total = math.fsum(row["observed_worker_cpu_seconds"] for row in stage_rows)
-    ledger = dict(schema="hcsn.r15.publication.runtime-ledger.v2",result_root=str(root),formal_run="formal_03",formal_stage_receipts_complete=True,formal_03_stages=stage_rows,
-        totals=dict(status="lower_bound",formal_03_successful_completed_process_cpu_seconds=total,formal_03_failed_completed_process_cpu_seconds=0.,formal_03_observed_completed_process_cpu_seconds=total,abandoned_attempt_complete_wait4_cpu_seconds=5.,abandoned_attempt_interrupted_process_cpu_lower_bound_seconds=7.,abandoned_attempt_cpu_lower_bound_seconds=12.,successful_failed_and_abandoned_cpu_lower_bound_seconds=total+12.,hours_lower_bound=(total+12.)/3600),
+    stage_rows[0].update(original_launcher_completed=False,accounting_kind="resumed_consolidated",
+        wall_scope="elapsed_since_original_restart_including_interruption_and_resume",
+        status="canonical_jobs_complete_after_operational_recovery")
+    enospc = dict(original_launcher_completed=False,same_scientific_freeze_and_contexts=True,
+        retained_original_success_count=13,resumed_success_count=19,canonical_success_count=32,
+        unknown_process_attempts=[dict(process_attempt_id="formal03/train_original/"+name,cpu_seconds=None,measurement_status="not_measured") for name in ("recall_s15137_value","recall_s15138_light")],
+        unknown_process_attempt_count=2,missing_process_cpu_seconds=None,
+        additional_measured_processes=[dict(process_attempt_id="train_resume_001/recall_s15137_value",cpu_seconds=7.,exit_code=1,measurement_status="complete_process_lifetime_wait4")],
+        additional_observed_cpu_addends=[7.],additional_complete_wait4_cpu_seconds=7.,
+        additional_partial_cpu_lower_bound_seconds=None,additional_observed_cpu_lower_bound_seconds=7.)
+    ledger = dict(schema="hcsn.r15.publication.runtime-ledger.v3",result_root=str(root),formal_run="formal_03",formal_stage_receipts_complete=True,formal_03_stages=stage_rows,
+        enospc_training_recovery=enospc,
+        totals=dict(status="lower_bound",formal_03_successful_completed_process_cpu_seconds=total,formal_03_failed_completed_process_cpu_seconds=0.,formal_03_observed_completed_process_cpu_seconds=total,abandoned_attempt_complete_wait4_cpu_seconds=5.,abandoned_attempt_interrupted_process_cpu_lower_bound_seconds=7.,abandoned_attempt_cpu_lower_bound_seconds=12.,
+            enospc_additional_complete_wait4_cpu_seconds=7.,enospc_additional_partial_cpu_lower_bound_seconds=None,enospc_additional_observed_cpu_lower_bound_seconds=7.,enospc_unknown_process_attempt_count=2,enospc_unknown_process_cpu_seconds=None,
+            successful_failed_and_abandoned_cpu_lower_bound_seconds=total+19.,hours_lower_bound=(total+19.)/3600),
         unmeasured=dict(gpu="not_measured",physical_energy_joules="not_measured",provider_bill="not_measured"))
     write_json(root/"RUNTIME_LEDGER.json",ledger)
     study = root/"study"
@@ -1115,12 +1174,35 @@ def selfcheck(output):
         no_negative_control_in_pressure_gate="missing_a" not in review["actual_acceptance"]["per_task"]["binding"]["pressure_D_minus_B_means"],
         replay_difference_retained=review["runtime_alignment"]["mismatch_condition_count"]==1 and review["runtime_alignment"]["totals"]["read_count"]["mismatches"]==1,
         replay_tail_not_transferred=review["actual_online_direct_state_tail_qualification"]["status"]==UNAVAILABLE,
-        full_runtime_not_nested_body_sum=review["runtime"]["ledger"]["totals"]["successful_failed_and_abandoned_cpu_lower_bound_seconds"]==1452.,
+        full_runtime_not_nested_body_sum=review["runtime"]["ledger"]["totals"]["successful_failed_and_abandoned_cpu_lower_bound_seconds"]==1459.,
         same_selected_weights_do_not_cancel_independent_training=review["training_resources"]["independent_training_pairs"][0]["selected_hashes_equal"][ORDINARY],
         four_arm_existing_records_retained=len(review["recovery"]["four_arms"]["rows"])==192,
         no_fault_cost_is_negative=review["recovery"]["frozen_summary"]["effects"][1]["mean"] < 0,
         candidate_explicitly_artificial="人工 fixture 候选报告" in report and review["artificial_fixture"],
         source_commit_not_self_reference=review["source_commit"]=="a"*40)
+    checks["canonical_success_does_not_claim_all_history_succeeded"] = review["runtime"]["every_canonical_formal_worker_successful"] and not review["runtime"]["all_process_attempts_successful"] and not review["runtime"]["original_training_launcher_completed"]
+    checks["enospc_retained13_resumed19_unknown2_in_report"] = "13 个旧成功与 19 个恢复成功" in report and "2 个已记录未知 attempt" in report and "含中断span" in report
+    ledger_original=ledger.read_text();changed_ledger=json.loads(ledger_original)
+    changed_ledger["schema"]="hcsn.r15.publication.runtime-ledger.v2";ledger.write_text(json.dumps(changed_ledger))
+    try:assemble(run,ledger,study=study)
+    except ReportError:checks["v2_cannot_omit_known_enospc_history"]=True
+    else:checks["v2_cannot_omit_known_enospc_history"]=False
+    ledger.write_text(ledger_original)
+    changed_ledger=json.loads(ledger_original)
+    changed_ledger["enospc_training_recovery"]["unknown_process_attempts"][0]["cpu_seconds"]=0.
+    ledger.write_text(json.dumps(changed_ledger))
+    try:assemble(run,ledger,study=study)
+    except ReportError:checks["unknown_enospc_cpu_zero_fill_rejected"]=True
+    else:checks["unknown_enospc_cpu_zero_fill_rejected"]=False
+    ledger.write_text(ledger_original)
+    changed_ledger=json.loads(ledger_original)
+    changed_ledger["enospc_training_recovery"].update(additional_measured_processes=[],additional_observed_cpu_addends=[],
+        additional_complete_wait4_cpu_seconds=None,additional_partial_cpu_lower_bound_seconds=None,additional_observed_cpu_lower_bound_seconds=None)
+    changed_ledger["totals"].update(enospc_additional_complete_wait4_cpu_seconds=None,enospc_additional_partial_cpu_lower_bound_seconds=None,
+        enospc_additional_observed_cpu_lower_bound_seconds=None,successful_failed_and_abandoned_cpu_lower_bound_seconds=1452.,hours_lower_bound=1452./3600)
+    ledger.write_text(json.dumps(changed_ledger));limited,_=assemble(run,ledger,study=study)
+    checks["no_extra_measured_receipt_is_null_not_an_invented_zero"] = limited["runtime"]["ledger"]["totals"]["enospc_additional_observed_cpu_lower_bound_seconds"] is None
+    ledger.write_text(ledger_original)
     _, boundary_context = assemble(run,ledger,study=study)
     boundary_tables = copy.deepcopy(boundary_context["actual"])
     for task in ("recall","binding"):
