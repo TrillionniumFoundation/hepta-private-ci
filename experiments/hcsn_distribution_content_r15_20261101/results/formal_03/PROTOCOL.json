@@ -1,0 +1,175 @@
+{
+  "acceptance": {
+    "full_cost_advantage_required": true,
+    "minimum_iid_accuracy": 0.7,
+    "minimum_positive_seed_fraction": 0.75,
+    "pressure_domains": [
+      "long_distractors",
+      "blank_retention",
+      "irregular_dt",
+      "clock4x",
+      "query_swap"
+    ],
+    "pressure_tolerance": -0.02,
+    "primary_lower95": 0.0,
+    "required_tasks": [
+      "recall",
+      "binding"
+    ]
+  },
+  "baseline_sha": "c0949e9cde89a54609a5133c0fb7f9c65bc80f4a",
+  "batch_size": 64,
+  "configs": {
+    "analytic_distribution": {
+      "ablation": "none",
+      "cache_size": 128,
+      "family": "analytic_distribution",
+      "mu": -0.25,
+      "n_anchors": 12,
+      "n_positions": 182,
+      "reset": 0.8,
+      "seed": 0,
+      "sigma": 1.0,
+      "spacing": 0.058823529411764705,
+      "tail_spacing": 0.5,
+      "tail_upper": 60.0,
+      "width": 16,
+      "x": 1.0
+    },
+    "analytic_fixed": {},
+    "mamba1": {
+      "hidden_width": 10,
+      "n_parameters": 2096,
+      "relative_gap": 0.03353057199211045,
+      "target_parameters": 2028
+    },
+    "ordinary_distribution": {
+      "ablation": "none",
+      "cache_size": 128,
+      "family": "ordinary_distribution",
+      "mu": -0.25,
+      "n_anchors": 12,
+      "n_positions": 182,
+      "reset": 0.8,
+      "seed": 0,
+      "sigma": 1.0,
+      "spacing": 0.058823529411764705,
+      "tail_spacing": 0.5,
+      "tail_upper": 60.0,
+      "width": 16,
+      "x": 1.0
+    },
+    "ordinary_dual": {},
+    "transformer": {
+      "hidden_width": 11,
+      "n_parameters": 1974,
+      "relative_gap": 0.026627218934911243,
+      "target_parameters": 2028
+    }
+  },
+  "controller": "Inherited R14 ten-input two-output critic. Actual STOP correctness and actual READ fees label targets. No labels or unread payloads enter action selection.",
+  "cost": "Equal update/data budget is not equal CPU. Complete training and actual prefix-recomputing execution are measured; tariff utility excludes CPU and physical Joules. Strong fused/KV-cache implementations remain separate.",
+  "domains": {
+    "binding": [
+      "iid",
+      "long_distractors",
+      "blank_retention",
+      "irregular_dt",
+      "clock4x",
+      "query_swap",
+      "missing_a",
+      "missing_b"
+    ],
+    "recall": [
+      "iid",
+      "long_distractors",
+      "blank_retention",
+      "irregular_dt",
+      "clock4x",
+      "query_swap",
+      "missing_payload"
+    ]
+  },
+  "effects": "A=ordinary light-trained/light-executed; B=ordinary value-trained/value-executed; C=analytic light-trained/light-executed; D=analytic value-trained/value-executed. Report all five total-effect contrasts. Same value-trained weights executed read-all form a separate conditional execution estimand.",
+  "execution_ablations": {
+    "content_independence": "Preserve position probability and unweighted content mean; immediate weighted readout may change.",
+    "mean_position": "Collapse spatial distribution to adjacent nodes at its mean and remove content association; immediate readout may change.",
+    "readout_independence": "Remove position-content association while preserving the current weighted readout/logits/controller scores at each intervention. Subsequent differences concern carried information; the unweighted content mean need not remain equal."
+  },
+  "families": [
+    "ordinary_distribution",
+    "analytic_distribution",
+    "ordinary_dual",
+    "analytic_fixed",
+    "mamba1",
+    "transformer"
+  ],
+  "fees": {
+    "read": 0.0025,
+    "time": 0.0005
+  },
+  "grad_clip": 1.0,
+  "inference": "Eight paired fit seeds and common heldout contexts. Seed-level paired intervals; descriptive context-cluster bootstrap separately. No row-wise treatment of four binding combinations as independent contexts.",
+  "initialization": "Every family/mode is freshly initialized; matched seeds, encoders, batches and budgets. No inherited trained checkpoint is used.",
+  "learning_rate": 0.003,
+  "light": "Independent optimizer and checkpoint, terminal CE, read-all execution.",
+  "modes": [
+    "light",
+    "value"
+  ],
+  "object_partition": "Query-invariant raw context SHA256 bucket before labels; train50/val15/test25/development10 percent; deduplicate complete contexts within each split. Binding units hold common event order and B nuisances, varying all task signs and query. Four-combination contexts and their query swaps stay together; all stress variants share base identity.",
+  "posterior_qualification": "Record actual cumulative cemetery loss for every selected primary-model validation and confirmation prefix in every domain. An upper loss above 1e-7 fails the continuous-tail qualification, even if finite-law conservation tests pass. This is a reporting gate, not a label-dependent checkpoint re-selection rule.",
+  "prefix_weight": 0.2,
+  "primary_pair": [
+    "ordinary_distribution",
+    "analytic_distribution"
+  ],
+  "public_schedule": "Complete dt schedule and finite observation budget are known before initial STOP; payloads require READ.",
+  "runtime": {
+    "cuda": false,
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "torch": "2.15.0+cpu"
+  },
+  "schema": "hcsn.r15.independent-distribution-content.v1",
+  "scope": "Synthetic raw-vector tasks, finite-grid fixed-boundary zero-delay distribution/moment closure. General learned/moving boundaries, real media, scale, physical energy and production service costs remain outside the claim.",
+  "seeds": [
+    15131,
+    15132,
+    15133,
+    15134,
+    15135,
+    15136,
+    15137,
+    15138
+  ],
+  "selection": "One complete six-model group checkpoint per train mode by mean validation utility for that mode; step zero eligible, earliest tie.",
+  "splits": {
+    "development": [
+      128,
+      151100
+    ],
+    "test": [
+      512,
+      151103
+    ],
+    "train": [
+      1024,
+      151101
+    ],
+    "val": [
+      256,
+      151102
+    ]
+  },
+  "tasks": [
+    "recall",
+    "binding"
+  ],
+  "updates": 768,
+  "validate_every": 128,
+  "value": "Independent optimizer and checkpoint, terminal CE + 0.2 per-prefix CE + 0.2 legal actual-Q-pi MSE. One controller is exactly shared across all six models in a task/seed group.",
+  "value_weight": 0.2,
+  "warmup": "During registered warmup, READ continuation targets follow read-all. Subsequently they follow the current actual greedy controller. Warmup and policy targets are marked in every training receipt.",
+  "warmup_updates": 128
+}

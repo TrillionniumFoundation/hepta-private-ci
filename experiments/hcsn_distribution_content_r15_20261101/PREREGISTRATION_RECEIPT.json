@@ -1,0 +1,41 @@
+{
+  "created_utc": "2026-11-01T17:48:16.087921+00:00",
+  "stage": "Before confirmation evaluation; training in progress",
+  "run": "results/formal_03",
+  "parent_commit": "c0949e9cde89a54609a5133c0fb7f9c65bc80f4a",
+  "files": {
+    "results/formal_03/PROTOCOL.json": {
+      "sha256": "22ac32d5eecf24dd90e6930368fa2ed7bc5459419adcccc75730c78826ce45c5",
+      "bytes": 6408
+    },
+    "results/formal_03/SOURCE_FREEZE.json": {
+      "sha256": "80d79ad880c275b43f51e4903ded904e21fa201be5919e04b5f816bf861665f1",
+      "bytes": 5186
+    },
+    "results/formal_03/TRAINING_DATA_CONTEXTS.json": {
+      "sha256": "2804001af69bb7050a224a4b677b123865d41397b02ab0ee81c5eac6f8eddd86",
+      "bytes": 223052
+    },
+    "results/formal_03/RESTART_REGISTRATION.json": {
+      "sha256": "a76af4270257492f82aa120b402918736b67209d93733d77e942f3c356d1a986",
+      "bytes": 786
+    },
+    "results/formal_03/full_online_confirmation/SELF_REGISTRATION.json": {
+      "sha256": "9558c76568f0c009ece6411fc305c6183cb87153af673398263c39394404b4e8",
+      "bytes": 254735
+    },
+    "online_confirm.py": {
+      "sha256": "c33fe176592042f408c305d477817c81823be43534c0a950bd26cbe70b91265e",
+      "bytes": 31628
+    }
+  },
+  "main_confirmation_index_exists": false,
+  "main_confirmation_npz_count": 0,
+  "recovery_confirmation_npz_count": 0,
+  "online_confirmation_npz_count": 0,
+  "expected_online_conditions": 2160,
+  "objects_per_condition": 512,
+  "online_batch_size": 32,
+  "workers": 2,
+  "science_benefit_claimed": false
+}
