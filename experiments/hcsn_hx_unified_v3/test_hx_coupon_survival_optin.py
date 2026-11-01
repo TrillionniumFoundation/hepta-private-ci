@@ -40,9 +40,14 @@ class CouponUnitDiscountTests(unittest.TestCase):
 
     def test_existing_first_passage_refusal_is_not_bypassed(self):
         p=HX()
-        for pricing in (default_bond_value,bond_value):
-            with self.assertRaisesRegex(ArithmeticError,'F/G first-passage'):
-                pricing(p,40306823.67318163,2.,64.62517667527493)
+        # A formerly rejected ordinary subnormal tail now has a corrected
+        # nonzero first term. Test guard non-bypass with an explicit refusal,
+        # not by requiring the repaired arithmetic defect to remain broken.
+        with patch('experiments.hcsn_hx_unified_v3.hx._first_passage_factors',
+                   side_effect=ArithmeticError('HX F/G first-passage ordering unresolved in f64')):
+            for pricing in (default_bond_value,bond_value):
+                with self.assertRaisesRegex(ArithmeticError,'F/G first-passage'):
+                    pricing(p,40306823.67318163,2.,64.62517667527493)
 
     def test_unresolved_survival_cancellation_refuses(self):
         p=HX()

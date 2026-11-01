@@ -112,12 +112,17 @@ def _first_passage_factors(p: HX, v: float, tau: float) -> tuple[float, float]:
     if (not all(math.isfinite(t) for t in (v,u,a,zhat))
             or v<0 or u<=0):
         raise ArithmeticError('HX first-passage scaled state unresolved in f64')
-    u2=u*u
-    h1=(-v-a*u2)/u
-    h2=(-v+a*u2)/u
-    q1=(-v-zhat*u2)/u
-    q2=(-v+zhat*u2)/u
-    F=float(ndtr(h1))+_exp_cdf(-2*a*v,h2)
+    # Preserve the original multiplication order on the ordinary path.
+    h1=(-v-a*u*u)/u
+    h2=(-v+a*u*u)/u
+    q1=(-v-zhat*u*u)/u
+    q2=(-v+zhat*u*u)/u
+    first=float(ndtr(h1))
+    if first == 0.:
+        # ndtr can erase a representable subnormal tail; log_ndtr retains
+        # it. Recover only this zero case; never clamp an unordered F/G.
+        first=_exp_cdf(0.,h1)
+    F=first+_exp_cdf(-2*a*v,h2)
     G=(_exp_cdf((-a+zhat)*v,q1)
        +_exp_cdf((-a-zhat)*v,q2))
     if not (math.isfinite(F) and math.isfinite(G) and 0<=G<=F<=1):
