@@ -1,0 +1,41 @@
+{
+  "r11_control_bitwise_identical_rows": 32,
+  "r11_control_rows": 32,
+  "candidate_observed_dual_dtypes": [
+    [
+      "float32",
+      "float32"
+    ]
+  ],
+  "extended_rows_rejected_by_default": 16,
+  "extended_rows": 16,
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+  "cpu_count": 9,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "source_sha256": {
+    "stable32.py": "1f49ee7f998bb0e5356eabdc5dcabd9c0769c0b97b9ad671bf4b615f4ff62b93",
+    "experiment.py": "7b8498c674777d5e7fd1bffa3eb2e4301de11c29fd77e64b9c3a9890f469ccae",
+    "kernel.py": "1a7fb9480bca8fd127241b2488834bc682626f817469f8a69e07097f74adf4b6",
+    "reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+    "check_joins.py": "27fb2ed0b96e96bacdfee7592c7e03e4e33322a504b6d7ac0552e99571805bfd"
+  },
+  "precision_scope": "All observed NumPy Dual values/tangents float32; no whole-kernel FP64 fallback. SciPy CDF implementation machine instructions not independently inspected; no pure-FP32 hardware/GPU claim.",
+  "runner_io_note": "After the measured runs, added --destination and early no-overwrite checks only; numerical algorithm is unchanged.",
+  "artifact_sha256": {
+    "CPU_BENCHMARK.json": "ca079ed0c9745ce8ac1d30b45482bb8765d8ca70631a5eb793561af053f88204",
+    "DEVELOPMENT_01_RESULTS.json": "fb1260aa30bb6468215c1d0f72b530f640b3dfbb8b383b5163704795eded65a5",
+    "DEVELOPMENT_01_SUMMARY.json": "dba818dceaa135e314efd5c68cc907190d5a69516f5a9ff45584cc1c9ba955a6",
+    "DEVELOPMENT_02_RESULTS.json": "342de98b99183c3dd6e29937d4dd5fd7311bffb92606e4e26de928906db6ccc7",
+    "DEVELOPMENT_02_SUMMARY.json": "b26022900528e4ff1c8764ee9f3c81b564706e2485f644c232f5e0d7214d315d",
+    "FINAL_RESULTS.json": "4878591c7ef9bfb358e84c6bcc784335e52f08ef3a6d6912bb4c1a9a84f237ee",
+    "FINAL_SUMMARY.json": "bcca590ee8947e5d72c3b9d1f9f397cad15c1722e9a56ce86f5fc961a9c530f5",
+    "FIT_TIMING.json": "306913974e5dc020cac430e20b5b66d0936f968d1ca82403ab153609f788e19f",
+    "JOIN_PROTOCOL.json": "572f15b1125de271ac6508d13e5220681066882161676e8aaf4d91ea40c5c12d",
+    "JOIN_RESULTS.json": "6f3535d8704b8eb7f40edde831d871ef9ddaebe1d4a2414741a6a3bd3a4047c9",
+    "NUMERICS_ZH.md": "381ef67e2664060e2b843e4e06067d7befb08a0448a981f5b0390105946d012b",
+    "PROTOCOL.json": "78754ad5e676eaa91b9c12b4512141519afd6c3cb1b94cf433f4219ff99ae1bd"
+  }
+}

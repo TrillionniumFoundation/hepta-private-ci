@@ -1,0 +1,71 @@
+{
+  "protocol_sha256": "78754ad5e676eaa91b9c12b4512141519afd6c3cb1b94cf433f4219ff99ae1bd",
+  "candidate_sha256": "1f49ee7f998bb0e5356eabdc5dcabd9c0769c0b97b9ad671bf4b615f4ff62b93",
+  "summary": {
+    "original32_box": {
+      "rows": 32,
+      "passed": 2,
+      "nonfinite_or_rejected": 0,
+      "maximum_value_error": 0.0162872771445453,
+      "maximum_jacobian_error": 61.81494268103482
+    },
+    "original32_extension": {
+      "rows": 16,
+      "passed": 3,
+      "nonfinite_or_rejected": 0,
+      "maximum_value_error": 0.29466463751644945,
+      "maximum_jacobian_error": 52.029556193558896
+    },
+    "candidate32_box": {
+      "rows": 32,
+      "passed": 20,
+      "nonfinite_or_rejected": 0,
+      "maximum_value_error": 2.0710889928387344e-06,
+      "maximum_jacobian_error": 0.0005222418961629626
+    },
+    "candidate32_extension": {
+      "rows": 16,
+      "passed": 3,
+      "nonfinite_or_rejected": 0,
+      "maximum_value_error": 0.00013766550408174486,
+      "maximum_jacobian_error": 0.01525415690480261
+    },
+    "original_mixed_box": {
+      "rows": 32,
+      "passed": 32,
+      "nonfinite_or_rejected": 0,
+      "maximum_value_error": 4.4137078101894436e-08,
+      "maximum_jacobian_error": 6.8832148173229e-08
+    },
+    "original_mixed_extension": {
+      "rows": 16,
+      "passed": 16,
+      "nonfinite_or_rejected": 0,
+      "maximum_value_error": 5.3437115021406333e-08,
+      "maximum_jacobian_error": 2.1716805520544114e-07
+    },
+    "candidate64_box": {
+      "rows": 32,
+      "passed": 32,
+      "nonfinite_or_rejected": 0,
+      "maximum_value_error": 2.483401955314762e-15,
+      "maximum_jacobian_error": 2.497666799931061e-12
+    },
+    "candidate64_extension": {
+      "rows": 16,
+      "passed": 16,
+      "nonfinite_or_rejected": 0,
+      "maximum_value_error": 3.268569618611005e-13,
+      "maximum_jacobian_error": 5.288757899844352e-11
+    }
+  },
+  "elapsed_seconds": 14.650967546000174,
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "processor": "x86_64"
+  },
+  "limits": "Fixed development points only; extended inputs never admitted for training"
+}
