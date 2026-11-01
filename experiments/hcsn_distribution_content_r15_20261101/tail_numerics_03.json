@@ -1,0 +1,1230 @@
+{
+  "checks": [
+    {
+      "error": 2.913225216616411e-13,
+      "name": "uniform_limit_matches_original_R14",
+      "passed": true,
+      "threshold": 2e-11
+    },
+    {
+      "error": 1.7763568394002505e-15,
+      "name": "tail_half_upper40.local_drift",
+      "passed": true,
+      "threshold": 2e-12
+    },
+    {
+      "error": 2.220446049250313e-16,
+      "name": "tail_half_upper40.local_variance",
+      "passed": true,
+      "threshold": 2e-12
+    },
+    {
+      "error": 0.0,
+      "name": "tail_half_upper40.same_fine_anchor_basis",
+      "passed": true,
+      "threshold": 0.0
+    },
+    {
+      "error": 1.7763568394002505e-15,
+      "name": "tail_half_upper40.same_fine_positions",
+      "passed": true,
+      "threshold": 9.508733669730752e-15
+    },
+    {
+      "name": "tail_half_upper40.constant_anchor_extrapolation",
+      "passed": true
+    },
+    {
+      "holding_time_max": 0.25,
+      "holding_time_min": 0.003460207612456723,
+      "minimum_down": 2.25,
+      "minimum_up": 1.75,
+      "name": "tail_half_upper40.nonnegative_rates",
+      "passed": true
+    },
+    {
+      "error": 1.7763568394002505e-15,
+      "name": "tail_half_upper40.nonuniform_mean_collapse",
+      "passed": true,
+      "threshold": 2e-12
+    },
+    {
+      "error": 7.450580596923828e-09,
+      "name": "tail_half_upper40.readout_independence_preserves_current_feature",
+      "passed": true,
+      "threshold": 2e-07
+    },
+    {
+      "name": "tail_half_upper40.readout_independence_preserves_probability",
+      "passed": true
+    },
+    {
+      "excess": -3.10647792873839e-05,
+      "name": "tail_half_upper40.readout_independence_bounded",
+      "passed": true,
+      "threshold": 2e-07
+    },
+    {
+      "error": 1.7763568394002505e-15,
+      "name": "tail_quarter_upper40.local_drift",
+      "passed": true,
+      "threshold": 2e-12
+    },
+    {
+      "error": 2.220446049250313e-16,
+      "name": "tail_quarter_upper40.local_variance",
+      "passed": true,
+      "threshold": 2e-12
+    },
+    {
+      "error": 0.0,
+      "name": "tail_quarter_upper40.same_fine_anchor_basis",
+      "passed": true,
+      "threshold": 0.0
+    },
+    {
+      "error": 1.7763568394002505e-15,
+      "name": "tail_quarter_upper40.same_fine_positions",
+      "passed": true,
+      "threshold": 9.508733669730752e-15
+    },
+    {
+      "name": "tail_quarter_upper40.constant_anchor_extrapolation",
+      "passed": true
+    },
+    {
+      "holding_time_max": 0.0625,
+      "holding_time_min": 0.003460207612456723,
+      "minimum_down": 8.5,
+      "minimum_up": 7.5,
+      "name": "tail_quarter_upper40.nonnegative_rates",
+      "passed": true
+    },
+    {
+      "error": 3.3306690738754696e-15,
+      "name": "tail_quarter_upper40.nonuniform_mean_collapse",
+      "passed": true,
+      "threshold": 2e-12
+    },
+    {
+      "error": 7.450580596923828e-09,
+      "name": "tail_quarter_upper40.readout_independence_preserves_current_feature",
+      "passed": true,
+      "threshold": 2e-07
+    },
+    {
+      "name": "tail_quarter_upper40.readout_independence_preserves_probability",
+      "passed": true
+    },
+    {
+      "excess": -2.0449539765655153e-05,
+      "name": "tail_quarter_upper40.readout_independence_bounded",
+      "passed": true,
+      "threshold": 2e-07
+    },
+    {
+      "error": 1.7763568394002505e-15,
+      "name": "tail_half_upper60.local_drift",
+      "passed": true,
+      "threshold": 2e-12
+    },
+    {
+      "error": 2.220446049250313e-16,
+      "name": "tail_half_upper60.local_variance",
+      "passed": true,
+      "threshold": 2e-12
+    },
+    {
+      "error": 0.0,
+      "name": "tail_half_upper60.same_fine_anchor_basis",
+      "passed": true,
+      "threshold": 0.0
+    },
+    {
+      "error": 1.7763568394002505e-15,
+      "name": "tail_half_upper60.same_fine_positions",
+      "passed": true,
+      "threshold": 9.508733669730752e-15
+    },
+    {
+      "name": "tail_half_upper60.constant_anchor_extrapolation",
+      "passed": true
+    },
+    {
+      "holding_time_max": 0.25,
+      "holding_time_min": 0.003460207612456723,
+      "minimum_down": 2.25,
+      "minimum_up": 1.75,
+      "name": "tail_half_upper60.nonnegative_rates",
+      "passed": true
+    },
+    {
+      "error": 2.6645352591003757e-15,
+      "name": "tail_half_upper60.nonuniform_mean_collapse",
+      "passed": true,
+      "threshold": 2e-12
+    },
+    {
+      "error": 7.450580596923828e-09,
+      "name": "tail_half_upper60.readout_independence_preserves_current_feature",
+      "passed": true,
+      "threshold": 2e-07
+    },
+    {
+      "name": "tail_half_upper60.readout_independence_preserves_probability",
+      "passed": true
+    },
+    {
+      "excess": -2.2505761171720386e-05,
+      "name": "tail_half_upper60.readout_independence_bounded",
+      "passed": true,
+      "threshold": 2e-07
+    }
+  ],
+  "cpu_seconds": 2.2292612839999997,
+  "passed": true,
+  "rows": [
+    {
+      "actual": {
+        "active_bins": [
+          0.034386342739799264,
+          0.10519358517794986,
+          0.40023406449410737,
+          0.4432491053424827,
+          0.016936901370628372,
+          8.75030752055731e-10,
+          9.192237351661693e-40
+        ],
+        "active_mass": 0.9999999999999984,
+        "count_pmf_with_overflow": [
+          0.9414519174154636,
+          0.057993925764920504,
+          0.0005535550584977284,
+          6.016767329707778e-07,
+          8.438363118031212e-11
+        ],
+        "expected_count": 0.0591028412496512,
+        "first_hit": 0.058548082584536365,
+        "mass": 0.9999999999999984,
+        "minimum_probability": 6.738699958505023e-270,
+        "time": 0.25,
+        "upper_loss": 1.2046005207187881e-216
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.5,
+        "tail_upper": 40.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.03462559380696257,
+          0.10573491935614858,
+          0.3998249627791915,
+          0.4430162384738279,
+          0.01679828513045131,
+          4.5341804526656857e-10,
+          1.3319992910663928e-45
+        ],
+        "active_mass": 0.9999999999999999,
+        "completed_reset_terms": 4,
+        "count_pmf_with_overflow": [
+          0.9419161566877954,
+          0.05758821767285213,
+          0.0004952466780258168,
+          3.7893703246825496e-07,
+          2.429414360433458e-11
+        ],
+        "expected_count": 0.05857984793717775,
+        "first_hit": 0.058083843312204564,
+        "omitted_probability_bound": 1.2662135678179683e-16,
+        "quadrature_error_estimate": 2.188803058412375e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.0015611704907224843,
+        "count_pmf_l1": 0.0009284785446620188,
+        "expected_count": 0.0005229933124734493,
+        "first_hit": 0.0004642392723318012,
+        "mass_error": 1.5543122344752192e-15,
+        "upper_loss": 1.2046005207187881e-216
+      },
+      "horizon": 0.25,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_half_upper40"
+    },
+    {
+      "actual": {
+        "active_bins": [
+          0.035347328306987176,
+          0.09970097823180676,
+          0.33063294117628955,
+          0.4163019647640654,
+          0.11742595269095188,
+          0.0005908348296097818,
+          2.8919206528891646e-13
+        ],
+        "active_mass": 0.9999999999999998,
+        "count_pmf_with_overflow": [
+          0.5992063637136719,
+          0.29032430295515127,
+          0.092867777735551,
+          0.016018472993975255,
+          0.001583082601650571
+        ],
+        "expected_count": 0.5305293735430908,
+        "first_hit": 0.40079363628632814,
+        "mass": 0.9999999999999999,
+        "minimum_probability": 4.4838640650620295e-148,
+        "time": 1.0,
+        "upper_loss": 5.677915374656128e-123
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.5,
+        "tail_upper": 40.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.035484346532871545,
+          0.09996857726774447,
+          0.3306162537161161,
+          0.4160045310269787,
+          0.11734212505439531,
+          0.000584166400845005,
+          2.0840983883260044e-13
+        ],
+        "active_mass": 0.9999999999991595,
+        "completed_reset_terms": 8,
+        "count_pmf_with_overflow": [
+          0.5991856185339332,
+          0.29060338366209754,
+          0.09280335118707347,
+          0.0158735494767744,
+          0.0015340971401214378
+        ],
+        "expected_count": 0.5300432314037705,
+        "first_hit": 0.40081438146606685,
+        "omitted_probability_bound": 8.403430751311875e-13,
+        "quadrature_error_estimate": 3.4355100304815496e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.0008092345244843523,
+        "count_pmf_l1": 0.0005581614138924886,
+        "expected_count": 0.00048614213932030026,
+        "first_hit": 2.0745179738712594e-05,
+        "mass_error": 1.1102230246251565e-16,
+        "upper_loss": 5.677915374656128e-123
+      },
+      "horizon": 1.0,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_half_upper40"
+    },
+    {
+      "actual": {
+        "active_bins": [
+          0.03105828785550989,
+          0.08785335674995456,
+          0.2947472270077966,
+          0.40479965769981735,
+          0.1764538490876875,
+          0.005087611509689755,
+          1.0089531188958362e-08
+        ],
+        "active_mass": 0.9999999999999868,
+        "count_pmf_with_overflow": [
+          0.436187692723661,
+          0.3005641351782083,
+          0.1722175875763306,
+          0.06811932261508817,
+          0.02291126190669879
+        ],
+        "expected_count": 0.9457460982690059,
+        "first_hit": 0.563812307276339,
+        "mass": 0.9999999999999869,
+        "minimum_probability": 3.8947592656291704e-112,
+        "time": 1.75,
+        "upper_loss": 1.230642461923852e-94
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.5,
+        "tail_upper": 40.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.03118211982634298,
+          0.08810266233379437,
+          0.294751972883489,
+          0.40454034941870987,
+          0.17634826329213507,
+          0.005074622764789244,
+          9.480724535620249e-09
+        ],
+        "active_mass": 0.9999999999999848,
+        "completed_reset_terms": 12,
+        "count_pmf_with_overflow": [
+          0.43615165757458774,
+          0.3007129227548404,
+          0.1723255132076643,
+          0.06806142631839339,
+          0.022748480144514176
+        ],
+        "expected_count": 0.9452007902467123,
+        "first_hit": 0.5638483424254123,
+        "omitted_probability_bound": 1.504384729245695e-14,
+        "quadrature_error_estimate": 4.617632541130725e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.0007557668607323434,
+        "count_pmf_l1": 0.0005134264159184429,
+        "expected_count": 0.000545308022293578,
+        "first_hit": 3.6035149073243566e-05,
+        "mass_error": 1.3100631690576847e-14,
+        "upper_loss": 1.230642461923852e-94
+      },
+      "horizon": 1.75,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_half_upper40"
+    },
+    {
+      "actual": {
+        "active_bins": [
+          0.02549964690738634,
+          0.07237503313564335,
+          0.24611064159721355,
+          0.3711447577989305,
+          0.25273430198198105,
+          0.032099992368858715,
+          3.5626209893488414e-05
+        ],
+        "active_mass": 0.9999999999999072,
+        "count_pmf_with_overflow": [
+          0.23844104224892254,
+          0.21836001787204845,
+          0.199444031782406,
+          0.15244557718129276,
+          0.19130933091523725
+        ],
+        "expected_count": 1.9927542873508055,
+        "first_hit": 0.7615589577510775,
+        "mass": 0.9999999999999071,
+        "minimum_probability": 2.8229337223818512e-71,
+        "time": 4.0,
+        "upper_loss": 2.4865753090103626e-61
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.5,
+        "tail_upper": 40.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.0256049156492735,
+          0.07259402400385696,
+          0.24613415965279128,
+          0.37094756452275,
+          0.25260497258766695,
+          0.03207892990946617,
+          3.543367362864594e-05
+        ],
+        "active_mass": 0.9999999999994333,
+        "completed_reset_terms": 18,
+        "count_pmf_with_overflow": [
+          0.23842170813487662,
+          0.2183707031774227,
+          0.19951318991674938,
+          0.1525179882967114,
+          0.19117641047423992
+        ],
+        "expected_count": 1.9921354432086467,
+        "first_hit": 0.7615782918651234,
+        "omitted_probability_bound": 5.664919065436113e-13,
+        "quadrature_error_estimate": 9.642603980163686e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.000695555331830499,
+        "count_pmf_l1": 0.00030450911017951277,
+        "expected_count": 0.0006188441421588475,
+        "first_hit": 1.9334114045865824e-05,
+        "mass_error": 9.29256671611256e-14,
+        "upper_loss": 2.4865753090103626e-61
+      },
+      "horizon": 4.0,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_half_upper40"
+    },
+    {
+      "actual": {
+        "active_bins": [
+          0.03438634273979926,
+          0.10519358517794983,
+          0.40023406449410714,
+          0.4432491053424821,
+          0.01693690137062833,
+          8.750307520557279e-10,
+          9.192237357972651e-40
+        ],
+        "active_mass": 0.9999999999999973,
+        "count_pmf_with_overflow": [
+          0.9414519174154626,
+          0.05799392576492045,
+          0.000553555058497728,
+          6.016767329707774e-07,
+          8.438363118031229e-11
+        ],
+        "expected_count": 0.05910284124965107,
+        "first_hit": 0.058548082584537364,
+        "mass": 0.9999999999999977,
+        "minimum_probability": 0.0,
+        "time": 0.25,
+        "upper_loss": 1.8720221724546777e-301
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.25,
+        "tail_upper": 40.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.03462559380696257,
+          0.10573491935614858,
+          0.3998249627791915,
+          0.4430162384738279,
+          0.01679828513045131,
+          4.5341804526656857e-10,
+          1.3319992910663928e-45
+        ],
+        "active_mass": 0.9999999999999999,
+        "completed_reset_terms": 4,
+        "count_pmf_with_overflow": [
+          0.9419161566877954,
+          0.05758821767285213,
+          0.0004952466780258168,
+          3.7893703246825496e-07,
+          2.429414360433458e-11
+        ],
+        "expected_count": 0.05857984793717775,
+        "first_hit": 0.058083843312204564,
+        "omitted_probability_bound": 1.2662135678179683e-16,
+        "quadrature_error_estimate": 2.188803058412375e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.0015611704907216447,
+        "count_pmf_l1": 0.000928478544662962,
+        "expected_count": 0.0005229933124733174,
+        "first_hit": 0.0004642392723328004,
+        "mass_error": 2.3314683517128287e-15,
+        "upper_loss": 1.8720221724546777e-301
+      },
+      "horizon": 0.25,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_quarter_upper40"
+    },
+    {
+      "actual": {
+        "active_bins": [
+          0.035347328306987266,
+          0.09970097823180701,
+          0.3306329411762904,
+          0.4163019647640663,
+          0.11742595269095199,
+          0.0005908348296097814,
+          2.8919206528891616e-13
+        ],
+        "active_mass": 1.000000000000002,
+        "count_pmf_with_overflow": [
+          0.5992063637136729,
+          0.290324302955152,
+          0.09286777773555122,
+          0.016018472993975297,
+          0.001583082601650575
+        ],
+        "expected_count": 0.5305293735430924,
+        "first_hit": 0.40079363628632714,
+        "mass": 1.000000000000002,
+        "minimum_probability": 1.7257737341426563e-197,
+        "time": 1.0,
+        "upper_loss": 1.1197051291130097e-167
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.25,
+        "tail_upper": 40.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.035484346532871545,
+          0.09996857726774447,
+          0.3306162537161161,
+          0.4160045310269787,
+          0.11734212505439531,
+          0.000584166400845005,
+          2.0840983883260044e-13
+        ],
+        "active_mass": 0.9999999999991595,
+        "completed_reset_terms": 8,
+        "count_pmf_with_overflow": [
+          0.5991856185339332,
+          0.29060338366209754,
+          0.09280335118707347,
+          0.0158735494767744,
+          0.0015340971401214378
+        ],
+        "expected_count": 0.5300432314037705,
+        "first_hit": 0.40081438146606685,
+        "omitted_probability_bound": 8.403430751311875e-13,
+        "quadrature_error_estimate": 3.4355100304815496e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.0008092345244858437,
+        "count_pmf_l1": 0.0005581614138930339,
+        "expected_count": 0.00048614213932185457,
+        "first_hit": 2.0745179739711794e-05,
+        "mass_error": 1.9984014443252818e-15,
+        "upper_loss": 1.1197051291130097e-167
+      },
+      "horizon": 1.0,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_quarter_upper40"
+    },
+    {
+      "actual": {
+        "active_bins": [
+          0.031058287855509483,
+          0.0878533567499534,
+          0.29474722700779266,
+          0.40479965769981197,
+          0.17645384908768516,
+          0.005087611509689688,
+          1.0089531188958058e-08
+        ],
+        "active_mass": 0.9999999999999735,
+        "count_pmf_with_overflow": [
+          0.4361876927236552,
+          0.30056413517820424,
+          0.17221758757632827,
+          0.06811932261508727,
+          0.022911261906698465
+        ],
+        "expected_count": 0.945746098268994,
+        "first_hit": 0.5638123072763448,
+        "mass": 0.9999999999999734,
+        "minimum_probability": 7.7883909542773315e-146,
+        "time": 1.75,
+        "upper_loss": 1.3684732065148193e-124
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.25,
+        "tail_upper": 40.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.03118211982634298,
+          0.08810266233379437,
+          0.294751972883489,
+          0.40454034941870987,
+          0.17634826329213507,
+          0.005074622764789244,
+          9.480724535620249e-09
+        ],
+        "active_mass": 0.9999999999999848,
+        "completed_reset_terms": 12,
+        "count_pmf_with_overflow": [
+          0.43615165757458774,
+          0.3007129227548404,
+          0.1723255132076643,
+          0.06806142631839339,
+          0.022748480144514176
+        ],
+        "expected_count": 0.9452007902467123,
+        "first_hit": 0.5638483424254123,
+        "omitted_probability_bound": 1.504384729245695e-14,
+        "quadrature_error_estimate": 4.617632541130725e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.0007557668607300727,
+        "count_pmf_l1": 0.0005134264159178253,
+        "expected_count": 0.0005453080222816986,
+        "first_hit": 3.603514906747041e-05,
+        "mass_error": 2.6645352591003757e-14,
+        "upper_loss": 1.3684732065148193e-124
+      },
+      "horizon": 1.75,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_quarter_upper40"
+    },
+    {
+      "actual": {
+        "active_bins": [
+          0.02549964690738763,
+          0.07237503313564703,
+          0.24611064159722607,
+          0.3711447577989494,
+          0.25273430198199387,
+          0.032099992371848025,
+          3.5626206905785576e-05
+        ],
+        "active_mass": 0.9999999999999579,
+        "count_pmf_with_overflow": [
+          0.2384410422489347,
+          0.2183600178720597,
+          0.1994440317824162,
+          0.15244557718130045,
+          0.19130933091524677
+        ],
+        "expected_count": 1.992754287350899,
+        "first_hit": 0.7615589577510653,
+        "mass": 0.9999999999999579,
+        "minimum_probability": 1.9671230432956602e-86,
+        "time": 4.0,
+        "upper_loss": 4.274405212248123e-74
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.25,
+        "tail_upper": 40.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.0256049156492735,
+          0.07259402400385696,
+          0.24613415965279128,
+          0.37094756452275,
+          0.25260497258766695,
+          0.03207892990946617,
+          3.543367362864594e-05
+        ],
+        "active_mass": 0.9999999999994333,
+        "completed_reset_terms": 18,
+        "count_pmf_with_overflow": [
+          0.23842170813487662,
+          0.2183707031774227,
+          0.19951318991674938,
+          0.1525179882967114,
+          0.19117641047423992
+        ],
+        "expected_count": 1.9921354432086467,
+        "first_hit": 0.7615782918651234,
+        "omitted_probability_bound": 5.664919065436113e-13,
+        "quadrature_error_estimate": 9.642603980163686e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.0006955553318463172,
+        "count_pmf_l1": 0.0003045091101720465,
+        "expected_count": 0.0006188441422523283,
+        "first_hit": 1.9334114058078278e-05,
+        "mass_error": 4.207745263329343e-14,
+        "upper_loss": 4.274405212248123e-74
+      },
+      "horizon": 4.0,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_quarter_upper40"
+    },
+    {
+      "actual": {
+        "active_bins": [
+          0.03438634273979944,
+          0.10519358517795036,
+          0.40023406449410914,
+          0.4432491053424844,
+          0.016936901370628456,
+          8.750307520557397e-10,
+          9.192237246309532e-40
+        ],
+        "active_mass": 1.0000000000000027,
+        "count_pmf_with_overflow": [
+          0.9414519174154674,
+          0.057993925764920774,
+          0.0005535550584977314,
+          6.016767329707813e-07,
+          8.438363118031238e-11
+        ],
+        "expected_count": 0.059102841249651504,
+        "first_hit": 0.05854808258453259,
+        "mass": 1.0000000000000024,
+        "minimum_probability": 0.0,
+        "time": 0.25,
+        "upper_loss": 5e-324
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.5,
+        "tail_upper": 60.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.03462559380696257,
+          0.10573491935614858,
+          0.3998249627791915,
+          0.4430162384738279,
+          0.01679828513045131,
+          4.5341804526656857e-10,
+          1.3319992910663928e-45
+        ],
+        "active_mass": 0.9999999999999999,
+        "completed_reset_terms": 4,
+        "count_pmf_with_overflow": [
+          0.9419161566877954,
+          0.05758821767285213,
+          0.0004952466780258168,
+          3.7893703246825496e-07,
+          2.429414360433458e-11
+        ],
+        "expected_count": 0.05857984793717775,
+        "first_hit": 0.058083843312204564,
+        "omitted_probability_bound": 1.2662135678179683e-16,
+        "quadrature_error_estimate": 2.188803058412375e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.0015611704907253917,
+        "count_pmf_l1": 0.0009284785446585176,
+        "expected_count": 0.0005229933124737546,
+        "first_hit": 0.0004642392723280264,
+        "mass_error": 2.4424906541753444e-15,
+        "upper_loss": 5e-324
+      },
+      "horizon": 0.25,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_half_upper60"
+    },
+    {
+      "actual": {
+        "active_bins": [
+          0.03534732830698757,
+          0.09970097823180787,
+          0.33063294117629316,
+          0.41630196476407,
+          0.11742595269095324,
+          0.0005908348296097879,
+          2.891920652889195e-13
+        ],
+        "active_mass": 1.0000000000000109,
+        "count_pmf_with_overflow": [
+          0.5992063637136783,
+          0.2903243029551546,
+          0.09286777773555205,
+          0.01601847299397544,
+          0.0015830826016505874
+        ],
+        "expected_count": 0.5305293735430973,
+        "first_hit": 0.4007936362863217,
+        "mass": 1.0000000000000107,
+        "minimum_probability": 8.575123136334796e-230,
+        "time": 1.0,
+        "upper_loss": 5.348012270481921e-201
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.5,
+        "tail_upper": 60.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.035484346532871545,
+          0.09996857726774447,
+          0.3306162537161161,
+          0.4160045310269787,
+          0.11734212505439531,
+          0.000584166400845005,
+          2.0840983883260044e-13
+        ],
+        "active_mass": 0.9999999999991595,
+        "completed_reset_terms": 8,
+        "count_pmf_with_overflow": [
+          0.5991856185339332,
+          0.29060338366209754,
+          0.09280335118707347,
+          0.0158735494767744,
+          0.0015340971401214378
+        ],
+        "expected_count": 0.5300432314037705,
+        "first_hit": 0.40081438146606685,
+        "omitted_probability_bound": 8.403430751311875e-13,
+        "quadrature_error_estimate": 3.4355100304815496e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.0008092345244924283,
+        "count_pmf_l1": 0.0005581614138968523,
+        "expected_count": 0.00048614213932673955,
+        "first_hit": 2.0745179745151887e-05,
+        "mass_error": 1.0658141036401503e-14,
+        "upper_loss": 5.348012270481921e-201
+      },
+      "horizon": 1.0,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_half_upper60"
+    },
+    {
+      "actual": {
+        "active_bins": [
+          0.031058287855509945,
+          0.08785335674995472,
+          0.2947472270077971,
+          0.404799657699818,
+          0.17645384908768774,
+          0.0050876115096897614,
+          1.008953118895833e-08
+        ],
+        "active_mass": 0.9999999999999886,
+        "count_pmf_with_overflow": [
+          0.43618769272366137,
+          0.30056413517820896,
+          0.17221758757633104,
+          0.06811932261508835,
+          0.022911261906698815
+        ],
+        "expected_count": 0.9457460982690098,
+        "first_hit": 0.5638123072763386,
+        "mass": 0.9999999999999885,
+        "minimum_probability": 1.8851415468657457e-181,
+        "time": 1.75,
+        "upper_loss": 9.71381171132602e-161
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.5,
+        "tail_upper": 60.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.03118211982634298,
+          0.08810266233379437,
+          0.294751972883489,
+          0.40454034941870987,
+          0.17634826329213507,
+          0.005074622764789244,
+          9.480724535620249e-09
+        ],
+        "active_mass": 0.9999999999999848,
+        "completed_reset_terms": 12,
+        "count_pmf_with_overflow": [
+          0.43615165757458774,
+          0.3007129227548404,
+          0.1723255132076643,
+          0.06806142631839339,
+          0.022748480144514176
+        ],
+        "expected_count": 0.9452007902467123,
+        "first_hit": 0.5638483424254123,
+        "omitted_probability_bound": 1.504384729245695e-14,
+        "quadrature_error_estimate": 4.617632541130725e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.0007557668607325577,
+        "count_pmf_l1": 0.000513426415917926,
+        "expected_count": 0.0005453080222974638,
+        "first_hit": 3.6035149073687656e-05,
+        "mass_error": 1.1546319456101628e-14,
+        "upper_loss": 9.71381171132602e-161
+      },
+      "horizon": 1.75,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_half_upper60"
+    },
+    {
+      "actual": {
+        "active_bins": [
+          0.025499646907389414,
+          0.07237503313565208,
+          0.2461106415972432,
+          0.37114475779897527,
+          0.2527343019820114,
+          0.032099992368862504,
+          3.562620989349247e-05
+        ],
+        "active_mass": 1.0000000000000273,
+        "count_pmf_with_overflow": [
+          0.23844104224895138,
+          0.21836001787207507,
+          0.19944403178243003,
+          0.15244557718131088,
+          0.19130933091525995
+        ],
+        "expected_count": 1.992754287351033,
+        "first_hit": 0.7615589577510486,
+        "mass": 1.0000000000000273,
+        "minimum_probability": 8.872143398693037e-123,
+        "time": 4.0,
+        "upper_loss": 1.943576773207447e-110
+      },
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 0,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.5,
+        "tail_upper": 60.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "continuous": {
+        "active_bins": [
+          0.0256049156492735,
+          0.07259402400385696,
+          0.24613415965279128,
+          0.37094756452275,
+          0.25260497258766695,
+          0.03207892990946617,
+          3.543367362864594e-05
+        ],
+        "active_mass": 0.9999999999994333,
+        "completed_reset_terms": 18,
+        "count_pmf_with_overflow": [
+          0.23842170813487662,
+          0.2183707031774227,
+          0.19951318991674938,
+          0.1525179882967114,
+          0.19117641047423992
+        ],
+        "expected_count": 1.9921354432086467,
+        "first_hit": 0.7615782918651234,
+        "omitted_probability_bound": 5.664919065436113e-13,
+        "quadrature_error_estimate": 9.642603980163686e-13
+      },
+      "errors": {
+        "active_bins_l1": 0.0006955553318679522,
+        "count_pmf_l1": 0.00030450911016227655,
+        "expected_count": 0.0006188441423864433,
+        "first_hit": 1.9334114074731623e-05,
+        "mass_error": 2.731148640577885e-14,
+        "upper_loss": 1.943576773207447e-110
+      },
+      "horizon": 4.0,
+      "limits": {
+        "active_bins_l1": 0.003,
+        "count_pmf_l1": 0.002,
+        "expected_count": 0.002,
+        "first_hit": 0.0005,
+        "mass_error": 2e-09,
+        "upper_loss": 1e-07
+      },
+      "passed": true,
+      "profile": "tail_half_upper60"
+    }
+  ],
+  "scope": "Nonuniform finite process; four initial-state continuous references, not a uniform posterior certificate",
+  "serialization": {
+    "change": "NumPy scalar to native Python scalar during JSON encoding only; frozen computation/model/training/evaluation sources unchanged.",
+    "computation_source_sha256": "6d5a59144d54ff779ec1caf51e2b4b95433a15a7ed9648044aaac02a542cc5d2",
+    "original_cli_failure": "Observed process exit 1: json.dump rejected a NumPy bool after computation. The partial output is retained unchanged.",
+    "original_cli_partial_sha256": "40f5f5cb3cbdae4b446ca746a3155d82b5feb7e930ad0aeca7f5a49021927393",
+    "retained_original_cli_partial": "tail_numerics_02.json",
+    "wrapper_source": "\"\"\"Serialize results from the unchanged frozen tail-check computation.\"\"\"\nimport hashlib\nimport json\nfrom pathlib import Path\n\nimport numpy as np\nimport torch\n\nfrom experiments.hcsn_distribution_content_r15_20261101 import tail_checks\n\n\ndef scalar(value):\n    if isinstance(value, np.generic):\n        return value.item()\n    raise TypeError(f\"Unsupported JSON object: {type(value)!r}\")\n\n\ntorch.set_num_threads(1)\ntorch.set_num_interop_threads(1)\nroot = Path(tail_checks.__file__).parent\nresult = tail_checks.numerics()\nresult['serialization'] = dict(\n    computation_source_sha256=hashlib.sha256(Path(tail_checks.__file__).read_bytes()).hexdigest(),\n    wrapper_source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),\n    wrapper_source=Path(__file__).read_text(),\n    change='NumPy scalar to native Python scalar during JSON encoding only; frozen computation/model/training/evaluation sources unchanged.',\n    retained_original_cli_partial='tail_numerics_02.json',\n    original_cli_partial_sha256=hashlib.sha256((root/'tail_numerics_02.json').read_bytes()).hexdigest(),\n    original_cli_failure='Observed process exit 1: json.dump rejected a NumPy bool after computation. The partial output is retained unchanged.')\nwith (root/'tail_numerics_03.json').open('x') as stream:\n    json.dump(result, stream, indent=2, sort_keys=True, allow_nan=False, default=scalar)\n    stream.write('\\n')\nprint(json.dumps(dict(passed=result['passed'], checks=len(result['checks']),\n    cases=len(result['rows']), failed=[r for r in result['checks']+result['rows'] if not r['passed']],\n    cpu_seconds=result['cpu_seconds']), default=scalar))\n",
+    "wrapper_source_sha256": "d40c732201f78b0cf43b259436e3425b6bf532a623788541ad238f0e776a12b2"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "passed": true,
+  "rows": [
+    {
+      "cache_bytes": 2526752,
+      "cache_entries": 4,
+      "cold_forward_backward_cpu": 0.44802142599999994,
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "analytic_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 150903,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.5,
+        "tail_upper": 60.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "family": "analytic_distribution",
+      "model_setup_cpu": 0.03477392899999998,
+      "parameters": 2028,
+      "warm_forward_backward_cpu": [
+        0.18810420599999977,
+        0.1779031350000002,
+        0.20068672500000018,
+        0.18045893499999988,
+        0.1913705349999999
+      ]
+    },
+    {
+      "cache_bytes": 2526752,
+      "cache_entries": 4,
+      "cold_forward_backward_cpu": 0.26439743300000007,
+      "config": {
+        "ablation": "none",
+        "cache_size": 128,
+        "family": "ordinary_distribution",
+        "mu": -0.25,
+        "n_anchors": 12,
+        "n_positions": 182,
+        "reset": 0.8,
+        "seed": 150903,
+        "sigma": 1.0,
+        "spacing": 0.058823529411764705,
+        "tail_spacing": 0.5,
+        "tail_upper": 60.0,
+        "width": 16,
+        "x": 1.0
+      },
+      "family": "ordinary_distribution",
+      "model_setup_cpu": 0.027790946000000094,
+      "parameters": 2028,
+      "warm_forward_backward_cpu": [
+        0.211022571,
+        0.19412698599999967,
+        0.2075305150000002,
+        0.18914031899999983,
+        0.1855432859999997
+      ]
+    }
+  ],
+  "runtime": "2.15.0+cpu",
+  "scope": "Fixed random B64 T12 tensors; no task data, no task cost/quality acceptance"
+}
