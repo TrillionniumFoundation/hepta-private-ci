@@ -1,0 +1,90 @@
+{
+  "schema": "hcsn-v8-reachable-mechanism-development.v1",
+  "created_unix": 1793554543.907972,
+  "source_sha256": {
+    "experiments/hcsn_v8_execution_20261101/mechanisms/campaign.py": "f6d19254032dec4b0276475bc95f6ca83c163b8f4341633f872b2d9696c657b0",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/count_interventions.py": "572b11dfbb67cd3b92a4fc3d14f1b57f662f97323c4dd16d703d8fecbaefa58e",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/recurrent_counts.py": "eef2fd26eb764d70e58ce7b2334b751e9916e9cf2aaa3f7598ba47b24f44ceb7",
+    "legacy/experiments/hcsn_mechanism_content_v2/renewal.py": "aa6bedde8d15d473d0b8beef36805955447fa88cc906846ee48be927ecab0cb6",
+    "legacy/experiments/hcsn_mechanism_content_v2/mechanism.py": "65754d240a34c5acf5eaac68a4aa3be1acbcfb96e07d735c5fcf6d4ca24e7fc0",
+    "legacy/experiments/hcsn_causal_execution_v3/mechanism_followup.py": "f972db7e0d41529b50c06d56d24bac80d83e185a006f85477758364bf677e429"
+  },
+  "fit_seeds": [
+    81101,
+    81103,
+    81107,
+    81109,
+    81113
+  ],
+  "training": {
+    "train_size": 8192,
+    "validation_size": 1024,
+    "epochs": 80
+  },
+  "conditions": [
+    "matched",
+    "hidden_refractory_mismatch"
+  ],
+  "episodes_per_condition": 24,
+  "world_seed_namespace": [
+    20261101,
+    83019
+  ],
+  "config": {
+    "dt": 0.15,
+    "ticks": 20,
+    "deadlines": [
+      5,
+      10,
+      15,
+      20
+    ],
+    "budget": 3,
+    "classes": 5,
+    "read_cost": 0.04,
+    "light_threshold": 0.28,
+    "particles": 4,
+    "condition": "matched"
+  },
+  "ordinary_families": [
+    "gru",
+    "ssm"
+  ],
+  "ordinary_selection": "Per fit, choose lower sampled-count validation NLL; retain both families",
+  "analytic_fitting": "Inherited common 512-sample physical calibration; no learned analytic parameters",
+  "interventions": [
+    "mean_two_point",
+    "single_transition"
+  ],
+  "paired_modes": [
+    "own closed loop",
+    "original analytic task-value actions fixed"
+  ],
+  "replacement_scope": "Newly fitted ordinary count propagators; same physical packet and count labels",
+  "recurrence_scope": "Four internal forecast-time nodes, not persistent AV observation memory",
+  "risk_intervention": "Not tested: inherited task has no external deadline service-risk term",
+  "primary_questions": [
+    "reachable multiple-event mass",
+    "count-shape vs count-mean effect",
+    "action vs fixed-action content effect",
+    "retrained ordinary replacement"
+  ],
+  "evidence_role": "development_only_known_renewal_model",
+  "real_AV_confirmation": false,
+  "v6_recovered": false,
+  "architecture_acceptance": false,
+  "limitations": [
+    "perfect sensor",
+    "known renewal-law prior",
+    "finite task",
+    "legacy one-planned-read heuristic",
+    "no calibrated-v7 common-head controller",
+    "CPU shared host",
+    "no physical device energy",
+    "no new real recording"
+  ],
+  "cost_rule": "Enclosing fresh workers charged once; internal arm timers are nested diagnostics",
+  "python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "torch": "2.9.1+cpu",
+  "threads": 1
+}
