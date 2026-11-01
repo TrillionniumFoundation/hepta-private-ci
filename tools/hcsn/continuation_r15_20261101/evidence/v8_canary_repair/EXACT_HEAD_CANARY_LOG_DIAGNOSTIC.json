@@ -1,0 +1,363 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "run_id": 41292214032,
+  "job_id": 124806452167,
+  "head": "6500d80838d0baf5304a9de584b93d9e0df8c914",
+  "merge": "f2298c98d294fd0491d408a7e25f0dfacaefd347",
+  "full_log_characters": 533576,
+  "evidence": [
+    {
+      "line": 1058,
+      "text": "  CARGO_INCREMENTAL: 0"
+    },
+    {
+      "line": 1059,
+      "text": "  CARGO_TERM_COLOR: always"
+    },
+    {
+      "line": 1060,
+      "text": "##[endgroup]"
+    },
+    {
+      "line": 1061,
+      "text": "rustc 1.95.0 (59807616e 2026-04-14)"
+    },
+    {
+      "line": 1062,
+      "text": "binary: rustc"
+    },
+    {
+      "line": 1063,
+      "text": "commit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860"
+    },
+    {
+      "line": 1064,
+      "text": "commit-date: 2026-04-14"
+    },
+    {
+      "line": 1065,
+      "text": "host: x86_64-unknown-linux-gnu"
+    },
+    {
+      "line": 1066,
+      "text": "release: 1.95.0"
+    },
+    {
+      "line": 1067,
+      "text": "LLVM version: 22.1.2"
+    },
+    {
+      "line": 1068,
+      "text": "##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=21]"
+    },
+    {
+      "line": 1069,
+      "text": "##[group]Run set -euo pipefail"
+    },
+    {
+      "line": 1070,
+      "text": "set -euo pipefail"
+    },
+    {
+      "line": 1071,
+      "text": "rustup_home=\"${RUSTUP_HOME:-${HOME}/.rustup}\""
+    },
+    {
+      "line": 5386,
+      "text": "  CARGO_HOME: /home/runner/.cargo"
+    },
+    {
+      "line": 5387,
+      "text": "  CARGO_INCREMENTAL: 0"
+    },
+    {
+      "line": 5388,
+      "text": "  CARGO_TERM_COLOR: always"
+    },
+    {
+      "line": 5389,
+      "text": "  CARGO_1_95: /home/runner/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo"
+    },
+    {
+      "line": 5390,
+      "text": "  SANDBOX: false"
+    },
+    {
+      "line": 5391,
+      "text": "  TARGET: x86_64-unknown-linux-gnu"
+    },
+    {
+      "line": 5570,
+      "text": "info: syncing channel updates for 1.91.0-x86_64-unknown-linux-gnu"
+    },
+    {
+      "line": 5571,
+      "text": "info: latest update on 2025-10-30 for version 1.91.0 (f8297e351 2025-10-28)"
+    },
+    {
+      "line": 5572,
+      "text": "info: downloading 11 components"
+    },
+    {
+      "line": 5573,
+      "text": "warn: the missing active toolchain `1.91.0-x86_64-unknown-linux-gnu` has been auto-installed"
+    },
+    {
+      "line": 5574,
+      "text": "warn: this might cause rustup commands to take longer time to finish than expected"
+    },
+    {
+      "line": 5575,
+      "text": "info: you may opt out with `RUSTUP_AUTO_INSTALL=0` or `rustup set auto-install disable`"
+    },
+    {
+      "line": 5576,
+      "text": "error[E0514]: found crate `fslock` compiled by an incompatible version of rustc"
+    },
+    {
+      "line": 5577,
+      "text": " --> /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/v8-150.4.0/build.rs:2:5"
+    },
+    {
+      "line": 5578,
+      "text": "  |"
+    },
+    {
+      "line": 5579,
+      "text": "2 | use fslock::LockFile;"
+    },
+    {
+      "line": 5580,
+      "text": "  |     ^^^^^^"
+    },
+    {
+      "line": 5581,
+      "text": "  |"
+    },
+    {
+      "line": 5582,
+      "text": "  = note: the following crate versions were found:"
+    },
+    {
+      "line": 5583,
+      "text": "          crate `fslock` compiled by rustc 1.95.0 (59807616e 2026-04-14): /home/runner/work/_temp/rusty-v8-cargo-smoke-x86_64-unknown-linux-gnu-false/debug/deps/libfslock-3c11df77b2f7133b.rlib"
+    },
+    {
+      "line": 5584,
+      "text": "  = help: please recompile that crate using this compiler (rustc 1.91.0 (f8297e351 2025-10-28)) (consider running `cargo clean` first)"
+    },
+    {
+      "line": 5585,
+      "text": ""
+    },
+    {
+      "line": 5586,
+      "text": "error[E0514]: found crate `miniz_oxide` compiled by an incompatible version of rustc"
+    },
+    {
+      "line": 5587,
+      "text": " --> /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/v8-150.4.0/build.rs:3:5"
+    },
+    {
+      "line": 5588,
+      "text": "  |"
+    },
+    {
+      "line": 5589,
+      "text": "3 | use miniz_oxide::MZFlush;"
+    },
+    {
+      "line": 5590,
+      "text": "  |     ^^^^^^^^^^^"
+    },
+    {
+      "line": 5591,
+      "text": "  |"
+    },
+    {
+      "line": 5592,
+      "text": "  = note: the following crate versions were found:"
+    },
+    {
+      "line": 5593,
+      "text": "          crate `miniz_oxide` compiled by rustc 1.95.0 (59807616e 2026-04-14): /home/runner/work/_temp/rusty-v8-cargo-smoke-x86_64-unknown-linux-gnu-false/debug/deps/libminiz_oxide-c3792625ab7af6df.rlib"
+    },
+    {
+      "line": 5594,
+      "text": "  = help: please recompile that crate using this compiler (rustc 1.91.0 (f8297e351 2025-10-28)) (consider running `cargo clean` first)"
+    },
+    {
+      "line": 5595,
+      "text": ""
+    },
+    {
+      "line": 5596,
+      "text": "error[E0514]: found crate `which` compiled by an incompatible version of rustc"
+    },
+    {
+      "line": 5597,
+      "text": "  --> /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/v8-150.4.0/build.rs:19:5"
+    },
+    {
+      "line": 5598,
+      "text": "   |"
+    },
+    {
+      "line": 5599,
+      "text": "19 | use which::which;"
+    },
+    {
+      "line": 5600,
+      "text": "   |     ^^^^^"
+    },
+    {
+      "line": 5601,
+      "text": "   |"
+    },
+    {
+      "line": 5602,
+      "text": "   = note: the following crate versions were found:"
+    },
+    {
+      "line": 5603,
+      "text": "           crate `which` compiled by rustc 1.95.0 (59807616e 2026-04-14): /home/runner/work/_temp/rusty-v8-cargo-smoke-x86_64-unknown-linux-gnu-false/debug/deps/libwhich-4688db37bf35438d.rlib"
+    },
+    {
+      "line": 5604,
+      "text": "   = help: please recompile that crate using this compiler (rustc 1.91.0 (f8297e351 2025-10-28)) (consider running `cargo clean` first)"
+    },
+    {
+      "line": 5605,
+      "text": ""
+    },
+    {
+      "line": 5606,
+      "text": "error[E0514]: found crate `bindgen` compiled by an incompatible version of rustc"
+    },
+    {
+      "line": 5607,
+      "text": "   --> /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/v8-150.4.0/build.rs:251:18"
+    },
+    {
+      "line": 5608,
+      "text": "    |"
+    },
+    {
+      "line": 5609,
+      "text": "251 |   let bindings = bindgen::Builder::default()"
+    },
+    {
+      "line": 5610,
+      "text": "    |                  ^^^^^^^"
+    },
+    {
+      "line": 5611,
+      "text": "    |"
+    },
+    {
+      "line": 5612,
+      "text": "    = note: the following crate versions were found:"
+    },
+    {
+      "line": 5613,
+      "text": "            crate `bindgen` compiled by rustc 1.95.0 (59807616e 2026-04-14): /home/runner/work/_temp/rusty-v8-cargo-smoke-x86_64-unknown-linux-gnu-false/debug/deps/libbindgen-1fd7e2eafaf28bf9.rlib"
+    },
+    {
+      "line": 5614,
+      "text": "    = help: please recompile that crate using this compiler (rustc 1.91.0 (f8297e351 2025-10-28)) (consider running `cargo clean` first)"
+    },
+    {
+      "line": 5615,
+      "text": ""
+    },
+    {
+      "line": 5616,
+      "text": "error[E0514]: found crate `home` compiled by an incompatible version of rustc"
+    },
+    {
+      "line": 5617,
+      "text": "   --> /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/v8-150.4.0/build.rs:776:25"
+    },
+    {
+      "line": 5618,
+      "text": "    |"
+    },
+    {
+      "line": 5619,
+      "text": "776 |   if let Ok(mut path) = home::cargo_home() {"
+    },
+    {
+      "line": 5620,
+      "text": "    |                         ^^^^"
+    },
+    {
+      "line": 5621,
+      "text": "    |"
+    },
+    {
+      "line": 5622,
+      "text": "    = note: the following crate versions were found:"
+    },
+    {
+      "line": 5623,
+      "text": "            crate `home` compiled by rustc 1.95.0 (59807616e 2026-04-14): /home/runner/work/_temp/rusty-v8-cargo-smoke-x86_64-unknown-linux-gnu-false/debug/deps/libhome-ed46a716c6391383.rlib"
+    },
+    {
+      "line": 5624,
+      "text": "    = help: please recompile that crate using this compiler (rustc 1.91.0 (f8297e351 2025-10-28)) (consider running `cargo clean` first)"
+    },
+    {
+      "line": 5625,
+      "text": ""
+    },
+    {
+      "line": 5626,
+      "text": "error[E0514]: found crate `gzip_header` compiled by an incompatible version of rustc"
+    },
+    {
+      "line": 5627,
+      "text": "   --> /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/v8-150.4.0/build.rs:893:3"
+    },
+    {
+      "line": 5628,
+      "text": "    |"
+    },
+    {
+      "line": 5629,
+      "text": "893 |   gzip_header::read_gz_header(input)?;"
+    },
+    {
+      "line": 5630,
+      "text": "    |   ^^^^^^^^^^^"
+    },
+    {
+      "line": 5631,
+      "text": "    |"
+    },
+    {
+      "line": 5632,
+      "text": "    = note: the following crate versions were found:"
+    },
+    {
+      "line": 5633,
+      "text": "            crate `gzip_header` compiled by rustc 1.95.0 (59807616e 2026-04-14): /home/runner/work/_temp/rusty-v8-cargo-smoke-x86_64-unknown-linux-gnu-false/debug/deps/libgzip_header-f14934e18423b6d1.rlib"
+    },
+    {
+      "line": 5634,
+      "text": "    = help: please recompile that crate using this compiler (rustc 1.91.0 (f8297e351 2025-10-28)) (consider running `cargo clean` first)"
+    },
+    {
+      "line": 5635,
+      "text": ""
+    },
+    {
+      "line": 5636,
+      "text": "For more information about this error, try `rustc --explain E0514`."
+    },
+    {
+      "line": 5637,
+      "text": "error: could not compile `v8` (build script) due to 6 previous errors"
+    }
+  ],
+  "scope": "E0514 compiler mismatch only; macOS aarch64 native-thread exhaustion is a separate failure"
+}
