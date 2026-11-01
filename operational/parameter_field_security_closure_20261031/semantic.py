@@ -90,6 +90,38 @@ def check_tests(path, required=(), minimum=1, negative=False):
             "junit": prepare.identity(path.read_bytes()), "negative_control": negative}
 
 
+def materialize_test_inputs(output, group):
+    raw_plan = (prepare.HERE / "TEST_INPUTS.json").read_bytes()
+    plan = json.loads(raw_plan)
+    if plan.get("schema") != "hepta.dependency-security-dev-fixtures.1":
+        raise ValueError("unrecognized dev fixture source plan")
+    archives = output / "dev-fixture-downloads"
+    archives.mkdir()
+    actual = {}
+    for entry in plan["files"]:
+        if entry["group"] != group:
+            continue
+        relative = str(prepare.relative_path(entry["destination"]))
+        if not ((group == "zip" and relative.startswith("workspace/zip/tests/data/"))
+                or (group == "matrix" and relative in {
+                    "benchmarks/benches/crypto_bench/keys_claim.json",
+                    "benchmarks/benches/crypto_bench/keys_query.json",
+                })):
+            raise ValueError("dev fixture destination is outside its declared test scope")
+        destination = output / relative
+        if destination.exists() or destination.is_symlink() or relative in actual:
+            raise ValueError("dev fixture would replace candidate source or another fixture")
+        raw = prepare.download(entry, archives)
+        git_blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+        if git_blob != entry["git_blob"]:
+            raise ValueError("dev fixture Git blob identity changed")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(raw)
+        actual[relative] = {**prepare.identity(raw), "git_blob": git_blob,
+                            "repository": entry["repository"], "commit": entry["commit"]}
+    return actual, prepare.identity(raw_plan)
+
+
 def make_workspace(root, work, plan, group):
     sources = {}
     for package_root in sorted({"/".join(Path(path).parts[:3])
@@ -188,6 +220,9 @@ def run(root, resolved, output, group):
         receipt["product_cargo_lock"] = resolver["cargo_lock"]
         receipt["resolver_receipt"] = prepare.identity((resolved / "RESOLUTION.json").read_bytes())
         sources, copied = make_workspace(root, work, plan, group)
+        dev_inputs, dev_plan_identity = materialize_test_inputs(output, group)
+        receipt["dev_inputs"] = dev_inputs
+        receipt["dev_input_plan"] = dev_plan_identity
         for tool in ("rustc", "cargo", "just"):
             invoke(tool + "_version", [tool, "--version"], 60)
         invoke("nextest_version", ["cargo", "nextest", "--version"], 60)
@@ -274,10 +309,17 @@ def run(root, resolved, output, group):
             source = sources[name]
             expected_paths = {path.relative_to(source).as_posix(): prepare.identity(path.read_bytes())
                               for path in source.rglob("*") if path.is_file()}
+            for relative, expected in dev_inputs.items():
+                fixture = output / relative
+                if fixture.is_relative_to(destination):
+                    expected_paths[fixture.relative_to(destination).as_posix()] = {
+                        key: expected[key] for key in ("bytes", "sha256")}
             actual_paths = {path.relative_to(destination).as_posix(): prepare.identity(path.read_bytes())
                             for path in destination.rglob("*") if path.is_file()}
             if actual_paths != expected_paths:
                 raise ValueError("isolated candidate package source changed during testing: " + name)
+        for relative, expected in dev_inputs.items():
+            prepare.check((output / relative).read_bytes(), expected, relative)
         for path, expected in plan["candidate_files"].items():
             prepare.check((root / path).read_bytes(), expected, path)
         if (work / "Cargo.lock").read_bytes() != lock_raw:
