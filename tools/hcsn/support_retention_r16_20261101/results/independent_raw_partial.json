@@ -1,0 +1,62 @@
+{
+  "schema": "hcsn-r16-independent-raw-results-audit-v1",
+  "complete_campaign": false,
+  "passed": true,
+  "checks": 132396,
+  "numerical_checks": 60486,
+  "maximum_numeric_error": 2.220446049250313e-16,
+  "failures": [],
+  "invalid_global": [],
+  "counts": {
+    "attempts_A": 128,
+    "valid_A": 128,
+    "successful_queries": 7680,
+    "attempts_B": 128,
+    "valid_B": 128,
+    "attempts_C": 128,
+    "valid_C": 128,
+    "attempts_D": 128,
+    "valid_D": 128,
+    "attempts_hmm": 128,
+    "valid_hmm": 128,
+    "attempts_free": 128,
+    "valid_free": 128,
+    "attempts_factorized": 128,
+    "valid_factorized": 128,
+    "attempts_mean": 128,
+    "valid_mean": 128,
+    "attempts_block": 128,
+    "valid_block": 128,
+    "attempts_anchored": 128,
+    "valid_anchored": 128
+  },
+  "archive_count": 4,
+  "archives": [
+    {
+      "bytes": 223284,
+      "path": "results/raw_151101_iid_00.json.gz",
+      "sha256": "6ad3177cd643a42381553f430211da2bcd9f9746452249c5eeca0239556035d9"
+    },
+    {
+      "bytes": 219129,
+      "path": "results/raw_151101_iid_01.json.gz",
+      "sha256": "226eed484a1eec1d6dbe0c7258c6cdebfdfe4fd59a528bd9dce080cd17517a45"
+    },
+    {
+      "bytes": 225393,
+      "path": "results/raw_151101_iid_02.json.gz",
+      "sha256": "c10661ea1017afda33e9b25410537dfe67aedfb427ab89693d11acb5b1e67fc9"
+    },
+    {
+      "bytes": 226459,
+      "path": "results/raw_151101_iid_03.json.gz",
+      "sha256": "4af72f69e48db0e2ccedaac177fc387e5ddbee4665124b7f0b065b2e01d1c060"
+    }
+  ],
+  "reconstructed_gates": null,
+  "process_cpu_seconds": 0.3118425250000001,
+  "audit_source_sha256": "c482d69402042f14b0d52cb3a2a23bfb9c0971ee79b12c40c83e7dc24d29c9e4",
+  "source_manifest_sha256": "e8a167247efacfed7463ad1cc86e1457d8833d850d9be3cc349de19cfd9f3f8a",
+  "publication": "01224c2b6ed609fe828f0c6e561b07497aaa7fa1",
+  "evidence_scope": "Reconstruct saved finite owner schedules/fingerprints, legal path edges, target and keyed observations; fees, raw summaries, fit inference, invalid propagation and resource accounting. No project executor/planner/world/summarizer import; no independent replay of policy optimization, clock internals or CPU instrumentation."
+}

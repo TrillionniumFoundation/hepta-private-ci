@@ -1,0 +1,32 @@
+{
+  "scope": "Follow-up read-only review after root changes; no confirmation results opened.",
+  "source_sha256": {
+    "execution.py": "4a2fdfd665cdd3cb4e517705649ef0256ab60dd140a37d0ac8efa8809b67251c",
+    "test_execution.py": "1f1fe3e08bb9dc4dc7af4dcab5bd8d1f85c0d1e90bd79075fba0cad2cf55f74b",
+    "study.py": "62d51c0577d9f0442513f098ec6b731675de0b8f6a336d9ebc62fa6888789109",
+    "supervise.py": "577b20e8befeb6a24fafac141efd2e2314a242a11440df9050e1425f467f8368",
+    "statistics.py": "9d227ca57cf190131fd062a0b43821f32f63370bf43e07c2b95e2caa8942e187",
+    "PROTOCOL.json": "9f47701cf087e8f1851c3cf7058f0047be420cc4597d3851c7c341168493fd45"
+  },
+  "prior_math_checks": {
+    "file": "review_root_statistics.json",
+    "sha256": "767fa46e7b15eb47aa9bcda20ea2065cdb2196b31787cf1b10bc1d87f882d175",
+    "same_statistics_source": true,
+    "all_passed": true
+  },
+  "resolved_findings": {
+    "post_exit_source_failure": "launch catches verification error and retains wait4 CPU/exit evidence in receipt",
+    "future_error_collection": "main collects every future outcome and saves partial-cost status; all_exited_zero requires verified source",
+    "old_training_cost": "study loads full inherited training supervisor total_cpu_seconds and retains internal cost separately",
+    "global_invalid": "statistics nulls candidate across both domains when any fit/domain invalid",
+    "cost_formula": "protocol now explicitly charges original complete training plus both-domain all-ten-arm confirmation including failure before alternative deployment preparation and uses",
+    "information_boundary": "protocol distinguishes same observation opportunities from endogenously purchased histories",
+    "recovery_scope": "same process keeps law/transition caches; not cold-process recovery"
+  },
+  "remaining_blocking_findings": [],
+  "limits": [
+    "Source manifest and publication not part of this follow-up review; formal freeze must bind transitive imports.",
+    "Complete-process metering is Linux wait4-specific; missing-cost supervisor outcomes make acceptance invalid.",
+    "Review covers root-authored files and math; compression author is not its independent reviewer."
+  ]
+}

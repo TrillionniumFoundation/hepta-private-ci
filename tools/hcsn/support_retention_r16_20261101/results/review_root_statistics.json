@@ -1,0 +1,86 @@
+{
+  "scope": "Independent read-only review of root-owned study, supervisor and statistics; no confirmation result inspection.",
+  "source_sha256": {
+    "execution.py": "4a2fdfd665cdd3cb4e517705649ef0256ab60dd140a37d0ac8efa8809b67251c",
+    "test_execution.py": "1f1fe3e08bb9dc4dc7af4dcab5bd8d1f85c0d1e90bd79075fba0cad2cf55f74b",
+    "study.py": "62d51c0577d9f0442513f098ec6b731675de0b8f6a336d9ebc62fa6888789109",
+    "supervise.py": "8b3b118049a76f3170d3fa12bc1b8871a765c092ee05c36a014ab8daeebf02ac",
+    "statistics.py": "9d227ca57cf190131fd062a0b43821f32f63370bf43e07c2b95e2caa8942e187",
+    "PROTOCOL.json": "ab54d1c5009e076f9c6511b1782b811d44ff1ba167bfee247689da6a2db97b32"
+  },
+  "checks": [
+    {
+      "name": "signflip_zero",
+      "actual": 1.0,
+      "expected": 1.0,
+      "passed": true
+    },
+    {
+      "name": "signflip_one",
+      "actual": 0.0078125,
+      "expected": 0.0078125,
+      "passed": true
+    },
+    {
+      "name": "signflip_balanced",
+      "actual": 1.0,
+      "expected": 1.0,
+      "passed": true
+    },
+    {
+      "name": "signflip_seven_one",
+      "actual": 0.0703125,
+      "expected": 0.0703125,
+      "passed": true
+    },
+    {
+      "name": "t_lower_0.975",
+      "actual": -0.006291866074398925,
+      "expected": -0.006291866074398927,
+      "critical_mpmath": "2.3646242515927853416809014737804902831302908834895",
+      "error": 2.6020852139652106e-18,
+      "passed": true
+    },
+    {
+      "name": "t_lower_0.9875",
+      "actual": -0.007660852790065422,
+      "expected": -0.007660852790065413,
+      "critical_mpmath": "2.8412442485882085480852319742083899608749411451632",
+      "error": 8.673617379884035e-18,
+      "passed": true
+    },
+    {
+      "name": "constant_interval",
+      "actual": {
+        "mean": 0.02,
+        "lower": 0.02,
+        "upper": 0.02,
+        "fits": [
+          0.02,
+          0.02,
+          0.02,
+          0.02,
+          0.02,
+          0.02,
+          0.02,
+          0.02
+        ]
+      },
+      "passed": true
+    }
+  ],
+  "all_math_checks_pass": true,
+  "execution_tests_independently_rerun": 3,
+  "execution_tests_passed": 3,
+  "review_findings": {
+    "global_invalid_propagation": "correct in statistics.py across all fits and both domains",
+    "holm_two_domain_stepdown": "correct",
+    "noninferiority_four_bounds": "correct, one-sided98.75% across utility/reward IID/OOD",
+    "projection_timing": "anchored planner matches executed observation/write anchoring",
+    "public_information": "no future target reaches planner; owner read after completed paid action",
+    "unclosed_at_review": [
+      "supervisor must persist measured usage even if verify() after exit raises",
+      "protocol must explicitly state both-domain all-candidate confirmation CPU enters amortized investment"
+    ]
+  }
+}

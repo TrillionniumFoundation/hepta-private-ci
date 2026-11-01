@@ -1,0 +1,270 @@
+{
+  "schema": "hcsn-support-retention-r16-blockers-v1",
+  "base_commit": "74144a3f5d5c77c953ecdc4708d3d90b56b67d3c",
+  "formal_source_commit": "01224c2b6ed609fe828f0c6e561b07497aaa7fa1",
+  "source_manifest_sha256": "e8a167247efacfed7463ad1cc86e1457d8833d850d9be3cc349de19cfd9f3f8a",
+  "frozen_identities": 36,
+  "published_files_read_back": 15,
+  "fit_replicates": 8,
+  "confirmation_worlds": 2048,
+  "candidate_attempts": 20480,
+  "full_confirmation_cpu_seconds": 313.03860099999997,
+  "inherited_outer_training_cpu_seconds": 30.111223,
+  "cost_scope": "Measured confirmation and inherited training worker costs; development/audit internal CPU separate. Not whole-project, GPU, energy or complete production cost.",
+  "all_blockers_closed": false,
+  "production_activation": false,
+  "scientific_acceptance_thresholds_changed": false,
+  "items": [
+    {
+      "id": "finite_operator_consistency",
+      "stage": "operator_and_propagation",
+      "status": "closed_in_declared_finite_profile",
+      "scope": "Three parameter points, forty basis initial states, eight durations; independent ODE, conservation, first hit, survival, repeated-event counts and time derivative. Not continuum convergence, financial-parameter gradients or full financial FP32.",
+      "evidence": [
+        "results/operator_development_v3.json"
+      ]
+    },
+    {
+      "id": "support_preserving_compression",
+      "stage": "operator_and_propagation",
+      "status": "closed_for_declared_finite_law_and_emissions",
+      "scope": "Eight group-content masses preserve support inclusion in exact arithmetic and immediate emission/reward values. Uniform phase reconstruction is explicit; unrepresentable support is rejected. No epsilon repair.",
+      "evidence": [
+        "SUPPORT_PROOF.md",
+        "compression.py",
+        "results/operator_development_v3.json"
+      ]
+    },
+    {
+      "id": "anchored_time_partition",
+      "stage": "continuous_dynamic_tasks",
+      "status": "closed_in_declared_profile",
+      "scope": "No repeated projection at missing-observation time subdivisions; observation/write timing is shared by planner and execution. Age-dependent filter, not an eight-state CTMC.",
+      "maximum_absolute_error": 6.217248937900877e-15,
+      "evidence": [
+        "results/operator_development_v3.json",
+        "test_compression.py",
+        "test_execution.py"
+      ]
+    },
+    {
+      "id": "packed_repeated_projection_semigroup",
+      "stage": "continuous_dynamic_tasks",
+      "status": "failed_preserved_negative_control",
+      "scope": "R exp(tQ) C does not define the required semigroup when applied after every arbitrary advance. Candidate is retained, not silently relabeled as anchored.",
+      "maximum_absolute_error": 0.03175808584003048,
+      "evidence": [
+        "results/operator_development_v3.json"
+      ]
+    },
+    {
+      "id": "warm_model_query_boundary_checkpoint",
+      "stage": "continuous_dynamic_tasks",
+      "status": "closed_for_declared_memory_boundary",
+      "scope": "Actual write/flush/fsync/read/restore after query 2. Same process retains law and transition caches; no pending action.",
+      "evidence": [
+        "execution.py",
+        "test_execution.py",
+        "results/INDEPENDENT_RAW_AUDIT_V2.json"
+      ]
+    },
+    {
+      "id": "cold_process_pending_action_production_recovery",
+      "stage": "continuous_dynamic_tasks",
+      "status": "open",
+      "scope": "Cold-process owner lifecycle, pending actions and complete production recovery are not qualified by this memory-boundary checkpoint."
+    },
+    {
+      "id": "anchored_quality_noninferiority",
+      "stage": "content_tasks",
+      "status": "closed_for_frozen_eight_fit_confirmation",
+      "scope": "Four one-sided98.75% paired-fit Student-t lower bounds, utility/reward in IID/OOD, all strictly above -.01. Not exact quality preservation.",
+      "margin": 0.01,
+      "lower_bounds": {
+        "iid": {
+          "utility": -0.005317282829723257,
+          "reward": -0.004416062059531024
+        },
+        "ood": {
+          "utility": -0.006999653063254773,
+          "reward": -0.006686983660329328
+        }
+      },
+      "evidence": [
+        "PROTOCOL.json",
+        "results/SUMMARY.json",
+        "results/INDEPENDENT_RAW_AUDIT_V2.json"
+      ]
+    },
+    {
+      "id": "persistent_numeric_state_reduction",
+      "stage": "content_tasks",
+      "status": "closed_numeric_arrays_only",
+      "full_bytes": 1288,
+      "anchored_bytes": 296,
+      "reduction_percent": 77.01863354037268,
+      "scope": "Four probability arrays plus clocks. Excludes model matrices, transition cache, temporary forty-state beliefs, planner branches, Python objects, RSS and serialization.",
+      "evidence": [
+        "compression.py",
+        "execution.py",
+        "results/INDEPENDENT_RAW_AUDIT_V2.json"
+      ]
+    },
+    {
+      "id": "original_mean_recovery_support",
+      "stage": "operator_and_propagation",
+      "status": "failed_original_candidate_preserved",
+      "attempts": 2048,
+      "invalid_attempts": 21,
+      "failed_attempt_cpu_seconds": 0.4342641719999967,
+      "quality_iid": null,
+      "quality_ood": null,
+      "scope": "Original mean candidate remains invalid globally; no successful-subset performance or epsilon repair.",
+      "evidence": [
+        "results/SUMMARY.json",
+        "results/INDEPENDENT_RAW_AUDIT_V2.json"
+      ]
+    },
+    {
+      "id": "original_hx_core_gain",
+      "stage": "full_model_adoption",
+      "status": "failed_unchanged_registered_threshold",
+      "minimum_mean_gain": 0.01,
+      "D_minus_B": {
+        "iid": {
+          "fits": [
+            0.0,
+            -0.00028710937500009415,
+            0.00431347656250014,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "holm_p": 1.0,
+          "lower": -0.0007865340117528406,
+          "mean": 0.0005032958984375058,
+          "signflip_p": 1.0,
+          "upper": 0.0017931258086278522
+        },
+        "ood": {
+          "fits": [
+            0.0,
+            -0.0009300130208333979,
+            -0.0013985677083333536,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "holm_p": 1.0,
+          "lower": -0.0007536584647775436,
+          "mean": -0.00029107259114584394,
+          "signflip_p": 0.5,
+          "upper": 0.00017151328248585576
+        }
+      },
+      "scope": "Neither the required both-domain effect nor statistical gate was met. Common value-control gains are a separate result.",
+      "evidence": [
+        "PROTOCOL.json",
+        "results/SUMMARY.json"
+      ]
+    },
+    {
+      "id": "same_matrix_hmm_reference",
+      "stage": "operator_and_propagation",
+      "status": "closed_exact_trace_equivalence",
+      "episodes": 2048,
+      "scope": "D and same-matrix ordinary HMM have identical complete query traces. This rules out an HX-exclusive filtering claim in this finite representation.",
+      "evidence": [
+        "results/SUMMARY.json",
+        "results/INDEPENDENT_RAW_AUDIT_V2.json"
+      ]
+    },
+    {
+      "id": "anchored_quality_guarded_cpu_cost",
+      "stage": "full_model_adoption",
+      "status": "failed_registered_cost_gate",
+      "maximum_ratio": 0.9,
+      "online_ratio": {
+        "iid": 0.9924881461950628,
+        "ood": 1.0495538359281709
+      },
+      "reuse_1000_ratio": {
+        "iid": 0.9981606971713238,
+        "ood": 1.0121097615914898
+      },
+      "scope": "Noninferiority passed, but both-domain online and complete search amortization requirements did not. Numeric state savings do not imply CPU savings.",
+      "evidence": [
+        "PROTOCOL.json",
+        "results/SUMMARY.json",
+        "results/PROCESS_SUMMARY.json"
+      ]
+    },
+    {
+      "id": "reachable_same_marginal_joint_witness",
+      "stage": "content_tasks",
+      "status": "closed_constructed_development_environment_only",
+      "scenarios": 48,
+      "owner_worlds": 24576,
+      "scope": "A real relation emission produces the declared Bayes posterior and every forced first action has actual subsequent-policy evaluation. This does not prove reachability from original R15 WRITE histories or a new formal fit confirmation.",
+      "evidence": [
+        "REACHABILITY.md",
+        "results/reachable_v2_results.json"
+      ]
+    },
+    {
+      "id": "full_distribution_or_hx_necessity",
+      "stage": "content_tasks",
+      "status": "not_established",
+      "scope": "Same-Q HMM and public construction plus a relation bit reconstruct identical policy trees. The finite mean joint-vs-factorized utility increment is about .000414602, below .01; no necessity or exclusive advantage follows.",
+      "evidence": [
+        "REACHABILITY.md",
+        "results/reachable_v2_results.json"
+      ]
+    },
+    {
+      "id": "learned_semantic_addressing_and_real_multimodal_binding",
+      "stage": "content_tasks",
+      "status": "open",
+      "scope": "Typed addresses are supplied. This study does not establish learned semantic addressing or real long-distance cross-modal binding."
+    },
+    {
+      "id": "continuous_free_boundary_and_full_horizon_control",
+      "stage": "operator_and_propagation",
+      "status": "open",
+      "scope": "Finite fixed-generator dynamics and three-slot current-query control do not establish continuous free-boundary/QVI optimality or globally optimal multi-query control."
+    },
+    {
+      "id": "production_rust_state_ownership",
+      "stage": "full_model_adoption",
+      "status": "open",
+      "scope": "No production Rust neuron/state-ownership replacement or activation is qualified."
+    },
+    {
+      "id": "gpu_joules_media_and_network_cost",
+      "stage": "full_model_adoption",
+      "status": "unmeasured",
+      "scope": "Linux observations found no CUDA device or powercap energy file. No GPU, joules, full media encoder or production network cost is available.",
+      "evidence": [
+        "ENVIRONMENT.json"
+      ]
+    },
+    {
+      "id": "independent_raw_record_statistics_audit",
+      "stage": "cross_stage_evidence",
+      "status": "closed_for_reported_audit_scope",
+      "checks": 2308644,
+      "numerical_checks": 990696,
+      "maximum_numeric_error": 2.220446049250313e-16,
+      "scope": "Independent raw targets/tokens/fees/fingerprint, summaries, fit inference, failure propagation and resource accounting. No experiment executor/planner/world/summarizer imports; not independent policy optimization or CPU instrumentation.",
+      "evidence": [
+        "audit_results.py",
+        "results/INDEPENDENT_RAW_AUDIT_V2.json",
+        "results/INDEPENDENT_RAW_AUDIT_REVIEW.json"
+      ]
+    }
+  ]
+}
