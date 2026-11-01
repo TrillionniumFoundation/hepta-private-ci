@@ -120,7 +120,7 @@ def review(run, protocol_sha256, candidate_sha256, source_commit):
             require(np.array_equal(arrays["sample_weight"], mask.astype(np.float32)),
                     "Registered score weights differ from four equally weighted queries")
             episode_id, position = np.where(mask)
-            available = arrays["target_available"][mask].reshape(n, 4)
+            available = arrays.get("target_available", mask)[mask].reshape(n, 4)
             for core in CORES:
                 for seed in SEEDS:
                     key = (task, core, seed, condition)

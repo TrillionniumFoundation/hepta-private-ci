@@ -1,0 +1,338 @@
+{
+  "scope": "Development, same trained development weights, full model forward/backward; not full training or heldout quality",
+  "torch": "2.9.0+cpu",
+  "threads": 1,
+  "warmups": 4,
+  "repeats": 9,
+  "source_sha256": {
+    "/workspace/scratch/ad699f1b2b79/hepta-csn-next/experiments/hcsn_addressed_flow_20261101/operator_audit/full_model_benchmark.py": "fe4528f1a4765e323aaec959051061a013f2ea607c30fdbf8b28aeaf284fbb01",
+    "/workspace/scratch/ad699f1b2b79/hepta-csn-next/experiments/hcsn_addressed_flow_20261101/addressed_models.py": "2c2c434c567f66d5e0f48d5befc05e54c201c724f0b2b5d6f211f3784612f25e",
+    "/workspace/scratch/ad699f1b2b79/hepta-csn-next/experiments/hcsn_addressed_flow_20261101/data.py": "165307e71c12d2e57c4e27933e8d739745e3fe6cfc03853f4e58c50eaa0ec5e6",
+    "/workspace/scratch/ad699f1b2b79/hepta-csn-next/experiments/hcsn_addressed_flow_20261101/operator_fastpath.py": "7a710dbbd4f56d37592d46b7fbec8f6abdb74cf9aab325fe812aa500cbcbce90",
+    "/workspace/scratch/ad699f1b2b79/hepta-csn-next/experiments/hcsn_four_stage_flow_20261031/models.py": "d8d47ea1e2b1a3bfad4a55c99ce1322bc1583dc73b69b8a645da38f4d07797b6",
+    "/workspace/scratch/ad699f1b2b79/hepta-csn-next/experiments/hcsn_four_stage_flow_20261031/marked_flow.py": "f7ccf2ea965b77ed08da488142d1023fb1c7a6a11580b13e8e7aba2dd861836c",
+    "/workspace/scratch/ad699f1b2b79/hepta-csn-next/experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e",
+    "/workspace/scratch/ad699f1b2b79/hepta-csn-next/experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6"
+  },
+  "checkpoint_sha256": {
+    "/workspace/scratch/ad699f1b2b79/hepta-csn-next/experiments/hcsn_addressed_flow_20261101/dev/addressing_train001/mqar_flow.pt": "d41baa54dd338d7cd183bb5a5d05af02f132f8532381e3478f0d614a1276c390",
+    "/workspace/scratch/ad699f1b2b79/hepta-csn-next/experiments/hcsn_addressed_flow_20261101/dev/addressing_train001/binding_flow.pt": "15abff31d5b8964535e765bd68aaeb49b3bf302281dc555d3712c299fef0814b"
+  },
+  "sources_unchanged": true,
+  "results": [
+    {
+      "task": "mqar",
+      "batch": 24,
+      "steps": 12,
+      "backward": false,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "numerical_pass": true,
+      "raw_seconds": {
+        "dense": [
+          0.009264575,
+          0.009172939,
+          0.012487952,
+          0.009122014,
+          0.013553352,
+          0.014333729,
+          0.011924929,
+          0.011307334,
+          0.008988616
+        ],
+        "bounded": [
+          0.009758797,
+          0.010121384,
+          0.010582719,
+          0.010332989,
+          0.010739401,
+          0.015286162,
+          0.014204588,
+          0.01605431,
+          0.017994506
+        ]
+      },
+      "median_seconds": {
+        "dense": 0.011307334,
+        "bounded": 0.010739401
+      },
+      "dense_over_bounded": 1.0528831170379056
+    },
+    {
+      "task": "mqar",
+      "batch": 24,
+      "steps": 12,
+      "backward": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "numerical_pass": true,
+      "raw_seconds": {
+        "dense": [
+          0.030121405,
+          0.031819772,
+          0.032400793,
+          0.032807417,
+          0.034967369,
+          0.036153778,
+          0.031564383,
+          0.030498674,
+          0.030783005
+        ],
+        "bounded": [
+          0.031372128,
+          0.028191023,
+          0.031428923,
+          0.028992391,
+          0.031866732,
+          0.028568622,
+          0.032388726,
+          0.033643385,
+          0.031223159
+        ]
+      },
+      "median_seconds": {
+        "dense": 0.031819772,
+        "bounded": 0.031372128
+      },
+      "dense_over_bounded": 1.0142688439878864
+    },
+    {
+      "task": "mqar",
+      "batch": 64,
+      "steps": 12,
+      "backward": false,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "numerical_pass": true,
+      "raw_seconds": {
+        "dense": [
+          0.0137675,
+          0.014075847,
+          0.014236034,
+          0.014438645,
+          0.013900807,
+          0.013750986,
+          0.01436135,
+          0.01458311,
+          0.015852281
+        ],
+        "bounded": [
+          0.01533166,
+          0.014734833,
+          0.013812508,
+          0.014569709,
+          0.014909594,
+          0.015287443,
+          0.016227898,
+          0.015813913,
+          0.017191446
+        ]
+      },
+      "median_seconds": {
+        "dense": 0.014236034,
+        "bounded": 0.015287443
+      },
+      "dense_over_bounded": 0.9312240117591934
+    },
+    {
+      "task": "mqar",
+      "batch": 64,
+      "steps": 12,
+      "backward": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "numerical_pass": true,
+      "raw_seconds": {
+        "dense": [
+          0.058657124,
+          0.060050643,
+          0.051262727,
+          0.05280305,
+          0.055171701,
+          0.048738103,
+          0.065469968,
+          0.052162445,
+          0.049564273
+        ],
+        "bounded": [
+          0.047266803,
+          0.047309215,
+          0.04777819,
+          0.049676194,
+          0.045813208,
+          0.046629077,
+          0.043547442,
+          0.045105331,
+          0.046219214
+        ]
+      },
+      "median_seconds": {
+        "dense": 0.05280305,
+        "bounded": 0.046629077
+      },
+      "dense_over_bounded": 1.1324060735750785
+    },
+    {
+      "task": "binding",
+      "batch": 24,
+      "steps": 16,
+      "backward": false,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "numerical_pass": true,
+      "raw_seconds": {
+        "dense": [
+          0.01574909,
+          0.015119565,
+          0.016100079,
+          0.015417948,
+          0.01531105,
+          0.015537456,
+          0.012491179,
+          0.013747992,
+          0.013033594
+        ],
+        "bounded": [
+          0.016590105,
+          0.016613711,
+          0.01646409,
+          0.016570988,
+          0.016454454,
+          0.015748988,
+          0.01521616,
+          0.013596357,
+          0.014784869
+        ]
+      },
+      "median_seconds": {
+        "dense": 0.01531105,
+        "bounded": 0.016454454
+      },
+      "dense_over_bounded": 0.9305109728952415
+    },
+    {
+      "task": "binding",
+      "batch": 24,
+      "steps": 16,
+      "backward": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "numerical_pass": true,
+      "raw_seconds": {
+        "dense": [
+          0.039807464,
+          0.038335803,
+          0.038859729,
+          0.042888741,
+          0.040666487,
+          0.045485851,
+          0.043499777,
+          0.061836987,
+          0.035458457
+        ],
+        "bounded": [
+          0.040939302,
+          0.040052107,
+          0.038034196,
+          0.044926662,
+          0.039550914,
+          0.044943056,
+          0.039946129,
+          0.040064525,
+          0.035567689
+        ]
+      },
+      "median_seconds": {
+        "dense": 0.040666487,
+        "bounded": 0.040052107
+      },
+      "dense_over_bounded": 1.0153395175939184
+    },
+    {
+      "task": "binding",
+      "batch": 64,
+      "steps": 16,
+      "backward": false,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "numerical_pass": true,
+      "raw_seconds": {
+        "dense": [
+          0.016121095,
+          0.01678501,
+          0.016539415,
+          0.017531426,
+          0.017111904,
+          0.016370404,
+          0.025637311,
+          0.026239813,
+          0.025993228
+        ],
+        "bounded": [
+          0.017053668,
+          0.01972046,
+          0.017222808,
+          0.017628921,
+          0.017202998,
+          0.017265352,
+          0.026765032,
+          0.026861134,
+          0.027729962
+        ]
+      },
+      "median_seconds": {
+        "dense": 0.017111904,
+        "bounded": 0.017628921
+      },
+      "dense_over_bounded": 0.9706722266212436
+    },
+    {
+      "task": "binding",
+      "batch": 64,
+      "steps": 16,
+      "backward": true,
+      "max_output_error": 0.0,
+      "max_parameter_gradient_error": 0.0,
+      "numerical_pass": true,
+      "raw_seconds": {
+        "dense": [
+          0.066735264,
+          0.066722359,
+          0.061773332,
+          0.070807074,
+          0.071143884,
+          0.069512074,
+          0.059850711,
+          0.06321553,
+          0.061234864
+        ],
+        "bounded": [
+          0.057859211,
+          0.056549152,
+          0.05443347,
+          0.055087329,
+          0.054200023,
+          0.053672141,
+          0.055525419,
+          0.05547258,
+          0.055443357
+        ]
+      },
+      "median_seconds": {
+        "dense": 0.066722359,
+        "bounded": 0.055443357
+      },
+      "dense_over_bounded": 1.2034328837627923
+    }
+  ],
+  "backend_execution": {
+    "calls": 216,
+    "matrices": 133056,
+    "methods": {
+      "poisson_scaling_squaring": 216
+    },
+    "maximum_polynomial_degree": 11
+  },
+  "passed": true,
+  "permanently_enabled_backend": false
+}

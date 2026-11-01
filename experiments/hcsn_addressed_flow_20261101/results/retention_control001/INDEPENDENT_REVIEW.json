@@ -1,0 +1,340 @@
+{
+  "calibration_archive_hashes_verified": 36,
+  "cpu_seconds": 0.8703300820000001,
+  "effects": [
+    {
+      "bootstrap_degenerate": true,
+      "effect": "B-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "mqar"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "D-C",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "mqar"
+    },
+    {
+      "bootstrap_degenerate": false,
+      "effect": "C-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0003255208333333333
+      ],
+      "mean": 8.138020833333333e-05,
+      "primary_family_interval": null,
+      "task": "mqar"
+    },
+    {
+      "bootstrap_degenerate": false,
+      "effect": "D-B",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0003255208333333333
+      ],
+      "mean": 8.138020833333333e-05,
+      "primary_family_interval": null,
+      "task": "mqar"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "(D-C)-(B-A)",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "mqar"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "B-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "selective"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "D-C",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "selective"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "C-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "selective"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "D-B",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "selective"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "(D-C)-(B-A)",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "selective"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "B-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "binding"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "D-C",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "binding"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "C-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "binding"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "D-B",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "binding"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "(D-C)-(B-A)",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "binding"
+    }
+  ],
+  "effects_verified": 15,
+  "input_hashes": {
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/CALIBRATION_SOURCE.json": "6c30f4e4d0a197afecac8d32e9aa6199fa0d0ea16764799d9ce3002b3bb69b9e",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/POLICY_FREEZE.json": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/PROTOCOL.json": "4c2afaf1bacec9bd923598617a8bef0b0c4fe6fc94ef234b7ab4389574c0c899",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/SUMMARY.json": "ff856f26931ee4436ba928effe6bc4f9bc6b0b74139e2974c15923a628b11db9",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/binding_diagonal_17.npz": "eee1abb97ec509222821f801c47bc21ba3415c97aa0d7a9c48c7b75891432be5",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/binding_diagonal_29.npz": "b1deff618f0ab1501dfa2cdc862260de71b7662233b5be0f9783d98f67f884c1",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/binding_diagonal_43.npz": "775a3cbad3bed3af721bc8491f3229c30263e82d1ab606d9841a709bfbae8dcc",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/binding_flow_17.npz": "3702174223b1fdfd1a36f6d60022bf3771fbbfc7791e4cc52b38861d5ba7ee5c",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/binding_flow_29.npz": "699d392e91b38976cd7b831631a17c9f796ac37f48c59e11ae79a82476154608",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/binding_flow_43.npz": "620f4ba1d15bd007ef329d7e3b166357492070d6a5164a173c804226e4af9c0b",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/mqar_diagonal_17.npz": "6ae00b032de96259881e177a5fbbbff6bcfa868d07756f406992529b83d2a92b",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/mqar_diagonal_29.npz": "faeef7ad0ad2bf368557e2df07d339eee6dc168e5317394ed649fc6957783e1f",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/mqar_diagonal_43.npz": "18440ddc43a0c3057a8cc7698c6f2d8fa1b525defd9acfcc9ee726344161f24c",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/mqar_flow_17.npz": "11a7891f9744809fa72bb75b325a3fdf8f30e3881550583a89330a6bd0af8fd7",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/mqar_flow_29.npz": "0a99e0dc6d09477f92e5740bbfda92f602efb44288c505b04622ea1feaa79cb3",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/mqar_flow_43.npz": "cd14df207ab6aef1cf1036dbd4b271fb9a4aa382502c8265eabe12f598aaaa39",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/selective_diagonal_17.npz": "4a8b3b6dede83f9bcea77656db6b0ac1b8ac4e4e745e5711b453982540c295cf",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/selective_diagonal_29.npz": "4ae8b691e254701a77da667864fabe0c6b43810bdf069305e05ad8a0da64acc7",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/selective_diagonal_43.npz": "1b16f7738fdcfe0d655285a84235459b35f41f37118c030272d6d33f2bdeffba",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/selective_flow_17.npz": "1a953264ba12f85cc99264239675d34eff93e35c703ebecf0fe857b3a342fdb4",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/selective_flow_29.npz": "c667ab75946ef8105b84ee4ba76754c9deb55ceccf9e48e0d51ac4784b784bc5",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001/confirmation/selective_flow_43.npz": "96b67d4923d53cab9880f95fb054dd8d094f5fd2f99ad6f05f31208227e62bae"
+  },
+  "limitations": [
+    "Three training seeds; all-zero effects have degenerate intervals, not proof of universal equality",
+    "No multiple-comparison family-wide benefit claim",
+    "Symbolic task cost and offline two-continuation CPU are not deployment energy"
+  ],
+  "method": [
+    "Regenerated118101 labels/price/removed-step and prefix clock/missingness",
+    "Recomputed features from actual first-query logits only",
+    "Recomputed actual READ/STOP quality, all4, frozen actions, paid utility and four policy summaries",
+    "Recomputed all15paired effects and registered2000-replicate descriptive95%bootstrap"
+  ],
+  "passed": true,
+  "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+  "records": [
+    {
+      "core": "diagonal",
+      "seed": 17,
+      "task": "mqar",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "diagonal",
+      "seed": 29,
+      "task": "mqar",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "diagonal",
+      "seed": 43,
+      "task": "mqar",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "flow",
+      "seed": 17,
+      "task": "mqar",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "flow",
+      "seed": 29,
+      "task": "mqar",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "flow",
+      "seed": 43,
+      "task": "mqar",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "diagonal",
+      "seed": 17,
+      "task": "selective",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "diagonal",
+      "seed": 29,
+      "task": "selective",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "diagonal",
+      "seed": 43,
+      "task": "selective",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "flow",
+      "seed": 17,
+      "task": "selective",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "flow",
+      "seed": 29,
+      "task": "selective",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "flow",
+      "seed": 43,
+      "task": "selective",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "diagonal",
+      "seed": 17,
+      "task": "binding",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "diagonal",
+      "seed": 29,
+      "task": "binding",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "diagonal",
+      "seed": 43,
+      "task": "binding",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "flow",
+      "seed": 17,
+      "task": "binding",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "flow",
+      "seed": 29,
+      "task": "binding",
+      "value_and_lightweight_actions_equal": true
+    },
+    {
+      "core": "flow",
+      "seed": 43,
+      "task": "binding",
+      "value_and_lightweight_actions_equal": true
+    }
+  ],
+  "records_verified": 18,
+  "schema": "hcsn.typed.control.independent.review.v1",
+  "scope": "Read-only completed-output audit; generated only the already-completed118101 environment, no model evaluation/training/selection",
+  "source_commit": "0ba19482533b0d714eebe4fa58b4544ca03aac6f",
+  "source_hashes_verified": 15,
+  "wall_seconds": 0.8707635629980359
+}

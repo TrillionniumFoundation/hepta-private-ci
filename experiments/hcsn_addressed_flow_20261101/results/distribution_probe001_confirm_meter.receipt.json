@@ -1,0 +1,64 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "/workspace/scratch/52a69008c60c/.venv/bin/python",
+    "-m",
+    "experiments.hcsn_addressed_flow_20261101.distribution_probe",
+    "--mode",
+    "evaluate",
+    "--out",
+    "experiments/hcsn_addressed_flow_20261101/results/distribution_probe001",
+    "--plan-sha256",
+    "a6ec8cddb4da18146771d209642687471f79f8b89c85fd6234ae2643f89e2e82",
+    "--source-commit",
+    "2b11523fba1dc4015688d646770a3e5d7563b474"
+  ],
+  "cwd": "/workspace/scratch/ad699f1b2b79/hepta-csn-next",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-01T07:59:13.077007+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_addressed_flow_20261101/results/distribution_probe001_confirm_meter.stdout.log",
+  "stderr_path": "experiments/hcsn_addressed_flow_20261101/results/distribution_probe001_confirm_meter.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-01T07:59:25.101890+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 12.02469439700144,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 11.852216,
+  "system_cpu_seconds": 0.14868399999999998,
+  "total_cpu_seconds": 12.0009,
+  "peak_rss_bytes": 251355136,
+  "peak_rss_native_units": 245464,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/distribution_probe001_confirm_meter.stdout.log",
+      "is_file": true,
+      "bytes": 3809,
+      "sha256": "f6e750eb4722eda4e2a8aebb9541c77bfbceeda37990cca4e6e11d44b792fff6"
+    },
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/distribution_probe001_confirm_meter.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/distribution_probe001/confirmation/SUMMARY.json",
+      "is_file": true,
+      "bytes": 35198,
+      "sha256": "2f6e361db7234c34e1d153cb54f7c94525bd5fc5812f9abe174a4930f9ad9d97"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0007478090000000021,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

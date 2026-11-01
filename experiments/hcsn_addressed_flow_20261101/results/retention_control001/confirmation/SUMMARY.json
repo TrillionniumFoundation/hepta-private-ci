@@ -1,0 +1,900 @@
+{
+  "candidate_sha256": "468459cd0353f7a84dd108edd5c7b416dc2beda0e972cdca87224d9e135c59a4",
+  "cost_scope": "Both actual counterfactual trajectories plus feature/selection work; not deployment policy cost",
+  "cpu_seconds": 14.895695452,
+  "effects": [
+    {
+      "bootstrap_degenerate": true,
+      "effect": "B-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "mqar"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "D-C",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "mqar"
+    },
+    {
+      "bootstrap_degenerate": false,
+      "effect": "C-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0003255208333333333
+      ],
+      "mean": 8.138020833333333e-05,
+      "primary_family_interval": null,
+      "task": "mqar"
+    },
+    {
+      "bootstrap_degenerate": false,
+      "effect": "D-B",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0003255208333333333
+      ],
+      "mean": 8.138020833333333e-05,
+      "primary_family_interval": null,
+      "task": "mqar"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "(D-C)-(B-A)",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "mqar"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "B-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "selective"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "D-C",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "selective"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "C-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "selective"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "D-B",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "selective"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "(D-C)-(B-A)",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "selective"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "B-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "binding"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "D-C",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "binding"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "C-A",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "binding"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "D-B",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "binding"
+    },
+    {
+      "bootstrap_degenerate": true,
+      "effect": "(D-C)-(B-A)",
+      "interpretation": "not_distinguished_from_zero",
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "primary_family_interval": null,
+      "task": "binding"
+    }
+  ],
+  "energy_joules": null,
+  "limitations": [
+    "New synthetic draws for a version-one-informed semantics revision",
+    "Only three training seeds; degenerate bootstrap is not population certainty",
+    "Restricted one-opportunity READ/STOP, not general WAIT/RESET or production economic superiority"
+  ],
+  "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+  "records": [
+    {
+      "checkpoint_sha256": "81db62cbe7e2c0d5d2e2ea96c1777ebce38040e0414c13fe4263c0f4d0099395",
+      "core": "diagonal",
+      "feature_cpu_seconds": 0.0008762100000001549,
+      "lightweight_controller_cpu_seconds": 9.874999999937017e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        },
+        "never_read": {
+          "accuracy": 0.750244140625,
+          "all4": 0.0009765625,
+          "read_rate": 0.0,
+          "utility": 0.750244140625
+        },
+        "value": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "mqar_diagonal_17.npz",
+      "raw_sha256": "6ae00b032de96259881e177a5fbbbff6bcfa868d07756f406992529b83d2a92b",
+      "seed": 17,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 0.00010865100000012617
+    },
+    {
+      "checkpoint_sha256": "f60d530cf85449e6365975e28e13ebc448bf2463b839ad88a1a73ec9c7b2d804",
+      "core": "diagonal",
+      "feature_cpu_seconds": 0.0006692130000001129,
+      "lightweight_controller_cpu_seconds": 3.4150000001176295e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.947998046875,
+          "all4": 0.7919921875,
+          "read_rate": 0.7900390625,
+          "utility": 0.8497167968750001
+        },
+        "never_read": {
+          "accuracy": 0.75146484375,
+          "all4": 0.005859375,
+          "read_rate": 0.0,
+          "utility": 0.75146484375
+        },
+        "value": {
+          "accuracy": 0.947998046875,
+          "all4": 0.7919921875,
+          "read_rate": 0.7900390625,
+          "utility": 0.8497167968750001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "mqar_diagonal_29.npz",
+      "raw_sha256": "faeef7ad0ad2bf368557e2df07d339eee6dc168e5317394ed649fc6957783e1f",
+      "seed": 29,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 5.4951000000080796e-05
+    },
+    {
+      "checkpoint_sha256": "f5aec74f06582a9857cf7edf41488c50c5ac7f5017702dce813a089e669a24b2",
+      "core": "diagonal",
+      "feature_cpu_seconds": 0.0006783569999999628,
+      "lightweight_controller_cpu_seconds": 3.2649999996969825e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        },
+        "never_read": {
+          "accuracy": 0.75048828125,
+          "all4": 0.001953125,
+          "read_rate": 0.0,
+          "utility": 0.75048828125
+        },
+        "value": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "mqar_diagonal_43.npz",
+      "raw_sha256": "18440ddc43a0c3057a8cc7698c6f2d8fa1b525defd9acfcc9ee726344161f24c",
+      "seed": 43,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 5.1335999999846393e-05
+    },
+    {
+      "checkpoint_sha256": "28442de08c6ca1ffcf1c731f3cf7634658ee3152f9b1851976ef46ad9aa39e1d",
+      "core": "flow",
+      "feature_cpu_seconds": 0.0014286809999997097,
+      "lightweight_controller_cpu_seconds": 4.106000000003718e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.947998046875,
+          "all4": 0.7919921875,
+          "read_rate": 0.7900390625,
+          "utility": 0.8497167968750001
+        },
+        "never_read": {
+          "accuracy": 0.750732421875,
+          "all4": 0.0029296875,
+          "read_rate": 0.0,
+          "utility": 0.750732421875
+        },
+        "value": {
+          "accuracy": 0.947998046875,
+          "all4": 0.7919921875,
+          "read_rate": 0.7900390625,
+          "utility": 0.8497167968750001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "mqar_flow_17.npz",
+      "raw_sha256": "11a7891f9744809fa72bb75b325a3fdf8f30e3881550583a89330a6bd0af8fd7",
+      "seed": 17,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 5.815600000014243e-05
+    },
+    {
+      "checkpoint_sha256": "9f438db13bb1ee4606eab9c530c8819ac17288ca6df6e577f8825369f627afb8",
+      "core": "flow",
+      "feature_cpu_seconds": 0.0008125659999995705,
+      "lightweight_controller_cpu_seconds": 4.526999999754366e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.947998046875,
+          "all4": 0.7919921875,
+          "read_rate": 0.7900390625,
+          "utility": 0.8497167968750001
+        },
+        "never_read": {
+          "accuracy": 0.7509765625,
+          "all4": 0.00390625,
+          "read_rate": 0.0,
+          "utility": 0.7509765625
+        },
+        "value": {
+          "accuracy": 0.947998046875,
+          "all4": 0.7919921875,
+          "read_rate": 0.7900390625,
+          "utility": 0.8497167968750001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "mqar_flow_29.npz",
+      "raw_sha256": "0a99e0dc6d09477f92e5740bbfda92f602efb44288c505b04622ea1feaa79cb3",
+      "seed": 29,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 6.030900000020267e-05
+    },
+    {
+      "checkpoint_sha256": "0a63c5fd0e39234ec5bca8d648f8f88a4970a59ffa77d358c51a1e2939618fc1",
+      "core": "flow",
+      "feature_cpu_seconds": 0.0006403099999996442,
+      "lightweight_controller_cpu_seconds": 3.034999999762533e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        },
+        "never_read": {
+          "accuracy": 0.750244140625,
+          "all4": 0.0009765625,
+          "read_rate": 0.0,
+          "utility": 0.750244140625
+        },
+        "value": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "mqar_flow_43.npz",
+      "raw_sha256": "cd14df207ab6aef1cf1036dbd4b271fb9a4aa382502c8265eabe12f598aaaa39",
+      "seed": 43,
+      "task": "mqar",
+      "value_controller_cpu_seconds": 5.0415000000469945e-05
+    },
+    {
+      "checkpoint_sha256": "ab66a9c4a651e226833660b182c2163842da53e66b5a9965cb905e42f9aa6196",
+      "core": "diagonal",
+      "feature_cpu_seconds": 0.0006710559999998367,
+      "lightweight_controller_cpu_seconds": 3.3750000003607283e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        },
+        "never_read": {
+          "accuracy": 0.75048828125,
+          "all4": 0.001953125,
+          "read_rate": 0.0,
+          "utility": 0.75048828125
+        },
+        "value": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "selective_diagonal_17.npz",
+      "raw_sha256": "4a8b3b6dede83f9bcea77656db6b0ac1b8ac4e4e745e5711b453982540c295cf",
+      "seed": 17,
+      "task": "selective",
+      "value_controller_cpu_seconds": 7.75650000006678e-05
+    },
+    {
+      "checkpoint_sha256": "e9cf0782e0282200863d0106a4b1c8657cb173a69b9d260c2ea2663687fb1e38",
+      "core": "diagonal",
+      "feature_cpu_seconds": 0.0007426019999998701,
+      "lightweight_controller_cpu_seconds": 3.1749999997998657e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        },
+        "never_read": {
+          "accuracy": 0.75,
+          "all4": 0.0,
+          "read_rate": 0.0,
+          "utility": 0.75
+        },
+        "value": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "selective_diagonal_29.npz",
+      "raw_sha256": "4ae8b691e254701a77da667864fabe0c6b43810bdf069305e05ad8a0da64acc7",
+      "seed": 29,
+      "task": "selective",
+      "value_controller_cpu_seconds": 4.743100000048628e-05
+    },
+    {
+      "checkpoint_sha256": "9cb5310a14b90f91a99a29fdbd2ea6308e1a9dcfacd033020842b8ea69dc736b",
+      "core": "diagonal",
+      "feature_cpu_seconds": 0.000720420000000388,
+      "lightweight_controller_cpu_seconds": 3.4250000000568548e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        },
+        "never_read": {
+          "accuracy": 0.75,
+          "all4": 0.0,
+          "read_rate": 0.0,
+          "utility": 0.75
+        },
+        "value": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "selective_diagonal_43.npz",
+      "raw_sha256": "1b16f7738fdcfe0d655285a84235459b35f41f37118c030272d6d33f2bdeffba",
+      "seed": 43,
+      "task": "selective",
+      "value_controller_cpu_seconds": 4.174200000051087e-05
+    },
+    {
+      "checkpoint_sha256": "2b3267621ed33b6e465bb71d715f034d9193863b40c6be9c5fffead3da40f23b",
+      "core": "flow",
+      "feature_cpu_seconds": 0.000792715999999416,
+      "lightweight_controller_cpu_seconds": 3.2139999994740265e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        },
+        "never_read": {
+          "accuracy": 0.75048828125,
+          "all4": 0.001953125,
+          "read_rate": 0.0,
+          "utility": 0.75048828125
+        },
+        "value": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "selective_flow_17.npz",
+      "raw_sha256": "1a953264ba12f85cc99264239675d34eff93e35c703ebecf0fe857b3a342fdb4",
+      "seed": 17,
+      "task": "selective",
+      "value_controller_cpu_seconds": 4.739100000072938e-05
+    },
+    {
+      "checkpoint_sha256": "d8fc08b30b97a9e7855ddfde01c9fe9242181bf705bb1cbfc3f98af9950200c0",
+      "core": "flow",
+      "feature_cpu_seconds": 0.0007052360000017188,
+      "lightweight_controller_cpu_seconds": 3.295000000846926e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        },
+        "never_read": {
+          "accuracy": 0.75,
+          "all4": 0.0,
+          "read_rate": 0.0,
+          "utility": 0.75
+        },
+        "value": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "selective_flow_29.npz",
+      "raw_sha256": "c667ab75946ef8105b84ee4ba76754c9deb55ceccf9e48e0d51ac4784b784bc5",
+      "seed": 29,
+      "task": "selective",
+      "value_controller_cpu_seconds": 5.423100000001568e-05
+    },
+    {
+      "checkpoint_sha256": "1665d76bbf3a6b936a706dae76b0aa61bad71a8cbdda916aa4abb4345f84c4e9",
+      "core": "flow",
+      "feature_cpu_seconds": 0.0007016709999998483,
+      "lightweight_controller_cpu_seconds": 3.3150000007253766e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        },
+        "never_read": {
+          "accuracy": 0.75,
+          "all4": 0.0,
+          "read_rate": 0.0,
+          "utility": 0.75
+        },
+        "value": {
+          "accuracy": 0.947509765625,
+          "all4": 0.7900390625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8492285156250001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "selective_flow_43.npz",
+      "raw_sha256": "96b67d4923d53cab9880f95fb054dd8d094f5fd2f99ad6f05f31208227e62bae",
+      "seed": 43,
+      "task": "selective",
+      "value_controller_cpu_seconds": 4.5648000000397815e-05
+    },
+    {
+      "checkpoint_sha256": "4962bca9b20e90608392ad791ffbc1868b6d72a19e39b4d0fa2307b89705358e",
+      "core": "diagonal",
+      "feature_cpu_seconds": 0.0006998590000009131,
+      "lightweight_controller_cpu_seconds": 3.2249999986078137e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        },
+        "never_read": {
+          "accuracy": 0.75146484375,
+          "all4": 0.005859375,
+          "read_rate": 0.0,
+          "utility": 0.75146484375
+        },
+        "value": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "binding_diagonal_17.npz",
+      "raw_sha256": "eee1abb97ec509222821f801c47bc21ba3415c97aa0d7a9c48c7b75891432be5",
+      "seed": 17,
+      "task": "binding",
+      "value_controller_cpu_seconds": 4.857199999896977e-05
+    },
+    {
+      "checkpoint_sha256": "d2b956a461389c8beb0947700066b776369e620bc55629a9f778c7c10a3bd9a6",
+      "core": "diagonal",
+      "feature_cpu_seconds": 0.0007003100000009255,
+      "lightweight_controller_cpu_seconds": 2.684000000030551e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        },
+        "never_read": {
+          "accuracy": 0.751953125,
+          "all4": 0.0078125,
+          "read_rate": 0.0,
+          "utility": 0.751953125
+        },
+        "value": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "binding_diagonal_29.npz",
+      "raw_sha256": "b1deff618f0ab1501dfa2cdc862260de71b7662233b5be0f9783d98f67f884c1",
+      "seed": 29,
+      "task": "binding",
+      "value_controller_cpu_seconds": 4.463700000023607e-05
+    },
+    {
+      "checkpoint_sha256": "13c65f769cb26dded53654dace1baf7d3be3de1ea793de8c49aa10eaa562e822",
+      "core": "diagonal",
+      "feature_cpu_seconds": 0.000731186000001216,
+      "lightweight_controller_cpu_seconds": 2.7750000004544972e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        },
+        "never_read": {
+          "accuracy": 0.750732421875,
+          "all4": 0.0029296875,
+          "read_rate": 0.0,
+          "utility": 0.750732421875
+        },
+        "value": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "binding_diagonal_43.npz",
+      "raw_sha256": "775a3cbad3bed3af721bc8491f3229c30263e82d1ab606d9841a709bfbae8dcc",
+      "seed": 43,
+      "task": "binding",
+      "value_controller_cpu_seconds": 4.312399999939487e-05
+    },
+    {
+      "checkpoint_sha256": "d1aca88d38261759b29d1166cae3c95f0e77d6c7d19b34195a5818f267dd4dba",
+      "core": "flow",
+      "feature_cpu_seconds": 0.0007229029999997749,
+      "lightweight_controller_cpu_seconds": 3.0349999988743548e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        },
+        "never_read": {
+          "accuracy": 0.75146484375,
+          "all4": 0.005859375,
+          "read_rate": 0.0,
+          "utility": 0.75146484375
+        },
+        "value": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "binding_flow_17.npz",
+      "raw_sha256": "3702174223b1fdfd1a36f6d60022bf3771fbbfc7791e4cc52b38861d5ba7ee5c",
+      "seed": 17,
+      "task": "binding",
+      "value_controller_cpu_seconds": 4.25729999999902e-05
+    },
+    {
+      "checkpoint_sha256": "b8f86cb4475d581123555588568fb8e8b3575b4fc229100c88b16554a13335e6",
+      "core": "flow",
+      "feature_cpu_seconds": 0.0007191879999997042,
+      "lightweight_controller_cpu_seconds": 3.304999999897973e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        },
+        "never_read": {
+          "accuracy": 0.751953125,
+          "all4": 0.0078125,
+          "read_rate": 0.0,
+          "utility": 0.751953125
+        },
+        "value": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "binding_flow_29.npz",
+      "raw_sha256": "699d392e91b38976cd7b831631a17c9f796ac37f48c59e11ae79a82476154608",
+      "seed": 29,
+      "task": "binding",
+      "value_controller_cpu_seconds": 4.4276000000564864e-05
+    },
+    {
+      "checkpoint_sha256": "6db0655a846ce07a022d94b368272992d68e2d91a6c34dded9499f1d7a57c529",
+      "core": "flow",
+      "feature_cpu_seconds": 0.0006933989999993173,
+      "lightweight_controller_cpu_seconds": 3.193999999595576e-06,
+      "policies": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "read_rate": 1.0,
+          "utility": 0.83453125
+        },
+        "lightweight": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        },
+        "never_read": {
+          "accuracy": 0.750244140625,
+          "all4": 0.0009765625,
+          "read_rate": 0.0,
+          "utility": 0.750244140625
+        },
+        "value": {
+          "accuracy": 0.94775390625,
+          "all4": 0.791015625,
+          "read_rate": 0.7900390625,
+          "utility": 0.8494726562500001
+        }
+      },
+      "policy_freeze_sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e",
+      "raw_file": "binding_flow_43.npz",
+      "raw_sha256": "620f4ba1d15bd007ef329d7e3b166357492070d6a5164a173c804226e4af9c0b",
+      "seed": 43,
+      "task": "binding",
+      "value_controller_cpu_seconds": 4.147099999940451e-05
+    }
+  ],
+  "source_commit": "0ba19482533b0d714eebe4fa58b4544ca03aac6f",
+  "source_hashes": {
+    "experiments/hcsn_addressed_flow_20261101/STATISTICAL_PLAN.json": "87c22c3671866b920791a569484f4696f84580c7778fb84a00f87545e1eedcdf",
+    "experiments/hcsn_addressed_flow_20261101/addressed_models.py": "2c2c434c567f66d5e0f48d5befc05e54c201c724f0b2b5d6f211f3784612f25e",
+    "experiments/hcsn_addressed_flow_20261101/analyze.py": "6fdcba08169d95c4a4f40f4889838988daf7eca1a3a9dab27a6442b304959d2f",
+    "experiments/hcsn_addressed_flow_20261101/control_study.py": "69033a8879a66bc02a2fcd7ee341f0c78d7a74755c0163bfe95a4677d48278f9",
+    "experiments/hcsn_addressed_flow_20261101/data.py": "165307e71c12d2e57c4e27933e8d739745e3fe6cfc03853f4e58c50eaa0ec5e6",
+    "experiments/hcsn_addressed_flow_20261101/retention_control.py": "f631ec9688081f82f4be3dfc5e3bb5233a25eefb6b2255b1500c4e0cabd7cfaa",
+    "experiments/hcsn_addressed_flow_20261101/retention_study.py": "22f8214b318c859d3a13f37b6b021e17303b6521dd42876014bead7409a6087a",
+    "experiments/hcsn_addressed_flow_20261101/study.py": "06b650f82d75e6677651a109cee8ef89a7f21d41c8852981153c0a88e080b3b1",
+    "experiments/hcsn_addressed_flow_20261101/typed_retention.py": "680d156cbd1290794d747d282763559a277ffc4a47b3e7347e1024db0ef23cf4",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_four_stage_flow_20261031/dynamic_data.py": "df016a6142ecc5a9fffaa45956ec253169ce33adb7101f8b18d41b4a845102c7",
+    "experiments/hcsn_four_stage_flow_20261031/extended_eval.py": "9c6f9633225625e9696871c4396e5b52f872ac117b8a4d47cba6f125cf53f84d",
+    "experiments/hcsn_four_stage_flow_20261031/marked_flow.py": "f7ccf2ea965b77ed08da488142d1023fb1c7a6a11580b13e8e7aba2dd861836c",
+    "experiments/hcsn_four_stage_flow_20261031/models.py": "d8d47ea1e2b1a3bfad4a55c99ce1322bc1583dc73b69b8a645da38f4d07797b6",
+    "experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e"
+  },
+  "source_unchanged": true,
+  "wall_seconds": 20.223300547997496
+}

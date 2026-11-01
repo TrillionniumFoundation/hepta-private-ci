@@ -1,0 +1,81 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python",
+    "-m",
+    "experiments.hcsn_addressed_flow_20261101.av_confirmation_guard",
+    "confirm",
+    "--candidate-freeze",
+    "experiments/hcsn_addressed_flow_20261101/results/av_development/fit003/CANDIDATES.json",
+    "--expected-candidate-sha256",
+    "18cf5752c049656156a1b87c05be95fa463f37c885cbc2188901f8fd0b46a495",
+    "--cohort-path",
+    "experiments/hcsn_addressed_flow_20261101/results/av_development/INDEPENDENT_COHORT.json",
+    "--independent-metadata",
+    "experiments/hcsn_addressed_flow_20261101/results/av_development/INDEPENDENT_COHORT_FROZEN_METADATA.json",
+    "--historical-proof",
+    "experiments/hcsn_addressed_flow_20261101/results/av_development/HISTORICAL_ACTOR_UNION_PROOF.json",
+    "--expected-history-sha256",
+    "7af9b818d9f33c4ef09cbb1f92f8a145e2514669380ca35e48a115d47d51631b",
+    "--required-scope",
+    "locked_cross_cohort_reevaluation",
+    "--media-root",
+    "/workspace/scratch/ad699f1b2b79/av_media_crosscohort",
+    "--data-root",
+    "experiments/hcsn_addressed_flow_20261101/results/av_independent_data",
+    "--temporal-root",
+    "experiments/hcsn_addressed_flow_20261101/results/av_independent_temporal",
+    "--mouth-root",
+    "experiments/hcsn_addressed_flow_20261101/results/av_independent_mouth",
+    "--out",
+    "experiments/hcsn_addressed_flow_20261101/results/av_independent_data/GUARD_PREPARED001.json"
+  ],
+  "cwd": "/workspace/scratch/ad699f1b2b79/hepta-csn-next",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-01T07:52:01.636899+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_addressed_flow_20261101/results/av_independent_costs/guard.stdout.log",
+  "stderr_path": "experiments/hcsn_addressed_flow_20261101/results/av_independent_costs/guard.stderr.log",
+  "pid": 6,
+  "finished_utc": "2026-11-01T07:52:02.768174+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 1.1309941069994238,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 0.9909359999999999,
+  "system_cpu_seconds": 0.11964899999999999,
+  "total_cpu_seconds": 1.110585,
+  "peak_rss_bytes": 86708224,
+  "peak_rss_native_units": 84676,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_independent_costs/guard.stdout.log",
+      "is_file": true,
+      "bytes": 2010,
+      "sha256": "9ea6810d3a552e7a442fb25a8c7c73c72e73cedad52319a1cd5d99868187aeac"
+    },
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_independent_costs/guard.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_independent_data/GUARD_PREPARED001.json",
+      "is_file": true,
+      "bytes": 146849,
+      "sha256": "c589a6a9ad870632d7e325983a791e8d9c250e17b217765f04567f729817a272"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0011938709999999991,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

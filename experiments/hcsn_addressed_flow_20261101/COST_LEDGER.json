@@ -1,0 +1,1900 @@
+{
+  "av_development_body_clocks": {
+    "energy_joules": null,
+    "failed_attempts": [
+      {
+        "cpu_seconds": null,
+        "failure": "Initial data-root path did not exist; no training or test opened",
+        "note": "Not metered, not assumed zero",
+        "stage": "fit001",
+        "stderr": "results/av_development/fit001.stderr.log"
+      }
+    ],
+    "metered_cpu_seconds_sum": 160.549158767,
+    "resident_checkpoints": {
+      "audio_encoder.npz": {
+        "arrays": {
+          "cal_coef": [],
+          "cal_intercept": [],
+          "coef": [
+            128
+          ],
+          "intercept": [],
+          "kind": [],
+          "mean": [
+            128
+          ],
+          "scale": [
+            128
+          ]
+        },
+        "resident_array_bytes": 3104,
+        "stored_bytes": 4313
+      },
+      "text_encoder.npz": {
+        "arrays": {
+          "cal_coef": [],
+          "cal_intercept": [],
+          "coef": [
+            24
+          ],
+          "intercept": [],
+          "kind": [],
+          "mean": [
+            24
+          ],
+          "scale": [
+            24
+          ]
+        },
+        "resident_array_bytes": 608,
+        "stored_bytes": 1394
+      },
+      "video_encoder.npz": {
+        "arrays": {
+          "cal_coef": [],
+          "cal_intercept": [],
+          "dual": [
+            257
+          ],
+          "gamma": [],
+          "intercept": [],
+          "kind": [],
+          "mean": [
+            684
+          ],
+          "scale": [
+            684
+          ],
+          "support": [
+            257,
+            684
+          ]
+        },
+        "resident_array_bytes": 1419344,
+        "stored_bytes": 785180
+      }
+    },
+    "schema": "hcsn.av.development.costs.v1",
+    "scope": "These are nonoverlapping development body clocks, including waited decoder children; not full deployment economics or energy. External process import/startup is excluded. Final core training and confirmation will be separate records.",
+    "stages": [
+      {
+        "cpu_seconds": 84.13847306599999,
+        "receipt": "results/av_features/PREPARE_train_validation.json",
+        "sha256": "3604a8910a8dcad447253f0334b6317afb97bc111e1ad7379f18a51b7a1385ee",
+        "stage": "temporal_preparation",
+        "wall_seconds": 83.61977884899898
+      },
+      {
+        "cpu_seconds": 69.673022186,
+        "receipt": "results/av_mouth_features/PREPARE_train_validation.json",
+        "sha256": "3685617bbd2c99cf76ac63782df48f5572f1c28eb2a3a757c6c20d933f361547",
+        "stage": "mouth_preparation",
+        "wall_seconds": 70.23950936699839
+      },
+      {
+        "cpu_seconds": 2.664900159,
+        "receipt": "results/av_development/fit002/DEVELOPMENT.json",
+        "sha256": "ac9c4ce03e11634bb28e45ec7398ab8df6c40913f4ad889e5ddbd2728f6ce0cd",
+        "stage": "first_development_41_candidates",
+        "wall_seconds": 2.6670520560001023
+      },
+      {
+        "cpu_seconds": 3.820883436,
+        "receipt": "results/av_development/fit003/DEVELOPMENT.json",
+        "sha256": "01683399f639b6855ef5804ec63480ec5f7e5e473636127ed8ab084bdec5f3d1",
+        "stage": "final_development_52_candidates",
+        "wall_seconds": 3.834104658999422
+      },
+      {
+        "cpu_seconds": 0.043030218000000175,
+        "receipt": "results/av_development/fit003/SUBSET_CONTROLS.json",
+        "sha256": "172bff745a56cffdc9e8de6cdd13e2af70d66cc9ea9a80083644e9a5be05ccd4",
+        "stage": "separate_modality_subset_heads",
+        "wall_seconds": 0.043071890999272
+      },
+      {
+        "cpu_seconds": 0.20884970200000041,
+        "receipt": "results/av_development/baseline_probes.json",
+        "stage": "initial_20_baseline_probes",
+        "wall_seconds": null
+      }
+    ],
+    "unmeasured": "Device energy; historical original-feature preparation/acquisition reused as cache; failed path/import overhead"
+  },
+  "energy_joules": null,
+  "outer_cpu_seconds_sum": 1776.847011,
+  "outer_process_receipts": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "experiments.hcsn_four_stage_flow_20261031.av_data",
+        "--media-root",
+        "/workspace/scratch/ad699f1b2b79/av_media_blind1019",
+        "--cohort-path",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/BLIND_ACTOR1019_COHORT.json",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_data",
+        "--splits",
+        "test",
+        "--candidate-freeze",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/CANDIDATES.json"
+      ],
+      "cpu_seconds": 3.8154609999999995,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_costs/baseline_prepare.receipt.json",
+      "returncode": 0,
+      "sha256": "38a819b2b9c6a7064f8367f5f520c0355dbcd509ea92a549b25c0d220d71c5e0",
+      "wall_seconds": 3.849918672000058
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.av_blind_core_evaluate",
+        "--mode",
+        "evaluate",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_core001",
+        "--confirmation",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_confirm001",
+        "--guard-receipt",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_data/GUARD_PREPARED001.json",
+        "--plan-sha256",
+        "2b8c415cd3eac91751190deea2279d95a96794f5c42c4e821334ec4a35409c8e"
+      ],
+      "cpu_seconds": 2.771475,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_costs/core_confirm.receipt.json",
+      "returncode": 0,
+      "sha256": "fe68f93d15c744e7d3a763aac8ae3660fe2e73669a3e0e75de944264c5eb4f33",
+      "wall_seconds": 2.80620665600145
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.av_frontend",
+        "confirm",
+        "--data-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_data",
+        "--temporal-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_temporal",
+        "--mouth-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_mouth",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_confirm001",
+        "--candidate-freeze",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/CANDIDATES.json",
+        "--split",
+        "independent_test"
+      ],
+      "cpu_seconds": 1.066941,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_costs/frontend_confirm.receipt.json",
+      "returncode": 0,
+      "sha256": "21a20f5ff46b90ce07873987b637a056cafad219248ffe92ff9e7d56f2436904",
+      "wall_seconds": 1.128180143001373
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.av_confirmation_guard",
+        "confirm",
+        "--candidate-freeze",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/CANDIDATES.json",
+        "--expected-candidate-sha256",
+        "e15355f634395a67fd30e90aec3919b37d41be41a63e88055da400150a27b68e",
+        "--cohort-path",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/BLIND_ACTOR1019_COHORT.json",
+        "--independent-metadata",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/BLIND_ACTOR1019_COHORT_METADATA.json",
+        "--historical-proof",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/HISTORICAL_ACTOR_UNION_PROOF.json",
+        "--expected-history-sha256",
+        "7af9b818d9f33c4ef09cbb1f92f8a145e2514669380ca35e48a115d47d51631b",
+        "--required-scope",
+        "globally_unseen",
+        "--media-root",
+        "/workspace/scratch/ad699f1b2b79/av_media_blind1019",
+        "--data-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_data",
+        "--temporal-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_temporal",
+        "--mouth-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_mouth",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_data/GUARD_PREPARED001.json"
+      ],
+      "cpu_seconds": 0.8746149999999999,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_costs/guard.receipt.json",
+      "returncode": 0,
+      "sha256": "186169337a4cb20f139dcc5e30d4f46297d1c3be3de51963a52abad25d35dc4a",
+      "wall_seconds": 1.9894732700013265
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.av_frontend",
+        "prepare-mouth",
+        "--media-root",
+        "/workspace/scratch/ad699f1b2b79/av_media_blind1019",
+        "--cohort-path",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/BLIND_ACTOR1019_COHORT.json",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_mouth",
+        "--splits",
+        "test",
+        "--candidate-freeze",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/CANDIDATES.json"
+      ],
+      "cpu_seconds": 3.1746350000000003,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_costs/mouth_prepare.receipt.json",
+      "returncode": 0,
+      "sha256": "58a43a20fc2bb9998ee818312f14fbfca012b4dae447fada0ab146185fcb36a3",
+      "wall_seconds": 3.2553493289997277
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.av_frontend",
+        "prepare",
+        "--media-root",
+        "/workspace/scratch/ad699f1b2b79/av_media_blind1019",
+        "--cohort-path",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/BLIND_ACTOR1019_COHORT.json",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_temporal",
+        "--splits",
+        "test",
+        "--candidate-freeze",
+        "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_candidates/CANDIDATES.json"
+      ],
+      "cpu_seconds": 3.957109,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_costs/temporal_prepare.receipt.json",
+      "returncode": 0,
+      "sha256": "1ee54f1ed29ba3654d17182d40875fdf1496b08cb01bbe7d26f5dbd63fa4f24c",
+      "wall_seconds": 4.05093884300004
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.av_core_study",
+        "--mode",
+        "train",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_core001",
+        "--source-commit",
+        "2d0f427bea28c787f15a17648c09640d94d532cc",
+        "--workers",
+        "2"
+      ],
+      "cpu_seconds": 53.529402999999995,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_core001_train_meter.receipt.json",
+      "returncode": 0,
+      "sha256": "28d7c73c89d2b93d624970e1f0313cac4a3671f2784d62cf1a93d317179e71bc",
+      "wall_seconds": 28.723509602998092
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "experiments.hcsn_four_stage_flow_20261031.av_data",
+        "--media-root",
+        "/workspace/scratch/ad699f1b2b79/av_media_crosscohort",
+        "--cohort-path",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/INDEPENDENT_COHORT.json",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_data",
+        "--splits",
+        "test",
+        "--candidate-freeze",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/fit003/CANDIDATES.json"
+      ],
+      "cpu_seconds": 29.031605,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_independent_costs/baseline_prepare.receipt.json",
+      "returncode": 0,
+      "sha256": "55b04617f622ef50d2eb56376d3e01c598d580107de110031cc9220ed64ea5d5",
+      "wall_seconds": 31.410463101998175
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.av_core_study",
+        "--mode",
+        "evaluate",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_core001",
+        "--confirmation",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_confirm001",
+        "--candidate-freeze-sha256",
+        "50163923f4312b63aefc29af4135279ba7da77cb251466eae29a9467b259e0fc"
+      ],
+      "cpu_seconds": 4.704037,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_independent_costs/core_confirm.receipt.json",
+      "returncode": 0,
+      "sha256": "8c9312246e24ec914d88f3762c08bcedd8856d00f1be47235190211d91ffe767",
+      "wall_seconds": 4.733428234998428
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.av_frontend",
+        "confirm",
+        "--data-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_data",
+        "--temporal-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_temporal",
+        "--mouth-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_mouth",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_confirm001",
+        "--candidate-freeze",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/fit003/CANDIDATES.json",
+        "--split",
+        "independent_test"
+      ],
+      "cpu_seconds": 1.556568,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_independent_costs/frontend_confirm.receipt.json",
+      "returncode": 0,
+      "sha256": "811a93e53309c62038b4be1029007a63859089b7db5a4d4285ebdc20300db5cf",
+      "wall_seconds": 1.6193436020002991
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.av_confirmation_guard",
+        "confirm",
+        "--candidate-freeze",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/fit003/CANDIDATES.json",
+        "--expected-candidate-sha256",
+        "18cf5752c049656156a1b87c05be95fa463f37c885cbc2188901f8fd0b46a495",
+        "--cohort-path",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/INDEPENDENT_COHORT.json",
+        "--independent-metadata",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/INDEPENDENT_COHORT_FROZEN_METADATA.json",
+        "--historical-proof",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/HISTORICAL_ACTOR_UNION_PROOF.json",
+        "--expected-history-sha256",
+        "7af9b818d9f33c4ef09cbb1f92f8a145e2514669380ca35e48a115d47d51631b",
+        "--required-scope",
+        "locked_cross_cohort_reevaluation",
+        "--media-root",
+        "/workspace/scratch/ad699f1b2b79/av_media_crosscohort",
+        "--data-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_data",
+        "--temporal-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_temporal",
+        "--mouth-root",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_mouth",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_data/GUARD_PREPARED001.json"
+      ],
+      "cpu_seconds": 1.110585,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_independent_costs/guard.receipt.json",
+      "returncode": 0,
+      "sha256": "b044f65288a4ee3fbc7d5c80ae9eac24e7b450f333406831f11cdf66cffd7d9f",
+      "wall_seconds": 1.1309941069994238
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.av_frontend",
+        "prepare-mouth",
+        "--media-root",
+        "/workspace/scratch/ad699f1b2b79/av_media_crosscohort",
+        "--cohort-path",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/INDEPENDENT_COHORT.json",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_mouth",
+        "--splits",
+        "test",
+        "--candidate-freeze",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/fit003/CANDIDATES.json"
+      ],
+      "cpu_seconds": 21.863616,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_independent_costs/mouth_prepare.receipt.json",
+      "returncode": 0,
+      "sha256": "239797cdb9c5dca373a501321d9f4a0035390657031a48d838360facc05985f4",
+      "wall_seconds": 23.698754353998083
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.av_frontend",
+        "prepare",
+        "--media-root",
+        "/workspace/scratch/ad699f1b2b79/av_media_crosscohort",
+        "--cohort-path",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/INDEPENDENT_COHORT.json",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/av_independent_temporal",
+        "--splits",
+        "test",
+        "--candidate-freeze",
+        "experiments/hcsn_addressed_flow_20261101/results/av_development/fit003/CANDIDATES.json"
+      ],
+      "cpu_seconds": 27.431368999999997,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_independent_costs/temporal_prepare.receipt.json",
+      "returncode": 0,
+      "sha256": "4eaeb98008170efc2b9dffd055f72708b86db715fe4139568e6cd8e473bee5cc",
+      "wall_seconds": 29.763552656000684
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.study",
+        "--phase",
+        "evaluate",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/campaign001",
+        "--candidate-freeze-sha256",
+        "4ed955c533a124c968494436e8600956a0b2e65467d2712b2701dea83709d836"
+      ],
+      "cpu_seconds": 278.292731,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/campaign001_confirmation_meter.receipt.json",
+      "returncode": 0,
+      "sha256": "97f11c6dee7cccf1b4acd7970acf37a93ef8067c58272697409486a4f8fa9930",
+      "wall_seconds": 283.5950123829971
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.study",
+        "--phase",
+        "train",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/campaign001",
+        "--source-commit",
+        "63b348005c468e29e89f9f309d525d87661ee06b",
+        "--workers",
+        "3"
+      ],
+      "cpu_seconds": 714.581908,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/campaign001_train_meter.receipt.json",
+      "returncode": 0,
+      "sha256": "4ddd81b8493baf31c811e81683f6a972d656b48d0fd73a6cfdc07ba820fa741d",
+      "wall_seconds": 244.76526979799746
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.control_study",
+        "--phase",
+        "evaluate",
+        "--run",
+        "experiments/hcsn_addressed_flow_20261101/results/campaign001",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/control001",
+        "--freeze-sha256",
+        "338448850d6df1a637443c576d9611c1e5a59db33c31cf2d56ca1bf3089c2a62"
+      ],
+      "cpu_seconds": 17.978894,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/control001_confirmation_meter.receipt.json",
+      "returncode": 0,
+      "sha256": "015aae83ec1edc882db315d57c4e130a267bd346ac3316f4b80294961ebe6225",
+      "wall_seconds": 18.116497541999706
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.control_study",
+        "--phase",
+        "train",
+        "--run",
+        "experiments/hcsn_addressed_flow_20261101/results/campaign001",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/control001",
+        "--candidate-freeze-sha256",
+        "4ed955c533a124c968494436e8600956a0b2e65467d2712b2701dea83709d836"
+      ],
+      "cpu_seconds": 14.097558,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/control001_train_meter.receipt.json",
+      "returncode": 0,
+      "sha256": "9d931e4c6f2bd80df3f66c04ba83f1c6a187e9196d3eaf31537b51f778ea30c3",
+      "wall_seconds": 15.067108630999428
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.distribution_probe",
+        "--mode",
+        "evaluate",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/distribution_probe001",
+        "--plan-sha256",
+        "a6ec8cddb4da18146771d209642687471f79f8b89c85fd6234ae2643f89e2e82",
+        "--source-commit",
+        "2b11523fba1dc4015688d646770a3e5d7563b474"
+      ],
+      "cpu_seconds": 12.0009,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/distribution_probe001_confirm_meter.receipt.json",
+      "returncode": 0,
+      "sha256": "2867873f7d4934d176e981e9bc0ce3dfcf46ec1b66c53511c4f220b5a143bfbc",
+      "wall_seconds": 12.02469439700144
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_four_stage_flow_20261031.operator_audit",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/operator_regression001",
+        "--stage",
+        "formal",
+        "--frozen-commit",
+        "7226bd94c6f30d113b2abb8dcf3678e63eb81f38"
+      ],
+      "cpu_seconds": 2.401737,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/operator_regression_meter.receipt.json",
+      "returncode": 0,
+      "sha256": "da10173f0a3b98eed6eed0ef6cf533d3877384d810f9100b7079772c5f3fb75f",
+      "wall_seconds": 2.42221026200059
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.retention_study",
+        "--mode",
+        "evaluate",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/retention001",
+        "--candidate-freeze-sha256",
+        "468459cd0353f7a84dd108edd5c7b416dc2beda0e972cdca87224d9e135c59a4"
+      ],
+      "cpu_seconds": 155.31317900000002,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/retention001_confirm_meter.receipt.json",
+      "returncode": 0,
+      "sha256": "16eb42501356cd10853039cedce6abf69fcb16cfbfce5ce8747681d8ea9ef85f",
+      "wall_seconds": 167.52197133200025
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.retention_study",
+        "--mode",
+        "train",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/retention001",
+        "--source-commit",
+        "6809dd449cecaad4f192b5bd176a11f91223769c",
+        "--workers",
+        "2"
+      ],
+      "cpu_seconds": 397.559356,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/retention001_train_meter.receipt.json",
+      "returncode": 0,
+      "sha256": "4bee36cccbf331b9f2d8d803e61ee9c6b86a43465e0024cd7e4181a7374c0fcf",
+      "wall_seconds": 208.0085775100015
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.retention_control",
+        "--mode",
+        "evaluate",
+        "--run",
+        "experiments/hcsn_addressed_flow_20261101/results/retention001",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/retention_control001",
+        "--policy-sha256",
+        "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e"
+      ],
+      "cpu_seconds": 16.166379,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/retention_control001_confirm_meter.receipt.json",
+      "returncode": 0,
+      "sha256": "61d076ca1d52f6f83c7016cc623548a8ac58043f0a632e6293138395f2250e6d",
+      "wall_seconds": 22.7284837110019
+    },
+    {
+      "command": [
+        "/workspace/scratch/52a69008c60c/.venv/bin/python",
+        "-m",
+        "experiments.hcsn_addressed_flow_20261101.retention_control",
+        "--mode",
+        "train",
+        "--run",
+        "experiments/hcsn_addressed_flow_20261101/results/retention001",
+        "--out",
+        "experiments/hcsn_addressed_flow_20261101/results/retention_control001",
+        "--source-commit",
+        "0ba19482533b0d714eebe4fa58b4544ca03aac6f",
+        "--candidate-sha256",
+        "468459cd0353f7a84dd108edd5c7b416dc2beda0e972cdca87224d9e135c59a4"
+      ],
+      "cpu_seconds": 13.56695,
+      "path": "experiments/hcsn_addressed_flow_20261101/results/retention_control001_train_meter.receipt.json",
+      "returncode": 0,
+      "sha256": "a73b875f41ce2131949c5a87b77b86005a5d5c42583b673444f9a1fa11e47592",
+      "wall_seconds": 13.640013976000773
+    }
+  ],
+  "schema": "hcsn.cost-ledger.v1",
+  "scope": "23 separate complete child process invocations, with waited descendants; inner fit timers are nested and must not be added",
+  "separate_acquisition_body_clocks": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_crosscohort_acquisition.json",
+      "receipt": {
+        "actors": [
+          "1001",
+          "1003",
+          "1004",
+          "1005",
+          "1008",
+          "1011",
+          "1012",
+          "1015"
+        ],
+        "candidate_freeze_sha256": "18cf5752c049656156a1b87c05be95fa463f37c885cbc2188901f8fd0b46a495",
+        "cohort_sha256": "286cd5c87ddcef74787418b22e188fd4ed5b8443e1d42a135840c46e32d95f38",
+        "cpu_seconds": 0.489453328,
+        "downloaded_bytes": 32139778,
+        "energy_joules": null,
+        "failed": 0,
+        "files": [
+          {
+            "actual_sha256": "10dc3fd1f2bc8203657431598bd7dc9312462008f93d08fda786043ae6a8d2f4",
+            "bytes": 265922,
+            "clip": "1001_DFA_ANG_XX",
+            "downloaded_bytes": 265922,
+            "expected_sha256": "10dc3fd1f2bc8203657431598bd7dc9312462008f93d08fda786043ae6a8d2f4",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.007148931,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_DFA_ANG_XX.flv",
+            "wall_seconds": 0.371409040002618
+          },
+          {
+            "actual_sha256": "cb6db35d6e666076ae736850d48e97fa2ba61d9490724eb1f62d711bea994d3c",
+            "bytes": 290553,
+            "clip": "1001_DFA_DIS_XX",
+            "downloaded_bytes": 290553,
+            "expected_sha256": "cb6db35d6e666076ae736850d48e97fa2ba61d9490724eb1f62d711bea994d3c",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.006754044999999999,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_DFA_DIS_XX.flv",
+            "wall_seconds": 0.343388782999682
+          },
+          {
+            "actual_sha256": "9869c4b9169a805b2c637ff5752947311111736eceb16abd276a890b97dcd57e",
+            "bytes": 266703,
+            "clip": "1001_DFA_FEA_XX",
+            "downloaded_bytes": 266703,
+            "expected_sha256": "9869c4b9169a805b2c637ff5752947311111736eceb16abd276a890b97dcd57e",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.008016839000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_DFA_FEA_XX.flv",
+            "wall_seconds": 0.3144895990008081
+          },
+          {
+            "actual_sha256": "e72a1221a240f2e6c232b871734ec6ea367228f3feb076dfe448941731752b14",
+            "bytes": 233278,
+            "clip": "1001_DFA_HAP_XX",
+            "downloaded_bytes": 233278,
+            "expected_sha256": "e72a1221a240f2e6c232b871734ec6ea367228f3feb076dfe448941731752b14",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005447465,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_DFA_HAP_XX.flv",
+            "wall_seconds": 0.24661665500025265
+          },
+          {
+            "actual_sha256": "a2b374bcd195d7320437c944eef2208dedd2c22725d09d65e8c31bf6c1eeb286",
+            "bytes": 251524,
+            "clip": "1001_DFA_NEU_XX",
+            "downloaded_bytes": 251524,
+            "expected_sha256": "a2b374bcd195d7320437c944eef2208dedd2c22725d09d65e8c31bf6c1eeb286",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004232432999999999,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_DFA_NEU_XX.flv",
+            "wall_seconds": 0.2987152799978503
+          },
+          {
+            "actual_sha256": "8fb9c1b08ef3edd03816208fb17fcc0d1ab3e3b8dd2e4a989695191f672bc40d",
+            "bytes": 249426,
+            "clip": "1001_DFA_SAD_XX",
+            "downloaded_bytes": 249426,
+            "expected_sha256": "8fb9c1b08ef3edd03816208fb17fcc0d1ab3e3b8dd2e4a989695191f672bc40d",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004101529,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_DFA_SAD_XX.flv",
+            "wall_seconds": 0.36838975900172954
+          },
+          {
+            "actual_sha256": "0903b67728737e813861d72443df94ceb4c7d55ebfaa8486136632200b588109",
+            "bytes": 268245,
+            "clip": "1001_IOM_ANG_XX",
+            "downloaded_bytes": 268245,
+            "expected_sha256": "0903b67728737e813861d72443df94ceb4c7d55ebfaa8486136632200b588109",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0038679429999999996,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_IOM_ANG_XX.flv",
+            "wall_seconds": 0.33202757600156474
+          },
+          {
+            "actual_sha256": "8f62cbb491d22df4c7dd11e7be77e77b3d2de20c7bf9df788f42535fc377fee2",
+            "bytes": 279222,
+            "clip": "1001_IOM_DIS_XX",
+            "downloaded_bytes": 279222,
+            "expected_sha256": "8f62cbb491d22df4c7dd11e7be77e77b3d2de20c7bf9df788f42535fc377fee2",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0037934229999999998,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_IOM_DIS_XX.flv",
+            "wall_seconds": 0.2953291999983776
+          },
+          {
+            "actual_sha256": "0abf1041e48dc4d2837f22fd8dfafad0a36e178fb88b5e53fd6dca9c13ef2dfd",
+            "bytes": 375631,
+            "clip": "1001_IOM_FEA_XX",
+            "downloaded_bytes": 375631,
+            "expected_sha256": "0abf1041e48dc4d2837f22fd8dfafad0a36e178fb88b5e53fd6dca9c13ef2dfd",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004626469999999999,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_IOM_FEA_XX.flv",
+            "wall_seconds": 0.3020138299980317
+          },
+          {
+            "actual_sha256": "09b7d93a9d71da98fa02bc2775ded6f8a31940feadd9938bea7fbdd41ad9f1e1",
+            "bytes": 258814,
+            "clip": "1001_IOM_HAP_XX",
+            "downloaded_bytes": 258814,
+            "expected_sha256": "09b7d93a9d71da98fa02bc2775ded6f8a31940feadd9938bea7fbdd41ad9f1e1",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005043924000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_IOM_HAP_XX.flv",
+            "wall_seconds": 0.39657366900064517
+          },
+          {
+            "actual_sha256": "0fc445a34a17a9a3ac103562833d511046aa28762594ef95813b94344e7d3583",
+            "bytes": 315604,
+            "clip": "1001_IOM_NEU_XX",
+            "downloaded_bytes": 315604,
+            "expected_sha256": "0fc445a34a17a9a3ac103562833d511046aa28762594ef95813b94344e7d3583",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005171883,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_IOM_NEU_XX.flv",
+            "wall_seconds": 0.2518016020003415
+          },
+          {
+            "actual_sha256": "0783a09e4fdb723b74477f13c10c673d766d018cea66d9419d01e92bb637a987",
+            "bytes": 243122,
+            "clip": "1001_IOM_SAD_XX",
+            "downloaded_bytes": 243122,
+            "expected_sha256": "0783a09e4fdb723b74477f13c10c673d766d018cea66d9419d01e92bb637a987",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.003887929,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1001_IOM_SAD_XX.flv",
+            "wall_seconds": 0.3045134340027289
+          },
+          {
+            "actual_sha256": "b69c5dadb66748481c8dba2e03dde00d0cba731ef0f9121c44c50353d88e8cf5",
+            "bytes": 399368,
+            "clip": "1003_DFA_ANG_XX",
+            "downloaded_bytes": 399368,
+            "expected_sha256": "b69c5dadb66748481c8dba2e03dde00d0cba731ef0f9121c44c50353d88e8cf5",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004906835000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_DFA_ANG_XX.flv",
+            "wall_seconds": 0.3768181880004704
+          },
+          {
+            "actual_sha256": "dc22315afb89f9a15155548f65b089ccd0fa6f897d0f8c9f933bc55804ca1e0c",
+            "bytes": 428112,
+            "clip": "1003_DFA_DIS_XX",
+            "downloaded_bytes": 428112,
+            "expected_sha256": "dc22315afb89f9a15155548f65b089ccd0fa6f897d0f8c9f933bc55804ca1e0c",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.006579376999999997,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_DFA_DIS_XX.flv",
+            "wall_seconds": 0.3681874350004364
+          },
+          {
+            "actual_sha256": "a8090609abca99483246bee7fa75dc63109023575b1c6daeffea8053961bf23b",
+            "bytes": 399634,
+            "clip": "1003_DFA_FEA_XX",
+            "downloaded_bytes": 399634,
+            "expected_sha256": "a8090609abca99483246bee7fa75dc63109023575b1c6daeffea8053961bf23b",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0044258510000000015,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_DFA_FEA_XX.flv",
+            "wall_seconds": 0.3330983100022422
+          },
+          {
+            "actual_sha256": "7fe434888f6f12cc83087427637ac6770b0a6595111333f66d0d60716765f0c5",
+            "bytes": 420269,
+            "clip": "1003_DFA_HAP_XX",
+            "downloaded_bytes": 420269,
+            "expected_sha256": "7fe434888f6f12cc83087427637ac6770b0a6595111333f66d0d60716765f0c5",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.007038278000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_DFA_HAP_XX.flv",
+            "wall_seconds": 0.23928766500102938
+          },
+          {
+            "actual_sha256": "b57046431372b84a19db3480f19411f43550b7232aee76115854c3080b860fe8",
+            "bytes": 413714,
+            "clip": "1003_DFA_NEU_XX",
+            "downloaded_bytes": 413714,
+            "expected_sha256": "b57046431372b84a19db3480f19411f43550b7232aee76115854c3080b860fe8",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0038945609999999978,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_DFA_NEU_XX.flv",
+            "wall_seconds": 0.19576797300032922
+          },
+          {
+            "actual_sha256": "0fd2ec4bf793eaf6100d73da15f642271487a556ee04ea1c5cf8151c1b36cee6",
+            "bytes": 401805,
+            "clip": "1003_DFA_SAD_XX",
+            "downloaded_bytes": 401805,
+            "expected_sha256": "0fd2ec4bf793eaf6100d73da15f642271487a556ee04ea1c5cf8151c1b36cee6",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005230351000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_DFA_SAD_XX.flv",
+            "wall_seconds": 0.28885858899957384
+          },
+          {
+            "actual_sha256": "099d64e20843193d45dc427a6c9eff5773fcef9e565410556fad3e837fa18d5c",
+            "bytes": 353173,
+            "clip": "1003_IOM_ANG_XX",
+            "downloaded_bytes": 353173,
+            "expected_sha256": "099d64e20843193d45dc427a6c9eff5773fcef9e565410556fad3e837fa18d5c",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004896919999999999,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_IOM_ANG_XX.flv",
+            "wall_seconds": 0.29123318400161224
+          },
+          {
+            "actual_sha256": "b6937640bffce44efa5d1c14a52d3beaf0b529502ba2aa830a3f27d373f19818",
+            "bytes": 434199,
+            "clip": "1003_IOM_DIS_XX",
+            "downloaded_bytes": 434199,
+            "expected_sha256": "b6937640bffce44efa5d1c14a52d3beaf0b529502ba2aa830a3f27d373f19818",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004761713000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_IOM_DIS_XX.flv",
+            "wall_seconds": 0.3149165409995476
+          },
+          {
+            "actual_sha256": "a7444c3ef30d542f5ca2ca3732e3f494b9611ca9cfd55a9be49a8710879abe00",
+            "bytes": 347252,
+            "clip": "1003_IOM_FEA_XX",
+            "downloaded_bytes": 347252,
+            "expected_sha256": "a7444c3ef30d542f5ca2ca3732e3f494b9611ca9cfd55a9be49a8710879abe00",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004846430999999998,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_IOM_FEA_XX.flv",
+            "wall_seconds": 0.30713582300086273
+          },
+          {
+            "actual_sha256": "a2ad0d3c1b79a759f721553ae217acc06857e934ea0c10c6c6bcf5e25c215209",
+            "bytes": 386968,
+            "clip": "1003_IOM_HAP_XX",
+            "downloaded_bytes": 386968,
+            "expected_sha256": "a2ad0d3c1b79a759f721553ae217acc06857e934ea0c10c6c6bcf5e25c215209",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004587496,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_IOM_HAP_XX.flv",
+            "wall_seconds": 0.34411894499862683
+          },
+          {
+            "actual_sha256": "9ffcad729ef7bb804d02dec3ca116d7231f00c983fabc6ee59ff7cabcaa1e2bf",
+            "bytes": 410928,
+            "clip": "1003_IOM_NEU_XX",
+            "downloaded_bytes": 410928,
+            "expected_sha256": "9ffcad729ef7bb804d02dec3ca116d7231f00c983fabc6ee59ff7cabcaa1e2bf",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005809276000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_IOM_NEU_XX.flv",
+            "wall_seconds": 0.30501402799927746
+          },
+          {
+            "actual_sha256": "2c1eface14df9a919e4ee86f028af1161fdea4fbdc2c9e49de577cdbeeed0bb6",
+            "bytes": 364012,
+            "clip": "1003_IOM_SAD_XX",
+            "downloaded_bytes": 364012,
+            "expected_sha256": "2c1eface14df9a919e4ee86f028af1161fdea4fbdc2c9e49de577cdbeeed0bb6",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.003978027999999998,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1003_IOM_SAD_XX.flv",
+            "wall_seconds": 0.355948251002701
+          },
+          {
+            "actual_sha256": "f8af41dbc1a81af5cd1d98bc9a661c25aad33705ec2a88999a333066a79301e4",
+            "bytes": 398712,
+            "clip": "1004_DFA_ANG_XX",
+            "downloaded_bytes": 398712,
+            "expected_sha256": "f8af41dbc1a81af5cd1d98bc9a661c25aad33705ec2a88999a333066a79301e4",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004564767000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_DFA_ANG_XX.flv",
+            "wall_seconds": 0.3019194000007701
+          },
+          {
+            "actual_sha256": "4ae060be27a9e44edd41e1c6e2db877b2236b5535636fb64e3a45788986fa1e8",
+            "bytes": 377457,
+            "clip": "1004_DFA_DIS_XX",
+            "downloaded_bytes": 377457,
+            "expected_sha256": "4ae060be27a9e44edd41e1c6e2db877b2236b5535636fb64e3a45788986fa1e8",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005845523999999998,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_DFA_DIS_XX.flv",
+            "wall_seconds": 0.30311762600103975
+          },
+          {
+            "actual_sha256": "b253498ced2b9ae0cd16d797f30ce19011a114eb69f46ec1812fdf933793f209",
+            "bytes": 384107,
+            "clip": "1004_DFA_FEA_XX",
+            "downloaded_bytes": 384107,
+            "expected_sha256": "b253498ced2b9ae0cd16d797f30ce19011a114eb69f46ec1812fdf933793f209",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.006869895000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_DFA_FEA_XX.flv",
+            "wall_seconds": 0.27404824999757693
+          },
+          {
+            "actual_sha256": "f4562249f8e4825b5ff6d039f231caca7bcb26fd675166302521ee29f4edfdc8",
+            "bytes": 352514,
+            "clip": "1004_DFA_HAP_XX",
+            "downloaded_bytes": 352514,
+            "expected_sha256": "f4562249f8e4825b5ff6d039f231caca7bcb26fd675166302521ee29f4edfdc8",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004724579,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_DFA_HAP_XX.flv",
+            "wall_seconds": 0.2888345540013688
+          },
+          {
+            "actual_sha256": "f9e3ab618c585f891645ffbc631896e1623ad739de4cec37ad7c74666ccc9346",
+            "bytes": 398264,
+            "clip": "1004_DFA_NEU_XX",
+            "downloaded_bytes": 398264,
+            "expected_sha256": "f9e3ab618c585f891645ffbc631896e1623ad739de4cec37ad7c74666ccc9346",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005382401000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_DFA_NEU_XX.flv",
+            "wall_seconds": 0.3649485019996064
+          },
+          {
+            "actual_sha256": "e7152bc670dc1c57d52efc0c7d12c9a8c02fa0deca161c5245aed0df55556a82",
+            "bytes": 367676,
+            "clip": "1004_DFA_SAD_XX",
+            "downloaded_bytes": 367676,
+            "expected_sha256": "e7152bc670dc1c57d52efc0c7d12c9a8c02fa0deca161c5245aed0df55556a82",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0045844599999999985,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_DFA_SAD_XX.flv",
+            "wall_seconds": 0.3736439829990559
+          },
+          {
+            "actual_sha256": "56c862984d4382d0cb5ff6a70169986d76866f86dc61c92e18ac89ca00b6447d",
+            "bytes": 340380,
+            "clip": "1004_IOM_ANG_XX",
+            "downloaded_bytes": 340380,
+            "expected_sha256": "56c862984d4382d0cb5ff6a70169986d76866f86dc61c92e18ac89ca00b6447d",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005195574000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_IOM_ANG_XX.flv",
+            "wall_seconds": 0.38940191700021387
+          },
+          {
+            "actual_sha256": "96d7b0e57a39394cea6f6486997018fc285ec16c813b8002b08e40c3e5831cc1",
+            "bytes": 352478,
+            "clip": "1004_IOM_DIS_XX",
+            "downloaded_bytes": 352478,
+            "expected_sha256": "96d7b0e57a39394cea6f6486997018fc285ec16c813b8002b08e40c3e5831cc1",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004367439000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_IOM_DIS_XX.flv",
+            "wall_seconds": 0.35128892000284395
+          },
+          {
+            "actual_sha256": "4d115524c0cd87cb87914ecda86361e6c718c056b7a8e61a79e24c78d2932ff4",
+            "bytes": 321674,
+            "clip": "1004_IOM_FEA_XX",
+            "downloaded_bytes": 321674,
+            "expected_sha256": "4d115524c0cd87cb87914ecda86361e6c718c056b7a8e61a79e24c78d2932ff4",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005462058000000006,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_IOM_FEA_XX.flv",
+            "wall_seconds": 0.36969376699926215
+          },
+          {
+            "actual_sha256": "478e07161622883d4bb1c6c8895b86a76bb09fe9784a5a64211a5fb003b61dc3",
+            "bytes": 434975,
+            "clip": "1004_IOM_HAP_XX",
+            "downloaded_bytes": 434975,
+            "expected_sha256": "478e07161622883d4bb1c6c8895b86a76bb09fe9784a5a64211a5fb003b61dc3",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005319903000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_IOM_HAP_XX.flv",
+            "wall_seconds": 0.4240602290010429
+          },
+          {
+            "actual_sha256": "ec9b14b7b9a2e79375f501d757677b5b19380a55fa57365b6208dd639c51141f",
+            "bytes": 332151,
+            "clip": "1004_IOM_NEU_XX",
+            "downloaded_bytes": 332151,
+            "expected_sha256": "ec9b14b7b9a2e79375f501d757677b5b19380a55fa57365b6208dd639c51141f",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004656992999999998,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_IOM_NEU_XX.flv",
+            "wall_seconds": 0.4034881529987615
+          },
+          {
+            "actual_sha256": "4cbf6e4f20f0e09562685ad852e212d9fdac699aebecf378a057e793ef126729",
+            "bytes": 366094,
+            "clip": "1004_IOM_SAD_XX",
+            "downloaded_bytes": 366094,
+            "expected_sha256": "4cbf6e4f20f0e09562685ad852e212d9fdac699aebecf378a057e793ef126729",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004210773000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1004_IOM_SAD_XX.flv",
+            "wall_seconds": 0.3721235090015398
+          },
+          {
+            "actual_sha256": "95e5515821610883f6777496a08a0008278fa4eeef626143bbf7ed1c92540556",
+            "bytes": 342815,
+            "clip": "1005_DFA_ANG_XX",
+            "downloaded_bytes": 342815,
+            "expected_sha256": "95e5515821610883f6777496a08a0008278fa4eeef626143bbf7ed1c92540556",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005447326000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_DFA_ANG_XX.flv",
+            "wall_seconds": 0.3758590870020271
+          },
+          {
+            "actual_sha256": "6a545f73935277585149d88cf4216e239f88a30891d1c7bcc9cbc3a654ed66ae",
+            "bytes": 355631,
+            "clip": "1005_DFA_DIS_XX",
+            "downloaded_bytes": 355631,
+            "expected_sha256": "6a545f73935277585149d88cf4216e239f88a30891d1c7bcc9cbc3a654ed66ae",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004540321,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_DFA_DIS_XX.flv",
+            "wall_seconds": 0.3778903669990541
+          },
+          {
+            "actual_sha256": "ce588ea24b670c103d2f59d75c7af458f54d43932600b90fd1da5911280652db",
+            "bytes": 330537,
+            "clip": "1005_DFA_FEA_XX",
+            "downloaded_bytes": 330537,
+            "expected_sha256": "ce588ea24b670c103d2f59d75c7af458f54d43932600b90fd1da5911280652db",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005835290999999999,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_DFA_FEA_XX.flv",
+            "wall_seconds": 0.29721516800054815
+          },
+          {
+            "actual_sha256": "b49d8129699d63d663b67dede3ac22602eaa2d50116eef04aa25e5485142ea31",
+            "bytes": 340334,
+            "clip": "1005_DFA_HAP_XX",
+            "downloaded_bytes": 340334,
+            "expected_sha256": "b49d8129699d63d663b67dede3ac22602eaa2d50116eef04aa25e5485142ea31",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0039227070000000044,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_DFA_HAP_XX.flv",
+            "wall_seconds": 0.2581174639999517
+          },
+          {
+            "actual_sha256": "861c34aa5a0964b71cfe7ec5e5881cc5a1935756d7812b01524d63de79a56433",
+            "bytes": 403328,
+            "clip": "1005_DFA_NEU_XX",
+            "downloaded_bytes": 403328,
+            "expected_sha256": "861c34aa5a0964b71cfe7ec5e5881cc5a1935756d7812b01524d63de79a56433",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004765024,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_DFA_NEU_XX.flv",
+            "wall_seconds": 0.286035401000845
+          },
+          {
+            "actual_sha256": "13af3ddf2c1107e4440fb612e3a6e2e968ceb3680c2854b16630a2218730a8ae",
+            "bytes": 393287,
+            "clip": "1005_DFA_SAD_XX",
+            "downloaded_bytes": 393287,
+            "expected_sha256": "13af3ddf2c1107e4440fb612e3a6e2e968ceb3680c2854b16630a2218730a8ae",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005026937000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_DFA_SAD_XX.flv",
+            "wall_seconds": 0.38042527200013865
+          },
+          {
+            "actual_sha256": "225b4196bae187c64ca5ff660fca0e3f55882976a05e48b03299be6e2ea3f72a",
+            "bytes": 447275,
+            "clip": "1005_IOM_ANG_XX",
+            "downloaded_bytes": 447275,
+            "expected_sha256": "225b4196bae187c64ca5ff660fca0e3f55882976a05e48b03299be6e2ea3f72a",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004443739000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_IOM_ANG_XX.flv",
+            "wall_seconds": 0.4077987700002268
+          },
+          {
+            "actual_sha256": "19a9a173a550c2693af4b22118ed41ee9deb820524322bb6154f7d2439a69d3c",
+            "bytes": 381873,
+            "clip": "1005_IOM_DIS_XX",
+            "downloaded_bytes": 381873,
+            "expected_sha256": "19a9a173a550c2693af4b22118ed41ee9deb820524322bb6154f7d2439a69d3c",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004692812999999997,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_IOM_DIS_XX.flv",
+            "wall_seconds": 0.36547793299905607
+          },
+          {
+            "actual_sha256": "8d5561a7ebd608d706c68b17e8d6455d8ea53b2d3b1178c0ee6eb28cc4c4597d",
+            "bytes": 421424,
+            "clip": "1005_IOM_FEA_XX",
+            "downloaded_bytes": 421424,
+            "expected_sha256": "8d5561a7ebd608d706c68b17e8d6455d8ea53b2d3b1178c0ee6eb28cc4c4597d",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005079394000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_IOM_FEA_XX.flv",
+            "wall_seconds": 0.46185714899911545
+          },
+          {
+            "actual_sha256": "e81810709c67c39c0e31f09c7ff8c8e3fbfdb908c72761ea8dd22bab3cdbf575",
+            "bytes": 407080,
+            "clip": "1005_IOM_HAP_XX",
+            "downloaded_bytes": 407080,
+            "expected_sha256": "e81810709c67c39c0e31f09c7ff8c8e3fbfdb908c72761ea8dd22bab3cdbf575",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005305274999999998,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_IOM_HAP_XX.flv",
+            "wall_seconds": 0.4258950770017691
+          },
+          {
+            "actual_sha256": "95fc92403fe50661170bb87c9a60596a28dc5437ba1400a2f3e0a8f98ff61285",
+            "bytes": 356863,
+            "clip": "1005_IOM_NEU_XX",
+            "downloaded_bytes": 356863,
+            "expected_sha256": "95fc92403fe50661170bb87c9a60596a28dc5437ba1400a2f3e0a8f98ff61285",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004585310000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_IOM_NEU_XX.flv",
+            "wall_seconds": 0.34465618299873313
+          },
+          {
+            "actual_sha256": "8ac95dc79b3ab41a4cc75abe8f1ca9fcf3c15d5d27a2eb412174bbc5b1a4477d",
+            "bytes": 390183,
+            "clip": "1005_IOM_SAD_XX",
+            "downloaded_bytes": 390183,
+            "expected_sha256": "8ac95dc79b3ab41a4cc75abe8f1ca9fcf3c15d5d27a2eb412174bbc5b1a4477d",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005680613000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1005_IOM_SAD_XX.flv",
+            "wall_seconds": 0.30346367500169436
+          },
+          {
+            "actual_sha256": "9c3bc41de13445d282a7b0773b1943c1aefbe984309b372169bd094342cdc6f2",
+            "bytes": 392943,
+            "clip": "1008_DFA_ANG_XX",
+            "downloaded_bytes": 392943,
+            "expected_sha256": "9c3bc41de13445d282a7b0773b1943c1aefbe984309b372169bd094342cdc6f2",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0038150630000000074,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_DFA_ANG_XX.flv",
+            "wall_seconds": 0.229417069000192
+          },
+          {
+            "actual_sha256": "317e554f60407c77704a5b65702a3e5eef46e6c2acc5fd22a967f2892ed1d29d",
+            "bytes": 448705,
+            "clip": "1008_DFA_DIS_XX",
+            "downloaded_bytes": 448705,
+            "expected_sha256": "317e554f60407c77704a5b65702a3e5eef46e6c2acc5fd22a967f2892ed1d29d",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005297784,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_DFA_DIS_XX.flv",
+            "wall_seconds": 0.45102698099799454
+          },
+          {
+            "actual_sha256": "d43b61769f5dd0cefd9e6d042955e35718d4bb9f1b87b15b2dec4a3a6f533d18",
+            "bytes": 335642,
+            "clip": "1008_DFA_FEA_XX",
+            "downloaded_bytes": 335642,
+            "expected_sha256": "d43b61769f5dd0cefd9e6d042955e35718d4bb9f1b87b15b2dec4a3a6f533d18",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004289039999999994,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_DFA_FEA_XX.flv",
+            "wall_seconds": 0.4161847609975666
+          },
+          {
+            "actual_sha256": "fd2082dda703870973f7ac77a30fe79fc828581c714c0b1bb97faecce791d20e",
+            "bytes": 406089,
+            "clip": "1008_DFA_HAP_XX",
+            "downloaded_bytes": 406089,
+            "expected_sha256": "fd2082dda703870973f7ac77a30fe79fc828581c714c0b1bb97faecce791d20e",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004048041000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_DFA_HAP_XX.flv",
+            "wall_seconds": 0.40911414899892407
+          },
+          {
+            "actual_sha256": "87c9ee3ccfa48cc7e45041f85150aa73cb71437fe9f5edf41090008c2d1cb82c",
+            "bytes": 291928,
+            "clip": "1008_DFA_NEU_XX",
+            "downloaded_bytes": 291928,
+            "expected_sha256": "87c9ee3ccfa48cc7e45041f85150aa73cb71437fe9f5edf41090008c2d1cb82c",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.003665830000000009,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_DFA_NEU_XX.flv",
+            "wall_seconds": 0.38970611299737357
+          },
+          {
+            "actual_sha256": "24c50cbe4b17b865993bfd52e6642fc2049b1c96d0145c515fe7b7598f6f2504",
+            "bytes": 471378,
+            "clip": "1008_DFA_SAD_XX",
+            "downloaded_bytes": 471378,
+            "expected_sha256": "24c50cbe4b17b865993bfd52e6642fc2049b1c96d0145c515fe7b7598f6f2504",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.007382852999999995,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_DFA_SAD_XX.flv",
+            "wall_seconds": 0.432906890000595
+          },
+          {
+            "actual_sha256": "64ae356664942d04b01889299955c344e0f2376441bee17623d940d9fca8e240",
+            "bytes": 458639,
+            "clip": "1008_IOM_ANG_XX",
+            "downloaded_bytes": 458639,
+            "expected_sha256": "64ae356664942d04b01889299955c344e0f2376441bee17623d940d9fca8e240",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005237640000000009,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_IOM_ANG_XX.flv",
+            "wall_seconds": 0.4917825630000152
+          },
+          {
+            "actual_sha256": "caf8630f89866527e98b11314878edf4ce2b80dea26999a2523c92e3182f232d",
+            "bytes": 447126,
+            "clip": "1008_IOM_DIS_XX",
+            "downloaded_bytes": 447126,
+            "expected_sha256": "caf8630f89866527e98b11314878edf4ce2b80dea26999a2523c92e3182f232d",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004969301000000009,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_IOM_DIS_XX.flv",
+            "wall_seconds": 0.4238812699986738
+          },
+          {
+            "actual_sha256": "20b882e625163d79a7fa70d1538e27ca23c910c702c746eb913910de1392620e",
+            "bytes": 475610,
+            "clip": "1008_IOM_FEA_XX",
+            "downloaded_bytes": 475610,
+            "expected_sha256": "20b882e625163d79a7fa70d1538e27ca23c910c702c746eb913910de1392620e",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005205904999999997,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_IOM_FEA_XX.flv",
+            "wall_seconds": 0.4182127179992676
+          },
+          {
+            "actual_sha256": "5094d574566529b00ded2900d61a4670232984ff32bd2e9718c822ddd48049cb",
+            "bytes": 338390,
+            "clip": "1008_IOM_HAP_XX",
+            "downloaded_bytes": 338390,
+            "expected_sha256": "5094d574566529b00ded2900d61a4670232984ff32bd2e9718c822ddd48049cb",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004541980000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_IOM_HAP_XX.flv",
+            "wall_seconds": 0.26582567900186405
+          },
+          {
+            "actual_sha256": "143904bf3c9f08b0ac1b4dddfe216e55a2b685db337980f77fc2673dd17ab8b3",
+            "bytes": 306939,
+            "clip": "1008_IOM_NEU_XX",
+            "downloaded_bytes": 306939,
+            "expected_sha256": "143904bf3c9f08b0ac1b4dddfe216e55a2b685db337980f77fc2673dd17ab8b3",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004640479000000003,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_IOM_NEU_XX.flv",
+            "wall_seconds": 0.4093422490004741
+          },
+          {
+            "actual_sha256": "1a05e6827522cea5c717b158c9e9ec41c935bdb63ce360d90e4b40ebb7995a4e",
+            "bytes": 467120,
+            "clip": "1008_IOM_SAD_XX",
+            "downloaded_bytes": 467120,
+            "expected_sha256": "1a05e6827522cea5c717b158c9e9ec41c935bdb63ce360d90e4b40ebb7995a4e",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005018437000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1008_IOM_SAD_XX.flv",
+            "wall_seconds": 0.2736389160018007
+          },
+          {
+            "actual_sha256": "4597286462481cdfd4c2cd685ff95ffd6e64b7bd146f16ddccd026aa27c9bd1f",
+            "bytes": 368491,
+            "clip": "1011_DFA_ANG_XX",
+            "downloaded_bytes": 368491,
+            "expected_sha256": "4597286462481cdfd4c2cd685ff95ffd6e64b7bd146f16ddccd026aa27c9bd1f",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.007408006000000009,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_DFA_ANG_XX.flv",
+            "wall_seconds": 0.4228687440008798
+          },
+          {
+            "actual_sha256": "43857901bc8f4c0514ad099aaa60bad5ce278cc22c7bffe2886c0824df061a42",
+            "bytes": 326172,
+            "clip": "1011_DFA_DIS_XX",
+            "downloaded_bytes": 326172,
+            "expected_sha256": "43857901bc8f4c0514ad099aaa60bad5ce278cc22c7bffe2886c0824df061a42",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004951940000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_DFA_DIS_XX.flv",
+            "wall_seconds": 0.23322263899899554
+          },
+          {
+            "actual_sha256": "14c4849eed5af783aecc4fe174be0502b96ceceb84aa72f885b60af59eed8166",
+            "bytes": 250967,
+            "clip": "1011_DFA_FEA_XX",
+            "downloaded_bytes": 250967,
+            "expected_sha256": "14c4849eed5af783aecc4fe174be0502b96ceceb84aa72f885b60af59eed8166",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004299996,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_DFA_FEA_XX.flv",
+            "wall_seconds": 0.4086891499973717
+          },
+          {
+            "actual_sha256": "0e3af76aca08c21016a6eaca2a36236c1abc19a7e87cb2bd021dd66198b8061b",
+            "bytes": 248245,
+            "clip": "1011_DFA_HAP_XX",
+            "downloaded_bytes": 248245,
+            "expected_sha256": "0e3af76aca08c21016a6eaca2a36236c1abc19a7e87cb2bd021dd66198b8061b",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004780697,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_DFA_HAP_XX.flv",
+            "wall_seconds": 0.36911243199938326
+          },
+          {
+            "actual_sha256": "1bd99c7d40efc413e814299486848d9f212a08e75639aa4c34a3128c1160d290",
+            "bytes": 311323,
+            "clip": "1011_DFA_NEU_XX",
+            "downloaded_bytes": 311323,
+            "expected_sha256": "1bd99c7d40efc413e814299486848d9f212a08e75639aa4c34a3128c1160d290",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004912598000000004,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_DFA_NEU_XX.flv",
+            "wall_seconds": 0.2967310849999194
+          },
+          {
+            "actual_sha256": "1e869680ae4f0d60f13734e99f41c9e72198e4f77fcfc30755c2c64d84a53078",
+            "bytes": 306940,
+            "clip": "1011_DFA_SAD_XX",
+            "downloaded_bytes": 306940,
+            "expected_sha256": "1e869680ae4f0d60f13734e99f41c9e72198e4f77fcfc30755c2c64d84a53078",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0038724910000000057,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_DFA_SAD_XX.flv",
+            "wall_seconds": 0.30023712500042166
+          },
+          {
+            "actual_sha256": "38870abfb13a346e7cf54ab427fd38c4e5ebc385582adbb9f359ebdeffef46a2",
+            "bytes": 339244,
+            "clip": "1011_IOM_ANG_XX",
+            "downloaded_bytes": 339244,
+            "expected_sha256": "38870abfb13a346e7cf54ab427fd38c4e5ebc385582adbb9f359ebdeffef46a2",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005105718999999995,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_IOM_ANG_XX.flv",
+            "wall_seconds": 0.3771826209995197
+          },
+          {
+            "actual_sha256": "b0e990408c3dcf6221b5887f0b65b26bbea0739eef76beac0662b500480e07c3",
+            "bytes": 356478,
+            "clip": "1011_IOM_DIS_XX",
+            "downloaded_bytes": 356478,
+            "expected_sha256": "b0e990408c3dcf6221b5887f0b65b26bbea0739eef76beac0662b500480e07c3",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004264278999999996,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_IOM_DIS_XX.flv",
+            "wall_seconds": 0.2884809570023208
+          },
+          {
+            "actual_sha256": "43a23a62115f52c7e4066c4cf8cb58d592de967820b2aa458fb76da6076593c3",
+            "bytes": 343194,
+            "clip": "1011_IOM_FEA_XX",
+            "downloaded_bytes": 343194,
+            "expected_sha256": "43a23a62115f52c7e4066c4cf8cb58d592de967820b2aa458fb76da6076593c3",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.005103456000000006,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_IOM_FEA_XX.flv",
+            "wall_seconds": 0.4605073310012813
+          },
+          {
+            "actual_sha256": "61a5bef224df6b46af4dba905f8927667888cd400294c4317f36cdd82612ca3a",
+            "bytes": 312714,
+            "clip": "1011_IOM_HAP_XX",
+            "downloaded_bytes": 312714,
+            "expected_sha256": "61a5bef224df6b46af4dba905f8927667888cd400294c4317f36cdd82612ca3a",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004276088999999997,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_IOM_HAP_XX.flv",
+            "wall_seconds": 0.3708543960019597
+          },
+          {
+            "actual_sha256": "4f301e9bda66137bb7e79925f8d421c0f169ba864066403391bd6754113861de",
+            "bytes": 265820,
+            "clip": "1011_IOM_NEU_XX",
+            "downloaded_bytes": 265820,
+            "expected_sha256": "4f301e9bda66137bb7e79925f8d421c0f169ba864066403391bd6754113861de",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0057600540000000006,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_IOM_NEU_XX.flv",
+            "wall_seconds": 0.31318316599936225
+          },
+          {
+            "actual_sha256": "d535086f4875469d1e8fcdec52e9fbc5e67078e963057474174b94440280bcdf",
+            "bytes": 318797,
+            "clip": "1011_IOM_SAD_XX",
+            "downloaded_bytes": 318797,
+            "expected_sha256": "d535086f4875469d1e8fcdec52e9fbc5e67078e963057474174b94440280bcdf",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.007224602999999996,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1011_IOM_SAD_XX.flv",
+            "wall_seconds": 0.2987376880009833
+          },
+          {
+            "actual_sha256": "b79db8520201a8576c7c1e46379bb5ab7621d1d532c75ea65f14fa6e0be50ab8",
+            "bytes": 341137,
+            "clip": "1012_DFA_ANG_XX",
+            "downloaded_bytes": 341137,
+            "expected_sha256": "b79db8520201a8576c7c1e46379bb5ab7621d1d532c75ea65f14fa6e0be50ab8",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.006055718000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_DFA_ANG_XX.flv",
+            "wall_seconds": 0.37797340899851406
+          },
+          {
+            "actual_sha256": "56ebbc8baf7829d2d305d814c15616c9dac45edd7c98ba7bc317ef848ba41785",
+            "bytes": 248618,
+            "clip": "1012_DFA_DIS_XX",
+            "downloaded_bytes": 248618,
+            "expected_sha256": "56ebbc8baf7829d2d305d814c15616c9dac45edd7c98ba7bc317ef848ba41785",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0038306069999999998,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_DFA_DIS_XX.flv",
+            "wall_seconds": 0.362341750998894
+          },
+          {
+            "actual_sha256": "bbf126f25f3c0c570268970e2c21c1d581c6f02182fc55bc24fbfedac816cc2d",
+            "bytes": 258375,
+            "clip": "1012_DFA_FEA_XX",
+            "downloaded_bytes": 258375,
+            "expected_sha256": "bbf126f25f3c0c570268970e2c21c1d581c6f02182fc55bc24fbfedac816cc2d",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.006330612999999999,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_DFA_FEA_XX.flv",
+            "wall_seconds": 0.2647073949992773
+          },
+          {
+            "actual_sha256": "2b6e3cc008a384dfa9ee2c12f372358db30227f974917ba29a2a88cbc15d6d2c",
+            "bytes": 288617,
+            "clip": "1012_DFA_HAP_XX",
+            "downloaded_bytes": 288617,
+            "expected_sha256": "2b6e3cc008a384dfa9ee2c12f372358db30227f974917ba29a2a88cbc15d6d2c",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004528708000000006,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_DFA_HAP_XX.flv",
+            "wall_seconds": 0.3837862039981701
+          },
+          {
+            "actual_sha256": "c3df765d593c3803fc4a999ba1108e8ef6f23b033ec237e97a68a5254e64beea",
+            "bytes": 272030,
+            "clip": "1012_DFA_NEU_XX",
+            "downloaded_bytes": 272030,
+            "expected_sha256": "c3df765d593c3803fc4a999ba1108e8ef6f23b033ec237e97a68a5254e64beea",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004632146000000004,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_DFA_NEU_XX.flv",
+            "wall_seconds": 0.3290839800029062
+          },
+          {
+            "actual_sha256": "95655b96fdf7bc178fb57412d9aa177ed884a61e413cea1e0f588bc48e1433cc",
+            "bytes": 274186,
+            "clip": "1012_DFA_SAD_XX",
+            "downloaded_bytes": 274186,
+            "expected_sha256": "95655b96fdf7bc178fb57412d9aa177ed884a61e413cea1e0f588bc48e1433cc",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004523872999999998,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_DFA_SAD_XX.flv",
+            "wall_seconds": 0.37845676000142703
+          },
+          {
+            "actual_sha256": "3639466fe432ff8091c7e6bd587527318f239642aaea3b41ec622a9e05b9f4c1",
+            "bytes": 257667,
+            "clip": "1012_IOM_ANG_XX",
+            "downloaded_bytes": 257667,
+            "expected_sha256": "3639466fe432ff8091c7e6bd587527318f239642aaea3b41ec622a9e05b9f4c1",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.006010970000000004,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_IOM_ANG_XX.flv",
+            "wall_seconds": 0.21750412799883634
+          },
+          {
+            "actual_sha256": "b218721d8fd5dd88647a600cff021ee4eaebc0945f5d4ff0804471f814585943",
+            "bytes": 303235,
+            "clip": "1012_IOM_DIS_XX",
+            "downloaded_bytes": 303235,
+            "expected_sha256": "b218721d8fd5dd88647a600cff021ee4eaebc0945f5d4ff0804471f814585943",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004308789999999993,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_IOM_DIS_XX.flv",
+            "wall_seconds": 0.3360301069988054
+          },
+          {
+            "actual_sha256": "cc35f7ce5cd0c43e07879f66fdcf5702680b76bc27764ad24de25499e5d2ef50",
+            "bytes": 272658,
+            "clip": "1012_IOM_FEA_XX",
+            "downloaded_bytes": 272658,
+            "expected_sha256": "cc35f7ce5cd0c43e07879f66fdcf5702680b76bc27764ad24de25499e5d2ef50",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0047710789999999975,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_IOM_FEA_XX.flv",
+            "wall_seconds": 0.310196521000762
+          },
+          {
+            "actual_sha256": "3571c889e44649102f14ec899d201b0709a38bf049121b187b490532b4853292",
+            "bytes": 284651,
+            "clip": "1012_IOM_HAP_XX",
+            "downloaded_bytes": 284651,
+            "expected_sha256": "3571c889e44649102f14ec899d201b0709a38bf049121b187b490532b4853292",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004195848000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_IOM_HAP_XX.flv",
+            "wall_seconds": 0.4370919409993803
+          },
+          {
+            "actual_sha256": "1baf1e67c373d679e7035c21cb82c39283c612141ce2cf56565abb79b695bb39",
+            "bytes": 261688,
+            "clip": "1012_IOM_NEU_XX",
+            "downloaded_bytes": 261688,
+            "expected_sha256": "1baf1e67c373d679e7035c21cb82c39283c612141ce2cf56565abb79b695bb39",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004137161,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_IOM_NEU_XX.flv",
+            "wall_seconds": 0.3641482310013089
+          },
+          {
+            "actual_sha256": "28b17e8173eb9ee600018e57b4f56926faab767934324fabb6695657cc8a1b07",
+            "bytes": 284526,
+            "clip": "1012_IOM_SAD_XX",
+            "downloaded_bytes": 284526,
+            "expected_sha256": "28b17e8173eb9ee600018e57b4f56926faab767934324fabb6695657cc8a1b07",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0049286880000000005,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1012_IOM_SAD_XX.flv",
+            "wall_seconds": 0.2988181660002738
+          },
+          {
+            "actual_sha256": "68ef5a9bce062777a02fb89931cff41497901ed935b8beeb5f3907f8ae28ff5f",
+            "bytes": 282283,
+            "clip": "1015_DFA_ANG_XX",
+            "downloaded_bytes": 282283,
+            "expected_sha256": "68ef5a9bce062777a02fb89931cff41497901ed935b8beeb5f3907f8ae28ff5f",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004550922999999998,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_DFA_ANG_XX.flv",
+            "wall_seconds": 0.39851330899909954
+          },
+          {
+            "actual_sha256": "ee2ca48293bcbb027a52c2938dfbac1dd51da41b26ac59bb2c306f8aa216a058",
+            "bytes": 268060,
+            "clip": "1015_DFA_DIS_XX",
+            "downloaded_bytes": 268060,
+            "expected_sha256": "ee2ca48293bcbb027a52c2938dfbac1dd51da41b26ac59bb2c306f8aa216a058",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.006208333999999996,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_DFA_DIS_XX.flv",
+            "wall_seconds": 0.3394598579980084
+          },
+          {
+            "actual_sha256": "4cfb954b21df42c0853a5980fa0222741cb22528298f29c8614478ebfba519a7",
+            "bytes": 257658,
+            "clip": "1015_DFA_FEA_XX",
+            "downloaded_bytes": 257658,
+            "expected_sha256": "4cfb954b21df42c0853a5980fa0222741cb22528298f29c8614478ebfba519a7",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004032440999999998,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_DFA_FEA_XX.flv",
+            "wall_seconds": 0.4104166869983601
+          },
+          {
+            "actual_sha256": "a897fbd1b0ec10404022314123abda4b59c050ba482d66acf58477f6541f3c07",
+            "bytes": 232822,
+            "clip": "1015_DFA_HAP_XX",
+            "downloaded_bytes": 232822,
+            "expected_sha256": "a897fbd1b0ec10404022314123abda4b59c050ba482d66acf58477f6541f3c07",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004322073999999995,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_DFA_HAP_XX.flv",
+            "wall_seconds": 0.3379819370020414
+          },
+          {
+            "actual_sha256": "1b9c93aee8ad836428e5deff6888dc5f1971f6f68a839140459b9de479aaa699",
+            "bytes": 227913,
+            "clip": "1015_DFA_NEU_XX",
+            "downloaded_bytes": 227913,
+            "expected_sha256": "1b9c93aee8ad836428e5deff6888dc5f1971f6f68a839140459b9de479aaa699",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004200700000000002,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_DFA_NEU_XX.flv",
+            "wall_seconds": 0.4533067630000005
+          },
+          {
+            "actual_sha256": "cdcbcb09e93d5ced3dbfe75f773ced626081f06db894429882b9e10d58c366e1",
+            "bytes": 265614,
+            "clip": "1015_DFA_SAD_XX",
+            "downloaded_bytes": 265614,
+            "expected_sha256": "cdcbcb09e93d5ced3dbfe75f773ced626081f06db894429882b9e10d58c366e1",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004682809999999996,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_DFA_SAD_XX.flv",
+            "wall_seconds": 0.3785530320019461
+          },
+          {
+            "actual_sha256": "3263179d9d72b583a6b66e440f99cd77611c5f583f49d6f74cece78b1e3d945b",
+            "bytes": 338711,
+            "clip": "1015_IOM_ANG_XX",
+            "downloaded_bytes": 338711,
+            "expected_sha256": "3263179d9d72b583a6b66e440f99cd77611c5f583f49d6f74cece78b1e3d945b",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004398538999999993,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_IOM_ANG_XX.flv",
+            "wall_seconds": 0.39601274999949965
+          },
+          {
+            "actual_sha256": "2cdcba74dc6429236118b1297732d2e908b09b33c65c851168c135719168d98d",
+            "bytes": 279765,
+            "clip": "1015_IOM_DIS_XX",
+            "downloaded_bytes": 279765,
+            "expected_sha256": "2cdcba74dc6429236118b1297732d2e908b09b33c65c851168c135719168d98d",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.003794133000000005,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_IOM_DIS_XX.flv",
+            "wall_seconds": 0.4276208420014882
+          },
+          {
+            "actual_sha256": "593ca48bd5b0e70bd7c55600b0f52d3d2b25176e50ad87931896bc4e81382dcf",
+            "bytes": 278790,
+            "clip": "1015_IOM_FEA_XX",
+            "downloaded_bytes": 278790,
+            "expected_sha256": "593ca48bd5b0e70bd7c55600b0f52d3d2b25176e50ad87931896bc4e81382dcf",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004196881999999999,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_IOM_FEA_XX.flv",
+            "wall_seconds": 0.3895268609994673
+          },
+          {
+            "actual_sha256": "eecc560a354aea72badeb4fb485e65fbd0975a756131ba0bfa1046a8b1b4247a",
+            "bytes": 215771,
+            "clip": "1015_IOM_HAP_XX",
+            "downloaded_bytes": 215771,
+            "expected_sha256": "eecc560a354aea72badeb4fb485e65fbd0975a756131ba0bfa1046a8b1b4247a",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0034156989999999943,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_IOM_HAP_XX.flv",
+            "wall_seconds": 0.3642086269974243
+          },
+          {
+            "actual_sha256": "db9f1686c03630fc9f552322027993eea4c8af73e1b74bd89225adaa5b1fe531",
+            "bytes": 248818,
+            "clip": "1015_IOM_NEU_XX",
+            "downloaded_bytes": 248818,
+            "expected_sha256": "db9f1686c03630fc9f552322027993eea4c8af73e1b74bd89225adaa5b1fe531",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0038043430000000017,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_IOM_NEU_XX.flv",
+            "wall_seconds": 0.2537784010019095
+          },
+          {
+            "actual_sha256": "23dd9c7b03c83dbb8bb7968f8dcef62708566682ffe46667773d3bb88801b8e1",
+            "bytes": 252701,
+            "clip": "1015_IOM_SAD_XX",
+            "downloaded_bytes": 252701,
+            "expected_sha256": "23dd9c7b03c83dbb8bb7968f8dcef62708566682ffe46667773d3bb88801b8e1",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004147053999999997,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1015_IOM_SAD_XX.flv",
+            "wall_seconds": 0.3881650309995166
+          }
+        ],
+        "finished_utc": "2026-11-01T07:49:25.918576+00:00",
+        "schema": "hcsn.av.confirmation-acquisition.v1",
+        "scope": "Download and checksum only; no decoding, feature extraction or evaluation",
+        "source_commit": "1658cd342dff90010aa843eaeebd53610a08b1dc",
+        "source_sha256": "d68763d18505e15c35fc93241e7918418250cc1cb5d8a4ae3d28b3e7ef02ccaf",
+        "started_utc": "2026-11-01T07:49:17.427670+00:00",
+        "wall_seconds": 8.490981369002839
+      }
+    },
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_blind1019_acquisition.json",
+      "receipt": {
+        "actors": [
+          "1019"
+        ],
+        "candidate_freeze_sha256": "e15355f634395a67fd30e90aec3919b37d41be41a63e88055da400150a27b68e",
+        "cohort_sha256": "5e2bb0b9efca5f90148d31098bd5aee67e853c940bb00a138cc758d5e790634b",
+        "cpu_seconds": 0.06753451900000002,
+        "downloaded_bytes": 3337303,
+        "energy_joules": null,
+        "failed": 0,
+        "files": [
+          {
+            "actual_sha256": "896f4ef80f9dce63e968cd19bf3dbd7d7d9bc5de8ab0d9cd7f4f68f025dd26e6",
+            "bytes": 211599,
+            "clip": "1019_DFA_ANG_XX",
+            "downloaded_bytes": 211599,
+            "expected_sha256": "896f4ef80f9dce63e968cd19bf3dbd7d7d9bc5de8ab0d9cd7f4f68f025dd26e6",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.008315188,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_DFA_ANG_XX.flv",
+            "wall_seconds": 0.3949260020017391
+          },
+          {
+            "actual_sha256": "734abe2531345a5f36a66917cf0ab1fc5be7cfecf8724701e9d50198c33cc031",
+            "bytes": 258819,
+            "clip": "1019_DFA_DIS_XX",
+            "downloaded_bytes": 258819,
+            "expected_sha256": "734abe2531345a5f36a66917cf0ab1fc5be7cfecf8724701e9d50198c33cc031",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.007604499,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_DFA_DIS_XX.flv",
+            "wall_seconds": 0.3574728120001964
+          },
+          {
+            "actual_sha256": "185286ee6c2df8dff8d332aa8324dd0ad8a1dec3c3dd806484892206eabbdb5a",
+            "bytes": 300971,
+            "clip": "1019_DFA_FEA_XX",
+            "downloaded_bytes": 300971,
+            "expected_sha256": "185286ee6c2df8dff8d332aa8324dd0ad8a1dec3c3dd806484892206eabbdb5a",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.006630672,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_DFA_FEA_XX.flv",
+            "wall_seconds": 0.4504999439996027
+          },
+          {
+            "actual_sha256": "084e4c9fae46a7bdbaec92d3538712a08cd0c05ceffe235cefc4c89bfcb30d6d",
+            "bytes": 283066,
+            "clip": "1019_DFA_HAP_XX",
+            "downloaded_bytes": 283066,
+            "expected_sha256": "084e4c9fae46a7bdbaec92d3538712a08cd0c05ceffe235cefc4c89bfcb30d6d",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.007585471000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_DFA_HAP_XX.flv",
+            "wall_seconds": 0.4051584900007583
+          },
+          {
+            "actual_sha256": "26adfa9095167eb44f704b4d60f13a4a035a79fa0682545b5bfc64ed820c567b",
+            "bytes": 204371,
+            "clip": "1019_DFA_NEU_XX",
+            "downloaded_bytes": 204371,
+            "expected_sha256": "26adfa9095167eb44f704b4d60f13a4a035a79fa0682545b5bfc64ed820c567b",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0037837789999999993,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_DFA_NEU_XX.flv",
+            "wall_seconds": 0.4912281629985955
+          },
+          {
+            "actual_sha256": "da231416efe24e7d570bd94d1d15ca040c8ec51edbfdc3dc6e47e69b2d236195",
+            "bytes": 293897,
+            "clip": "1019_DFA_SAD_XX",
+            "downloaded_bytes": 293897,
+            "expected_sha256": "da231416efe24e7d570bd94d1d15ca040c8ec51edbfdc3dc6e47e69b2d236195",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004098310999999999,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_DFA_SAD_XX.flv",
+            "wall_seconds": 0.3883977249970485
+          },
+          {
+            "actual_sha256": "92df2404e7530956a405373412a5084c17da4942d12a2761891bc4116da673e1",
+            "bytes": 314870,
+            "clip": "1019_IOM_ANG_XX",
+            "downloaded_bytes": 314870,
+            "expected_sha256": "92df2404e7530956a405373412a5084c17da4942d12a2761891bc4116da673e1",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004286454999999999,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_IOM_ANG_XX.flv",
+            "wall_seconds": 0.3781772740003362
+          },
+          {
+            "actual_sha256": "7ab8888bfd37d203c330333856bbb6da6454568ee259eea04b9c3195e814029f",
+            "bytes": 392433,
+            "clip": "1019_IOM_DIS_XX",
+            "downloaded_bytes": 392433,
+            "expected_sha256": "7ab8888bfd37d203c330333856bbb6da6454568ee259eea04b9c3195e814029f",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004946501,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_IOM_DIS_XX.flv",
+            "wall_seconds": 0.3804512690003321
+          },
+          {
+            "actual_sha256": "b4f09cff087dc64e5d72283170163401f73e91415446a9e8532f69b46c4478b2",
+            "bytes": 284892,
+            "clip": "1019_IOM_FEA_XX",
+            "downloaded_bytes": 284892,
+            "expected_sha256": "b4f09cff087dc64e5d72283170163401f73e91415446a9e8532f69b46c4478b2",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.0046190910000000005,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_IOM_FEA_XX.flv",
+            "wall_seconds": 0.4226362989975314
+          },
+          {
+            "actual_sha256": "dab299c42e1a932851ece08464350330b02297d675af31243c1d2bd8a267f3b0",
+            "bytes": 285445,
+            "clip": "1019_IOM_HAP_XX",
+            "downloaded_bytes": 285445,
+            "expected_sha256": "dab299c42e1a932851ece08464350330b02297d675af31243c1d2bd8a267f3b0",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.003767320000000001,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_IOM_HAP_XX.flv",
+            "wall_seconds": 0.4045217249986308
+          },
+          {
+            "actual_sha256": "28e3286ba2a8f2c0635fe9a4cc98f535643a11f11cf7304e4b8a872819e151f9",
+            "bytes": 242888,
+            "clip": "1019_IOM_NEU_XX",
+            "downloaded_bytes": 242888,
+            "expected_sha256": "28e3286ba2a8f2c0635fe9a4cc98f535643a11f11cf7304e4b8a872819e151f9",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004060658,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_IOM_NEU_XX.flv",
+            "wall_seconds": 0.4397450910000771
+          },
+          {
+            "actual_sha256": "a05070f8c08b2a5bf14dc0415c8212b87632dac9271279e7c9cb4f97902239d2",
+            "bytes": 264052,
+            "clip": "1019_IOM_SAD_XX",
+            "downloaded_bytes": 264052,
+            "expected_sha256": "a05070f8c08b2a5bf14dc0415c8212b87632dac9271279e7c9cb4f97902239d2",
+            "status": "downloaded_verified",
+            "thread_cpu_seconds": 0.004546307999999999,
+            "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1019_IOM_SAD_XX.flv",
+            "wall_seconds": 0.3536113070003921
+          }
+        ],
+        "finished_utc": "2026-11-01T07:50:05.272314+00:00",
+        "schema": "hcsn.av.confirmation-acquisition.v1",
+        "scope": "Download and checksum only; no decoding, feature extraction or evaluation",
+        "source_commit": "1658cd342dff90010aa843eaeebd53610a08b1dc",
+        "source_sha256": "d68763d18505e15c35fc93241e7918418250cc1cb5d8a4ae3d28b3e7ef02ccaf",
+        "started_utc": "2026-11-01T07:50:03.998409+00:00",
+        "wall_seconds": 1.2739969529975497
+      }
+    }
+  ],
+  "total_research_or_deployment_cost_known": false,
+  "unknown_costs": [
+    "Historical reused original-feature generation and acquisition",
+    "Unmetered failed development path/import overhead",
+    "Some small development/semantic-check preparation and external interpreter startup",
+    "Source creation, review, packaging and transfer are outside training measurement boundary"
+  ],
+  "wall_seconds_sum_interpretation": "Not an overall elapsed time: some jobs ran concurrently"
+}
