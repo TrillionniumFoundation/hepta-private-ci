@@ -117,3 +117,174 @@ jobs:
           path: ${{ runner.temp }}/security-${{ matrix.group }}/evidence/
           if-no-files-found: error
           retention-days: 30
+
+  native-credentials:
+    name: Original and repaired v3 real credential interoperability
+    needs: resolve
+    if: always() && needs.resolve.outputs.resolved == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install inherited Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Install actual private Secret Service prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends build-essential pkg-config libdbus-1-dev dbus dbus-x11 gnome-keyring
+      - name: Download exact same-run resolver evidence
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: security-resolution-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/security-resolved
+      - name: Build original and repaired v3 graphs and run real native cases
+        id: native
+        run: >-
+          python3 -B -m operational.parameter_field_security_closure_20261031.native
+          --repo "$GITHUB_WORKSPACE" --resolved "$RUNNER_TEMP/security-resolved"
+          --output "$RUNNER_TEMP/security-native"
+      - name: Preserve native source, binary identities and actual private-bus results
+        if: always() && steps.native.outcome != 'skipped'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: security-native-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/security-native/evidence/
+          if-no-files-found: error
+          retention-days: 30
+
+  product-regressions:
+    name: Existing affected product regressions (${{ matrix.machine }})
+    needs: resolve
+    if: always() && needs.resolve.outputs.resolved == 'true'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 100
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            machine: x86_64
+          - runner: ubuntu-24.04-arm
+            machine: aarch64
+    steps:
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install inherited Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install inherited Linux native test prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends build-essential pkg-config libcap-dev bubblewrap
+      - name: Download exact same-run resolver evidence
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: security-resolution-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/security-resolved
+      - name: Run original just test for ZIP, AWS and Matrix product paths
+        id: product
+        run: >-
+          python3 -B -m operational.parameter_field_security_closure_20261031.product_gates
+          --repo "$GITHUB_WORKSPACE" --resolved "$RUNNER_TEMP/security-resolved"
+          --output "$RUNNER_TEMP/security-product-${{ matrix.machine }}"
+          --phase product --expected-machine "${{ matrix.machine }}"
+      - name: Preserve actual product compilation and JUnit evidence
+        if: always() && steps.product.outcome != 'skipped'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: security-product-${{ matrix.machine }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/security-product-${{ matrix.machine }}/
+          if-no-files-found: error
+          retention-days: 30
+
+  bazel-and-format:
+    name: Actual repository formatting and Cargo to Bazel lock synchronization
+    needs: resolve
+    if: always() && needs.resolve.outputs.resolved == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    steps:
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare inherited Bazel tooling
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: parameter-field-security-closure
+      - name: Install inherited Rust toolchain and formatter
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Install pinned repository command runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - name: Download exact same-run resolver evidence
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: security-resolution-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/security-resolved
+      - name: Run actual just fmt and actual Bazel lock update followed by check
+        id: bazel
+        run: >-
+          python3 -B -m operational.parameter_field_security_closure_20261031.product_gates
+          --repo "$GITHUB_WORKSPACE" --resolved "$RUNNER_TEMP/security-resolved"
+          --output "$RUNNER_TEMP/security-bazel" --phase bazel --expected-machine x86_64
+      - name: Preserve synchronized lock and every formatter byte delta for review
+        if: always() && steps.bazel.outcome != 'skipped'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: security-bazel-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/security-bazel/
+          if-no-files-found: error
+          retention-days: 30
+
+  required:
+    name: Security candidate engineering gates
+    if: always()
+    needs: [resolve, semantic, native-credentials, product-regressions, bazel-and-format]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GATE_RESULTS: ${{ toJSON(needs) }}
+    steps:
+      - name: Require every actual gate without claiming scientific qualification
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, sys
+          results = json.loads(os.environ['GATE_RESULTS'])
+          failed = {name: row['result'] for name, row in results.items() if row['result'] != 'success'}
+          receipt = {'schema': 'hepta.dependency-security-gates.1', 'checks': results, 'failures': failed,
+                     'qualification': False, 'scientific_execution': False,
+                     'source_and_lock_adoption_requires_review': True,
+                     'path_backport_scope': 'Registry advisory absence alone is insufficient; exact upstream patch and actual regressions are required.'}
+          pathlib.Path(os.environ['RUNNER_TEMP'], 'security-gates.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          print(json.dumps(receipt, indent=2))
+          sys.exit(bool(failed))
+          PY
+      - name: Preserve engineering gate outcome
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: security-gates-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/security-gates.json
+          if-no-files-found: error
+          retention-days: 30

@@ -32,7 +32,8 @@ def graph_fixture():
         "anymap2": "0.13.0", "anymap3": "1.1.0", "aws-config": "1.8.12",
         "ctutils": "0.4.7", "crypto-bigint": "0.7.10", "i18n-config": "0.4.8",
         "keyring": "3.6.3", "matrix-sdk-crypto": "0.18.0", "oxiarc-bzip2": "0.4.2",
-        "secret-service": "6.0.0", "toml": "1.1.8+spec-1.1.0", "zip": "9.1.2", "zbus": "6.0.0",
+        "secret-service": "6.0.0", "toml": "1.1.8+spec-1.1.0", "toml_writer": "1.1.3+spec-1.1.0",
+        "zip": "9.1.2", "zbus": "6.0.0",
     }
     return {"package": [{"name": name, "version": version} for name, version in versions.items()]}
 

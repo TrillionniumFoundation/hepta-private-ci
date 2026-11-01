@@ -43,7 +43,8 @@ def graph_contract(document):
     for name in ("basic-toml", "zbus_names", "zvariant", "zvariant_derive", "libbz2-rs-sys", "bzip2-sys"):
         if name in by_name:
             raise ValueError("retired or rejected implementation remains: " + name)
-    for name, version in (("ctutils", "0.4.7"), ("crypto-bigint", "0.7.10")):
+    for name, version in (("ctutils", "0.4.7"), ("crypto-bigint", "0.7.10"),
+                          ("toml_writer", "1.1.3+spec-1.1.0")):
         if [item["version"] for item in by_name.get(name, [])] != [version]:
             raise ValueError("patched registry version not selected: " + name)
     for name, version in (
