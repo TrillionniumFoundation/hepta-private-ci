@@ -1,0 +1,86 @@
+{
+  "arms": [
+    "flow",
+    "diagonal",
+    "gru",
+    "transformer",
+    "mlp"
+  ],
+  "batch": 24,
+  "clip_norm": 1.0,
+  "conditions": [
+    "base",
+    "delay8",
+    "delay32",
+    "resample"
+  ],
+  "energy_joules": null,
+  "frontend_candidate_sha256": "18cf5752c049656156a1b87c05be95fa463f37c885cbc2188901f8fd0b46a495",
+  "frontend_directory": "/workspace/scratch/ad699f1b2b79/hepta-csn-next/experiments/hcsn_addressed_flow_20261101/results/av_development/fit003",
+  "gpu": null,
+  "independent_cohort": {
+    "actors": [
+      "1001",
+      "1003",
+      "1004",
+      "1005",
+      "1008",
+      "1011",
+      "1012",
+      "1015"
+    ],
+    "core_records_sha256": "bcf0ef0d80c4f0938091fe1abf8b3fa1be72b85c6fd596eb5ec292e796dc45ac",
+    "records_sha256": "00c739f9e6de327deec79d1af5bdc350b3513dcf79868527145ca09c0952b36d",
+    "sha256": "286cd5c87ddcef74787418b22e188fd4ed5b8443e1d42a135840c46e32d95f38"
+  },
+  "input": "Two sentence probabilities, three modality flags and one query flag; no actor, clip, filename or duration metadata",
+  "inputs_sha256": "8695925130e755c703340cbeaa5f19fdbee135e4a7b755f4afa8700a825ac915",
+  "intervals": "10000 actor-cluster bootstrap replicates, seed71; three neural training seeds reported individually",
+  "latency": {
+    "batches": [
+      1,
+      24
+    ],
+    "repeats": 9,
+    "warmup": 3
+  },
+  "learning_rate": 0.003,
+  "limits": [
+    "Common auxiliary sentence-supervised closed-vocabulary frontend",
+    "One binary consistency answer, not open-domain generation",
+    "Head-only clocks exclude encoder/media preparation; those costs remain in frontend ledger",
+    "Weak video frontend can remain the binding bottleneck despite successful head training"
+  ],
+  "metadata_sha256": {
+    "train": "5eee881d5196e6837272cb12a8972ac46c2da914a629885f0614e88b2da6bb55",
+    "validation": "9f84185c439562578ee3c319ac4e00e96e7bae9fb2bb52d7a07447f5d84d14eb"
+  },
+  "metric": "Exact class-balanced sample-weighted accuracy and cross entropy",
+  "optimizer": "AdamW",
+  "original_probabilities_sha256": "a02ded95f055ef62485743a2f5e1a055f9410c4ab197980e22be70732f04e9d1",
+  "relation_head_sha256": "c6bc949f83bc7997efdb9d40251e8ac3f1c92e4c67dd021463a8348c5d2d26f2",
+  "sampling": "Same uniform row indices per seed and step; weighted cross entropy normalized within batch",
+  "schema": "hcsn.av.cores.v1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "selection": "Final checkpoint; no head hyperparameter or development selection",
+  "source_hashes": {
+    "experiments/hcsn_addressed_flow_20261101/av_core_study.py": "85101095c49dd4ec3f9fa6dac62a82031516c80e0be372f47f722fc56b5ac350",
+    "experiments/hcsn_addressed_flow_20261101/av_frontend.py": "a53f2290e5ac89a82adc2d78268c79d79d8f9abc091491377135072605771513",
+    "experiments/hcsn_addressed_flow_20261101/av_frontend_protocol.json": "3786efb932c81209f264b6d3e1afaf4528f405b275def8163b80f78d4b58ffb6",
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_four_stage_flow_20261031/marked_flow.py": "f7ccf2ea965b77ed08da488142d1023fb1c7a6a11580b13e8e7aba2dd861836c",
+    "experiments/hcsn_four_stage_flow_20261031/models.py": "d8d47ea1e2b1a3bfad4a55c99ce1322bc1583dc73b69b8a645da38f4d07797b6"
+  },
+  "steps": 600,
+  "strong_references": [
+    "Frozen train-OOF learned multilinear logistic relation head",
+    "Constructed conditional-independence probability rule"
+  ],
+  "timing": "Entire shared one-second prefix available; dt=[1,0,0,0]; final query has zero value payload",
+  "training": "Actor-group out-of-fold BASE decoder scores, followed by one training-wide logistic calibrator; calibrated probabilities are not nested out-of-fold. Identical frozen probabilities for every core; no fresh actor labels.",
+  "weight_decay": 0.0001
+}
