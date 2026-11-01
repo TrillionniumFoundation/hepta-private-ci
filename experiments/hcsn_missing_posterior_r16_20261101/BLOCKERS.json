@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn.missing.posterior.blockers.v1",
+  "source_freeze": "cf15dfe62476b0081c0d5d329671e345033794c7",
+  "all_project_blockers_closed": false,
+  "all_registered_scoped_gates_passed": true,
+  "production_activation": false,
+  "items": [
+    {"id": "known_generator_missing_posterior", "status": "closed_in_registered_finite_profile", "evidence": "confirmation_01/SUMMARY.json", "detail": "48 new raw-prefix posteriors match independent latent enumeration exactly; model input excludes labels and target availability"},
+    {"id": "shared_missing_calibration", "status": "closed_in_registered_finite_profile", "evidence": "confirmation_01/SUMMARY.json", "detail": "12 simultaneous proper-score gates pass on 3072 new independent worlds with 18 unchanged fixed checkpoints; applies equally to both cores"},
+    {"id": "finite_profile_abstention", "status": "closed_in_registered_finite_profile", "evidence": "confirmation_01/SUMMARY.json", "detail": "All 18 episode-level exact reliability bounds exceed 0.99 at fixed 0.9 acceptance threshold; coverage remains explicitly incomplete"},
+    {"id": "actual_missing_write_read", "status": "closed_in_registered_finite_profile", "evidence": "confirmation_01/SUMMARY.json", "detail": "1536 actual raw-WRITE acquisitions recover four queries; action chosen before returned token and scoring; both successors retained"},
+    {"id": "learned_missingness_unknown_protocol", "status": "open", "detail": "New layer uses exact published generator prior; no new training or acceptance beyond base and one-WRITE erasure"},
+    {"id": "analytic_core_increment", "status": "open_no_increment_established", "detail": "Corrected Flow and Diagonal hard predictions agree; common calibration gains cannot establish D-B"},
+    {"id": "real_multimodal_long_term_content", "status": "open", "detail": "Typed four-address eight-value symbolic tasks do not qualify open-domain audiovisual or language capability"},
+    {"id": "full_deployment_economics_energy_gpu", "status": "open", "evidence": "confirmation_01/PROCESS_RECEIPT.json", "detail": "Fresh confirmation process fully metered; prior training and deployment costs not replaced, GPU and joules unmeasured"},
+    {"id": "production_rust_neuron_ownership", "status": "open", "detail": "No production neuron replacement or owner qualification in this research continuation"}
+  ]
+}

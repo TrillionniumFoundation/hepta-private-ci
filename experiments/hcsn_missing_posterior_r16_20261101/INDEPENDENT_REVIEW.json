@@ -1,0 +1,71 @@
+{
+  "final": {
+    "abstention_gates": 18,
+    "all_source_and_weight_hashes_unchanged": true,
+    "audit_file": "INDEPENDENT_CONFIRMATION_AUDIT.json",
+    "audit_sha256": "591bd90a7972630eceb037a465742c570d25c5247d78e5c9ca499046806d3154",
+    "audit_source": "audit_confirm_independent.py",
+    "audit_source_sha256": "cbbe399279b7582c1c6bdda8445f4dc465f63efc557e688218a1d27aee4a7508",
+    "command": [
+      "python",
+      "-B",
+      "-m",
+      "experiments.hcsn_missing_posterior_r16_20261101.audit_confirm_independent"
+    ],
+    "independently_enumerated_prefixes": 3072,
+    "maximum_absolute_difference": 3.552713678800501e-15,
+    "numerical_elements_checked": 3562414,
+    "process_receipt": "INDEPENDENT_AUDIT_PROCESS_RECEIPT.json",
+    "process_receipt_sha256": "82cdea13da050e1b8c09e4f9339985a4b43f4bcd91c8f67285ab6c75f1c39290",
+    "proper_score_gates": 12,
+    "real_read_successors": 1536,
+    "recorded_independent_reference_prefixes": 48,
+    "status": "PASS"
+  },
+  "frozen_source_commit": "cf15dfe62476b0081c0d5d329671e345033794c7",
+  "limits": [
+    "Conditioned on the 18 fixed checkpoints and the known typed finite generator",
+    "No analytical-core increment or new learned missingness",
+    "Final auditor reanalyzes saved logits and checkpoint identities, not a second neural-network execution",
+    "Bootstrap bounds are the preregistered finite-resample approximation",
+    "Outer original CPU is checked arithmetically and by log/hash provenance, not remeasured retroactively",
+    "No real multimodal, GPU, energy or production qualification"
+  ],
+  "preconfirmation": {
+    "all_18_checkpoints_matched": true,
+    "closed_findings": [
+      "Explicit full 18 task/core/seed and 18/12/3/48 record checks",
+      "Post-run rehash of all 18 checkpoint bytes included in acceptance",
+      "READ action chosen before raw acquisition and target scoring",
+      "Explicit FP64 probability input contract for unchanged known rows"
+    ],
+    "confirm_sha256": "55303fa6a1090a436133fb5fba0138fd2764459ddd5badb67e10240843c70724",
+    "development_reference_check": {
+      "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -B - < inline DEV reference script; script reproduced below in INDEPENDENT_REVIEW.md >",
+      "episodes_per_task": 32,
+      "maximum_error": 0.0,
+      "method": "Reviewer reran the separate permutation enumeration from audit.independent against posterior.infer; every possible returned token resolved all four values. This was not yet the final independently implemented audit.",
+      "prefixes": 96,
+      "seed": 162901,
+      "selective_erased_initial": 23,
+      "selective_erased_overwrite": 9,
+      "split": "dev"
+    },
+    "dtype_check": {
+      "episodes_per_task": 4,
+      "examples": 12,
+      "fp32_rejected": true,
+      "fp64_accepted": true,
+      "seed": 162902,
+      "split": "dev"
+    },
+    "formal_stream_opened_by_reviewer": false,
+    "manifest_sha256": "2d5586ee961576c0e67c748fd2a6c7dcb8d13b61215762574d22088886194378",
+    "posterior_sha256": "9bc93ddd317bc65e260346b9b4accb1ee16f4c7a945f35b07a6a0b41908ffa35",
+    "source_hashes_matched": true,
+    "status": "NO_REMAINING_BLOCKER_AFTER_FIXES"
+  },
+  "reviewer": "continuity_audit agent, separate from missing_content author",
+  "schema": "hcsn.missing.independent.review.v1",
+  "scope": "Preconfirmation design/source review plus independent postconfirmation raw-statistic audit; no source mutation, new stream, refit, or model selection"
+}
