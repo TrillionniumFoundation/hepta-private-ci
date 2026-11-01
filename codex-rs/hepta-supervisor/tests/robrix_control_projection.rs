@@ -349,9 +349,17 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 }
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
-    read_artifacts(
-        &std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fixtures/robrix-control-v2"),
-    )
+    let crate_root = if option_env!("BAZEL_PACKAGE").is_some() {
+        // The Bazel launcher resolves the Rust workspace root from runfiles.
+        std::path::PathBuf::from(
+            std::env::var_os("INSTA_WORKSPACE_ROOT")
+                .context("Bazel launcher did not set INSTA_WORKSPACE_ROOT")?,
+        )
+        .join("hepta-supervisor")
+    } else {
+        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+    };
+    read_artifacts(&crate_root.join("fixtures/robrix-control-v2"))
 }
 
 fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {

@@ -1,0 +1,71 @@
+{
+  "schema": "hcsn.robrix-fixture-runfiles-repair.v1",
+  "base_head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "job": 124814581056,
+  "fix": "Declare all tracked Robrix fixtures as Bazel test data and resolve the crate via the existing runtime Rust-workspace root, retaining Cargo manifest lookup.",
+  "patch_sha256": "6fb5bcd17a4bd03c8c8dd32833d05597bda8794518b177e8b0184f4512cbcff3",
+  "files": [
+    {
+      "path": "codex-rs/hepta-supervisor/BUILD.bazel",
+      "base_sha256": "a97c5296ab5031b4eb15e205819bf9c043ea47290fdd42173f999c23ff2a41bd",
+      "candidate_sha256": "eb292353534a14b8adb817cdac5bf3e1b69b32b833e8fe4806320a11bd1d055d",
+      "candidate_bytes": 528
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+      "base_sha256": "53de7ba097303fda8e5d618cef073fdf167f6e05fe87542acff65e82ae84de12",
+      "candidate_sha256": "c39ef87bef3f66a67c35c19cc03d34a4008f2655204a52f97fcc94c4d465a99d",
+      "candidate_bytes": 13420
+    }
+  ],
+  "actual_just_fmt": {
+    "command": "just fmt",
+    "cwd": "/tmp/hcsn-r15-fixture-capability-review/robrix-candidate/codex-rs",
+    "returncode": 0,
+    "exact_repository_formatter_and_rustfmt_configuration": true,
+    "toolchain": "1.95.0",
+    "configuration_git_blob": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+    "scope": "Scoped exact-file Git fixture; original justfile/scripts; two candidate paths only."
+  },
+  "validation": {
+    "probe_returncode": 0,
+    "compiler_runs": 3,
+    "runtime_cases": 6,
+    "macro_records": 10,
+    "data_targets": [
+      "hepta-supervisor-unit-tests-bin",
+      "fixture-bin-bin-unit-tests-bin",
+      "hepta-supervisor-robrix_control_projection-test",
+      "hepta-supervisor-robrix_control_projection-test-windows-cross-bin"
+    ],
+    "scope": "Unchanged actual Bash runfiles launcher plus verbatim extracted Rust fixture readers with std-only error shims and five synthetic named fixtures; real macro source emission with explicit inventory. Not full Bazel analysis or original crate tests."
+  },
+  "checks": {
+    "diff_check": {
+      "args": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "reverse_apply_check": {
+      "args": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/tmp/hcsn-r15-fixture-capability-review/robrix_fixture_runfiles.patch"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "cargo_manifest_or_lock_changes": false,
+  "product_permission_changes": false,
+  "test_assertions_skipped_or_removed": false,
+  "native_gate": "Original Robrix integration tests and next-head GNU/macOS/Windows Bazel runs remain required; source-level macro emission is not Bazel analysis."
+}
