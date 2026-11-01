@@ -1,0 +1,7 @@
+{
+  "schema": "hcsn.ieee-byte-identity-addendum-execution.v1",
+  "command": "PYTHONPATH=/tmp/hcsn-torch-runtime python -u /tmp/hcsn-autograd-independent-review/check_v3_ieee_bytes.py",
+  "actual_exit_code": 0,
+  "stdout": "{\n  \"passed\": true,\n  \"rows\": 48,\n  \"financial_calls\": 12,\n  \"output\": \"/tmp/hcsn-autograd-independent-review/V3_IEEE_BYTE_IDENTITY_ADDENDUM.json\",\n  \"sha256\": \"83cc45f63a11b36c4d2c5e0d6a8315851cfc3fe51d63a6602a5e52813129f104\"\n}\n",
+  "scope": "Concrete refinement of signed-zero comparison, using the same six already-opened adapter fixtures; no recurrent evaluations and no financial oracle."
+}
