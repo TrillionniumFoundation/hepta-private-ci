@@ -1,0 +1,176 @@
+{
+  "criteria_passed": true,
+  "episodes": 288,
+  "failures": [],
+  "known_support_failures": 0,
+  "limits": [
+    "Complete symbolic alias map is supplied; binding is an index permutation, not natural multimodal binding",
+    "Uniform independent mask mechanism differs from previous informative-WRITE-only erasure",
+    "Robust acceptance is limited to the explicitly declared two-generator set",
+    "No analytical-cell mechanism or learned network is used; core independent contribution remains open"
+  ],
+  "measured_loop_cpu_seconds": 1.659365052,
+  "measured_loop_wall_seconds": 1.7582877890017699,
+  "role": "bounded_new_world_verification",
+  "schema": "hcsn.multi-missing.r17.v1",
+  "source_freeze": {
+    "base_remote_commit": "0fd894118c47f38c2acf2532b8242fd16df76c47",
+    "dependencies": [
+      "Python 3.12 standard library",
+      "numpy"
+    ],
+    "files": {
+      "audit.py": "8e956c159ec68a82ccab95571f0231160bcd67d2fe45a4ff653836d0eb1e0a49",
+      "posterior.py": "68ac2c0ee6f8de5a0943c07d0f89d9afc780d6c4c1f62108945d7c839f0f78a8",
+      "protocol.json": "88fcee9f43aaae0db13264d6a9489d2213c6df966573cb3f0f24942ad67689be",
+      "run.py": "dc8041f83da6afd5ffa900a3448229f80ff7ecf74c80117cae716f411970f2ec",
+      "world.py": "db28ccc87d2285bae1026605e50a9cb68fee5d99abb672faa0b7bf957c7fe66a"
+    },
+    "formal_outcomes_opened": false,
+    "pre_outcome_revision": "Replay receipts and publication binding; execute complete symbolic alias-to-address permutation on probabilities and owner query targets",
+    "schema": "hcsn.multi-missing.source-freeze.v1"
+  },
+  "source_publication": {
+    "commit_sha": "bce93e1109163d4d87ca3656e3084fdeccb8da7b",
+    "files": [
+      {
+        "match": true,
+        "path": "experiments/hcsn_multi_missing_r17_20261101/posterior.py"
+      },
+      {
+        "match": true,
+        "path": "experiments/hcsn_multi_missing_r17_20261101/world.py"
+      },
+      {
+        "match": true,
+        "path": "experiments/hcsn_multi_missing_r17_20261101/audit.py"
+      },
+      {
+        "match": true,
+        "path": "experiments/hcsn_multi_missing_r17_20261101/run.py"
+      },
+      {
+        "match": true,
+        "path": "experiments/hcsn_multi_missing_r17_20261101/protocol.json"
+      },
+      {
+        "match": true,
+        "path": "experiments/hcsn_multi_missing_r17_20261101/SOURCE_FREEZE.json"
+      },
+      {
+        "match": true,
+        "path": "experiments/hcsn_multi_missing_r17_20261101/SOURCE_FREEZE_SUPERSEDED_V3.json"
+      },
+      {
+        "match": true,
+        "path": "experiments/hcsn_multi_missing_r17_20261101/README.md"
+      }
+    ],
+    "readback_verified": true,
+    "source_freeze_sha256": "ef9e12390670500e2bca33c1a1146c001cc0d1a7530b96179d78fb95174dc3b3"
+  },
+  "summaries": [
+    {
+      "accepted_error_rate": 0.1545138888888889,
+      "accepted_errors": 89,
+      "answered_queries": 576,
+      "attempts": 144,
+      "generator": "without_replacement",
+      "invalid": 0,
+      "mean_brier": 0.16132192460317463,
+      "mean_confidence": 0.8400669642857141,
+      "mean_fee": 0.03486111111111111,
+      "mean_net_accuracy": 0.810625,
+      "policy": "known_exact",
+      "query_coverage": 1.0,
+      "reads": 65,
+      "valid_mean_accuracy": 0.8454861111111112,
+      "whole_population_quality": 0.8454861111111112
+    },
+    {
+      "accepted_error_rate": 0.1545138888888889,
+      "accepted_errors": 89,
+      "answered_queries": 576,
+      "attempts": 144,
+      "generator": "without_replacement",
+      "invalid": 0,
+      "mean_brier": 0.16132192460317463,
+      "mean_confidence": 0.8400669642857141,
+      "mean_fee": 0.03486111111111111,
+      "mean_net_accuracy": 0.810625,
+      "policy": "fixed_without_replacement",
+      "query_coverage": 1.0,
+      "reads": 65,
+      "valid_mean_accuracy": 0.8454861111111112,
+      "whole_population_quality": 0.8454861111111112
+    },
+    {
+      "accepted_error_rate": 0.0,
+      "accepted_errors": 0,
+      "answered_queries": 444,
+      "attempts": 144,
+      "generator": "without_replacement",
+      "invalid": 0,
+      "mean_brier": 0.17704854221781308,
+      "mean_confidence": 0.8223048941798943,
+      "mean_fee": 0.02652777777777778,
+      "mean_net_accuracy": 0.8137500000000001,
+      "policy": "unknown_finite_set",
+      "query_coverage": 0.7708333333333334,
+      "reads": 60,
+      "valid_mean_accuracy": 0.8402777777777778,
+      "whole_population_quality": 0.8402777777777778
+    },
+    {
+      "accepted_error_rate": 0.1892361111111111,
+      "accepted_errors": 109,
+      "answered_queries": 576,
+      "attempts": 144,
+      "generator": "with_replacement",
+      "invalid": 0,
+      "mean_brier": 0.1903694058641975,
+      "mean_confidence": 0.8151765046296297,
+      "mean_fee": 0.02527777777777778,
+      "mean_net_accuracy": 0.7854861111111112,
+      "policy": "known_exact",
+      "query_coverage": 1.0,
+      "reads": 59,
+      "valid_mean_accuracy": 0.8107638888888888,
+      "whole_population_quality": 0.8107638888888888
+    },
+    {
+      "accepted_error_rate": 0.22602739726027396,
+      "accepted_errors": 66,
+      "answered_queries": 292,
+      "attempts": 144,
+      "generator": "with_replacement",
+      "invalid": 71,
+      "mean_brier": 0.23808708414872803,
+      "mean_confidence": 0.7874836921069797,
+      "mean_fee": 0.02,
+      "mean_net_accuracy": null,
+      "policy": "fixed_without_replacement",
+      "query_coverage": 0.5069444444444444,
+      "reads": 39,
+      "valid_mean_accuracy": 0.773972602739726,
+      "whole_population_quality": null
+    },
+    {
+      "accepted_error_rate": 0.0,
+      "accepted_errors": 0,
+      "answered_queries": 447,
+      "attempts": 144,
+      "generator": "with_replacement",
+      "invalid": 0,
+      "mean_brier": 0.1893375564925044,
+      "mean_confidence": 0.8195777529761905,
+      "mean_fee": 0.02527777777777778,
+      "mean_net_accuracy": 0.7872222222222223,
+      "policy": "unknown_finite_set",
+      "query_coverage": 0.7760416666666666,
+      "reads": 59,
+      "valid_mean_accuracy": 0.8125,
+      "whole_population_quality": 0.8125
+    }
+  ]
+}
