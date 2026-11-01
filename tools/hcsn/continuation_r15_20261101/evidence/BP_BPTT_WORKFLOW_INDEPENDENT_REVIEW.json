@@ -1,0 +1,26 @@
+{
+  "schema": "hcsn.financial-bp-ci-independent-review.v1",
+  "reviewed_workflow_sha256": "37acf5263850f81eb2a14f3f6d0a847fa2261cfe79ec51f5b1161e0320fdd9e4",
+  "blocking_findings": [],
+  "static_review": {
+    "least_permissions": "contents:read; no secrets, no write permissions, no pull_request_target; checkout does not persist credentials",
+    "source_binding": "Exact PR head SHA or dispatch github.sha; adapter, recurrent, and financial recovery directories fully selected",
+    "cli": "All four execution scripts and standalone checker arguments match actual current argparse APIs",
+    "failure_propagation": "set -euo pipefail; no continue-on-error; independent diagnostic steps do not clear failed outcomes; checker conditional on both recurrent executions succeeding",
+    "output_contract": "Runner-temp paths, create-only output writers; preserved artifact and final tracked/untracked source cleanliness checks"
+  },
+  "local_identity_check": {
+    "checkout": "/tmp/hepta-r15-recovered",
+    "adapter_sources": 7,
+    "recurrent_sources": 7,
+    "financial_sources": 11,
+    "differences": 0
+  },
+  "numerical_executions_by_reviewer": 0,
+  "limitations": [
+    "This is a static wiring and exact-file review, not a new GitHub Actions pass.",
+    "Runtime package installation and sealed Linux binary compatibility on ubuntu-24.04 remain for actual new-head CI.",
+    "This lane replays frozen functional fixtures and creates no new financial holdout, quality result, optimizer superiority, or energy claim.",
+    "Paths filter intentionally limits triggers; branch-protection configuration was not reviewed."
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "schema": "hcsn.bp-bptt-workflow-local-review.v1",
+  "workflow_sha256": "37acf5263850f81eb2a14f3f6d0a847fa2261cfe79ec51f5b1161e0320fdd9e4",
+  "scope": "Static Actions contract, actual Bash syntax, exact frozen hash preflight and extracted create-only writers. No remote Actions or new numerical execution.",
+  "yaml_parse": true,
+  "read_only_permissions": true,
+  "bounded_trigger_and_sparse_scope": true,
+  "full_sha_pinned_actions": [
+    "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+    "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+  ],
+  "no_continue_on_error": true,
+  "bash_syntax": [
+    {
+      "step": "Verify frozen inputs and install the CPU runtime",
+      "exit_code": 0
+    },
+    {
+      "step": "Audit the actual financial autograd interface",
+      "exit_code": 0
+    },
+    {
+      "step": "Train through the actual financial autograd interface",
+      "exit_code": 0
+    },
+    {
+      "step": "Audit the recurrent temporal gradient",
+      "exit_code": 0
+    },
+    {
+      "step": "Train through the recurrent temporal gradient",
+      "exit_code": 0
+    },
+    {
+      "step": "Independently check the recurrent result records",
+      "exit_code": 0
+    },
+    {
+      "step": "Verify checkout remains unchanged",
+      "exit_code": 0
+    }
+  ],
+  "entrypoints": [
+    {
+      "entrypoint": "audit_gradients.py",
+      "source_sha256": "9d4e4ec2ee1bb6d05c4931c4692703cb018928aaacab00046b93e7764e320fc4",
+      "actual_flags": [
+        "--frozen-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/adapter-gradients.json.gz"
+    },
+    {
+      "entrypoint": "training_smoke.py",
+      "source_sha256": "f91ea1ac624681aedd90ce72644a9c7fac8ac123a5e720cf28ae28fb24569c03",
+      "actual_flags": [
+        "--frozen-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/adapter-training.json.gz"
+    },
+    {
+      "entrypoint": "audit_recurrent.py",
+      "source_sha256": "b437b2233ede3a4829f931df290763eb73c084266e4fe820f31f1f566b0704fb",
+      "actual_flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/recurrent-audit.json.gz"
+    },
+    {
+      "entrypoint": "train_recurrent.py",
+      "source_sha256": "41bd77e742719e774e2fd050ec923ea721e715c793706e10f91ca5448120cb7c",
+      "actual_flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/recurrent-training.json.gz"
+    },
+    {
+      "entrypoint": "check_recurrent_results.py",
+      "source_sha256": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+      "actual_flags": [
+        "--audit",
+        "--output",
+        "--protocol-sha256",
+        "--root",
+        "--training"
+      ],
+      "output": "$HCSN_RESULTS/recurrent-check.json"
+    }
+  ],
+  "preflight": {
+    "actual_exit": 0,
+    "repeat_exit": 1,
+    "identity_mismatch_exit": 1,
+    "repeat_preserved_output": true,
+    "observed_source_sha256": {
+      "/tmp/hcsn-autograd-adapter-v3/ADAPTER_PROTOCOL.json": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+      "/tmp/hcsn-autograd-adapter-v3/requirements.txt": "c8038849aaa1710f940a6c70bfb9a6739c67c132abdc56c4d19d37c4126e945d",
+      "/tmp/hcsn-recurrent-next-v1/RECURRENT_PROTOCOL.json": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+      "/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+      "/tmp/hcsn-compiled-recovery/RECOVERY_PROTOCOL_V1.json": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+      "/tmp/hcsn-compiled-recovery/recovered.so": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615"
+    }
+  },
+  "writer_checks": [
+    {
+      "source": "/tmp/hcsn-autograd-adapter-v3/adapter_common.py",
+      "sha256": "6921dfae93b6ecd7bf28724b10b4d2823c4b21bd7c237b022c075aa9f76fab5a",
+      "source_extracted_write_checks": [
+        "first write succeeds",
+        "overwrite rejected with bytes unchanged",
+        "nonfinite JSON rejected"
+      ]
+    },
+    {
+      "source": "/tmp/hcsn-recurrent-next-v1/recurrent_common.py",
+      "sha256": "ade8f72b9dc1160778705eaeb6dac7c2302ebabe299de182d66aba4b23796ce9",
+      "source_extracted_write_checks": [
+        "first write succeeds",
+        "overwrite rejected with bytes unchanged",
+        "nonfinite JSON rejected"
+      ]
+    }
+  ],
+  "formatter": {
+    "version": "3.5.3",
+    "integrity": "sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw=="
+  },
+  "native_or_remote_runs": 0
+}

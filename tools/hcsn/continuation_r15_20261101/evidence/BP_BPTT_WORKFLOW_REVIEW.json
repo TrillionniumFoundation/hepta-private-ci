@@ -1,0 +1,123 @@
+{
+  "schema": "hcsn.bp-bptt-workflow-review.v1",
+  "baseline": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "reference_head": "889e7acebd14ecb05018c1d8c6ae4d26287cbcf8",
+    "reference_workflow": ".github/workflows/hcsn-compensated-fp32-r16.yml",
+    "reference_workflow_git_blob": "ed96cedd5687a8067fa6b7bce258a07774c0f1df"
+  },
+  "delivered_workflow": ".github/workflows/hcsn-financial-autograd-r16.yml",
+  "workflow_sha256": "37acf5263850f81eb2a14f3f6d0a847fa2261cfe79ec51f5b1161e0320fdd9e4",
+  "scope": "Independent read-only GitHub Actions replay of frozen financial BP and recurrent V1 BPTT interfaces; does not replace or weaken existing quality gates.",
+  "runtime": {
+    "runner": "ubuntu-24.04",
+    "architecture": "x86_64",
+    "python": "3.12",
+    "timeout_minutes": 20,
+    "cpu_threads": 1,
+    "requirements": "tools/hcsn/hx_autograd_r16_20261101/requirements.txt",
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "dependency_file_sha256": "c8038849aaa1710f940a6c70bfb9a6739c67c132abdc56c4d19d37c4126e945d"
+  },
+  "frozen_contracts": {
+    "adapter_protocol_sha256": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+    "recurrent_protocol_sha256": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+    "recurrent_checker_sha256": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+    "financial_recovery_protocol_sha256": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+    "financial_binary_sha256": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+    "binary_policy": "Existing sealed Linux x86_64 recovered.so is loaded directly. An ABI or loader failure remains a failure; no rebuild, substituted implementation or new identity."
+  },
+  "permissions_and_failure_semantics": {
+    "contents": "read",
+    "other_permissions": "unspecified and therefore none",
+    "checkout_exact_head": true,
+    "persist_credentials": false,
+    "trigger": "workflow_dispatch or pull_request touching only the workflow or three financial/adapter/recurrent directories",
+    "source_writes": "forbidden by final tracked/staged/untracked cleanliness check",
+    "output_location": "Fresh RUNNER_TEMP directory; all five result output filenames are distinct and create-only",
+    "errors": "Four scripts return exit zero only on their gates; the independent checker raises on rejection. No continue-on-error. Always-run later steps and artifact upload do not erase earlier failures.",
+    "artifact_upload": "Always after noncancelled execution; includes setup metadata and any complete or failed result records.",
+    "cancellation": "A cancelled job is not a pass."
+  },
+  "local_verification": {
+    "prettier": {
+      "version": "3.5.3",
+      "root_lock_git_blob": "63908374922391c47316149ba5127b5de1e90992",
+      "registry": "https://registry.npmjs.org",
+      "integrity": "sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==",
+      "format_exit": 0,
+      "check_exit": 0,
+      "changed_after_format": false
+    },
+    "just_fmt": {
+      "command": "env PATH=/tmp/hcsn-r15-runtime-tools/cargo/bin:/tmp/hcsn-r15-yaml-alias-tools:$PATH CARGO_HOME=/tmp/hcsn-r15-runtime-tools/cargo RUSTUP_HOME=/tmp/hcsn-r15-runtime-tools/rustup RUSTUP_TOOLCHAIN=1.95.0 /tmp/hcsn-r15-yaml-alias-tools/just fmt",
+      "working_directory": "/tmp/hcsn-r16-bp-ci/candidate/codex-rs",
+      "exit_code": 0,
+      "output": "No changed files need formatting. Use --all for a full repository check.",
+      "interpretation": "Actual repository recipe executed. Its scoped formatter does not select YAML; the separate real pinned Prettier check is the YAML formatting evidence."
+    },
+    "bash_syntax": {
+      "blocks": 7,
+      "all_exit_zero": true
+    },
+    "actual_cli_source_comparisons": 5,
+    "exact_hash_preflight_exit": 0,
+    "overwrite_and_wrong_identity_controls": "Both reject, retaining existing source-bindings bytes.",
+    "create_only_writers": "Source-extracted exact write/sha functions from adapter_common.py and recurrent_common.py each tested for successful first write, rejected overwrite, and rejected nonfinite JSON; no financial code imported.",
+    "git_diff_check_exit": 0,
+    "local_results_file": "BP_BPTT_WORKFLOW_LOCAL_CHECKS.json",
+    "local_results_sha256": "cd1a52f624098c4e43520a63f7e041acc8bd57b6cd09e2081a22130b9dc561db"
+  },
+  "independent_review": {
+    "reviewer": "architecture_comparison",
+    "reviewed_workflow_sha256": "37acf5263850f81eb2a14f3f6d0a847fa2261cfe79ec51f5b1161e0320fdd9e4",
+    "result": "No blocking wiring or security finding",
+    "observations": [
+      "Only contents:read; no secrets, write tokens or pull_request_target.",
+      "Exact-head checkout and sparse paths cover all 25 protocol-sealed source entries verified by reviewer (7 adapter, 7 recurrent, 11 financial recovery).",
+      "All four actual audit/training argparse contracts match workflow parameters; result checker wiring is also present.",
+      "Distinct create-only result paths, strict shell status and absence of continue-on-error preserve failures.",
+      "Final tracked/staged/untracked source check is compatible with PYTHONDONTWRITEBYTECODE."
+    ],
+    "scope": "Read-only source and identity review; no new numerical, Torch, native or remote execution."
+  },
+  "limitations": [
+    "This workflow has not yet run on GitHub Actions; no remote pass is claimed.",
+    "Actual PyTorch package availability and Linux runner shared-library ABI compatibility must be established by the new head run.",
+    "The lane replays already-opened functional fixtures. It does not create a new scientific confirmation set or establish accuracy outside frozen numerical domains.",
+    "Recurrent V1 uses independently supplied signed x. It is preserved as V1; a later fixed-asset/log-V candidate requires its own frozen protocol and explicit additional workflow wiring.",
+    "The result checker recomputes record/count/FP32 Euler/temporal adjoint/loss/update consistency. It neither reexecutes Adam nor replaces the frozen financial reference validation."
+  ],
+  "policy_sources": [
+    {
+      "path": "AGENTS.md",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    {
+      "path": "justfile",
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+    },
+    {
+      "path": "scripts/format.py",
+      "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+    },
+    {
+      "path": ".prettierrc.toml",
+      "git_blob": "4c58c583e5fa327928190f625a1095a9c4d9e72f"
+    },
+    {
+      "path": ".prettierignore",
+      "git_blob": "538bdc7f1658482073bb2cee8f2cd82f8c1bb13c"
+    }
+  ],
+  "installation_notes": {
+    "initial_configuration_failure": "Using /dev/null for both npm user/global config was rejected as duplicate loading; distinct empty task-local configs corrected that setup.",
+    "default_network_failure": "Official registry request was denied by sandbox connect EPERM.",
+    "approved_retry": "The same install was retried through require_escalated automatic review and completed exit zero. Install scripts were disabled; no repository dependencies or lockfiles changed."
+  }
+}
