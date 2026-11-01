@@ -1,0 +1,28 @@
+{
+  "schema": "hcsn-v8-enclosing-worker-cost.v1",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "-v",
+    "experiments.hcsn_v8_execution_20261101.economics.test_worker_cost"
+  ],
+  "enclosing_supervisor_exit_code": 0,
+  "complete_supervisor_wait4": {
+    "cpu_seconds": 1.3824729999999998,
+    "user_cpu_seconds": 0.9173589999999999,
+    "system_cpu_seconds": 0.46511399999999997,
+    "largest_single_process_highwater_bytes": 14417920
+  },
+  "cold_supervisor_to_exit_seconds": 2.721656357,
+  "monotonic_begin_ns": 28712362429963,
+  "monotonic_end_ns": 28715084086320,
+  "complete_task_cpu_coverage": true,
+  "task_success": true,
+  "supervision_sha256": "87e1bfdc4063838d60a71fa47c876afb87c617b6a7819dcf9313a1a688c4f272",
+  "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+  "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time.",
+  "nested_cost_rule": "Use enclosing wait4 CPU once. Inner worker/child/grandchild and component timers are explanatory, not additive.",
+  "scientific_confirmation": false,
+  "candidate_economic_advantage": null
+}

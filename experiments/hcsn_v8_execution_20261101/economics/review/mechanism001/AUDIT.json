@@ -1,0 +1,44 @@
+{
+  "schema": "hcsn-v8-independent-outcome-audit.v1",
+  "checks": 133975,
+  "failed_check_examples": [],
+  "all_checks_passed": true,
+  "worlds": 48,
+  "runs": 1728,
+  "outputs": 6912,
+  "independently_recomputed_contrasts": {
+    "matched": {
+      "A": 0.6719166666666666,
+      "B": 0.7074166666666667,
+      "C": 0.6437499999999999,
+      "D": 0.6991666666666667,
+      "ordinary_fixed_D": 0.7095833333333335,
+      "B-A": 0.03550000000000002,
+      "D-C": 0.05541666666666678,
+      "C-A": -0.02816666666666672,
+      "D-B": -0.008249999999999957,
+      "interaction": 0.01991666666666676
+    },
+    "hidden_refractory_mismatch": {
+      "A": 0.7360833333333334,
+      "B": 0.7491666666666668,
+      "C": 0.7687499999999999,
+      "D": 0.7475,
+      "ordinary_fixed_D": 0.7475,
+      "B-A": 0.013083333333333336,
+      "D-C": -0.02124999999999988,
+      "C-A": 0.0326666666666666,
+      "D-B": -0.0016666666666666162,
+      "interaction": -0.034333333333333216
+    }
+  },
+  "source": "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/mechanisms/results/development001",
+  "raw_sha256": "7aeba42c7b3493256d3b80f588837afa7bc70325babe1732f8f6fb6710f470b7",
+  "scientific_confirmation": false,
+  "limitations": [
+    "Synthetic known-renewal worlds; no real AV confirmation.",
+    "Five ordinary fits reuse the same 24 worlds per condition; D/C are not five independent analytic fits.",
+    "A/C share a confidence-triggered rule, not an identical fixed observation schedule.",
+    "No device energy or complete deployment-family memory; no candidate economic superiority."
+  ]
+}

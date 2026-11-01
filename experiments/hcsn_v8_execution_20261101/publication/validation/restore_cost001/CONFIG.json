@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_v8_execution_20261101.publication.validate_transport",
+    "--root",
+    ".",
+    "--manifest",
+    "experiments/hcsn_v8_execution_20261101/publication/MANIFEST.json",
+    "--report",
+    "experiments/hcsn_v8_execution_20261101/publication/RESTORE_VALIDATION.json"
+  ],
+  "out": "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/publication/validation/restore_cost001",
+  "timeout": 45.0,
+  "sample_interval": 0.05
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "hcsn-v8-historical-subset-marginal-audit.v1",
+  "selected_binding_objects": 4,
+  "source_id_counts_by_binding_label": {
+    "0": {
+      "audio": {
+        "1023_DFA_ANG_XX": 1,
+        "1040_DFA_ANG_XX": 1
+      },
+      "video": {
+        "1023_DFA_NEU_XX": 1,
+        "1040_DFA_FEA_XX": 1
+      }
+    },
+    "1": {
+      "audio": {
+        "1023_DFA_ANG_XX": 1,
+        "1040_DFA_ANG_XX": 1
+      },
+      "video": {
+        "1023_DFA_ANG_XX": 1,
+        "1040_DFA_ANG_XX": 1
+      }
+    }
+  },
+  "audio_marginals_equal": true,
+  "video_marginals_equal": false,
+  "balanced_binding_quality_claim_admitted": false,
+  "interpretation": "The original full historical binding set has balanced marginals, but the deterministic first-object-per-actor-label scheduler subset does not preserve the video marginal. Its3/4 result is an execution integration diagnostic, not a balanced binding quality test. Original selection/protocol/results remain unchanged.",
+  "full_historical_binding_accuracy_reference": "13/24 from independently restored frontend audit; no new confirmation"
+}

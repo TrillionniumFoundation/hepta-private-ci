@@ -1,0 +1,197 @@
+{
+  "schema": "hcsn-v8-task-supervision.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/scratch/71893ec7be58/run_research_python.py",
+    "experiments.hcsn_v8_execution_20261101.mechanisms.campaign",
+    "aggregate",
+    "--output",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/mechanisms/results/development001"
+  ],
+  "boundary_begin_monotonic_ns": 30034632540455,
+  "boundary_end_monotonic_ns": 30046756528589,
+  "command_to_collection_seconds": 12.123988134,
+  "first_stdout_receive_monotonic_ns": 30034720745416,
+  "root_exit_code": 0,
+  "timed_out": false,
+  "all_waitable_children_collected": true,
+  "subreaper": {
+    "enabled": true,
+    "scope": "Dedicated supervisor and its ordinary spawned descendants"
+  },
+  "disjoint_wait4_subtrees": [
+    {
+      "pid_in_supervisor_namespace": 123,
+      "is_direct_worker": true,
+      "exit_code": 0,
+      "wait4": {
+        "cpu_seconds": 4.761616,
+        "user_cpu_seconds": 4.38884,
+        "system_cpu_seconds": 0.372776,
+        "largest_single_process_highwater_bytes": 369889280
+      }
+    }
+  ],
+  "observed_task_subtree_cpu_seconds": 4.761616,
+  "complete_task_cpu_coverage": true,
+  "task_success": true,
+  "episode_outputs": [],
+  "protocol_errors": [],
+  "owned_identity_error": null,
+  "memory": {
+    "family_sampled_peak_rss_sum_bytes": null,
+    "all_family_samples_available": false,
+    "successful_family_samples": 0,
+    "family_errors": [
+      "Direct live child has not completed identity handshake",
+      "Cannot read required owned-process metadata: /proc/270194/task/270194/children: [Errno 2] No such file or directory: '/proc/270194/task/270194/children'",
+      "Cannot read required owned-process metadata: /proc/270194/task/270194/children: [Errno 2] No such file or directory: '/proc/270194/task/270194/children'"
+    ],
+    "registered_subset_peak_rss_sum_bytes": 378920960,
+    "successful_registered_samples": 24,
+    "retained_raw_sample_limit_per_kind": 2048,
+    "raw_samples_truncated": false,
+    "registered_subset_samples": [
+      {
+        "at_ns": 30034644467770,
+        "rss_bytes": 13209600,
+        "known_processes": 1
+      },
+      {
+        "at_ns": 30035147099235,
+        "rss_bytes": 61607936,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30035647243779,
+        "rss_bytes": 148672512,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30036152723812,
+        "rss_bytes": 174612480,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30036653446038,
+        "rss_bytes": 183885824,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30037158355548,
+        "rss_bytes": 197468160,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30037661489318,
+        "rss_bytes": 203493376,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30038163532993,
+        "rss_bytes": 212230144,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30038681070610,
+        "rss_bytes": 217563136,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30039188879588,
+        "rss_bytes": 230760448,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30039689146086,
+        "rss_bytes": 246128640,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30040190939801,
+        "rss_bytes": 251281408,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30040691421042,
+        "rss_bytes": 257634304,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30041193647161,
+        "rss_bytes": 282107904,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30041695953793,
+        "rss_bytes": 298614784,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30042201018609,
+        "rss_bytes": 323096576,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30042702408276,
+        "rss_bytes": 353247232,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30043210686194,
+        "rss_bytes": 359309312,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30043711787525,
+        "rss_bytes": 378920960,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30044216509867,
+        "rss_bytes": 286527488,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30044889930069,
+        "rss_bytes": 283435008,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30045391633886,
+        "rss_bytes": 283451392,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30045894072993,
+        "rss_bytes": 283475968,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 30046395954855,
+        "rss_bytes": 265338880,
+        "known_processes": 2
+      }
+    ],
+    "family_samples": [],
+    "continuous_peak_proved": false,
+    "physical_unique_memory": false,
+    "scope": "Includes supervisor. Registered subset can omit descendants; RSS sums double-count shared pages."
+  },
+  "energy": {
+    "joules": null,
+    "attributable_to_task": false,
+    "visible_counter_directories": {
+      "/sys/class/powercap": false,
+      "/sys/class/hwmon": false,
+      "/sys/class/drm": false
+    },
+    "reason": "No configured directly observed, attributable device-energy counter"
+  },
+  "accounting": "Inner waited subtrees are disjoint diagnostics. Outer supervisor wait4 includes these once; never add inner waits again.",
+  "limits": [
+    "Dedicated Linux supervisor, ordinary fork/exec children; arbitrary malicious clone/reparent behavior is not qualified.",
+    "Timeout cleanup kills only an unreaped direct task. Uncollected descendants make coverage fail; no whole-tree fault recovery claim.",
+    "Sampled family RSS is not an atomic or continuous peak even where enumeration is available."
+  ]
+}

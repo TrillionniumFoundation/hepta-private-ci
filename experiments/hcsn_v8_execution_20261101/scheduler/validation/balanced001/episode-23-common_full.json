@@ -1,0 +1,172 @@
+{
+  "schema": "hcsn-v8-causal-execution.v2",
+  "purpose": "development_support",
+  "scientific_confirmation": false,
+  "clock": "LogicalClock",
+  "service_mode": "historical V3 prepared AV array replay; raw decoding and original feature preparation excluded; LogicalClock uses declared simulated service 0.001s/read",
+  "source_monotonic_ns": null,
+  "output_flush_monotonic_ns": null,
+  "output_elapsed_seconds": 3.002,
+  "post_drain_elapsed_seconds": 3.002,
+  "timely_output": true,
+  "deadline_seconds": 4.0,
+  "requested_observations": 6,
+  "observation_fee": 0.12,
+  "latency_fee": 0.015009999999999999,
+  "deadline_penalty": 0.0,
+  "output": {
+    "kind": "episode_prediction",
+    "episode_id": "balanced-old-binding-23-common_full",
+    "predicted_class": 1,
+    "probabilities": [
+      0.3240567163824528,
+      0.6759432836175472
+    ],
+    "head_id": "legacy-v3-av_binding-8caeeeb6ebc663c3",
+    "content_fingerprint": "f2c78923003fb3307889c717534c37272c84045eb72c83c6d2efc6690deb56fb",
+    "accepted_event_ids": [
+      "prepared-1",
+      "prepared-2",
+      "prepared-3",
+      "prepared-4",
+      "prepared-5",
+      "prepared-6"
+    ],
+    "scientific_confirmation": false
+  },
+  "serialized_output_sha256": "3300ab030c79493422db7828b34280f3be6116101957a3baba9923515f3e4aba",
+  "events": [
+    {
+      "kind": "read",
+      "request": 1,
+      "mandatory": true,
+      "action": "READ:audio:1",
+      "requested_at": 0.0,
+      "status": "accepted",
+      "before": "40527e63ec95790cc3f575265ad09ad0be839d2ece1448357b123c15626bb2b1",
+      "completed_at": 1.001,
+      "accepted_at": 1.001,
+      "after": "cf4f6636f6fd23db576e02bea3142685d77a169fe3f634ebe566cc5dfd469474"
+    },
+    {
+      "kind": "read",
+      "request": 2,
+      "mandatory": false,
+      "action": "READ:video:1",
+      "requested_at": 1.001,
+      "status": "accepted",
+      "before": "cf4f6636f6fd23db576e02bea3142685d77a169fe3f634ebe566cc5dfd469474",
+      "completed_at": 1.0019999999999998,
+      "accepted_at": 1.0019999999999998,
+      "after": "a57e3fca5cc6b4f59ab0e4c6d8cf2a155839c1eb30300197c0344d0fd9e01973"
+    },
+    {
+      "kind": "read",
+      "request": 3,
+      "mandatory": false,
+      "action": "READ:audio:2",
+      "requested_at": 1.0019999999999998,
+      "status": "accepted",
+      "before": "a57e3fca5cc6b4f59ab0e4c6d8cf2a155839c1eb30300197c0344d0fd9e01973",
+      "completed_at": 2.001,
+      "accepted_at": 2.001,
+      "after": "1d3357c08d62b88f4763f38ecce3cc2d8b55d4897f255d49acbd04635f8affc2"
+    },
+    {
+      "kind": "read",
+      "request": 4,
+      "mandatory": false,
+      "action": "READ:video:2",
+      "requested_at": 2.001,
+      "status": "accepted",
+      "before": "1d3357c08d62b88f4763f38ecce3cc2d8b55d4897f255d49acbd04635f8affc2",
+      "completed_at": 2.002,
+      "accepted_at": 2.002,
+      "after": "bd0c711b5c07fcefb6e9ac58ac74ddb75397b13cc15c257b27e2cc017b56ce0f"
+    },
+    {
+      "kind": "read",
+      "request": 5,
+      "mandatory": false,
+      "action": "READ:audio:3",
+      "requested_at": 2.002,
+      "status": "accepted",
+      "before": "bd0c711b5c07fcefb6e9ac58ac74ddb75397b13cc15c257b27e2cc017b56ce0f",
+      "completed_at": 3.001,
+      "accepted_at": 3.001,
+      "after": "89e51cb3d839e5470d2e979cbcc718bdc88af4c10a986f528c16353087dc602b"
+    },
+    {
+      "kind": "read",
+      "request": 6,
+      "mandatory": false,
+      "action": "READ:video:3",
+      "requested_at": 3.001,
+      "status": "accepted",
+      "before": "89e51cb3d839e5470d2e979cbcc718bdc88af4c10a986f528c16353087dc602b",
+      "completed_at": 3.002,
+      "accepted_at": 3.002,
+      "after": "f2c78923003fb3307889c717534c37272c84045eb72c83c6d2efc6690deb56fb"
+    }
+  ],
+  "decisions": [
+    {
+      "selected": "READ:video:1/READ:audio:2/READ:video:2/READ:audio:3/READ:video:3",
+      "mode": "fixed",
+      "content_fingerprint": "cf4f6636f6fd23db576e02bea3142685d77a169fe3f634ebe566cc5dfd469474"
+    }
+  ],
+  "source_window_updates": [
+    {
+      "modality": "audio",
+      "modality_prefix_increment": 1.0,
+      "global_source_increment": 1.0,
+      "global_source_time": 1.0,
+      "accepted_event_id": "prepared-1"
+    },
+    {
+      "modality": "video",
+      "modality_prefix_increment": 1.0,
+      "global_source_increment": 0.0,
+      "global_source_time": 1.0,
+      "accepted_event_id": "prepared-2"
+    },
+    {
+      "modality": "audio",
+      "modality_prefix_increment": 1.0,
+      "global_source_increment": 1.0,
+      "global_source_time": 2.0,
+      "accepted_event_id": "prepared-3"
+    },
+    {
+      "modality": "video",
+      "modality_prefix_increment": 1.0,
+      "global_source_increment": 0.0,
+      "global_source_time": 2.0,
+      "accepted_event_id": "prepared-4"
+    },
+    {
+      "modality": "audio",
+      "modality_prefix_increment": 1.0,
+      "global_source_increment": 1.0,
+      "global_source_time": 3.0,
+      "accepted_event_id": "prepared-5"
+    },
+    {
+      "modality": "video",
+      "modality_prefix_increment": 1.0,
+      "global_source_increment": 0.0,
+      "global_source_time": 3.0,
+      "accepted_event_id": "prepared-6"
+    }
+  ],
+  "late_drains": [],
+  "cache_storage": {
+    "nominal_float64_payload_bytes": 4368,
+    "nominal_payload_limit_bytes": 65536,
+    "retained_python_object_graph_bytes": 19011,
+    "retained_event_count": 6,
+    "dtype": "Python float (binary64); copied immutable tuples",
+    "scope": "sys.getsizeof over this snapshot's unique dataclass/tuple/value objects; not process RSS/PSS, allocator fragmentation, encoder, readout or transient pair workspace"
+  }
+}

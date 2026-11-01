@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "-v",
+    "experiments.hcsn_v8_execution_20261101.scheduler.test_scheduler"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 0.29992578,
+  "child_user_seconds": 0.084691,
+  "child_system_seconds": 0.004698,
+  "child_peak_rss_kib": 13924,
+  "scope": "Complete test worker; no scientific model or candidate cost claim",
+  "completed_at_utc": "2026-11-01T17:33:20.301115+00:00",
+  "log_sha256": "cadf070e2eb674fd3b3f223d1429eb985e7a7a89d25196b42db64150f10de1c3",
+  "sources": {
+    "experiments/hcsn_v8_execution_20261101/scheduler/live_probe.py": "131f39655c8470b83b7a98cd3ceb8a7d02e175ac67519a100375b08112fd4d6b",
+    "experiments/hcsn_v8_execution_20261101/scheduler/planning.py": "0f6bb460494454da7a68f03fe3f32a7a0d1fa83e4f003070c8bbd4ba328cbf5c",
+    "experiments/hcsn_v8_execution_20261101/scheduler/execution.py": "587709160c6ada443b726552f58d0393c8d046eb54c412db099f00506285b6db",
+    "experiments/hcsn_v8_execution_20261101/scheduler/test_scheduler.py": "bb785bfb3de8dd319307397d2d5a3b63523078158f1b56af51cf1b7c4068a48b",
+    "experiments/hcsn_v8_execution_20261101/scheduler/service.py": "82610a5ea4145d80726a5b0e15b8521016121bdb65f0bfaa78af188937ffeeb2"
+  }
+}

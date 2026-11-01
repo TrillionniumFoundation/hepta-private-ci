@@ -1,0 +1,169 @@
+{
+  "scope": "Historical V3 development replay; not V6 restoration, new confirmation or a scientific candidate",
+  "fresh_confirmation": false,
+  "tasks": {
+    "async_av": {
+      "checkpoint_sha256": "2f390a2dda86eef5eb808bad1092e86dbe9cc3fd904bf378890d87deccb7768b",
+      "head_storage": {
+        "checkpoint_file_bytes": 7526,
+        "loaded_array_bytes": 6268,
+        "scope": "Checkpoint arrays only; cache, Python runtime, workspaces and calibration extra"
+      },
+      "splits": {
+        "train": {
+          "objects": 24,
+          "actors": [
+            "1016",
+            "1043",
+            "1050",
+            "1051"
+          ],
+          "comparisons": 768,
+          "max_cache_probability_error": 0.0,
+          "original_full_probability_error": 0.0,
+          "original_full_objects_match": true,
+          "original_full_labels_match": true,
+          "original_full_correct": 24,
+          "three_second_prefix_correct": 24,
+          "input_array_sha256": "01ffc02e803cfcd35733dc6b689d57baaacc6b46d10541c2f3f463ab79b1dd29"
+        },
+        "val": {
+          "objects": 12,
+          "actors": [
+            "1011",
+            "1082"
+          ],
+          "comparisons": 384,
+          "max_cache_probability_error": 0.0,
+          "original_full_probability_error": 0.0,
+          "original_full_objects_match": true,
+          "original_full_labels_match": true,
+          "original_full_correct": 4,
+          "three_second_prefix_correct": 4,
+          "input_array_sha256": "a139f90b65b6a29f875e84372fce691b039f6436a120fae9a86162b1d07d5798"
+        },
+        "test": {
+          "objects": 12,
+          "actors": [
+            "1023",
+            "1040"
+          ],
+          "comparisons": 384,
+          "max_cache_probability_error": 0.0,
+          "original_full_probability_error": 0.0,
+          "original_full_objects_match": true,
+          "original_full_labels_match": true,
+          "original_full_correct": 5,
+          "three_second_prefix_correct": 5,
+          "input_array_sha256": "dc72127c7e58c9efa3b5d1c2fbf422c0273d7d4ce0f7626678642f4280833850"
+        }
+      }
+    },
+    "av_binding": {
+      "checkpoint_sha256": "8caeeeb6ebc663c348bd02da7ed77dde26363b42978c42f711e90d0584894fc4",
+      "head_storage": {
+        "checkpoint_file_bytes": 90272,
+        "loaded_array_bytes": 117864,
+        "scope": "Checkpoint arrays only; cache, Python runtime, workspaces and calibration extra"
+      },
+      "splits": {
+        "train": {
+          "objects": 48,
+          "actors": [
+            "1016",
+            "1043",
+            "1050",
+            "1051"
+          ],
+          "comparisons": 1536,
+          "max_cache_probability_error": 0.0,
+          "original_full_probability_error": 0.0,
+          "original_full_objects_match": true,
+          "original_full_labels_match": true,
+          "original_full_correct": 48,
+          "three_second_prefix_correct": 48,
+          "input_array_sha256": "aa547e167f14c23cc0a7345adf527215d50b2aab1a0dffe0089b777e4180cc3c"
+        },
+        "val": {
+          "objects": 24,
+          "actors": [
+            "1011",
+            "1082"
+          ],
+          "comparisons": 768,
+          "max_cache_probability_error": 0.0,
+          "original_full_probability_error": 0.0,
+          "original_full_objects_match": true,
+          "original_full_labels_match": true,
+          "original_full_correct": 18,
+          "three_second_prefix_correct": 18,
+          "input_array_sha256": "2b9ea67693bfb23c1b1716233e6f94e983039118183a2ac055a9a9b11fd4b060"
+        },
+        "test": {
+          "objects": 24,
+          "actors": [
+            "1023",
+            "1040"
+          ],
+          "comparisons": 768,
+          "max_cache_probability_error": 0.0,
+          "original_full_probability_error": 0.0,
+          "original_full_objects_match": true,
+          "original_full_labels_match": true,
+          "original_full_correct": 13,
+          "three_second_prefix_correct": 13,
+          "input_array_sha256": "3ad2aca8b2ae5aeabefa6279083e96191ae31d9de081cc84e81136a306351d32"
+        }
+      }
+    }
+  },
+  "cache_comparisons": 4608,
+  "maximum_probability_error": 0.0,
+  "maximum_nominal_cache_payload_bytes": 8448,
+  "maximum_cache_python_object_graph_bytes": 35337,
+  "same_modality_binding_marginals": {
+    "train": {
+      "audio_pair_equal": true,
+      "video_by_source_equal": true,
+      "compared_fields": [
+        "x",
+        "dt",
+        "valid",
+        "observed",
+        "timestamps"
+      ],
+      "pairs": 48
+    },
+    "val": {
+      "audio_pair_equal": true,
+      "video_by_source_equal": true,
+      "compared_fields": [
+        "x",
+        "dt",
+        "valid",
+        "observed",
+        "timestamps"
+      ],
+      "pairs": 24
+    },
+    "test": {
+      "audio_pair_equal": true,
+      "video_by_source_equal": true,
+      "compared_fields": [
+        "x",
+        "dt",
+        "valid",
+        "observed",
+        "timestamps"
+      ],
+      "pairs": 24
+    }
+  },
+  "historical_audit_passed": true,
+  "adapter_parity_passed": true,
+  "content_quality_gate_passed": false,
+  "gate_reason": "Historical V3 tasks/weights do not instantiate missing V6 frontend; independent new objects unavailable",
+  "inner_process_cpu_seconds": 16.815818912,
+  "inner_wall_seconds": 55.14689917600117,
+  "energy_joules": null
+}

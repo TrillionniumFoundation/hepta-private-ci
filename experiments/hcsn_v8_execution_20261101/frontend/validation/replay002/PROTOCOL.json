@@ -1,0 +1,40 @@
+{
+  "scope": "Historical V3 development replay; not V6 restoration, new confirmation or a scientific candidate",
+  "sources": {
+    "experiments/hcsn_v8_execution_20261101/frontend/replay.py": "4a813a54eaa0d115c62e3f9538e9db549edb5eb3c1f4a882cc80dc5d0c862518",
+    "experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py": "860ebfb6e261f9793b258dc847a3c5f24e6225d054369409210dbca36e7ced31",
+    "recovered/v3/SOURCE_VERIFICATION.json": "24e8941b2025b8d2542713bc007be121de6d94cce4d6a924fbbb1d697c85872c",
+    "recovered/v3/ARCHIVE_RECOVERY_RECEIPT.json": "0a1810aa3db2ee1143cc4d6847c9ee2a9056eff3353ecd862faf30b1dddf0f76"
+  },
+  "tasks": [
+    "async_av",
+    "av_binding"
+  ],
+  "splits": [
+    "train",
+    "val",
+    "test"
+  ],
+  "audio_prefixes": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "video_prefixes": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "orders": [
+    "audio_first",
+    "video_first"
+  ],
+  "comparison": "The same frozen original head on exactly the same accepted source rows",
+  "probability_tolerance": 1e-12,
+  "fresh_confirmation": false,
+  "labels": "V3 six-emotion classification and same-recording source binding, not V6 five-class/statement binding",
+  "source_use": "All splits and actors were previously exposed; test is a historical replay label only",
+  "cost_boundary": "Import, prepared-array load, adapter and original inference, all checks and artifacts; original decoding/training excluded"
+}

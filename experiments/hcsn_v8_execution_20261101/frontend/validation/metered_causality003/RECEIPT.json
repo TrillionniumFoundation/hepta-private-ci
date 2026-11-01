@@ -1,0 +1,36 @@
+{
+  "schema": "hcsn-v8-enclosing-worker-cost.v1",
+  "command": [
+    "python",
+    "-m",
+    "experiments.hcsn_v8_execution_20261101.frontend.causality_check",
+    "--before",
+    "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/source_snapshot/legacy_v3.py",
+    "--output",
+    "experiments/hcsn_v8_execution_20261101/frontend/validation/CAUSAL_HARDENING.json"
+  ],
+  "enclosing_supervisor_exit_code": 0,
+  "complete_supervisor_wait4": {
+    "cpu_seconds": 9.587136000000001,
+    "user_cpu_seconds": 2.740729,
+    "system_cpu_seconds": 6.846407,
+    "largest_single_process_highwater_bytes": 177577984
+  },
+  "cold_supervisor_to_exit_seconds": 40.574517451,
+  "monotonic_begin_ns": 29184705237009,
+  "monotonic_end_ns": 29225279754460,
+  "complete_task_cpu_coverage": true,
+  "task_success": true,
+  "supervision_sha256": "6a7139a24f5a45571df8026f7ebbbeba0a94037db14c0743caf84195167cd31f",
+  "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+  "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time.",
+  "nested_cost_rule": "Use enclosing wait4 CPU once. Inner worker/child/grandchild and component timers are explanatory, not additive.",
+  "source_sha256_at_start": {
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+  },
+  "source_unchanged_through_collection": true,
+  "scientific_confirmation": false,
+  "candidate_economic_advantage": null
+}

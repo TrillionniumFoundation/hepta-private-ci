@@ -1,0 +1,40 @@
+{
+  "source_hash_matches_frozen_protocol": true,
+  "protocol_hash_matches_summary": true,
+  "probability_floor": 1e-15,
+  "auditor_sha256": "e492cd6f69832014c9343cd41eec72669df4ed9e4e307eabb7c3a3789056e496",
+  "tasks": {
+    "async_av": {
+      "candidate_count": 120,
+      "exact_declared_candidate_grid": true,
+      "candidate_prediction_tables": 240,
+      "test_prediction_tables": 5,
+      "maximum_metric_error": 0.0,
+      "target_probabilities_below_floor": 0,
+      "identical_inputs_and_targets_across_candidates": true,
+      "selection_is_min_validation_ce": true,
+      "selected_sha_matches": true,
+      "selected_arrays_match_candidate": true,
+      "selection_records_match": true,
+      "test_actor_metrics_match": true,
+      "passed": true
+    },
+    "av_binding": {
+      "candidate_count": 120,
+      "exact_declared_candidate_grid": true,
+      "candidate_prediction_tables": 240,
+      "test_prediction_tables": 5,
+      "maximum_metric_error": 0.0,
+      "target_probabilities_below_floor": 1,
+      "identical_inputs_and_targets_across_candidates": true,
+      "selection_is_min_validation_ce": true,
+      "selected_sha_matches": true,
+      "selected_arrays_match_candidate": true,
+      "selection_records_match": true,
+      "test_actor_metrics_match": true,
+      "passed": true
+    }
+  },
+  "all_passed": true,
+  "scope": "Saved-table identities, metrics, declared selection and model identity; not independent data relabeling or fresh-actor validation"
+}
