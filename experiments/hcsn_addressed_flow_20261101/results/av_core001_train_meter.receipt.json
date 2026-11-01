@@ -1,0 +1,57 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "/workspace/scratch/52a69008c60c/.venv/bin/python",
+    "-m",
+    "experiments.hcsn_addressed_flow_20261101.av_core_study",
+    "--mode",
+    "train",
+    "--out",
+    "experiments/hcsn_addressed_flow_20261101/results/av_core001",
+    "--source-commit",
+    "2d0f427bea28c787f15a17648c09640d94d532cc",
+    "--workers",
+    "2"
+  ],
+  "cwd": "/workspace/scratch/ad699f1b2b79/hepta-csn-next",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-01T07:38:31.784381+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_addressed_flow_20261101/results/av_core001_train_meter.stdout.log",
+  "stderr_path": "experiments/hcsn_addressed_flow_20261101/results/av_core001_train_meter.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-01T07:39:00.508164+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 28.723509602998092,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 52.542328,
+  "system_cpu_seconds": 0.9870749999999999,
+  "total_cpu_seconds": 53.529402999999995,
+  "peak_rss_bytes": 354017280,
+  "peak_rss_native_units": 345720,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_core001_train_meter.stdout.log",
+      "is_file": true,
+      "bytes": 9180,
+      "sha256": "1d4724eab8fb9f031a89e60ead3378b3bde80b19c47f61878074105a7d9408de"
+    },
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/av_core001_train_meter.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0007655960000000003,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}
