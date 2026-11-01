@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+    "dirty": false,
+    "parents": [
+      "cd579a60915cc9a8a40488c9ee82002d9458bd4d"
+    ],
+    "tree": "8010f83386f4effdcd6123aad99f1ab3775709e3"
+  },
+  "base_sha": "0f7c63418a7eec6cff5e4348e8cdc733850f8386",
+  "before": {
+    "commit": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+    "dirty": false,
+    "parents": [
+      "cd579a60915cc9a8a40488c9ee82002d9458bd4d"
+    ],
+    "tree": "8010f83386f4effdcd6123aad99f1ab3775709e3"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(authbus_dispatch::tests::)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 476.786207942,
+  "exit_code": 0,
+  "finished_at": "2026-11-01T17:43:16.318019+00:00",
+  "job": "policy-renewal",
+  "lane": "source-head",
+  "log_bytes": 79098,
+  "log_file": "dispatcher.json.342a7d23685f4d20a8c33258fe0c9c3c.log",
+  "log_sha256": "b4c1392fa251939822f8c88049e54717cb731e9ac89e8ee488ded591d37db68a",
+  "minimum_tests": 13,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 13,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "41331758612",
+  "schema_version": 1,
+  "source_sha": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+  "started_at": "2026-11-01T17:35:19.531289+00:00",
+  "status": "passed",
+  "tested_sha": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

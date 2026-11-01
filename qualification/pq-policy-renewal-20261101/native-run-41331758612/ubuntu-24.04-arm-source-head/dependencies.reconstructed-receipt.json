@@ -1,0 +1,49 @@
+{
+  "after": {
+    "commit": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+    "dirty": false,
+    "parents": [
+      "cd579a60915cc9a8a40488c9ee82002d9458bd4d"
+    ],
+    "tree": "8010f83386f4effdcd6123aad99f1ab3775709e3"
+  },
+  "base_sha": "0f7c63418a7eec6cff5e4348e8cdc733850f8386",
+  "before": {
+    "commit": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+    "dirty": false,
+    "parents": [
+      "cd579a60915cc9a8a40488c9ee82002d9458bd4d"
+    ],
+    "tree": "8010f83386f4effdcd6123aad99f1ab3775709e3"
+  },
+  "command": [
+    "cargo",
+    "fetch",
+    "--locked",
+    "--manifest-path",
+    "codex-rs/Cargo.toml"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 37.149675521000006,
+  "exit_code": 0,
+  "finished_at": "2026-11-01T17:35:38.586520+00:00",
+  "job": "policy-renewal",
+  "lane": "source-head",
+  "log_bytes": 44263,
+  "log_file": "dependencies.json.0882d5ae0de04f01b3cbe20a9a0a6d00.log",
+  "log_sha256": "23aa5abbb9c03aa38729033d85330ac0157a7fc8741b67d2d176ae344613ab4b",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "41331758612",
+  "schema_version": 1,
+  "source_sha": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+  "started_at": "2026-11-01T17:35:01.435815+00:00",
+  "status": "passed",
+  "tested_sha": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

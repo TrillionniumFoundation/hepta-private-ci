@@ -1,0 +1,58 @@
+{
+  "after": {
+    "commit": "7aaccdc384b36706b7d89a81bf87151c26a2bf0f",
+    "dirty": false,
+    "parents": [
+      "0f7c63418a7eec6cff5e4348e8cdc733850f8386",
+      "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a"
+    ],
+    "tree": "8010f83386f4effdcd6123aad99f1ab3775709e3"
+  },
+  "base_sha": "0f7c63418a7eec6cff5e4348e8cdc733850f8386",
+  "before": {
+    "commit": "7aaccdc384b36706b7d89a81bf87151c26a2bf0f",
+    "dirty": false,
+    "parents": [
+      "0f7c63418a7eec6cff5e4348e8cdc733850f8386",
+      "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a"
+    ],
+    "tree": "8010f83386f4effdcd6123aad99f1ab3775709e3"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--test",
+    "authbus_text_product",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 122.50852050799995,
+  "exit_code": 0,
+  "finished_at": "2026-11-01T17:47:49.783810+00:00",
+  "job": "policy-renewal",
+  "lane": "base-merge",
+  "log_bytes": 27229,
+  "log_file": "product.json.d9025feea5814dd4ba66a2228fffa716.log",
+  "log_sha256": "5921f5d1f8acf4e62be0303de9ac0ed135463d35c2e54df9a811d7fd7a837985",
+  "minimum_tests": 3,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 3,
+  "output_limit_exceeded": false,
+  "recomputed_merge_tree": "8010f83386f4effdcd6123aad99f1ab3775709e3",
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "41331758612",
+  "schema_version": 1,
+  "source_sha": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+  "started_at": "2026-11-01T17:45:47.274605+00:00",
+  "status": "passed",
+  "tested_sha": "7aaccdc384b36706b7d89a81bf87151c26a2bf0f",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

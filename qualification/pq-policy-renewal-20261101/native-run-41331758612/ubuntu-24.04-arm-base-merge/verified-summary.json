@@ -1,0 +1,339 @@
+{
+  "base_sha": "0f7c63418a7eec6cff5e4348e8cdc733850f8386",
+  "commands": {
+    "dependencies": {
+      "command": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml"
+      ],
+      "elapsed_seconds": 25.31439019299995,
+      "exit_code": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "original_log_file": "dependencies.json.1070d9aba8e94141822d4ee4ade8de74.log",
+      "raw_log_bytes": 44263,
+      "raw_log_path": "ubuntu-24.04-arm-base-merge/dependencies.recovered-stdout.log",
+      "raw_log_sha256": "4dba3078ee62c0210005354187e8d3b91f6b4d69b2f0f74685e1284264e3ba59",
+      "receipt_path": "ubuntu-24.04-arm-base-merge/dependencies.reconstructed-receipt.json",
+      "selected_tests": [],
+      "status": "passed"
+    },
+    "dispatcher": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(authbus_dispatch::tests::)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "elapsed_seconds": 619.859671641,
+      "exit_code": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 13,
+      "original_log_file": "dispatcher.json.f151ae7d36bc49ca8983662d6024030b.log",
+      "raw_log_bytes": 78860,
+      "raw_log_path": "ubuntu-24.04-arm-base-merge/dispatcher.recovered-stdout.log",
+      "raw_log_sha256": "b7c81b1eb46507dacf095f8d89e2856299edcd35fa7f526abea5af3530138c9a",
+      "receipt_path": "ubuntu-24.04-arm-base-merge/dispatcher.reconstructed-receipt.json",
+      "selected_tests": [
+        {
+          "name": "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+          "result": "ok"
+        }
+      ],
+      "status": "passed"
+    },
+    "fix": {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-evidence",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "elapsed_seconds": 259.25164269200013,
+      "exit_code": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "original_log_file": "fix.json.da23309a3a1f47bcb3edb49aabc76ba2.log",
+      "raw_log_bytes": 83888,
+      "raw_log_path": "ubuntu-24.04-arm-base-merge/fix.recovered-stdout.log",
+      "raw_log_sha256": "c07df0300579605f3ece723a09f47eafd200bddea574dc8a4ea228f70b1f5afd",
+      "receipt_path": "ubuntu-24.04-arm-base-merge/fix.reconstructed-receipt.json",
+      "selected_tests": [],
+      "status": "passed"
+    },
+    "format": {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "0f7c63418a7eec6cff5e4348e8cdc733850f8386"
+      ],
+      "elapsed_seconds": 1.1913276929999483,
+      "exit_code": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "original_log_file": "format.json.96b269b2428449f2aac54ec523030449.log",
+      "raw_log_bytes": 0,
+      "raw_log_path": "ubuntu-24.04-arm-base-merge/format.recovered-stdout.log",
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "receipt_path": "ubuntu-24.04-arm-base-merge/format.reconstructed-receipt.json",
+      "selected_tests": [],
+      "status": "passed"
+    },
+    "product": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "authbus_text_product",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "elapsed_seconds": 122.50852050799995,
+      "exit_code": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 3,
+      "original_log_file": "product.json.d9025feea5814dd4ba66a2228fffa716.log",
+      "raw_log_bytes": 27229,
+      "raw_log_path": "ubuntu-24.04-arm-base-merge/product.recovered-stdout.log",
+      "raw_log_sha256": "5921f5d1f8acf4e62be0303de9ac0ed135463d35c2e54df9a811d7fd7a837985",
+      "receipt_path": "ubuntu-24.04-arm-base-merge/product.reconstructed-receipt.json",
+      "selected_tests": [
+        {
+          "name": "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+          "result": "ok"
+        },
+        {
+          "name": "real_agentd_without_explicit_trust_rejects_signed_text",
+          "result": "ok"
+        },
+        {
+          "name": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+          "result": "ok"
+        }
+      ],
+      "status": "passed"
+    }
+  },
+  "full_job_log_reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41331758612/job/124923994477",
+  "job_id": 124923994477,
+  "job_log_bytes": 1762305,
+  "job_log_sha256": "1ead0aea079bb78ffdf1d7c07f5b9a041d37cedec7a8e8143d8af707a8c8f8d0",
+  "job_name": "PQ renewal (ubuntu-24.04-arm, base-merge)",
+  "job_steps_from_github_api": [
+    {
+      "conclusion": "success",
+      "name": "Set up job",
+      "number": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Check out the exact source or prospective merge",
+      "number": 2,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Bind commit, tree and merge parents",
+      "number": 3,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Prepare the original native process prerequisites",
+      "number": 4,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+      "number": 5,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+      "number": 6,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run sudo install -m 0755 \"$(command -v dotslash)\" /usr/local/bin/dotslash",
+      "number": 7,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Resolve the existing verified V8 artifacts",
+      "number": 8,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Fetch the unchanged locked dependency graph",
+      "number": 9,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run all thirteen original and added dispatcher controls",
+      "number": 10,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run the three real Agentd and App Server process controls",
+      "number": 11,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Require every selected test by name with no selected skip",
+      "number": 12,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run the original scoped linter and retain any source mutation as failure",
+      "number": 13,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run the original formatter after tests and lint",
+      "number": 14,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Verify the exact source after all execution",
+      "number": 15,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Retain original command logs and identity records",
+      "number": 16,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Post Check out the exact source or prospective merge",
+      "number": 32,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Complete job",
+      "number": 33,
+      "status": "completed"
+    }
+  ],
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41331758612/job/124923994477",
+  "lane": "base-merge",
+  "original_identity_before_and_after": {
+    "commit": "7aaccdc384b36706b7d89a81bf87151c26a2bf0f",
+    "dirty": false,
+    "parents": [
+      "0f7c63418a7eec6cff5e4348e8cdc733850f8386",
+      "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a"
+    ],
+    "tree": "8010f83386f4effdcd6123aad99f1ab3775709e3"
+  },
+  "product_limit": "real Agentd/App Server/queue processes with a test response service; no Cell/FinalUse/RunStart or independently deployed model qualification",
+  "product_profiles": {
+    "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade": {
+      "algorithm": "MlDsa65V2",
+      "scope": "PQ text product path and rejection recovery"
+    },
+    "real_agentd_without_explicit_trust_rejects_signed_text": {
+      "algorithm": "Ed25519V1",
+      "scope": "signed request rejected without explicit trust"
+    },
+    "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress": {
+      "algorithm": "Ed25519V1",
+      "scope": "retained classical text product regression"
+    }
+  },
+  "raw_command_recovery": "removed only GitHub runner timestamp prefixes; every raw command hash independently matches its original receipt",
+  "receipt_provenance": "Reconstructed from the original execution JSON emitted in the complete GitHub job log, using indent=2, sort_keys=True, and a final LF as in the pinned hepta_ci_exec.py. Original artifact receipt files were not directly downloaded; their disk bytes were not compared.",
+  "retained_predecessor_failure": {
+    "job_id": 124913972865,
+    "product_log_sha256": "128a9dc77372cf96d107c8ab923f022f0e516ad4c50e8d5e632fcff7bd834976",
+    "run_id": 41328688564
+  },
+  "run_id": 41331758612,
+  "scope": "named AuthBus controls only; no whole-chain or whole-product qualification",
+  "source_sha": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+  "tested_sha": "7aaccdc384b36706b7d89a81bf87151c26a2bf0f",
+  "tree": "8010f83386f4effdcd6123aad99f1ab3775709e3",
+  "verification": "passed"
+}

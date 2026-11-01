@@ -1,0 +1,338 @@
+{
+  "base_sha": "0f7c63418a7eec6cff5e4348e8cdc733850f8386",
+  "commands": {
+    "dependencies": {
+      "command": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml"
+      ],
+      "elapsed_seconds": 37.149675521000006,
+      "exit_code": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "original_log_file": "dependencies.json.0882d5ae0de04f01b3cbe20a9a0a6d00.log",
+      "raw_log_bytes": 44263,
+      "raw_log_path": "ubuntu-24.04-arm-source-head/dependencies.recovered-stdout.log",
+      "raw_log_sha256": "23aa5abbb9c03aa38729033d85330ac0157a7fc8741b67d2d176ae344613ab4b",
+      "receipt_path": "ubuntu-24.04-arm-source-head/dependencies.reconstructed-receipt.json",
+      "selected_tests": [],
+      "status": "passed"
+    },
+    "dispatcher": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(authbus_dispatch::tests::)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "elapsed_seconds": 558.9965451529999,
+      "exit_code": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 13,
+      "original_log_file": "dispatcher.json.ae39789c5a904132af1f558f4c5dea09.log",
+      "raw_log_bytes": 78859,
+      "raw_log_path": "ubuntu-24.04-arm-source-head/dispatcher.recovered-stdout.log",
+      "raw_log_sha256": "87c9ce1e75de631585f2d88103bf37cf549a644d6087cac6c8b2bead9637e6da",
+      "receipt_path": "ubuntu-24.04-arm-source-head/dispatcher.reconstructed-receipt.json",
+      "selected_tests": [
+        {
+          "name": "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+          "result": "ok"
+        },
+        {
+          "name": "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+          "result": "ok"
+        }
+      ],
+      "status": "passed"
+    },
+    "fix": {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-evidence",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "elapsed_seconds": 231.70786389499995,
+      "exit_code": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "original_log_file": "fix.json.d6e71aa356334fb0bb0dd75c7a1e814a.log",
+      "raw_log_bytes": 83888,
+      "raw_log_path": "ubuntu-24.04-arm-source-head/fix.recovered-stdout.log",
+      "raw_log_sha256": "21ccb8c8a017bb30c2c6cae7fd41db5b5b266bf08975b082caf9ff71097b88ae",
+      "receipt_path": "ubuntu-24.04-arm-source-head/fix.reconstructed-receipt.json",
+      "selected_tests": [],
+      "status": "passed"
+    },
+    "format": {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "0f7c63418a7eec6cff5e4348e8cdc733850f8386"
+      ],
+      "elapsed_seconds": 1.4923069909998503,
+      "exit_code": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "original_log_file": "format.json.4630017af57e4ac4a8f802e3fcd53b85.log",
+      "raw_log_bytes": 0,
+      "raw_log_path": "ubuntu-24.04-arm-source-head/format.recovered-stdout.log",
+      "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "receipt_path": "ubuntu-24.04-arm-source-head/format.reconstructed-receipt.json",
+      "selected_tests": [],
+      "status": "passed"
+    },
+    "product": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "authbus_text_product",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "elapsed_seconds": 106.72357018299999,
+      "exit_code": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 3,
+      "original_log_file": "product.json.2f7d5ba2663d46f6bfa83dca6c1a4714.log",
+      "raw_log_bytes": 27229,
+      "raw_log_path": "ubuntu-24.04-arm-source-head/product.recovered-stdout.log",
+      "raw_log_sha256": "9149a369ac63db9fa915d2e46ed55e5e839d3a3e61807c21edd0ecdcc4b77225",
+      "receipt_path": "ubuntu-24.04-arm-source-head/product.reconstructed-receipt.json",
+      "selected_tests": [
+        {
+          "name": "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+          "result": "ok"
+        },
+        {
+          "name": "real_agentd_without_explicit_trust_rejects_signed_text",
+          "result": "ok"
+        },
+        {
+          "name": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+          "result": "ok"
+        }
+      ],
+      "status": "passed"
+    }
+  },
+  "full_job_log_reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41331758612/job/124923994538",
+  "job_id": 124923994538,
+  "job_log_bytes": 1761026,
+  "job_log_sha256": "3229ba6da4dee86b9d9494f3a25c528337fc0aaad21e0d055a2f7e8a7a51b750",
+  "job_name": "PQ renewal (ubuntu-24.04-arm, source-head)",
+  "job_steps_from_github_api": [
+    {
+      "conclusion": "success",
+      "name": "Set up job",
+      "number": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Check out the exact source or prospective merge",
+      "number": 2,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Bind commit, tree and merge parents",
+      "number": 3,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Prepare the original native process prerequisites",
+      "number": 4,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+      "number": 5,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+      "number": 6,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run sudo install -m 0755 \"$(command -v dotslash)\" /usr/local/bin/dotslash",
+      "number": 7,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Resolve the existing verified V8 artifacts",
+      "number": 8,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Fetch the unchanged locked dependency graph",
+      "number": 9,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run all thirteen original and added dispatcher controls",
+      "number": 10,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run the three real Agentd and App Server process controls",
+      "number": 11,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Require every selected test by name with no selected skip",
+      "number": 12,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run the original scoped linter and retain any source mutation as failure",
+      "number": 13,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Run the original formatter after tests and lint",
+      "number": 14,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Verify the exact source after all execution",
+      "number": 15,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Retain original command logs and identity records",
+      "number": 16,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Post Check out the exact source or prospective merge",
+      "number": 32,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Complete job",
+      "number": 33,
+      "status": "completed"
+    }
+  ],
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41331758612/job/124923994538",
+  "lane": "source-head",
+  "original_identity_before_and_after": {
+    "commit": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+    "dirty": false,
+    "parents": [
+      "cd579a60915cc9a8a40488c9ee82002d9458bd4d"
+    ],
+    "tree": "8010f83386f4effdcd6123aad99f1ab3775709e3"
+  },
+  "product_limit": "real Agentd/App Server/queue processes with a test response service; no Cell/FinalUse/RunStart or independently deployed model qualification",
+  "product_profiles": {
+    "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade": {
+      "algorithm": "MlDsa65V2",
+      "scope": "PQ text product path and rejection recovery"
+    },
+    "real_agentd_without_explicit_trust_rejects_signed_text": {
+      "algorithm": "Ed25519V1",
+      "scope": "signed request rejected without explicit trust"
+    },
+    "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress": {
+      "algorithm": "Ed25519V1",
+      "scope": "retained classical text product regression"
+    }
+  },
+  "raw_command_recovery": "removed only GitHub runner timestamp prefixes; every raw command hash independently matches its original receipt",
+  "receipt_provenance": "Reconstructed from the original execution JSON emitted in the complete GitHub job log, using indent=2, sort_keys=True, and a final LF as in the pinned hepta_ci_exec.py. Original artifact receipt files were not directly downloaded; their disk bytes were not compared.",
+  "retained_predecessor_failure": {
+    "job_id": 124913972865,
+    "product_log_sha256": "128a9dc77372cf96d107c8ab923f022f0e516ad4c50e8d5e632fcff7bd834976",
+    "run_id": 41328688564
+  },
+  "run_id": 41331758612,
+  "scope": "named AuthBus controls only; no whole-chain or whole-product qualification",
+  "source_sha": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+  "tested_sha": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+  "tree": "8010f83386f4effdcd6123aad99f1ab3775709e3",
+  "verification": "passed"
+}
