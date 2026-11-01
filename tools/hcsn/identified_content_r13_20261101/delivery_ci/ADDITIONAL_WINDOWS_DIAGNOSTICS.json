@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.ci.additional_windows_diagnostics.v1",
+  "head": "90d1c11c5e654b1bf595c2564f1160df7d8e07a9",
+  "run_id": 41265424224,
+  "shard_job": {
+    "id": 124727579324,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41265424224/job/124727579324",
+    "conclusion": "cancelled",
+    "test_step_conclusion": "failure",
+    "excerpts": [
+      [
+        "2026-11-01T02:38:29.3095213Z           rust-lld: error: undefined symbol: ___chkstk_ms",
+        "2026-11-01T02:38:29.3194834Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_x25519_ge_scalarmult)",
+        "2026-11-01T02:38:29.3273056Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_ec_nistp_scalar_mul)",
+        "2026-11-01T02:38:29.3335489Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_ec_nistp_scalar_mul_public)",
+        "2026-11-01T02:38:29.3604901Z           >>> referenced 39 more times"
+      ],
+      [
+        "2026-11-01T02:38:29.1572904Z           rust-lld: error: undefined symbol: __stack_chk_fail",
+        "2026-11-01T02:38:29.1723197Z           >>> referenced by libring-1490277151.rlib(79abf3e07b579fd2-poly1305.o):(poly1305_update)",
+        "2026-11-01T02:38:29.1843084Z           >>> referenced by libring-1490277151.rlib(73090ba2100ad232-curve25519.o):(fe_frombytes)",
+        "2026-11-01T02:38:29.1892906Z           >>> referenced by libring-1490277151.rlib(73090ba2100ad232-curve25519.o):(fe_isnonzero)",
+        "2026-11-01T02:38:29.1919216Z           >>> referenced 221 more times"
+      ],
+      [
+        "2026-11-01T02:40:25.2090000Z Error: Invalid(\"workspace root must be canonical and must not traverse a symlink: D:\\\\tmp\\\\.tmpwJzBbJ\\\\sweep\\\\a\")",
+        "2026-11-01T02:40:25.2090402Z ",
+        "2026-11-01T02:40:25.2090406Z ",
+        "2026-11-01T02:40:25.2090473Z failures:",
+        "2026-11-01T02:40:25.2090930Z     registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths"
+      ]
+    ]
+  },
+  "aggregate_job": {
+    "id": 124729565246,
+    "conclusion": "failure",
+    "message": "Windows Bazel test shards finished with result: cancelled",
+    "scope": "Aggregate contains no compiler diagnostics; shard evidence is separately recorded above."
+  },
+  "scope_notes": [
+    "The workspace path test returned Invalid during fixture setup before the pairwise equality assertion. The log does not contain unequal oracle values.",
+    "C objects from zstd, ring, OpenSSL-compatible aws-lc and sqlite link with missing GNU-style stack symbols in the MSVC link invocation. Toolchain cause requires independent diagnosis; no symbol stub or weakened validation is proposed here.",
+    "Source, toolchain and platform repairs are independent from the frozen R13 research runtime."
+  ]
+}
