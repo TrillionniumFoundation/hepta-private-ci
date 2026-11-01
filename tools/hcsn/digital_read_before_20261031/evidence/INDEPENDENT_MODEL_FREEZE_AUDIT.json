@@ -1,0 +1,1125 @@
+{
+  "auditor_sha256": "2775c0328fbeaecb5367c9ae6a4dba017bf121c31d141a83c8bb6fd341776073",
+  "finished_unix": 1793495569.0306199,
+  "model_freeze_sha256": "ecc60fe863e5d58517c52be1c2cd0a6e8bf7b0a6746fe77458d6abe6434ef44d",
+  "models": {
+    "fits": [
+      {
+        "calibration_count": 64,
+        "finished_at": "2026-11-01T01:08:55.376719+00:00",
+        "fit": 11,
+        "full_fit_wall_seconds": 61.311548,
+        "models_pipeline_timing": {
+          "cpu_seconds": 47.528955716000006,
+          "wall_seconds": 56.65015859499999
+        },
+        "train_records": 308,
+        "validation_records": 78
+      },
+      {
+        "calibration_count": 64,
+        "finished_at": "2026-11-01T01:08:50.549867+00:00",
+        "fit": 23,
+        "full_fit_wall_seconds": 56.279905,
+        "models_pipeline_timing": {
+          "cpu_seconds": 44.242106398000004,
+          "wall_seconds": 51.94604294800001
+        },
+        "train_records": 306,
+        "validation_records": 76
+      },
+      {
+        "calibration_count": 64,
+        "finished_at": "2026-11-01T01:08:55.634582+00:00",
+        "fit": 37,
+        "full_fit_wall_seconds": 61.466822,
+        "models_pipeline_timing": {
+          "cpu_seconds": 46.748825364,
+          "wall_seconds": 57.68893497199997
+        },
+        "train_records": 294,
+        "validation_records": 76
+      },
+      {
+        "calibration_count": 64,
+        "finished_at": "2026-11-01T01:08:52.429796+00:00",
+        "fit": 53,
+        "full_fit_wall_seconds": 58.55791,
+        "models_pipeline_timing": {
+          "cpu_seconds": 44.999182103,
+          "wall_seconds": 54.65256000699992
+        },
+        "train_records": 282,
+        "validation_records": 77
+      },
+      {
+        "calibration_count": 64,
+        "finished_at": "2026-11-01T01:08:53.337742+00:00",
+        "fit": 71,
+        "full_fit_wall_seconds": 59.30815,
+        "models_pipeline_timing": {
+          "cpu_seconds": 46.469926092,
+          "wall_seconds": 55.10267756400026
+        },
+        "train_records": 302,
+        "validation_records": 86
+      }
+    ],
+    "matched_fit_controllers": "One frozen model per fit/family, reused by fixed and value controllers",
+    "models": [
+      {
+        "all_parameter_shift_l2": 5.654380349789602,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 377929,
+        "effective_parameters": 1803,
+        "encoded_bytes": 53468,
+        "export_preparation": {
+          "cpu_seconds": 0.024905374999999452,
+          "wall_seconds": 0.024904134999815142
+        },
+        "family": "ordinary_base",
+        "final_validation_loss": 0.1925166396642177,
+        "fit": 11,
+        "initial_validation_loss": 0.39510148954758223,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "cdc096e95e1b5b1868ab1f85815953a4001e8a1b0359db6dafefb5add9aba889",
+        "raw_shift": [
+          0.5109688386766627,
+          -2.0184064969702384,
+          1.8741977198221802,
+          0.23658699595039212,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "training": {
+          "cpu_seconds": 6.2265637300000005,
+          "wall_seconds": 7.001711263999823
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.128998918510167,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 376145,
+        "effective_parameters": 1803,
+        "encoded_bytes": 109485,
+        "export_preparation": {
+          "cpu_seconds": 0.02764808599999924,
+          "wall_seconds": 0.027678827999807254
+        },
+        "family": "ordinary_bank",
+        "final_validation_loss": 0.18235782525946792,
+        "fit": 11,
+        "initial_validation_loss": 0.3821050674682425,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "c44102036d2428ed8e0eacf594b612c559c9dfcc4e07f4143e5aeb70895cfcea",
+        "raw_shift": [
+          -0.5350814829270949,
+          -1.5819340212997477,
+          1.4327839533676074,
+          0.09350751522115083,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "training": {
+          "cpu_seconds": 9.389796505,
+          "wall_seconds": 12.03225701600013
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.677581744165616,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 425774,
+        "effective_parameters": 1806,
+        "encoded_bytes": 118386,
+        "export_preparation": {
+          "cpu_seconds": 0.04920435000000367,
+          "wall_seconds": 0.061058868000145594
+        },
+        "family": "clocked_bank",
+        "final_validation_loss": 0.18082396338917595,
+        "fit": 11,
+        "initial_validation_loss": 0.3825187119258875,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "02ef2ce2d55c78e2ab3e097899275dacddf33952a256067f4895301227e65177",
+        "raw_shift": [
+          1.181180279651644,
+          -2.1519469181334845,
+          1.572483781357773,
+          0.09372031604909908,
+          0.7602834417945008,
+          -0.6562072405093954,
+          0.6229932713742788
+        ],
+        "training": {
+          "cpu_seconds": 10.786530667999997,
+          "wall_seconds": 13.623131548999936
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.659014331466414,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 426230,
+        "effective_parameters": 1806,
+        "encoded_bytes": 164671,
+        "export_preparation": {
+          "cpu_seconds": 0.08224928699999623,
+          "wall_seconds": 0.09009857299997748
+        },
+        "family": "first_passage_bank",
+        "final_validation_loss": 0.18077408697980318,
+        "fit": 11,
+        "initial_validation_loss": 0.3825718395927768,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "3451b4c313ca1a45a16fbf489513b7b09d499fe09357c99fc5de77a863622699",
+        "raw_shift": [
+          1.2711952915433162,
+          -2.153894628069448,
+          1.5835647425632544,
+          0.10117644668785711,
+          0.6817397219250695,
+          -0.5455600847386493,
+          0.7609561918861274
+        ],
+        "training": {
+          "cpu_seconds": 18.490618038,
+          "wall_seconds": 21.07359950199998
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.65920996185146,
+        "allocated_parameters": 1799,
+        "decoded_bytes": 38070,
+        "effective_parameters": 1799,
+        "encoded_bytes": 18041,
+        "export_preparation": {
+          "cpu_seconds": 0.000533181999998078,
+          "wall_seconds": 0.0005330610001692548
+        },
+        "family": "raw_history",
+        "final_validation_loss": 0.1652860679256911,
+        "fit": 11,
+        "initial_validation_loss": 0.39006858052362364,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "50e347b911900b42464f25f16e19c570d0a2ebe482d99e8ece330c9740744893",
+        "raw_shift": [],
+        "training": {
+          "cpu_seconds": 1.6064989670000003,
+          "wall_seconds": 1.7607198330001665
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.89225466548755,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 377822,
+        "effective_parameters": 1803,
+        "encoded_bytes": 54955,
+        "export_preparation": {
+          "cpu_seconds": 0.017479092000000307,
+          "wall_seconds": 0.025603424000109953
+        },
+        "family": "ordinary_base",
+        "final_validation_loss": 0.2369026225534146,
+        "fit": 23,
+        "initial_validation_loss": 0.2670493691128876,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "32654ac0511978c6ecc44f776484ecf354eb9b021b2a688f03ca3bb57a3bc6c5",
+        "raw_shift": [
+          0.4940557280771842,
+          -2.1920200708344346,
+          1.808673913613792,
+          -0.10162178076968557,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "training": {
+          "cpu_seconds": 6.053078985000001,
+          "wall_seconds": 6.896224095999969
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.91294279822199,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 377529,
+        "effective_parameters": 1803,
+        "encoded_bytes": 107092,
+        "export_preparation": {
+          "cpu_seconds": 0.02251231400000009,
+          "wall_seconds": 0.022578315999908227
+        },
+        "family": "ordinary_bank",
+        "final_validation_loss": 0.22682488822465835,
+        "fit": 23,
+        "initial_validation_loss": 0.26633734254895536,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "d4d0de9b58a3b2b03ed09d416428b2ead51621777653fb774a1855d5c03d2edc",
+        "raw_shift": [
+          0.17434571171921615,
+          -1.9927658211562111,
+          1.4342721716087414,
+          -0.20601053717836748,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "training": {
+          "cpu_seconds": 7.5144328489999985,
+          "wall_seconds": 9.147500104999835
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.539264004695133,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 426682,
+        "effective_parameters": 1806,
+        "encoded_bytes": 119523,
+        "export_preparation": {
+          "cpu_seconds": 0.031375869000001444,
+          "wall_seconds": 0.035564394000175525
+        },
+        "family": "clocked_bank",
+        "final_validation_loss": 0.23338264820232585,
+        "fit": 23,
+        "initial_validation_loss": 0.2672135254741205,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "0e159bfa19de8ac83f183f63aa729e184f6840de53d99ed2d3a382415d592ea8",
+        "raw_shift": [
+          1.3432614519450912,
+          -2.44794840652045,
+          1.7107023717629675,
+          -0.22808234421675,
+          1.012677485387386,
+          -0.9834959933808566,
+          -0.31797993810823827
+        ],
+        "training": {
+          "cpu_seconds": 10.105233523999999,
+          "wall_seconds": 12.31114252899988
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.527825135078986,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 426684,
+        "effective_parameters": 1806,
+        "encoded_bytes": 164844,
+        "export_preparation": {
+          "cpu_seconds": 0.10249095999999724,
+          "wall_seconds": 0.11453446599989547
+        },
+        "family": "first_passage_bank",
+        "final_validation_loss": 0.23730657299871877,
+        "fit": 23,
+        "initial_validation_loss": 0.2675608195623442,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "05e3711a08430ce768d0d961b1c5191b08863bbea8494cdd0bce0ff300bb9a1c",
+        "raw_shift": [
+          1.4583142503389643,
+          -2.4876177664559855,
+          1.7342551153696184,
+          -0.20553512381514988,
+          0.9991251357138692,
+          -0.8866880585465504,
+          0.03402333057582456
+        ],
+        "training": {
+          "cpu_seconds": 17.815079715000003,
+          "wall_seconds": 20.528886988000068
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.017615613557276,
+        "allocated_parameters": 1799,
+        "decoded_bytes": 38113,
+        "effective_parameters": 1799,
+        "encoded_bytes": 18039,
+        "export_preparation": {
+          "cpu_seconds": 0.0007006399999980317,
+          "wall_seconds": 0.0007007389999671432
+        },
+        "family": "raw_history",
+        "final_validation_loss": 0.17761627351174275,
+        "fit": 23,
+        "initial_validation_loss": 0.268148940878049,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "a5f78664424140e480587fd2f6b71dea85dcfac36d0104117f89c09f86cb4a6b",
+        "raw_shift": [],
+        "training": {
+          "cpu_seconds": 1.7255095989999987,
+          "wall_seconds": 1.8899150789998203
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.431286062897307,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 377997,
+        "effective_parameters": 1803,
+        "encoded_bytes": 53086,
+        "export_preparation": {
+          "cpu_seconds": 0.01741761199999914,
+          "wall_seconds": 0.017415642999822012
+        },
+        "family": "ordinary_base",
+        "final_validation_loss": 0.20162614432110867,
+        "fit": 37,
+        "initial_validation_loss": 0.4566411427077787,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "40ce8714ca76ff99883c4fd33668d00146aa11a3361124e7ac6abe4694c1e4e7",
+        "raw_shift": [
+          0.28712649952515595,
+          -2.2288934374720517,
+          2.056349371140917,
+          0.07777628827287209,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "training": {
+          "cpu_seconds": 6.116695416999999,
+          "wall_seconds": 7.014289032999841
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.663032849254154,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 377893,
+        "effective_parameters": 1803,
+        "encoded_bytes": 109982,
+        "export_preparation": {
+          "cpu_seconds": 0.022701623999999754,
+          "wall_seconds": 0.02270012599956317
+        },
+        "family": "ordinary_bank",
+        "final_validation_loss": 0.18099347365737767,
+        "fit": 37,
+        "initial_validation_loss": 0.47612087543470555,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "5abc9c1633d951ff967d7e439c27064132798d42f87fe13e4a1fb98dd5a7420d",
+        "raw_shift": [
+          0.1337840924964173,
+          -2.2118982843009394,
+          1.8238144967983496,
+          0.0002806346105231894,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "training": {
+          "cpu_seconds": 8.102615554,
+          "wall_seconds": 10.104206801000146
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.21359020617349,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 426296,
+        "effective_parameters": 1806,
+        "encoded_bytes": 119702,
+        "export_preparation": {
+          "cpu_seconds": 0.033672898000002505,
+          "wall_seconds": 0.03367132199991829
+        },
+        "family": "clocked_bank",
+        "final_validation_loss": 0.18759023174542613,
+        "fit": 37,
+        "initial_validation_loss": 0.4653865931517777,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "150f992b200aefe0c89e920f782f108717e41c43520ca9592a51fcc8ab338f6d",
+        "raw_shift": [
+          0.989763991938395,
+          -2.258039976456695,
+          1.9467940397375412,
+          -0.06166353475893732,
+          0.8275918378893689,
+          -1.100014560690804,
+          -0.022312184069597868
+        ],
+        "training": {
+          "cpu_seconds": 10.863540037,
+          "wall_seconds": 14.719703193999976
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.115954772086618,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 426273,
+        "effective_parameters": 1806,
+        "encoded_bytes": 165585,
+        "export_preparation": {
+          "cpu_seconds": 0.06951949200000485,
+          "wall_seconds": 0.07757573500020953
+        },
+        "family": "first_passage_bank",
+        "final_validation_loss": 0.19244880431305647,
+        "fit": 37,
+        "initial_validation_loss": 0.46093466848646786,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "7b6d820fb6973701f38f74818e17deecd74740cd3ed8528dfaa3d06c1d706386",
+        "raw_shift": [
+          1.0357263181423788,
+          -2.1202739660444276,
+          1.9128023434678927,
+          -0.06995062548755548,
+          0.7412796168947404,
+          -0.9516056420145085,
+          0.21723896740266158
+        ],
+        "training": {
+          "cpu_seconds": 19.222198039,
+          "wall_seconds": 22.9600365780002
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.364292807774531,
+        "allocated_parameters": 1799,
+        "decoded_bytes": 38073,
+        "effective_parameters": 1799,
+        "encoded_bytes": 18038,
+        "export_preparation": {
+          "cpu_seconds": 0.0005134610000041562,
+          "wall_seconds": 0.001650366999911057
+        },
+        "family": "raw_history",
+        "final_validation_loss": 0.16107264228537072,
+        "fit": 37,
+        "initial_validation_loss": 0.44102398379075863,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "5fb4abe0c03c4b2fb964e030e3cf5438b9b2b71c9d95107af1f09af2198e6400",
+        "raw_shift": [],
+        "training": {
+          "cpu_seconds": 1.325221067000001,
+          "wall_seconds": 1.4319055979999575
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.499001300203091,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 378028,
+        "effective_parameters": 1803,
+        "encoded_bytes": 53384,
+        "export_preparation": {
+          "cpu_seconds": 0.016718754000001113,
+          "wall_seconds": 0.01671849000013026
+        },
+        "family": "ordinary_base",
+        "final_validation_loss": 0.20907175429650993,
+        "fit": 53,
+        "initial_validation_loss": 0.2887474928763944,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "58657ae81b417733a8d4b1754583df44025b5b2535ea6d13bf505bced98c0608",
+        "raw_shift": [
+          0.3389460005441359,
+          -2.168627336452632,
+          1.935974428833142,
+          0.021790590996904266,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "training": {
+          "cpu_seconds": 5.6289114069999995,
+          "wall_seconds": 6.36267652000015
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.421667634963832,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 377310,
+        "effective_parameters": 1803,
+        "encoded_bytes": 110628,
+        "export_preparation": {
+          "cpu_seconds": 0.02459952099999896,
+          "wall_seconds": 0.061214760999973805
+        },
+        "family": "ordinary_bank",
+        "final_validation_loss": 0.19857455032805219,
+        "fit": 53,
+        "initial_validation_loss": 0.318613389177731,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "18827d9c971921751fa20f3aa72e4c277d3b23cb3f59c4e2c45463986c6d8fbd",
+        "raw_shift": [
+          -0.25681890316248024,
+          -1.8805704879186944,
+          1.6193355932148106,
+          -0.21835689010979553,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "training": {
+          "cpu_seconds": 8.778407082999998,
+          "wall_seconds": 10.927458208999724
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.957055122135468,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 426176,
+        "effective_parameters": 1806,
+        "encoded_bytes": 118459,
+        "export_preparation": {
+          "cpu_seconds": 0.04759129600000023,
+          "wall_seconds": 0.05546108699991237
+        },
+        "family": "clocked_bank",
+        "final_validation_loss": 0.20247141163232096,
+        "fit": 53,
+        "initial_validation_loss": 0.3160032972328256,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "9d6b7e962a79ca4b5c4b23d8de651cc10f13a95bb6de08e080f3f493e0378687",
+        "raw_shift": [
+          0.924043421462448,
+          -2.1280243347159775,
+          1.766585868629524,
+          -0.18900998133723104,
+          0.7621677797555824,
+          -0.7843412261711996,
+          0.17926707829540958
+        ],
+        "training": {
+          "cpu_seconds": 10.654465772000002,
+          "wall_seconds": 14.08112792599968
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.949742732465766,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 426387,
+        "effective_parameters": 1806,
+        "encoded_bytes": 165387,
+        "export_preparation": {
+          "cpu_seconds": 0.09589015199999551,
+          "wall_seconds": 0.103746819999742
+        },
+        "family": "first_passage_bank",
+        "final_validation_loss": 0.20231238958479172,
+        "fit": 53,
+        "initial_validation_loss": 0.31458188840477874,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "37b86be4f484db948d34533d79f2588ff608d6182d0088a497a204f9a4e6e28e",
+        "raw_shift": [
+          1.0820968234517674,
+          -2.0989333430990182,
+          1.7410375250884478,
+          -0.17977172513907208,
+          0.6486493999339064,
+          -0.6526365523137102,
+          0.4621197684900456
+        ],
+        "training": {
+          "cpu_seconds": 17.059306675000002,
+          "wall_seconds": 19.644525574
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.668747724175635,
+        "allocated_parameters": 1799,
+        "decoded_bytes": 38064,
+        "effective_parameters": 1799,
+        "encoded_bytes": 17965,
+        "export_preparation": {
+          "cpu_seconds": 0.0005052899999995475,
+          "wall_seconds": 0.0005065810000814963
+        },
+        "family": "raw_history",
+        "final_validation_loss": 0.21100405217399273,
+        "fit": 53,
+        "initial_validation_loss": 0.28738900722387545,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "aec252e0698dfef4382389a4ef60757d920cbfea891cdb237f2d1d72aed93024",
+        "raw_shift": [],
+        "training": {
+          "cpu_seconds": 1.6669725909999968,
+          "wall_seconds": 1.855003795000357
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.7265991014806366,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 377841,
+        "effective_parameters": 1803,
+        "encoded_bytes": 51632,
+        "export_preparation": {
+          "cpu_seconds": 0.019379002999999173,
+          "wall_seconds": 0.01937839200036251
+        },
+        "family": "ordinary_base",
+        "final_validation_loss": 0.2105103685229897,
+        "fit": 71,
+        "initial_validation_loss": 0.3449060670188094,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "863effc6bed1127f63eefd8d3665f41169ff5da44cd478a4327f510d0eed090e",
+        "raw_shift": [
+          0.3790522748927462,
+          -2.1016277951722113,
+          1.8352891559889415,
+          0.14297638636909543,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "training": {
+          "cpu_seconds": 6.658199793,
+          "wall_seconds": 7.450804499000242
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 5.593934677606082,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 376919,
+        "effective_parameters": 1803,
+        "encoded_bytes": 108365,
+        "export_preparation": {
+          "cpu_seconds": 0.024649575999998063,
+          "wall_seconds": 0.05798228799994831
+        },
+        "family": "ordinary_bank",
+        "final_validation_loss": 0.19898343162745488,
+        "fit": 71,
+        "initial_validation_loss": 0.33356377355022504,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "e24eec94be8a047af6c0ca9afc8ee95c19e836f9a25d9eb295ec23680d581e1d",
+        "raw_shift": [
+          -0.1203924898635899,
+          -1.7365319651679667,
+          1.403103007498561,
+          -0.049892351862542754,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "training": {
+          "cpu_seconds": 8.789453783,
+          "wall_seconds": 10.99422370100001
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.416185751012468,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 426046,
+        "effective_parameters": 1806,
+        "encoded_bytes": 119451,
+        "export_preparation": {
+          "cpu_seconds": 0.05002794399999999,
+          "wall_seconds": 0.05004138699996474
+        },
+        "family": "clocked_bank",
+        "final_validation_loss": 0.2006256849756984,
+        "fit": 71,
+        "initial_validation_loss": 0.3338641491025661,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "7baac747046a6721e9665e1c4c40d3a854285c97505ded4a63b2ad99c1348c65",
+        "raw_shift": [
+          1.1203874358699208,
+          -2.1911276192663474,
+          1.5679725982450265,
+          0.030248631900912752,
+          0.8343921706308881,
+          -0.8145777019555995,
+          0.18093433624339877
+        ],
+        "training": {
+          "cpu_seconds": 10.969912333,
+          "wall_seconds": 13.826844963999974
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.496310834192791,
+        "allocated_parameters": 1806,
+        "decoded_bytes": 426295,
+        "effective_parameters": 1806,
+        "encoded_bytes": 164736,
+        "export_preparation": {
+          "cpu_seconds": 0.09624459900000204,
+          "wall_seconds": 0.10806902900003479
+        },
+        "family": "first_passage_bank",
+        "final_validation_loss": 0.20362295255780985,
+        "fit": 71,
+        "initial_validation_loss": 0.3344361695033554,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "aa98831c3ed7e89f90d5a077b5973be15a56f37872fdf42d4938e7087ec3e4b5",
+        "raw_shift": [
+          1.2554883465722404,
+          -2.2231698972679217,
+          1.5982141974584996,
+          0.07330726644929589,
+          0.8335570392494999,
+          -0.7090083746097506,
+          0.2644657813165498
+        ],
+        "training": {
+          "cpu_seconds": 17.401590068000004,
+          "wall_seconds": 19.287742340000023
+        },
+        "updates": 240
+      },
+      {
+        "all_parameter_shift_l2": 6.436403337218917,
+        "allocated_parameters": 1799,
+        "decoded_bytes": 38105,
+        "effective_parameters": 1799,
+        "encoded_bytes": 18030,
+        "export_preparation": {
+          "cpu_seconds": 0.0007002890000009643,
+          "wall_seconds": 0.0007006490000094345
+        },
+        "family": "raw_history",
+        "final_validation_loss": 0.20213641058736623,
+        "fit": 71,
+        "initial_validation_loss": 0.3440983362908471,
+        "maximum_rebuilt_table_error": 0.0,
+        "model_sha256": "e9eb3185d278a1262515da857f695b6abd1d1c463d91fdb5170858a16b5046ea",
+        "raw_shift": [],
+        "training": {
+          "cpu_seconds": 1.5536012919999962,
+          "wall_seconds": 2.0749097389998497
+        },
+        "updates": 240
+      }
+    ],
+    "timing_limit": "Fit timestamps cover full wall duration; models_pipeline_timing excludes earlier data preparation. Nested timer attributions are not additional costs.",
+    "total_optimizer_updates": 6000
+  },
+  "schema": "digital-read-before-independent-final-audit-v1",
+  "started_unix": 1793495567.3534048,
+  "status": "passed",
+  "timing_replays": {
+    "additional_independent_fits": 0,
+    "byte_identical_models": 25,
+    "records": [
+      {
+        "command": [
+          "/workspace/scratch/b4991412e0c9/digital-runtime/bin/python",
+          "-m",
+          "tools.hcsn.digital_read_before_20261031.run_training",
+          "--fit",
+          "11",
+          "--runs",
+          "/workspace/scratch/b4991412e0c9/digital-training-timed-v1"
+        ],
+        "extra_independent_fits": 0,
+        "finished_at": "2026-11-01T01:11:17.333609+00:00",
+        "fit": 11,
+        "involuntary_context_switches": 4592,
+        "major_faults": 8,
+        "minor_faults": 76751,
+        "model_equality": [
+          {
+            "byte_identical": true,
+            "family": "ordinary_base",
+            "primary_sha256": "cdc096e95e1b5b1868ab1f85815953a4001e8a1b0359db6dafefb5add9aba889",
+            "replay_sha256": "cdc096e95e1b5b1868ab1f85815953a4001e8a1b0359db6dafefb5add9aba889"
+          },
+          {
+            "byte_identical": true,
+            "family": "ordinary_bank",
+            "primary_sha256": "c44102036d2428ed8e0eacf594b612c559c9dfcc4e07f4143e5aeb70895cfcea",
+            "replay_sha256": "c44102036d2428ed8e0eacf594b612c559c9dfcc4e07f4143e5aeb70895cfcea"
+          },
+          {
+            "byte_identical": true,
+            "family": "clocked_bank",
+            "primary_sha256": "02ef2ce2d55c78e2ab3e097899275dacddf33952a256067f4895301227e65177",
+            "replay_sha256": "02ef2ce2d55c78e2ab3e097899275dacddf33952a256067f4895301227e65177"
+          },
+          {
+            "byte_identical": true,
+            "family": "first_passage_bank",
+            "primary_sha256": "3451b4c313ca1a45a16fbf489513b7b09d499fe09357c99fc5de77a863622699",
+            "replay_sha256": "3451b4c313ca1a45a16fbf489513b7b09d499fe09357c99fc5de77a863622699"
+          },
+          {
+            "byte_identical": true,
+            "family": "raw_history",
+            "primary_sha256": "50e347b911900b42464f25f16e19c570d0a2ebe482d99e8ece330c9740744893",
+            "replay_sha256": "50e347b911900b42464f25f16e19c570d0a2ebe482d99e8ece330c9740744893"
+          }
+        ],
+        "peak_rss_kib": 321320,
+        "primary_models_unchanged": true,
+        "rationale": "Original fit timers excluded interpreter and outer data serialization. This separate exact reproduction measures those costs; timings are not retroactively attributed to the primary campaign.",
+        "returncode": 0,
+        "schema": "digital-read-before-process-timing-v1",
+        "scope": "Entire child process: interpreter/import, calibration, actual-content cohort preparation, serialization, optimizer, diagnostics, export and shutdown. Parent measurement harness excluded.",
+        "started_at": "2026-11-01T01:10:08.701238+00:00",
+        "system_cpu_seconds": 0.436961,
+        "total_cpu_seconds": 58.581056999999994,
+        "user_cpu_seconds": 58.144096,
+        "voluntary_context_switches": 164,
+        "wall_seconds": 68.62282525899991
+      },
+      {
+        "command": [
+          "/workspace/scratch/b4991412e0c9/digital-runtime/bin/python",
+          "-m",
+          "tools.hcsn.digital_read_before_20261031.run_training",
+          "--fit",
+          "23",
+          "--runs",
+          "/workspace/scratch/b4991412e0c9/digital-training-timed-v1"
+        ],
+        "extra_independent_fits": 0,
+        "finished_at": "2026-11-01T01:11:22.011934+00:00",
+        "fit": 23,
+        "involuntary_context_switches": 4799,
+        "major_faults": 0,
+        "minor_faults": 77306,
+        "model_equality": [
+          {
+            "byte_identical": true,
+            "family": "ordinary_base",
+            "primary_sha256": "32654ac0511978c6ecc44f776484ecf354eb9b021b2a688f03ca3bb57a3bc6c5",
+            "replay_sha256": "32654ac0511978c6ecc44f776484ecf354eb9b021b2a688f03ca3bb57a3bc6c5"
+          },
+          {
+            "byte_identical": true,
+            "family": "ordinary_bank",
+            "primary_sha256": "d4d0de9b58a3b2b03ed09d416428b2ead51621777653fb774a1855d5c03d2edc",
+            "replay_sha256": "d4d0de9b58a3b2b03ed09d416428b2ead51621777653fb774a1855d5c03d2edc"
+          },
+          {
+            "byte_identical": true,
+            "family": "clocked_bank",
+            "primary_sha256": "0e159bfa19de8ac83f183f63aa729e184f6840de53d99ed2d3a382415d592ea8",
+            "replay_sha256": "0e159bfa19de8ac83f183f63aa729e184f6840de53d99ed2d3a382415d592ea8"
+          },
+          {
+            "byte_identical": true,
+            "family": "first_passage_bank",
+            "primary_sha256": "05e3711a08430ce768d0d961b1c5191b08863bbea8494cdd0bce0ff300bb9a1c",
+            "replay_sha256": "05e3711a08430ce768d0d961b1c5191b08863bbea8494cdd0bce0ff300bb9a1c"
+          },
+          {
+            "byte_identical": true,
+            "family": "raw_history",
+            "primary_sha256": "a5f78664424140e480587fd2f6b71dea85dcfac36d0104117f89c09f86cb4a6b",
+            "replay_sha256": "a5f78664424140e480587fd2f6b71dea85dcfac36d0104117f89c09f86cb4a6b"
+          }
+        ],
+        "peak_rss_kib": 321272,
+        "primary_models_unchanged": true,
+        "rationale": "Original fit timers excluded interpreter and outer data serialization. This separate exact reproduction measures those costs; timings are not retroactively attributed to the primary campaign.",
+        "returncode": 0,
+        "schema": "digital-read-before-process-timing-v1",
+        "scope": "Entire child process: interpreter/import, calibration, actual-content cohort preparation, serialization, optimizer, diagnostics, export and shutdown. Parent measurement harness excluded.",
+        "started_at": "2026-11-01T01:10:08.737648+00:00",
+        "system_cpu_seconds": 0.753979,
+        "total_cpu_seconds": 57.274875,
+        "user_cpu_seconds": 56.520896,
+        "voluntary_context_switches": 20,
+        "wall_seconds": 73.27000893100012
+      },
+      {
+        "command": [
+          "/workspace/scratch/b4991412e0c9/digital-runtime/bin/python",
+          "-m",
+          "tools.hcsn.digital_read_before_20261031.run_training",
+          "--fit",
+          "37",
+          "--runs",
+          "/workspace/scratch/b4991412e0c9/digital-training-timed-v1"
+        ],
+        "extra_independent_fits": 0,
+        "finished_at": "2026-11-01T01:11:22.811111+00:00",
+        "fit": 37,
+        "involuntary_context_switches": 5552,
+        "major_faults": 0,
+        "minor_faults": 83340,
+        "model_equality": [
+          {
+            "byte_identical": true,
+            "family": "ordinary_base",
+            "primary_sha256": "40ce8714ca76ff99883c4fd33668d00146aa11a3361124e7ac6abe4694c1e4e7",
+            "replay_sha256": "40ce8714ca76ff99883c4fd33668d00146aa11a3361124e7ac6abe4694c1e4e7"
+          },
+          {
+            "byte_identical": true,
+            "family": "ordinary_bank",
+            "primary_sha256": "5abc9c1633d951ff967d7e439c27064132798d42f87fe13e4a1fb98dd5a7420d",
+            "replay_sha256": "5abc9c1633d951ff967d7e439c27064132798d42f87fe13e4a1fb98dd5a7420d"
+          },
+          {
+            "byte_identical": true,
+            "family": "clocked_bank",
+            "primary_sha256": "150f992b200aefe0c89e920f782f108717e41c43520ca9592a51fcc8ab338f6d",
+            "replay_sha256": "150f992b200aefe0c89e920f782f108717e41c43520ca9592a51fcc8ab338f6d"
+          },
+          {
+            "byte_identical": true,
+            "family": "first_passage_bank",
+            "primary_sha256": "7b6d820fb6973701f38f74818e17deecd74740cd3ed8528dfaa3d06c1d706386",
+            "replay_sha256": "7b6d820fb6973701f38f74818e17deecd74740cd3ed8528dfaa3d06c1d706386"
+          },
+          {
+            "byte_identical": true,
+            "family": "raw_history",
+            "primary_sha256": "5fb4abe0c03c4b2fb964e030e3cf5438b9b2b71c9d95107af1f09af2198e6400",
+            "replay_sha256": "5fb4abe0c03c4b2fb964e030e3cf5438b9b2b71c9d95107af1f09af2198e6400"
+          }
+        ],
+        "peak_rss_kib": 321104,
+        "primary_models_unchanged": true,
+        "rationale": "Original fit timers excluded interpreter and outer data serialization. This separate exact reproduction measures those costs; timings are not retroactively attributed to the primary campaign.",
+        "returncode": 0,
+        "schema": "digital-read-before-process-timing-v1",
+        "scope": "Entire child process: interpreter/import, calibration, actual-content cohort preparation, serialization, optimizer, diagnostics, export and shutdown. Parent measurement harness excluded.",
+        "started_at": "2026-11-01T01:10:08.836410+00:00",
+        "system_cpu_seconds": 0.463887,
+        "total_cpu_seconds": 56.433457,
+        "user_cpu_seconds": 55.96957,
+        "voluntary_context_switches": 20,
+        "wall_seconds": 73.9702354179999
+      },
+      {
+        "command": [
+          "/workspace/scratch/b4991412e0c9/digital-runtime/bin/python",
+          "-m",
+          "tools.hcsn.digital_read_before_20261031.run_training",
+          "--fit",
+          "53",
+          "--runs",
+          "/workspace/scratch/b4991412e0c9/digital-training-timed-v1"
+        ],
+        "extra_independent_fits": 0,
+        "finished_at": "2026-11-01T01:11:20.059813+00:00",
+        "fit": 53,
+        "involuntary_context_switches": 4176,
+        "major_faults": 0,
+        "minor_faults": 107167,
+        "model_equality": [
+          {
+            "byte_identical": true,
+            "family": "ordinary_base",
+            "primary_sha256": "58657ae81b417733a8d4b1754583df44025b5b2535ea6d13bf505bced98c0608",
+            "replay_sha256": "58657ae81b417733a8d4b1754583df44025b5b2535ea6d13bf505bced98c0608"
+          },
+          {
+            "byte_identical": true,
+            "family": "ordinary_bank",
+            "primary_sha256": "18827d9c971921751fa20f3aa72e4c277d3b23cb3f59c4e2c45463986c6d8fbd",
+            "replay_sha256": "18827d9c971921751fa20f3aa72e4c277d3b23cb3f59c4e2c45463986c6d8fbd"
+          },
+          {
+            "byte_identical": true,
+            "family": "clocked_bank",
+            "primary_sha256": "9d6b7e962a79ca4b5c4b23d8de651cc10f13a95bb6de08e080f3f493e0378687",
+            "replay_sha256": "9d6b7e962a79ca4b5c4b23d8de651cc10f13a95bb6de08e080f3f493e0378687"
+          },
+          {
+            "byte_identical": true,
+            "family": "first_passage_bank",
+            "primary_sha256": "37b86be4f484db948d34533d79f2588ff608d6182d0088a497a204f9a4e6e28e",
+            "replay_sha256": "37b86be4f484db948d34533d79f2588ff608d6182d0088a497a204f9a4e6e28e"
+          },
+          {
+            "byte_identical": true,
+            "family": "raw_history",
+            "primary_sha256": "aec252e0698dfef4382389a4ef60757d920cbfea891cdb237f2d1d72aed93024",
+            "replay_sha256": "aec252e0698dfef4382389a4ef60757d920cbfea891cdb237f2d1d72aed93024"
+          }
+        ],
+        "peak_rss_kib": 321016,
+        "primary_models_unchanged": true,
+        "rationale": "Original fit timers excluded interpreter and outer data serialization. This separate exact reproduction measures those costs; timings are not retroactively attributed to the primary campaign.",
+        "returncode": 0,
+        "schema": "digital-read-before-process-timing-v1",
+        "scope": "Entire child process: interpreter/import, calibration, actual-content cohort preparation, serialization, optimizer, diagnostics, export and shutdown. Parent measurement harness excluded.",
+        "started_at": "2026-11-01T01:10:08.858260+00:00",
+        "system_cpu_seconds": 0.5030519999999999,
+        "total_cpu_seconds": 55.811515,
+        "user_cpu_seconds": 55.308463,
+        "voluntary_context_switches": 20,
+        "wall_seconds": 71.19632842400006
+      },
+      {
+        "command": [
+          "/workspace/scratch/b4991412e0c9/digital-runtime/bin/python",
+          "-m",
+          "tools.hcsn.digital_read_before_20261031.run_training",
+          "--fit",
+          "71",
+          "--runs",
+          "/workspace/scratch/b4991412e0c9/digital-training-timed-v1"
+        ],
+        "extra_independent_fits": 0,
+        "finished_at": "2026-11-01T01:11:13.928278+00:00",
+        "fit": 71,
+        "involuntary_context_switches": 2978,
+        "major_faults": 0,
+        "minor_faults": 75138,
+        "model_equality": [
+          {
+            "byte_identical": true,
+            "family": "ordinary_base",
+            "primary_sha256": "863effc6bed1127f63eefd8d3665f41169ff5da44cd478a4327f510d0eed090e",
+            "replay_sha256": "863effc6bed1127f63eefd8d3665f41169ff5da44cd478a4327f510d0eed090e"
+          },
+          {
+            "byte_identical": true,
+            "family": "ordinary_bank",
+            "primary_sha256": "e24eec94be8a047af6c0ca9afc8ee95c19e836f9a25d9eb295ec23680d581e1d",
+            "replay_sha256": "e24eec94be8a047af6c0ca9afc8ee95c19e836f9a25d9eb295ec23680d581e1d"
+          },
+          {
+            "byte_identical": true,
+            "family": "clocked_bank",
+            "primary_sha256": "7baac747046a6721e9665e1c4c40d3a854285c97505ded4a63b2ad99c1348c65",
+            "replay_sha256": "7baac747046a6721e9665e1c4c40d3a854285c97505ded4a63b2ad99c1348c65"
+          },
+          {
+            "byte_identical": true,
+            "family": "first_passage_bank",
+            "primary_sha256": "aa98831c3ed7e89f90d5a077b5973be15a56f37872fdf42d4938e7087ec3e4b5",
+            "replay_sha256": "aa98831c3ed7e89f90d5a077b5973be15a56f37872fdf42d4938e7087ec3e4b5"
+          },
+          {
+            "byte_identical": true,
+            "family": "raw_history",
+            "primary_sha256": "e9eb3185d278a1262515da857f695b6abd1d1c463d91fdb5170858a16b5046ea",
+            "replay_sha256": "e9eb3185d278a1262515da857f695b6abd1d1c463d91fdb5170858a16b5046ea"
+          }
+        ],
+        "peak_rss_kib": 321084,
+        "primary_models_unchanged": true,
+        "rationale": "Original fit timers excluded interpreter and outer data serialization. This separate exact reproduction measures those costs; timings are not retroactively attributed to the primary campaign.",
+        "returncode": 0,
+        "schema": "digital-read-before-process-timing-v1",
+        "scope": "Entire child process: interpreter/import, calibration, actual-content cohort preparation, serialization, optimizer, diagnostics, export and shutdown. Parent measurement harness excluded.",
+        "started_at": "2026-11-01T01:10:08.843330+00:00",
+        "system_cpu_seconds": 0.42727699999999996,
+        "total_cpu_seconds": 54.917258,
+        "user_cpu_seconds": 54.489981,
+        "voluntary_context_switches": 20,
+        "wall_seconds": 65.05591478499991
+      }
+    ],
+    "scope": "Separate deterministic whole-process timing replays; these are additional reproduction costs and not retroactive measurements of primary fits.",
+    "total_cpu_seconds": 283.01816199999996
+  }
+}

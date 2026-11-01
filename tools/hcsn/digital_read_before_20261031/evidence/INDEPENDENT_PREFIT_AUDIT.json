@@ -1,0 +1,336 @@
+{
+  "actual_owner": {
+    "actual_opened_packets": [
+      "p0.json",
+      "p1.json"
+    ],
+    "checks": [
+      "delayed causal read",
+      "duplicate-read atomic refusal",
+      "real FullHX decode",
+      "pending cancellation",
+      "invalid read retains costs",
+      "repair",
+      "sunk-cost STOP",
+      "packet identity excluded from policy features",
+      "label-independent abort"
+    ],
+    "limitation": "fresh Python owner; native checkpoint/restart audited separately",
+    "real_fullhx_successful_decodes": 1,
+    "real_invalid_packet_attempts": 1
+  },
+  "complete_paths": {
+    "evidence": "independent NumPy complete paths vs augmented Torch probability flow",
+    "not_established": [
+      "continuous-limit accuracy",
+      "policy-gradient equality",
+      "full-task optimality",
+      "performance superiority"
+    ],
+    "records": [
+      {
+        "autograd": [
+          -0.006179892440403691,
+          0.028741433205292478,
+          -0.029459478873270883,
+          -0.11661655511316303,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "central_difference": [
+          -0.006179892440838496,
+          0.02874143320563682,
+          -0.0294594788702307,
+          -0.11661655509864753,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "expectation_error": 1.1102230246251565e-16,
+        "mass": 1.0,
+        "maximum_gradient_error": 1.4515499913159147e-11,
+        "mode": "ordinary",
+        "paths": 125,
+        "raw_names": [
+          "boundary",
+          "diffusion",
+          "gain",
+          "drift_bias",
+          "reset_plus",
+          "reset_minus",
+          "recovery_rate"
+        ],
+        "value": 0.3862092701009221
+      },
+      {
+        "autograd": [
+          -0.03786993028351256,
+          0.07861296695681286,
+          0.0011222461151870618,
+          0.006013293974355119,
+          0.00039542345163539775,
+          -0.0010523613571635864,
+          -0.017460196254575823
+        ],
+        "central_difference": [
+          -0.03786993028331853,
+          0.07861296695277353,
+          0.0011222461182569532,
+          0.006013293968321064,
+          0.0003954234523151356,
+          -0.0010523613591661984,
+          -0.01746019625548101
+        ],
+        "expectation_error": 1.1102230246251565e-16,
+        "mass": 1.0,
+        "maximum_gradient_error": 6.034054332582084e-12,
+        "mode": "clocked",
+        "paths": 125,
+        "raw_names": [
+          "boundary",
+          "diffusion",
+          "gain",
+          "drift_bias",
+          "reset_plus",
+          "reset_minus",
+          "recovery_rate"
+        ],
+        "value": 0.5384292355894478
+      },
+      {
+        "autograd": [
+          -0.049735713957764396,
+          0.0946120416145577,
+          0.018650445380811554,
+          0.052148981745219425,
+          0.0006596369572617724,
+          -0.00287058805486718,
+          -0.02928867689777801
+        ],
+        "central_difference": [
+          -0.0497357139583876,
+          0.0946120416123186,
+          0.01865044538251759,
+          0.052148981738442395,
+          0.0006596369589439988,
+          -0.00287058805892304,
+          -0.02928867689766523
+        ],
+        "expectation_error": 1.1102230246251565e-16,
+        "mass": 0.9999999999999999,
+        "maximum_gradient_error": 6.7770303258107845e-12,
+        "mode": "first_passage",
+        "paths": 125,
+        "raw_names": [
+          "boundary",
+          "diffusion",
+          "gain",
+          "drift_bias",
+          "reset_plus",
+          "reset_minus",
+          "recovery_rate"
+        ],
+        "value": 0.6446123955664838
+      }
+    ],
+    "scope": "three-step finite projected process, N=3; nonlinear joint state/event-count payoff"
+  },
+  "delivery": {
+    "claim": "current bytes match manifest; independent remote pin must be supplied separately",
+    "files": 8,
+    "manifest_sha256": "4c20a1d3efc62b0022b067b425f2ab6f6fd567f5bfbff649b0bf35de6fb0690a"
+  },
+  "finished_unix": 1793494952.8948634,
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "torch": "2.9.1+cpu",
+    "torch_threads": 1
+  },
+  "schema": "hepta.digital-read-before.independent-audit.v1",
+  "source_sha256": {
+    "bank.py": "002bdece767352a66ba598148c9d26055c1e3a03792b3c11583ccf98928a284b",
+    "independent_audit.py": "eb4dc1d08f3868ff2239b5352242f6b3f58d7ca01e51031e396b64d70fd1a27f",
+    "model.py": "2080945409e174f0d2318b632f2cc1e776f9db5c3624f751dfe0d18cb0f81aeb",
+    "protocol.json": "436fc22baae079cf6bae5242d5b87f1569ae3c15a8e20555d5ef4101504c4bb8",
+    "task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+    "train.py": "eb8a5fcf0489f78cc7b7f53d97726ac8c7dcfe8bcafc56a312989cf99e117553"
+  },
+  "started_unix": 1793494949.7630355,
+  "status": "passed",
+  "supervised_objective": {
+    "evidence": "complete latent path enumeration, independent NumPy head/loss and SciPy endpoint features",
+    "limitations": [
+      "transition matrices are the separately audited finite kernel",
+      "task public feature encoder is reused",
+      "no fitted model or on-policy performance claim"
+    ],
+    "protocol_sha256": "436fc22baae079cf6bae5242d5b87f1569ae3c15a8e20555d5ef4101504c4bb8",
+    "records": [
+      {
+        "complete_latent_paths": 312,
+        "family": "ordinary_base",
+        "head_directional_autograd": 0.010483570213041664,
+        "head_directional_central_difference": 0.010483570214714355,
+        "head_directional_error": 1.6726914991993524e-12,
+        "independent_loss": 0.32962185682079953,
+        "loss_error": 0.0,
+        "maximum_raw_gradient_error": 1.015846749167354e-12,
+        "raw_autograd": [
+          0.00015596650461690388,
+          -0.0003244447868149843,
+          -3.8778927436216936e-05,
+          -0.0002802739311892898,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "raw_central_difference": [
+          0.00015596650360105713,
+          -0.0003244447863148814,
+          -3.877892729153842e-05,
+          -0.0002802739304530455,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rows": 8
+      },
+      {
+        "complete_latent_paths": 312,
+        "family": "ordinary_bank",
+        "head_directional_autograd": -0.0032260955528523637,
+        "head_directional_central_difference": -0.0032260955545870824,
+        "head_directional_error": 1.7347187054872482e-12,
+        "independent_loss": 0.3085761209114971,
+        "loss_error": 5.551115123125783e-17,
+        "maximum_raw_gradient_error": 2.488918576445953e-12,
+        "raw_autograd": [
+          -5.813399235130738e-05,
+          -7.894672159446684e-06,
+          8.769660736825143e-05,
+          -0.00422084116338423,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "raw_central_difference": [
+          -5.813399484022596e-05,
+          -7.894671028019218e-06,
+          8.769660692076185e-05,
+          -0.004220841162694278,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rows": 8
+      },
+      {
+        "complete_latent_paths": 312,
+        "family": "clocked_bank",
+        "head_directional_autograd": -0.002643181012437981,
+        "head_directional_central_difference": -0.0026431810129512456,
+        "head_directional_error": 5.132647779015898e-13,
+        "independent_loss": 0.309384278085385,
+        "loss_error": 0.0,
+        "maximum_raw_gradient_error": 1.2707199929882368e-12,
+        "raw_autograd": [
+          -0.00021758505980899696,
+          0.0002981939267792638,
+          0.00015187648385311432,
+          -0.002906576437670641,
+          2.596953211198746e-06,
+          -6.959968900870241e-06,
+          -8.03805055886275e-05
+        ],
+        "raw_central_difference": [
+          -0.00021758506107971695,
+          0.0002981939264956601,
+          0.00015187648361170147,
+          -0.0029065764364788467,
+          2.5969532080338804e-06,
+          -6.9599687124721746e-06,
+          -8.038050641756556e-05
+        ],
+        "rows": 8
+      },
+      {
+        "complete_latent_paths": 312,
+        "family": "first_passage_bank",
+        "head_directional_autograd": -0.0021588312410273083,
+        "head_directional_central_difference": -0.0021588312387743613,
+        "head_directional_error": 2.2529469609344766e-12,
+        "independent_loss": 0.30999056494288424,
+        "loss_error": 0.0,
+        "maximum_raw_gradient_error": 2.3660227965217884e-12,
+        "raw_autograd": [
+          -0.00031733033186584616,
+          0.0005030131281373952,
+          0.0001486341000581068,
+          -0.0023411522483184812,
+          -1.1737658004005723e-05,
+          -1.5966233262060325e-05,
+          -0.00013727991602216619
+        ],
+        "raw_central_difference": [
+          -0.00031733033423186896,
+          0.0005030131269845306,
+          0.0001486340994727442,
+          -0.0023411522484528824,
+          -1.1737659455501868e-05,
+          -1.5966233890551962e-05,
+          -0.00013727991660106298
+        ],
+        "rows": 8
+      },
+      {
+        "complete_latent_paths": 8,
+        "family": "raw_history",
+        "head_directional_autograd": 0.009804520775049147,
+        "head_directional_central_difference": 0.009804520775813508,
+        "head_directional_error": 7.643607968788046e-13,
+        "independent_loss": 0.3326243819203501,
+        "loss_error": 5.551115123125783e-17,
+        "maximum_raw_gradient_error": 0.0,
+        "raw_autograd": [],
+        "raw_central_difference": [],
+        "rows": 8
+      }
+    ],
+    "scope": "actual train.expected_loss; N=3; eight observed records with shared and branched prefixes"
+  },
+  "task_graph": {
+    "records": [
+      {
+        "delays": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "failure_probability": 0.0,
+        "maximum_q_error": 4.440892098500626e-16,
+        "states": 469,
+        "successor_branches": 1991
+      },
+      {
+        "delays": [
+          2,
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "failure_probability": 0.2,
+        "maximum_q_error": 4.440892098500626e-16,
+        "states": 310,
+        "successor_branches": 1288
+      }
+    ],
+    "scope": "all reachable states in two fixed six-slot fitted-law tasks"
+  }
+}

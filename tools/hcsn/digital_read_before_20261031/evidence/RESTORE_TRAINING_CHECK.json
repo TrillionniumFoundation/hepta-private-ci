@@ -1,0 +1,234 @@
+{
+  "aggregate_sha256": "588112696b321d68e8a81704e8dff66439dd7e0e294cf31f193cfb8050bd9e58",
+  "archive_checks": "Every index/chunk/gzip/tar identity and byte count; every regular member identity; restored file readback; complete training-data and model equality to MODEL_FREEZE.",
+  "checked_at": "2026-11-01T01:35:51.453007+00:00",
+  "files": 3386,
+  "fit_count": 5,
+  "fits": [
+    {
+      "bytes": 4910940,
+      "files": 678,
+      "fit": 11,
+      "gzip_bytes": 872845,
+      "gzip_sha256": "d88e7bbb81e029a980e763eb3e451678712a56a3924e22f40af4813fea4aac6c",
+      "index_sha256": "a5e52e2fb5d4658fc8e2395b96ef9b3f2cca79c7699082279881622a36ed4f89",
+      "models": [
+        {
+          "byte_identical": true,
+          "bytes": 377929,
+          "family": "ordinary_base",
+          "sha256": "cdc096e95e1b5b1868ab1f85815953a4001e8a1b0359db6dafefb5add9aba889"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 376145,
+          "family": "ordinary_bank",
+          "sha256": "c44102036d2428ed8e0eacf594b612c559c9dfcc4e07f4143e5aeb70895cfcea"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 425774,
+          "family": "clocked_bank",
+          "sha256": "02ef2ce2d55c78e2ab3e097899275dacddf33952a256067f4895301227e65177"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 426230,
+          "family": "first_passage_bank",
+          "sha256": "3451b4c313ca1a45a16fbf489513b7b09d499fe09357c99fc5de77a863622699"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 38070,
+          "family": "raw_history",
+          "sha256": "50e347b911900b42464f25f16e19c570d0a2ebe482d99e8ece330c9740744893"
+        }
+      ],
+      "tar_bytes": 5550080,
+      "tar_sha256": "dc83d9f3af9f061ff346cf9c2dcdd69b85a346a872121c10f89a99ecf912431b",
+      "training_data_sha256": "e5db3c01003c47e871346e74719f0be3e15bb7744c2525da058b80fca3081707"
+    },
+    {
+      "bytes": 4903887,
+      "files": 675,
+      "fit": 23,
+      "gzip_bytes": 872871,
+      "gzip_sha256": "807745daca3214d8d5bd37e0f0ce693135d2f291db16fa7ffc031119a1e9d0cd",
+      "index_sha256": "e1da7777b69aea8b35547268fdf8f0cadd8878d2d4e124f3475a0ac2a5c254af",
+      "models": [
+        {
+          "byte_identical": true,
+          "bytes": 377822,
+          "family": "ordinary_base",
+          "sha256": "32654ac0511978c6ecc44f776484ecf354eb9b021b2a688f03ca3bb57a3bc6c5"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 377529,
+          "family": "ordinary_bank",
+          "sha256": "d4d0de9b58a3b2b03ed09d416428b2ead51621777653fb774a1855d5c03d2edc"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 426682,
+          "family": "clocked_bank",
+          "sha256": "0e159bfa19de8ac83f183f63aa729e184f6840de53d99ed2d3a382415d592ea8"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 426684,
+          "family": "first_passage_bank",
+          "sha256": "05e3711a08430ce768d0d961b1c5191b08863bbea8494cdd0bce0ff300bb9a1c"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 38113,
+          "family": "raw_history",
+          "sha256": "a5f78664424140e480587fd2f6b71dea85dcfac36d0104117f89c09f86cb4a6b"
+        }
+      ],
+      "tar_bytes": 5539840,
+      "tar_sha256": "6e53cde235cec552ba5ba1b2e39a66483c1ccd10f4a1f71c529ecade202a9c05",
+      "training_data_sha256": "df3cb12ba5e9aa0ae2595f98ec8f00776349e180f1b8055f1a102cd48345ad5c"
+    },
+    {
+      "bytes": 4809370,
+      "files": 678,
+      "fit": 37,
+      "gzip_bytes": 870132,
+      "gzip_sha256": "a95dde1996a7ddd6d9a1753e23c42736a65ceac325c1441c91035abf6dcb0e24",
+      "index_sha256": "15b87cdb7efce26f10ee929a6977891fefe36084081de69cb0021b9c298005b1",
+      "models": [
+        {
+          "byte_identical": true,
+          "bytes": 377997,
+          "family": "ordinary_base",
+          "sha256": "40ce8714ca76ff99883c4fd33668d00146aa11a3361124e7ac6abe4694c1e4e7"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 377893,
+          "family": "ordinary_bank",
+          "sha256": "5abc9c1633d951ff967d7e439c27064132798d42f87fe13e4a1fb98dd5a7420d"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 426296,
+          "family": "clocked_bank",
+          "sha256": "150f992b200aefe0c89e920f782f108717e41c43520ca9592a51fcc8ab338f6d"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 426273,
+          "family": "first_passage_bank",
+          "sha256": "7b6d820fb6973701f38f74818e17deecd74740cd3ed8528dfaa3d06c1d706386"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 38073,
+          "family": "raw_history",
+          "sha256": "5fb4abe0c03c4b2fb964e030e3cf5438b9b2b71c9d95107af1f09af2198e6400"
+        }
+      ],
+      "tar_bytes": 5457920,
+      "tar_sha256": "dca8040dd8b5ea8a00fea498ca584ec02442e81f9c00e3b90a113a30d9a03d7e",
+      "training_data_sha256": "fb695a99a34703f9c1c20b82585891acd39226c72b3a48259a24a0e1c1dc01cb"
+    },
+    {
+      "bytes": 4758740,
+      "files": 669,
+      "fit": 53,
+      "gzip_bytes": 867285,
+      "gzip_sha256": "4b67b8afdc26e5b158f351ddbe563469f3d5635bdb734f6ff8e11ce762fd7cbe",
+      "index_sha256": "3596fec5f6040ef310a5d0eef956e3476502ef100666c2d7795aedf1aecfc229",
+      "models": [
+        {
+          "byte_identical": true,
+          "bytes": 378028,
+          "family": "ordinary_base",
+          "sha256": "58657ae81b417733a8d4b1754583df44025b5b2535ea6d13bf505bced98c0608"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 377310,
+          "family": "ordinary_bank",
+          "sha256": "18827d9c971921751fa20f3aa72e4c277d3b23cb3f59c4e2c45463986c6d8fbd"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 426176,
+          "family": "clocked_bank",
+          "sha256": "9d6b7e962a79ca4b5c4b23d8de651cc10f13a95bb6de08e080f3f493e0378687"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 426387,
+          "family": "first_passage_bank",
+          "sha256": "37b86be4f484db948d34533d79f2588ff608d6182d0088a497a204f9a4e6e28e"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 38064,
+          "family": "raw_history",
+          "sha256": "aec252e0698dfef4382389a4ef60757d920cbfea891cdb237f2d1d72aed93024"
+        }
+      ],
+      "tar_bytes": 5396480,
+      "tar_sha256": "b6b6ea4cf6bc9420ae4ec19cb88826ac1d18b3adb31b3915e99e906ea354c2f2",
+      "training_data_sha256": "7dc921c0c8d11357997b496329f0e357718bb51d6594c4295d6e0216daf16f9a"
+    },
+    {
+      "bytes": 4919426,
+      "files": 686,
+      "fit": 71,
+      "gzip_bytes": 870250,
+      "gzip_sha256": "fb0a07f89448efd3c23974ad84cda402fdbbe62ce43c2fb34f054958e72a0591",
+      "index_sha256": "15814a774190b5235878a549f239ffca7524d07ec6c4f6f3a9f160c1bd73df4c",
+      "models": [
+        {
+          "byte_identical": true,
+          "bytes": 377841,
+          "family": "ordinary_base",
+          "sha256": "863effc6bed1127f63eefd8d3665f41169ff5da44cd478a4327f510d0eed090e"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 376919,
+          "family": "ordinary_bank",
+          "sha256": "e24eec94be8a047af6c0ca9afc8ee95c19e836f9a25d9eb295ec23680d581e1d"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 426046,
+          "family": "clocked_bank",
+          "sha256": "7baac747046a6721e9665e1c4c40d3a854285c97505ded4a63b2ad99c1348c65"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 426295,
+          "family": "first_passage_bank",
+          "sha256": "aa98831c3ed7e89f90d5a077b5973be15a56f37872fdf42d4938e7087ec3e4b5"
+        },
+        {
+          "byte_identical": true,
+          "bytes": 38105,
+          "family": "raw_history",
+          "sha256": "e9eb3185d278a1262515da857f695b6abd1d1c463d91fdb5170858a16b5046ea"
+        }
+      ],
+      "tar_bytes": 5570560,
+      "tar_sha256": "7e1d998a7ef15abda38db4dcf477e41b63788ab2d48eaa98f587de14b002df6e",
+      "training_data_sha256": "62be044720d33eab06e82b41e148d028bffadb08a908b4f4fd1a8148f011ff81"
+    }
+  ],
+  "frozen_models_verified": 25,
+  "model_freeze_sha256": "ecc60fe863e5d58517c52be1c2cd0a6e8bf7b0a6746fe77458d6abe6434ef44d",
+  "output": "/tmp/digital-restored-primary",
+  "preservation": "Original file bytes restored unchanged, including captured JSON paths and clocks; no training or experiment was run.",
+  "restored_file_bytes": 24302363,
+  "restorer_sha256": "e62b1fb9ea12425a2b32ae735ed7fcd4b055c1f33649eeea5b87d947e06436e2",
+  "safety": "Fresh output only; no absolute paths, traversal, duplicate members, links, special files, PAX metadata or file/directory conflicts; no extractall.",
+  "schema": "digital-primary-training-restore-check-v1",
+  "source_commit": "6d149e78cd17f0a243ea73956ca10129e333d6c1",
+  "status": "passed"
+}

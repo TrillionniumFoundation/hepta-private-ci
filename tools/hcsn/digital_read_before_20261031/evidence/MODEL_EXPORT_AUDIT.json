@@ -1,0 +1,112 @@
+{
+  "scope": "Untrained initialization development audit only; all five families, noncentral and refractory cell states, and raw-history completed observations. No formal training or task-performance evidence.",
+  "passed": true,
+  "checks": [
+    {
+      "family": "ordinary_base",
+      "cases": 28,
+      "realized_indices": [
+        0,
+        3,
+        7,
+        11,
+        14,
+        15,
+        16
+      ],
+      "maximum_absolute_score_error": 1.3877787807814457e-16,
+      "observed_history_lengths": [
+        0,
+        0,
+        1,
+        2
+      ],
+      "model_identity": "020c7634b464035f81a89c9bfb24516bc27c79246be584c9e7440b3dd58f8d0d"
+    },
+    {
+      "family": "ordinary_bank",
+      "cases": 28,
+      "realized_indices": [
+        0,
+        3,
+        7,
+        11,
+        14,
+        15,
+        16
+      ],
+      "maximum_absolute_score_error": 1.3877787807814457e-16,
+      "observed_history_lengths": [
+        0,
+        0,
+        1,
+        2
+      ],
+      "model_identity": "eb1a46fa496b68e2f4504ee24f4c5617c06311f26ca42f0bb4be54dad5a1da77"
+    },
+    {
+      "family": "clocked_bank",
+      "cases": 28,
+      "realized_indices": [
+        0,
+        3,
+        7,
+        11,
+        14,
+        15,
+        16
+      ],
+      "maximum_absolute_score_error": 1.3877787807814457e-16,
+      "observed_history_lengths": [
+        0,
+        0,
+        1,
+        2
+      ],
+      "model_identity": "b6a9984f0ad118b014e559cce02954269c9cda02df17bd9522eb789d6736b65d"
+    },
+    {
+      "family": "first_passage_bank",
+      "cases": 28,
+      "realized_indices": [
+        0,
+        3,
+        7,
+        11,
+        14,
+        15,
+        16
+      ],
+      "maximum_absolute_score_error": 1.3877787807814457e-16,
+      "observed_history_lengths": [
+        0,
+        0,
+        1,
+        2
+      ],
+      "model_identity": "652db8ea90a1d45e625130d9292909b75d6e0c332b9774842b0af8399637e660"
+    },
+    {
+      "family": "raw_history",
+      "cases": 4,
+      "realized_indices": [
+        0
+      ],
+      "maximum_absolute_score_error": 1.1102230246251565e-16,
+      "observed_history_lengths": [
+        0,
+        0,
+        1,
+        2
+      ],
+      "model_identity": "afc24f81380d831982502bbe1aba8399dcd96ef3434d85a599c5cc6880cb7b90"
+    }
+  ],
+  "source_sha256": {
+    "model.py": "2080945409e174f0d2318b632f2cc1e776f9db5c3624f751dfe0d18cb0f81aeb",
+    "train.py": "eb8a5fcf0489f78cc7b7f53d97726ac8c7dcfe8bcafc56a312989cf99e117553",
+    "deploy.py": "73c379488827982e5bfa2da4e0b44f81d501a2217bad1395604160be2ba47477",
+    "bank.py": "002bdece767352a66ba598148c9d26055c1e3a03792b3c11583ccf98928a284b",
+    "task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06"
+  }
+}

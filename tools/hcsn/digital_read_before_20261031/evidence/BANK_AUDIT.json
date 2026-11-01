@@ -1,0 +1,395 @@
+{
+  "cpu_seconds": 0.6106010480000001,
+  "dtype": "float64",
+  "envelope": {
+    "durations": [
+      0.0,
+      0.25,
+      1.0,
+      2.0
+    ],
+    "image_terms_12_vs_16_max_abs_error": 0.0,
+    "limitation": "finite sample of bounded parameter envelope; not a proof for every raw value",
+    "max_row_mass_error": 8.881784197001252e-16,
+    "minimum_entry": 0.0,
+    "raw_cases": [
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        6.0,
+        6.0,
+        6.0,
+        6.0,
+        6.0,
+        6.0,
+        6.0
+      ],
+      [
+        -6.0,
+        -6.0,
+        -6.0,
+        -6.0,
+        -6.0,
+        -6.0,
+        -6.0
+      ],
+      [
+        6.0,
+        -6.0,
+        6.0,
+        6.0,
+        -6.0,
+        6.0,
+        -6.0
+      ],
+      [
+        -6.0,
+        6.0,
+        6.0,
+        -6.0,
+        6.0,
+        -6.0,
+        6.0
+      ]
+    ],
+    "transition_calls": 180
+  },
+  "export_roundtrip": true,
+  "gaussian": {
+    "atom_convention": "put <= strike; call > strike; equal strike idle=0",
+    "bank_probit_max_abs_error": 1.1102230246251565e-16,
+    "endpoint_max_abs_error": 8.326672684688674e-17,
+    "tails": [
+      {
+        "lower": -35.0,
+        "probability": 4.717892160071597e-269,
+        "relative_error": 1.1260642602660318e-13,
+        "scipy_probability": 4.7178921600710656e-269,
+        "upper": -34.99
+      },
+      {
+        "lower": -12.0,
+        "probability": 4.140875604228298e-33,
+        "relative_error": 5.783311089560955e-15,
+        "scipy_probability": 4.1408756042283216e-33,
+        "upper": -11.9
+      },
+      {
+        "lower": 8.0,
+        "probability": 3.4730011818734986e-16,
+        "relative_error": 5.962450824989583e-15,
+        "scipy_probability": 3.4730011818735193e-16,
+        "upper": 8.1
+      },
+      {
+        "lower": 12.0,
+        "probability": 1.2484262353343123e-33,
+        "relative_error": 5.0696682385912046e-15,
+        "scipy_probability": 1.248426235334306e-33,
+        "upper": 12.1
+      },
+      {
+        "lower": 30.0,
+        "probability": 1.2731211121826904e-198,
+        "relative_error": 8.034982908809078e-14,
+        "scipy_probability": 1.2731211121827927e-198,
+        "upper": 30.01
+      }
+    ]
+  },
+  "kernel_version": "digital-read-before-brownian-images-v1",
+  "local_gradients": [
+    {
+      "autograd": [
+        -0.1225189531268459,
+        0.043654638068095386,
+        0.36909324345547573,
+        -0.4791744255158127,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "epsilon": 1e-05,
+      "finite_difference": [
+        -0.12251895307735515,
+        0.04365463812661118,
+        0.36909324349077005,
+        -0.4791744255161489,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "maximum_absolute_error": 5.851579637505822e-11,
+      "mode": "ordinary",
+      "raw": [
+        0.3,
+        -0.4,
+        0.5,
+        -0.2,
+        0.25,
+        -0.3,
+        0.1
+      ]
+    },
+    {
+      "autograd": [
+        -0.2189498853536936,
+        0.18820056312703043,
+        0.47411294415298755,
+        -0.615516002182044,
+        -0.10454631336312871,
+        -1.0420941826250532,
+        0.12744480480404305
+      ],
+      "epsilon": 1e-05,
+      "finite_difference": [
+        -0.21894988526671708,
+        0.18820056321144915,
+        0.4741129442042968,
+        -0.6155160021503736,
+        -0.10454631347300845,
+        -1.042094181924469,
+        0.12744480479831566
+      ],
+      "maximum_absolute_error": 7.005842572738175e-10,
+      "mode": "clocked",
+      "raw": [
+        0.3,
+        -0.4,
+        0.5,
+        -0.2,
+        0.25,
+        -0.3,
+        0.1
+      ]
+    },
+    {
+      "autograd": [
+        -0.28706349835097744,
+        0.22531843080457614,
+        0.6576796951803947,
+        -0.8538311001336346,
+        -0.10454631336312871,
+        -1.0420941826250532,
+        0.12744480480404305
+      ],
+      "epsilon": 1e-05,
+      "finite_difference": [
+        -0.287063498316531,
+        0.22531843079098832,
+        0.6576796951485164,
+        -0.8538311001671238,
+        -0.10454631349521291,
+        -1.042094181924469,
+        0.12744480479831566
+      ],
+      "maximum_absolute_error": 7.005842572738175e-10,
+      "mode": "first_passage",
+      "raw": [
+        0.3,
+        -0.4,
+        0.5,
+        -0.2,
+        0.25,
+        -0.3,
+        0.1
+      ]
+    }
+  ],
+  "passed": true,
+  "projection": {
+    "interpretation": "Diagnostic of repeated voltage projection only; no reset or release in the killed comparison. No continuous-equivalence admission.",
+    "results": [
+      {
+        "absolute_projection_difference": 0.001319601939826054,
+        "active_bins": 15,
+        "one_interval_first_hit": 0.18253360770787708,
+        "two_projected_killed_intervals_first_hit": 0.18385320964770313
+      },
+      {
+        "absolute_projection_difference": 0.0003088805613818968,
+        "active_bins": 31,
+        "one_interval_first_hit": 0.18253360770787708,
+        "two_projected_killed_intervals_first_hit": 0.18284248826925897
+      },
+      {
+        "absolute_projection_difference": 7.478365876834037e-05,
+        "active_bins": 63,
+        "one_interval_first_hit": 0.18253360770787708,
+        "two_projected_killed_intervals_first_hit": 0.18260839136664542
+      }
+    ]
+  },
+  "schema": "digital.bank.mathematical.audit.v1",
+  "scope": "Mathematical Gaussian/Brownian probability and finite-kernel audit only. Free-endpoint bank features are not calibrated probabilities of FullHX observations, hidden labels, task success, or future action value.",
+  "source_sha256": {
+    "bank.py": "002bdece767352a66ba598148c9d26055c1e3a03792b3c11583ccf98928a284b",
+    "bank_tests.py": "60f49d0ae4653dc0b9c28e023b1e7848a6ea431efd9995c52110db77c7dc6000"
+  },
+  "spectral": {
+    "cases": [
+      {
+        "drift": 0.315,
+        "dt": 0.25,
+        "maximum_absolute_error": 5.551115123125783e-16,
+        "physical": {
+          "boundary": 1.0,
+          "diffusion": 0.575,
+          "drift_bias": 0.0,
+          "gain": 0.45,
+          "recovery_rate": 1.125,
+          "reset_minus": 0.0,
+          "reset_plus": 0.0
+        },
+        "raw": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "reliability": 0.85,
+        "symbol": 1
+      },
+      {
+        "drift": -0.315,
+        "dt": 0.75,
+        "maximum_absolute_error": 7.771561172376096e-16,
+        "physical": {
+          "boundary": 1.0,
+          "diffusion": 0.575,
+          "drift_bias": 0.0,
+          "gain": 0.45,
+          "recovery_rate": 1.125,
+          "reset_minus": 0.0,
+          "reset_plus": 0.0
+        },
+        "raw": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "reliability": 0.85,
+        "symbol": -1
+      },
+      {
+        "drift": 0.0,
+        "dt": 1.5,
+        "maximum_absolute_error": 1.8214596497756474e-16,
+        "physical": {
+          "boundary": 1.0,
+          "diffusion": 0.575,
+          "drift_bias": 0.0,
+          "gain": 0.45,
+          "recovery_rate": 1.125,
+          "reset_minus": 0.0,
+          "reset_plus": 0.0
+        },
+        "raw": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "reliability": 0.5,
+        "symbol": 0
+      },
+      {
+        "drift": 0.3156599585297508,
+        "dt": 0.25,
+        "maximum_absolute_error": 2.220446049250313e-16,
+        "physical": {
+          "boundary": 1.0672751088672665,
+          "diffusion": 0.6194094470506034,
+          "drift_bias": 0.09242343145200195,
+          "gain": 0.3189093243967841,
+          "recovery_rate": 1.2122094952968365,
+          "reset_minus": -0.18654642010120767,
+          "reset_plus": 0.34390778105096786
+        },
+        "raw": [
+          0.7,
+          0.4,
+          -0.6,
+          0.5,
+          0.6,
+          -0.3,
+          0.2
+        ],
+        "reliability": 0.85,
+        "symbol": 1
+      },
+      {
+        "drift": -0.1308130956257469,
+        "dt": 0.75,
+        "maximum_absolute_error": 3.885780586188048e-16,
+        "physical": {
+          "boundary": 1.0672751088672665,
+          "diffusion": 0.6194094470506034,
+          "drift_bias": 0.09242343145200195,
+          "gain": 0.3189093243967841,
+          "recovery_rate": 1.2122094952968365,
+          "reset_minus": -0.18654642010120767,
+          "reset_plus": 0.34390778105096786
+        },
+        "raw": [
+          0.7,
+          0.4,
+          -0.6,
+          0.5,
+          0.6,
+          -0.3,
+          0.2
+        ],
+        "reliability": 0.85,
+        "symbol": -1
+      },
+      {
+        "drift": 0.09242343145200195,
+        "dt": 1.5,
+        "maximum_absolute_error": 2.255140518769849e-16,
+        "physical": {
+          "boundary": 1.0672751088672665,
+          "diffusion": 0.6194094470506034,
+          "drift_bias": 0.09242343145200195,
+          "gain": 0.3189093243967841,
+          "recovery_rate": 1.2122094952968365,
+          "reset_minus": -0.18654642010120767,
+          "reset_plus": 0.34390778105096786
+        },
+        "raw": [
+          0.7,
+          0.4,
+          -0.6,
+          0.5,
+          0.6,
+          -0.3,
+          0.2
+        ],
+        "reliability": 0.5,
+        "symbol": 0
+      }
+    ],
+    "limitation": "numerical independent reference on listed moderate-drift points, not interval certification",
+    "maximum_absolute_error": 7.771561172376096e-16,
+    "reference": "192-term Dirichlet sine law, 32-point Gauss-Legendre per bin, harmonic exit identity"
+  },
+  "torch_version": "2.9.1+cpu",
+  "wall_seconds": 1.2822118760000194
+}
