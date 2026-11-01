@@ -1,0 +1,81 @@
+{
+  "schema": "hcsn-r15-actual-scoped-native-test-v1",
+  "command": [
+    "/tmp/hcsn-r15-fmt-tools/bin/just",
+    "test",
+    "-p",
+    "codex-hepta-fleet",
+    "--locked",
+    "--offline"
+  ],
+  "cwd": "/workspace/scratch/d87ad18a3bba/hepta-r15-git/codex-rs",
+  "environment_overrides": {
+    "CARGO_HOME": "/tmp/hepta-digital-cargo",
+    "RUSTUP_HOME": "/tmp/hcsn-r15-fmt-tools/rustup-home",
+    "CARGO_TARGET_DIR": "/tmp/hcsn-r15-native-tests-target",
+    "CARGO_BUILD_JOBS": "2",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "path_prefix": [
+    "/tmp/hcsn-r15-fmt-tools/bin",
+    "/tmp/hepta-digital-rust195/bin",
+    "/tmp/hepta-digital-tools/bin"
+  ],
+  "versions": {
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "cargo": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)",
+    "nextest": "cargo-nextest 0.9.150 (d225b1daf 2026-10-26)\nrelease: 0.9.150\ncommit-hash: d225b1daf362c1ca8e5e048132618c1a81c57a28\ncommit-date: 2026-10-26\nhost: x86_64-unknown-linux-gnu",
+    "just": "just 1.59.0"
+  },
+  "free_bytes_before": 1378963456,
+  "source_sha256_before": {
+    "codex-rs/Cargo.toml": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4",
+    "codex-rs/Cargo.lock": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+    "codex-rs/clippy.toml": "323037ae6e8136646a8a80fd59724b32bbb3e3b2b7ea745ac79841443d4a71a9",
+    "codex-rs/hepta-fleet/src/authority_port.rs": "e26a8617580ce0e1a893aff4c593bdea99f3733d58fce567ce5e026b523a2901",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "b06480154f08e0b9620e7b670074e12330d786739384e16391587e26f3ea3d18",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "c435c06766b29542580cfe876cf53bf6982099fc33af522f1efa2cac9e490f57",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "8247d1d8bc638f1ad8784fe06490ed1c48d1659516df5fb59a242dc52fdbc668",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "930b29b3010de976f8638091222f00fc70e6ad831a6134474b8eb31a26b50463",
+    "codex-rs/hepta-memory/src/production_writer.rs": "1f21334c69b258240905e96ccc91b67dd2e5cd44f55a63baa0d003c429fd26ec"
+  },
+  "status": "completed",
+  "test_selection": "All default tests for codex-hepta-fleet through unchanged prescribed just test/nextest recipe; no test filters, no skip flags, no feature changes.",
+  "returncode": 0,
+  "wall_seconds": 4.093320792999293,
+  "child_user_seconds": 5.432656000000001,
+  "child_system_seconds": 1.356128,
+  "free_bytes_after": 1281155072,
+  "source_sha256_after": {
+    "codex-rs/Cargo.toml": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4",
+    "codex-rs/Cargo.lock": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+    "codex-rs/clippy.toml": "323037ae6e8136646a8a80fd59724b32bbb3e3b2b7ea745ac79841443d4a71a9",
+    "codex-rs/hepta-fleet/src/authority_port.rs": "e26a8617580ce0e1a893aff4c593bdea99f3733d58fce567ce5e026b523a2901",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "b06480154f08e0b9620e7b670074e12330d786739384e16391587e26f3ea3d18",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "c435c06766b29542580cfe876cf53bf6982099fc33af522f1efa2cac9e490f57",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "8247d1d8bc638f1ad8784fe06490ed1c48d1659516df5fb59a242dc52fdbc668",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "930b29b3010de976f8638091222f00fc70e6ad831a6134474b8eb31a26b50463",
+    "codex-rs/hepta-memory/src/production_writer.rs": "1f21334c69b258240905e96ccc91b67dd2e5cd44f55a63baa0d003c429fd26ec"
+  },
+  "log_sha256": "251c3eaeb4d489b2eff0ff8987dcd825e490ff88e9c5bab80a40f18d61d6ed76",
+  "log_path": "/workspace/scratch/d87ad18a3bba/tmp_r15_clippy_source/SCOPED_NATIVE_TEST.log",
+  "source_inputs_unchanged": true,
+  "nextest_summary": {
+    "tests_run": 41,
+    "passed": 41,
+    "skipped": 0,
+    "binaries": 2,
+    "test_seconds": 0.181,
+    "run_id": "6eac7ea8-60bd-404c-8022-8371b66d6b60"
+  },
+  "materialized_compile_resource": {
+    "path": "docs/modules/MODULES.json",
+    "git_blob": "e4a5965a06b0af917130bd929158e714684a91bc",
+    "sha256": "be10ee569a0a12c94631e0d5f25e5ee627b337369e8bccf5b75f236c98d444a5",
+    "bytes": 60117,
+    "git_status": "",
+    "operation": "Materialized unchanged tracked include_str resource omitted by sparse checkout",
+    "source": "GitHub connector fetch_file at0ee3bb576e3db6156dad9b914ef5bae83a5387db; exact blob matched local HEAD tree"
+  },
+  "prior_attempt": "The prescribed test initially failed with exit101 because sparse checkout omitted MODULES.json; exact GitHub blob restored, then identical command passed. The repeated missing-resource log and receipt are retained beside this receipt."
+}

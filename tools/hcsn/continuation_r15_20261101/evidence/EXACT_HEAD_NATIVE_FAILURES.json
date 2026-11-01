@@ -1,0 +1,251 @@
+{
+  "schema": "hcsn-r15-current-head-native-failures-v2",
+  "reports": [
+    {
+      "job_id": 124796761970,
+      "run_id": 41289063949,
+      "head_sha": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41289063949/job/124796761970",
+      "tested_merge_sha": "bc17c8c6b6970908b6992bf3b9023f6eedd36bc3",
+      "log_characters": 959330,
+      "errors": [
+        {
+          "message": "error: used `unwrap()` on a `Result` value",
+          "location": "--> hepta-fleet/src/authority_port.rs:197:9"
+        },
+        {
+          "message": "error: use of a disallowed method `sqlx::pool::PoolOptions::connect`",
+          "location": "--> hepta-automation/src/migration_convergence_tests.rs:9:10"
+        },
+        {
+          "message": "error: use of a disallowed method `sqlx::pool::PoolOptions::connect`",
+          "location": "--> hepta-memory/src/cognitive_schema_tests.rs:10:10"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3497:9"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3502:9"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3503:21"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3503:43"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3505:9"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3567:9"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3568:13"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3569:13"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3570:13"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3573:13"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3580:9"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3585:13"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3586:13"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3593:25"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3608:22"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-memory/src/production_writer.rs:3623:20"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/tests/kernel_evidence_product.rs:683:22"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/tests/kernel_evidence_product.rs:727:9"
+        },
+        {
+          "message": "error[E0599]: no method named `append_qualification` found for struct `codex_hepta_learning_ledger::DurableLedger` in the current scope",
+          "location": "--> hepta-agentd/tests/plasticity_process_e2e.rs:115:12"
+        },
+        {
+          "message": "error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope",
+          "location": "--> hepta-agentd/tests/plasticity_process_e2e.rs:115:12"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:716:24"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:717:24"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:719:30"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:720:28"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:722:13"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:723:29"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:724:28"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:726:28"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:728:17"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:732:26"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:745:25"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:757:9"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:799:21"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:807:9"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:812:9"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:824:23"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:829:9"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:832:18"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:844:22"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:845:9"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:859:9"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:881:23"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:893:20"
+        },
+        {
+          "message": "error: used `expect()` on a `Result` value",
+          "location": "--> hepta-agentd/src/automation_effect_host.rs:900:9"
+        }
+      ],
+      "failed_targets": [
+        "//codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin",
+        "//codex-rs/hepta-automation:hepta-automation-unit-tests-bin",
+        "//codex-rs/hepta-memory:hepta-memory-unit-tests-bin",
+        "//codex-rs/hepta-agentd:hepta-agentd-kernel_evidence_product-test",
+        "//codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test",
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin",
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin"
+      ],
+      "log_available": true,
+      "distinct_diagnostic_message_location_pairs": 47,
+      "distinct_diagnostic_locations": 46,
+      "summary": {
+        "unwrap": 1,
+        "disallowed_sqlx_connect": 2,
+        "expect": 42,
+        "missing_feature_gated_method": 1
+      },
+      "note": "Complete unique non-aborting error locations from this exact job; the E0599 diagnostic appears with qualified and unqualified type names at the same source location. Repeated Bazel target output and abort summaries are deduplicated."
+    },
+    {
+      "job_id": 124796762047,
+      "run_id": 41289063949,
+      "head_sha": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41289063949/job/124796762047",
+      "tested_merge_sha": "bc17c8c6b6970908b6992bf3b9023f6eedd36bc3",
+      "log_characters": 732503,
+      "errors": [
+        {
+          "message": "error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope",
+          "location": "--> hepta-agentd/tests/plasticity_process_e2e.rs:115:12",
+          "excerpt": [
+            "error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope",
+            "   --> hepta-agentd/tests/plasticity_process_e2e.rs:115:12",
+            "    |",
+            "115 |     ledger.append_qualification(",
+            "    |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `DurableLedger`",
+            "",
+            "error: aborting due to 1 previous error"
+          ]
+        }
+      ],
+      "failed_targets": [
+        "//codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test"
+      ],
+      "log_available": true,
+      "distinct_diagnostic_locations": 1,
+      "note": "Only substantive compiler failure in this exact release job. No Clippy-only failures are inferred for this job."
+    }
+  ]
+}
