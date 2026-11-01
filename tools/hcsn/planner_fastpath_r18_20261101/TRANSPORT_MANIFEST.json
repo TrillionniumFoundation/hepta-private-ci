@@ -1,0 +1,30 @@
+{
+  "entries": [
+    {
+      "bytes": 227474,
+      "git_blob_sha": "701c694d040df0722fc062c5f85183e9dbf3010d",
+      "parts": [
+        {
+          "bytes": 80000,
+          "path": "transport/development/memory/RAW.json.gz.part0000.bin",
+          "sha256": "1f8fec22708958bc793a09be84578c259115ba0d79edbbc8971d44c6b1f08152"
+        },
+        {
+          "bytes": 80000,
+          "path": "transport/development/memory/RAW.json.gz.part0001.bin",
+          "sha256": "8868eb94a9dc9a7dcec189f62c2915307a98ba13b31c2fac70ebc9f8a37ac252"
+        },
+        {
+          "bytes": 67474,
+          "path": "transport/development/memory/RAW.json.gz.part0002.bin",
+          "sha256": "108bbe7491515ce920023a263f708b15062232a218396148e1d3cd5739726de3"
+        }
+      ],
+      "path": "development/memory/RAW.json.gz",
+      "sha256": "34e683e6c09543c7462f187e669ba10fc176363e60d007363c108ae484705ee6"
+    }
+  ],
+  "interpretation": "Original logical bytes remain unchanged; upload parts and restore before running raw audits. Logical originals may be absent from remote tree and are explicitly excluded from top-level published-file inventory.",
+  "maximum_part_bytes": 80000,
+  "schema": "hcsn-r18-bounded-transport-v1"
+}

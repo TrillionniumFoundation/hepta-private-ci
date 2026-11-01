@@ -1,0 +1,326 @@
+{
+  "gates": {
+    "lcp_residual": true,
+    "finest_reference_value_gap": false,
+    "finest_consecutive_mesh_gap": true,
+    "refinement_reduces_reference_gap": false,
+    "finest_smooth_fit_error": true,
+    "contact_value_error": true,
+    "heat_semigroup": true,
+    "heat_positivity": true,
+    "heat_mass": true,
+    "smooth_branch_gradient": true
+  },
+  "profiles": [
+    {
+      "sigma": 0.7,
+      "arms": {
+        "free_fd": {
+          "mean_utility": 0.65061865234375,
+          "mean_propensity_utility": 0.6314414393117587,
+          "mean_success": 0.7236328125,
+          "mean_fee": 0.07301416015625,
+          "mean_wait_steps": 80.41015625,
+          "mean_reset_count": 2.1669921875
+        },
+        "free_reference": {
+          "mean_utility": 0.6381290283203125,
+          "mean_propensity_utility": 0.6320169104988904,
+          "mean_success": 0.7109375,
+          "mean_fee": 0.0728084716796875,
+          "mean_wait_steps": 77.7978515625,
+          "mean_reset_count": 2.1669921875
+        },
+        "fixed_selected": {
+          "mean_utility": 0.5794828613281249,
+          "mean_propensity_utility": 0.5680779036749202,
+          "mean_success": 0.6328125,
+          "mean_fee": 0.05332963867187511,
+          "mean_wait_steps": 143.548828125,
+          "mean_reset_count": 1.2353515625
+        },
+        "stop_now": {
+          "mean_utility": 0.4453125,
+          "mean_propensity_utility": 0.4327055214364026,
+          "mean_success": 0.4453125,
+          "mean_fee": 0.0,
+          "mean_wait_steps": 0.0,
+          "mean_reset_count": 0.0
+        }
+      },
+      "comparisons": {
+        "free_reference": {
+          "utility": {
+            "mean": 0.0124896240234375,
+            "t95": [
+              -0.005845595288046526,
+              0.030824843334921526
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          },
+          "propensity_utility": {
+            "mean": -0.0005754711871317095,
+            "t95": [
+              -0.00294811759407574,
+              0.001797175219812321
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          }
+        },
+        "fixed_selected": {
+          "utility": {
+            "mean": 0.0711357910156251,
+            "t95": [
+              0.03289753477427769,
+              0.10937404725697251
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          },
+          "propensity_utility": {
+            "mean": 0.06336353563683855,
+            "t95": [
+              0.0523302187172579,
+              0.07439685255641922
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          }
+        },
+        "stop_now": {
+          "utility": {
+            "mean": 0.20530615234375,
+            "t95": [
+              0.16725051073827613,
+              0.24336179394922386
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          },
+          "propensity_utility": {
+            "mean": 0.1987359178753561,
+            "t95": [
+              0.18627022917547742,
+              0.2112016065752348
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          }
+        }
+      },
+      "selected_fixed_thresholds": [
+        0.25,
+        1.0
+      ]
+    },
+    {
+      "sigma": 1.0,
+      "arms": {
+        "free_fd": {
+          "mean_utility": 0.6648253662109374,
+          "mean_propensity_utility": 0.6517736892336254,
+          "mean_success": 0.7392578125,
+          "mean_fee": 0.07443244628906252,
+          "mean_wait_steps": 97.6279296875,
+          "mean_reset_count": 2.1572265625
+        },
+        "free_reference": {
+          "mean_utility": 0.6607385498046875,
+          "mean_propensity_utility": 0.6502161076268911,
+          "mean_success": 0.7353515625,
+          "mean_fee": 0.07461301269531254,
+          "mean_wait_steps": 94.7490234375,
+          "mean_reset_count": 2.1708984375
+        },
+        "fixed_selected": {
+          "mean_utility": 0.5734805908203124,
+          "mean_propensity_utility": 0.5864460359729491,
+          "mean_success": 0.615234375,
+          "mean_fee": 0.04175378417968753,
+          "mean_wait_steps": 115.0244140625,
+          "mean_reset_count": 0.96484375
+        },
+        "stop_now": {
+          "mean_utility": 0.451171875,
+          "mean_propensity_utility": 0.4327055214364026,
+          "mean_success": 0.451171875,
+          "mean_fee": 0.0,
+          "mean_wait_steps": 0.0,
+          "mean_reset_count": 0.0
+        }
+      },
+      "comparisons": {
+        "free_reference": {
+          "utility": {
+            "mean": 0.004086816406250002,
+            "t95": [
+              -0.014322716848023394,
+              0.0224963496605234
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          },
+          "propensity_utility": {
+            "mean": 0.0015575816067343504,
+            "t95": [
+              -0.0009466249057119244,
+              0.004061788119180626
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          }
+        },
+        "fixed_selected": {
+          "utility": {
+            "mean": 0.09134477539062501,
+            "t95": [
+              0.05527058086925286,
+              0.12741896991199717
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          },
+          "propensity_utility": {
+            "mean": 0.06532765326067635,
+            "t95": [
+              0.05492337190497806,
+              0.07573193461637465
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          }
+        },
+        "stop_now": {
+          "utility": {
+            "mean": 0.21365349121093746,
+            "t95": [
+              0.1741267686368499,
+              0.25318021378502503
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          },
+          "propensity_utility": {
+            "mean": 0.21906816779722282,
+            "t95": [
+              0.20666600351752237,
+              0.23147033207692327
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          }
+        }
+      },
+      "selected_fixed_thresholds": [
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "sigma": 1.3,
+      "arms": {
+        "free_fd": {
+          "mean_utility": 0.6284708007812501,
+          "mean_propensity_utility": 0.6559821400758201,
+          "mean_success": 0.705078125,
+          "mean_fee": 0.07660732421875004,
+          "mean_wait_steps": 115.44140625,
+          "mean_reset_count": 2.177734375
+        },
+        "free_reference": {
+          "mean_utility": 0.6334533935546875,
+          "mean_propensity_utility": 0.6532628137123159,
+          "mean_success": 0.7099609375,
+          "mean_fee": 0.07650754394531253,
+          "mean_wait_steps": 109.5927734375,
+          "mean_reset_count": 2.1904296875
+        },
+        "fixed_selected": {
+          "mean_utility": 0.5913994873046875,
+          "mean_propensity_utility": 0.5832384792514714,
+          "mean_success": 0.6328125,
+          "mean_fee": 0.04141301269531254,
+          "mean_wait_steps": 81.5224609375,
+          "mean_reset_count": 1.029296875
+        },
+        "stop_now": {
+          "mean_utility": 0.41796875,
+          "mean_propensity_utility": 0.4327055214364026,
+          "mean_success": 0.41796875,
+          "mean_fee": 0.0,
+          "mean_wait_steps": 0.0,
+          "mean_reset_count": 0.0
+        }
+      },
+      "comparisons": {
+        "free_reference": {
+          "utility": {
+            "mean": -0.0049825927734375025,
+            "t95": [
+              -0.027483963346140745,
+              0.01751877779926574
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          },
+          "propensity_utility": {
+            "mean": 0.002719326363504259,
+            "t95": [
+              -0.0007578517391641174,
+              0.0061965044661726355
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          }
+        },
+        "fixed_selected": {
+          "utility": {
+            "mean": 0.0370713134765625,
+            "t95": [
+              -0.002218223746678759,
+              0.07636085069980375
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          },
+          "propensity_utility": {
+            "mean": 0.07274366082434866,
+            "t95": [
+              0.06071980049235969,
+              0.08476752115633762
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          }
+        },
+        "stop_now": {
+          "utility": {
+            "mean": 0.21050205078124995,
+            "t95": [
+              0.16906852364352107,
+              0.2519355779189788
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          },
+          "propensity_utility": {
+            "mean": 0.2232766186394175,
+            "t95": [
+              0.2103978658393928,
+              0.2361553714394422
+            ],
+            "independent_worlds": 1024,
+            "scope": "Conditional paired-world Monte Carlo interval, no discretization or architecture uncertainty"
+          }
+        }
+      },
+      "selected_fixed_thresholds": [
+        0.0,
+        1.0
+      ]
+    }
+  ],
+  "cpu_seconds": 8.337034952
+}

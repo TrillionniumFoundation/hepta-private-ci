@@ -1,0 +1,180 @@
+{
+  "schema": "hcsn-r18-continuous-task-protocol-v2",
+  "question": "Does a task-derived continuous evidence boundary govern actual WAIT/STOP/RESET payoffs under the same finite-horizon regenerative law?",
+  "scope": "Declared observed-quality synthetic typed retrieval task, not a hidden semantic memory benchmark or full He-Xiong model. Numerical development plus fresh conditional owner worlds, no architecture/core gain claim.",
+  "source_basis": "R17 parameter-flow and R15 finite planner were read for state/reset semantics; this new continuous reflected diffusion does not pretend their CTMC is already a continuum law.",
+  "task": {
+    "state": "Public quality x in [-4,4] and observed content mode intact/damaged; no future correctness label reaches policy",
+    "diffusion": "Continuous reflected Brownian dx=sigma dW; reflecting endpoints",
+    "sigma_profiles": [
+      0.7,
+      1.0,
+      1.3
+    ],
+    "horizon": 1.2,
+    "recovery_duration": 0.2,
+    "reset_x": 0.6,
+    "wait_cost": 0.03,
+    "recovery_cost_per_time": 0.02,
+    "reset_fee": [
+      0.035,
+      0.025
+    ],
+    "content_transition": [
+      [
+        0.9,
+        0.1
+      ],
+      [
+        0.25,
+        0.75
+      ]
+    ],
+    "stop_reward": "Bernoulli success with current public propensity base_j+amp_j*sigmoid(1.3*x); bases[.2,.1], amplitudes[.75,.4]. This is a synthetic content quality score, not real semantic binding.",
+    "reset_semantics": "Distinct from STOP. Pay fee_j+recoverycarry*rho; wait autonomous rho; sample actual new mode from M_j; return x_reset; continue with t-rho. Disallowed t<rho, allowed t=rho. No reward paid on reset itself.",
+    "terminal": "At fixed deadline STOP and receive actual Bernoulli success; no action may overrun deadline",
+    "time_regularities": "Deterministic minimum recovery can create time kinks at rho and its propagated multiples; no time smoothness asserted there. Spatial smooth-fit checked away from these dates."
+  },
+  "solver": "Implicit Euler reflecting centered finite-difference QVI min(V-max(g,B), (I-dtL)V-Vprev+c*dt)=0. Reset B uses same task value at t-rho, including subsequent resets and content reward.",
+  "independent_reference": "Continuous Neumann heat eigenvalues with DCT-I collocation; Bermudan max over STOP, delayed RESET and exact spectral propagation. Uses no FD generator/eigenvalues or primary policy iteration.",
+  "meshes": [
+    [
+      0.125,
+      0.02
+    ],
+    [
+      0.0625,
+      0.01
+    ],
+    [
+      0.03125,
+      0.005
+    ],
+    [
+      0.015625,
+      0.0025
+    ]
+  ],
+  "boundary_inspection_times": [
+    0.3,
+    0.5,
+    0.7,
+    1.1
+  ],
+  "threshold_family": [
+    [
+      -1.0,
+      0.5
+    ],
+    [
+      -1.0,
+      1.0
+    ],
+    [
+      -1.0,
+      1.5
+    ],
+    [
+      0.0,
+      0.5
+    ],
+    [
+      0.0,
+      1.0
+    ],
+    [
+      0.0,
+      1.5
+    ],
+    [
+      0.25,
+      0.5
+    ],
+    [
+      0.25,
+      1.0
+    ],
+    [
+      0.25,
+      1.5
+    ]
+  ],
+  "fixed_selection": "All9 threshold candidates valued under independent same-law reference on the finest mesh. Select highest mean over8 fixed public initial states; persist selection before owner worlds are opened. All candidates measured, no owner outcome selection.",
+  "owner_initial_states": [
+    [
+      -1.5,
+      0
+    ],
+    [
+      -0.25,
+      0
+    ],
+    [
+      0.3,
+      0
+    ],
+    [
+      1.2,
+      0
+    ],
+    [
+      -1.5,
+      1
+    ],
+    [
+      -0.25,
+      1
+    ],
+    [
+      0.3,
+      1
+    ],
+    [
+      1.2,
+      1
+    ]
+  ],
+  "owner": {
+    "worlds_per_profile": 1024,
+    "seed_namespace": 18180000,
+    "arms": [
+      "free_fd",
+      "free_reference",
+      "fixed_selected",
+      "stop_now"
+    ],
+    "decision_dt": 0.0025,
+    "interpretation": "Owner Gaussian-fold samples reflected diffusion endpoints; policy acts only on decision mesh. This is not exact continuous first-crossing execution. Use paired seed within profile, conditional on declared states/law; Monte Carlo and discretization uncertainty remain separate."
+  },
+  "gradient": {
+    "coordinates": [
+      "sigma",
+      "wait_cost",
+      "reset_fee_0",
+      "retention_0"
+    ],
+    "mesh": [
+      0.0625,
+      0.01
+    ],
+    "step": 1e-06,
+    "method": "Differentiate the fixed finite-grid active branch, compare actual centered parameter perturbations. Report all active-set changes; only unchanged branches qualify for ordinary derivative agreement. No hard-action derivative or global moving-boundary derivative claim.",
+    "financial_scope": "These4taskcoordinates are not all financial parameters; no whole-financial/all-parameter-gradient closure.",
+    "nonvacuous_gate": "At least one registered perturbation case must retain its full active set; zero qualifying cases fails the gate. Every changed case remains in the result and is outside the smooth-branch derivative admission."
+  },
+  "gates": {
+    "lcp_residual": 2e-09,
+    "finest_reference_value_gap": 0.003,
+    "finest_consecutive_mesh_gap": 0.004,
+    "finest_smooth_fit_error": 0.08,
+    "contact_value_error": 2e-09,
+    "heat_cosine_or_semigroup_error": 2e-12,
+    "heat_negative_kernel_tolerance": 2e-12,
+    "smooth_branch_gradient_error": 2e-05
+  },
+  "outcome_policy": "No metric threshold promises a positive control effect in advance. Report both actual success-minus-fee and current-state propensity-minus-fee, paired profile intervals, all arms and any negative results. Ordinary same-law reference is a strong control, not HX-exclusive evidence.",
+  "production_activation": false,
+  "all_blockers_closed": false,
+  "source_base_commit": "3937a5f68aa455433ecfce6f8f045f57e7c07b4b",
+  "preoutcome_review": "After V1 remote freeze59270cd6a7cda3a8a18328c4036603c4f4ea989a but before any registered cases/selection/worlds, independent review found potential empty-generator all() gate. V2 strengthens this gate only; no numerical threshold/physics/selection/case changed."
+}

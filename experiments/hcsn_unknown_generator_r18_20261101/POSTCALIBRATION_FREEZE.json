@@ -1,0 +1,21 @@
+{
+  "confirmation_opened": false,
+  "files": {
+    "calibration_01/ARCHIVES.json": "57c06f13c20ab0ddae744bba16292f172d4bfb6286f5eb2e63a46b72df7ab839",
+    "calibration_01/CALIBRATION.json": "90096d89a36d8f4b7a7e0b08d4990f6a7fd304b5dddbe3696211801d0d650a73",
+    "calibration_01/MODELS.json": "2a0975ffaaaab99345f940baa175c022f7fc0bacd870bef49c3159057ed6db76",
+    "calibration_01/OOD_CUTOFFS.json": "8cf02273fb10433ae8c3b10c187da2138e5f4a658a1e4209ee6ba376a6b1c462"
+  },
+  "schema": "hcsn.r18.postcalibration.freeze.v1",
+  "selected": {
+    "markov_mixture": {
+      "calibration_gate_passed": true,
+      "threshold": 0.95
+    },
+    "pooled_iid": {
+      "calibration_gate_passed": false,
+      "threshold": 0.999999999999
+    }
+  },
+  "source_freeze_sha256": "bbd4a25a8b1f99f6f55e48dafdf8bfcc00e4a0b20f4f98d3373218f42951484d"
+}

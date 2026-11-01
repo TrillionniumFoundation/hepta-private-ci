@@ -1,0 +1,71 @@
+{
+  "role": "Postrun arithmetic from unchanged frozen raw; bootstrap uses same declared generator cluster seed",
+  "values": {
+    "markov_mixture": {
+      "panels": {
+        "confirm": {
+          "actual_reads": 212,
+          "admitted": 1010,
+          "attempts": 1024,
+          "fractional_accepted": 148,
+          "invalid": 0,
+          "score_or_schema_rejected": 14
+        },
+        "rotor": {
+          "actual_reads": 14,
+          "admitted": 89,
+          "attempts": 128,
+          "fractional_accepted": 1,
+          "invalid": 0,
+          "score_or_schema_rejected": 39
+        },
+        "vocabulary": {
+          "actual_reads": 0,
+          "admitted": 0,
+          "attempts": 32,
+          "fractional_accepted": 0,
+          "invalid": 32,
+          "score_or_schema_rejected": 32
+        }
+      },
+      "read_net_effect_ci95": [
+        0.0696337890625,
+        0.1060791015625
+      ],
+      "read_net_effect_mean": 0.08755859375
+    },
+    "pooled_iid": {
+      "panels": {
+        "confirm": {
+          "actual_reads": 301,
+          "admitted": 992,
+          "attempts": 1024,
+          "fractional_accepted": 0,
+          "invalid": 0,
+          "score_or_schema_rejected": 32
+        },
+        "rotor": {
+          "actual_reads": 28,
+          "admitted": 128,
+          "attempts": 128,
+          "fractional_accepted": 0,
+          "invalid": 0,
+          "score_or_schema_rejected": 0
+        },
+        "vocabulary": {
+          "actual_reads": 0,
+          "admitted": 0,
+          "attempts": 32,
+          "fractional_accepted": 0,
+          "invalid": 32,
+          "score_or_schema_rejected": 32
+        }
+      },
+      "read_net_effect_ci95": [
+        0.11615478515625,
+        0.15875488281250003
+      ],
+      "read_net_effect_mean": 0.13732421875
+    }
+  }
+}

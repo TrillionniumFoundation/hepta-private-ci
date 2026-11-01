@@ -1,0 +1,58 @@
+         2337484 function calls (2302358 primitive calls) in 3.087 seconds
+
+   Ordered by: cumulative time
+   List reduced from 193 to 50 due to restriction <50>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      192    0.045    0.000    3.082    0.016 execution.py:47(execute)
+      794    0.002    0.000    1.609    0.002 planner.py:147(choose)
+      794    0.009    0.000    1.606    0.002 planner.py:140(values)
+    15162    0.012    0.000    1.057    0.000 compression.py:47(project)
+ 6640/398    0.181    0.000    0.835    0.002 planner.py:112(_values)
+    24232    0.041    0.000    0.817    0.000 numeric.py:2279(allclose)
+ 6624/396    0.164    0.000    0.762    0.002 execution.py:21(_values)
+    24232    0.308    0.000    0.689    0.000 numeric.py:2373(isclose)
+    12190    0.072    0.000    0.601    0.000 compression.py:22(_probability)
+    11562    0.007    0.000    0.596    0.000 law.py:212(project)
+    11562    0.075    0.000    0.576    0.000 law.py:168(_belief)
+     6618    0.085    0.000    0.407    0.000 compression.py:35(unpack)
+   196406    0.386    0.000    0.386    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+   103258    0.106    0.000    0.364    0.000 fromnumeric.py:89(_wrapreduction_any_all)
+     8600    0.018    0.000    0.328    0.000 law.py:183(transition)
+    72696    0.042    0.000    0.322    0.000 fromnumeric.py:2589(all)
+     3018    0.012    0.000    0.313    0.000 compression.py:151(materialize)
+     5476    0.017    0.000    0.308    0.000 compression.py:30(pack)
+     2190    0.065    0.000    0.296    0.000 _matfuncs.py:234(expm)
+     1152    0.028    0.000    0.237    0.000 planner.py:97(__init__)
+      192    0.165    0.001    0.165    0.001 {built-in method posix.fsync}
+      724    0.006    0.000    0.155    0.000 compression.py:163(observe)
+     3190    0.009    0.000    0.155    0.000 __init__.py:183(dumps)
+    79192    0.022    0.000    0.147    0.000 _methods.py:66(_all)
+    54096    0.051    0.000    0.146    0.000 {method 'all' of 'numpy.generic' objects}
+    34438    0.017    0.000    0.141    0.000 {method 'sum' of 'numpy.ndarray' objects}
+     3190    0.006    0.000    0.137    0.000 encoder.py:183(encode)
+      960    0.008    0.000    0.136    0.000 compression.py:177(write)
+      192    0.001    0.000    0.131    0.001 compression.py:147(__init__)
+      192    0.006    0.000    0.130    0.001 compression.py:60(__init__)
+     3382    0.128    0.000    0.128    0.000 encoder.py:205(iterencode)
+    34438    0.010    0.000    0.124    0.000 _methods.py:49(_sum)
+    32942    0.046    0.000    0.119    0.000 fromnumeric.py:69(_wrapreduction)
+    25734    0.018    0.000    0.118    0.000 fromnumeric.py:3052(max)
+     2094    0.110    0.000    0.110    0.000 {built-in method scipy.linalg._matfuncs_expm.pade_UV_calc}
+    30562    0.020    0.000    0.104    0.000 fromnumeric.py:2477(any)
+      768    0.003    0.000    0.098    0.000 planner.py:67(checkpoint)
+      864    0.001    0.000    0.097    0.000 planner.py:18(canonical)
+       96    0.002    0.000    0.081    0.001 compression.py:195(restore)
+     1462    0.021    0.000    0.079    0.000 world.py:132(observe)
+      192    0.009    0.000    0.072    0.000 __init__.py:120(dump)
+    25096    0.012    0.000    0.064    0.000 {method 'all' of 'numpy.ndarray' objects}
+     1320    0.006    0.000    0.064    0.000 planner.py:35(advance)
+     2094    0.061    0.000    0.061    0.000 {built-in method scipy.linalg._matfuncs_expm.pick_pade_structure}
+    28800    0.006    0.000    0.057    0.000 encoder.py:414(_iterencode)
+   121160    0.037    0.000    0.053    0.000 numeric.py:2465(<genexpr>)
+31488/28800    0.010    0.000    0.051    0.000 encoder.py:334(_iterencode_dict)
+      768    0.004    0.000    0.048    0.000 compression.py:187(checkpoint)
+     2190    0.028    0.000    0.044    0.000 _util.py:1149(wrapper)
+      738    0.005    0.000    0.044    0.000 planner.py:45(observe)
+
+

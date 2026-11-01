@@ -1,0 +1,40 @@
+{
+  "all_checks_passed": true,
+  "followup_contact_rows_checked": 18,
+  "followup_gate_decisions": {
+    "contact_value_error": true,
+    "cosine_consistency": true,
+    "finest_consecutive_mesh_gap": true,
+    "finest_reference_value_gap": true,
+    "finest_smooth_fit_error": true,
+    "jump_condition": true,
+    "kernel_mass": true,
+    "lcp_residual": true,
+    "positive_kernel": true,
+    "quadrature": true,
+    "refinement_reduces_reference_gap": true
+  },
+  "input_sha256": {
+    "FOLLOWUP_PROTOCOL.json": "78496cb0eea7d1bf28963dc024de2a9b7690dadb2de4c51ae9def0591277b103",
+    "PROTOCOL.json": "8a01ca8e215fe18a899192076d0fabbb1877a16fe877acfbf2d2562772ba024d",
+    "run_01/RESULTS.json": "452b3729c67673059bb0f10c0c992b5a9c21a5a226910d42412b73345ec4f1a4",
+    "run_02/RESULTS.json": "a3e7a3b4fee177886d056d07278c3d72cec30918cb9fe2c38c884c9aa6b29fb0"
+  },
+  "limits": [
+    "Finite observed-quality task only, no complete He-Xiong PDE convergence theorem",
+    "Positive hat projection is refined numerical approximation, not exact finite semigroup",
+    "New jump solver parameter gradients remain open",
+    "Stored smooth contacts are not certified continuous-boundary brackets"
+  ],
+  "maximum_finest_fd_reference_gap": 0.00035251273447889364,
+  "maximum_finest_lcp_residual": 2.0761170560490427e-14,
+  "maximum_kernel_mass_error": 2.220446049250313e-16,
+  "maximum_quadrature_weight_difference": 5.551115123125783e-17,
+  "original_eligible_gradient_cases": 12,
+  "original_failed_gates_preserved": [
+    "finest_reference_value_gap",
+    "refinement_reduces_reference_gap"
+  ],
+  "schema": "hcsn-r18-independent-continuous-numeric-record-review-v1",
+  "scope": "Independently recomputed gate decisions from saved numerical measurements; source-level jump/positive-kernel mathematics reviewed, not a new independent PDE solve"
+}

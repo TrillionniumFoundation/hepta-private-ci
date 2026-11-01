@@ -1,0 +1,363 @@
+{
+  "all_checks_passed": true,
+  "limits": [
+    "Recorded free-policy actions are replayed under owner law; the optimizer is not independently rerun by this auditor",
+    "Numerical gate flags reflect stored finite-grid measurements; not rigorous PDE error bounds",
+    "Policies act only on a decision mesh, not exact continuous first crossings",
+    "Known synthetic task/observed quality does not establish learned semantic content or analytic-core advantage",
+    "Original active-branch derivative checks do not automatically qualify new jump solver gradients"
+  ],
+  "run01": {
+    "executions": 12288,
+    "gates": {
+      "contact_value_error": true,
+      "finest_consecutive_mesh_gap": true,
+      "finest_reference_value_gap": false,
+      "finest_smooth_fit_error": true,
+      "heat_mass": true,
+      "heat_positivity": true,
+      "heat_semigroup": true,
+      "lcp_residual": true,
+      "refinement_reduces_reference_gap": false,
+      "smooth_branch_gradient": true
+    },
+    "maximum_replayed_final_state_error": 8.881784197001252e-15,
+    "paired_intervals": {
+      "0.7:fixed_selected:propensity_utility": {
+        "mean": 0.06336353563683855,
+        "t95": [
+          0.0523302187172579,
+          0.07439685255641922
+        ]
+      },
+      "0.7:fixed_selected:utility": {
+        "mean": 0.0711357910156251,
+        "t95": [
+          0.03289753477427769,
+          0.10937404725697251
+        ]
+      },
+      "0.7:free_reference:propensity_utility": {
+        "mean": -0.0005754711871317095,
+        "t95": [
+          -0.00294811759407574,
+          0.001797175219812321
+        ]
+      },
+      "0.7:free_reference:utility": {
+        "mean": 0.0124896240234375,
+        "t95": [
+          -0.005845595288046526,
+          0.030824843334921526
+        ]
+      },
+      "0.7:stop_now:propensity_utility": {
+        "mean": 0.1987359178753561,
+        "t95": [
+          0.18627022917547742,
+          0.2112016065752348
+        ]
+      },
+      "0.7:stop_now:utility": {
+        "mean": 0.20530615234375,
+        "t95": [
+          0.16725051073827613,
+          0.24336179394922386
+        ]
+      },
+      "1.0:fixed_selected:propensity_utility": {
+        "mean": 0.06532765326067635,
+        "t95": [
+          0.05492337190497806,
+          0.07573193461637465
+        ]
+      },
+      "1.0:fixed_selected:utility": {
+        "mean": 0.09134477539062501,
+        "t95": [
+          0.05527058086925286,
+          0.12741896991199717
+        ]
+      },
+      "1.0:free_reference:propensity_utility": {
+        "mean": 0.0015575816067343504,
+        "t95": [
+          -0.0009466249057119244,
+          0.004061788119180626
+        ]
+      },
+      "1.0:free_reference:utility": {
+        "mean": 0.004086816406250002,
+        "t95": [
+          -0.014322716848023394,
+          0.0224963496605234
+        ]
+      },
+      "1.0:stop_now:propensity_utility": {
+        "mean": 0.21906816779722282,
+        "t95": [
+          0.20666600351752237,
+          0.23147033207692327
+        ]
+      },
+      "1.0:stop_now:utility": {
+        "mean": 0.21365349121093746,
+        "t95": [
+          0.1741267686368499,
+          0.25318021378502503
+        ]
+      },
+      "1.3:fixed_selected:propensity_utility": {
+        "mean": 0.07274366082434866,
+        "t95": [
+          0.06071980049235969,
+          0.08476752115633762
+        ]
+      },
+      "1.3:fixed_selected:utility": {
+        "mean": 0.0370713134765625,
+        "t95": [
+          -0.002218223746678759,
+          0.07636085069980375
+        ]
+      },
+      "1.3:free_reference:propensity_utility": {
+        "mean": 0.002719326363504259,
+        "t95": [
+          -0.0007578517391641174,
+          0.0061965044661726355
+        ]
+      },
+      "1.3:free_reference:utility": {
+        "mean": -0.0049825927734375025,
+        "t95": [
+          -0.027483963346140745,
+          0.01751877779926574
+        ]
+      },
+      "1.3:stop_now:propensity_utility": {
+        "mean": 0.2232766186394175,
+        "t95": [
+          0.2103978658393928,
+          0.2361553714394422
+        ]
+      },
+      "1.3:stop_now:utility": {
+        "mean": 0.21050205078124995,
+        "t95": [
+          0.16906852364352107,
+          0.2519355779189788
+        ]
+      }
+    },
+    "raw_archive_sha256": {
+      "owner_profile0_part000.jsonl.gz": "bf7349e38116d44113836b5d9505b4cd8d008c2b362f7675abcb6f5cd1c5631f",
+      "owner_profile0_part001.jsonl.gz": "32de8dea799dfce45dc9704203eecbf11c801378244deefddf3aea594c9dc5c0",
+      "owner_profile0_part002.jsonl.gz": "11e687d2bceaee30ec66ae29796437a158b9361421b36438efa250f0e501f0e4",
+      "owner_profile0_part003.jsonl.gz": "d47364ef60e1aa75d7b7b614fad1c1a61e936b9f833af010a805630384ac7d63",
+      "owner_profile0_part004.jsonl.gz": "503d3c471f9b49663fee2ef934d1008187aeab6f32c74ba0861065a8853c4604",
+      "owner_profile0_part005.jsonl.gz": "596663e5fbc6be91b2122cc6ae5e297377ae9af54ef9c9e03104b507842f900c",
+      "owner_profile0_part006.jsonl.gz": "1cebb1ef8a0b6e15b458c4df3a596a9a8da11f64178d04fd1167e3bf8ac7791a",
+      "owner_profile0_part007.jsonl.gz": "1a2de0d24262142e470d5da32da466d8c0ba322f843a125b838cfdd3d41c9f6a",
+      "owner_profile1_part000.jsonl.gz": "dfde9a5acac620d05200227ecbc1b17c1c28204513cf5904cb2ff487d4cf8c66",
+      "owner_profile1_part001.jsonl.gz": "e0b46b6505d9b0bddd88fde04e3abfe836e149f3bd335be8279c783540d4d977",
+      "owner_profile1_part002.jsonl.gz": "36d901d7f8ab3cc7a3ff9efdbf94e9d5ae4af0dbd8b2f92aafb8af5146a971c5",
+      "owner_profile1_part003.jsonl.gz": "58c835a73c7d8f65238b9a730aaa01ce1b40f8d61018afd16e6f93627fc7d7ee",
+      "owner_profile1_part004.jsonl.gz": "aabfaa0fa898f4336e35d476c13686897faa0b14bc3e6f10907af9648e978961",
+      "owner_profile1_part005.jsonl.gz": "8f8c772f86a47b0d7aceb2f58f00c8f61adfe5c17482c0793b5e8fdd111571d2",
+      "owner_profile1_part006.jsonl.gz": "deaa56ce40eab959693804eb7d8b0d783a43a1ceb8d35040d220991b5b56a14d",
+      "owner_profile1_part007.jsonl.gz": "de7b0e168d56b016494fde514b553e9427287057f8b0af1a1ae3977afe79f4ab",
+      "owner_profile2_part000.jsonl.gz": "e5b00dfead2c95f52b40af46d2100fb5fd82247f3c712b966cf3e32538cdb950",
+      "owner_profile2_part001.jsonl.gz": "0f3519d4d6cb44dff08f9d09926388472d2bdf20f5bc9ad462fcd5c3d91e5dc8",
+      "owner_profile2_part002.jsonl.gz": "e9b0e8e0639f85505762c6f6591b2256568a15641d10d94eb8e9912583fad347",
+      "owner_profile2_part003.jsonl.gz": "08d7a3b3ef34040d90eafcd3cc3d848d40aa0b895bc9d52a1974e106c892749d",
+      "owner_profile2_part004.jsonl.gz": "3bafc5140f3e8697f832e2e2cbb13ff60471a7b85490eef9b7c745bf6c052b9e",
+      "owner_profile2_part005.jsonl.gz": "d33c33321209e5caa9f7c01580564423c7ee9aef8f5ae38dc57dfe62fb9547bb",
+      "owner_profile2_part006.jsonl.gz": "2e52d49389e8b20e36cff83ccfdaeae5594be7b3b1768818edafa67d86eb7808",
+      "owner_profile2_part007.jsonl.gz": "1380a96dddea98616134412763dbbd6d2c207552f6d212475939cdd4b57a54f3"
+    },
+    "reset_actions": 16650,
+    "wait_actions": 937692
+  },
+  "run02": {
+    "executions": 12288,
+    "gates": {
+      "contact_value_error": true,
+      "cosine_consistency": true,
+      "finest_consecutive_mesh_gap": true,
+      "finest_reference_value_gap": true,
+      "finest_smooth_fit_error": true,
+      "jump_condition": true,
+      "kernel_mass": true,
+      "lcp_residual": true,
+      "positive_kernel": true,
+      "quadrature": true,
+      "refinement_reduces_reference_gap": true
+    },
+    "maximum_replayed_final_state_error": 1.5987211554602254e-14,
+    "paired_intervals": {
+      "0.7:mode_fixed_selected:propensity_utility": {
+        "mean": 0.007944685038543743,
+        "t95": [
+          0.004061237098000791,
+          0.011828132979086695
+        ]
+      },
+      "0.7:mode_fixed_selected:utility": {
+        "mean": -0.004832452392578008,
+        "t95": [
+          -0.036841371155467,
+          0.027176466370310983
+        ]
+      },
+      "0.7:positive_reference:propensity_utility": {
+        "mean": 0.0019643165415489843,
+        "t95": [
+          -0.00013187156446173992,
+          0.0040605046475597085
+        ]
+      },
+      "0.7:positive_reference:utility": {
+        "mean": -0.002904260253906242,
+        "t95": [
+          -0.02081737676122084,
+          0.015008856253408354
+        ]
+      },
+      "0.7:stop_now:propensity_utility": {
+        "mean": 0.1994508069691545,
+        "t95": [
+          0.18749386519981506,
+          0.2114077487384939
+        ]
+      },
+      "0.7:stop_now:utility": {
+        "mean": 0.22072119750976604,
+        "t95": [
+          0.18277768827940366,
+          0.2586647067401284
+        ]
+      },
+      "1.0:mode_fixed_selected:propensity_utility": {
+        "mean": 0.00504756662520248,
+        "t95": [
+          -0.00023652239849940564,
+          0.010331655648904366
+        ]
+      },
+      "1.0:mode_fixed_selected:utility": {
+        "mean": 0.004059381103516002,
+        "t95": [
+          -0.028596811552944315,
+          0.03671557375997632
+        ]
+      },
+      "1.0:positive_reference:propensity_utility": {
+        "mean": -0.0002781546159329418,
+        "t95": [
+          -0.0036035079895742773,
+          0.0030471987577083935
+        ]
+      },
+      "1.0:positive_reference:utility": {
+        "mean": 0.005634033203125012,
+        "t95": [
+          -0.015026375541661348,
+          0.02629444194791137
+        ]
+      },
+      "1.0:stop_now:propensity_utility": {
+        "mean": 0.21613974724650398,
+        "t95": [
+          0.20343193546042265,
+          0.2288475590325853
+        ]
+      },
+      "1.0:stop_now:utility": {
+        "mean": 0.21281623535156302,
+        "t95": [
+          0.17499098281269054,
+          0.2506414878904355
+        ]
+      },
+      "1.3:mode_fixed_selected:propensity_utility": {
+        "mean": 0.011482526380573801,
+        "t95": [
+          0.005321701817653534,
+          0.01764335094349407
+        ]
+      },
+      "1.3:mode_fixed_selected:utility": {
+        "mean": 0.036367895507812914,
+        "t95": [
+          0.0013905853202123147,
+          0.07134520569541351
+        ]
+      },
+      "1.3:positive_reference:propensity_utility": {
+        "mean": -0.0013988561499583352,
+        "t95": [
+          -0.004787573314267329,
+          0.001989861014350658
+        ]
+      },
+      "1.3:positive_reference:utility": {
+        "mean": 0.008209777832031258,
+        "t95": [
+          -0.013479538762208605,
+          0.02989909442627112
+        ]
+      },
+      "1.3:stop_now:propensity_utility": {
+        "mean": 0.22772468387835393,
+        "t95": [
+          0.21442202055489454,
+          0.24102734720181332
+        ]
+      },
+      "1.3:stop_now:utility": {
+        "mean": 0.25050380249023485,
+        "t95": [
+          0.2099027803111425,
+          0.2911048246693272
+        ]
+      }
+    },
+    "raw_archive_sha256": {
+      "owner_profile0_part000.jsonl.gz": "0dcad41a950cf26937fd034dc164e0dca545ccd7bf5b090e3a2401e3e7cd579c",
+      "owner_profile0_part001.jsonl.gz": "ffbc807a6a7c141131db7e22ed0c4b4fead46a9fc3c582c1765ee814b05ca6f8",
+      "owner_profile0_part002.jsonl.gz": "f3b05b0f42da949d572fd3a351535bd621b405fa905c42ebccf9d4545bebd25e",
+      "owner_profile0_part003.jsonl.gz": "b44d9d2b5378d9f0a52b7cc8bc31c85d548f2499326999008433702339e504f4",
+      "owner_profile0_part004.jsonl.gz": "507a80db29a4a96f3d6e5827db0cf7287b1906f7731d79056cc40be5361a6e0c",
+      "owner_profile0_part005.jsonl.gz": "e6492fa1c97459ac0074d3b65955df53887e2ed09d9fac0273084b9e68d52018",
+      "owner_profile0_part006.jsonl.gz": "89c1d8f58fa9cc5aadec47c46e460e6b9eaefe3083f2dc8cba36ef0176906203",
+      "owner_profile0_part007.jsonl.gz": "540e16737415ba25aa5c468f18f02b2c8ca28588f29ffbf47ac3e054503d0e8f",
+      "owner_profile1_part000.jsonl.gz": "537dc4b9e7367b7cee9988d9ccb29e26bf2e737e262ffee67b8e14d08cadc4db",
+      "owner_profile1_part001.jsonl.gz": "68d4110551dfc3d5edd7a7c9f0bc77d7c76aaaaa65bb4e57d1c95e012979931c",
+      "owner_profile1_part002.jsonl.gz": "c86086cf9ddd39ce317093a6b98b0370a010d582818e463065fe5bd3b0906554",
+      "owner_profile1_part003.jsonl.gz": "c38b5ba9c5d00b9a1fa1802d4675fad1f1f28c0b2e2b116e7edd6908c1861581",
+      "owner_profile1_part004.jsonl.gz": "bbe8308d12e7f436faede394759d37f129e391a0af3a29788afef1e6075d8b17",
+      "owner_profile1_part005.jsonl.gz": "31f6e34a2f9f90aa920374f556a58cf0347ef0728c53fddb3c25474059123dc4",
+      "owner_profile1_part006.jsonl.gz": "2399c778423ae1b1593a2a24922f1e27682f377cbde444891d2abce28f6b9102",
+      "owner_profile1_part007.jsonl.gz": "ce93b75ba35dd7086d24d6ff19b229323921cc28c0a602e3e6b8f268625b851f",
+      "owner_profile2_part000.jsonl.gz": "565357c37894ef9764250c94caa5ccb514af66eaa8cac05cde27b6b307e37395",
+      "owner_profile2_part001.jsonl.gz": "d2fa306b5df23e8bc1f29ea10da8564f87e5f4fdb89e0d6d150f0131467425c3",
+      "owner_profile2_part002.jsonl.gz": "c4bead88fffba5bfdaadcbfcb5290c6f836aadb35c4335e0338cc3952a05007f",
+      "owner_profile2_part003.jsonl.gz": "638d0fe44e97bcf7f51c933500531c756816ba9ec1e9a422c1a8f12ee0f22768",
+      "owner_profile2_part004.jsonl.gz": "fed0509ca80883bddd2bc8312aba0fa2dbc8283b99eab5496be1e2cfee2f11d5",
+      "owner_profile2_part005.jsonl.gz": "1cc11a93c9d2f59fe222b3c5034e4f41af67d054c3e49243e87c8214cd1f14e9",
+      "owner_profile2_part006.jsonl.gz": "148126fa211304f6727bcbb42eda8662f0382f4f54370b4973557e9272881912",
+      "owner_profile2_part007.jsonl.gz": "2627b329e651a730578b33859b6c0669b66893ccf5b5d05d29c4c27d7bece90f"
+    },
+    "reset_actions": 19895,
+    "wait_actions": 3125948
+  },
+  "schema": "hcsn-r18-continuous-independent-owner-review-v1",
+  "scope": "Independent sampled-law replay from saved actions and keyed random draws, fees, recovery states and summaries. No task/solver/executor imports.",
+  "source_review": [
+    "Delayed reset keeps all remaining time after its registered recovery duration",
+    "Jump solver evolves left limit before admitting new reset obstacle at multiples of rho",
+    "Positive Gaussian-image hat quadrature has nonnegative weights without clipping/renormalization",
+    "Followup preserves the original two numerical gate failures and strengthens the fixed comparator"
+  ]
+}
