@@ -1,0 +1,336 @@
+{
+  "arms": {
+    "A": {
+      "accuracy": 0.75,
+      "all_prefixes": {
+        "advantage_mae": 0.01553150504945517,
+        "below_best_prefix_stop_count": 107,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.7755575615628914e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 0.00824306314934479,
+          "state_estimation": 0.010197746325383164,
+          "world_model": 0.0033381336368311257
+        },
+        "one_step_regret": 0.010778883958424771,
+        "prefix_occurrences": 384,
+        "rank_agreement": 0.9394224733207784,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 0.009064964503546864,
+        "unique_prefixes": 230
+      },
+      "audit_cpu_seconds": 1.373240416999998,
+      "checkpoint_sha256": "e8ab3da95cd044f2440231a3ecb9bee81d754209a81fa097cf18592246e86568",
+      "control": "fixed_read",
+      "counts": {
+        "READ": 256,
+        "RESET": 0,
+        "WAIT": 0
+      },
+      "episodes": 128,
+      "exact_root_expected_utility": 0.7159055304612543,
+      "execution_and_capture_cpu_seconds": 0.022820160000001977,
+      "initial_stop_count": 0,
+      "kind": "continuous_diagonal_ssm",
+      "mean_reward": 0.7638338551586719,
+      "mean_task_cost": 0.08089736556157319,
+      "mean_utility": 0.6829364895970985,
+      "occupied_prefixes": {
+        "advantage_mae": 0.011295519898737,
+        "below_best_prefix_stop_count": 107,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.4424906541753444e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 0.004119833472747579,
+          "state_estimation": 0.015296619488074745,
+          "world_model": 0.004016347685863054
+        },
+        "one_step_regret": 0.015937432835806863,
+        "prefix_occurrences": 256,
+        "rank_agreement": 0.9149459193706981,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 0.013597446755320295,
+        "unique_prefixes": 203
+      },
+      "roots": {
+        "advantage_mae": 0.024003475350891507,
+        "below_best_prefix_stop_count": 0,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.7755575615628914e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 0.016489522502539218,
+          "state_estimation": 0.0,
+          "world_model": 0.0019817055387672633
+        },
+        "one_step_regret": 0.00046178620366058454,
+        "prefix_occurrences": 128,
+        "rank_agreement": 0.9826388888888888,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 0.0,
+        "unique_prefixes": 27
+      }
+    },
+    "B": {
+      "accuracy": 0.8203125,
+      "all_prefixes": {
+        "advantage_mae": 0.006072482599894986,
+        "below_best_prefix_stop_count": 9,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.3314683517128287e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 0.0004651138763056811,
+          "state_estimation": 0.009465421329549027,
+          "world_model": 0.003184007896891281
+        },
+        "one_step_regret": 0.00021335002668338682,
+        "prefix_occurrences": 297,
+        "rank_agreement": 0.9750755287009063,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 6.90776542702086e-05,
+        "unique_prefixes": 150
+      },
+      "audit_cpu_seconds": 1.0394373359999989,
+      "checkpoint_sha256": "e8ab3da95cd044f2440231a3ecb9bee81d754209a81fa097cf18592246e86568",
+      "control": "value",
+      "counts": {
+        "READ": 159,
+        "RESET": 0,
+        "WAIT": 10
+      },
+      "episodes": 128,
+      "exact_root_expected_utility": 0.7470715782372606,
+      "execution_and_capture_cpu_seconds": 0.17040532100000405,
+      "initial_stop_count": 0,
+      "kind": "continuous_diagonal_ssm",
+      "mean_reward": 0.834061381612328,
+      "mean_task_cost": 0.0505906365292708,
+      "mean_utility": 0.7834707450830574,
+      "occupied_prefixes": {
+        "advantage_mae": 0.007945281763543137,
+        "below_best_prefix_stop_count": 9,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.1094237467877974e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 0.0005615788547484432,
+          "state_estimation": 0.01663449783950332,
+          "world_model": 0.003717457937993212
+        },
+        "one_step_regret": 0.0003749405794376679,
+        "prefix_occurrences": 169,
+        "rank_agreement": 0.9558823529411765,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 0.00012139682436835475,
+        "unique_prefixes": 123
+      },
+      "roots": {
+        "advantage_mae": 0.003746114888800799,
+        "below_best_prefix_stop_count": 0,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.3314683517128287e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 0.0003377499594554721,
+          "state_estimation": 0.0,
+          "world_model": 0.0024796871394988916
+        },
+        "one_step_regret": 0.0,
+        "prefix_occurrences": 128,
+        "rank_agreement": 1.0,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 0.0,
+        "unique_prefixes": 27
+      }
+    },
+    "C": {
+      "accuracy": 0.71875,
+      "all_prefixes": {
+        "advantage_mae": 0.012477343942292841,
+        "below_best_prefix_stop_count": 103,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.7755575615628914e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 0.007718558959788007,
+          "state_estimation": 0.0,
+          "world_model": 0.0033104745677261407
+        },
+        "one_step_regret": 0.010496684721367685,
+        "prefix_occurrences": 384,
+        "rank_agreement": 0.9560577526679221,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 0.008759596592183614,
+        "unique_prefixes": 230
+      },
+      "audit_cpu_seconds": 1.1198297709999991,
+      "checkpoint_sha256": "f9ae8a2d0f1b05d16399d8bc1caa6a6c4b35f69e6717e443afce15bdf64b3ce1",
+      "control": "fixed_read",
+      "counts": {
+        "READ": 256,
+        "RESET": 0,
+        "WAIT": 0
+      },
+      "episodes": 128,
+      "exact_root_expected_utility": 0.7165442213133159,
+      "execution_and_capture_cpu_seconds": 0.03614378599999668,
+      "initial_stop_count": 0,
+      "kind": "hx_distribution",
+      "mean_reward": 0.7325838551586717,
+      "mean_task_cost": 0.08089736556157319,
+      "mean_utility": 0.6516864895970986,
+      "occupied_prefixes": {
+        "advantage_mae": 0.006987522132552696,
+        "below_best_prefix_stop_count": 103,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.4424906541753444e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 0.0035342661632854606,
+          "state_estimation": 0.0,
+          "world_model": 0.004012101720343115
+        },
+        "one_step_regret": 0.015479380968761992,
+        "prefix_occurrences": 256,
+        "rank_agreement": 0.9434611602753196,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 0.01313939488827542,
+        "unique_prefixes": 203
+      },
+      "roots": {
+        "advantage_mae": 0.02345698756177313,
+        "below_best_prefix_stop_count": 0,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.7755575615628914e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 0.016087144552793104,
+          "state_estimation": 0.0,
+          "world_model": 0.0019072202624921784
+        },
+        "one_step_regret": 0.0005312922265790715,
+        "prefix_occurrences": 128,
+        "rank_agreement": 0.9782986111111112,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 0.0,
+        "unique_prefixes": 27
+      }
+    },
+    "D": {
+      "accuracy": 0.8203125,
+      "all_prefixes": {
+        "advantage_mae": 0.0025285263583505915,
+        "below_best_prefix_stop_count": 2,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.220446049250313e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 2.646726220821408e-17,
+          "state_estimation": 1.8566869695096475e-18,
+          "world_model": 0.003003731234061078
+        },
+        "one_step_regret": 5.33095203007e-05,
+        "prefix_occurrences": 293,
+        "rank_agreement": 0.9935139259824495,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 3.4626573269131882e-06,
+        "unique_prefixes": 145
+      },
+      "audit_cpu_seconds": 0.8259587679999996,
+      "checkpoint_sha256": "f9ae8a2d0f1b05d16399d8bc1caa6a6c4b35f69e6717e443afce15bdf64b3ce1",
+      "control": "value",
+      "counts": {
+        "READ": 156,
+        "RESET": 0,
+        "WAIT": 9
+      },
+      "episodes": 128,
+      "exact_root_expected_utility": 0.7473926578873689,
+      "execution_and_capture_cpu_seconds": 0.1315088189999969,
+      "initial_stop_count": 0,
+      "kind": "hx_distribution",
+      "mean_reward": 0.8337508837158687,
+      "mean_task_cost": 0.049497902047618794,
+      "mean_utility": 0.78425298166825,
+      "occupied_prefixes": {
+        "advantage_mae": 0.0014071300233304987,
+        "below_best_prefix_stop_count": 2,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.220446049250313e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 1.9008363906461e-17,
+          "state_estimation": 3.297025951917132e-18,
+          "world_model": 0.0036028690588789693
+        },
+        "one_step_regret": 9.466478453397031e-05,
+        "prefix_occurrences": 165,
+        "rank_agreement": 0.988427501701838,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 6.148839980518571e-06,
+        "unique_prefixes": 118
+      },
+      "roots": {
+        "advantage_mae": 0.003895228141656329,
+        "below_best_prefix_stop_count": 0,
+        "max_decomposition_error": 0.0,
+        "max_mass_error": 2.1094237467877974e-15,
+        "mean_absolute_decomposition": {
+          "continuation_policy": 3.608224830031759e-17,
+          "state_estimation": 0.0,
+          "world_model": 0.002231405131756766
+        },
+        "one_step_regret": 0.0,
+        "prefix_occurrences": 128,
+        "rank_agreement": 1.0,
+        "reset_strictly_best_count": 0,
+        "selected_reset_count": 0,
+        "stop_deficit": 0.0,
+        "unique_prefixes": 27
+      }
+    },
+    "exact_root_expected_utility_contrasts": {
+      "B-A": 0.03116604777600629,
+      "C-A": 0.0006386908520615853,
+      "D-B": 0.0003210796501083024,
+      "D-C": 0.030848436574053006,
+      "interaction": -0.00031761120195328285
+    },
+    "mean_utility_contrasts": {
+      "B-A": 0.10053425548595885,
+      "C-A": -0.03124999999999989,
+      "D-B": 0.0007822365851926083,
+      "D-C": 0.13256649207115134,
+      "interaction": 0.0320322365851925
+    }
+  },
+  "causal_input_schema": "10 raw features; no evaluator belief/state/fee fed to actor",
+  "cpu_seconds": 4.766460148,
+  "domain": "iid",
+  "evidence": {
+    "episodes.jsonl.gz": {
+      "bytes": 43497,
+      "sha256": "3ac92d24ad74ed31234387be9b72db834f66466c69acad8bfc81bb68428ef055"
+    },
+    "prefixes.jsonl.gz": {
+      "bytes": 1381028,
+      "sha256": "b91c80223d7b9925876e5dab0e620a27a546ec14a5f2aaf44bdff161f8665c96"
+    }
+  },
+  "fitted_world_identity": "0f723c8ca12eeb6ad9546db3ab0f4e240cb3d7693083d782dc87788cebf4b1a1",
+  "order": [
+    "A",
+    "C",
+    "B",
+    "D"
+  ],
+  "paired_tapes": 128,
+  "seed": 121113,
+  "source_freeze_sha256": "4ca2ad93eedc063b2bdcc81dd7d87677237c54dd7da0950a79fe7324721750ff",
+  "tape_seed": 140231113,
+  "true_world_identity": "fbf446897f7da1dc9cb73f13d5cac47ec3bed02bdcfaedc2240e1d5e6b4992cb",
+  "wall_seconds": 4.766692252000212
+}

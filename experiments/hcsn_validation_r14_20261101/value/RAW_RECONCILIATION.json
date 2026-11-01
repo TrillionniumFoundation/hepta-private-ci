@@ -1,0 +1,20 @@
+{
+  "schema": "hcsn.r14.value.raw-arithmetic-check.v1",
+  "counts": {
+    "cases": 16,
+    "episodes": 8192,
+    "prefixes": 12440,
+    "prefix_occurrences": 21570,
+    "forced_actions": 57107,
+    "tree_nodes": 380584
+  },
+  "maximum_absolute_errors": {
+    "qpi_tree": 2.220446049250313e-16,
+    "fees": 0.0,
+    "utility_mean": 1.1102230246251565e-16,
+    "decomposition": 2.220446049250313e-16,
+    "mass": 5.10702591327572e-15
+  },
+  "cpu_seconds": 1.8354621979999999,
+  "scope": "Independent raw record aggregation and trace arithmetic; not repeated neural inference or an external review. All16cases covered."
+}
