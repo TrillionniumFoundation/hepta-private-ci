@@ -304,7 +304,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         ),
     ] {
         artifacts.append(ArtifactEvent::Register {
-            event_id: id(event_id),
+            event_id: id(event_id)?,
             manifest,
         })?;
     }
