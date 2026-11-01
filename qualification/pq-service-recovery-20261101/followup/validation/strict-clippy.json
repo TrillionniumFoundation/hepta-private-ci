@@ -1,0 +1,34 @@
+{
+  "schema": "hepta-pq-followup-command-v1",
+  "head_before_command": "7ff91a4368bc110c35da789b16916e046f79b42c",
+  "modified_inputs_before_command": [
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "sha256": "009ab9fe5939b96f342128cd7c4f3fdd0e2711e7ec7ad6e0d28cddfeb7fa872b"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_pq_tests.rs",
+      "sha256": "5da5f1b07c7c0be8ea0ad31b02a92e04100b38543b4d25e4136030d0f5d46b6d"
+    }
+  ],
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-hepta-intelligence",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "/workspace/scratch/be76671b3e90/hepta-followup/codex-rs",
+  "started_utc": "2026-11-01T10:20:20.903841+00:00",
+  "elapsed_seconds": 29.857547780000004,
+  "exit_code": 101,
+  "build_jobs": 2,
+  "log": "strict-clippy.log",
+  "log_sha256": "cf82ddabc969d7f622136fc0e75d7a6bc0d3a5f6c1e2332bf552bf683f8a34a2",
+  "runtime_budget_settings_changed": false
+}

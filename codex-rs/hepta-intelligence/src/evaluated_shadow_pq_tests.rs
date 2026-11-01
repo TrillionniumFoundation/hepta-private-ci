@@ -292,8 +292,8 @@ fn pq_candidate_and_generator_proofs_cannot_bypass_verification_via_exact_replay
     let frontier = TestFrontier::new(&trust);
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("pq-ledger");
-    let mut writer = pq_ledger_at(&path, trust, frontier.clone());
-    run_evaluated_shadow_v1(
+    let mut writer = pq_ledger_at(&path, trust.clone(), frontier.clone());
+    let receipt = run_evaluated_shadow_v1(
         fixture.request(),
         &mut writer,
         &mut Ports::new(&fixture),
@@ -301,8 +301,40 @@ fn pq_candidate_and_generator_proofs_cannot_bypass_verification_via_exact_replay
     )
     .unwrap();
     let expected_records = writer.records().unwrap();
+    let append = receipt.learning.as_ref().unwrap();
+    let recovery = LedgerRecovery::Acknowledged(LedgerAnchor {
+        sequence: append.sequence.get(),
+        chain_digest: append.chain_digest,
+    });
+    drop(writer);
     let ledger_bytes = fs::read(&path).unwrap();
     let witness_bytes = fs::read(witness_path(&path)).unwrap();
+    let reopen_writer = || {
+        let ledger = DurableLedger::recover_with_authentication_profile(
+            existing_file(&path),
+            frontier.binding,
+            /*max_records*/ 1,
+            recovery,
+            PQ,
+        )
+        .unwrap();
+        let witness = LedgerWitnessStore::recover_with_authentication_profile(
+            existing_file(&witness_path(&path)),
+            frontier.binding,
+            PQ,
+        )
+        .unwrap();
+        let parent = open_ledger_directory(directory.path());
+        LedgerWriter::from_durable_with_trust_frontier(
+            ledger,
+            witness,
+            trust.clone(),
+            &parent,
+            &parent,
+            frontier.clone(),
+        )
+        .unwrap()
+    };
     let mut bad_candidate = fixture.candidate_evidence.clone();
     bad_candidate.signature[0] ^= 1;
     let mut bad_generator = fixture.decision_evidence.clone();
@@ -320,6 +352,7 @@ fn pq_candidate_and_generator_proofs_cannot_bypass_verification_via_exact_replay
         ),
     ];
     for (candidate, generator) in cases {
+        let mut writer = reopen_writer();
         let mut request = fixture.request();
         request.candidate_evidence = &candidate;
         request.decision_evidence = generator;
@@ -332,11 +365,13 @@ fn pq_candidate_and_generator_proofs_cannot_bypass_verification_via_exact_replay
         ));
         assert!(ports.calls.is_empty());
         assert_eq!(writer.records().unwrap(), expected_records);
+        drop(writer);
         assert_eq!(fs::read(&path).unwrap(), ledger_bytes);
         assert_eq!(fs::read(witness_path(&path)).unwrap(), witness_bytes);
     }
     // A retained independent floor change also invalidates an otherwise exact
     // replay before ports run; the old local files cannot restore its authority.
+    let mut writer = reopen_writer();
     frontier.current.lock().unwrap().generation += 1;
     let mut ports = Ports::new(&fixture);
     assert!(
@@ -344,6 +379,7 @@ fn pq_candidate_and_generator_proofs_cannot_bypass_verification_via_exact_replay
     );
     assert!(ports.calls.is_empty());
     assert_eq!(writer.records().unwrap(), expected_records);
+    drop(writer);
     assert_eq!(fs::read(&path).unwrap(), ledger_bytes);
     assert_eq!(fs::read(witness_path(&path)).unwrap(), witness_bytes);
 }

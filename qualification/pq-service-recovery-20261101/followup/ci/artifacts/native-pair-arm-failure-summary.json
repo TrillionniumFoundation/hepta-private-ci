@@ -1,0 +1,96 @@
+{
+  "github_workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778",
+  "github_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737207",
+  "artifact_id": 13078229624,
+  "artifact_name": "hepta-pon-pair-ubuntu-24.04-arm-source-head-1",
+  "archive_path": "/tmp/hepta4552-live-ci/arm-source-head-evidence.zip",
+  "archive_bytes": 5194393,
+  "archive_sha256": "6fb34cbd21ed39888912c0ea0fe516e0002805c4d22d713c4669fb74444430a9",
+  "hepta_sha": "7ff91a4368bc110c35da789b16916e046f79b42c",
+  "chain_source": {
+    "commit": "131f673d9563e72aca7139f3239856957d118d49",
+    "tree": "b8bdd87dca3cd6288c38f63848b24b1a2df6a09d",
+    "tracked_source_identity": {
+      "schema": "trnm-ci-source-v1",
+      "kind": "head",
+      "tested_commit": "131f673d9563e72aca7139f3239856957d118d49",
+      "tested_tree": "b8bdd87dca3cd6288c38f63848b24b1a2df6a09d",
+      "candidate": "131f673d9563e72aca7139f3239856957d118d49",
+      "base": null,
+      "prospective_merge": null,
+      "tracked_worktree_verified": true,
+      "tracked_entries": 5894,
+      "tracked_bytes": 744280991,
+      "tests_executed_by_identity_check": false
+    },
+    "test_sha256": "d10a3871e19ae2479c9eb3420ddf0bc47e89a1ef72d34ac5be5b82fad99eb023"
+  },
+  "native_manifest_failures": [
+    "CONFIRMATION_TARGET"
+  ],
+  "all_named_tests_passed": true,
+  "overall_passed": false,
+  "finite_target_met": false,
+  "invariant_target_met": true,
+  "phases": [
+    {
+      "mode": "attack-free-baseline",
+      "requested_window_ns": 4000000000,
+      "workers": 0,
+      "client_confirmed_transactions": 1,
+      "client_confirmation_latency_ns": 2389878787,
+      "client_confirmed_before_original_window_end": true,
+      "finite_business_target_met": true,
+      "full_native_state_equal": true,
+      "invariant_target_met": true,
+      "receiver_matches_valid_honest_prefix": true,
+      "overlap_demonstrated": true
+    },
+    {
+      "mode": "from-zero-pressure",
+      "requested_window_ns": 4000000000,
+      "workers": 16,
+      "client_confirmed_transactions": 0,
+      "client_confirmation_latency_ns": null,
+      "client_confirmed_before_original_window_end": false,
+      "finite_business_target_met": false,
+      "full_native_state_equal": false,
+      "invariant_target_met": true,
+      "receiver_matches_valid_honest_prefix": true,
+      "overlap_demonstrated": false
+    }
+  ],
+  "extracted_files": [
+    {
+      "zip_member": "chain-from-zero-native/manifest.json",
+      "path": "/tmp/hepta4552-live-ci/arm-source-head/native-manifest.json",
+      "bytes": 20237,
+      "sha256": "1f608eec2b73e695ea9b4bf1969d95ff5db59c3be53a96f6917f779ddc33b7ca"
+    },
+    {
+      "zip_member": "chain-from-zero-native-host/systemd-run.log",
+      "path": "/tmp/hepta4552-live-ci/arm-source-head/systemd-run.log",
+      "bytes": 7048,
+      "sha256": "3a6ef40595d538867138e7bcb4cf90129a007533fa2fff50c86ccd2eb24acf6a"
+    },
+    {
+      "zip_member": "chain-from-zero-native-host/child-result.json",
+      "path": "/tmp/hepta4552-live-ci/arm-source-head/child-result.json",
+      "bytes": 332,
+      "sha256": "cc5acaf914cf58ad98b8a2c7571912b49f4bde1ad738142ed5ff4a70220fbdd9"
+    },
+    {
+      "zip_member": "chain-from-zero-native-host/controller-result.json",
+      "path": "/tmp/hepta4552-live-ci/arm-source-head/controller-result.json",
+      "bytes": 3971,
+      "sha256": "e0726270a8b2d20e70d52dc2c6db7d3098355996c6d600c791fa90c53cc46293"
+    },
+    {
+      "zip_member": "chain-from-zero-native/confirmation/report.json",
+      "path": "/tmp/hepta4552-live-ci/arm-source-head/confirmation-report.json",
+      "bytes": 5229481,
+      "sha256": "fbe1c3e0715bb9a1890e4262f01aa07db88ff04c9bcda38fd46d2aedb8c8dab6"
+    }
+  ],
+  "scope_note": "Read-only inspection of one actual ARM source-head artifact. No tests rerun, no timing/budget changes. Four Linux/ARM jobs failed at the controller gate; this exact underlying CONFIRMATION_TARGET diagnosis is evidenced for this retained ARM source-head artifact only."
+}

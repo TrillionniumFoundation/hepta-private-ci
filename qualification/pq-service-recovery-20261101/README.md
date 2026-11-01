@@ -1,5 +1,16 @@
 # PQ service continuity: FinalUse and AuthBus recovery controls
 
+## Later CI follow-up
+
+The execution phases below were published in commit
+`7ff91a4368bc110c35da789b16916e046f79b42c`. A later
+[two-test-file follow-up](followup/README.md) repairs the newly introduced
+helper's strict-Clippy errors and the Windows raw-file-read lifecycle, preserving
+all security assertions. It records 269 fresh Linux library test successes,
+the remaining failed strict-Clippy command and the earlier hosted CI failures.
+Those results have separate source identities and must not be combined into a
+claim that full CI, original native pressure or whole-chain PQ has passed.
+
 ## Source and scope
 
 The baseline is Hepta PQ PR #4368, commit

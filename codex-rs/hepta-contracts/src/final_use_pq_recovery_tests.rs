@@ -4,14 +4,14 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-fn sign_grant(key: &PqNativeSigningKey, grant: FinalUseGrant) -> SignedFinalUseGrant {
-    SignedFinalUseGrant {
-        signature: key
-            .sign_exact_message(&grant.signing_bytes().unwrap())
-            .unwrap()
-            .to_vec(),
+fn sign_grant(
+    key: &PqNativeSigningKey,
+    grant: FinalUseGrant,
+) -> Result<SignedFinalUseGrant, Box<dyn std::error::Error>> {
+    Ok(SignedFinalUseGrant {
+        signature: key.sign_exact_message(&grant.signing_bytes()?)?.to_vec(),
         grant,
-    }
+    })
 }
 
 #[test]
@@ -38,7 +38,7 @@ fn pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_n
     assert!(
         fixture
             .authority
-            .claim(&sign_grant(&fixture.key, expired), &binding)
+            .claim(&sign_grant(&fixture.key, expired).unwrap(), &binding)
             .is_err()
     );
     let mut stale = fixture.signed.grant.clone();
@@ -46,7 +46,7 @@ fn pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_n
     assert!(
         fixture
             .authority
-            .claim(&sign_grant(&fixture.key, stale), &binding)
+            .claim(&sign_grant(&fixture.key, stale).unwrap(), &binding)
             .is_err()
     );
     let mut other_binding = binding.clone();
@@ -89,7 +89,7 @@ fn pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_n
     let mut next = fixture.signed.grant.clone();
     next.grant_id = "pq-after-rejection".into();
     next.nonce = [4; 32];
-    let next = sign_grant(&fixture.key, next);
+    let next = sign_grant(&fixture.key, next).unwrap();
     let token = fixture.authority.claim(&next, &binding).unwrap();
     assert_eq!(
         fixture.authority.with_verified_use(token, &binding, || 12),
@@ -151,7 +151,7 @@ fn pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_n
     let mut after_recovery = next.grant;
     after_recovery.grant_id = "pq-after-recovery".into();
     after_recovery.nonce = [5; 32];
-    let after_recovery = sign_grant(&fixture.key, after_recovery);
+    let after_recovery = sign_grant(&fixture.key, after_recovery).unwrap();
     let token = recovered.claim(&after_recovery, &binding).unwrap();
     assert_eq!(recovered.with_verified_use(token, &binding, || 13), Ok(13));
     assert_eq!(recovered.capacity().unwrap().used_nonces, 3);

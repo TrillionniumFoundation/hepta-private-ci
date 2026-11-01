@@ -1,0 +1,28 @@
+{
+  "schema": "hepta-pq-followup-command-v1",
+  "head_before_command": "7ff91a4368bc110c35da789b16916e046f79b42c",
+  "modified_inputs_before_command": [
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "sha256": "009ab9fe5939b96f342128cd7c4f3fdd0e2711e7ec7ad6e0d28cddfeb7fa872b"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_pq_tests.rs",
+      "sha256": "5da5f1b07c7c0be8ea0ad31b02a92e04100b38543b4d25e4136030d0f5d46b6d"
+    }
+  ],
+  "command": [
+    "just",
+    "fmt",
+    "--base",
+    "7ff91a4368bc110c35da789b16916e046f79b42c"
+  ],
+  "cwd": "/workspace/scratch/be76671b3e90/hepta-followup/codex-rs",
+  "started_utc": "2026-11-01T10:22:28.485759+00:00",
+  "elapsed_seconds": 0.17405167800006893,
+  "exit_code": 0,
+  "build_jobs": 2,
+  "log": "final-format.log",
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "runtime_budget_settings_changed": false
+}
