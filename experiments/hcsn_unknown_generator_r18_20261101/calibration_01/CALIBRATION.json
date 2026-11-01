@@ -1,0 +1,100 @@
+{
+  "grid": {
+    "markov_mixture": {
+      "0.65": {
+        "accepted": 1968,
+        "errors": 55,
+        "fractional": 523,
+        "fractional_errors": 55,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.03970962052828961,
+        "upper_fractional_error": 0.14689511424385857
+      },
+      "0.75": {
+        "accepted": 1950,
+        "errors": 44,
+        "fractional": 500,
+        "fractional_errors": 44,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.03340516306235872,
+        "upper_fractional_error": 0.12816575825229393
+      },
+      "0.85": {
+        "accepted": 1899,
+        "errors": 30,
+        "fractional": 426,
+        "fractional_errors": 30,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.025354425103741262,
+        "upper_fractional_error": 0.11111617942485702
+      },
+      "0.95": {
+        "accepted": 1809,
+        "errors": 11,
+        "fractional": 283,
+        "fractional_errors": 11,
+        "invalid": 0,
+        "passed": true,
+        "upper_error": 0.013013312092194276,
+        "upper_fractional_error": 0.08162369015924688
+      }
+    },
+    "pooled_iid": {
+      "0.65": {
+        "accepted": 1858,
+        "errors": 35,
+        "fractional": 350,
+        "fractional_errors": 35,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.029212692010078565,
+        "upper_fractional_error": 0.15151526593227568
+      },
+      "0.75": {
+        "accepted": 1854,
+        "errors": 33,
+        "fractional": 341,
+        "fractional_errors": 33,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.02795776495865287,
+        "upper_fractional_error": 0.14849073427094558
+      },
+      "0.85": {
+        "accepted": 1692,
+        "errors": 4,
+        "fractional": 124,
+        "fractional_errors": 4,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.00780902922780945,
+        "upper_fractional_error": 0.10293067081113982
+      },
+      "0.95": {
+        "accepted": 1655,
+        "errors": 0,
+        "fractional": 23,
+        "fractional_errors": 0,
+        "invalid": 0,
+        "passed": false,
+        "upper_error": 0.0034793234074868033,
+        "upper_fractional_error": 0.22181933538610993
+      }
+    }
+  },
+  "selected": {
+    "markov_mixture": {
+      "calibration_gate_passed": true,
+      "threshold": 0.95
+    },
+    "pooled_iid": {
+      "calibration_gate_passed": false,
+      "threshold": 0.999999999999
+    }
+  },
+  "simultaneous_delta": 0.003125,
+  "units": "One world/query for each of2048independent new generators"
+}
