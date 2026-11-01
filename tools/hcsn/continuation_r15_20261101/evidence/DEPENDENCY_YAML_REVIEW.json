@@ -1,0 +1,145 @@
+{
+  "stage": "yaml",
+  "base_local_commit": "2165536fb8e47c31e5e39f74aa58feff546701b2",
+  "baseline_stage": "i18n",
+  "patch": "yaml.patch",
+  "patch_sha256": "3959fe5015c030d761aa1fc6211e31303d40df1c000266aa2ee89347fe96d5eb",
+  "files": {
+    "MODULE.bazel.lock": {
+      "base_sha256": "943ab60a008674817ab6d45183d101bea9b62f071797f232b450138567523448",
+      "candidate_sha256": "0f3564b380951c7dc0c9b20de3abf5f4dbc8b4bc884438572ffa2a694eaede8c"
+    },
+    "codex-rs/Cargo.lock": {
+      "base_sha256": "2b58e4a6cb1c634b271ba421f473f43680659f4d80157fdca44d12e3f7e9c710",
+      "candidate_sha256": "53df80eb7b16cb343388de5a9c10c76595d12c01af8d0f86d5bf45952ed04d88"
+    },
+    "codex-rs/Cargo.toml": {
+      "base_sha256": "f1d53e16a66861e020a0106ff0978601445f549feaa3bad99e63817ac911fa70",
+      "candidate_sha256": "fc5bed00217a44790fe5be1ee3284249b7f806293384141bae12a2d1faf1383e"
+    }
+  },
+  "advisory_db": "2295466c4e9df26647fd67d8fa1c705ac2fc7f81",
+  "before_advisories": 7,
+  "after_advisories": 6,
+  "removed_ids": [
+    "RUSTSEC-2024-0449"
+  ],
+  "added_ids": [],
+  "remaining_ids": [
+    "RUSTSEC-2026-0318",
+    "RUSTSEC-2026-0319",
+    "RUSTSEC-2026-0370",
+    "RUSTSEC-2026-0371",
+    "RUSTSEC-2026-0372",
+    "RUSTSEC-2026-0387"
+  ],
+  "remaining_error_categories": {
+    "unmaintained": 4,
+    "vulnerability": 2
+  },
+  "deny_policy_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+  "cargo_deny": {
+    "command": [
+      "/tmp/hepta_r13_cargo_deny_diagnostic/cargo-deny",
+      "--log-level",
+      "warn",
+      "--format",
+      "json",
+      "--color",
+      "never",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--all-features",
+      "--locked",
+      "--offline",
+      "check",
+      "--disable-fetch",
+      "--hide-inclusion-graph"
+    ],
+    "returncode": 1,
+    "elapsed_seconds": 3.7513041290003457
+  },
+  "metadata": {
+    "command": [
+      "/tmp/hepta-digital-rust195/bin/cargo",
+      "metadata",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--all-features",
+      "--locked",
+      "--offline",
+      "--format-version",
+      "1"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 1.8219243619969347,
+    "packages": 1522,
+    "nodes": 1522
+  },
+  "bazel_lock_update": {
+    "command": [
+      "/tmp/hcsn-r15-fmt-tools/bin/just",
+      "bazel-lock-update"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 2.141446568995889,
+    "before_sha256": "943ab60a008674817ab6d45183d101bea9b62f071797f232b450138567523448",
+    "after_sha256": "0f3564b380951c7dc0c9b20de3abf5f4dbc8b4bc884438572ffa2a694eaede8c",
+    "tls_verification_enabled": true,
+    "trust_store": "/tmp/hepta_r13_cargo_deny_diagnostic/bazel-session-cacerts"
+  },
+  "format": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "2165536"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 0.19609123300324427
+  },
+  "patch_apply_check": {
+    "command": [
+      "git",
+      "apply",
+      "--cached",
+      "--check",
+      "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/review_evidence/yaml/yaml.patch"
+    ],
+    "returncode": 0,
+    "scope": "isolated index at the stated base commit"
+  },
+  "diff_check_returncode": 0,
+  "integration_tests": {
+    "executed": false,
+    "reason": "Full affected project graph exceeds available local build resources; not replaced by metadata or a source probe."
+  },
+  "remote_log_reproduced": false,
+  "main_workspace_changed": false,
+  "dependency_probe": {
+    "scope": "Existing skill frontmatter parser module and all its existing tests copied byte-for-byte; not the entire 703-node skills crate or every YAML consumer.",
+    "source_hashes": {
+      "codex-rs/skills/src/parser.rs": "f3532df1cc16f4da423b8e5c813269940c90317bcd211b6659cad449fd877e89",
+      "codex-rs/skills/src/parser_tests.rs": "89bf58eb2bd97c47bcefcdc605914bc5b3b023e30a8504fa93e2040ae1913b57"
+    },
+    "command": [
+      "just",
+      "test",
+      "--manifest-path",
+      "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/review_evidence/yaml/parser_probe/Cargo.toml",
+      "--config-file",
+      "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/review_evidence/yaml/parser_probe/.config/nextest.toml",
+      "-p",
+      "hepta-yaml-parser-probe",
+      "--locked",
+      "--offline"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 4.506811552004365,
+    "packages": 20,
+    "dependency_identities_subset_of_candidate": true,
+    "disk_free_before": 6581997568,
+    "disk_free_after": 6518923264,
+    "profile": "Standalone dev default debug full, no RUSTFLAGS, two jobs, incremental disabled"
+  }
+}
