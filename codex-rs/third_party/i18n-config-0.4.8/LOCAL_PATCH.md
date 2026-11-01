@@ -1,0 +1,11 @@
+# Local parser maintenance patch
+
+This directory starts from the published `i18n-config` 0.4.8 crate. The original MIT license is retained in `LICENSE.txt`.
+
+The local change replaces the abandoned `basic-toml` dependency with the maintained `toml` 0.9 parser already used by this workspace. This follows the replacement named in RUSTSEC-2026-0374. The two parsing calls use `toml::from_str`; the existing `CannotDeserializeToml` variant now carries `toml::de::Error`. Its variant name and outer error message remain unchanged, but the parser's detailed diagnostics may differ. No consumer in the resolved source graph relies on the old concrete parser error type.
+
+The configuration structures, filesystem traversal, localization behavior, and public function signatures remain upstream's. Tests cover real configuration files, Cargo package metadata, defaults, malformed syntax, duplicate keys, and invalid locale identifiers. No encryption code or age dependency is changed.
+
+The source archive identity and upstream file hashes are recorded in the dependency migration receipt. Review the patch against the published upstream source before updating this vendored copy.
+
+An empty workspace declaration allows this vendored library's own tests to run independently without adding it to the first-party workspace test matrix.
