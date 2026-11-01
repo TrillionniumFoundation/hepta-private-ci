@@ -86,12 +86,18 @@ class Runtime:
             a.nbytes + b.nbytes for a, b in self.transitions.values())
 
 
-def run_episode(runtime, record, adapter, confusion, controller, seed, supervised=False):
+def run_episode(runtime, record, adapter, confusion, controller, seed, supervised=False, diagnostic_oracle=None):
     """Read payloads only on completion; labels only after a terminated task."""
     start_cpu, start_wall = time.process_time(), time.perf_counter()
     folder = Path(record["folder"])
     public = json.loads((folder / "public.json").read_text())
-    owner, oracle = Owner(public, folder, adapter), Oracle(public, confusion)
+    owner = Owner(public, folder, adapter)
+    if runtime is None or diagnostic_oracle is None:
+        oracle = Oracle(public, confusion)
+    else:
+        if diagnostic_oracle.public != public or not np.array_equal(diagnostic_oracle.confusion, confusion):
+            raise ValueError("diagnostic oracle belongs to different public task or fitted law")
+        oracle = diagnostic_oracle
     index = 7 if runtime is not None and runtime.policy.cell is not None else 0
     rng = np.random.default_rng(seed)
     rows, decisions, prefix = [], [], []

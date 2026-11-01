@@ -13,7 +13,7 @@ import numpy as np
 import torch
 
 from ..digital_read_before_20261031.data import cohort, prepare_fit
-from ..digital_read_before_20261031.task import ContentAdapter
+from ..digital_read_before_20261031.task import ContentAdapter, Oracle
 from .execution import Runtime, extend_behavior, occupancy_key, run_episode
 from .models import MechanismPolicy
 from .training import candidates, fit_candidate
@@ -56,6 +56,7 @@ def source_hashes():
 
 def evaluate_models(models, records, adapter, confusion, protocol, fit, split, training_receipts):
     output, summary, runtime_receipts = [], [], []
+    diagnostic_oracles = {}
     for identifier, policy in models.items():
         training = training_receipts.get(identifier, {})
         old_keys = {tuple(x) for x in training.get("behavior_occupancy_keys", [])}
@@ -67,7 +68,10 @@ def evaluate_models(models, records, adapter, confusion, protocol, fit, split, t
             episodes = []
             for i, record in enumerate(records):
                 seed = protocol["execution_seed_base"] + fit * 100000 + {"validation": 0, "iid": 10000, "ood": 20000}[split] + i
-                episode, _ = run_episode(runtime, record, adapter, confusion, controller, seed)
+                if runtime is not None and record["id"] not in diagnostic_oracles:
+                    diagnostic_oracles[record["id"]] = Oracle(read_json(Path(record["folder"]) / "public.json"), confusion)
+                episode, _ = run_episode(runtime, record, adapter, confusion, controller, seed,
+                                         diagnostic_oracle=diagnostic_oracles.get(record["id"]))
                 episode.update(fit=fit, split=split, candidate=identifier)
                 keys = [tuple(row["occupancy_key"]) for row in episode["decisions"]]
                 episode["metrics"].update(behavior_strata_unseen=sum(k not in old_keys for k in keys) / len(keys),
@@ -135,7 +139,17 @@ def confirm_fit(root, training, freeze_path, fit, protocol):
     if len(commit) != 40 or set(commit) - set("0123456789abcdef") or fit not in freeze["fits"]:
         raise ValueError("verified published model freeze and registered fit required")
     model_ids = {c["id"] for c in candidates()}
+    expected_model_keys = {f"{f}/{name}" for f in protocol["fits"] for name in model_ids}
+    if freeze["fits"] != protocol["fits"] or set(freeze["models_sha256"]) != expected_model_keys:
+        raise ValueError("incomplete registered model/fit freeze")
+    if set(freeze["training_receipts_sha256"]) != expected_model_keys:
+        raise ValueError("incomplete training receipt freeze")
+    for mapping in ("training_started_sha256", "training_finished_sha256", "training_process_sha256", "training_data_sha256"):
+        if set(freeze[mapping]) != {str(f) for f in protocol["fits"]}:
+            raise ValueError("incomplete fit provenance freeze")
     fitted = training / f"fit_{fit}"
+    if digest(fitted / "STARTED.json") != freeze["training_started_sha256"][str(fit)]:
+        raise ValueError("actual training protocol receipt changed after freeze")
     data_path = fitted / "extended_data.json.gz"
     if digest(data_path) != freeze["training_data_sha256"][str(fit)]:
         raise ValueError("TRAIN data changed after model freeze")
@@ -188,6 +202,9 @@ def main():
     args = parser.parse_args()
     protocol = read_json(args.protocol)
     torch.set_num_threads(1)
+    registered = protocol["development_fits" if args.stage == "development" else "fits"]
+    if args.fit not in registered:
+        raise ValueError("fit is outside the registered stage")
     if args.stage == "confirm":
         confirm_fit(args.root / f"fit_{args.fit}", args.training, args.freeze, args.fit, protocol)
     else:
