@@ -167,6 +167,7 @@ def run(output):
                                   selected_fixed_thresholds=thresholds))
     finest_rows = [row["levels"][-1] for row in numeric]
     smooth = [row for level in finest_rows for row in level["boundaries"] if "reset_contact" in row]
+    qualifying_gradients = [row for row in gradient_rows if row["qualifies_smooth_active_branch"]]
     gates = dict(lcp_residual=max(r["lcp_residual"] for r in finest_rows) < protocol["gates"]["lcp_residual"],
         finest_reference_value_gap=max(r["fd_reference_max_value_gap"] for r in finest_rows) < protocol["gates"]["finest_reference_value_gap"],
         finest_consecutive_mesh_gap=max(r["consecutive_mesh_gap"] for r in finest_rows) < protocol["gates"]["finest_consecutive_mesh_gap"],
@@ -176,9 +177,11 @@ def run(output):
         heat_semigroup=max(heat_check.values()) < protocol["gates"]["heat_cosine_or_semigroup_error"],
         heat_positivity=min(r["heat_kernel_min"] for r in finest_rows) > -protocol["gates"]["heat_negative_kernel_tolerance"],
         heat_mass=max(r["heat_mass_error"] for r in finest_rows) < protocol["gates"]["heat_cosine_or_semigroup_error"],
-        smooth_branch_gradient=all(row["maximum_scaled_error"] < protocol["gates"]["smooth_branch_gradient_error"] for row in gradient_rows if row["qualifies_smooth_active_branch"]))
+        smooth_branch_gradient=bool(qualifying_gradients) and all(row["maximum_scaled_error"] < protocol["gates"]["smooth_branch_gradient_error"] for row in qualifying_gradients))
     result = dict(schema="hcsn-r18-continuous-task-results-v1", source_freeze=freeze, gates=gates,
-        numeric=numeric, gradients=gradient_rows, heat_semigroup=heat_check, owner=owner_summary,
+        numeric=numeric, gradients=gradient_rows, qualifying_gradient_case_count=len(qualifying_gradients),
+        changed_gradient_case_count=len(gradient_rows) - len(qualifying_gradients),
+        heat_semigroup=heat_check, owner=owner_summary,
         model_selection=selected, raw_manifest=raw_manifest,
         scope=protocol["scope"], no_continuous_crossing_execution=True, production_activation=False,
         cpu_seconds=time.process_time() - started, wall_seconds=time.perf_counter() - wall,
