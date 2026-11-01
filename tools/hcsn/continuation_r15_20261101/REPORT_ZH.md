@@ -116,7 +116,7 @@ raw5/readout3 共 **48 个通道**：普通一阶值及 VJP 与 V2 逐位相同�
 `1.2916021347` 降至 `0.1068059132`，八个参数 tensor 均发生更新。
 金融参数的独立通道 VJP 非零，asset 的 `-b_theta/b` 链和独立 log x 的
 零参数导数均核验。训练 loss 下降不能归因于金融机制：x 旁路和 head
-也能参与拟合；没有消融或泛化验收，跨时间 BPTT 另行验证。
+也能参与拟合；没有消融或泛化验收，跨时间结果见下一节。
 
 独立审阅发现并修复了真实高阶合同缺陷：V2 的 `once_differentiable`
 不能阻止复合读出返回不完整 Hessian。V3 在 backward 入口显式拒绝
@@ -125,6 +125,34 @@ raw5/readout3 共 **48 个通道**：普通一阶值及 VJP 与 V2 逐位相同�
 V2 高阶反例和真实中断退出码均保留。该接口支持普通 BP，不提供 Hessian、
 GPU、torch.compile 或稀疏事件优势；每状态保存的 5×10 FP64 Jacobian
 本身占 400 字节。
+
+### 实际跨时间 BPTT：通过接线验证，训练损失基本持平
+
+[完整递归单元结果](../hx_recurrent_r16_20261101/RESULTS.md)使用真实 H–X
+值场、带符号裕度 x 和恢复状态 a，执行 16 步 FP32 Euler。只有原九个
+金融参数可训练，输入、增益与终末目标固定，没有可训练 head。
+5 个跨边界读出例、13 个接口合同和 8 组时间梯度比较全部通过。
+
+终末损失对最早 theta_t 的 VJP 范数为 `6.0717976072e-7`；手工离散
+Jacobian/adjoint 与实际 BPTT 的最大绝对差为 `9.3853981878e-10`。
+切断状态路径的负对照使早期贡献归零。全负区的 theta 梯度严格为零，
+但状态仍按独立 2×2 矩阵的 16 次幂传播敏感性。原八条驱动轨迹有
+13 次采样相位变化，其中 11 次为严格正负换号，2 次从初始零进入一侧。
+这些是驱动下的采样轨迹，不证明自主周期轨道或精确连续时间首达时刻。
+
+12 次更新后，loss 从 `0.0004702643782366067` 变成
+`0.0004702617588918656`，相对仅下降 **0.000557%**，基本持平。
+9 个 raw/effective theta 分量均改变，完整各步轨迹、梯度及更新链保留；
+独立只读重算通过。这个结果证明真实 BPTT 接通，没有证明效果优势。
+
+另一个重要限制是：固定独立 x 会使 V=b(theta)exp(x) 随 b 一起缩放，
+因此 b 从 67.4415 变到 67.5699 不能直接解释成阈值相对固定物理状态
+移动。固定 z=log(V) 的资产坐标候选正在独立建立，必须保留完整的
+边界参数链，固定初态与恢复参考，并保持终末目标只依赖 z/a。
+
+本地源/输入/门槛冻结及完整字节备份先于首次执行；远端源检查点
+`a629f9b1a9a1539f5360f8e44d2b81a09fdcf6ae` 在首次 audit 后确认，
+没有把这轮功能验证称为远端事前注册的独立科学确认。
 
 ## 5. 已执行的远端回归与新的构建修复
 
@@ -142,7 +170,9 @@ V2 修复覆盖全部四个直接消费者和九个规则生成点，按实际�
 原有非 alias 属性一致，原 `just fmt` 通过。源码头 `889e7ace` 的 GNU
 release、GNU Clippy 和 SDK 实际编译、SDK lint/test 已全部通过；
 [精确 job/step 快照](evidence/R16_REMOTE_889E_NATIVE_SNAPSHOT.json)保留验证范围。
-原生测试矩阵仍运行，依赖审计失败，不能声称全仓绿色。
+原生测试矩阵仍未全绿，依赖审计失败。随后完成的 Windows shard 1/3
+也失败；[完整原日志与部分分类](evidence/native_ci_889e/PARTIAL_WINDOWS_FAILURES.json)
+分别记录 6/8 个失败 target，保留重试与具名错误，不冒充四 shard 全量统计。
 [修复与证据](evidence/yaml_bazel_alias_v2/VALIDATION_RECEIPT.json)。
 
 Windows 目录测试改用正确句柄/路径操作，macOS V8 限制客户端并发为
@@ -199,6 +229,19 @@ lifecycle CAS 也不覆盖 intent、lease 和 transaction 的共同快照；Matr
 和[独立复核](evidence/native_repairs/signed_intent_lock_audit/SIGNED_INTENT_LOCK_AUDIT.json)
 列明统一 owner 能力、持久化次序、退出证据和原生并发验证要求。
 
+其中一条现存自动启动路径已另行修补：pending MAIN restart 在
+RecoveryRequired 下拒绝 dispatch，保留 pending/deadline/journal。
+合法的 release target/rollback continuation 保持原状态机调用。
+新增原生回归保留原测试全部断言；完整 tick_slot 的源提取红绿从
+6 过 2 失败变为 8 过 0 失败，实际格式化与独立审阅通过。
+[范围限定的修复收据](evidence/automatic_restart_quarantine_1e91/VALIDATION_RECEIPT.json)
+不等于统一 owner、Matrix 退出或 Abort 功能已经完成。
+
+新增独立的 BP/BPTT workflow 使用只读权限、精确 source-head checkout、
+冻结 binary/protocol/source hashes 和临时输出目录，执行四个实际入口及
+独立结果 checker。格式化、Bash/CLI 接线和 hash 负例检查通过；其真正
+远端执行仍以包含新 workflow 的提交结果为准。
+
 ## 6. 继续保留的实质障碍与历史证据
 
 - 原有限任务的最优公开策略相对固定 B 的期望上限，仅为 IID
@@ -210,13 +253,42 @@ lifecycle CAS 也不覆盖 intent、lease 和 transaction 的共同快照；Matr
 - Windows 缺失的安全后端需要真正的访问控制、句柄绑定、链接攻击
   防御、持久化和验签语义；普通文件打开或跳过测试不能替代。
 - 生产神经元状态归属、完整 rollover 动态网络、全模态泛化优势、GPU
-  与焦耳成本尚未获得资格。一阶 BP 接线已通过，真实跨时间模型另行验证。
+  与焦耳成本尚未获得资格。一阶 BP 和固定短时 BPTT 接线已通过，
+  固定物理状态下的边界移动及规模化训练仍另行验证。
 
 旧执行环境丢失的未上传 C++ 768 行 raw、完整旧协议和 36 批原计时没有
 恢复；只有源码与重编译二进制身份精确恢复。此次新协议、新独立样本和
 新计时已完整保全。已发布 Python capsule、接受的依赖迁移原始证据不受
 此影响。后来的 keyring/AWS 原归档也未恢复，其恢复收据明确只依据
 保留记录重建，不能冒称原始日志。
+
+## 7. 与原构想和其他网络的关系
+
+[He–Xiong 原文](https://www.princeton.edu/~wxiong/papers/rollover.pdf)
+提供债务 PDE、equity ODE、值匹配与 smooth pasting，以及解析边界和
+价值函数。这里借用这些解析函数作为神经元的值场；F/G 是首达相关
+量，不能直接改称同时满足 equity smooth pasting 的两份 call/put。
+原 default 终止企业；让神经元恢复并重复越界，是新增的神经动力学。
+解析值函数也不自动给出整个递归 ODE 的解析时间流。
+
+| 比较维度 | 本轮证据支持的结论 | 尚缺的资格 |
+| --- | --- | --- |
+| 普通反向传播 | 条件 C1 的 Q/R 值通道及 margin 可接普通一阶 BP/BPTT，无需训练 0/1 事件输出 | 全参数域、长时间稳定训练、高阶梯度 |
+| 与传统 SNN 比较 | 连续信号可保留幅度与裕度信息，固定小模型有真实跨时间梯度 | 连续稠密计算没有自动获得事件稀疏性、低带宽或低能耗 |
+| 与 Transformer 比较 | 固定宽度递归状态可让状态更新次数随序列长度线性增长，这是结构性质 | 内容寻址、跨模态绑定、并行训练、吞吐及质量成本均未胜出 |
+| 实际实现成本 | 当前 CPU 内部 FP64 比双字 FP32 合算；完整 Jacobian 每状态 400 B | 当前 eager/ctypes bridge、BPTT 保存量、GPU 融合内核与真实焦耳成本 |
+| 新颖性 | H–X 价值/边界函数的具体神经动力学参数化可以作为研究对象 | 仅靠金融类比、自由边界或闭式函数不能取得首创资格 |
+
+与既有方法的比较还应包括 [CfC](https://arxiv.org/abs/2106.13898) 和
+[selective SSM / Mamba](https://arxiv.org/abs/2312.00752)：闭式近似的
+连续时间模型、选择性递归和线性序列缩放均有既有工作。自由边界与
+integrate-and-fire 的联系也已有[直接研究](https://arxiv.org/abs/1806.01934)，
+金融系统风险与神经网络的共同 Stefan 表述已有[相关论文](https://arxiv.org/abs/2010.05281)。
+这些先例不否定当前具体参数化，但排除了仅靠跨领域命名证明新颖性。
+
+当前可以交付的是具有明确边界语义和可核验梯度的研究模块。它适合先
+作为受控时间序列或 encoder 的动态部件评估；这属于研究方向判断，
+不是多模态大模型替换能力的实证结论。
 
 ---
 

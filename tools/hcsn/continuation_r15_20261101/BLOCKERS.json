@@ -93,8 +93,8 @@
       "status": "unmeasured"
     },
     {
-      "detail": "At exact source889e7ace, GNU release, GNU Clippy and SDK actual builds/lint/tests pass, closing the observed YAML alias compilation failures. R16 numerical regression, R13, finite-model regressions, Codespell, blob policy and repository checks pass. Native platform tests were still running in recorded snapshot; cargo-deny fails. Later exec/supervisor/SSHSIG candidates need their own head verification.",
-      "evidence": "evidence/R16_REMOTE_889E_NATIVE_SNAPSHOT.json",
+      "detail": "At exact source889e7ace, GNU release, GNU Clippy and SDK actual builds/lint/tests pass, closing the observed YAML alias compilation failures. R16 numerical regression, R13, finite-model regressions, Codespell, blob policy and repository checks pass. Native platform tests were still running in recorded snapshot; cargo-deny fails. Later exec/supervisor/SSHSIG candidates need their own head verification. Later completed Windows shards1 and3 fail; raw logs and partial target/name classification retained without claiming all-shard counts.",
+      "evidence": "evidence/native_ci_889e/PARTIAL_WINDOWS_FAILURES.json",
       "id": "repository_wide_ci",
       "status": "open_native_builds_passed_remaining_runtime_and_policy"
     },
@@ -202,15 +202,33 @@
     },
     {
       "id": "actual_financial_recurrent_bptt",
-      "status": "in_progress_separate_signed_c1_readout_extension",
-      "detail": "A pre-frozen short recurrent candidate will use the actual H-X E/b and transformed R, plus signed margin and recovery state. Raw financial domain and accepted kernel gates remain unchanged. No recurrent qualification has been admitted yet.",
-      "evidence": null
+      "status": "closed_for_fixed_short_first_order_functional_protocol",
+      "detail": "Actual H-X signed Q/R readout and16-step FP32 Euler pass5 signed fixtures,13 contracts,8 temporal-gradient comparisons; earliest theta VJP6.0718e-7, manual chain max abs9.3854e-10, detach negative control zero, all-negative A^16 control passes.12 theta-only updates execute;loss improves only0.000557percent, not quality evidence. Local freeze/store precedes audit, remote checkpoint was later.",
+      "evidence": "../hx_recurrent_r16_20261101/RESULTS.md"
     },
     {
       "id": "signed_abort_owner_and_exit_evidence",
       "status": "blocked_exact_source_and_counterexamples_preserved",
       "detail": "Existing recovery does not consume exact-digest Abort directives. Safe activation requires one lifetime owner capability across daemon/public Supervisor/Fleet/CLI and all journal writers, versioned protected snapshot, retained Matrix process/lease until observed exit, and independent release admission fences.25 exact source blobs and71 writer/definition locations reviewed;2 synthetic real-filesystem race witnesses plus same-generation CAS rejection control executed. No product mutation, no weakened terminal-state gate, original quarantine remains.",
       "evidence": "evidence/signed_abort_1e91/SAFETY_REVIEW.json"
+    },
+    {
+      "id": "automatic_main_restart_quarantine",
+      "status": "reviewed_source_repair_native_execution_pending",
+      "detail": "RecoveryRequired now suppresses the pending automatic MAIN restart branch while preserving pending/deadline/journal and legitimate release target/rollback state-machine paths. Exact tick_slot fragment harness passes8/8 versus prior6/8; new original-library regression source and independent review included, native CI still required. Other ownership/Matrix/Abort gaps remain.",
+      "evidence": "evidence/automatic_restart_quarantine_1e91/VALIDATION_RECEIPT.json"
+    },
+    {
+      "id": "fixed_physical_state_boundary_learning",
+      "status": "in_progress_separate_asset_coordinate_candidate",
+      "detail": "Fixed-x V1 rescales implicit V with b(theta); changing b alone does not demonstrate threshold motion relative to fixed physical state. A separate fixed-z/asset-mode dynamical family is being defined with complete boundary parameter chain and terminal loss only on z/a. Original V1 result remains nearly flat.",
+      "evidence": "../hx_recurrent_r16_20261101/RESULTS.md"
+    },
+    {
+      "id": "actual_bp_bptt_remote_regression",
+      "status": "workflow_ready_pending_new_head_execution",
+      "detail": "A read-only source-head workflow runs the actual V3 adapter audit/training and V1 recurrent audit/training plus independent result checker with sealed hashes/create-only temporary outputs. Actual formatter, shell/CLI preflight and independent review pass; no remote execution admitted yet.",
+      "evidence": "evidence/BP_BPTT_WORKFLOW_REVIEW.json"
     }
   ],
   "new_confirmation_opened": false,
@@ -230,5 +248,6 @@
     "source_and_windows_classification_recovered": true,
     "later_keyring_crypto_raw_archives_recovered": false
   },
-  "compiled_recovery_checkpoint": "bfd3a5a6f9445ae681b27d3947865ad67ef5651e"
+  "compiled_recovery_checkpoint": "bfd3a5a6f9445ae681b27d3947865ad67ef5651e",
+  "recurrent_source_checkpoint": "a629f9b1a9a1539f5360f8e44d2b81a09fdcf6ae"
 }
