@@ -1,0 +1,79 @@
+{
+  "arms": [
+    "flow",
+    "diagonal",
+    "gru",
+    "snn",
+    "transformer"
+  ],
+  "baseline": "Verified core test__base predictions used only for paired switch statistics, never selection",
+  "candidate_freeze_sha256": "d9b9bd020e3a7166ba5bdbef64645d85319543b7959b65b4c7c5d684b28e7ac8",
+  "conditions": [
+    "long_tokens_64",
+    "long_tokens_128",
+    "matched_silence_64",
+    "matched_silence_128",
+    "query_swap"
+  ],
+  "core_frozen_commit": "8044dbfc3c41356eaf3f8ac69c7537e2091eda80",
+  "core_source_hashes": {
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_four_stage_flow_20261031/av_data.py": "465f1d2bf296dc5df4b25cd5cdc781551740a16766bb631b937a80fb3ef7767f",
+    "experiments/hcsn_four_stage_flow_20261031/dynamic_data.py": "df016a6142ecc5a9fffaa45956ec253169ce33adb7101f8b18d41b4a845102c7",
+    "experiments/hcsn_four_stage_flow_20261031/marked_flow.py": "f7ccf2ea965b77ed08da488142d1023fb1c7a6a11580b13e8e7aba2dd861836c",
+    "experiments/hcsn_four_stage_flow_20261031/models.py": "d8d47ea1e2b1a3bfad4a55c99ce1322bc1583dc73b69b8a645da38f4d07797b6",
+    "experiments/hcsn_four_stage_flow_20261031/runner.py": "fc2d2e1fb7de9a2f365895bb044e536493aa8040fc14e4ecc090ec8dbab52f0a",
+    "experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e"
+  },
+  "cost": "Per-condition generation+forward+serialization and separate fit setup; no energy measurement",
+  "distractor_seed": 910731,
+  "episodes": 512,
+  "extension_source_sha256": "9c6f9633225625e9696871c4396e5b52f872ac117b8a4d47cba6f125cf53f84d",
+  "fit_seeds": [
+    17,
+    29,
+    43
+  ],
+  "frozen_utc": "2026-11-01T04:53:11.116246+00:00",
+  "long_tokens": {
+    "count": "target total length minus original episode length",
+    "dt_seconds": 0.25,
+    "insertion": "After the original prelude and before all queries",
+    "keys": "Uniform A-key",
+    "observed": true,
+    "paired_lengths": "The shorter filler is a per-episode prefix of the longer filler",
+    "total_lengths": [
+      64,
+      128
+    ],
+    "type": 2,
+    "values": "Uniform value; independent of labels"
+  },
+  "matched_silence": "No inserted observations; add exactly filler_count * .25 seconds to first-query dt",
+  "pairing": "Same task/test-content-seed/episode-index identifier across fits and conditions",
+  "parent_protocol_sha256": "26e401d211a3c72f80b68d292b54980ef18601bafbb519ee4ffd3dd2f27babdc",
+  "predict_batch_size": 16,
+  "query_swap": "Exchange first two query identities and labels; keep every dt and prelude token fixed",
+  "saved_arrays": [
+    "query logits",
+    "query labels",
+    "query weights",
+    "paired sample IDs"
+  ],
+  "schema": "hcsn-four-stage.extended-protocol.v1",
+  "scope": "Controlled symbolic long-distance/interference diagnostics; no foundation-model or LLM claim",
+  "selection": "All 45 fits and five fixed conditions; preserve failures without dropping conditions",
+  "switch_metrics": {
+    "conditional_correct_switch": "Same event restricted to episodes whose original first-two predictions were correct",
+    "correct_switch": "Both first-two predictions equal their exchanged true targets",
+    "interpretation": "Output changes alone are never counted as successful binding"
+  },
+  "tasks": [
+    "mqar",
+    "selective",
+    "binding"
+  ],
+  "test_content_seed": 81001,
+  "total_condition_rows": 225,
+  "training": "Forbidden; every checkpoint is verified against the already frozen candidate artifact"
+}
