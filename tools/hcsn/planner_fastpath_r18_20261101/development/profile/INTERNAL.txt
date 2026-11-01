@@ -1,0 +1,58 @@
+         2337484 function calls (2302358 primitive calls) in 3.087 seconds
+
+   Ordered by: internal time
+   List reduced from 193 to 50 due to restriction <50>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   196406    0.386    0.000    0.386    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+    24232    0.308    0.000    0.689    0.000 numeric.py:2373(isclose)
+ 6640/398    0.181    0.000    0.835    0.002 planner.py:112(_values)
+      192    0.165    0.001    0.165    0.001 {built-in method posix.fsync}
+ 6624/396    0.164    0.000    0.762    0.002 execution.py:21(_values)
+     3382    0.128    0.000    0.128    0.000 encoder.py:205(iterencode)
+     2094    0.110    0.000    0.110    0.000 {built-in method scipy.linalg._matfuncs_expm.pade_UV_calc}
+   103258    0.106    0.000    0.364    0.000 fromnumeric.py:89(_wrapreduction_any_all)
+     6618    0.085    0.000    0.407    0.000 compression.py:35(unpack)
+    11562    0.075    0.000    0.576    0.000 law.py:168(_belief)
+    12190    0.072    0.000    0.601    0.000 compression.py:22(_probability)
+     2190    0.065    0.000    0.296    0.000 _matfuncs.py:234(expm)
+     2094    0.061    0.000    0.061    0.000 {built-in method scipy.linalg._matfuncs_expm.pick_pade_structure}
+    54096    0.051    0.000    0.146    0.000 {method 'all' of 'numpy.generic' objects}
+    32942    0.046    0.000    0.119    0.000 fromnumeric.py:69(_wrapreduction)
+      192    0.045    0.000    3.082    0.016 execution.py:47(execute)
+    72696    0.042    0.000    0.322    0.000 fromnumeric.py:2589(all)
+    24232    0.041    0.000    0.817    0.000 numeric.py:2279(allclose)
+   121160    0.037    0.000    0.053    0.000 numeric.py:2465(<genexpr>)
+   137736    0.033    0.000    0.033    0.000 {method 'items' of 'dict' objects}
+     2190    0.028    0.000    0.044    0.000 _util.py:1149(wrapper)
+   214306    0.028    0.000    0.028    0.000 {built-in method builtins.isinstance}
+     1152    0.028    0.000    0.237    0.000 planner.py:97(__init__)
+      384    0.026    0.000    0.036    0.000 {built-in method _io.open}
+    79192    0.022    0.000    0.147    0.000 _methods.py:66(_all)
+     7208    0.021    0.000    0.026    0.000 numeric.py:98(zeros_like)
+     1462    0.021    0.000    0.079    0.000 world.py:132(observe)
+    13264    0.021    0.000    0.034    0.000 numeric.py:324(full)
+    30562    0.020    0.000    0.104    0.000 fromnumeric.py:2477(any)
+40896/20928    0.019    0.000    0.038    0.000 encoder.py:278(_iterencode_list)
+    30368    0.019    0.000    0.019    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+    25734    0.018    0.000    0.118    0.000 fromnumeric.py:3052(max)
+    54608    0.018    0.000    0.018    0.000 {built-in method numpy.asarray}
+    51174    0.018    0.000    0.018    0.000 {built-in method builtins.abs}
+     8600    0.018    0.000    0.328    0.000 law.py:183(transition)
+    24232    0.017    0.000    0.033    0.000 _ufunc_config.py:448(__enter__)
+     5476    0.017    0.000    0.308    0.000 compression.py:30(pack)
+    34438    0.017    0.000    0.141    0.000 {method 'sum' of 'numpy.ndarray' objects}
+    85018    0.015    0.000    0.015    0.000 {built-in method builtins.getattr}
+     2614    0.014    0.000    0.028    0.000 world.py:115(_state_at)
+     9934    0.014    0.000    0.014    0.000 law.py:161(_duration)
+    19008    0.014    0.000    0.014    0.000 encoder.py:224(floatstr)
+    11850    0.013    0.000    0.013    0.000 {method 'copy' of 'numpy.ndarray' objects}
+    25096    0.012    0.000    0.064    0.000 {method 'all' of 'numpy.ndarray' objects}
+    15162    0.012    0.000    1.057    0.000 compression.py:47(project)
+     3018    0.012    0.000    0.313    0.000 compression.py:151(materialize)
+    17644    0.010    0.000    0.010    0.000 {built-in method numpy.empty}
+31488/28800    0.010    0.000    0.051    0.000 encoder.py:334(_iterencode_dict)
+    24232    0.010    0.000    0.010    0.000 {method 'reset' of '_contextvars.ContextVar' objects}
+    34438    0.010    0.000    0.124    0.000 _methods.py:49(_sum)
+
+
