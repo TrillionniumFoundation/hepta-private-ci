@@ -1,0 +1,213 @@
+{
+  "artifact_bytes_downloaded_and_rehashed": true,
+  "artifact_metadata": [
+    {
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13095131247/zip",
+      "created_at": "2026-11-01T18:05:21Z",
+      "digest": "sha256:37e005411be5acd7530d6400894d498f3491d2488060baa070de11dea50ea0db",
+      "expired": false,
+      "expires_at": "2027-01-30T18:04:37Z",
+      "id": 13095131247,
+      "name": "hcsn-financial-bp-bptt-r16-cf74634be5c1d7de8d2b0f24a1c4a8a4ab361b20",
+      "size_in_bytes": 257659,
+      "updated_at": "2026-11-01T18:05:21Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13095131247",
+      "workflow_run": {
+        "head_branch": "research/hcsn-continuation-r15-20261101",
+        "head_repository_id": 1320694176,
+        "head_sha": "cf74634be5c1d7de8d2b0f24a1c4a8a4ab361b20",
+        "id": 41334698980,
+        "repository_id": 1320694176
+      }
+    }
+  ],
+  "artifact_recheck": {
+    "archive": "REMOTE_ARTIFACT.zip",
+    "bytes": 257659,
+    "financial_kernel_reexecuted_for_local_recheck": false,
+    "local_record_checker_exit_code": 0,
+    "local_record_recheck_file": "REMOTE_RECORD_RECHECK.json",
+    "local_record_recheck_sha256": "8b15e88690357a145a439b9a108178fad02efb058ba9efb199f9252cae5c991c",
+    "members": {
+      "adapter-gradients.json.gz": {
+        "bytes": 67547,
+        "sha256": "52a25514c76ddef82bc68a673794e8b5318a18cab1b3621c441f7c608d947edb"
+      },
+      "adapter-training.json.gz": {
+        "bytes": 34956,
+        "sha256": "fc0520b6f470070a2d228d9d936f67c2a359607cef3eb4568afdd44cf8076f26"
+      },
+      "install.log": {
+        "bytes": 5146,
+        "sha256": "23274674cced28857bb5cc602f38a749c89db53c885674b31dc9afa06c8d0a01"
+      },
+      "recurrent-audit.json.gz": {
+        "bytes": 49330,
+        "sha256": "84b89b03a6ac358ebfae292f4201368b50e9e0bee8ea4ca04dd25013f7bd53fe"
+      },
+      "recurrent-check.json": {
+        "bytes": 2182,
+        "sha256": "9edca19532e897236333e6b3516ea4a3d903f29121c67d5ca352cc560a519533"
+      },
+      "recurrent-training.json.gz": {
+        "bytes": 102842,
+        "sha256": "ec5d7e13d3d277b1f3fede50cb010f78fa71d71af1d0f2e7217001b7ef442241"
+      },
+      "runtime.txt": {
+        "bytes": 183,
+        "sha256": "985cb4957095066347a6cb4bdc63047de9ca14cb2a1faabfabc8cfcfc9a9502f"
+      },
+      "source-bindings.json": {
+        "bytes": 1056,
+        "sha256": "4e4ed4dd257b92208505780e7c05e0ebc853c698a82c7d1d64cdb848da40f88e"
+      }
+    },
+    "scope": "Downloaded actual remote artifact ZIP, verified API digest and exact source bindings; reran the frozen independent recurrent record checker. No new scientific confirmation.",
+    "sha256": "37e005411be5acd7530d6400894d498f3491d2488060baa070de11dea50ea0db",
+    "source_bindings": {
+      "binary_policy": "Load the sealed Linux x86_64 binary; no rebuild or fallback.",
+      "head": "cf74634be5c1d7de8d2b0f24a1c4a8a4ab361b20",
+      "scope": "Replay existing functional fixtures, not a new confirmation set.",
+      "sha256": {
+        "tools/hcsn/compiled_fp32_r16_20261101/recovery/RECOVERY_PROTOCOL_V1.json": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+        "tools/hcsn/compiled_fp32_r16_20261101/recovery/recovered.so": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+        "tools/hcsn/hx_autograd_r16_20261101/ADAPTER_PROTOCOL.json": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+        "tools/hcsn/hx_autograd_r16_20261101/requirements.txt": "c8038849aaa1710f940a6c70bfb9a6739c67c132abdc56c4d19d37c4126e945d",
+        "tools/hcsn/hx_recurrent_r16_20261101/RECURRENT_PROTOCOL.json": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+        "tools/hcsn/hx_recurrent_r16_20261101/check_recurrent_results.py": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb"
+      }
+    }
+  },
+  "bp_steps": [
+    {
+      "conclusion": "success",
+      "name": "Set up job",
+      "number": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Check out exact source candidate",
+      "number": 2,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Initialize runner-local paths",
+      "number": 3,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Verify frozen inputs and install the CPU runtime",
+      "number": 4,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Audit the actual financial autograd interface",
+      "number": 5,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Train through the actual financial autograd interface",
+      "number": 6,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Audit the recurrent temporal gradient",
+      "number": 7,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Train through the recurrent temporal gradient",
+      "number": 8,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Independently check the recurrent result records",
+      "number": 9,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Preserve complete BP and BPTT outputs",
+      "number": 10,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Verify checkout remains unchanged",
+      "number": 11,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Post Check out exact source candidate",
+      "number": 22,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "Complete job",
+      "number": 23,
+      "status": "completed"
+    }
+  ],
+  "checks": [
+    {
+      "conclusion": "success",
+      "head_sha": "cf74634be5c1d7de8d2b0f24a1c4a8a4ab361b20",
+      "id": 124931932431,
+      "name": "financial-bp-and-bptt",
+      "status": "completed",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41334698980/job/124931932431"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": "cf74634be5c1d7de8d2b0f24a1c4a8a4ab361b20",
+      "id": 124931932305,
+      "name": "finite-model-regressions",
+      "status": "completed",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41334698982/job/124931932305"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": "cf74634be5c1d7de8d2b0f24a1c4a8a4ab361b20",
+      "id": 124931931674,
+      "name": "numerical-contract",
+      "status": "completed",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41334698894/job/124931931674"
+    }
+  ],
+  "logs": [
+    {
+      "file": "BP_BPTT.log.gz",
+      "gzip_bytes": 10967,
+      "gzip_sha256": "25edbbcc648be3e6b4905ccab1c6ff51e34701f04213a47c4bcb38e690b9d61c",
+      "raw_bytes": 51092,
+      "raw_sha256": "c66becfe38cfb15dc9071d16ec7110f6351e23bf216eca6b7aafdf3c34eb5295"
+    },
+    {
+      "file": "FINITE_MODEL.log.gz",
+      "gzip_bytes": 7876,
+      "gzip_sha256": "d4700d1dcecccd4f656b3668f2bf2b6d11153b691b51e919a3d513b09b237092",
+      "raw_bytes": 38029,
+      "raw_sha256": "e1622031c0a92ec670bd9d3e38c89066ff0bba55ba230b856e92815065644df8"
+    }
+  ],
+  "merge_tree_verified_identical": true,
+  "new_confirmation_opened": false,
+  "prior_finite_failure_job": 124930433301,
+  "prior_validation_failure_run": 41334191519,
+  "prospective_merge": "1a756998bedabe63f96b3435c1f1a35cf6b827a4",
+  "quality_gate_changed": false,
+  "schema": "hcsn.actual-financial-bp-bptt-remote-regression.v1",
+  "scope": "Actual GitHub runner replay of the frozen V3 and normalized-margin V1 plus 48 R14 and 22 R15 regressions. No fixed-z step existed yet.",
+  "source_head": "cf74634be5c1d7de8d2b0f24a1c4a8a4ab361b20",
+  "source_tree": "784170ebf8b2ac63587672bf26824140dff28141"
+}
