@@ -1,0 +1,21 @@
+{
+  "source_after": {
+    "contract.py": "cf765a72c2c7256b2827143234ba1e17ec125e4a2c41271d58c4d5f40c897ca0",
+    "models.py": "7a9c1b8ba856afbf5dfb5199e18f02b3e8df9aede7a80aef6aafff578022dba5",
+    "data.py": "4501dd8936bdeccd6e328fdb3050b8d6a09423d549c17322029e682362900694",
+    "control/controller.py": "910c8f0033b10a93aa56640231514a57525f1e6cf262ebff0d0d0d3dbc839c99"
+  },
+  "files": {
+    "ACTIONS.json": "e58a3e94cce7ab138c211fc980cc101312bdd6db1eb4cbdbb00561f25417d83e",
+    "BUG_FIX_CHECK.json": "96e1b4c026ae03379c28f2e36e510966fb0b71a1b79d1bee6b93a5f3e6bf4efc",
+    "EMPTY_GROUP_BUG.json": "9f97469649d1f99bc53a8acfcd112ca0e8c790ef0aad8032ce6cb85eb726257a",
+    "FIRST_HIT.json": "097018d16c46fd41ce4a8e0aa3bf0948bb0ff5a7374b18a3d40f6bebe1b957f8",
+    "GRADIENTS.json": "b8bc6a7bc6127e735a1fd812a275b8004930246cbbf4bc02f342ae10ff652659",
+    "PROTOCOL.json": "65634be61083a4a5dcfb9f45a6529c4ef3ce6347d25f28f8926e1c3996e1ab4d",
+    "REFINEMENT_AND_KINK.json": "adf4449042a352984016ef9d1ec1048ea11b93405e4e35771450b88b903e3db1",
+    "VERIFICATION_ZH.md": "e78648a95417eaa086b228e0800caf9db6452c590d57ab7100a68e81e77e5f1b",
+    "verify.py": "59a70767aaf1df983dd94e49c89c482869564d8810942051e592b1a9f6168022"
+  },
+  "scope": "FP64 first-order gradients and finite mechanism scans only; no confirmation data or production activation",
+  "verification_harness_note": "A first successful gradient run hit an np.bool serialization error; casting the pass flag to Python bool repaired only evidence serialization, then the same fixed calculations were rerun."
+}
