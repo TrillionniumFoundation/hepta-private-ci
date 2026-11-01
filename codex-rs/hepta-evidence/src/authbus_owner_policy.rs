@@ -74,6 +74,28 @@ pub(crate) async fn store(
     Ok(())
 }
 
+pub(crate) async fn require_current(
+    tx: &mut Transaction<'_, Sqlite>,
+    expected: Option<(Generation, Digest32)>,
+) -> Result<(), AuthBusAdmissionError> {
+    let current: Option<(Vec<u8>, Vec<u8>)> = sqlx::query_as(
+        "SELECT policy_revision, policy_digest FROM authbus_owner_policy_floor WHERE singleton = 1",
+    )
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(classify_sqlx_error)?;
+    match (current, expected) {
+        (None, None) => Ok(()),
+        (Some((revision, digest)), Some((expected_revision, expected_digest)))
+            if revision == expected_revision.get().to_be_bytes()
+                && digest == expected_digest.as_array().as_slice() =>
+        {
+            Ok(())
+        }
+        _ => Err(AuthBusAdmissionError::OwnerPolicyMismatch),
+    }
+}
+
 pub(crate) async fn append_frontier(
     tx: &mut Transaction<'_, Sqlite>,
     bytes: &mut Vec<u8>,

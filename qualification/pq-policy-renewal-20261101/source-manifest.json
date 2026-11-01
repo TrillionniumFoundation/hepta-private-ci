@@ -1,0 +1,72 @@
+{
+  "base_commit": "0f7c63418a7eec6cff5e4348e8cdc733850f8386",
+  "files": [
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_owner_policy.rs",
+      "baseline_blob": "44584018f7ec90d0dcd1a0e38bdd1b4cc3ec81e9",
+      "candidate_blob": "90376d0eff8ddd969fb2128266a016f6311e8546",
+      "sha256": "5e7317bbde2339494d8c4b7edf822f176d6b08628ad63a23ab55752f3bde729a",
+      "bytes": 4371
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_worker.rs",
+      "baseline_blob": "8fd5c2cc88c792437f73f0de8f31f407231e080e",
+      "candidate_blob": "dde6248630028006eb16daf73bf43c89885d3971",
+      "sha256": "664c80177acce57eb509d5e4eecb62dda694b313349f64e5c5360bab536f4c74",
+      "bytes": 13407
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch.rs",
+      "baseline_blob": "220700e70232c464f721b2dd3c55d05c618479fa",
+      "candidate_blob": "8c586d41e07575fd41236076e462c15eca179cde",
+      "sha256": "ce031f618454ba60f6b8830f343ed76ba037b3047029e3334d4044a5ffece792",
+      "bytes": 12647
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+      "baseline_blob": "27deff998fa54d540ac3262f78a314670e94b487",
+      "candidate_blob": "ee0fc17125fa7c74f82ff500330d2bdcea9b6485",
+      "sha256": "46d49bb9e0ebf7e602b52123d13f7e646af8c8114da2505922c538cb7ae8b761",
+      "bytes": 13058
+    },
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "baseline_blob": null,
+      "candidate_blob": "f7eb7a6db25560c4691686bdb7aba2575597da87",
+      "sha256": "e8e9007adec3d0a88861b28f3ce176013687f400e59a080f33877ae1a0b6fe71",
+      "bytes": 10473,
+      "followup_baseline_blob": "53484d9af2e544dc2a45ac13eb89039e01ec3242"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "baseline_blob": "3d041a2bd4e258979d3c2be0a000bdd59af7b969",
+      "candidate_blob": "c02537df4c934fc20f36419d06812d575cd8b3a4",
+      "sha256": "0ad58796f5c9432b1e8777e605456c00ac4e67241c90fb752d83062e6941b3d2",
+      "bytes": 14681,
+      "change_base_commit": "69797ad95bd019f422df73281da1827e2e289d6d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "baseline_blob": "670bca1f31940892761443dd91d0ea0cbb6f6fe4",
+      "candidate_blob": "f880c98b1261d8d5d8c9a1d94602fbc4cb0e982e",
+      "sha256": "1a72763311cfa8e03e6c2992c75c413cab4c3ed0519376d856010cc4b6f18eed",
+      "bytes": 17730,
+      "change_base_commit": "69797ad95bd019f422df73281da1827e2e289d6d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs",
+      "baseline_blob": null,
+      "candidate_blob": "692a8bd082b7f19958ac357f3fc088a1fb655c1b",
+      "sha256": "482b94f086ef45362be59aacd7c3290b5946b7c8ec59642a3315181f5354ba14",
+      "bytes": 4620,
+      "change_base_commit": "69797ad95bd019f422df73281da1827e2e289d6d"
+    }
+  ],
+  "validation": {
+    "scoped_rustfmt": "initial four and follow-up three Rust files passed Rust 1.95 parse/format; not follow-up repository 1.96 just fmt",
+    "native_tests": "follow-up 13 dispatcher + 3 product cases not executed; the superseded 17dc064f native failure is retained separately",
+    "locked_build": "follow-up not executed",
+    "workflow_reader_controls": "seven current 13+3 synthetic reader controls executed; not native application execution"
+  },
+  "followup_base_commit": "69797ad95bd019f422df73281da1827e2e289d6d"
+}

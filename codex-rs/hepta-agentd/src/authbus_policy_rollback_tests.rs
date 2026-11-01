@@ -1,4 +1,179 @@
 use super::*;
+use codex_hepta_evidence::AuthBusAdmissionError;
+use codex_hepta_evidence::AuthBusOutboxError;
+use codex_hepta_types::Generation;
+
+#[tokio::test]
+async fn pq_bound_policy_refuses_renewal_without_policy_snapshot() {
+    let fixture = Fixture::with_algorithm(AuthBusAlgorithm::MlDsa65V2).await;
+    let id = submit(&fixture.state, fixture.request(/*sequence*/ 1))
+        .await
+        .unwrap()
+        .delivery_id
+        .parse()
+        .unwrap();
+    let host = attached(&fixture.state).unwrap();
+    let delivery = fixture.claim(&host, id).await;
+    let issuer = host.trust(&fixture.state).await.unwrap().issuer().unwrap();
+    let before = host.evidence.authbus_delivery_status(id).await.unwrap();
+    assert!(matches!(
+        host.evidence
+            .renew_authbus_delivery(&issuer, &delivery.lease, /*lease_ms*/ 30_000)
+            .await,
+        Err(AuthBusOutboxError::Admission(
+            AuthBusAdmissionError::OwnerPolicyMismatch
+        ))
+    ));
+    assert_eq!(
+        host.evidence.authbus_delivery_status(id).await.unwrap(),
+        before
+    );
+
+    // The real dispatcher must select the policy-bound entry, so refusing the
+    // old API cannot turn a legitimate PQ delivery into an unavailable service.
+    let queue = ReplyLostQueue::default();
+    queue.lose_reply.store(false, Ordering::SeqCst);
+    deliver(&fixture.state, &host, &queue, delivery)
+        .await
+        .unwrap();
+    assert_eq!(queue.accepted.lock().unwrap().len(), 1);
+    assert_eq!(
+        host.evidence
+            .authbus_delivery_status(id)
+            .await
+            .unwrap()
+            .state,
+        AuthBusDeliveryState::Acked
+    );
+}
+
+#[tokio::test]
+async fn pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch() {
+    let fixture = Fixture::with_algorithm(AuthBusAlgorithm::MlDsa65V2).await;
+    let id = submit(&fixture.state, fixture.request(/*sequence*/ 1))
+        .await
+        .unwrap()
+        .delivery_id
+        .parse()
+        .unwrap();
+    let host = attached(&fixture.state).unwrap();
+    let delivery = fixture.claim(&host, id).await;
+    let selected = host.trust(&fixture.state).await.unwrap();
+    let issuer = selected.issuer().unwrap();
+    let (selected_revision, selected_digest) = selected.owner_policy().unwrap();
+
+    // A second legitimate owner refresh changes only thread permission, leaving
+    // issuer, key and epoch identical. A previously selected snapshot must not
+    // become usable merely because renewal acquired its SQLite lock later.
+    let mut config: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&fixture.trust_file).unwrap()).unwrap();
+    config["policy_revision"] = serde_json::json!(selected_revision.get() + 1);
+    config["thread_ids"] = serde_json::json!([]);
+    std::fs::write(&fixture.trust_file, serde_json::to_vec(&config).unwrap()).unwrap();
+    let current = host.trust(&fixture.state).await.unwrap();
+    let current_issuer = current.issuer().unwrap();
+    assert_eq!(
+        (
+            &current_issuer.issuer_id,
+            current_issuer.key_epoch,
+            current_issuer.verifying_key.as_bytes(),
+            current_issuer.revoked,
+        ),
+        (
+            &issuer.issuer_id,
+            issuer.key_epoch,
+            issuer.verifying_key.as_bytes(),
+            issuer.revoked,
+        )
+    );
+    let (current_revision, current_digest) = current.owner_policy().unwrap();
+    let before = host.evidence.authbus_delivery_status(id).await.unwrap();
+    for (revision, digest) in [
+        (selected_revision, selected_digest),
+        (current_revision, selected_digest),
+        (
+            Generation::new(current_revision.get() + 1).unwrap(),
+            current_digest,
+        ),
+    ] {
+        assert!(matches!(
+            host.evidence
+                .renew_authbus_delivery_with_owner_policy(
+                    &issuer,
+                    &delivery.lease,
+                    revision,
+                    digest,
+                    /*lease_ms*/ 30_000,
+                )
+                .await,
+            Err(AuthBusOutboxError::Admission(
+                AuthBusAdmissionError::OwnerPolicyMismatch
+            ))
+        ));
+        assert_eq!(
+            host.evidence.authbus_delivery_status(id).await.unwrap(),
+            before
+        );
+    }
+    assert!(matches!(
+        host.evidence
+            .renew_authbus_delivery(&issuer, &delivery.lease, /*lease_ms*/ 30_000)
+            .await,
+        Err(AuthBusOutboxError::Admission(
+            AuthBusAdmissionError::OwnerPolicyMismatch
+        ))
+    ));
+    let queue = ReplyLostQueue::default();
+    queue.lose_reply.store(false, Ordering::SeqCst);
+    deliver(&fixture.state, &host, &queue, delivery)
+        .await
+        .unwrap();
+    assert!(queue.modes.lock().unwrap().is_empty());
+    assert_eq!(
+        host.evidence
+            .authbus_delivery_status(id)
+            .await
+            .unwrap()
+            .state,
+        AuthBusDeliveryState::Quarantined
+    );
+
+    config["policy_revision"] = serde_json::json!(current_revision.get() + 1);
+    config["thread_ids"] = serde_json::json!(["thread:test"]);
+    std::fs::write(&fixture.trust_file, serde_json::to_vec(&config).unwrap()).unwrap();
+    let id = submit(&fixture.state, fixture.request(/*sequence*/ 2))
+        .await
+        .unwrap()
+        .delivery_id
+        .parse()
+        .unwrap();
+    let mut delivery = fixture.claim(&host, id).await;
+    let restored = host.trust(&fixture.state).await.unwrap();
+    let (revision, digest) = restored.owner_policy().unwrap();
+    delivery.lease = host
+        .evidence
+        .renew_authbus_delivery_with_owner_policy(
+            &restored.issuer().unwrap(),
+            &delivery.lease,
+            revision,
+            digest,
+            /*lease_ms*/ 30_000,
+        )
+        .await
+        .unwrap();
+    deliver(&fixture.state, &host, &queue, delivery)
+        .await
+        .unwrap();
+    assert_eq!(queue.accepted.lock().unwrap().len(), 1);
+    assert_eq!(
+        host.evidence
+            .authbus_delivery_status(id)
+            .await
+            .unwrap()
+            .state,
+        AuthBusDeliveryState::Acked
+    );
+}
 
 #[tokio::test]
 async fn pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen() {

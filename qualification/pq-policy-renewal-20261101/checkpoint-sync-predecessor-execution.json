@@ -1,0 +1,97 @@
+{
+  "scope": "retained real failed native predecessor; not successor qualification",
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41328688564/job/124913972865",
+  "job_id": 124913972865,
+  "source_sha": "17dc064f9af8b7c28f5cb41ca35cab8484bd3922",
+  "tested_tree": "5df912b991beed1004a1f4217b5d204f2de45bbf",
+  "runner": "ubuntu-24.04-arm",
+  "lane": "source-head",
+  "job_conclusion": "failure",
+  "command_record": {
+    "after": {
+      "commit": "17dc064f9af8b7c28f5cb41ca35cab8484bd3922",
+      "dirty": false,
+      "parents": [
+        "0f7c63418a7eec6cff5e4348e8cdc733850f8386"
+      ],
+      "tree": "5df912b991beed1004a1f4217b5d204f2de45bbf"
+    },
+    "base_sha": "0f7c63418a7eec6cff5e4348e8cdc733850f8386",
+    "before": {
+      "commit": "17dc064f9af8b7c28f5cb41ca35cab8484bd3922",
+      "dirty": false,
+      "parents": [
+        "0f7c63418a7eec6cff5e4348e8cdc733850f8386"
+      ],
+      "tree": "5df912b991beed1004a1f4217b5d204f2de45bbf"
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd",
+      "--test",
+      "authbus_text_product",
+      "--no-capture",
+      "--retries",
+      "0",
+      "--test-threads=1"
+    ],
+    "command_exit_code": 100,
+    "elapsed_seconds": 121.68903074000002,
+    "error": "required tests were not observed passing",
+    "exit_code": 100,
+    "finished_at": "2026-11-01T17:09:23.441358+00:00",
+    "job": "policy-renewal",
+    "lane": "source-head",
+    "log_bytes": 29522,
+    "log_file": "product.json.6968d5fe271c4c3999976d67699ea83f.log",
+    "log_sha256": "128a9dc77372cf96d107c8ab923f022f0e516ad4c50e8d5e632fcff7bd834976",
+    "minimum_tests": 3,
+    "observed_failed_tests": 1,
+    "observed_passed_tests": 2,
+    "output_limit_exceeded": false,
+    "returncode": 100,
+    "run_attempt": "1",
+    "run_id": "41328688564",
+    "schema_version": 1,
+    "source_sha": "17dc064f9af8b7c28f5cb41ca35cab8484bd3922",
+    "started_at": "2026-11-01T17:07:21.751358+00:00",
+    "status": "failed",
+    "tested_sha": "17dc064f9af8b7c28f5cb41ca35cab8484bd3922",
+    "timed_out": false,
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+  },
+  "failed_test": {
+    "name": "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+    "algorithm": "MlDsa65V2",
+    "error": "agentd protocol error: agentd rejected request (request_rejected): invalid agentd configuration: AuthBus text: AuthBus external replay checkpoint indicates rollback or drift",
+    "reported_test_seconds": 0.96
+  },
+  "other_product_cases": [
+    {
+      "name": "real_agentd_without_explicit_trust_rejects_signed_text",
+      "algorithm": "Ed25519V1",
+      "role": "missing-trust negative",
+      "result": "passed"
+    },
+    {
+      "name": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+      "algorithm": "Ed25519V1",
+      "role": "retained classical product regression",
+      "result": "passed"
+    }
+  ],
+  "log_evidence": {
+    "path": "checkpoint-sync-predecessor-product.log",
+    "bytes": 29522,
+    "sha256": "128a9dc77372cf96d107c8ab923f022f0e516ad4c50e8d5e632fcff7bd834976",
+    "recovery": "Removed only GitHub runner timestamp prefixes from the complete job log; reconstructed raw bytes match the original command record SHA-256.",
+    "complete_job_log_sha256": "bc79dee0dbc34d5756679cd8f1b0893c9a4274ee39c65f42b3ef3a896a5b3ba8"
+  },
+  "limitations": [
+    "The observed failure is real; the same-owner interleaving is source-derived until the new deterministic control executes.",
+    "No timeout, retry, skip, snapshot recapture, or authority substitute is used to turn this failed observation into a pass."
+  ]
+}

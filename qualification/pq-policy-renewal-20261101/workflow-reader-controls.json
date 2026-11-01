@@ -1,0 +1,53 @@
+{
+  "scope": "synthetic workflow reader controls only; no native application execution",
+  "workflow_sha256": "e8e9007adec3d0a88861b28f3ce176013687f400e59a080f33877ae1a0b6fe71",
+  "inline_validator_sha256": "4b012c06f42da3b8dff93abc140fdffdd93bd256c0b9cd3d283a98ca5152b9dc",
+  "expected_case_counts": {
+    "dispatcher": 13,
+    "product": 3
+  },
+  "controls": [
+    {
+      "case": "complete",
+      "expected_accept": true,
+      "exit_code": 0,
+      "control_passed": true
+    },
+    {
+      "case": "omitted",
+      "expected_accept": false,
+      "exit_code": 1,
+      "control_passed": true
+    },
+    {
+      "case": "duplicated",
+      "expected_accept": false,
+      "exit_code": 1,
+      "control_passed": true
+    },
+    {
+      "case": "ignored",
+      "expected_accept": false,
+      "exit_code": 1,
+      "control_passed": true
+    },
+    {
+      "case": "bad_hash",
+      "expected_accept": false,
+      "exit_code": 1,
+      "control_passed": true
+    },
+    {
+      "case": "false_count",
+      "expected_accept": false,
+      "exit_code": 1,
+      "control_passed": true
+    },
+    {
+      "case": "failed_status",
+      "expected_accept": false,
+      "exit_code": 1,
+      "control_passed": true
+    }
+  ]
+}

@@ -13,6 +13,7 @@ use codex_app_server_protocol::ThreadQueueReconcileOutcome;
 use codex_app_server_protocol::ThreadQueueReconcileParams;
 use codex_app_server_protocol::ThreadQueueReconcileResponse;
 use codex_app_server_protocol::UserInput;
+use codex_hepta_authbus::AuthBusAlgorithm;
 use codex_hepta_evidence::AuthBusClaimRequest;
 use codex_hepta_evidence::AuthBusDelivery;
 use codex_hepta_types::Digest32;
@@ -212,11 +213,26 @@ async fn deliver<Q: TextQueueTransport>(
     // Trust refresh can wait for SQLite and checkpoint fsync. Renew only after
     // every such await, rechecking the current persisted issuer and lease fence
     // in one transaction immediately before the transport boundary.
-    let lease = host
-        .evidence
-        .renew_authbus_delivery(&fresh_issuer, &delivery.lease, /*lease_ms*/ 30_000)
-        .await
-        .map_err(|error| invalid(&error.to_string()))?;
+    let lease = match fresh.algorithm()? {
+        AuthBusAlgorithm::Ed25519V1 => {
+            host.evidence
+                .renew_authbus_delivery(&fresh_issuer, &delivery.lease, /*lease_ms*/ 30_000)
+                .await
+        }
+        AuthBusAlgorithm::MlDsa65V2 => {
+            let (revision, digest) = fresh.owner_policy()?;
+            host.evidence
+                .renew_authbus_delivery_with_owner_policy(
+                    &fresh_issuer,
+                    &delivery.lease,
+                    revision,
+                    digest,
+                    /*lease_ms*/ 30_000,
+                )
+                .await
+        }
+    }
+    .map_err(|error| invalid(&error.to_string()))?;
     require_ready(state)?;
     let now = now_ms()?;
     let remaining_ms = u64::try_from(lease.expires_at_ms())
