@@ -1,0 +1,47 @@
+{
+  "actual_reset_owner_checks": [
+    {
+      "kernel": "retain:early",
+      "resets": 64,
+      "trace_sha256": "b07272e16f9587cb933cf0575e0f17e44bcc2300423fafabe9dba71c7ec74c98"
+    },
+    {
+      "kernel": "retain:late",
+      "resets": 64,
+      "trace_sha256": "703c7a20424d8e6e5d32fa39a85150afd1c2a43acfd6a25181e93f183a65795e"
+    },
+    {
+      "kernel": "repair:early",
+      "resets": 64,
+      "trace_sha256": "83d0bcdf8da235b985e74c1226b1db7e5799b7fd39eb5914a93b3bccd04e40ef"
+    },
+    {
+      "kernel": "repair:late",
+      "resets": 64,
+      "trace_sha256": "5cb384ffcceb057b81a0efe172d7d34edbe1c613e7b3b58c53a6b06fafb73c13"
+    },
+    {
+      "kernel": "rebuild:early",
+      "resets": 64,
+      "trace_sha256": "1b0898363ca9128cb248f03c4792e86e78b615fd40cdb896c7c48a4cb98056f5"
+    },
+    {
+      "kernel": "rebuild:late",
+      "resets": 64,
+      "trace_sha256": "060d620395525bfd1a84ffb83dde87ef7d5672c8844f3f77f1c234a29acf1345"
+    }
+  ],
+  "development_sample": {
+    "episodes": 4096,
+    "expected_return": 0.6379325658595162,
+    "sampled_return": 0.6435659179687501,
+    "sampling_standard_error": 0.005405554916483851
+  },
+  "exact_threshold_dominance_checks": 648,
+  "no_confirmation_data_used": true,
+  "no_training_data_used": true,
+  "passed": true,
+  "process_cpu_seconds": 1.474599699,
+  "scalar_bellman_max_absolute_error": 8.881784197001252e-16,
+  "schema": "hcsn-r16-control-development-v1"
+}
