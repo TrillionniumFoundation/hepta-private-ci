@@ -1,0 +1,11 @@
+{
+  "scope": "Implementation details fixed before content training or any fresh heldout evaluation",
+  "source_commit": "3583d3c9a934be4049491c96f6419be3573ccaa5",
+  "content_fit_seeds": [12031, 12032, 12033],
+  "content_seed_note": "The top-level plan listed 11,23,37. The module protocol uses a separate fresh namespace 12031,12032,12033. The exact frozen module protocol governs all 96 content fits. Value recalibration uses the six existing backbone checkpoints with seeds 11,23,37.",
+  "content_concurrency": 4,
+  "profile_concurrency": 1,
+  "frozen_scope": "Content track freezes the common causal frame encoder only; dynamics and task readout train. Value track freezes the entire inherited content backbone. These are distinct tests, not one fully crossed joint content/control training experiment.",
+  "value_source_order": "Value source hashes were frozen locally before training. Remote source publication followed training startup. Fresh heldout remains unopened until candidate freeze is published.",
+  "scientific_limits": "Passing numerical checks, positive control effects, or full completion of workers does not establish a new foundation network. Joint content/control training and learned He-Xiong free boundaries are not implemented by this matrix."
+}
