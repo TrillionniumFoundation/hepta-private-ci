@@ -1,0 +1,61 @@
+{
+  "action_step_checks": 34653,
+  "all_checks_passed": true,
+  "all_query_hashes_and_query2_snapshots_exact": true,
+  "all_six_value_groups_meet_point90": true,
+  "case_sets": 1536,
+  "complete_recorded_child_cost_lower_bound": 141.098189,
+  "complete_successful_campaign_child_cpu_seconds": 37.3705,
+  "executions": 4608,
+  "fixed_cpu_plus_preparation_ratios": {
+    "free|anchored|fixed": 1.0061020740639286,
+    "free|full|fixed": 1.0045241585930775,
+    "hmm_same_matrix|anchored|fixed": 0.9793800952507175,
+    "hmm_same_matrix|full|fixed": 0.9120539493563834,
+    "hx|anchored|fixed": 0.953874430734971,
+    "hx|full|fixed": 0.9682748487324658
+  },
+  "frozen_file_identities_verified": 44,
+  "independent_execution_query_fee_checks": 27648,
+  "limits": [
+    "New finite optimization gate, not old anchored/D or full-model adoption gate",
+    "Historical training CPU and candidate investigation are not erased from complete economics",
+    "Memory instrumentation source reviewed, not independently measured allocations or RSS",
+    "Same-matrix ordinary HMM receives this optimization; no exclusive analytic core gain"
+  ],
+  "maximum_query2_clock_roundoff": 8.881784197001252e-16,
+  "paired_query_record_comparisons": 18432,
+  "raw_archive_sha256": {
+    "raw_151101_iid.json.gz": "86aef317824dd849ddec1ebcb8329bec193f44624a0e4699dd036d7033be1297",
+    "raw_151101_ood.json.gz": "13636b962111508eb8e78022c0e9efa116ad5ae3d3dbd71d386176ae720e2169",
+    "raw_151103_iid.json.gz": "b21a94b6494971eb29775440fe5e6517e99928ad972616a8c67441813100a095",
+    "raw_151103_ood.json.gz": "228e52ce581379eb699ab7307f348121a12db0fc5ec078d2defc3dc865d5bd00",
+    "raw_151107_iid.json.gz": "8674a1991c8dadf6a1cb78b2e220ac5c048d373873575a485f2469e6d06e0a5f",
+    "raw_151107_ood.json.gz": "49588b0634c9badad3ef618d7c2462e09408827e62dc284a5f7fd53522ff5d8f",
+    "raw_151109_iid.json.gz": "4205adf8bb67c83b6d5cfc6e31d6c15a1bf56351f0c349ba7f6f79969ed1123e",
+    "raw_151109_ood.json.gz": "82b86b7ea54f2babcaf53f0bc42d0a8e606de56839b1ae5b7b0a39875842f587",
+    "raw_151113_iid.json.gz": "54c855b76cb610ce82e9677658eb581bf3ddd22b41cf972657c0eb62e7ba13db",
+    "raw_151113_ood.json.gz": "052a8bf1eeab8aed1ad35860e4776bdf4d4dfbd49da2989eaa37f49536633ac5",
+    "raw_151117_iid.json.gz": "697d2c6dc8cad5f69a747c7f9ce5a4f1670ccbab035890d1e2670c439720158a",
+    "raw_151117_ood.json.gz": "fcecdc809d3aa99d22bcd0b1be6660ff02f33770b5855a427029345bdf77320c",
+    "raw_151119_iid.json.gz": "49d3dcd1a8427c1f7a8afd00cdd5e58374ec983e16d6cad8e8f2b1dbb412a1d0",
+    "raw_151119_ood.json.gz": "a61de36dab10a73a98b948f8963771ac75eb82e72892dd1fe376edf88be76c34",
+    "raw_151123_iid.json.gz": "532b91044c8a226806aea1765b7257d5e0c0d56a9f9f22a57767b604414d0359",
+    "raw_151123_ood.json.gz": "a5658d408263769792bf4b76cacb452d8a658be733a54d7e382a99863a0b50f1"
+  },
+  "schema": "hcsn-r18-independent-planner-raw-review-v4",
+  "scope": "No experiment planner/executor imports; saved full traces, checkpoints, fees and resource summaries recomputed",
+  "source_commit": "43bed3e4821bfe967e7f9e830e4559b62436daa0",
+  "state_or_behavior_mismatches": 0,
+  "unique_owner_worlds": 128,
+  "v3_failed_cost_gate_retained": true,
+  "v3_free_anchored_ratio": 0.9093597094730493,
+  "value_cpu_plus_preparation_ratios": {
+    "free|anchored|value": 0.7545697868190551,
+    "free|full|value": 0.6530448039613234,
+    "hmm_same_matrix|anchored|value": 0.768978951150054,
+    "hmm_same_matrix|full|value": 0.6384993526314401,
+    "hx|anchored|value": 0.7771468438352264,
+    "hx|full|value": 0.6769309079042614
+  }
+}

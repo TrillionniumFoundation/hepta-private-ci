@@ -1,0 +1,47 @@
+{
+  "allocation_order": "Alternating per fit/model/representation/policy",
+  "allocation_window": "After imports and before law/cache construction through two complete executions and query2 snapshot readback; current/peak measured before end-memory-metrics traversal",
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "episodes_per_arm": 2,
+  "exact_gate": "Complete semantic equality excluding only CPU/wall/checkpointIO timing; exact original query2 snapshot dictionaries; failures preserved",
+  "final_source_commit": "43bed3e4821bfe967e7f9e830e4559b62436daa0",
+  "fits": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "kernel_cache_capacity": 64,
+  "models": [
+    "hx",
+    "free",
+    "hmm_same_matrix"
+  ],
+  "modes": [
+    "baseline",
+    "cached"
+  ],
+  "namespace": 180831,
+  "policies": [
+    "value",
+    "fixed"
+  ],
+  "representations": [
+    "full",
+    "anchored"
+  ],
+  "rss_scope": "One full child maxRSS; cannot separate per-method RSS",
+  "schema": "hcsn-r18-posthoc-tracemalloc-diagnostic-v1",
+  "scope": "Posthoc memory diagnostic after successful confirmation_02; one already-opened index0 world perfit/domain, no new quality evidence or gate changes",
+  "world_theta": [
+    0.3,
+    0.018
+  ]
+}
