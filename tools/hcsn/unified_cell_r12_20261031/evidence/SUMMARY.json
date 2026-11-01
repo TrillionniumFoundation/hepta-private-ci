@@ -1,0 +1,533 @@
+{
+  "schema": "hcsn-r12-registered-analysis-v1",
+  "domains": {
+    "iid": {
+      "arms": {
+        "A": {
+          "mean_utility": 0.8205929294513123,
+          "mean_accuracy": 0.88671875,
+          "read_calls": 256.0,
+          "advance_calls": 256.0,
+          "recovery_read_calls": 14.0,
+          "amortized_cpu_per_episode": 0.040113847371968755,
+          "equal_shared_charge_cpu_per_episode": 0.040113847371968755
+        },
+        "B": {
+          "mean_utility": 0.8350169927537247,
+          "mean_accuracy": 0.8779296875,
+          "read_calls": 179.75,
+          "advance_calls": 179.75,
+          "recovery_read_calls": 9.625,
+          "amortized_cpu_per_episode": 0.04014097123427344,
+          "equal_shared_charge_cpu_per_episode": 0.04014097123427344
+        },
+        "C": {
+          "mean_utility": 0.8196163669513123,
+          "mean_accuracy": 0.8857421875,
+          "read_calls": 256.0,
+          "advance_calls": 256.0,
+          "recovery_read_calls": 14.0,
+          "amortized_cpu_per_episode": 0.020101862778554688,
+          "equal_shared_charge_cpu_per_episode": 0.040147394804179684
+        },
+        "D": {
+          "mean_utility": 0.83798197679777,
+          "mean_accuracy": 0.8828125,
+          "read_calls": 186.25,
+          "advance_calls": 186.25,
+          "recovery_read_calls": 10.0,
+          "amortized_cpu_per_episode": 0.020115186199453124,
+          "equal_shared_charge_cpu_per_episode": 0.04016071822507813
+        },
+        "GRU": {
+          "mean_utility": 0.8350169927537247,
+          "mean_accuracy": 0.8779296875,
+          "read_calls": 179.75,
+          "advance_calls": 179.75,
+          "recovery_read_calls": 9.625,
+          "amortized_cpu_per_episode": 0.040208790651265626,
+          "equal_shared_charge_cpu_per_episode": 0.040208790651265626
+        },
+        "SSM": {
+          "mean_utility": 0.8315552691588166,
+          "mean_accuracy": 0.8759765625,
+          "read_calls": 183.625,
+          "advance_calls": 183.625,
+          "recovery_read_calls": 10.0,
+          "amortized_cpu_per_episode": 0.040146991048726564,
+          "equal_shared_charge_cpu_per_episode": 0.040146991048726564
+        },
+        "HMM": {
+          "mean_utility": 0.83602885179777,
+          "mean_accuracy": 0.880859375,
+          "read_calls": 186.25,
+          "advance_calls": 186.25,
+          "recovery_read_calls": 10.0,
+          "amortized_cpu_per_episode": 0.02007967470042969,
+          "equal_shared_charge_cpu_per_episode": 0.04012520672605469
+        },
+        "ORACLE": {
+          "mean_utility": 0.8377171406847079,
+          "mean_accuracy": 0.8818359375,
+          "read_calls": 184.5,
+          "advance_calls": 184.5,
+          "recovery_read_calls": 9.875,
+          "amortized_cpu_per_episode": 3.3757467773437534e-05,
+          "equal_shared_charge_cpu_per_episode": 3.3757467773437534e-05
+        }
+      },
+      "contrasts": {
+        "B_minus_A": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            0.04081462197538133,
+            0.02376061434633725,
+            0.01624691874431894,
+            0.00038393273242598447,
+            0.016206101387612026,
+            -0.002160720280044881,
+            0.015226084471447687,
+            0.004914953041820658
+          ],
+          "mean": 0.014424063302412374,
+          "ci95_student": [
+            0.0027994724471436805,
+            0.026048654157681067
+          ],
+          "one_sided_simultaneous_lower": 0.0027994724471436805,
+          "exact_sign_flip_p": 0.0234375
+        },
+        "D_minus_C": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            0.012445532682800575,
+            0.030141260545084925,
+            0.040606141633720005,
+            -0.0025281462828858903,
+            0.023111600003250965,
+            0.0026438805173707447,
+            0.013568150249743227,
+            0.026936459422577275
+          ],
+          "mean": 0.01836560984645773,
+          "ci95_student": [
+            0.006246083217775528,
+            0.03048513647513993
+          ],
+          "one_sided_simultaneous_lower": 0.006246083217775528,
+          "exact_sign_flip_p": 0.015625
+        },
+        "C_minus_A": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            0.0234375,
+            -0.0078125,
+            -0.0078125,
+            0.0,
+            -0.0078125,
+            0.0078125,
+            -0.0078125,
+            -0.0078125
+          ],
+          "mean": -0.0009765625,
+          "ci95_student": [
+            -0.010497651908412264,
+            0.008544526908412264
+          ],
+          "one_sided_simultaneous_lower": -0.010497651908412264,
+          "exact_sign_flip_p": 1.0
+        },
+        "D_minus_B": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            -0.004931589292580751,
+            -0.0014318538012523252,
+            0.016546722889401067,
+            -0.0029120790153118747,
+            -0.0009070013843610614,
+            0.012617100797415626,
+            -0.00947043422170446,
+            0.014209006380756617
+          ],
+          "mean": 0.0029649840440453545,
+          "ci95_student": [
+            -0.005334782408297524,
+            0.011264750496388233
+          ],
+          "one_sided_simultaneous_lower": -0.005334782408297524,
+          "exact_sign_flip_p": 0.4453125,
+          "holm_p": 0.71875
+        },
+        "D_minus_HMM": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.015625
+          ],
+          "mean": 0.001953125,
+          "ci95_student": [
+            -0.0026652817413921562,
+            0.006571531741392156
+          ],
+          "one_sided_simultaneous_lower": -0.0026652817413921562,
+          "exact_sign_flip_p": 1.0
+        },
+        "interaction": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            -0.02836908929258075,
+            0.006380646198747675,
+            0.024359222889401067,
+            -0.0029120790153118747,
+            0.006905498615638939,
+            0.004804600797415626,
+            -0.0016579342217044601,
+            0.022021506380756617
+          ],
+          "mean": 0.0039415465440453545,
+          "ci95_student": [
+            -0.00976493239391689,
+            0.017648025482007598
+          ],
+          "one_sided_simultaneous_lower": -0.00976493239391689,
+          "exact_sign_flip_p": 0.4765625
+        }
+      },
+      "accuracy_D_minus_B": {
+        "n_independent_fits": 8,
+        "paired_values": [
+          0.0,
+          0.0,
+          0.015625,
+          0.0,
+          0.0,
+          0.015625,
+          -0.0078125,
+          0.015625
+        ],
+        "mean": 0.0048828125,
+        "ci95_student": [
+          -0.0028747754569756565,
+          0.012640400456975657
+        ],
+        "one_sided_simultaneous_lower": -0.0028747754569756565,
+        "exact_sign_flip_p": 0.25
+      },
+      "sequence": {
+        "hx_distribution": {
+          "mean_accuracy": 0.9030490451388888,
+          "mean_posterior_ce": 2.208208533873143,
+          "mean_posterior_content_brier": 2.133354066018333e-05
+        },
+        "gru": {
+          "mean_accuracy": 0.9014756944444445,
+          "mean_posterior_ce": 2.2131563843675135,
+          "mean_posterior_content_brier": 0.0017951991034643488
+        },
+        "continuous_diagonal_ssm": {
+          "mean_accuracy": 0.8983289930555556,
+          "mean_posterior_ce": 2.222894111258144,
+          "mean_posterior_content_brier": 0.006435779425001061
+        },
+        "generic_hmm": {
+          "mean_accuracy": 0.9034830729166666,
+          "mean_posterior_ce": 2.208208533873143,
+          "mean_posterior_content_brier": 2.133354066018332e-05
+        },
+        "true_bayes": {
+          "mean_accuracy": 0.9035373263888888,
+          "mean_posterior_ce": 2.2081689365225667,
+          "mean_posterior_content_brier": 0.0
+        }
+      },
+      "ordinary_choices": [
+        "gru",
+        "gru",
+        "gru",
+        "gru",
+        "gru",
+        "gru",
+        "gru",
+        "gru"
+      ],
+      "generic_hmm_torch_parity_max": 1.1102230246251565e-15,
+      "conservative_cost_ratio_D_over_B": 1.0004919410317563,
+      "unique_actual_cost_ratio_D_over_B": 0.5011135899541523,
+      "noninferiority_pass": true,
+      "cost_acceptance_pass": false,
+      "D_HMM_action_disagreements": 4,
+      "quality_gain_acceptance_pass": false
+    },
+    "ood": {
+      "arms": {
+        "A": {
+          "mean_utility": 0.8141161569666856,
+          "mean_accuracy": 0.888671875,
+          "read_calls": 256.0,
+          "advance_calls": 256.0,
+          "recovery_read_calls": 14.25,
+          "amortized_cpu_per_episode": 0.04011369396083594,
+          "equal_shared_charge_cpu_per_episode": 0.04011369396083594
+        },
+        "B": {
+          "mean_utility": 0.8295656738610631,
+          "mean_accuracy": 0.876953125,
+          "read_calls": 178.125,
+          "advance_calls": 178.125,
+          "recovery_read_calls": 9.375,
+          "amortized_cpu_per_episode": 0.040139366460835935,
+          "equal_shared_charge_cpu_per_episode": 0.040139366460835935
+        },
+        "C": {
+          "mean_utility": 0.8131395944666856,
+          "mean_accuracy": 0.8876953125,
+          "read_calls": 256.0,
+          "advance_calls": 256.0,
+          "recovery_read_calls": 14.25,
+          "amortized_cpu_per_episode": 0.020101404425039063,
+          "equal_shared_charge_cpu_per_episode": 0.04014693645066407
+        },
+        "D": {
+          "mean_utility": 0.8239879331163642,
+          "mean_accuracy": 0.87109375,
+          "read_calls": 178.625,
+          "advance_calls": 178.75,
+          "recovery_read_calls": 9.25,
+          "amortized_cpu_per_episode": 0.020112355640859378,
+          "equal_shared_charge_cpu_per_episode": 0.04015788766648437
+        },
+        "GRU": {
+          "mean_utility": 0.8295656738610631,
+          "mean_accuracy": 0.876953125,
+          "read_calls": 178.125,
+          "advance_calls": 178.125,
+          "recovery_read_calls": 9.375,
+          "amortized_cpu_per_episode": 0.04014162115224219,
+          "equal_shared_charge_cpu_per_episode": 0.04014162115224219
+        },
+        "SSM": {
+          "mean_utility": 0.7873857266385489,
+          "mean_accuracy": 0.84765625,
+          "read_calls": 215.625,
+          "advance_calls": 215.625,
+          "recovery_read_calls": 11.375,
+          "amortized_cpu_per_episode": 0.04014368181825781,
+          "equal_shared_charge_cpu_per_episode": 0.04014368181825781
+        },
+        "HMM": {
+          "mean_utility": 0.8230113706163642,
+          "mean_accuracy": 0.8701171875,
+          "read_calls": 178.625,
+          "advance_calls": 178.75,
+          "recovery_read_calls": 9.25,
+          "amortized_cpu_per_episode": 0.020078528101796875,
+          "equal_shared_charge_cpu_per_episode": 0.040124060127421875
+        },
+        "ORACLE": {
+          "mean_utility": 0.8253936123318967,
+          "mean_accuracy": 0.875,
+          "read_calls": 187.125,
+          "advance_calls": 187.25,
+          "recovery_read_calls": 9.75,
+          "amortized_cpu_per_episode": 3.310782128906247e-05,
+          "equal_shared_charge_cpu_per_episode": 3.310782128906247e-05
+        }
+      },
+      "contrasts": {
+        "B_minus_A": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            0.052674895166014646,
+            -0.0016934948880437117,
+            0.04261784383362466,
+            0.021383042728385204,
+            0.03750215104358001,
+            -0.026966699039470576,
+            -0.009621579738349206,
+            0.007699976049278967
+          ],
+          "mean": 0.015449516894377499,
+          "ci95_student": [
+            -0.007828622458988296,
+            0.0387276562477433
+          ],
+          "one_sided_simultaneous_lower": -0.007828622458988296,
+          "exact_sign_flip_p": 0.1640625
+        },
+        "D_minus_C": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            0.027618844468029313,
+            0.006066200115413367,
+            0.022524454873298128,
+            0.021383042728385204,
+            0.045310744793580104,
+            -0.026966699039470576,
+            -0.009621579738349206,
+            0.00047170099654225695
+          ],
+          "mean": 0.010848338649678574,
+          "ci95_student": [
+            -0.00836132825973731,
+            0.030058005559094457
+          ],
+          "one_sided_simultaneous_lower": -0.00836132825973731,
+          "exact_sign_flip_p": 0.2265625
+        },
+        "C_minus_A": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            0.0,
+            -0.0234375,
+            0.0,
+            -0.0078125,
+            0.015625,
+            0.0078125,
+            0.0,
+            0.0
+          ],
+          "mean": -0.0009765625,
+          "ci95_student": [
+            -0.010497651908412264,
+            0.008544526908412264
+          ],
+          "one_sided_simultaneous_lower": -0.010497651908412264,
+          "exact_sign_flip_p": 1.0
+        },
+        "D_minus_B": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            -0.025056050697985333,
+            -0.01567780499654292,
+            -0.02009338896032653,
+            -0.0078125,
+            0.023433593750000092,
+            0.0078125,
+            0.0,
+            -0.00722827505273671
+          ],
+          "mean": -0.005577740744698925,
+          "ci95_student": [
+            -0.018803587120718286,
+            0.007648105631320437
+          ],
+          "one_sided_simultaneous_lower": -0.018803587120718286,
+          "exact_sign_flip_p": 0.359375,
+          "holm_p": 0.71875
+        },
+        "D_minus_HMM": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0078125,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "mean": 0.0009765625,
+          "ci95_student": [
+            -0.0013326408706960781,
+            0.003285765870696078
+          ],
+          "one_sided_simultaneous_lower": -0.0013326408706960781,
+          "exact_sign_flip_p": 1.0
+        },
+        "interaction": {
+          "n_independent_fits": 8,
+          "paired_values": [
+            -0.025056050697985333,
+            0.007759695003457079,
+            -0.02009338896032653,
+            0.0,
+            0.007808593750000092,
+            0.0,
+            0.0,
+            -0.00722827505273671
+          ],
+          "mean": -0.004601178244698925,
+          "ci95_student": [
+            -0.014769937388651169,
+            0.0055675808992533184
+          ],
+          "one_sided_simultaneous_lower": -0.014769937388651169,
+          "exact_sign_flip_p": 0.4375
+        }
+      },
+      "accuracy_D_minus_B": {
+        "n_independent_fits": 8,
+        "paired_values": [
+          -0.0234375,
+          -0.015625,
+          -0.0234375,
+          -0.0078125,
+          0.0234375,
+          0.0078125,
+          0.0,
+          -0.0078125
+        ],
+        "mean": -0.005859375,
+        "ci95_student": [
+          -0.019267534396998603,
+          0.007548784396998605
+        ],
+        "one_sided_simultaneous_lower": -0.019267534396998603,
+        "exact_sign_flip_p": 0.421875
+      },
+      "sequence": {
+        "hx_distribution": {
+          "mean_accuracy": 0.8894856770833333,
+          "mean_posterior_ce": 2.2308952695857043,
+          "mean_posterior_content_brier": 2.1800007983380244e-05
+        },
+        "gru": {
+          "mean_accuracy": 0.8900824652777777,
+          "mean_posterior_ce": 2.240970636318031,
+          "mean_posterior_content_brier": 0.002907703698567643
+        },
+        "continuous_diagonal_ssm": {
+          "mean_accuracy": 0.8505316840277778,
+          "mean_posterior_ce": 2.3310674049008577,
+          "mean_posterior_content_brier": 0.05779728764252164
+        },
+        "generic_hmm": {
+          "mean_accuracy": 0.8907335069444444,
+          "mean_posterior_ce": 2.2308952695857043,
+          "mean_posterior_content_brier": 2.180000798338047e-05
+        },
+        "true_bayes": {
+          "mean_accuracy": 0.8886176215277777,
+          "mean_posterior_ce": 2.230854541275052,
+          "mean_posterior_content_brier": 0.0
+        }
+      },
+      "ordinary_choices": [
+        "gru",
+        "gru",
+        "gru",
+        "gru",
+        "gru",
+        "gru",
+        "gru",
+        "gru"
+      ],
+      "generic_hmm_torch_parity_max": 1.3322676295501878e-15,
+      "conservative_cost_ratio_D_over_B": 1.0004614224707933,
+      "unique_actual_cost_ratio_D_over_B": 0.5010631062272257,
+      "noninferiority_pass": false,
+      "cost_acceptance_pass": false,
+      "D_HMM_action_disagreements": 1,
+      "quality_gain_acceptance_pass": false
+    }
+  },
+  "scope": "Eight paired fits in a synthetic known-family finite CTMC task. No real-content or production claim.",
+  "all_scientific_blockers_closed": false
+}
