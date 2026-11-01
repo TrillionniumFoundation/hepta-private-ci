@@ -1,0 +1,65 @@
+{
+  "schema": "hcsn-support-retention-r16-v1",
+  "base_commit": "74144a3f5d5c77c953ecdc4708d3d90b56b67d3c",
+  "scope": "Fresh-trajectory extension using eight frozen R15 fits. Finite synthetic CTMC, supplied addresses, six queries and current-query three-slot control; no retraining, learned semantics, continuum optimality, or production activation.",
+  "fits": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "world_theta": [
+    0.3,
+    0.018
+  ],
+  "episodes_per_fit_domain": 128,
+  "development_namespace": 16061,
+  "confirmation_namespace": 16062,
+  "training_source": "addressed_decision_r15_20261101/run_01/training/*.json.gz; exact SHA256 identities from run_02/FREEZE.json; choices remain unchanged",
+  "models": "Original HX, free-rate, same-matrix HMM and validation-selected ordinary. Full A/B/C/D and same-Q HMM retained; all receive identical initial public events and event tapes, action interfaces, observation opportunities, fees and deadlines; purchased histories depend on each arm's own actions.",
+  "new_candidates": {
+    "block": "Eight active/recovery by content masses with uniform within-group phase reconstruction; project after each advance. Secondary, expected to depend on time partition.",
+    "anchored": "Eight masses and one anchor time per address, plus a common clock. Advance only moves clock. Materialize from last real observation/write; project only on actual information or write. Planner projects at the same events. Primary new compression candidate."
+  },
+  "retained_controls": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "hmm",
+    "free",
+    "factorized",
+    "mean"
+  ],
+  "storage_accounting": "Count persistent numeric belief and time arrays. Separately retain forty-dimensional temporaries, model matrices, caches, Python objects, disk checkpoints and process RSS; do not call the 296-byte statistic total memory.",
+  "quality_statistics": {
+    "unit": "paired fitted model, n=8; new worlds do not create new independent fitted models",
+    "original_core": "D-B, both domains mean >=0.01, Student t95 lower >0, two-sided exact paired sign-flip Holm across domains <0.05; unchanged from R15",
+    "primary_compression": "anchored-D, utility and correctness in both domains: four one-sided 98.75% Student t lower bounds strictly >-0.01",
+    "cost_gate": "After compression noninferiority: both online CPU anchored/D and the complete measured new confirmation search plus inherited all-search training + candidate preparation + 1000 repeated uses anchored/D <=0.90 in both domains. Common search investment includes all candidate and failed attempts, and complete worker CPU; it is charged equally to each alternative deployment. Developer/audit CPU is separately reported and is not called whole-project cost.",
+    "uncertainty": "CPU ratios descriptive single-run aggregates with cyclic arm order; no energy or hardware generalization. Report per-fit CPU, wall, throughput and full worker costs.",
+    "secondary": "Block/factorized/mean comparisons descriptive only; no substitution for the primary anchored candidate after confirmation.",
+    "reuse_investment_formula": "For each fit, I = original complete training worker CPU + the sum of complete confirmation worker CPU in both domains, including all ten candidate arms and failures. Alternative deployment cost for N uses is I + its model restoration CPU + N times its measured online per-episode CPU. No candidate search cost is silently free."
+  },
+  "failure_rule": "Any candidate with an invalid episode has null utility/reward summaries in both domains; report every attempt, exception and full failure CPU. No epsilon likelihood repair or success-only estimate. Any D/HMM trace mismatch blocks all gain interpretation.",
+  "cost_contract": "Every candidate executes every world. Include model restoration, temporary expansion, all planner branches, checkpoint serialization/fsync/read/restore at the same query boundary, and invalid attempts. Separately report world generation, original full-search training and complete child CPU including interpreter/import/output. Numeric CPU is not joules.",
+  "checkpoint_scope": "One actual query-boundary disk restore per episode after query 2. The same process retains law and transition caches. No pending action. Not cold-process, production owner or mid-action recovery qualification.",
+  "new_source_rule": "Freeze and publish source, protocol, inherited model hashes and selections before generation of namespace16062 worlds. Development may use only namespace16061. Keep all development and failed output.",
+  "unmeasured": [
+    "GPU",
+    "joules",
+    "media encoder cost",
+    "production networking",
+    "production Rust ownership",
+    "continuous full-horizon optimality"
+  ],
+  "production_activation": false
+}
