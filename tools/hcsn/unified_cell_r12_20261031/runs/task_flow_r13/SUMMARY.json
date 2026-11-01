@@ -1,0 +1,1029 @@
+{
+  "all_scientific_blockers_closed": false,
+  "arm_mapping": {
+    "A": "ordinary selected core, fixed READ control",
+    "B": "ordinary selected core, finite-horizon value control",
+    "C": "HX distribution core, fixed READ control",
+    "D": "HX distribution core, finite-horizon value control"
+  },
+  "confirmation_cpu_seconds": 9.180064891,
+  "confirmation_wall_seconds": 9.184539561000747,
+  "cost_allocation_contract": "All arms include common preparation. HX fitting supplies the shared controller calibration; C/D count that fit once, A/B also include both ordinary candidate fits used for validation selection, amortized by the runner at 1000 episodes.",
+  "cost_limits": "CPU is measured computation, not energy. Cost acceptance uses full costs only; online and direct columns are descriptive and never substitute for full cost.",
+  "domains": {
+    "iid": {
+      "contrasts": {
+        "B-A": {
+          "degrees_of_freedom": 7,
+          "independent_unit": "paired fit seed",
+          "mean": 0.03901364803363022,
+          "n": 8,
+          "per_seed": [
+            {
+              "seed": 121101,
+              "value": 0.07970485647814951
+            },
+            {
+              "seed": 121103,
+              "value": 0.05308607486965955
+            },
+            {
+              "seed": 121107,
+              "value": 0.002135012577178297
+            },
+            {
+              "seed": 121109,
+              "value": 0.08552617231897974
+            },
+            {
+              "seed": 121113,
+              "value": 0.005829808669526315
+            },
+            {
+              "seed": 121117,
+              "value": 0.040089450477769795
+            },
+            {
+              "seed": 121119,
+              "value": 0.013683772681993056
+            },
+            {
+              "seed": 121123,
+              "value": 0.03205403619578551
+            }
+          ],
+          "sample_sd": 0.03200361505999915,
+          "standard_error": 0.011314986615704658,
+          "t_95pct_ci": [
+            0.012257956275687227,
+            0.06576933979157322
+          ]
+        },
+        "C-A": {
+          "degrees_of_freedom": 7,
+          "independent_unit": "paired fit seed",
+          "mean": -0.007812500000000014,
+          "n": 8,
+          "per_seed": [
+            {
+              "seed": 121101,
+              "value": -0.0078125
+            },
+            {
+              "seed": 121103,
+              "value": -0.046875
+            },
+            {
+              "seed": 121107,
+              "value": -0.046875
+            },
+            {
+              "seed": 121109,
+              "value": 0.0390625
+            },
+            {
+              "seed": 121113,
+              "value": 0.015625
+            },
+            {
+              "seed": 121117,
+              "value": 0.0078125
+            },
+            {
+              "seed": 121119,
+              "value": -0.03125
+            },
+            {
+              "seed": 121123,
+              "value": 0.007812499999999889
+            }
+          ],
+          "sample_sd": 0.03124999999999999,
+          "standard_error": 0.0110485434560398,
+          "t_95pct_ci": [
+            -0.033938153800928475,
+            0.01831315380092845
+          ]
+        },
+        "D-B": {
+          "degrees_of_freedom": 7,
+          "independent_unit": "paired fit seed",
+          "mean": -0.017034079425746418,
+          "n": 8,
+          "per_seed": [
+            {
+              "seed": 121101,
+              "value": -0.018632077891396426
+            },
+            {
+              "seed": 121103,
+              "value": -0.030458582260844302
+            },
+            {
+              "seed": 121107,
+              "value": -0.010368660164974952
+            },
+            {
+              "seed": 121109,
+              "value": -0.01944526806556013
+            },
+            {
+              "seed": 121113,
+              "value": -0.035889655413069876
+            },
+            {
+              "seed": 121117,
+              "value": -0.008288536382201062
+            },
+            {
+              "seed": 121119,
+              "value": -0.014966627462205784
+            },
+            {
+              "seed": 121123,
+              "value": 0.0017767722342811876
+            }
+          ],
+          "sample_sd": 0.012089855764126892,
+          "standard_error": 0.004274409497190697,
+          "t_95pct_ci": [
+            -0.027141451784042057,
+            -0.0069267070674507766
+          ]
+        },
+        "D-C": {
+          "degrees_of_freedom": 7,
+          "independent_unit": "paired fit seed",
+          "mean": 0.029792068607883818,
+          "n": 8,
+          "per_seed": [
+            {
+              "seed": 121101,
+              "value": 0.06888527858675308
+            },
+            {
+              "seed": 121103,
+              "value": 0.06950249260881525
+            },
+            {
+              "seed": 121107,
+              "value": 0.038641352412203345
+            },
+            {
+              "seed": 121109,
+              "value": 0.027018404253419614
+            },
+            {
+              "seed": 121113,
+              "value": -0.04568484674354356
+            },
+            {
+              "seed": 121117,
+              "value": 0.023988414095568733
+            },
+            {
+              "seed": 121119,
+              "value": 0.029967145219787272
+            },
+            {
+              "seed": 121123,
+              "value": 0.026018308430066805
+            }
+          ],
+          "sample_sd": 0.03572897774106553,
+          "standard_error": 0.012632101222785325,
+          "t_95pct_ci": [
+            -7.810429208922332e-05,
+            0.05966224150785686
+          ]
+        },
+        "interaction": {
+          "degrees_of_freedom": 7,
+          "independent_unit": "paired fit seed",
+          "mean": -0.009221579425746404,
+          "n": 8,
+          "per_seed": [
+            {
+              "seed": 121101,
+              "value": -0.010819577891396426
+            },
+            {
+              "seed": 121103,
+              "value": 0.016416417739155698
+            },
+            {
+              "seed": 121107,
+              "value": 0.03650633983502505
+            },
+            {
+              "seed": 121109,
+              "value": -0.05850776806556013
+            },
+            {
+              "seed": 121113,
+              "value": -0.051514655413069876
+            },
+            {
+              "seed": 121117,
+              "value": -0.01610103638220106
+            },
+            {
+              "seed": 121119,
+              "value": 0.016283372537794216
+            },
+            {
+              "seed": 121123,
+              "value": -0.006035727765718701
+            }
+          ],
+          "sample_sd": 0.03311606196012988,
+          "standard_error": 0.011708295989100854,
+          "t_95pct_ci": [
+            -0.036907300066400806,
+            0.018464141214907998
+          ]
+        }
+      },
+      "cost_acceptance": {
+        "accepted": false,
+        "cpu_acceptable": true,
+        "familywise_confidence_at_least": 0.95,
+        "full_cpu_ratio_maximum": 0.9,
+        "measured_full_cpu_ratio": 0.3534775582173624,
+        "multiplicity": "Bonferroni across IID/OOD utility bounds",
+        "noninferiority_margin": 0.01,
+        "per_domain_one_sided_confidence": 0.975,
+        "utility_lower_bound": -0.027141451784042057,
+        "utility_noninferior": false
+      },
+      "costs": {
+        "D_over_B": {
+          "direct_cpu_per_episode": 0.9884404162723572,
+          "full_cpu_per_episode": 0.3534775582173624,
+          "online_cpu_per_episode": 0.8555366167172368
+        },
+        "aggregation": "D/B ratio of domain arm means across the eight fits",
+        "arm_means": {
+          "A": {
+            "direct_cpu_per_episode": 0.021211511286132814,
+            "full_cpu_per_episode": 0.06204061141113281,
+            "online_cpu_per_episode": 0.000175024161132813
+          },
+          "B": {
+            "direct_cpu_per_episode": 0.022729157199218752,
+            "full_cpu_per_episode": 0.06355825732421874,
+            "online_cpu_per_episode": 0.0016926700742187517
+          },
+          "C": {
+            "direct_cpu_per_episode": 0.021293451578125,
+            "full_cpu_per_episode": 0.021293451578125,
+            "online_cpu_per_episode": 0.00027517520312499936
+          },
+          "D": {
+            "direct_cpu_per_episode": 0.02246641760351563,
+            "full_cpu_per_episode": 0.02246641760351563,
+            "online_cpu_per_episode": 0.0014481412285156248
+          }
+        },
+        "direct_column_supplied": true,
+        "direct_missing_policy": "Absent direct costs remain null and are not replaced by online or full costs",
+        "per_seed": [
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.0210783396328125,
+                "full_cpu_per_episode": 0.06202814463281249,
+                "online_cpu_per_episode": 0.00012790163281250003
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.022109415851562498,
+                "full_cpu_per_episode": 0.06305922085156249,
+                "online_cpu_per_episode": 0.0011589778515624996
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.021231740562500004,
+                "full_cpu_per_episode": 0.021231740562500004,
+                "online_cpu_per_episode": 0.0002193225625000024
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.022085086296875,
+                "full_cpu_per_episode": 0.022085086296875,
+                "online_cpu_per_episode": 0.0010726682968749991
+              }
+            },
+            "seed": 121101
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.0211640714375,
+                "full_cpu_per_episode": 0.0619418264375,
+                "online_cpu_per_episode": 0.00018359343750000076
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.02243349921875,
+                "full_cpu_per_episode": 0.06321125421875,
+                "online_cpu_per_episode": 0.0014530212187499995
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.0211896555625,
+                "full_cpu_per_episode": 0.0211896555625,
+                "online_cpu_per_episode": 0.00020165156249999858
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.022406507726562504,
+                "full_cpu_per_episode": 0.022406507726562504,
+                "online_cpu_per_episode": 0.0014185037265625026
+              }
+            },
+            "seed": 121103
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.021175021476562497,
+                "full_cpu_per_episode": 0.0619720654765625,
+                "online_cpu_per_episode": 0.00020358247656249856
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.0222461817578125,
+                "full_cpu_per_episode": 0.0630432257578125,
+                "online_cpu_per_episode": 0.0012747427578125026
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.021222621515624998,
+                "full_cpu_per_episode": 0.021222621515624998,
+                "online_cpu_per_episode": 0.0002334205156249991
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.023161308898437497,
+                "full_cpu_per_episode": 0.023161308898437497,
+                "online_cpu_per_episode": 0.0021721078984374975
+              }
+            },
+            "seed": 121107
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.0212188676953125,
+                "full_cpu_per_episode": 0.0620273646953125,
+                "online_cpu_per_episode": 0.00012172269531249974
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.022330964703125,
+                "full_cpu_per_episode": 0.063139461703125,
+                "online_cpu_per_episode": 0.0012338197031249998
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.0212687527578125,
+                "full_cpu_per_episode": 0.0212687527578125,
+                "online_cpu_per_episode": 0.00021767675781250023
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.0223806690703125,
+                "full_cpu_per_episode": 0.0223806690703125,
+                "online_cpu_per_episode": 0.0013295930703125028
+              }
+            },
+            "seed": 121109
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.021205298015625006,
+                "full_cpu_per_episode": 0.061963629015625,
+                "online_cpu_per_episode": 0.00019489301562500283
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.022472059429687503,
+                "full_cpu_per_episode": 0.0632303904296875,
+                "online_cpu_per_episode": 0.0014616544296875006
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.02127930190625,
+                "full_cpu_per_episode": 0.02127930190625,
+                "online_cpu_per_episode": 0.0002801929062499972
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.022063499031250003,
+                "full_cpu_per_episode": 0.022063499031250003,
+                "online_cpu_per_episode": 0.001064390031250001
+              }
+            },
+            "seed": 121113
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.021151933984375006,
+                "full_cpu_per_episode": 0.06193021398437501,
+                "online_cpu_per_episode": 0.00010955698437500883
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.0230122846328125,
+                "full_cpu_per_episode": 0.0637905646328125,
+                "online_cpu_per_episode": 0.0019699076328125037
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.021148803679687505,
+                "full_cpu_per_episode": 0.021148803679687505,
+                "online_cpu_per_episode": 0.00019485467968750197
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.022175414671875,
+                "full_cpu_per_episode": 0.022175414671875,
+                "online_cpu_per_episode": 0.001221465671874998
+              }
+            },
+            "seed": 121117
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.021321359656249997,
+                "full_cpu_per_episode": 0.06219162565625,
+                "online_cpu_per_episode": 0.00017228065624999567
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.022685295632812505,
+                "full_cpu_per_episode": 0.06355556163281251,
+                "online_cpu_per_episode": 0.0015362166328125038
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.0215301995,
+                "full_cpu_per_episode": 0.0215301995,
+                "online_cpu_per_episode": 0.0004671294999999964
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.022764456734374994,
+                "full_cpu_per_episode": 0.022764456734374994,
+                "online_cpu_per_episode": 0.0017013867343749906
+              }
+            },
+            "seed": 121119
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.021377198390625,
+                "full_cpu_per_episode": 0.062270021390625,
+                "online_cpu_per_episode": 0.00028666239062499765
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.024543556367187507,
+                "full_cpu_per_episode": 0.0654363793671875,
+                "online_cpu_per_episode": 0.0034530203671875037
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.021476537140625,
+                "full_cpu_per_episode": 0.021476537140625,
+                "online_cpu_per_episode": 0.00038715314062499895
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.02269439839843751,
+                "full_cpu_per_episode": 0.02269439839843751,
+                "online_cpu_per_episode": 0.001605014398437507
+              }
+            },
+            "seed": 121123
+          }
+        ],
+        "unit": "process CPU seconds per episode"
+      },
+      "primary_test": {
+        "alpha": 0.05,
+        "contrast": "D-B",
+        "enumerated_sign_vectors": 256,
+        "family": "IID/OOD D-B",
+        "holm_adjusted_p": 0.03125,
+        "improvement": false,
+        "minimum_mean_improvement": 0.01,
+        "raw_p": 0.015625,
+        "test": "two-sided exhaustive paired sign flip"
+      },
+      "utility_arm_means": {
+        "A": 0.725699211053487,
+        "B": 0.7647128590871172,
+        "C": 0.717886711053487,
+        "D": 0.7476787796613708
+      }
+    },
+    "ood": {
+      "contrasts": {
+        "B-A": {
+          "degrees_of_freedom": 7,
+          "independent_unit": "paired fit seed",
+          "mean": 0.042240325210187474,
+          "n": 8,
+          "per_seed": [
+            {
+              "seed": 121101,
+              "value": 0.08643590574244109
+            },
+            {
+              "seed": 121103,
+              "value": 0.022088190422047793
+            },
+            {
+              "seed": 121107,
+              "value": 0.03269328632906765
+            },
+            {
+              "seed": 121109,
+              "value": 0.037718969799811486
+            },
+            {
+              "seed": 121113,
+              "value": 0.02098251933079609
+            },
+            {
+              "seed": 121117,
+              "value": 0.007568621457766933
+            },
+            {
+              "seed": 121119,
+              "value": 0.023224046151478994
+            },
+            {
+              "seed": 121123,
+              "value": 0.10721106244808976
+            }
+          ],
+          "sample_sd": 0.03526994552149288,
+          "standard_error": 0.012469808825163858,
+          "t_95pct_ci": [
+            0.012753912849479292,
+            0.07172673757089565
+          ]
+        },
+        "C-A": {
+          "degrees_of_freedom": 7,
+          "independent_unit": "paired fit seed",
+          "mean": 0.004882812499999986,
+          "n": 8,
+          "per_seed": [
+            {
+              "seed": 121101,
+              "value": 0.02343749999999989
+            },
+            {
+              "seed": 121103,
+              "value": 0.0
+            },
+            {
+              "seed": 121107,
+              "value": 0.015625
+            },
+            {
+              "seed": 121109,
+              "value": 0.0390625
+            },
+            {
+              "seed": 121113,
+              "value": -0.03125
+            },
+            {
+              "seed": 121117,
+              "value": -0.015625
+            },
+            {
+              "seed": 121119,
+              "value": 0.0
+            },
+            {
+              "seed": 121123,
+              "value": 0.0078125
+            }
+          ],
+          "sample_sd": 0.022072411207105017,
+          "standard_error": 0.007803775820840953,
+          "t_95pct_ci": [
+            -0.013570185059953915,
+            0.023335810059953888
+          ]
+        },
+        "D-B": {
+          "degrees_of_freedom": 7,
+          "independent_unit": "paired fit seed",
+          "mean": -0.001982490682216953,
+          "n": 8,
+          "per_seed": [
+            {
+              "seed": 121101,
+              "value": 0.020710524164131994
+            },
+            {
+              "seed": 121103,
+              "value": -0.01044475665463529
+            },
+            {
+              "seed": 121107,
+              "value": -0.011997113204771148
+            },
+            {
+              "seed": 121109,
+              "value": -0.010752086529005389
+            },
+            {
+              "seed": 121113,
+              "value": 0.01488614902531149
+            },
+            {
+              "seed": 121117,
+              "value": 0.006625694438790575
+            },
+            {
+              "seed": 121119,
+              "value": -0.004021966465328819
+            },
+            {
+              "seed": 121123,
+              "value": -0.020866370232229037
+            }
+          ],
+          "sample_sd": 0.014556263103553088,
+          "standard_error": 0.005146416174628964,
+          "t_95pct_ci": [
+            -0.014151831177533965,
+            0.010186849813100059
+          ]
+        },
+        "D-C": {
+          "degrees_of_freedom": 7,
+          "independent_unit": "paired fit seed",
+          "mean": 0.035375022027970535,
+          "n": 8,
+          "per_seed": [
+            {
+              "seed": 121101,
+              "value": 0.08370892990657319
+            },
+            {
+              "seed": 121103,
+              "value": 0.011643433767412503
+            },
+            {
+              "seed": 121107,
+              "value": 0.005071173124296502
+            },
+            {
+              "seed": 121109,
+              "value": -0.012095616729193903
+            },
+            {
+              "seed": 121113,
+              "value": 0.06711866835610758
+            },
+            {
+              "seed": 121117,
+              "value": 0.029819315896557508
+            },
+            {
+              "seed": 121119,
+              "value": 0.019202079686150175
+            },
+            {
+              "seed": 121123,
+              "value": 0.07853219221586072
+            }
+          ],
+          "sample_sd": 0.03631955413905581,
+          "standard_error": 0.012840901510699151,
+          "t_95pct_ci": [
+            0.005011114903456904,
+            0.06573892915248417
+          ]
+        },
+        "interaction": {
+          "degrees_of_freedom": 7,
+          "independent_unit": "paired fit seed",
+          "mean": -0.006865303182216939,
+          "n": 8,
+          "per_seed": [
+            {
+              "seed": 121101,
+              "value": -0.0027269758358678953
+            },
+            {
+              "seed": 121103,
+              "value": -0.01044475665463529
+            },
+            {
+              "seed": 121107,
+              "value": -0.027622113204771148
+            },
+            {
+              "seed": 121109,
+              "value": -0.04981458652900539
+            },
+            {
+              "seed": 121113,
+              "value": 0.04613614902531149
+            },
+            {
+              "seed": 121117,
+              "value": 0.022250694438790575
+            },
+            {
+              "seed": 121119,
+              "value": -0.004021966465328819
+            },
+            {
+              "seed": 121123,
+              "value": -0.028678870232229037
+            }
+          ],
+          "sample_sd": 0.03034618325590383,
+          "standard_error": 0.01072899598168963,
+          "t_95pct_ci": [
+            -0.03223534727576177,
+            0.01850474091132789
+          ]
+        }
+      },
+      "cost_acceptance": {
+        "accepted": false,
+        "cpu_acceptable": true,
+        "familywise_confidence_at_least": 0.95,
+        "full_cpu_ratio_maximum": 0.9,
+        "measured_full_cpu_ratio": 0.3578709069503454,
+        "multiplicity": "Bonferroni across IID/OOD utility bounds",
+        "noninferiority_margin": 0.01,
+        "per_domain_one_sided_confidence": 0.975,
+        "utility_lower_bound": -0.014151831177533965,
+        "utility_noninferior": false
+      },
+      "costs": {
+        "D_over_B": {
+          "direct_cpu_per_episode": 1.0102112778973837,
+          "full_cpu_per_episode": 0.3578709069503454,
+          "online_cpu_per_episode": 1.181276917469293
+        },
+        "aggregation": "D/B ratio of domain arm means across the eight fits",
+        "arm_means": {
+          "A": {
+            "direct_cpu_per_episode": 0.02119571772558594,
+            "full_cpu_per_episode": 0.06202481785058594,
+            "online_cpu_per_episode": 0.00015923060058593798
+          },
+          "B": {
+            "direct_cpu_per_episode": 0.022398655276367186,
+            "full_cpu_per_episode": 0.06322775540136719,
+            "online_cpu_per_episode": 0.0013621681513671857
+          },
+          "C": {
+            "direct_cpu_per_episode": 0.02129218686230469,
+            "full_cpu_per_episode": 0.02129218686230469,
+            "online_cpu_per_episode": 0.0002739104873046875
+          },
+          "D": {
+            "direct_cpu_per_episode": 0.022627374169921874,
+            "full_cpu_per_episode": 0.022627374169921874,
+            "online_cpu_per_episode": 0.0016090977949218743
+          }
+        },
+        "direct_column_supplied": true,
+        "direct_missing_policy": "Absent direct costs remain null and are not replaced by online or full costs",
+        "per_seed": [
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.0210725182578125,
+                "full_cpu_per_episode": 0.0620223232578125,
+                "online_cpu_per_episode": 0.00012208025781250062
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.0220597620703125,
+                "full_cpu_per_episode": 0.0630095670703125,
+                "online_cpu_per_episode": 0.0011093240703125007
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.0213017381953125,
+                "full_cpu_per_episode": 0.0213017381953125,
+                "online_cpu_per_episode": 0.000289320195312498
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.022397506531250003,
+                "full_cpu_per_episode": 0.022397506531250003,
+                "online_cpu_per_episode": 0.001385088531250002
+              }
+            },
+            "seed": 121101
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.0211008529921875,
+                "full_cpu_per_episode": 0.061878607992187494,
+                "online_cpu_per_episode": 0.00012037499218749831
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.022066271273437497,
+                "full_cpu_per_episode": 0.06284402627343749,
+                "online_cpu_per_episode": 0.0010857932734374964
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.0213380686953125,
+                "full_cpu_per_episode": 0.0213380686953125,
+                "online_cpu_per_episode": 0.0003500646953124992
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.021944468703125,
+                "full_cpu_per_episode": 0.021944468703125,
+                "online_cpu_per_episode": 0.0009564647031249998
+              }
+            },
+            "seed": 121103
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.021087243296875,
+                "full_cpu_per_episode": 0.061884287296875,
+                "online_cpu_per_episode": 0.00011580429687500088
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.022038952656249996,
+                "full_cpu_per_episode": 0.06283599665625,
+                "online_cpu_per_episode": 0.0010675136562499979
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.0211976168203125,
+                "full_cpu_per_episode": 0.0211976168203125,
+                "online_cpu_per_episode": 0.00020841582031250194
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.022019648703125,
+                "full_cpu_per_episode": 0.022019648703125,
+                "online_cpu_per_episode": 0.0010304477031249995
+              }
+            },
+            "seed": 121107
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.021291065632812505,
+                "full_cpu_per_episode": 0.0620995626328125,
+                "online_cpu_per_episode": 0.000193920632812504
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.022400307320312503,
+                "full_cpu_per_episode": 0.0632088043203125,
+                "online_cpu_per_episode": 0.0013031623203125023
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.021284697046875,
+                "full_cpu_per_episode": 0.021284697046875,
+                "online_cpu_per_episode": 0.00023362104687500024
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.023512354179687504,
+                "full_cpu_per_episode": 0.023512354179687504,
+                "online_cpu_per_episode": 0.0024612781796875052
+              }
+            },
+            "seed": 121109
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.021171065484375,
+                "full_cpu_per_episode": 0.061929396484374996,
+                "online_cpu_per_episode": 0.0001606604843749984
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.022660237875000003,
+                "full_cpu_per_episode": 0.063418568875,
+                "online_cpu_per_episode": 0.001649832875
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.0211895188046875,
+                "full_cpu_per_episode": 0.0211895188046875,
+                "online_cpu_per_episode": 0.00019040980468749968
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.023055457421875,
+                "full_cpu_per_episode": 0.023055457421875,
+                "online_cpu_per_episode": 0.0020563484218749997
+              }
+            },
+            "seed": 121113
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.021307787570312497,
+                "full_cpu_per_episode": 0.0620860675703125,
+                "online_cpu_per_episode": 0.00026541057031249926
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.023180095257812488,
+                "full_cpu_per_episode": 0.06395837525781249,
+                "online_cpu_per_episode": 0.0021377182578124904
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.021364420265625007,
+                "full_cpu_per_episode": 0.021364420265625007,
+                "online_cpu_per_episode": 0.0004104712656250037
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.02301959434375001,
+                "full_cpu_per_episode": 0.02301959434375001,
+                "online_cpu_per_episode": 0.0020656453437500055
+              }
+            },
+            "seed": 121117
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.021290827984374996,
+                "full_cpu_per_episode": 0.062161093984375,
+                "online_cpu_per_episode": 0.00014174898437499528
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.022381269140625007,
+                "full_cpu_per_episode": 0.06325153514062501,
+                "online_cpu_per_episode": 0.0012321901406250058
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.021336526187499996,
+                "full_cpu_per_episode": 0.021336526187499996,
+                "online_cpu_per_episode": 0.000273456187499993
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.02250456482812499,
+                "full_cpu_per_episode": 0.02250456482812499,
+                "online_cpu_per_episode": 0.0014414948281249867
+              }
+            },
+            "seed": 121119
+          },
+          {
+            "arms": {
+              "A": {
+                "direct_cpu_per_episode": 0.02124438058593751,
+                "full_cpu_per_episode": 0.06213720358593751,
+                "online_cpu_per_episode": 0.00015384458593750705
+              },
+              "B": {
+                "direct_cpu_per_episode": 0.022402346617187496,
+                "full_cpu_per_episode": 0.0632951696171875,
+                "online_cpu_per_episode": 0.0013118106171874921
+              },
+              "C": {
+                "direct_cpu_per_episode": 0.021324908882812507,
+                "full_cpu_per_episode": 0.021324908882812507,
+                "online_cpu_per_episode": 0.0002355248828125045
+              },
+              "D": {
+                "direct_cpu_per_episode": 0.0225653986484375,
+                "full_cpu_per_episode": 0.0225653986484375,
+                "online_cpu_per_episode": 0.0014760146484374959
+              }
+            },
+            "seed": 121123
+          }
+        ],
+        "unit": "process CPU seconds per episode"
+      },
+      "primary_test": {
+        "alpha": 0.05,
+        "contrast": "D-B",
+        "enumerated_sign_vectors": 256,
+        "family": "IID/OOD D-B",
+        "holm_adjusted_p": 0.703125,
+        "improvement": false,
+        "minimum_mean_improvement": 0.01,
+        "raw_p": 0.703125,
+        "test": "two-sided exhaustive paired sign flip"
+      },
+      "utility_arm_means": {
+        "A": 0.689351759657516,
+        "B": 0.7315920848677036,
+        "C": 0.694234572157516,
+        "D": 0.7296095941854865
+      }
+    }
+  },
+  "fit_seeds": [
+    121101,
+    121103,
+    121107,
+    121109,
+    121113,
+    121117,
+    121119,
+    121123
+  ],
+  "fits_per_domain": 8,
+  "freeze_sha256": "0d9c882950ff0c6c06970cf5004a6e537a78eb9c2c8bf9187cf2007a9a1a8fa9",
+  "independent_unit": "paired fitted seed, not episodes or time steps",
+  "inference_limits": "Sign-flip inference assumes exchangeable effect signs under the null; t bounds assume paired fit means are adequately approximated by a t sampling model with seven degrees of freedom.",
+  "interaction_definition": "(D-C)-(B-A)",
+  "production_activation": false,
+  "schema": "hcsn-r13-eight-paired-fit-statistics-v1",
+  "source_commit": "5f1575cc280b26322daf084da27c6f7d38cbdaa6"
+}

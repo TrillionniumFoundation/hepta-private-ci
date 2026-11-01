@@ -1,0 +1,13 @@
+{
+  "schema": "hcsn-source-materialization-reconciliation-v1",
+  "original_source_commit": "5f1575cc280b26322daf084da27c6f7d38cbdaa6",
+  "candidate_freeze_commit": "8b7cea658c70024012a36574b1e9e315d0105158",
+  "frozen_manifest_sha256": "0d9c882950ff0c6c06970cf5004a6e537a78eb9c2c8bf9187cf2007a9a1a8fa9",
+  "path": "tools/hcsn/calibrated_operator_r11_20261031/numerics/kernel.py",
+  "executed_source_sha256": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+  "original_remote_blob": "509a4811d9f6ac9b96ef8933e82bd8ad6045f040",
+  "executed_source_git_blob": "95cace749982a6b48b738dfa5d369b6491589a87",
+  "difference": "The initial tool-to-local materialization appended one terminal newline. The exact executed file SHA256 was already in FREEZE.json committed before confirmation; the old source_commit contains the identical Python program with one fewer terminal newline.",
+  "repair": "Materialize the unchanged executed bytes in the review branch. No local execution source, training checkpoint, source hash, confirmation input, threshold or outcome has been changed. The historical source_commit pointer and original FREEZE remain untouched.",
+  "chronology": "Detected and documented after confirmation during full checkout reproducibility audit; this is a repository snapshot reconciliation, not a source-code fix or a rerun."
+}
