@@ -1,0 +1,140 @@
+{
+  "schema": "hcsn.r15.independent-planner-math-review.v1",
+  "reviewer": "/root/math_validation",
+  "review_type": "Independent source/math review and targeted pre-fix counterexamples; no CPU benchmark by this reviewer",
+  "base_r14_commit": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "checkout_scope": "Verified selected source reconstruction, not a complete repository checkout or production build",
+  "sources": {
+    "tools/hcsn/unified_cell_r12_20261031/task_value.py": "551f2853b7a785b759d516a18c00c896ed97dba2106c7689d9a2bbe5e2e6ca3c",
+    "tools/hcsn/unified_cell_r12_20261031/cell.py": "c76e6d128ecefe871b14ee3855e44420cfdfd4553e4afb588142db9a60931345",
+    "tools/hcsn/task_aligned_r14_20261101/models.py": "8193e0c9f026bb69ba9d9752e79f85a9ba4c3ebfaf6543c03cb5ec6a4df8700b",
+    "tools/hcsn/task_aligned_r14_20261101/task.py": "032c60ca2b1b1532bcdd29f691dbd3c1c15d08f63da506adfdc995aa424624af",
+    "tools/hcsn/task_aligned_r14_20261101/qpi.py": "f0f00f5250c72b24e5213e3b66c15f4b0fa38a2864ef9083a13e8d7aa90aa73c",
+    "tools/hcsn/task_aligned_r14_20261101/execution.py": "df77f04783d0aa1feece9935f021e7db7566587b651990eae6647f0d934bfc2d",
+    "tools/hcsn/task_aligned_r14_20261101/PROTOCOL.json": "aa7ca0a0437595532b2dad65db2f14e7a00f1e0039305d827e3d06520c4dcd3d",
+    "tools/hcsn/continuation_r15_20261101/planner.py": "18517903880e8d3056330a04e3347ca43338f28686ca8a7b14857ab3fe9cd5ba",
+    "tools/hcsn/continuation_r15_20261101/test_planner_safety.py": "bd871b17a20969a718a2840ec9cca7303f09a7598761533359a1b9e49ed92a9a",
+    "tools/hcsn/continuation_r15_20261101/REPLAY_PROTOCOL.json": "b99b43a7e53cd744a018105bc1453f69307bed4875c887774eec02d8764692b1"
+  },
+  "source_mutations_by_reviewer": [
+    "tools/hcsn/continuation_r15_20261101/test_planner_safety.py"
+  ],
+  "mathematical_findings": [
+    {
+      "id": "joint-finite-model",
+      "result": "No new normal-domain first-passage/reset joint-state error identified in the inspected R14 path",
+      "reason": "R12 carries phase/content joint CTMC state; natural absorption and recovery are inside Q; R14 external-sensor RESET uses R before the full elapsed transition. Counts and first-event probability have different marked/killed operators."
+    },
+    {
+      "id": "homogeneous-bellman-recursion",
+      "result": "Equivalent objective in exact arithmetic for nonnegative masses and conservative transitions",
+      "reason": "Unnormalized mass recursion preserves terminal linear rewards, end-state READ costs, public elapsed costs, reset-before-propagation and sums of observation-branch optimal values. Future values use raw max; the deployed first action retains the inherited sequential tolerance rule."
+    },
+    {
+      "id": "shared-not-exclusive",
+      "result": "Applies identically to ordinary and HX estimators",
+      "reason": "The accelerator consumes the same frozen Q,E,R,reward/read-cost model and causal belief. It supplies no extra observation or latent state and cannot establish an HX-exclusive mechanism gain."
+    },
+    {
+      "id": "finite-model-only",
+      "result": "No continuum or financial-free-boundary qualification",
+      "reason": "Matrix exponentials and planner recursion refer to the specified finite model. Neither eight active bins nor Erlang recovery becomes an exact continuous diffusion or fixed refractory interval through this optimization."
+    }
+  ],
+  "reproduced_defects_and_current_review": [
+    {
+      "id": "nan-transition",
+      "original_path": "tools/hcsn/unified_cell_r12_20261031/task_value.py: ExactBeliefDP._make_transition",
+      "counterexample": {
+        "model": "original TinyCell",
+        "duration": 1e+100,
+        "budget": 1,
+        "original_nonterminal_values": "NaN",
+        "original_selected_action": "STOP0"
+      },
+      "fix_review": "Checked transition rejects nonfinite exponentials; checked action-value output also rejects nonfinite results."
+    },
+    {
+      "id": "overflow-fees-and-policy-apis",
+      "counterexample": {
+        "model": "original TinyCell",
+        "latency_price": "float64 maximum",
+        "duration": 2.0,
+        "original_WAIT_RESET": "-Infinity",
+        "early_R15_evaluate_policy_and_paired_q_pi": "also returned -Infinity"
+      },
+      "fix_review": "Current CheckedBeliefDP wraps action_values, evaluate_policy and paired_q_pi with numerical-error handling and finite-result checks."
+    },
+    {
+      "id": "no-reset-channel",
+      "counterexample": "Subclass legal_actions removes RESET; original channels(prior,(0.2,),0) subtracts None from a float and raises TypeError.",
+      "fix_review": "Current channels returns B=None and advantage=None, does not claim reset optimality, and respects the subclass action restriction."
+    },
+    {
+      "id": "channels-action-bypass",
+      "counterexample": {
+        "model": "TinyCell",
+        "belief": [
+          0.7,
+          0.1,
+          0.1,
+          0.1
+        ],
+        "duration": 0.37,
+        "reward_column_0": "arange(4)*6.147804351208078e-12",
+        "reward_column_1": -1.0,
+        "reset_cost": 1.0,
+        "latency_price": 0.0,
+        "reference_and_guarded_choose": "STOP0",
+        "early_R15_channels_action": "WAIT"
+      },
+      "fix_review": "Current channels calls self.choose, so diagnostic action and actual guarded action share the same selector."
+    }
+  ],
+  "tie_rule": {
+    "original_rule": "Visit STOP0, STOP1, WAIT, READ, RESET in order and replace the current choice only when q_new > q_current + 1e-12.",
+    "counterexample": {
+      "STOP0": 0.0,
+      "STOP1": 7.5e-13,
+      "WAIT": 1.5e-12,
+      "original_choice": "WAIT",
+      "incorrect_first_within_eps_of_global_max": "STOP1"
+    },
+    "current_review": "Preserved. Internal value maximization remains ordinary max, not the value of the epsilon-selected action."
+  },
+  "floating_point_qualification": {
+    "guard_is_rigorous_bound": false,
+    "guard_is_conservative_fallback_trigger": true,
+    "guard_inputs_reviewed": [
+      "intermediate reward magnitude",
+      "reset fees",
+      "READ fees and multiplier",
+      "total elapsed-time fee",
+      "state/observation/horizon sizes",
+      "transition row-sum residual"
+    ],
+    "limits": [
+      "This heuristic does not prove action equivalence for every finite IEEE input.",
+      "Actual-policy equality must be established on the retained replay prefixes; no inference from small mean Q error alone.",
+      "Long-horizon fallback uses the original outer recursion, whose short suffixes may still use batching; it preserves the mathematical objective but is not a claim that every operation is reference-only."
+    ]
+  },
+  "validation": {
+    "reviewer_initial_seven_methods": "Passed after correcting the test callback to WAIT when a forced READ exhausted its remaining budget.",
+    "reviewer_eighth_regression": "Added channels/choose boundary consistency witness after independently reproducing the discrepancy.",
+    "final_eight_methods": "Parent reports all eight pass after the current fixes; final suite not rerun by this reviewer during the serial timing campaign.",
+    "test_command": "PYTHONDONTWRITEBYTECODE=1 python -m unittest -v tools.hcsn.continuation_r15_20261101.test_planner_safety",
+    "independent_cost_witness": "RESET -> WAIT -> READ with exact sensor repair/reveal yields utility 0.903 after all elapsed time, repair fee and multiplied end-state READ fee.",
+    "performance_claim_by_reviewer": null
+  },
+  "scientific_acceptance": {
+    "original_R14_thresholds_changed": false,
+    "frozen_R14_sources_modified_by_this_work": false,
+    "failed_D_minus_B_gates_promoted": false,
+    "new_independent_confirmation_claimed": false,
+    "interpretation": "Replay of already opened episodes is a numerical/implementation-cost equivalence study. It cannot overturn failed R14 science gates or create a new independent confirmation sample.",
+    "all_scientific_blockers_closed": false,
+    "production_qualification": false
+  },
+  "overall": "Mathematical design and targeted interface fixes are consistent with the stated finite-model scope. Performance and complete replay equality are left to the root serial campaign; the heuristic fallback is explicitly not a global numerical certificate."
+}

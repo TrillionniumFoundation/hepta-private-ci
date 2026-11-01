@@ -1,0 +1,119 @@
+{
+  "case_count": 32,
+  "case_files": [
+    "141101_iid_B.json",
+    "141101_iid_D.json",
+    "141101_ood_B.json",
+    "141101_ood_D.json",
+    "141103_iid_B.json",
+    "141103_iid_D.json",
+    "141103_ood_B.json",
+    "141103_ood_D.json",
+    "141107_iid_B.json",
+    "141107_iid_D.json",
+    "141107_ood_B.json",
+    "141107_ood_D.json",
+    "141109_iid_B.json",
+    "141109_iid_D.json",
+    "141109_ood_B.json",
+    "141109_ood_D.json",
+    "141113_iid_B.json",
+    "141113_iid_D.json",
+    "141113_ood_B.json",
+    "141113_ood_D.json",
+    "141117_iid_B.json",
+    "141117_iid_D.json",
+    "141117_ood_B.json",
+    "141117_ood_D.json",
+    "141119_iid_B.json",
+    "141119_iid_D.json",
+    "141119_ood_B.json",
+    "141119_ood_D.json",
+    "141123_iid_B.json",
+    "141123_iid_D.json",
+    "141123_ood_B.json",
+    "141123_ood_D.json"
+  ],
+  "cpu_seconds": 40.166731483,
+  "limitations": "No new training, no change to R14 acceptance; CPU timing is not joules, GPU performance or intrinsic HX efficiency; both ordinary and HX receive the same optimization",
+  "measured_execute_calls": 192,
+  "new_confirmation_opened": false,
+  "original_artifacts_unchanged": true,
+  "schema": "hcsn.r15.common-controller-replay.v1",
+  "scientific_acceptance_changed": false,
+  "source_freeze_sha256": "ead971b8e640ba7b30467d4980cbdf223b6d10133fee9ad0524fdd01e25d292d",
+  "sources_unchanged": true,
+  "summary": {
+    "iid": {
+      "B": {
+        "all_episode_records_equal": true,
+        "batched_cpu_sum": 1.3001622540000046,
+        "per_fit_ratios": [
+          0.5312837637379921,
+          0.6082976203502741,
+          0.6109525252812285,
+          0.6563638464296545,
+          0.5541393969838873,
+          0.6046707719578202,
+          0.6850672409376257,
+          0.6569356317504135
+        ],
+        "ratio": 0.6185913024953816,
+        "reference_cpu_sum": 2.1018114039999967
+      },
+      "D": {
+        "all_episode_records_equal": true,
+        "batched_cpu_sum": 1.0778808810000022,
+        "per_fit_ratios": [
+          0.5948564002827698,
+          0.5874534592411392,
+          0.554897541358525,
+          0.6368791189754431,
+          0.6297502675960368,
+          0.6145622180075022,
+          0.5781406098575271,
+          0.544564759474076
+        ],
+        "ratio": 0.5911298038992431,
+        "reference_cpu_sum": 1.8234250310000015
+      }
+    },
+    "ood": {
+      "B": {
+        "all_episode_records_equal": true,
+        "batched_cpu_sum": 1.2607735230000108,
+        "per_fit_ratios": [
+          0.4237940903547585,
+          0.5997585225066373,
+          0.6379824910558247,
+          0.5716938826581258,
+          0.47699372998144535,
+          0.5803685262145832,
+          0.7353090744658698,
+          0.6403591666599276
+        ],
+        "ratio": 0.5859826687236206,
+        "reference_cpu_sum": 2.151554287000007
+      },
+      "D": {
+        "all_episode_records_equal": true,
+        "batched_cpu_sum": 1.1092128360000038,
+        "per_fit_ratios": [
+          0.5736178943411797,
+          0.5253134070891365,
+          0.6053303914152612,
+          0.6502570441329695,
+          0.5378751860403366,
+          0.5276203366546409,
+          0.5958337975450498,
+          0.5683142960985437
+        ],
+        "ratio": 0.5704156438635706,
+        "reference_cpu_sum": 1.944569451999988
+      }
+    }
+  },
+  "timing_scope": "Full original execute call with cold planner, model copy, model start, inference, control, owner and trace assembly; world preparation separate and common",
+  "unique_actor_episodes": 16384,
+  "wall_seconds": 40.222211128999334
+}

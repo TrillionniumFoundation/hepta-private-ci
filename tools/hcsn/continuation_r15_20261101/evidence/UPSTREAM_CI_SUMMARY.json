@@ -1,0 +1,47 @@
+{
+  "source": "UPSTREAM_CI_AUDIT.json.gz",
+  "source_sha256": "31e17c6c53a33a7c25e98048ed11f181c5cd23cf568b9c7888670142ee0a9f3b",
+  "gzip_sha256": "8c3d022d1bf50608c05cec85bc9c90da1cf9c8de9c003ce2da81cd31d49bb02f",
+  "head": {
+    "pr": 4547,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4547",
+    "sha": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+    "base": "b0802dc314251f5332bd026cb2984a0b5c75f768",
+    "changed_files": 101,
+    "all_changes_under": "tools/hcsn/task_aligned_r14_20261101",
+    "changed_rust_files": 0
+  },
+  "status": "Pinned upstream failures; prepared local repairs do not establish remote success",
+  "jobs": [
+    {
+      "job": "Blob size policy",
+      "status": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41284518214/job/124783143464",
+      "resolution": "Original bytes repackaged into 26 independent gzip containers, largest 450151 bytes; original paths retained locally and listed for remote tree removal. Remote pass not observed."
+    },
+    {
+      "job": "Codespell",
+      "status": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41284518214/job/124783143570",
+      "resolution": "OPEN. No frozen scientific bytes or ignore policies modified. New transport uses genuine gzip containers; existing repository failures are not claimed fixed."
+    },
+    {
+      "job": "repo-checks / build-test",
+      "status": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41284518214/job/124783504760",
+      "resolution": "R13 workflow formatted with locked Prettier 3.5.3; parsed semantic identity verified against original connector-fetched blob."
+    },
+    {
+      "job": "cargo-deny",
+      "status": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41284518214/job/124783504774",
+      "resolution": "OPEN; root cause not diagnosed from unavailable logs."
+    },
+    {
+      "job": "Bazel clippy Ubuntu GNU",
+      "status": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41284518214/job/124783504942",
+      "resolution": "OPEN; inherited native Rust code, no R14 Rust changes and no local native fixes."
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "all_episode_records_equal": true,
+  "arm": "D",
+  "batched_reference_cpu_ratio": 0.5874534592411392,
+  "calls": [
+    {
+      "controller": "batched",
+      "costs": {
+        "control_cpu_seconds": 0.07106840999998365,
+        "cpu_seconds": 0.11455637899999971,
+        "inference_cpu_seconds": 0.017916358999993776,
+        "owner_cpu_seconds": 0.019804983000018872,
+        "planner_construction_cpu_seconds": 8.747999999947353e-05,
+        "wall_seconds": 0.11455124100029934
+      },
+      "order": 0,
+      "record_sha256": "0a22827526beda56937a6677ee1cd6101ae735c1cede7123ee1fe64a2b623122",
+      "repeat": 0
+    },
+    {
+      "controller": "reference",
+      "costs": {
+        "control_cpu_seconds": 0.16219478500001827,
+        "cpu_seconds": 0.2095968260000003,
+        "inference_cpu_seconds": 0.019067057000000887,
+        "owner_cpu_seconds": 0.02208432300000851,
+        "planner_construction_cpu_seconds": 8.405500000030486e-05,
+        "wall_seconds": 0.20959261300231447
+      },
+      "order": 1,
+      "record_sha256": "0a22827526beda56937a6677ee1cd6101ae735c1cede7123ee1fe64a2b623122",
+      "repeat": 0
+    },
+    {
+      "controller": "reference",
+      "costs": {
+        "control_cpu_seconds": 0.17215856800004126,
+        "cpu_seconds": 0.21717764699999975,
+        "inference_cpu_seconds": 0.01887532300002448,
+        "owner_cpu_seconds": 0.020594775999973614,
+        "planner_construction_cpu_seconds": 9.348899999928051e-05,
+        "wall_seconds": 0.21719054699860862
+      },
+      "order": 0,
+      "record_sha256": "0a22827526beda56937a6677ee1cd6101ae735c1cede7123ee1fe64a2b623122",
+      "repeat": 1
+    },
+    {
+      "controller": "batched",
+      "costs": {
+        "control_cpu_seconds": 0.07892283699996128,
+        "cpu_seconds": 0.12758176000000088,
+        "inference_cpu_seconds": 0.02015611700002573,
+        "owner_cpu_seconds": 0.022068715999997046,
+        "planner_construction_cpu_seconds": 0.00010000800000042886,
+        "wall_seconds": 0.12757661099749384
+      },
+      "order": 1,
+      "record_sha256": "0a22827526beda56937a6677ee1cd6101ae735c1cede7123ee1fe64a2b623122",
+      "repeat": 1
+    },
+    {
+      "controller": "reference",
+      "costs": {
+        "control_cpu_seconds": 0.21347964599999436,
+        "cpu_seconds": 0.25883555100000066,
+        "inference_cpu_seconds": 0.018855433000020128,
+        "owner_cpu_seconds": 0.020847280000008794,
+        "planner_construction_cpu_seconds": 9.362900000020602e-05,
+        "wall_seconds": 0.25884852899980615
+      },
+      "order": 0,
+      "record_sha256": "0a22827526beda56937a6677ee1cd6101ae735c1cede7123ee1fe64a2b623122",
+      "repeat": 2
+    },
+    {
+      "controller": "batched",
+      "costs": {
+        "control_cpu_seconds": 0.0896784059999689,
+        "cpu_seconds": 0.1445419139999995,
+        "inference_cpu_seconds": 0.022932971999964025,
+        "owner_cpu_seconds": 0.024391807000034404,
+        "planner_construction_cpu_seconds": 0.0001961919999988737,
+        "wall_seconds": 0.14453777499875287
+      },
+      "order": 1,
+      "record_sha256": "0a22827526beda56937a6677ee1cd6101ae735c1cede7123ee1fe64a2b623122",
+      "repeat": 2
+    }
+  ],
+  "common_preparation_cpu_seconds": 0.007563796999999539,
+  "count": 512,
+  "domain": "iid",
+  "means": {
+    "elapsed": 1.2251953125,
+    "fee": 0.072759765625,
+    "reads": 1.18359375,
+    "resets": 1.0,
+    "reward": 0.765625,
+    "utility": 0.692865234375
+  },
+  "median_costs": {
+    "batched": {
+      "control_cpu_seconds": 0.07892283699996128,
+      "cpu_seconds": 0.12758176000000088,
+      "inference_cpu_seconds": 0.02015611700002573,
+      "owner_cpu_seconds": 0.022068715999997046,
+      "planner_construction_cpu_seconds": 0.00010000800000042886,
+      "wall_seconds": 0.12757661099749384
+    },
+    "reference": {
+      "control_cpu_seconds": 0.17215856800004126,
+      "cpu_seconds": 0.21717764699999975,
+      "inference_cpu_seconds": 0.01887532300002448,
+      "owner_cpu_seconds": 0.020847280000008794,
+      "planner_construction_cpu_seconds": 9.348899999928051e-05,
+      "wall_seconds": 0.21719054699860862
+    }
+  },
+  "planner_identity": "b894c06cc231c0738fadc50da08c216aba91d3d7c2d75ef1b4b78e1d9ba60621",
+  "preparation_scope": "Shared by B/D and both controllers; count once per fit/domain",
+  "record_file": "141103_iid_D.records.json.gz",
+  "record_file_sha256": "7d59c214f765b2683e28718e22c6746afd6ce94cce94a549b96bcbc5939b69c6",
+  "record_sha256": "0a22827526beda56937a6677ee1cd6101ae735c1cede7123ee1fe64a2b623122",
+  "seed": 141103,
+  "selected_ordinary": "dual_head",
+  "tape_hash": "0e674cd2e1bb89895e108377b19d92a9d76b6b3f35144e0061091facc1e91b72"
+}
