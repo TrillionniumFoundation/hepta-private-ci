@@ -94,9 +94,12 @@
     },
     "schema": "hcsn-r15-independent-audit-v1"
   },
+  "development_manifest_scope": "Original development manifest retained; only extra trailing LF in imported dependencies removed, no executable or JSON value change.",
   "development_pipeline": "dev/pipeline_v2",
   "development_tests": "training, freeze, two-domain 13-arm confirmation, fit-level summary; every stage completed",
   "formal_confirmation_opened": false,
+  "publication_dependency_normalization": "DEPENDENCY_NORMALIZATION.json",
+  "published_source_manifest_sha256": "6c06773eadb2ccf9edb4f992fcebd338e34854d5a7ba36c938a0014fa7e2dbf2",
   "repo_fmt": {
     "command": "just fmt",
     "exit_code": 127,
