@@ -1,0 +1,57 @@
+{
+  "base_commit": "0fd894118c47f38c2acf2532b8242fd16df76c47",
+  "cost_gate": "Descriptive ratios only; no registered scientific adoption gate changed. Original <=0.90 source study gate stays unchanged and cannot be relabeled passed from a different comparator.",
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "durations": [
+    0.0,
+    1e-10,
+    1e-05,
+    0.25,
+    0.95,
+    3.0,
+    30.0,
+    100.0
+  ],
+  "eligibility_gate": "All HX and same-matrix HMM laws must take the fast path. Free laws may be rejected by bit-exact symmetry and must then reproduce dense transitions exactly; fallback is counted and timed, not silently approximated. No tolerance relaxation.",
+  "exact_behavior_gate": "All actions, answers, targets, tokens, fees, utility, operation counts, and public query records must agree exactly. Only timing fields and numeric checkpoint hash bytes are separately compared. No tolerant action ties or answer relabeling.",
+  "fits": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "instrumentation_revision": 3,
+  "interpretation": "Finite exact optimization accessible equally to HX and same-matrix ordinary HMM; cannot establish core independent gain, complete project/deployment advantage, GPU, joules, continuous optimal boundary, or production qualification. No retraining. Fixed sample size is engineering parity evidence, not independent efficacy confirmation.",
+  "models": [
+    "hx",
+    "free",
+    "hmm_same_matrix"
+  ],
+  "namespace": 170721,
+  "numerical_contract": "Exact permutation symmetry required; Metzler triangular lift; no subtraction expA-expB, no clipping or probability floors. Unsupported matrix uses explicit dense fallback, audited with conservative asymmetric fixture. Both laws retain original Q, arrays, model/operator identities.",
+  "operator_atol": 3e-11,
+  "output_root": "results_v2; existing results and attempt_01 are retained without overwrites",
+  "prior_attempt": "attempt_01 preserves original frozen source and all24 operator audits. No operator error/rejection failure; first guard incorrectly required every free matrix to be eligible despite the stated fallback contract. Campaign was not run.",
+  "prior_instrumentation_refusal": "V2 supervisor refused existing create-only results/audit.stdout.log before launching a child. Existing results duplicate attempt_01 byte content; duplication cause unknown, not attributed to another agent. Explicit fresh output root and fail-closed parent/campaign exits introduced; no numerical/action thresholds changed.",
+  "production_activation": false,
+  "reference": "Dense scipy expm and independent full1600-state DOP853 ODE at all frozen durations; raw matrices retained.",
+  "representations": [
+    "full",
+    "anchored"
+  ],
+  "schema": "hcsn-r17-symmetric-fastpath-v1",
+  "state_atol": 3e-11,
+  "timing": "Dense/fast order alternates by world index, same frozen law payloads, law caches retained across episodes exactly as baseline. Per execute includes planning, world observations, serialization, fsync, and in-process restore. Model preparation reported separately and allocated equally between two representations for combined ratios. Child wait4 records imports, failed candidates, serialization/output and exit.",
+  "world_theta": [
+    0.3,
+    0.018
+  ],
+  "worlds_per_fit_domain": 4
+}

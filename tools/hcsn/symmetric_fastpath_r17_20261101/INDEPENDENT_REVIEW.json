@@ -1,0 +1,126 @@
+{
+  "action_effect_checks": 2208,
+  "all_saved_record_checks_passed": true,
+  "behavior_mismatches": 0,
+  "candidate_attempts": 768,
+  "cost_receipts": [
+    {
+      "additive_cpu_seconds": 5.096156000000001,
+      "duplicate_same_execution": false,
+      "exit_codes": [
+        1
+      ],
+      "raw_cpu_seconds": 5.096156000000001,
+      "receipt": "attempt_01/results/PROCESS_SUMMARY.json"
+    },
+    {
+      "additive_cpu_seconds": 0,
+      "duplicate_same_execution": true,
+      "exit_codes": [
+        1
+      ],
+      "raw_cpu_seconds": 5.096156000000001,
+      "receipt": "results/PROCESS_SUMMARY.json"
+    },
+    {
+      "additive_cpu_seconds": 12.918543,
+      "duplicate_same_execution": false,
+      "exit_codes": [
+        0,
+        1
+      ],
+      "raw_cpu_seconds": 12.918543,
+      "receipt": "results_v2/PROCESS_SUMMARY.json"
+    },
+    {
+      "additive_cpu_seconds": 16.395342,
+      "duplicate_same_execution": false,
+      "exit_codes": [
+        0,
+        0
+      ],
+      "raw_cpu_seconds": 16.395342,
+      "receipt": "replay_01/results_v2/PROCESS_SUMMARY.json"
+    }
+  ],
+  "cost_scope": "Measured child CPU lower bound including preserved failures and replay. Nested execute/preparation times are descriptive components and are not added to outer receipts. Duplicate initial artifact contributes zero additive CPU. Unmetered attempts remain explicitly unknown, not zero cost.",
+  "cpu_ratios_from_raw": {
+    "free_anchored": 0.9555052343583359,
+    "free_full": 0.9970995747437031,
+    "hmm_same_matrix_anchored": 1.0043196575511075,
+    "hmm_same_matrix_full": 1.0065983491922303,
+    "hx_anchored": 0.9972100023133753,
+    "hx_full": 0.9802942186900151
+  },
+  "independent_fee_recomputations": 4608,
+  "input_sha256": {
+    "COST_LEDGER.json": "2a2c683e9262cfd5032da863bb3f79d4d19a651f93e3ad64d4b877e243535edd",
+    "PUBLICATION.json": "2a8b8dc900de15bfac82cea3733e0c00a3d78587df11f1464ddebf76e2448dd6",
+    "SOURCE_MANIFEST.json": "ede9f2d966f6657fec573091754dc880746f5896e38cb67b27db739bf9a6a8a8",
+    "attempt_01/results/PROCESS_SUMMARY.json": "b5eeee46f11a30fffa50999d47b7d0f046f6f860d3e973b07df2dfb9e93584f6",
+    "attempt_01/results/audit.PROCESS_RECEIPT.json": "85bc863c88ccf4a788c6b5889ad629970b9afdca5ac8470dd9492e6fd20cc894",
+    "replay_01/results_v2/EXECUTION_SUMMARY.json": "72c0e6cb8caa72aab19e0c31940951108c22347cbce8dee73bc0c8811da553ce",
+    "replay_01/results_v2/OPERATOR_SUMMARY.json": "b62a7cd8ce3f6d600296d249b0fe237cdb3493192d4139f865d628e9e629321d",
+    "replay_01/results_v2/PROCESS_SUMMARY.json": "e806fc0c18283838fa419cf8ab51c89913c49b1c4cc53b33fffefd24d15c1ee0",
+    "replay_01/results_v2/audit.PROCESS_RECEIPT.json": "4ffadcb13467870e5044681356bc78682e60da4214b44ca5176f02e5854233d3",
+    "replay_01/results_v2/campaign.PROCESS_RECEIPT.json": "7a800cff21f0d24893258da4b0beb18b0e93d45c3c2dc8c6041d93f49d970d3b",
+    "replay_01/results_v2/execution_151101.json.gz": "4696ef81926e5a3a70dd822ace7171ef43a7360600d9493dae45512e27fd50c4",
+    "replay_01/results_v2/execution_151103.json.gz": "dffb61e67a21549ac3c5ba30f1840982242dee43aaabc44bdb527f04f80fda2a",
+    "replay_01/results_v2/execution_151107.json.gz": "d6b22817d547a3ff8044dd75c926a6306cd9daa8d50879a4c4749faa43d3df3a",
+    "replay_01/results_v2/execution_151109.json.gz": "c8a717169ce1263d4da354f2284ed1f34a93bb456f7dec1d188378e684e3d687",
+    "replay_01/results_v2/execution_151113.json.gz": "1aaeb5ce97359da5b70ae150659b17bed624bf0586f9c2e832a07d9cc3d42b7b",
+    "replay_01/results_v2/execution_151117.json.gz": "d9f3cdd1661e968ad3dcd2672bc467d358800cac67d10ee09febfd97ae231287",
+    "replay_01/results_v2/execution_151119.json.gz": "28fce28dd62a68cc7f0401ce0a88c616f21b601bc9f82619d76413a59afe01aa",
+    "replay_01/results_v2/execution_151123.json.gz": "697f6b61a2d73967e7d060551c3f31923e2e1fc545b2a00a8a983aea9be52e26",
+    "replay_01/results_v2/operator_151101_free.json.gz": "9fc6392848c45073896319102eb2f59bc7f8cc66b9ac7b5688fb4793495f1e49",
+    "replay_01/results_v2/operator_151101_hmm_same_matrix.json.gz": "f2f45e9d3f52f4eb5e037ae53b657c80017a843fc8a6949506cbb763cc3359d7",
+    "replay_01/results_v2/operator_151101_hx.json.gz": "f2f45e9d3f52f4eb5e037ae53b657c80017a843fc8a6949506cbb763cc3359d7",
+    "replay_01/results_v2/operator_151103_free.json.gz": "9ba5127b434c4ec39eaa040418204b84aca20b3430ef96cd10a2902f2bf15639",
+    "replay_01/results_v2/operator_151103_hmm_same_matrix.json.gz": "9bf0f252b501452ffc710110d8e93575be18f98662324ed2bf047c8e217db30a",
+    "replay_01/results_v2/operator_151103_hx.json.gz": "9bf0f252b501452ffc710110d8e93575be18f98662324ed2bf047c8e217db30a",
+    "replay_01/results_v2/operator_151107_free.json.gz": "4a7a9eda856c4bfe924800d2f38b04d40733aae3f1083f966f6371a8eaff0495",
+    "replay_01/results_v2/operator_151107_hmm_same_matrix.json.gz": "fb191dd3d904728b6bc32f59bac931154c004f9e2984a636b344af0345010ce2",
+    "replay_01/results_v2/operator_151107_hx.json.gz": "fb191dd3d904728b6bc32f59bac931154c004f9e2984a636b344af0345010ce2",
+    "replay_01/results_v2/operator_151109_free.json.gz": "41b5afe686d7baeccef9a95c21cc98263b6b1044b80a3b53c7d4280e573fb8fd",
+    "replay_01/results_v2/operator_151109_hmm_same_matrix.json.gz": "d382a11a37772da26c70ef577c40dfa7b5ee52e5113564c8ae68921856fc4790",
+    "replay_01/results_v2/operator_151109_hx.json.gz": "d382a11a37772da26c70ef577c40dfa7b5ee52e5113564c8ae68921856fc4790",
+    "replay_01/results_v2/operator_151113_free.json.gz": "120b364ee0e13d43e9127f140992f52028807113af2140c9d2532006f98fe0ae",
+    "replay_01/results_v2/operator_151113_hmm_same_matrix.json.gz": "790a2f5c53604ae313ba43ef138b7213a3952fb1444d7c850e08f74c7dea1bed",
+    "replay_01/results_v2/operator_151113_hx.json.gz": "790a2f5c53604ae313ba43ef138b7213a3952fb1444d7c850e08f74c7dea1bed",
+    "replay_01/results_v2/operator_151117_free.json.gz": "36ed2132a0619898d023ef993753fa86c30ab08f6d48bdc9b1d8a8df9c34eeb6",
+    "replay_01/results_v2/operator_151117_hmm_same_matrix.json.gz": "f082ebcd104b9de65c48c07ebf6500c31512e94f968d3b48ea3022b32490d16c",
+    "replay_01/results_v2/operator_151117_hx.json.gz": "f082ebcd104b9de65c48c07ebf6500c31512e94f968d3b48ea3022b32490d16c",
+    "replay_01/results_v2/operator_151119_free.json.gz": "ed124eecb7b095e30522530df17ad0dcf20b7f25c5a2595b9a13e23c84b7ada2",
+    "replay_01/results_v2/operator_151119_hmm_same_matrix.json.gz": "f5f6ee4e29ef82d3d5646d228d36d475b1f0068d88e873e2cfe40d92e92b6c0a",
+    "replay_01/results_v2/operator_151119_hx.json.gz": "f5f6ee4e29ef82d3d5646d228d36d475b1f0068d88e873e2cfe40d92e92b6c0a",
+    "replay_01/results_v2/operator_151123_free.json.gz": "e455f1ba8e7ab21af5c7109aa371ce4938b5a8e22c67180a480edbe105f31ed5",
+    "replay_01/results_v2/operator_151123_hmm_same_matrix.json.gz": "d84f2f428be4699fe9151b4c046b9eb56a8bf85817992fee13b4365d3ee34d68",
+    "replay_01/results_v2/operator_151123_hx.json.gz": "d84f2f428be4699fe9151b4c046b9eb56a8bf85817992fee13b4365d3ee34d68",
+    "results/PROCESS_SUMMARY.json": "b5eeee46f11a30fffa50999d47b7d0f046f6f860d3e973b07df2dfb9e93584f6",
+    "results/audit.PROCESS_RECEIPT.json": "85bc863c88ccf4a788c6b5889ad629970b9afdca5ac8470dd9492e6fd20cc894",
+    "results_v2/PROCESS_SUMMARY.json": "663f4861f966509928cd88a72ca501abdf71e73de26eb472f3310657a79cd625",
+    "results_v2/audit.PROCESS_RECEIPT.json": "7b5d79ed63df5792cfcc1b6ff396ff9759d1d6af2606e4ac86747f9fe160ae72",
+    "results_v2/campaign.PROCESS_RECEIPT.json": "80e81bc80125b1d13974da4123f2cd8773b8d59d3b9f34f11ae8e0b88cad9a99"
+  },
+  "limits": [
+    "Numeric state comparison is the saved query2 checkpoint only; full semantic records checked across all6queries",
+    "No independent rederivation of DOP853 implementation or instrument CPU clock",
+    "No10%cost-saving claim, no original anchored/D gate relabeling, no core-exclusive gain",
+    "No GPU/joules/media or production admission"
+  ],
+  "maximum_dense_error": 1.0116907311896739e-14,
+  "maximum_mass_error": 1.7252865802674933e-13,
+  "maximum_ode_error": 1.3301637569185232e-11,
+  "minimum_transition_entry": 0.0,
+  "nonoverlapping_recorded_child_cpu_seconds": 34.410041,
+  "operator_matrix_cases": 192,
+  "query2_maximum_numeric_state_error": 1.099120794378905e-14,
+  "query_checkpoint_hash_differences": 1567,
+  "query_record_comparisons": 2304,
+  "raw_execution_pairs": 384,
+  "role": "Independent recomputation using stdlib and NumPy only; no experiment helpers imported",
+  "schema": "hcsn-r17-symmetric-independent-raw-review-v1",
+  "source_dependencies_verified": 41,
+  "source_manifest_sha256": "ede9f2d966f6657fec573091754dc880746f5896e38cb67b27db739bf9a6a8a8",
+  "source_revision": "8e62cf1a57d2b07c9f9207e1bb01b0e909bfed54"
+}

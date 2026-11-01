@@ -1,0 +1,37 @@
+{
+  "inclusion": "Each receipt uses wait4 complete fresh child CPU, including imports, all failed/successful candidate attempts and output. Nested execute/preparation timings are not added to these outer receipts.",
+  "nonoverlapping_measured_child_cpu_seconds": 34.410041,
+  "not_measured": [
+    "supervisor parent interpreter/import CPU",
+    "source preparation and publication",
+    "syntax-only checks",
+    "V2 create-only launch refusal CPU",
+    "first replay startup refused before process due nonexistent cwd",
+    "training of inherited fixed models",
+    "full deployment/network/media/GPU/energy"
+  ],
+  "records": [
+    {
+      "child_cpu_seconds": 5.096156000000001,
+      "receipt": "attempt_01/results/PROCESS_SUMMARY.json",
+      "scope": "initial operator guard failed; no campaign"
+    },
+    {
+      "child_cpu_seconds": 0,
+      "receipt": "results/PROCESS_SUMMARY.json",
+      "scope": "current results duplicates initial audit bytes; same execution, zero additive CPU"
+    },
+    {
+      "child_cpu_seconds": 12.918543,
+      "receipt": "results_v2/PROCESS_SUMMARY.json",
+      "scope": "V3 operator success and disk-full interrupted campaign"
+    },
+    {
+      "child_cpu_seconds": 16.395342,
+      "receipt": "replay_01/results_v2/PROCESS_SUMMARY.json",
+      "scope": "same-source same-namespace fresh-checkout engineering replay, complete"
+    }
+  ],
+  "schema": "hcsn-r17-symmetric-cost-v1",
+  "scope": "Recorded nonoverlapping child CPU lower bound, not complete project or deployment total; CPU seconds are not joules."
+}
