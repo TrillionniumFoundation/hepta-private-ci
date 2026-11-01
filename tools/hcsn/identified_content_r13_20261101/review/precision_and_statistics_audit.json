@@ -1,0 +1,2947 @@
+{
+  "schema": "hcsn-r13-independent-precision-statistics-audit-v1",
+  "preflight": {
+    "timestamp": "2026-11-01T02:09:03.433782+00:00",
+    "confirmation_present_at_snapshot": true,
+    "source_review_completed_before_first_outcome_read": true,
+    "freeze_sha256": "be3b72c8786724fc03f72a1abcf919e6d063a40a36697a8bdc4dab35a5ba610c",
+    "source_checks": {
+      "calibrated_operator_r11_20261031/numerics/kernel.py": true,
+      "identified_content_r13_20261101/IMPLEMENTATION.md": true,
+      "identified_content_r13_20261101/PROTOCOL.json": true,
+      "identified_content_r13_20261101/content.py": true,
+      "identified_content_r13_20261101/contract.py": true,
+      "identified_content_r13_20261101/controller.py": true,
+      "identified_content_r13_20261101/costs.py": true,
+      "identified_content_r13_20261101/data/sms_spam_collection.zip": true,
+      "identified_content_r13_20261101/data.py": true,
+      "identified_content_r13_20261101/evaluation.py": true,
+      "identified_content_r13_20261101/fit_frontend.py": true,
+      "identified_content_r13_20261101/freeze.py": true,
+      "identified_content_r13_20261101/inference.py": true,
+      "identified_content_r13_20261101/launch.py": true,
+      "identified_content_r13_20261101/models.py": true,
+      "identified_content_r13_20261101/native/adapter.py": true,
+      "identified_content_r13_20261101/native/benchmark.py": true,
+      "identified_content_r13_20261101/native/build.py": true,
+      "identified_content_r13_20261101/native/checkpoint.rs": true,
+      "identified_content_r13_20261101/native/core.rs": true,
+      "identified_content_r13_20261101/native/events.rs": true,
+      "identified_content_r13_20261101/native/events_main.rs": true,
+      "identified_content_r13_20261101/native/fixtures.py": true,
+      "identified_content_r13_20261101/native/lib.rs": true,
+      "identified_content_r13_20261101/native/prepared.rs": true,
+      "identified_content_r13_20261101/native/runtime_adapter.py": true,
+      "identified_content_r13_20261101/native/sha256.rs": true,
+      "identified_content_r13_20261101/native/test_migration.py": true,
+      "identified_content_r13_20261101/native/test_prepared.py": true,
+      "identified_content_r13_20261101/native/test_runtime_adapter.py": true,
+      "identified_content_r13_20261101/package_training.py": true,
+      "identified_content_r13_20261101/propagation/api.py": true,
+      "identified_content_r13_20261101/propagation/bounds.py": true,
+      "identified_content_r13_20261101/propagation/finite_volume.py": true,
+      "identified_content_r13_20261101/run_fits.py": true,
+      "identified_content_r13_20261101/statistics.py": true,
+      "identified_content_r13_20261101/training.py": true,
+      "unified_cell_r12_20261031/contract.py": true,
+      "unified_cell_r12_20261031/control/controller.py": true,
+      "unified_cell_r12_20261031/tie_resolution/candidate.py": true
+    },
+    "artifact_checks": {
+      "fits/131101_hx_distribution.json": true,
+      "fits/131101_gru.json": true,
+      "fits/131101_continuous_diagonal_ssm.json": true,
+      "fits/131103_hx_distribution.json": true,
+      "fits/131103_gru.json": true,
+      "fits/131103_continuous_diagonal_ssm.json": true,
+      "fits/131107_hx_distribution.json": true,
+      "fits/131107_gru.json": true,
+      "fits/131107_continuous_diagonal_ssm.json": true,
+      "fits/131109_hx_distribution.json": true,
+      "fits/131109_gru.json": true,
+      "fits/131109_continuous_diagonal_ssm.json": true,
+      "fits/131113_hx_distribution.json": true,
+      "fits/131113_gru.json": true,
+      "fits/131113_continuous_diagonal_ssm.json": true,
+      "fits/131117_hx_distribution.json": true,
+      "fits/131117_gru.json": true,
+      "fits/131117_continuous_diagonal_ssm.json": true,
+      "fits/131119_hx_distribution.json": true,
+      "fits/131119_gru.json": true,
+      "fits/131119_continuous_diagonal_ssm.json": true,
+      "fits/131123_hx_distribution.json": true,
+      "fits/131123_gru.json": true,
+      "fits/131123_continuous_diagonal_ssm.json": true,
+      "receipts/131101_hx_distribution.json": true,
+      "receipts/131101_gru.json": true,
+      "receipts/131101_continuous_diagonal_ssm.json": true,
+      "receipts/131103_hx_distribution.json": true,
+      "receipts/131103_gru.json": true,
+      "receipts/131103_continuous_diagonal_ssm.json": true,
+      "receipts/131107_hx_distribution.json": true,
+      "receipts/131107_gru.json": true,
+      "receipts/131107_continuous_diagonal_ssm.json": true,
+      "receipts/131109_hx_distribution.json": true,
+      "receipts/131109_gru.json": true,
+      "receipts/131109_continuous_diagonal_ssm.json": true,
+      "receipts/131113_hx_distribution.json": true,
+      "receipts/131113_gru.json": true,
+      "receipts/131113_continuous_diagonal_ssm.json": true,
+      "receipts/131117_hx_distribution.json": true,
+      "receipts/131117_gru.json": true,
+      "receipts/131117_continuous_diagonal_ssm.json": true,
+      "receipts/131119_hx_distribution.json": true,
+      "receipts/131119_gru.json": true,
+      "receipts/131119_continuous_diagonal_ssm.json": true,
+      "receipts/131123_hx_distribution.json": true,
+      "receipts/131123_gru.json": true,
+      "receipts/131123_continuous_diagonal_ssm.json": true,
+      "frontend.json": true,
+      "frontend_receipt.json": true
+    },
+    "native_library_sha256": "19299f8802da6932f9a0e08025f265c38b855be8e9417b17f2c558115ef50ad2",
+    "operative_source_coverage": {
+      "evaluation.py": true,
+      "statistics.py": true,
+      "costs.py": true,
+      "contract.py": true,
+      "models.py": true,
+      "content.py": true,
+      "data.py": true,
+      "inference.py": true,
+      "training.py": true,
+      "controller.py": true,
+      "launch.py": true,
+      "fit_frontend.py": true,
+      "propagation/api.py": true,
+      "propagation/bounds.py": true,
+      "propagation/finite_volume.py": true,
+      "native/adapter.py": true
+    },
+    "receipts": [
+      {
+        "seed": 131101,
+        "core": "hx_distribution",
+        "receipt_sha256": "e2078dd2c7878b0c93498d3720b69ae978a8c855714ef0cc9db32ef664030a31",
+        "whole_process_cpu_seconds": 44.526467000000004,
+        "child_cpu_sum_error": 1.3322676295501878e-15,
+        "preparation_cpu_seconds": 0.250488641,
+        "fit_cpu_seconds": 40.182243084999996,
+        "overhead_cpu_seconds": 4.093735274000011,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.18224308499999609,
+        "updates": 546,
+        "selected_update": 540,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131101,
+        "core": "gru",
+        "receipt_sha256": "a48fc67da7690a3fc95f7e33d097a3a517844b8286bfe4fdbe415c9cb72a562a",
+        "whole_process_cpu_seconds": 44.219871,
+        "child_cpu_sum_error": 2.6645352591003757e-15,
+        "preparation_cpu_seconds": 0.2465831679999999,
+        "fit_cpu_seconds": 40.027566298,
+        "overhead_cpu_seconds": 3.9457215339999934,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.027566298000003542,
+        "updates": 3601,
+        "selected_update": 2140,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131101,
+        "core": "continuous_diagonal_ssm",
+        "receipt_sha256": "172c281c576025e6d4dcb603ca7cf7c64d9c9dff1f20e8581846353ff44ae37f",
+        "whole_process_cpu_seconds": 44.158719,
+        "child_cpu_sum_error": 8.881784197001252e-16,
+        "preparation_cpu_seconds": 0.26267328999999995,
+        "fit_cpu_seconds": 40.023338213,
+        "overhead_cpu_seconds": 3.8727074969999933,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.023338213000002384,
+        "updates": 3636,
+        "selected_update": 3636,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131103,
+        "core": "hx_distribution",
+        "receipt_sha256": "798f50c586bbe7f2819aa94e9b3cc3b8e3111b8d46f99190c5ff5bb836b79175",
+        "whole_process_cpu_seconds": 44.485502000000004,
+        "child_cpu_sum_error": 9.992007221626409e-16,
+        "preparation_cpu_seconds": 0.1712322180000001,
+        "fit_cpu_seconds": 40.190204103,
+        "overhead_cpu_seconds": 4.1240656790000045,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.19020410299999924,
+        "updates": 484,
+        "selected_update": 260,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131103,
+        "core": "gru",
+        "receipt_sha256": "3b18c59d601612aae62d8821f365680bb104b4e93a532f9aa3452df059245581",
+        "whole_process_cpu_seconds": 44.399883,
+        "child_cpu_sum_error": 8.881784197001252e-16,
+        "preparation_cpu_seconds": 0.21024593400000002,
+        "fit_cpu_seconds": 40.04845063,
+        "overhead_cpu_seconds": 4.141186436000005,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.04845062999999783,
+        "updates": 3071,
+        "selected_update": 1860,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131103,
+        "core": "continuous_diagonal_ssm",
+        "receipt_sha256": "245060291c94a3691172644251a7ecb7bfa4866b73630cf622db2e80d9901817",
+        "whole_process_cpu_seconds": 44.439124,
+        "child_cpu_sum_error": 8.881784197001252e-16,
+        "preparation_cpu_seconds": 0.2175860369999998,
+        "fit_cpu_seconds": 40.029261762999994,
+        "overhead_cpu_seconds": 4.192276200000009,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.029261762999993834,
+        "updates": 3131,
+        "selected_update": 3131,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131107,
+        "core": "hx_distribution",
+        "receipt_sha256": "307009fe2bd8bd5cbbe33793a5a49b6eae40da83077f1c4eb14b3a50d7515a3b",
+        "whole_process_cpu_seconds": 44.424771,
+        "child_cpu_sum_error": 2.9976021664879227e-15,
+        "preparation_cpu_seconds": 0.16214682300000005,
+        "fit_cpu_seconds": 40.103004045,
+        "overhead_cpu_seconds": 4.159620132000001,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.10300404499999871,
+        "updates": 545,
+        "selected_update": 480,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131107,
+        "core": "gru",
+        "receipt_sha256": "4a8f25c9eafe97774493e83babec3c21f7f22951662358f2210b4df6db60d5d1",
+        "whole_process_cpu_seconds": 44.452556,
+        "child_cpu_sum_error": 1.4432899320127035e-15,
+        "preparation_cpu_seconds": 0.1737160539999998,
+        "fit_cpu_seconds": 40.037196256,
+        "overhead_cpu_seconds": 4.241643690000004,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.037196256000001426,
+        "updates": 3646,
+        "selected_update": 1620,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131107,
+        "core": "continuous_diagonal_ssm",
+        "receipt_sha256": "a2114ada5da40abe1fb93c3e463c4066823a8a84b6f110eed06a705842a771d5",
+        "whole_process_cpu_seconds": 44.267593,
+        "child_cpu_sum_error": 2.220446049250313e-16,
+        "preparation_cpu_seconds": 0.16480119299999973,
+        "fit_cpu_seconds": 40.029760671999995,
+        "overhead_cpu_seconds": 4.073031135000001,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.02976067199999477,
+        "updates": 3712,
+        "selected_update": 3640,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131109,
+        "core": "hx_distribution",
+        "receipt_sha256": "1cc7f95b91699defd668f81f081a0114b6a6170751cd19c99e1a747a88c7a87b",
+        "whole_process_cpu_seconds": 44.330261,
+        "child_cpu_sum_error": 2.220446049250313e-16,
+        "preparation_cpu_seconds": 0.16288833299999972,
+        "fit_cpu_seconds": 40.225941027000005,
+        "overhead_cpu_seconds": 3.9414316399999976,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.22594102700000462,
+        "updates": 480,
+        "selected_update": 160,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131109,
+        "core": "gru",
+        "receipt_sha256": "df68a1e8e50a5671d80c44cc9dac745abc75520792e940e2bd656eb3546ca9b4",
+        "whole_process_cpu_seconds": 44.134051,
+        "child_cpu_sum_error": 2.3314683517128287e-15,
+        "preparation_cpu_seconds": 0.22919860400000003,
+        "fit_cpu_seconds": 40.029274703999995,
+        "overhead_cpu_seconds": 3.8755776920000073,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.02927470399999521,
+        "updates": 3328,
+        "selected_update": 2280,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131109,
+        "core": "continuous_diagonal_ssm",
+        "receipt_sha256": "7daed818aedfe4d5be24d33c2d40e2d9ec536a730db194a8784df2101697e41e",
+        "whole_process_cpu_seconds": 43.978323,
+        "child_cpu_sum_error": 0.0,
+        "preparation_cpu_seconds": 0.21678353699999997,
+        "fit_cpu_seconds": 40.049245807,
+        "overhead_cpu_seconds": 3.712293656000007,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.049245806999998365,
+        "updates": 3160,
+        "selected_update": 2840,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131113,
+        "core": "hx_distribution",
+        "receipt_sha256": "7b2fbe7ca2767c8174dc2fc7cc095142dc6d7dbe4fee8ec8d567797febc12fa4",
+        "whole_process_cpu_seconds": 44.694917000000004,
+        "child_cpu_sum_error": 1.887379141862766e-15,
+        "preparation_cpu_seconds": 0.2012090849999999,
+        "fit_cpu_seconds": 40.135226721,
+        "overhead_cpu_seconds": 4.3584811939999994,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.13522672100000221,
+        "updates": 588,
+        "selected_update": 500,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131113,
+        "core": "gru",
+        "receipt_sha256": "613e2c2a6e191ca84c669324293a6a771cee63d8d92583d235ca951dc6c8dac7",
+        "whole_process_cpu_seconds": 44.553181,
+        "child_cpu_sum_error": 4.440892098500626e-16,
+        "preparation_cpu_seconds": 0.23234249000000018,
+        "fit_cpu_seconds": 40.025035671999994,
+        "overhead_cpu_seconds": 4.295802838000007,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.025035671999994236,
+        "updates": 4101,
+        "selected_update": 4080,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131113,
+        "core": "continuous_diagonal_ssm",
+        "receipt_sha256": "8888ac3965374a8cb151d53902af061e7a784e988fd5653cca7184d155a6376e",
+        "whole_process_cpu_seconds": 44.700324,
+        "child_cpu_sum_error": 2.220446049250313e-15,
+        "preparation_cpu_seconds": 0.2417439990000001,
+        "fit_cpu_seconds": 40.030279516,
+        "overhead_cpu_seconds": 4.428300485000001,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.03027951600000023,
+        "updates": 4090,
+        "selected_update": 4020,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131117,
+        "core": "hx_distribution",
+        "receipt_sha256": "4c8fd591cb941d29409eafb57615d9de397c53ddac9a794943c523037152db3d",
+        "whole_process_cpu_seconds": 44.039591,
+        "child_cpu_sum_error": 7.771561172376096e-16,
+        "preparation_cpu_seconds": 0.16710840800000026,
+        "fit_cpu_seconds": 40.134551807,
+        "overhead_cpu_seconds": 3.737930785000003,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.13455180700000113,
+        "updates": 587,
+        "selected_update": 400,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131117,
+        "core": "gru",
+        "receipt_sha256": "31113e025bf217adc3923d5dd6389d68d5447a34c4b061485db363041be209d3",
+        "whole_process_cpu_seconds": 43.858999000000004,
+        "child_cpu_sum_error": 1.3322676295501878e-15,
+        "preparation_cpu_seconds": 0.16870856300000003,
+        "fit_cpu_seconds": 40.030693143,
+        "overhead_cpu_seconds": 3.659597294000001,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.03069314300000059,
+        "updates": 4004,
+        "selected_update": 1380,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131117,
+        "core": "continuous_diagonal_ssm",
+        "receipt_sha256": "cbd7355981299c34b2bfbdae9d51af1ca1ef9bd8db0093e2951fcf13d70bf65f",
+        "whole_process_cpu_seconds": 43.946622000000005,
+        "child_cpu_sum_error": 3.552713678800501e-15,
+        "preparation_cpu_seconds": 0.18009046699999987,
+        "fit_cpu_seconds": 40.024103099,
+        "overhead_cpu_seconds": 3.7424284340000042,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.024103099000001293,
+        "updates": 3960,
+        "selected_update": 3940,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131119,
+        "core": "hx_distribution",
+        "receipt_sha256": "2b976c8087c153da26338d6ca5ca7a2c8e231b9f63a025e54205c357164217e6",
+        "whole_process_cpu_seconds": 44.055967,
+        "child_cpu_sum_error": 3.3306690738754696e-16,
+        "preparation_cpu_seconds": 0.18575098200000006,
+        "fit_cpu_seconds": 40.124618915999996,
+        "overhead_cpu_seconds": 3.745597102000005,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.12461891599999575,
+        "updates": 588,
+        "selected_update": 460,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131119,
+        "core": "gru",
+        "receipt_sha256": "6498d81d4a38ac78a77a73e461b130ba5ad1dffc186c4e95f1e271c1523e2c67",
+        "whole_process_cpu_seconds": 43.678409,
+        "child_cpu_sum_error": 1.5543122344752192e-15,
+        "preparation_cpu_seconds": 0.16492943300000018,
+        "fit_cpu_seconds": 40.032667245,
+        "overhead_cpu_seconds": 3.4808123220000056,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.03266724499999896,
+        "updates": 3881,
+        "selected_update": 3040,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131119,
+        "core": "continuous_diagonal_ssm",
+        "receipt_sha256": "e5f29f13ef68c2bd72d028e5a2b8b4c03b5038435e65697bb892e7b93ca7e3dc",
+        "whole_process_cpu_seconds": 43.748839,
+        "child_cpu_sum_error": 9.992007221626409e-16,
+        "preparation_cpu_seconds": 0.22516906699999995,
+        "fit_cpu_seconds": 40.02028729,
+        "overhead_cpu_seconds": 3.503382642999995,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.020287289999998848,
+        "updates": 4067,
+        "selected_update": 3420,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131123,
+        "core": "hx_distribution",
+        "receipt_sha256": "bbc6d63927988ff69cd80510cfd78f2daa4664ac432240ebc77b5f8a6085e783",
+        "whole_process_cpu_seconds": 44.229411,
+        "child_cpu_sum_error": 1.1102230246251565e-15,
+        "preparation_cpu_seconds": 0.25834151799999994,
+        "fit_cpu_seconds": 40.155025633,
+        "overhead_cpu_seconds": 3.816043848999996,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.15502563300000105,
+        "updates": 591,
+        "selected_update": 340,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131123,
+        "core": "gru",
+        "receipt_sha256": "1d427cc1eeb4bb6e34954c2b814d00360accf54ed5c34a2db8b43adf2d8812a0",
+        "whole_process_cpu_seconds": 44.035624,
+        "child_cpu_sum_error": 2.886579864025407e-15,
+        "preparation_cpu_seconds": 0.1780234730000001,
+        "fit_cpu_seconds": 40.034639943,
+        "overhead_cpu_seconds": 3.8229605839999934,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.03463994300000195,
+        "updates": 3997,
+        "selected_update": 3720,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      },
+      {
+        "seed": 131123,
+        "core": "continuous_diagonal_ssm",
+        "receipt_sha256": "1d5185656f553ca6bdc8c0f03e6ba0dcc55ed80a7ef01eb2a3b3886f418c0d4a",
+        "whole_process_cpu_seconds": 44.155635000000004,
+        "child_cpu_sum_error": 2.886579864025407e-15,
+        "preparation_cpu_seconds": 0.17254188199999998,
+        "fit_cpu_seconds": 40.025307677,
+        "overhead_cpu_seconds": 3.9577854410000057,
+        "fit_budget": 40.0,
+        "fit_overshoot": 0.025307677000000695,
+        "updates": 4276,
+        "selected_update": 3960,
+        "source_matches_freeze": true,
+        "source_unchanged": true,
+        "returncode": 0,
+        "frontend_identity_matches": true
+      }
+    ],
+    "paired_fits": [
+      {
+        "seed": 131101,
+        "training_digest_same": true,
+        "validation_digest_same": true,
+        "choice": "gru",
+        "frozen_choice": "gru",
+        "selected_validation_ce": {
+          "hx_distribution": 3.617547172473934,
+          "gru": 3.6224998630418077,
+          "continuous_diagonal_ssm": 3.6370028420047356
+        }
+      },
+      {
+        "seed": 131103,
+        "training_digest_same": true,
+        "validation_digest_same": true,
+        "choice": "gru",
+        "frozen_choice": "gru",
+        "selected_validation_ce": {
+          "hx_distribution": 3.5892560999989547,
+          "gru": 3.593941579879756,
+          "continuous_diagonal_ssm": 3.605877273260014
+        }
+      },
+      {
+        "seed": 131107,
+        "training_digest_same": true,
+        "validation_digest_same": true,
+        "choice": "gru",
+        "frozen_choice": "gru",
+        "selected_validation_ce": {
+          "hx_distribution": 3.6380339490217457,
+          "gru": 3.64113446682803,
+          "continuous_diagonal_ssm": 3.658953622674017
+        }
+      },
+      {
+        "seed": 131109,
+        "training_digest_same": true,
+        "validation_digest_same": true,
+        "choice": "gru",
+        "frozen_choice": "gru",
+        "selected_validation_ce": {
+          "hx_distribution": 3.6177936496663867,
+          "gru": 3.622315882392679,
+          "continuous_diagonal_ssm": 3.64721325738461
+        }
+      },
+      {
+        "seed": 131113,
+        "training_digest_same": true,
+        "validation_digest_same": true,
+        "choice": "gru",
+        "frozen_choice": "gru",
+        "selected_validation_ce": {
+          "hx_distribution": 3.6147716788786743,
+          "gru": 3.6186175485292957,
+          "continuous_diagonal_ssm": 3.631915485858462
+        }
+      },
+      {
+        "seed": 131117,
+        "training_digest_same": true,
+        "validation_digest_same": true,
+        "choice": "gru",
+        "frozen_choice": "gru",
+        "selected_validation_ce": {
+          "hx_distribution": 3.671437690600994,
+          "gru": 3.675460892626292,
+          "continuous_diagonal_ssm": 3.6847536546616197
+        }
+      },
+      {
+        "seed": 131119,
+        "training_digest_same": true,
+        "validation_digest_same": true,
+        "choice": "gru",
+        "frozen_choice": "gru",
+        "selected_validation_ce": {
+          "hx_distribution": 3.6292839675946293,
+          "gru": 3.633305382828351,
+          "continuous_diagonal_ssm": 3.6497588645799803
+        }
+      },
+      {
+        "seed": 131123,
+        "training_digest_same": true,
+        "validation_digest_same": true,
+        "choice": "gru",
+        "frozen_choice": "gru",
+        "selected_validation_ce": {
+          "hx_distribution": 3.6337930580414604,
+          "gru": 3.638185504163282,
+          "continuous_diagonal_ssm": 3.6505218091563716
+        }
+      }
+    ],
+    "checks": {
+      "source_hashes_match": true,
+      "artifact_hashes_match": true,
+      "native_library_hash_matches": true,
+      "operative_sources_covered": true,
+      "receipts_count": 24,
+      "all_24_receipts_valid": true,
+      "all_paired_data_and_choices_match": true,
+      "frontend_replica_weights_and_counts_match": true
+    },
+    "frontend_receipt_scope": "Full-process deterministic refit; deployed coefficients/counts match; original and replica timing fields need not match",
+    "source_identity_limits": [
+      "Per-fit source_before covers the training computation but omits launch.py; final FREEZE covers launch.py and run_fits.py.",
+      "Frontend-refit source_before omits its fit_frontend.py entrypoint; final FREEZE covers fit_frontend.py. Receipt is not retrospective proof of that entrypoint hash at execution.",
+      "R12 contract reads its PROTOCOL.json at import, although the R13-used FinancialOutputs and bayes_step do not use those protocol values; this transitive non-operative file is not in FREEZE.",
+      "Source hashes do not attest the entire Python/OS/dependency environment; native binary identity is separately verified."
+    ],
+    "statistics_contract": {
+      "independent_units": "8 paired fit seeds, not episodes",
+      "gain": "Two-sided 256 sign assignments; Holm over the two D-B utility domains; mean utility gain >= .01",
+      "noninferiority": "One-sided Student lower bound at alpha/2=.025 in each of two domains, greater than -.01",
+      "cost_primary": "ratio of mean unique amortized deployment CPU, D/B <= .9, conditional on noninferiority",
+      "caveats": [
+        "Sign-flip exactness assumes conditional sign exchangeability/symmetry, not merely equal means.",
+        "Student coverage is model-based with eight fits, not a distribution-free finite-sample guarantee.",
+        "Gain tests zero improvement plus a point-estimate .01 threshold; it is not a confidence bound proving improvement greater than .01.",
+        "Unique deployment reuse and runtime/kernel efficiency are distinct; search/equal-charge/runtime ledgers must accompany primary cost."
+      ]
+    },
+    "frozen_files_modified": false
+  },
+  "confirmation": {
+    "timestamp": "2026-11-01T02:09:03.949631+00:00",
+    "confirmation_sha256": "aae98a044b40308ddd2fa16c18cea38316bfee7d5b25cf40f37809e2545f09c9",
+    "summary_sha256": "d01dd62e3729ae33a79255913c86a3509dc98a1fad48e32145f9a65300dc810d",
+    "independent_t975_df7": 2.3646242515927853,
+    "domains": {
+      "text_iid": {
+        "contrasts": {
+          "B_minus_A": {
+            "paired_values": [
+              0.03311576384119341,
+              0.02922876567987276,
+              0.02832907225098813,
+              0.027704860492340333,
+              0.035507214201605186,
+              0.024037086346009873,
+              0.03232287246636589,
+              0.03626507621660846
+            ],
+            "mean": 0.030813838936873006,
+            "standard_error": 0.0014856242379258902,
+            "ci95_student": [
+              0.027300895835119396,
+              0.034326782038626616
+            ],
+            "one_sided_simultaneous_lower": 0.027300895835119396,
+            "exact_sign_flip_p": 0.0078125,
+            "represented_rational_sign_flip_p_without_tolerance": 0.0078125,
+            "n_independent_fits": 8
+          },
+          "D_minus_C": {
+            "paired_values": [
+              0.03311576384119341,
+              0.02922876567987276,
+              0.02930563475098813,
+              0.027704860492340333,
+              0.035507214201605186,
+              0.024037086346009873,
+              0.03232287246636589,
+              0.03626507621660846
+            ],
+            "mean": 0.030935909249373006,
+            "standard_error": 0.0014612729905744118,
+            "ci95_student": [
+              0.027480547697663237,
+              0.03439127080108278
+            ],
+            "one_sided_simultaneous_lower": 0.027480547697663237,
+            "exact_sign_flip_p": 0.0078125,
+            "represented_rational_sign_flip_p_without_tolerance": 0.0078125,
+            "n_independent_fits": 8
+          },
+          "C_minus_A": {
+            "paired_values": [
+              0.001953125,
+              0.0029296875,
+              -0.0009765625,
+              -0.005859375,
+              -0.0029296875,
+              0.0009765625,
+              0.005859375,
+              -0.0009765625
+            ],
+            "mean": 0.0001220703125,
+            "standard_error": 0.001284434279319217,
+            "ci95_student": [
+              -0.002915134133955322,
+              0.003159274758955322
+            ],
+            "one_sided_simultaneous_lower": -0.002915134133955322,
+            "exact_sign_flip_p": 1.0,
+            "represented_rational_sign_flip_p_without_tolerance": 1.0,
+            "n_independent_fits": 8
+          },
+          "D_minus_B": {
+            "paired_values": [
+              0.001953125,
+              0.0029296875,
+              0.0,
+              -0.005859375,
+              -0.0029296875,
+              0.0009765625,
+              0.005859375,
+              -0.0009765625
+            ],
+            "mean": 0.000244140625,
+            "standard_error": 0.0012752863629172865,
+            "ci95_student": [
+              -0.002771432436479774,
+              0.003259713686479774
+            ],
+            "one_sided_simultaneous_lower": -0.002771432436479774,
+            "exact_sign_flip_p": 0.9375,
+            "represented_rational_sign_flip_p_without_tolerance": 0.9375,
+            "n_independent_fits": 8,
+            "holm_p": 1.0
+          },
+          "D_minus_HMM": {
+            "paired_values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "mean": 0.0,
+            "standard_error": 0.0,
+            "ci95_student": [
+              0.0,
+              0.0
+            ],
+            "one_sided_simultaneous_lower": 0.0,
+            "exact_sign_flip_p": 1.0,
+            "represented_rational_sign_flip_p_without_tolerance": 1.0,
+            "n_independent_fits": 8
+          },
+          "interaction": {
+            "paired_values": [
+              0.0,
+              0.0,
+              0.0009765625,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "mean": 0.0001220703125,
+            "standard_error": 0.0001220703125,
+            "ci95_student": [
+              -0.00016658010883700993,
+              0.00041072073383700993
+            ],
+            "one_sided_simultaneous_lower": -0.00016658010883700993,
+            "exact_sign_flip_p": 1.0,
+            "represented_rational_sign_flip_p_without_tolerance": 1.0,
+            "n_independent_fits": 8
+          }
+        },
+        "cost_ratios": {
+          "runtime_cost_ratio_D_over_B": 0.9062265361618868,
+          "unique_actual_cost_ratio_D_over_B": 0.5310012428907374,
+          "total_model_search_cost_ratio_D_over_B": 0.9998946821464496,
+          "conservative_cost_ratio_D_over_B": 1.0017750527285045
+        },
+        "noninferiority_pass": true,
+        "cost_acceptance_pass": true,
+        "quality_gain_acceptance_pass": false
+      },
+      "text_ood_time": {
+        "contrasts": {
+          "B_minus_A": {
+            "paired_values": [
+              0.025224540185154964,
+              0.029727784126555967,
+              0.03850182028858584,
+              0.029893557928728942,
+              0.03833174700424913,
+              0.03559533891766975,
+              0.03243422247089833,
+              0.031106977162512983
+            ],
+            "mean": 0.03260199851054449,
+            "standard_error": 0.0016305394007289362,
+            "ci95_student": [
+              0.02874638550040328,
+              0.0364576115206857
+            ],
+            "one_sided_simultaneous_lower": 0.02874638550040328,
+            "exact_sign_flip_p": 0.0078125,
+            "represented_rational_sign_flip_p_without_tolerance": 0.0078125,
+            "n_independent_fits": 8
+          },
+          "D_minus_C": {
+            "paired_values": [
+              0.027177665185154964,
+              0.029727784126555967,
+              0.03850182028858584,
+              0.033890611437982,
+              0.03754378675820391,
+              0.03559533891766975,
+              0.030480609189648344,
+              0.03223668623137155
+            ],
+            "mean": 0.03314428776689654,
+            "standard_error": 0.0014003532917037493,
+            "ci95_student": [
+              0.02983297841253607,
+              0.03645559712125701
+            ],
+            "one_sided_simultaneous_lower": 0.02983297841253607,
+            "exact_sign_flip_p": 0.0078125,
+            "represented_rational_sign_flip_p_without_tolerance": 0.0078125,
+            "n_independent_fits": 8
+          },
+          "C_minus_A": {
+            "paired_values": [
+              -0.001953125,
+              -0.0029296875,
+              -0.0009765625,
+              -0.00390625,
+              0.001953125,
+              0.0048828125,
+              0.0029296875,
+              -0.005859375
+            ],
+            "mean": -0.000732421875,
+            "standard_error": 0.0013017199781334768,
+            "ci95_student": [
+              -0.0038105005040772496,
+              0.0023456567540772496
+            ],
+            "one_sided_simultaneous_lower": -0.0038105005040772496,
+            "exact_sign_flip_p": 0.640625,
+            "represented_rational_sign_flip_p_without_tolerance": 0.640625,
+            "n_independent_fits": 8
+          },
+          "D_minus_B": {
+            "paired_values": [
+              0.0,
+              -0.0029296875,
+              -0.0009765625,
+              9.08035092530568e-05,
+              0.0011651647539547838,
+              0.0048828125,
+              0.0009760742187500115,
+              -0.004729665931141436
+            ],
+            "mean": -0.00019013261864794795,
+            "standard_error": 0.001015748427925781,
+            "ci95_student": [
+              -0.0025919959848384965,
+              0.0022117307475426006
+            ],
+            "one_sided_simultaneous_lower": -0.0025919959848384965,
+            "exact_sign_flip_p": 0.921875,
+            "represented_rational_sign_flip_p_without_tolerance": 0.921875,
+            "n_independent_fits": 8,
+            "holm_p": 1.0
+          },
+          "D_minus_HMM": {
+            "paired_values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "mean": 0.0,
+            "standard_error": 0.0,
+            "ci95_student": [
+              0.0,
+              0.0
+            ],
+            "one_sided_simultaneous_lower": 0.0,
+            "exact_sign_flip_p": 1.0,
+            "represented_rational_sign_flip_p_without_tolerance": 1.0,
+            "n_independent_fits": 8
+          },
+          "interaction": {
+            "paired_values": [
+              0.001953125,
+              0.0,
+              0.0,
+              0.003997053509253057,
+              -0.0007879602460452162,
+              0.0,
+              -0.0019536132812499885,
+              0.0011297090688585643
+            ],
+            "mean": 0.000542289256352052,
+            "standard_error": 0.000642987470763616,
+            "ci95_student": [
+              -0.0009781345104859015,
+              0.0020627130231900053
+            ],
+            "one_sided_simultaneous_lower": -0.0009781345104859015,
+            "exact_sign_flip_p": 0.5,
+            "represented_rational_sign_flip_p_without_tolerance": 0.5,
+            "n_independent_fits": 8
+          }
+        },
+        "cost_ratios": {
+          "runtime_cost_ratio_D_over_B": 0.9225595057335462,
+          "unique_actual_cost_ratio_D_over_B": 0.5310166990883762,
+          "total_model_search_cost_ratio_D_over_B": 0.9999145711320166,
+          "conservative_cost_ratio_D_over_B": 1.0018043236515168
+        },
+        "noninferiority_pass": true,
+        "cost_acceptance_pass": true,
+        "quality_gain_acceptance_pass": false
+      }
+    },
+    "rows": [
+      {
+        "seed": 131101,
+        "domain": "text_iid",
+        "ordinary_choice": "gru",
+        "arms": {
+          "HMM": {
+            "mean_utility": 0.9308262741354587,
+            "mean_accuracy": 0.966796875,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.059854124000005,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 0.00016037199804687504,
+            "unique_amortized_cpu_per_episode": 0.05022022612204688,
+            "total_search_amortized_cpu_per_episode": 0.1385988161220469,
+            "equal_calibration_charge_cpu_per_episode": 0.05022022612204688
+          },
+          "SSM": {
+            "mean_utility": 0.9308262741354587,
+            "mean_accuracy": 0.966796875,
+            "full_process_own_fit_cpu_seconds": 44.158719,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.218573124,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 0.00016879049511718753,
+            "unique_amortized_cpu_per_episode": 0.09438736361911719,
+            "total_search_amortized_cpu_per_episode": 0.1386072346191172,
+            "equal_calibration_charge_cpu_per_episode": 0.09438736361911719
+          },
+          "GRU": {
+            "mean_utility": 0.9288731491354587,
+            "mean_accuracy": 0.96484375,
+            "full_process_own_fit_cpu_seconds": 44.219871,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.27972512400001,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 0.00014880980371093783,
+            "unique_amortized_cpu_per_episode": 0.09442853492771094,
+            "total_search_amortized_cpu_per_episode": 0.13858725392771093,
+            "equal_calibration_charge_cpu_per_episode": 0.09442853492771094
+          },
+          "D": {
+            "mean_utility": 0.9308262741354587,
+            "mean_accuracy": 0.966796875,
+            "full_process_own_fit_cpu_seconds": 44.526467000000004,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.059854124000005,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 0.00013468658105468718,
+            "unique_amortized_cpu_per_episode": 0.05019454070505469,
+            "total_search_amortized_cpu_per_episode": 0.1385731307050547,
+            "equal_calibration_charge_cpu_per_episode": 0.09472100770505469
+          },
+          "C": {
+            "mean_utility": 0.8977105102942653,
+            "mean_accuracy": 0.9638671875,
+            "full_process_own_fit_cpu_seconds": 44.526467000000004,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.059854124000005,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 7.137455957031275e-05,
+            "unique_amortized_cpu_per_episode": 0.05013122868357032,
+            "total_search_amortized_cpu_per_episode": 0.13850981868357032,
+            "equal_calibration_charge_cpu_per_episode": 0.09465769568357033
+          },
+          "B": {
+            "mean_utility": 0.9288731491354587,
+            "mean_accuracy": 0.96484375,
+            "full_process_own_fit_cpu_seconds": 44.219871,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.27972512400001,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 0.00016885311718750021,
+            "unique_amortized_cpu_per_episode": 0.09444857824118752,
+            "total_search_amortized_cpu_per_episode": 0.1386072972411875,
+            "equal_calibration_charge_cpu_per_episode": 0.09444857824118752
+          },
+          "A": {
+            "mean_utility": 0.8957573852942653,
+            "mean_accuracy": 0.9619140625,
+            "full_process_own_fit_cpu_seconds": 44.219871,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.27972512400001,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 6.422876757812557e-05,
+            "unique_amortized_cpu_per_episode": 0.09434395389157814,
+            "total_search_amortized_cpu_per_episode": 0.13850267289157814,
+            "equal_calibration_charge_cpu_per_episode": 0.09434395389157814
+          }
+        }
+      },
+      {
+        "seed": 131101,
+        "domain": "text_ood_time",
+        "ordinary_choice": "gru",
+        "arms": {
+          "HMM": {
+            "mean_utility": 0.9240961702232011,
+            "mean_accuracy": 0.962890625,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.059854124000005,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 0.00013941224121093772,
+            "unique_amortized_cpu_per_episode": 0.050199266365210944,
+            "total_search_amortized_cpu_per_episode": 0.13857785636521094,
+            "equal_calibration_charge_cpu_per_episode": 0.050199266365210944
+          },
+          "SSM": {
+            "mean_utility": 0.8566355281373498,
+            "mean_accuracy": 0.9130859375,
+            "full_process_own_fit_cpu_seconds": 44.158719,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.218573124,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 0.0002143817470703132,
+            "unique_amortized_cpu_per_episode": 0.09443295487107031,
+            "total_search_amortized_cpu_per_episode": 0.1386528258710703,
+            "equal_calibration_charge_cpu_per_episode": 0.09443295487107031
+          },
+          "GRU": {
+            "mean_utility": 0.9240961702232011,
+            "mean_accuracy": 0.962890625,
+            "full_process_own_fit_cpu_seconds": 44.219871,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.27972512400001,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 0.00013727875390625015,
+            "unique_amortized_cpu_per_episode": 0.09441700387790626,
+            "total_search_amortized_cpu_per_episode": 0.13857572287790626,
+            "equal_calibration_charge_cpu_per_episode": 0.09441700387790626
+          },
+          "D": {
+            "mean_utility": 0.9240961702232011,
+            "mean_accuracy": 0.962890625,
+            "full_process_own_fit_cpu_seconds": 44.526467000000004,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.059854124000005,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 0.00013109233496093851,
+            "unique_amortized_cpu_per_episode": 0.050190946458960946,
+            "total_search_amortized_cpu_per_episode": 0.13856953645896095,
+            "equal_calibration_charge_cpu_per_episode": 0.09471741345896094
+          },
+          "C": {
+            "mean_utility": 0.8969185050380462,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 44.526467000000004,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.059854124000005,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 6.424703710937538e-05,
+            "unique_amortized_cpu_per_episode": 0.05012410116110938,
+            "total_search_amortized_cpu_per_episode": 0.1385026911611094,
+            "equal_calibration_charge_cpu_per_episode": 0.09465056816110938
+          },
+          "B": {
+            "mean_utility": 0.9240961702232011,
+            "mean_accuracy": 0.962890625,
+            "full_process_own_fit_cpu_seconds": 44.219871,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.27972512400001,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 0.00015474895117187533,
+            "unique_amortized_cpu_per_episode": 0.09443447407517189,
+            "total_search_amortized_cpu_per_episode": 0.13859319307517187,
+            "equal_calibration_charge_cpu_per_episode": 0.09443447407517189
+          },
+          "A": {
+            "mean_utility": 0.8988716300380462,
+            "mean_accuracy": 0.970703125,
+            "full_process_own_fit_cpu_seconds": 44.219871,
+            "shared_calibration_cpu_seconds": 44.526467000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.27972512400001,
+            "all_candidate_search_cpu_seconds": 138.438444124,
+            "service_setup_cpu_seconds": 3.0522971240000003,
+            "runtime_cpu_per_episode": 6.2705843750001e-05,
+            "unique_amortized_cpu_per_episode": 0.09434243096775001,
+            "total_search_amortized_cpu_per_episode": 0.13850114996775,
+            "equal_calibration_charge_cpu_per_episode": 0.09434243096775001
+          }
+        }
+      },
+      {
+        "seed": 131103,
+        "domain": "text_iid",
+        "ordinary_choice": "gru",
+        "arms": {
+          "A": {
+            "mean_utility": 0.9028338342597187,
+            "mean_accuracy": 0.9697265625,
+            "full_process_own_fit_cpu_seconds": 44.399883,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.41749232500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 7.050015625000104e-05,
+            "unique_amortized_cpu_per_episode": 0.09448799248125002,
+            "total_search_amortized_cpu_per_episode": 0.13892711648125003,
+            "equal_calibration_charge_cpu_per_episode": 0.09448799248125002
+          },
+          "B": {
+            "mean_utility": 0.9320625999395915,
+            "mean_accuracy": 0.9677734375,
+            "full_process_own_fit_cpu_seconds": 44.399883,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.41749232500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 0.00014882867968750088,
+            "unique_amortized_cpu_per_episode": 0.09456632100468752,
+            "total_search_amortized_cpu_per_episode": 0.1390054450046875,
+            "equal_calibration_charge_cpu_per_episode": 0.09456632100468752
+          },
+          "C": {
+            "mean_utility": 0.9057635217597187,
+            "mean_accuracy": 0.97265625,
+            "full_process_own_fit_cpu_seconds": 44.485502000000004,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.01760932500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 6.153409472656364e-05,
+            "unique_amortized_cpu_per_episode": 0.05007914341972657,
+            "total_search_amortized_cpu_per_episode": 0.13891815041972658,
+            "equal_calibration_charge_cpu_per_episode": 0.09456464541972656
+          },
+          "D": {
+            "mean_utility": 0.9349922874395915,
+            "mean_accuracy": 0.970703125,
+            "full_process_own_fit_cpu_seconds": 44.485502000000004,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.01760932500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 0.0001465620146484381,
+            "unique_amortized_cpu_per_episode": 0.05016417133964845,
+            "total_search_amortized_cpu_per_episode": 0.13900317833964845,
+            "equal_calibration_charge_cpu_per_episode": 0.09464967333964844
+          },
+          "GRU": {
+            "mean_utility": 0.9320625999395915,
+            "mean_accuracy": 0.9677734375,
+            "full_process_own_fit_cpu_seconds": 44.399883,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.41749232500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 0.00013474857226562515,
+            "unique_amortized_cpu_per_episode": 0.09455224089726565,
+            "total_search_amortized_cpu_per_episode": 0.13899136489726563,
+            "equal_calibration_charge_cpu_per_episode": 0.09455224089726565
+          },
+          "SSM": {
+            "mean_utility": 0.9293510450534872,
+            "mean_accuracy": 0.9697265625,
+            "full_process_own_fit_cpu_seconds": 44.439124,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.456733325,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 0.00013577443066406254,
+            "unique_amortized_cpu_per_episode": 0.09459250775566407,
+            "total_search_amortized_cpu_per_episode": 0.13899239075566408,
+            "equal_calibration_charge_cpu_per_episode": 0.09459250775566407
+          },
+          "HMM": {
+            "mean_utility": 0.9349922874395915,
+            "mean_accuracy": 0.970703125,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.01760932500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 0.00012402723925781286,
+            "unique_amortized_cpu_per_episode": 0.050141636564257824,
+            "total_search_amortized_cpu_per_episode": 0.13898064356425782,
+            "equal_calibration_charge_cpu_per_episode": 0.050141636564257824
+          }
+        }
+      },
+      {
+        "seed": 131103,
+        "domain": "text_ood_time",
+        "ordinary_choice": "gru",
+        "arms": {
+          "A": {
+            "mean_utility": 0.9031429840197924,
+            "mean_accuracy": 0.974609375,
+            "full_process_own_fit_cpu_seconds": 44.399883,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.41749232500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 6.178987402343742e-05,
+            "unique_amortized_cpu_per_episode": 0.09447928219902346,
+            "total_search_amortized_cpu_per_episode": 0.13891840619902346,
+            "equal_calibration_charge_cpu_per_episode": 0.09447928219902346
+          },
+          "B": {
+            "mean_utility": 0.9328707681463484,
+            "mean_accuracy": 0.9716796875,
+            "full_process_own_fit_cpu_seconds": 44.399883,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.41749232500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 0.0001653715624999998,
+            "unique_amortized_cpu_per_episode": 0.09458286388750002,
+            "total_search_amortized_cpu_per_episode": 0.1390219878875,
+            "equal_calibration_charge_cpu_per_episode": 0.09458286388750002
+          },
+          "C": {
+            "mean_utility": 0.9002132965197924,
+            "mean_accuracy": 0.9716796875,
+            "full_process_own_fit_cpu_seconds": 44.485502000000004,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.01760932500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 8.431642773437491e-05,
+            "unique_amortized_cpu_per_episode": 0.05010192575273439,
+            "total_search_amortized_cpu_per_episode": 0.1389409327527344,
+            "equal_calibration_charge_cpu_per_episode": 0.09458742775273438
+          },
+          "D": {
+            "mean_utility": 0.9299410806463484,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 44.485502000000004,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.01760932500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 0.00014619344824218748,
+            "unique_amortized_cpu_per_episode": 0.0501638027732422,
+            "total_search_amortized_cpu_per_episode": 0.1390028097732422,
+            "equal_calibration_charge_cpu_per_episode": 0.09464930477324218
+          },
+          "GRU": {
+            "mean_utility": 0.9328707681463484,
+            "mean_accuracy": 0.9716796875,
+            "full_process_own_fit_cpu_seconds": 44.399883,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.41749232500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 0.00014576316210937468,
+            "unique_amortized_cpu_per_episode": 0.0945632554871094,
+            "total_search_amortized_cpu_per_episode": 0.1390023794871094,
+            "equal_calibration_charge_cpu_per_episode": 0.0945632554871094
+          },
+          "SSM": {
+            "mean_utility": 0.7699457701639217,
+            "mean_accuracy": 0.8232421875,
+            "full_process_own_fit_cpu_seconds": 44.439124,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.456733325,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 0.0001441826796874995,
+            "unique_amortized_cpu_per_episode": 0.0946009160046875,
+            "total_search_amortized_cpu_per_episode": 0.1390007990046875,
+            "equal_calibration_charge_cpu_per_episode": 0.0946009160046875
+          },
+          "HMM": {
+            "mean_utility": 0.9299410806463484,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.485502000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.01760932500001,
+            "all_candidate_search_cpu_seconds": 138.856616325,
+            "service_setup_cpu_seconds": 3.051017325,
+            "runtime_cpu_per_episode": 0.000126930571289062,
+            "unique_amortized_cpu_per_episode": 0.05014453989628907,
+            "total_search_amortized_cpu_per_episode": 0.13898354689628908,
+            "equal_calibration_charge_cpu_per_episode": 0.05014453989628907
+          }
+        }
+      },
+      {
+        "seed": 131107,
+        "domain": "text_iid",
+        "ordinary_choice": "gru",
+        "arms": {
+          "A": {
+            "mean_utility": 0.8915336020047182,
+            "mean_accuracy": 0.958984375,
+            "full_process_own_fit_cpu_seconds": 44.452556,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.409729373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 6.612592089843845e-05,
+            "unique_amortized_cpu_per_episode": 0.09447585529389844,
+            "total_search_amortized_cpu_per_episode": 0.13874344829389845,
+            "equal_calibration_charge_cpu_per_episode": 0.09447585529389844
+          },
+          "B": {
+            "mean_utility": 0.9198626742557063,
+            "mean_accuracy": 0.95703125,
+            "full_process_own_fit_cpu_seconds": 44.452556,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.409729373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 0.00014641667187500085,
+            "unique_amortized_cpu_per_episode": 0.094556146044875,
+            "total_search_amortized_cpu_per_episode": 0.13882373904487502,
+            "equal_calibration_charge_cpu_per_episode": 0.094556146044875
+          },
+          "C": {
+            "mean_utility": 0.8905570395047182,
+            "mean_accuracy": 0.9580078125,
+            "full_process_own_fit_cpu_seconds": 44.424771,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.957173373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 8.446849609375102e-05,
+            "unique_amortized_cpu_per_episode": 0.05004164186909376,
+            "total_search_amortized_cpu_per_episode": 0.13876179086909377,
+            "equal_calibration_charge_cpu_per_episode": 0.09446641286909375
+          },
+          "D": {
+            "mean_utility": 0.9198626742557063,
+            "mean_accuracy": 0.95703125,
+            "full_process_own_fit_cpu_seconds": 44.424771,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.957173373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 0.00013901073730468883,
+            "unique_amortized_cpu_per_episode": 0.0500961841103047,
+            "total_search_amortized_cpu_per_episode": 0.1388163331103047,
+            "equal_calibration_charge_cpu_per_episode": 0.09452095511030469
+          },
+          "GRU": {
+            "mean_utility": 0.9198626742557063,
+            "mean_accuracy": 0.95703125,
+            "full_process_own_fit_cpu_seconds": 44.452556,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.409729373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 0.00015093269238281113,
+            "unique_amortized_cpu_per_episode": 0.09456066206538281,
+            "total_search_amortized_cpu_per_episode": 0.13882825506538282,
+            "equal_calibration_charge_cpu_per_episode": 0.09456066206538281
+          },
+          "SSM": {
+            "mean_utility": 0.9199017331478366,
+            "mean_accuracy": 0.95703125,
+            "full_process_own_fit_cpu_seconds": 44.267593,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.224766373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 0.00015593926269531332,
+            "unique_amortized_cpu_per_episode": 0.09438070563569531,
+            "total_search_amortized_cpu_per_episode": 0.13883326163569532,
+            "equal_calibration_charge_cpu_per_episode": 0.09438070563569531
+          },
+          "HMM": {
+            "mean_utility": 0.9198626742557063,
+            "mean_accuracy": 0.95703125,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.957173373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 0.00016304607128906235,
+            "unique_amortized_cpu_per_episode": 0.05012021944428907,
+            "total_search_amortized_cpu_per_episode": 0.13884036844428907,
+            "equal_calibration_charge_cpu_per_episode": 0.05012021944428907
+          }
+        }
+      },
+      {
+        "seed": 131107,
+        "domain": "text_ood_time",
+        "ordinary_choice": "gru",
+        "arms": {
+          "A": {
+            "mean_utility": 0.9002957469616661,
+            "mean_accuracy": 0.970703125,
+            "full_process_own_fit_cpu_seconds": 44.452556,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.409729373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 6.527837304687659e-05,
+            "unique_amortized_cpu_per_episode": 0.09447500774604688,
+            "total_search_amortized_cpu_per_episode": 0.13874260074604688,
+            "equal_calibration_charge_cpu_per_episode": 0.09447500774604688
+          },
+          "B": {
+            "mean_utility": 0.938797567250252,
+            "mean_accuracy": 0.974609375,
+            "full_process_own_fit_cpu_seconds": 44.452556,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.409729373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 0.0001373285830078147,
+            "unique_amortized_cpu_per_episode": 0.09454705795600782,
+            "total_search_amortized_cpu_per_episode": 0.1388146509560078,
+            "equal_calibration_charge_cpu_per_episode": 0.09454705795600782
+          },
+          "C": {
+            "mean_utility": 0.8993191844616661,
+            "mean_accuracy": 0.9697265625,
+            "full_process_own_fit_cpu_seconds": 44.424771,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.957173373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 7.93161816406273e-05,
+            "unique_amortized_cpu_per_episode": 0.050036489554640635,
+            "total_search_amortized_cpu_per_episode": 0.13875663855464063,
+            "equal_calibration_charge_cpu_per_episode": 0.09446126055464063
+          },
+          "D": {
+            "mean_utility": 0.937821004750252,
+            "mean_accuracy": 0.9736328125,
+            "full_process_own_fit_cpu_seconds": 44.424771,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.957173373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 0.0001468605439453128,
+            "unique_amortized_cpu_per_episode": 0.05010403391694532,
+            "total_search_amortized_cpu_per_episode": 0.13882418291694532,
+            "equal_calibration_charge_cpu_per_episode": 0.09452880491694532
+          },
+          "GRU": {
+            "mean_utility": 0.938797567250252,
+            "mean_accuracy": 0.974609375,
+            "full_process_own_fit_cpu_seconds": 44.452556,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.409729373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 0.00013732126757812733,
+            "unique_amortized_cpu_per_episode": 0.09454705064057813,
+            "total_search_amortized_cpu_per_episode": 0.13881464364057813,
+            "equal_calibration_charge_cpu_per_episode": 0.09454705064057813
+          },
+          "SSM": {
+            "mean_utility": 0.9208441895376092,
+            "mean_accuracy": 0.9736328125,
+            "full_process_own_fit_cpu_seconds": 44.267593,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.224766373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 0.00013994591503906258,
+            "unique_amortized_cpu_per_episode": 0.09436471228803905,
+            "total_search_amortized_cpu_per_episode": 0.1388172682880391,
+            "equal_calibration_charge_cpu_per_episode": 0.09436471228803905
+          },
+          "HMM": {
+            "mean_utility": 0.937821004750252,
+            "mean_accuracy": 0.9736328125,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.424771,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.957173373,
+            "all_candidate_search_cpu_seconds": 138.677322373,
+            "service_setup_cpu_seconds": 3.051312373,
+            "runtime_cpu_per_episode": 0.00013079603613281449,
+            "unique_amortized_cpu_per_episode": 0.05008796940913282,
+            "total_search_amortized_cpu_per_episode": 0.13880811840913282,
+            "equal_calibration_charge_cpu_per_episode": 0.05008796940913282
+          }
+        }
+      },
+      {
+        "seed": 131109,
+        "domain": "text_iid",
+        "ordinary_choice": "gru",
+        "arms": {
+          "HMM": {
+            "mean_utility": 0.9221950711832385,
+            "mean_accuracy": 0.9580078125,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.862429776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 0.00014318229687500066,
+            "unique_amortized_cpu_per_episode": 0.050005612072875,
+            "total_search_amortized_cpu_per_episode": 0.13811798607287498,
+            "equal_calibration_charge_cpu_per_episode": 0.050005612072875
+          },
+          "SSM": {
+            "mean_utility": 0.9224226314259144,
+            "mean_accuracy": 0.9580078125,
+            "full_process_own_fit_cpu_seconds": 43.978323,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.84075277599999,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 0.00015113588281250034,
+            "unique_amortized_cpu_per_episode": 0.09399188865881249,
+            "total_search_amortized_cpu_per_episode": 0.13812593965881248,
+            "equal_calibration_charge_cpu_per_episode": 0.09399188865881249
+          },
+          "GRU": {
+            "mean_utility": 0.9280544461832385,
+            "mean_accuracy": 0.9638671875,
+            "full_process_own_fit_cpu_seconds": 44.134051,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.996480776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 0.0001504306757812504,
+            "unique_amortized_cpu_per_episode": 0.09414691145178125,
+            "total_search_amortized_cpu_per_episode": 0.13812523445178124,
+            "equal_calibration_charge_cpu_per_episode": 0.09414691145178125
+          },
+          "D": {
+            "mean_utility": 0.9221950711832385,
+            "mean_accuracy": 0.9580078125,
+            "full_process_own_fit_cpu_seconds": 44.330261,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.862429776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 0.000140947968750001,
+            "unique_amortized_cpu_per_episode": 0.05000337774475,
+            "total_search_amortized_cpu_per_episode": 0.13811575174475,
+            "equal_calibration_charge_cpu_per_episode": 0.09433363874475
+          },
+          "C": {
+            "mean_utility": 0.8944902106908982,
+            "mean_accuracy": 0.9609375,
+            "full_process_own_fit_cpu_seconds": 44.330261,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.862429776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 6.288125000000061e-05,
+            "unique_amortized_cpu_per_episode": 0.049925311026,
+            "total_search_amortized_cpu_per_episode": 0.138037685026,
+            "equal_calibration_charge_cpu_per_episode": 0.09425557202599999
+          },
+          "B": {
+            "mean_utility": 0.9280544461832385,
+            "mean_accuracy": 0.9638671875,
+            "full_process_own_fit_cpu_seconds": 44.134051,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.996480776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 0.00017457986230468882,
+            "unique_amortized_cpu_per_episode": 0.09417106063830469,
+            "total_search_amortized_cpu_per_episode": 0.13814938363830467,
+            "equal_calibration_charge_cpu_per_episode": 0.09417106063830469
+          },
+          "A": {
+            "mean_utility": 0.9003495856908982,
+            "mean_accuracy": 0.966796875,
+            "full_process_own_fit_cpu_seconds": 44.134051,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.996480776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 6.639130371093732e-05,
+            "unique_amortized_cpu_per_episode": 0.09406287207971092,
+            "total_search_amortized_cpu_per_episode": 0.13804119507971094,
+            "equal_calibration_charge_cpu_per_episode": 0.09406287207971092
+          }
+        }
+      },
+      {
+        "seed": 131109,
+        "domain": "text_ood_time",
+        "ordinary_choice": "gru",
+        "arms": {
+          "HMM": {
+            "mean_utility": 0.9267465658041052,
+            "mean_accuracy": 0.9658203125,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.862429776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 0.0001480861318359384,
+            "unique_amortized_cpu_per_episode": 0.05001051590783594,
+            "total_search_amortized_cpu_per_episode": 0.13812288990783594,
+            "equal_calibration_charge_cpu_per_episode": 0.05001051590783594
+          },
+          "SSM": {
+            "mean_utility": 0.896677889070315,
+            "mean_accuracy": 0.951171875,
+            "full_process_own_fit_cpu_seconds": 43.978323,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.84075277599999,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 0.00016429599121093805,
+            "unique_amortized_cpu_per_episode": 0.09400504876721093,
+            "total_search_amortized_cpu_per_episode": 0.13813909976721092,
+            "equal_calibration_charge_cpu_per_episode": 0.09400504876721093
+          },
+          "GRU": {
+            "mean_utility": 0.9266557622948521,
+            "mean_accuracy": 0.9658203125,
+            "full_process_own_fit_cpu_seconds": 44.134051,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.996480776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 0.0001507621396484391,
+            "unique_amortized_cpu_per_episode": 0.09414724291564844,
+            "total_search_amortized_cpu_per_episode": 0.13812556591564842,
+            "equal_calibration_charge_cpu_per_episode": 0.09414724291564844
+          },
+          "D": {
+            "mean_utility": 0.9267465658041052,
+            "mean_accuracy": 0.9658203125,
+            "full_process_own_fit_cpu_seconds": 44.330261,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.862429776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 0.00016102305175781303,
+            "unique_amortized_cpu_per_episode": 0.05002345282775782,
+            "total_search_amortized_cpu_per_episode": 0.1381358268277578,
+            "equal_calibration_charge_cpu_per_episode": 0.09435371382775781
+          },
+          "C": {
+            "mean_utility": 0.8928559543661232,
+            "mean_accuracy": 0.96484375,
+            "full_process_own_fit_cpu_seconds": 44.330261,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.862429776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 6.439803222656366e-05,
+            "unique_amortized_cpu_per_episode": 0.04992682780822656,
+            "total_search_amortized_cpu_per_episode": 0.13803920180822657,
+            "equal_calibration_charge_cpu_per_episode": 0.09425708880822656
+          },
+          "B": {
+            "mean_utility": 0.9266557622948521,
+            "mean_accuracy": 0.9658203125,
+            "full_process_own_fit_cpu_seconds": 44.134051,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.996480776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 0.0001519500742187506,
+            "unique_amortized_cpu_per_episode": 0.09414843085021875,
+            "total_search_amortized_cpu_per_episode": 0.13812675385021875,
+            "equal_calibration_charge_cpu_per_episode": 0.09414843085021875
+          },
+          "A": {
+            "mean_utility": 0.8967622043661232,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 44.134051,
+            "shared_calibration_cpu_seconds": 44.330261,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.996480776,
+            "all_candidate_search_cpu_seconds": 137.974803776,
+            "service_setup_cpu_seconds": 3.0510787760000007,
+            "runtime_cpu_per_episode": 6.429448046875105e-05,
+            "unique_amortized_cpu_per_episode": 0.09406077525646875,
+            "total_search_amortized_cpu_per_episode": 0.13803909825646873,
+            "equal_calibration_charge_cpu_per_episode": 0.09406077525646875
+          }
+        }
+      },
+      {
+        "seed": 131113,
+        "domain": "text_iid",
+        "ordinary_choice": "gru",
+        "arms": {
+          "HMM": {
+            "mean_utility": 0.932826188974974,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.22800891600001,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 0.0001343808593749999,
+            "unique_amortized_cpu_per_episode": 0.05036238977537501,
+            "total_search_amortized_cpu_per_episode": 0.13961589477537498,
+            "equal_calibration_charge_cpu_per_episode": 0.05036238977537501
+          },
+          "SSM": {
+            "mean_utility": 0.933802751474974,
+            "mean_accuracy": 0.9697265625,
+            "full_process_own_fit_cpu_seconds": 44.700324,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.92833291599999,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 0.00014050066406249943,
+            "unique_amortized_cpu_per_episode": 0.09506883358006249,
+            "total_search_amortized_cpu_per_episode": 0.13962201458006246,
+            "equal_calibration_charge_cpu_per_episode": 0.09506883358006249
+          },
+          "GRU": {
+            "mean_utility": 0.935755876474974,
+            "mean_accuracy": 0.9716796875,
+            "full_process_own_fit_cpu_seconds": 44.553181,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.78118991599999,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 0.0001598581777343764,
+            "unique_amortized_cpu_per_episode": 0.09494104809373437,
+            "total_search_amortized_cpu_per_episode": 0.13964137209373434,
+            "equal_calibration_charge_cpu_per_episode": 0.09494104809373437
+          },
+          "D": {
+            "mean_utility": 0.932826188974974,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 44.694917000000004,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.22800891600001,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 0.00014424734863281372,
+            "unique_amortized_cpu_per_episode": 0.05037225626463282,
+            "total_search_amortized_cpu_per_episode": 0.13962576126463278,
+            "equal_calibration_charge_cpu_per_episode": 0.09506717326463282
+          },
+          "C": {
+            "mean_utility": 0.8973189747733689,
+            "mean_accuracy": 0.9638671875,
+            "full_process_own_fit_cpu_seconds": 44.694917000000004,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.22800891600001,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 6.780159960937532e-05,
+            "unique_amortized_cpu_per_episode": 0.050295810515609385,
+            "total_search_amortized_cpu_per_episode": 0.13954931551560934,
+            "equal_calibration_charge_cpu_per_episode": 0.09499072751560939
+          },
+          "B": {
+            "mean_utility": 0.935755876474974,
+            "mean_accuracy": 0.9716796875,
+            "full_process_own_fit_cpu_seconds": 44.553181,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.78118991599999,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 0.00015552954394531214,
+            "unique_amortized_cpu_per_episode": 0.09493671945994529,
+            "total_search_amortized_cpu_per_episode": 0.1396370434599453,
+            "equal_calibration_charge_cpu_per_episode": 0.09493671945994529
+          },
+          "A": {
+            "mean_utility": 0.9002486622733689,
+            "mean_accuracy": 0.966796875,
+            "full_process_own_fit_cpu_seconds": 44.553181,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.78118991599999,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 7.152576074218736e-05,
+            "unique_amortized_cpu_per_episode": 0.09485271567674217,
+            "total_search_amortized_cpu_per_episode": 0.13955303967674215,
+            "equal_calibration_charge_cpu_per_episode": 0.09485271567674217
+          }
+        }
+      },
+      {
+        "seed": 131113,
+        "domain": "text_ood_time",
+        "ordinary_choice": "gru",
+        "arms": {
+          "HMM": {
+            "mean_utility": 0.9306219108604034,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.22800891600001,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 0.00013420462011718738,
+            "unique_amortized_cpu_per_episode": 0.050362213536117195,
+            "total_search_amortized_cpu_per_episode": 0.13961571853611715,
+            "equal_calibration_charge_cpu_per_episode": 0.050362213536117195
+          },
+          "SSM": {
+            "mean_utility": 0.7771007432542939,
+            "mean_accuracy": 0.8203125,
+            "full_process_own_fit_cpu_seconds": 44.700324,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.92833291599999,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 0.00016378583007812392,
+            "unique_amortized_cpu_per_episode": 0.09509211874607812,
+            "total_search_amortized_cpu_per_episode": 0.1396452997460781,
+            "equal_calibration_charge_cpu_per_episode": 0.09509211874607812
+          },
+          "GRU": {
+            "mean_utility": 0.9294567461064486,
+            "mean_accuracy": 0.9677734375,
+            "full_process_own_fit_cpu_seconds": 44.553181,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.78118991599999,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 0.00014126794531250063,
+            "unique_amortized_cpu_per_episode": 0.09492245786131248,
+            "total_search_amortized_cpu_per_episode": 0.13962278186131247,
+            "equal_calibration_charge_cpu_per_episode": 0.09492245786131248
+          },
+          "D": {
+            "mean_utility": 0.9306219108604034,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 44.694917000000004,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.22800891600001,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 0.00013003482812500022,
+            "unique_amortized_cpu_per_episode": 0.05035804374412501,
+            "total_search_amortized_cpu_per_episode": 0.13961154874412496,
+            "equal_calibration_charge_cpu_per_episode": 0.095052960744125
+          },
+          "C": {
+            "mean_utility": 0.8930781241021994,
+            "mean_accuracy": 0.96484375,
+            "full_process_own_fit_cpu_seconds": 44.694917000000004,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 50.22800891600001,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 6.505203125000032e-05,
+            "unique_amortized_cpu_per_episode": 0.05029306094725001,
+            "total_search_amortized_cpu_per_episode": 0.13954656594724998,
+            "equal_calibration_charge_cpu_per_episode": 0.09498797794725
+          },
+          "B": {
+            "mean_utility": 0.9294567461064486,
+            "mean_accuracy": 0.9677734375,
+            "full_process_own_fit_cpu_seconds": 44.553181,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.78118991599999,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 0.0001680180693359387,
+            "unique_amortized_cpu_per_episode": 0.09494920798533593,
+            "total_search_amortized_cpu_per_episode": 0.13964953198533592,
+            "equal_calibration_charge_cpu_per_episode": 0.09494920798533593
+          },
+          "A": {
+            "mean_utility": 0.8911249991021994,
+            "mean_accuracy": 0.962890625,
+            "full_process_own_fit_cpu_seconds": 44.553181,
+            "shared_calibration_cpu_seconds": 44.694917000000004,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 94.78118991599999,
+            "all_candidate_search_cpu_seconds": 139.48151391599998,
+            "service_setup_cpu_seconds": 3.052001916,
+            "runtime_cpu_per_episode": 6.694908398437519e-05,
+            "unique_amortized_cpu_per_episode": 0.09484813899998436,
+            "total_search_amortized_cpu_per_episode": 0.13954846299998436,
+            "equal_calibration_charge_cpu_per_episode": 0.09484813899998436
+          }
+        }
+      },
+      {
+        "seed": 131117,
+        "domain": "text_iid",
+        "ordinary_choice": "gru",
+        "arms": {
+          "HMM": {
+            "mean_utility": 0.921674769385339,
+            "mean_accuracy": 0.9580078125,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.572347528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 0.00012612714257812484,
+            "unique_amortized_cpu_per_episode": 0.04969847467057813,
+            "total_search_amortized_cpu_per_episode": 0.1375040956705781,
+            "equal_calibration_charge_cpu_per_episode": 0.04969847467057813
+          },
+          "SSM": {
+            "mean_utility": 0.9217217568204966,
+            "mean_accuracy": 0.9580078125,
+            "full_process_own_fit_cpu_seconds": 43.946622000000005,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.518969528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 0.00013173795019531288,
+            "unique_amortized_cpu_per_episode": 0.09365070747819532,
+            "total_search_amortized_cpu_per_episode": 0.1375097064781953,
+            "equal_calibration_charge_cpu_per_episode": 0.09365070747819532
+          },
+          "GRU": {
+            "mean_utility": 0.920698206885339,
+            "mean_accuracy": 0.95703125,
+            "full_process_own_fit_cpu_seconds": 43.858999000000004,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.431346528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 0.00013568597851562614,
+            "unique_amortized_cpu_per_episode": 0.09356703250651563,
+            "total_search_amortized_cpu_per_episode": 0.13751365450651562,
+            "equal_calibration_charge_cpu_per_episode": 0.09356703250651563
+          },
+          "D": {
+            "mean_utility": 0.921674769385339,
+            "mean_accuracy": 0.9580078125,
+            "full_process_own_fit_cpu_seconds": 44.039591,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.572347528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 0.00012842402832031162,
+            "unique_amortized_cpu_per_episode": 0.049700771556320314,
+            "total_search_amortized_cpu_per_episode": 0.1375063925563203,
+            "equal_calibration_charge_cpu_per_episode": 0.0937403625563203
+          },
+          "C": {
+            "mean_utility": 0.8976376830393291,
+            "mean_accuracy": 0.96484375,
+            "full_process_own_fit_cpu_seconds": 44.039591,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.572347528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 5.929342480468815e-05,
+            "unique_amortized_cpu_per_episode": 0.04963164095280469,
+            "total_search_amortized_cpu_per_episode": 0.13743726195280467,
+            "equal_calibration_charge_cpu_per_episode": 0.09367123195280469
+          },
+          "B": {
+            "mean_utility": 0.920698206885339,
+            "mean_accuracy": 0.95703125,
+            "full_process_own_fit_cpu_seconds": 43.858999000000004,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.431346528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 0.00014531736914062503,
+            "unique_amortized_cpu_per_episode": 0.09357666389714063,
+            "total_search_amortized_cpu_per_episode": 0.1375232858971406,
+            "equal_calibration_charge_cpu_per_episode": 0.09357666389714063
+          },
+          "A": {
+            "mean_utility": 0.8966611205393291,
+            "mean_accuracy": 0.9638671875,
+            "full_process_own_fit_cpu_seconds": 43.858999000000004,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.431346528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 6.288675585937493e-05,
+            "unique_amortized_cpu_per_episode": 0.09349423328385938,
+            "total_search_amortized_cpu_per_episode": 0.13744085528385938,
+            "equal_calibration_charge_cpu_per_episode": 0.09349423328385938
+          }
+        }
+      },
+      {
+        "seed": 131117,
+        "domain": "text_ood_time",
+        "ordinary_choice": "gru",
+        "arms": {
+          "HMM": {
+            "mean_utility": 0.938667522960872,
+            "mean_accuracy": 0.9775390625,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.572347528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 0.00013474139453125214,
+            "unique_amortized_cpu_per_episode": 0.049707088922531256,
+            "total_search_amortized_cpu_per_episode": 0.13751270992253126,
+            "equal_calibration_charge_cpu_per_episode": 0.049707088922531256
+          },
+          "SSM": {
+            "mean_utility": 0.7715506581191268,
+            "mean_accuracy": 0.8251953125,
+            "full_process_own_fit_cpu_seconds": 43.946622000000005,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.518969528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 0.0001423052919921862,
+            "unique_amortized_cpu_per_episode": 0.09366127481999219,
+            "total_search_amortized_cpu_per_episode": 0.13752027381999218,
+            "equal_calibration_charge_cpu_per_episode": 0.09366127481999219
+          },
+          "GRU": {
+            "mean_utility": 0.933784710460872,
+            "mean_accuracy": 0.97265625,
+            "full_process_own_fit_cpu_seconds": 43.858999000000004,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.431346528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 0.00013598902734375182,
+            "unique_amortized_cpu_per_episode": 0.09356733555534376,
+            "total_search_amortized_cpu_per_episode": 0.13751395755534374,
+            "equal_calibration_charge_cpu_per_episode": 0.09356733555534376
+          },
+          "D": {
+            "mean_utility": 0.938667522960872,
+            "mean_accuracy": 0.9775390625,
+            "full_process_own_fit_cpu_seconds": 44.039591,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.572347528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 0.00013092479199218812,
+            "unique_amortized_cpu_per_episode": 0.04970327231999219,
+            "total_search_amortized_cpu_per_episode": 0.1375088933199922,
+            "equal_calibration_charge_cpu_per_episode": 0.09374286331999218
+          },
+          "C": {
+            "mean_utility": 0.9030721840432022,
+            "mean_accuracy": 0.974609375,
+            "full_process_own_fit_cpu_seconds": 44.039591,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.572347528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 5.867089941406431e-05,
+            "unique_amortized_cpu_per_episode": 0.04963101842741406,
+            "total_search_amortized_cpu_per_episode": 0.13743663942741405,
+            "equal_calibration_charge_cpu_per_episode": 0.09367060942741406
+          },
+          "B": {
+            "mean_utility": 0.933784710460872,
+            "mean_accuracy": 0.97265625,
+            "full_process_own_fit_cpu_seconds": 43.858999000000004,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.431346528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 0.0001386767744140649,
+            "unique_amortized_cpu_per_episode": 0.09357002330241407,
+            "total_search_amortized_cpu_per_episode": 0.13751664530241406,
+            "equal_calibration_charge_cpu_per_episode": 0.09357002330241407
+          },
+          "A": {
+            "mean_utility": 0.8981893715432022,
+            "mean_accuracy": 0.9697265625,
+            "full_process_own_fit_cpu_seconds": 43.858999000000004,
+            "shared_calibration_cpu_seconds": 44.039591,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.431346528,
+            "all_candidate_search_cpu_seconds": 137.377968528,
+            "service_setup_cpu_seconds": 3.0516665279999984,
+            "runtime_cpu_per_episode": 6.210785644531272e-05,
+            "unique_amortized_cpu_per_episode": 0.09349345438444531,
+            "total_search_amortized_cpu_per_episode": 0.1374400763844453,
+            "equal_calibration_charge_cpu_per_episode": 0.09349345438444531
+          }
+        }
+      },
+      {
+        "seed": 131119,
+        "domain": "text_iid",
+        "ordinary_choice": "gru",
+        "arms": {
+          "A": {
+            "mean_utility": 0.8949354578579735,
+            "mean_accuracy": 0.9609375,
+            "full_process_own_fit_cpu_seconds": 43.678409,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.26716246199999,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 6.418570507812915e-05,
+            "unique_amortized_cpu_per_episode": 0.09333134816707811,
+            "total_search_amortized_cpu_per_episode": 0.13708018716707812,
+            "equal_calibration_charge_cpu_per_episode": 0.09333134816707811
+          },
+          "B": {
+            "mean_utility": 0.9272583303243394,
+            "mean_accuracy": 0.962890625,
+            "full_process_own_fit_cpu_seconds": 43.678409,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.26716246199999,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 0.00013756532910156466,
+            "unique_amortized_cpu_per_episode": 0.09340472779110154,
+            "total_search_amortized_cpu_per_episode": 0.13715356679110155,
+            "equal_calibration_charge_cpu_per_episode": 0.09340472779110154
+          },
+          "C": {
+            "mean_utility": 0.9007948328579735,
+            "mean_accuracy": 0.966796875,
+            "full_process_own_fit_cpu_seconds": 44.055967,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.58875346200001,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 6.596839550781705e-05,
+            "unique_amortized_cpu_per_episode": 0.04965472185750783,
+            "total_search_amortized_cpu_per_episode": 0.1370819698575078,
+            "equal_calibration_charge_cpu_per_episode": 0.09371068885750782
+          },
+          "D": {
+            "mean_utility": 0.9331177053243394,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 44.055967,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.58875346200001,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 0.00014332895312500413,
+            "unique_amortized_cpu_per_episode": 0.049732082415125015,
+            "total_search_amortized_cpu_per_episode": 0.13715933041512499,
+            "equal_calibration_charge_cpu_per_episode": 0.093788049415125
+          },
+          "GRU": {
+            "mean_utility": 0.9272583303243394,
+            "mean_accuracy": 0.962890625,
+            "full_process_own_fit_cpu_seconds": 43.678409,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.26716246199999,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 0.00013377813671875544,
+            "unique_amortized_cpu_per_episode": 0.09340094059871873,
+            "total_search_amortized_cpu_per_episode": 0.13714977959871874,
+            "equal_calibration_charge_cpu_per_episode": 0.09340094059871873
+          },
+          "SSM": {
+            "mean_utility": 0.9273142024458159,
+            "mean_accuracy": 0.962890625,
+            "full_process_own_fit_cpu_seconds": 43.748839,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.33759246199999,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 0.0001329369365234423,
+            "unique_amortized_cpu_per_episode": 0.09347052939852343,
+            "total_search_amortized_cpu_per_episode": 0.13714893839852343,
+            "equal_calibration_charge_cpu_per_episode": 0.09347052939852343
+          },
+          "HMM": {
+            "mean_utility": 0.9331177053243394,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.58875346200001,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 0.00012014879589844138,
+            "unique_amortized_cpu_per_episode": 0.04970890225789845,
+            "total_search_amortized_cpu_per_episode": 0.13713615025789844,
+            "equal_calibration_charge_cpu_per_episode": 0.04970890225789845
+          }
+        }
+      },
+      {
+        "seed": 131119,
+        "domain": "text_ood_time",
+        "ordinary_choice": "gru",
+        "arms": {
+          "A": {
+            "mean_utility": 0.8976791397528089,
+            "mean_accuracy": 0.9697265625,
+            "full_process_own_fit_cpu_seconds": 43.678409,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.26716246199999,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 6.631847070312502e-05,
+            "unique_amortized_cpu_per_episode": 0.0933334809327031,
+            "total_search_amortized_cpu_per_episode": 0.13708231993270312,
+            "equal_calibration_charge_cpu_per_episode": 0.0933334809327031
+          },
+          "B": {
+            "mean_utility": 0.9301133622237072,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 43.678409,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.26716246199999,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 0.00014805383789062362,
+            "unique_amortized_cpu_per_episode": 0.09341521629989061,
+            "total_search_amortized_cpu_per_episode": 0.13716405529989062,
+            "equal_calibration_charge_cpu_per_episode": 0.09341521629989061
+          },
+          "C": {
+            "mean_utility": 0.9006088272528089,
+            "mean_accuracy": 0.97265625,
+            "full_process_own_fit_cpu_seconds": 44.055967,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.58875346200001,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 5.94906513671882e-05,
+            "unique_amortized_cpu_per_episode": 0.0496482441133672,
+            "total_search_amortized_cpu_per_episode": 0.13707549211336717,
+            "equal_calibration_charge_cpu_per_episode": 0.09370421111336719
+          },
+          "D": {
+            "mean_utility": 0.9310894364424572,
+            "mean_accuracy": 0.9697265625,
+            "full_process_own_fit_cpu_seconds": 44.055967,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.58875346200001,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 0.00013388819335937233,
+            "unique_amortized_cpu_per_episode": 0.049722641655359376,
+            "total_search_amortized_cpu_per_episode": 0.13714988965535937,
+            "equal_calibration_charge_cpu_per_episode": 0.09377860865535936
+          },
+          "GRU": {
+            "mean_utility": 0.9301133622237072,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 43.678409,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.26716246199999,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 0.00013911906445312344,
+            "unique_amortized_cpu_per_episode": 0.09340628152645311,
+            "total_search_amortized_cpu_per_episode": 0.13715512052645312,
+            "equal_calibration_charge_cpu_per_episode": 0.09340628152645311
+          },
+          "SSM": {
+            "mean_utility": 0.9036933556841136,
+            "mean_accuracy": 0.9580078125,
+            "full_process_own_fit_cpu_seconds": 43.748839,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.33759246199999,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 0.00014278017089843636,
+            "unique_amortized_cpu_per_episode": 0.09348037263289843,
+            "total_search_amortized_cpu_per_episode": 0.13715878163289844,
+            "equal_calibration_charge_cpu_per_episode": 0.09348037263289843
+          },
+          "HMM": {
+            "mean_utility": 0.9310894364424572,
+            "mean_accuracy": 0.9697265625,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.055967,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.58875346200001,
+            "all_candidate_search_cpu_seconds": 137.016001462,
+            "service_setup_cpu_seconds": 3.0516964620000007,
+            "runtime_cpu_per_episode": 0.0001311089902343715,
+            "unique_amortized_cpu_per_episode": 0.04971986245223438,
+            "total_search_amortized_cpu_per_episode": 0.13714711045223438,
+            "equal_calibration_charge_cpu_per_episode": 0.04971986245223438
+          }
+        }
+      },
+      {
+        "seed": 131123,
+        "domain": "text_iid",
+        "ordinary_choice": "gru",
+        "arms": {
+          "A": {
+            "mean_utility": 0.8901630902591209,
+            "mean_accuracy": 0.95703125,
+            "full_process_own_fit_cpu_seconds": 44.035624,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.798514812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 7.117012597656486e-05,
+            "unique_amortized_cpu_per_episode": 0.09386968493797657,
+            "total_search_amortized_cpu_per_episode": 0.13802531993797656,
+            "equal_calibration_charge_cpu_per_episode": 0.09386968493797657
+          },
+          "B": {
+            "mean_utility": 0.9264281664757293,
+            "mean_accuracy": 0.9619140625,
+            "full_process_own_fit_cpu_seconds": 44.035624,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.798514812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 0.000166214074218754,
+            "unique_amortized_cpu_per_episode": 0.09396472888621875,
+            "total_search_amortized_cpu_per_episode": 0.13812036388621873,
+            "equal_calibration_charge_cpu_per_episode": 0.09396472888621875
+          },
+          "C": {
+            "mean_utility": 0.8891865277591209,
+            "mean_accuracy": 0.9560546875,
+            "full_process_own_fit_cpu_seconds": 44.229411,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.762890812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 6.348230859375137e-05,
+            "unique_amortized_cpu_per_episode": 0.04982637312059375,
+            "total_search_amortized_cpu_per_episode": 0.13801763212059376,
+            "equal_calibration_charge_cpu_per_episode": 0.09405578412059375
+          },
+          "D": {
+            "mean_utility": 0.9254516039757293,
+            "mean_accuracy": 0.9609375,
+            "full_process_own_fit_cpu_seconds": 44.229411,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.762890812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 0.00014950803222656475,
+            "unique_amortized_cpu_per_episode": 0.04991239884422656,
+            "total_search_amortized_cpu_per_episode": 0.13810365784422657,
+            "equal_calibration_charge_cpu_per_episode": 0.09414180984422656
+          },
+          "GRU": {
+            "mean_utility": 0.9264281664757293,
+            "mean_accuracy": 0.9619140625,
+            "full_process_own_fit_cpu_seconds": 44.035624,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.798514812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 0.00014544572949218987,
+            "unique_amortized_cpu_per_episode": 0.09394396054149218,
+            "total_search_amortized_cpu_per_episode": 0.13809959554149218,
+            "equal_calibration_charge_cpu_per_episode": 0.09394396054149218
+          },
+          "SSM": {
+            "mean_utility": 0.925592737083288,
+            "mean_accuracy": 0.9609375,
+            "full_process_own_fit_cpu_seconds": 44.155635000000004,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.918525812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 0.000154394896484375,
+            "unique_amortized_cpu_per_episode": 0.09407292070848437,
+            "total_search_amortized_cpu_per_episode": 0.13810854470848438,
+            "equal_calibration_charge_cpu_per_episode": 0.09407292070848437
+          },
+          "HMM": {
+            "mean_utility": 0.9254516039757293,
+            "mean_accuracy": 0.9609375,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.762890812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 0.00015467856738281618,
+            "unique_amortized_cpu_per_episode": 0.04991756937938281,
+            "total_search_amortized_cpu_per_episode": 0.13810882837938282,
+            "equal_calibration_charge_cpu_per_episode": 0.04991756937938281
+          }
+        }
+      },
+      {
+        "seed": 131123,
+        "domain": "text_ood_time",
+        "ordinary_choice": "gru",
+        "arms": {
+          "A": {
+            "mean_utility": 0.9036141513392643,
+            "mean_accuracy": 0.9755859375,
+            "full_process_own_fit_cpu_seconds": 44.035624,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.798514812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 7.109202050781596e-05,
+            "unique_amortized_cpu_per_episode": 0.09386960683250781,
+            "total_search_amortized_cpu_per_episode": 0.1380252418325078,
+            "equal_calibration_charge_cpu_per_episode": 0.09386960683250781
+          },
+          "B": {
+            "mean_utility": 0.9347211285017772,
+            "mean_accuracy": 0.9736328125,
+            "full_process_own_fit_cpu_seconds": 44.035624,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.798514812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 0.00015704253125000192,
+            "unique_amortized_cpu_per_episode": 0.09395555734324999,
+            "total_search_amortized_cpu_per_episode": 0.13811119234325,
+            "equal_calibration_charge_cpu_per_episode": 0.09395555734324999
+          },
+          "C": {
+            "mean_utility": 0.8977547763392643,
+            "mean_accuracy": 0.9697265625,
+            "full_process_own_fit_cpu_seconds": 44.229411,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.762890812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 8.25384101562493e-05,
+            "unique_amortized_cpu_per_episode": 0.04984542922215625,
+            "total_search_amortized_cpu_per_episode": 0.13803668822215626,
+            "equal_calibration_charge_cpu_per_episode": 0.09407484022215624
+          },
+          "D": {
+            "mean_utility": 0.9299914625706358,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 44.229411,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.762890812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 0.00014660360449219104,
+            "unique_amortized_cpu_per_episode": 0.04990949441649219,
+            "total_search_amortized_cpu_per_episode": 0.1381007534164922,
+            "equal_calibration_charge_cpu_per_episode": 0.09413890541649218
+          },
+          "GRU": {
+            "mean_utility": 0.9347211285017772,
+            "mean_accuracy": 0.9736328125,
+            "full_process_own_fit_cpu_seconds": 44.035624,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.798514812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 0.00016471360351562325,
+            "unique_amortized_cpu_per_episode": 0.09396322841551562,
+            "total_search_amortized_cpu_per_episode": 0.1381188634155156,
+            "equal_calibration_charge_cpu_per_episode": 0.09396322841551562
+          },
+          "SSM": {
+            "mean_utility": 0.8863535290006631,
+            "mean_accuracy": 0.943359375,
+            "full_process_own_fit_cpu_seconds": 44.155635000000004,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 93.918525812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 0.0001458646123046886,
+            "unique_amortized_cpu_per_episode": 0.09406439042430469,
+            "total_search_amortized_cpu_per_episode": 0.1381000144243047,
+            "equal_calibration_charge_cpu_per_episode": 0.09406439042430469
+          },
+          "HMM": {
+            "mean_utility": 0.9299914625706358,
+            "mean_accuracy": 0.96875,
+            "full_process_own_fit_cpu_seconds": 0.0,
+            "shared_calibration_cpu_seconds": 44.229411,
+            "frontend_fit_cpu_seconds": 2.48109,
+            "unique_fit_cpu_seconds": 49.762890812,
+            "all_candidate_search_cpu_seconds": 137.954149812,
+            "service_setup_cpu_seconds": 3.0523898119999995,
+            "runtime_cpu_per_episode": 0.00012666879687499993,
+            "unique_amortized_cpu_per_episode": 0.049889559608875,
+            "total_search_amortized_cpu_per_episode": 0.138080818608875,
+            "equal_calibration_charge_cpu_per_episode": 0.049889559608875
+          }
+        }
+      }
+    ],
+    "scalar_comparisons": [
+      {
+        "name": "text_iid/B_minus_A/mean",
+        "difference": 5.551115123125783e-17,
+        "passed": true
+      },
+      {
+        "name": "text_iid/B_minus_A/one_sided_simultaneous_lower",
+        "difference": 7.28583859910259e-17,
+        "passed": true
+      },
+      {
+        "name": "text_iid/B_minus_A/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/D_minus_C/mean",
+        "difference": 4.163336342344337e-17,
+        "passed": true
+      },
+      {
+        "name": "text_iid/D_minus_C/one_sided_simultaneous_lower",
+        "difference": 7.979727989493313e-17,
+        "passed": true
+      },
+      {
+        "name": "text_iid/D_minus_C/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/C_minus_A/mean",
+        "difference": 1.3877787807814457e-17,
+        "passed": true
+      },
+      {
+        "name": "text_iid/C_minus_A/one_sided_simultaneous_lower",
+        "difference": 2.3418766925686896e-17,
+        "passed": true
+      },
+      {
+        "name": "text_iid/C_minus_A/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/D_minus_B/mean",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/D_minus_B/one_sided_simultaneous_lower",
+        "difference": 1.734723475976807e-18,
+        "passed": true
+      },
+      {
+        "name": "text_iid/D_minus_B/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/D_minus_HMM/mean",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/D_minus_HMM/one_sided_simultaneous_lower",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/D_minus_HMM/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/interaction/mean",
+        "difference": 1.3877787807814457e-17,
+        "passed": true
+      },
+      {
+        "name": "text_iid/interaction/one_sided_simultaneous_lower",
+        "difference": 1.8756697583999227e-17,
+        "passed": true
+      },
+      {
+        "name": "text_iid/interaction/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/runtime_cost_ratio_D_over_B",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/unique_actual_cost_ratio_D_over_B",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/total_model_search_cost_ratio_D_over_B",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/conservative_cost_ratio_D_over_B",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/noninferiority",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/cost_acceptance",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/B_minus_A/mean",
+        "difference": 2.7755575615628914e-17,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/B_minus_A/one_sided_simultaneous_lower",
+        "difference": 1.734723475976807e-17,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/B_minus_A/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/D_minus_C/mean",
+        "difference": 2.7755575615628914e-17,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/D_minus_C/one_sided_simultaneous_lower",
+        "difference": 2.7755575615628914e-17,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/D_minus_C/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/C_minus_A/mean",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/C_minus_A/one_sided_simultaneous_lower",
+        "difference": 1.734723475976807e-18,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/C_minus_A/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/D_minus_B/mean",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/D_minus_B/one_sided_simultaneous_lower",
+        "difference": 2.168404344971009e-17,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/D_minus_B/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/D_minus_HMM/mean",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/D_minus_HMM/one_sided_simultaneous_lower",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/D_minus_HMM/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/interaction/mean",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/interaction/one_sided_simultaneous_lower",
+        "difference": 2.862293735361732e-17,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/interaction/exact_sign_flip_p",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/runtime_cost_ratio_D_over_B",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/unique_actual_cost_ratio_D_over_B",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/total_model_search_cost_ratio_D_over_B",
+        "difference": 2.220446049250313e-16,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/conservative_cost_ratio_D_over_B",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/noninferiority",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/cost_acceptance",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/Holm",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_ood_time/quality_gain",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/Holm",
+        "difference": 0.0,
+        "passed": true
+      },
+      {
+        "name": "text_iid/quality_gain",
+        "difference": 0.0,
+        "passed": true
+      }
+    ],
+    "checks": {
+      "outcomes_match_aggregate": true,
+      "causal_count_invariants": true,
+      "maximum_mean_difference": 1.1102230246251565e-16,
+      "maximum_cost_ledger_difference": 2.842170943040401e-14,
+      "maximum_timing_components_excess": 0.0,
+      "summary_all_match": true
+    },
+    "implementation": "Independent fsum/sample-variance formulas, Fraction enumeration of 256 signs, incomplete-beta Student quantile, and explicit cost algebra; production analysis functions are never imported."
+  },
+  "final_frozen_source_checks": {
+    "source_hashes_match": true,
+    "artifact_hashes_match": true,
+    "native_library_hash_matches": true,
+    "operative_sources_covered": true,
+    "receipts_count": 24,
+    "all_24_receipts_valid": true,
+    "all_paired_data_and_choices_match": true,
+    "frontend_replica_weights_and_counts_match": true
+  }
+}
