@@ -1,0 +1,28 @@
+{
+  "schema": "hcsn-v7-common-content-contract-tests.v1",
+  "began_at_utc": "2026-11-01T17:08:21.080755+00:00",
+  "ended_at_utc": "2026-11-01T17:08:21.277753+00:00",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "-v",
+    "test_content_interface"
+  ],
+  "exit_code": 0,
+  "tests_run": 17,
+  "passed": true,
+  "complete_child_user_cpu_seconds": 0.07213,
+  "complete_child_system_cpu_seconds": 0.011205,
+  "complete_child_wall_seconds": 0.1966283799993107,
+  "single_process_highwater_bytes": 13893632,
+  "source_sha256": {
+    "content_interface.py": "2dd6f4cc0204f5d77a7a5ab993d0710088d47848e2977bc44351519fc6d50c92",
+    "test_content_interface.py": "93a8127b25f4b644109b7852ca1b710d6719eba097dc4d04ff03cb3abba24ce3"
+  },
+  "log_sha256": "0059f0a6d42fb64cd21d30255be4f8f4c89609da0a6429858550f335ae795a9c",
+  "trained_model_calls": 0,
+  "real_av_confirmations": 0,
+  "scientific_acceptance": false,
+  "scope": "Fixture contract tests only; no trained encoder, readout, old v6 assets or real AV data used. No production acceptance or core benefit claimed."
+}

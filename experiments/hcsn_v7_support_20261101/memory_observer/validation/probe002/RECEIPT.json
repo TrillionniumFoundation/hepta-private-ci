@@ -1,0 +1,25 @@
+{
+  "schema": "hcsn-v7-memory-observer-complete-worker.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "probe_memory.py",
+    "--output",
+    "PROBE_REPORT_002.json"
+  ],
+  "began_at_utc": "2026-11-01T17:06:16.690377+00:00",
+  "ended_at_utc": "2026-11-01T17:06:17.023477+00:00",
+  "waited_pid_in_parent_namespace": 5,
+  "exit_code": 0,
+  "complete_worker_cpu_seconds": 0.17777199999999999,
+  "wall_seconds": 0.3331299259989464,
+  "wrapper_own_cpu_seconds": 0.00045917099999999433,
+  "wait4_largest_single_process_highwater_bytes": 37355520,
+  "family_peak_rss_bytes": null,
+  "accounting": "Complete waited-worker subtree CPU once; nested stage/process figures are not added again. Largest-single-process high-water is not family RSS.",
+  "source_sha256": {
+    "probe_memory.py": "f77dc684a0a96c425505710778f31fc40dc1726dbdcdddc0d2a1a5484b548b71",
+    "process_memory.py": "31e49364622f3753d1013ab1583eb8f8dd8d79da2e77b3d52981deeccc32b4fb",
+    "run_validation.py": "b7e0e1d3f9688c8c649987af35c83734ed4bd92ed40a89729758daa3605a35fd",
+    "test_process_memory.py": "d9f1e8d97bd4744cf84ee71b1ac31016c6386df4902b04ae81a1de54c4dae042"
+  }
+}
