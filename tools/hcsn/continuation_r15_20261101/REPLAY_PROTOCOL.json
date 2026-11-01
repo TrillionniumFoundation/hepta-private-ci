@@ -1,0 +1,17 @@
+{
+  "schema": "hcsn.r15.controller-replay.protocol.v1",
+  "purpose": "Policy-preserving common-controller engineering comparison, not new architecture efficacy confirmation",
+  "upstream_commit": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "fit_seeds": [141101, 141103, 141107, 141109, 141113, 141117, 141119, 141123],
+  "domains": ["iid", "ood"],
+  "arms": ["B", "D"],
+  "controllers": ["reference", "batched"],
+  "episodes_per_case": 512,
+  "repeats": 3,
+  "threadpool_limit": 1,
+  "tapes": "Recreate the already opened original R14 tapes from the original seed offsets; no new efficacy sample or checkpoint selection",
+  "identity_gate": "Every episode record, action, observation, fee, correctness and utility must equal the original reference in every repeat",
+  "timing_scope": "Full original execute call with cold planner, model copy, model start, inference, control, owner and trace assembly; world preparation separate and common",
+  "reporting": "All orders and per-call CPU/wall records retained; repeated timings are not independent training fits",
+  "limits": "No new training, no change to R14 acceptance; CPU timing is not joules, GPU performance or intrinsic HX efficiency; both ordinary and HX receive the same optimization"
+}
