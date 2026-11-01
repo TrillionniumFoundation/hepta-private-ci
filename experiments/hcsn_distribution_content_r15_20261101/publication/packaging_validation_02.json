@@ -1,0 +1,130 @@
+{
+  "check_count": 15,
+  "checks": [
+    {
+      "detail": {
+        "compressed_bytes": 92440,
+        "input_bytes": 385877,
+        "members": 10,
+        "parts": 2
+      },
+      "name": "pack_restore_byte_equality",
+      "passed": true
+    },
+    {
+      "detail": {
+        "excluded": [
+          {
+            "path": "study/__pycache__",
+            "reason": "excluded_directory"
+          },
+          {
+            "path": "study/archives",
+            "reason": "excluded_directory"
+          },
+          {
+            "path": "study/prior.tar.xz",
+            "reason": "existing_archive"
+          }
+        ],
+        "socket_fixture_limitation": "AF_UNIX fixture creation denied by execution environment: [Errno 1] Operation not permitted"
+      },
+      "name": "cache_archive_exclusions",
+      "passed": true
+    },
+    {
+      "detail": 10,
+      "name": "identical_existing_files_are_idempotent",
+      "passed": true
+    },
+    {
+      "detail": {
+        "all_manifest_and_shard_bytes_identical": true
+      },
+      "name": "reproducible_despite_source_mtime_change",
+      "passed": true
+    },
+    {
+      "detail": "error: Refusing to overwrite different content: study/checkpoints/selected.pt",
+      "name": "different_existing_content_refused",
+      "passed": true
+    },
+    {
+      "detail": "error: Part hash mismatch: results.tar.xz.part000001",
+      "name": "tampered_shard_refused_before_destination_creation",
+      "passed": true
+    },
+    {
+      "detail": "error: Source symlink refused: study/escape",
+      "name": "source_symlink_refused",
+      "passed": true
+    },
+    {
+      "detail": "error: [Errno 20] Not a directory: 'study'",
+      "name": "destination_ancestor_symlink_refused",
+      "passed": true
+    },
+    {
+      "detail": 7,
+      "name": "unsafe_member_paths_refused",
+      "passed": true
+    },
+    {
+      "detail": 2,
+      "name": "manifest_duplicates_and_file_parent_collisions_refused",
+      "passed": true
+    },
+    {
+      "detail": "Duplicate tar member: safe",
+      "name": "tar_duplicate_refused",
+      "passed": true
+    },
+    {
+      "detail": "Non-regular tar member: safe",
+      "name": "tar_symlink_refused",
+      "passed": true
+    },
+    {
+      "detail": "Non-regular tar member: safe",
+      "name": "tar_hardlink_refused",
+      "passed": true
+    },
+    {
+      "detail": "Non-regular tar member: safe",
+      "name": "tar_directory_refused",
+      "passed": true
+    },
+    {
+      "detail": "Non-regular tar member: safe",
+      "name": "tar_fifo_refused",
+      "passed": true
+    }
+  ],
+  "fixture_pack_receipt": {
+    "archive_bytes": 92440,
+    "manifest_sha256": "c4bc207eb66c3917429adea4cfbd361ffc19f0c871c3bd08c4653a287f707df6",
+    "members": 10,
+    "operation": "pack",
+    "output": "/tmp/hcsn-publication-test-d6vncwzz/bundle",
+    "parts": 2,
+    "source_bytes": 385877,
+    "source_roots": {
+      "study": "/tmp/hcsn-publication-test-d6vncwzz/source",
+      "study/development/development01": "/tmp/hcsn-publication-test-d6vncwzz/development01"
+    },
+    "tool_sha256": "c2314d3157259037a0880b5bcd02508e81085d1378054327a722c18906ca3dcd"
+  },
+  "fixture_restore_receipt": {
+    "already_identical_members": 0,
+    "destination": "/tmp/hcsn-publication-test-d6vncwzz/restored",
+    "manifest_sha256": "c4bc207eb66c3917429adea4cfbd361ffc19f0c871c3bd08c4653a287f707df6",
+    "operation": "restore",
+    "verified_member_bytes": 385877,
+    "verified_members": 10,
+    "verified_parts": 2
+  },
+  "passed": true,
+  "scope": "synthetic publication mechanics only; no scientific or test-split data accessed",
+  "tool_sha256": "c2314d3157259037a0880b5bcd02508e81085d1378054327a722c18906ca3dcd",
+  "validation_script_sha256": "5541d46a500713b39eef6aa541f308e9c40a1b8333a7743e5aca090f6f48f8df"
+}

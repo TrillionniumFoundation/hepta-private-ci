@@ -1,0 +1,7 @@
+{
+  "status": "fixture_setup_failed_before_pack",
+  "scope": "synthetic publication mechanics only; no scientific or test-split data accessed",
+  "exception": "PermissionError: [Errno 1] Operation not permitted",
+  "operation": "socket.socket(AF_UNIX).bind(synthetic_source/worker.socket)",
+  "interpretation": "The managed environment refused creation of a temporary Unix socket. No pack or restore ran in this attempt. The next fixture records socket creation as unavailable and still exercises regular-file, archive and cache exclusions, byte roundtrip, determinism and adversarial restore checks."
+}

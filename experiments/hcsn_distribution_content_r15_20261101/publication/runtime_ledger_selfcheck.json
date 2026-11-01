@@ -1,0 +1,23 @@
+{
+  "checks": {
+    "aggregate_mismatch_rejected": true,
+    "all_nested_levels_separate": true,
+    "completed_kill_cpu_charged": true,
+    "completed_snapshot_not_double_counted": true,
+    "default_refuses_unfinished_formal_run": true,
+    "duplicate_process_identity_rejected": true,
+    "explicit_partial_stays_lower_bound": true,
+    "final_total_includes_waste_and_no_nested_or_aggregate_duplicates": true,
+    "live_cpu_only_lower_bound": true,
+    "root_duplicates_never_read": true,
+    "successful_and_failed_separate": true,
+    "unmeasured_costs_not_invented": true
+  },
+  "confirmation_data_accessed": false,
+  "expected_total_cpu_lower_bound_seconds": 92,
+  "fixture_root": "/tmp/hcsn-runtime-ledger-fixture-3w5k6757",
+  "passed": true,
+  "real_runtime_records_read": false,
+  "schema": "hcsn.r15.runtime-ledger.fixture.v1",
+  "source_sha256": "35b9943cba438bde4bf780aa5773062d0f14e224f52a7c879881e332557bf9ce"
+}
