@@ -1,0 +1,328 @@
+{
+  "allowed_edit_scope": {
+    "REPORT_ZH.md": [
+      "One CSV citation now links to the fixed first-publication commit and explains local restoration.",
+      "One added publication packaging paragraph states size/binary-check causes, lossless transport, separate inherited CI findings, and prior review scope."
+    ],
+    "REPRODUCE.md": [
+      "Section 3 now uses publication.transport restore with CONTAINERS.json and explains genuine gzip envelopes, compact JSON, original index preservation, and restored large files.",
+      "The final CLI-reference sentence includes the publication bootstrap."
+    ],
+    "protected_scientific_text_and_commands_unchanged": true
+  },
+  "archive_identity": {
+    "inputs": {
+      "compact_index_sha256": "ae6459f2ffb37c4d42f9d7fcfb0ce09e14f96528b7376173198f00c35d67036e",
+      "index_semantics_identical": true,
+      "largest_stream_container_bytes": 479968,
+      "legacy_index_gzip_containers": 1,
+      "original_compressed_stream_sha256": "2e18712d5b5af6ca8e3887401ed1a1f13619ace00ad89a34a99362bc1fe87104",
+      "original_index_sha256": "9253d818341e8962836413f0bfd60c75a66326dcc90dd4943e3de2edd865ac35",
+      "stream_containers": 75
+    },
+    "results": {
+      "compact_index_sha256": "1891b4cc920033ee0f6f2a69689fc56f9fbb47ef19574d23e42fb7dc1f1aad80",
+      "index_semantics_identical": true,
+      "largest_stream_container_bytes": 479968,
+      "legacy_index_gzip_containers": 1,
+      "original_compressed_stream_sha256": "50d462e035f71ae02eed1bca96f0cceccfb278207f3e14117ea2f6409c16dc83",
+      "original_index_sha256": "8b296c946324c571808c3618abde474b88102abe55d1528e2262205dcc6c7dd8",
+      "stream_containers": 71
+    }
+  },
+  "changes_by_reviewer": "Only this new review receipt; diagnosis, reports, frozen science, original evidence and all checking policies were unchanged.",
+  "csv_link_and_restoration": {
+    "bytes": 642626,
+    "fixed_git_blob": "0f03a73bfaffe7f2ef247b7d854217c33b512d18",
+    "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/14570fdb78c8a787b95a67b0c9cf4ffc76d531b1/experiments/hcsn_validation_r13_20261031/cost/results/historical_002/per_seed_quality_cost.csv",
+    "large_local_manifest_archive_sha256": "1e313e3f395ca0b47cd3990688d277a0aee85174bb1435b784510d7f09217c20",
+    "link_git_blob_matches_original_local_bytes": true,
+    "local_and_archive_member_sha256": "41eca76f4a95ef8736bd219321c8f8c1da2139726c62f51f88536f6a2fc9aca2",
+    "results_archive_member_matches": true
+  },
+  "diagnosis_literal_check": {
+    "bytes": 87241,
+    "diagnosis_file_modified_in_this_review": false,
+    "new_diagnostic_text_findings": 0,
+    "original_log_hash_and_job_url_unchanged": true,
+    "raw_tokens_encoding": "Standard hexadecimal encoding of the original UTF-8 bytes, identified by reported_token_utf8_hex.",
+    "unchanged_sha256": "2457eb631a2bccb011b8fdeb1a314b9438bcc239ee27b20b7c5d82e5a7d04d97"
+  },
+  "document_diff_sha256": {
+    "REPORT_ZH.md": "3d727f7c7a74b0c68c1f32cff94fffab3ca2fa344996b78c6b0d530b8c9f1aa7",
+    "REPRODUCE.md": "c1c64a5586b18ab41bd8d96bf7b8dd7b9e72994922b005f60cfb05802f021b52"
+  },
+  "document_versions": {
+    "REPORT_ZH.md": {
+      "current_sha256": "e410dd1c3d6746507653ad0444aaf9b3e71bc66defe7cbd69caf7414f4e4278e",
+      "old_commit": "14570fdb78c8a787b95a67b0c9cf4ffc76d531b1",
+      "old_git_blob": "8c26aa42099bfa6d3c1a21a6bfa351e3b5635715",
+      "old_sha256": "c5164d0e4e854baca467a7688ab845b9403d6c5ac45de80eb3f2aa7a2aad24ff"
+    },
+    "REPRODUCE.md": {
+      "current_sha256": "4c50b9c6da65ea5af3cc1ca03010a567e2fca89f14f1606513d7db47d47c0355",
+      "old_commit": "14570fdb78c8a787b95a67b0c9cf4ffc76d531b1",
+      "old_git_blob": "0313a794b936d95b8408250747d047c1371f7a8f",
+      "old_sha256": "9354dd6039c46a77ecd0f3b5ea2e3a61577ae5c9d41484786712f907fa765948"
+    }
+  },
+  "gzip_file_count_note": "146 compressed-stream containers plus two legacy-index gzip containers; 148 actual gzip files in total.",
+  "passed": true,
+  "read_files": {
+    "experiments/hcsn_validation_r13_20261031/BASELINE_READBACK.json": {
+      "bytes": 24598,
+      "sha256": "4e3d6c931bdb8e34b672bc17e34e87caefff2f21fc34da2ce6ed4326b90dd8af"
+    },
+    "experiments/hcsn_validation_r13_20261031/LOCAL_INPUT_MANIFEST.json": {
+      "bytes": 911200,
+      "sha256": "1e313e3f395ca0b47cd3990688d277a0aee85174bb1435b784510d7f09217c20"
+    },
+    "experiments/hcsn_validation_r13_20261031/README.md": {
+      "bytes": 4833,
+      "sha256": "0db27f0983ec0e3d1b58ad09c666fe7849a82ac2e11a5008da75cb519a3fe240"
+    },
+    "experiments/hcsn_validation_r13_20261031/REMOTE_BASELINE_TREE.json": {
+      "bytes": 13400,
+      "sha256": "43bad2e72a10e549a4bd473e1041d527fede40236e218f8fb2861fbe807ef22c"
+    },
+    "experiments/hcsn_validation_r13_20261031/REPORT_ZH.md": {
+      "bytes": 20365,
+      "sha256": "e410dd1c3d6746507653ad0444aaf9b3e71bc66defe7cbd69caf7414f4e4278e"
+    },
+    "experiments/hcsn_validation_r13_20261031/REPRODUCE.md": {
+      "bytes": 15637,
+      "sha256": "4c50b9c6da65ea5af3cc1ca03010a567e2fca89f14f1606513d7db47d47c0355"
+    },
+    "experiments/hcsn_validation_r13_20261031/RUNTIME.json": {
+      "bytes": 498,
+      "sha256": "ff066676e7a57e581feb3abc51fbc44a465de5f69f21104d081e400e50f7eb86"
+    },
+    "experiments/hcsn_validation_r13_20261031/SOURCE_BASELINE.json": {
+      "bytes": 1663,
+      "sha256": "71a316fbe52cb703dd197b3a60395fc406073ec20a34b9e4cd06a9dd1cf4d926"
+    },
+    "experiments/hcsn_validation_r13_20261031/__init__.py": {
+      "bytes": 58,
+      "sha256": "eaa05868a5b846e8180226cb5c914b4d96c4107e8b2eef044e85703ff5a5d0a5"
+    },
+    "experiments/hcsn_validation_r13_20261031/archives/inputs/CONTAINERS.json": {
+      "bytes": 17171,
+      "sha256": "a995a1f265a49ef246b6fd08268537274dad6df1061497fc23cc43d42a1104b9"
+    },
+    "experiments/hcsn_validation_r13_20261031/archives/inputs/INDEX.json": {
+      "bytes": 448240,
+      "sha256": "ae6459f2ffb37c4d42f9d7fcfb0ce09e14f96528b7376173198f00c35d67036e"
+    },
+    "experiments/hcsn_validation_r13_20261031/archives/inputs/legacy-index.json.gz": {
+      "bytes": 97377,
+      "sha256": "e7f798db985143c6b11086bf59c34bff010ff45b0c1d0f8ebd569235ec9343de"
+    },
+    "experiments/hcsn_validation_r13_20261031/archives/results/CONTAINERS.json": {
+      "bytes": 16289,
+      "sha256": "539ae394522d0552bf56d59b760cb4aa5b01af4cc46a0f18502e3e175354773a"
+    },
+    "experiments/hcsn_validation_r13_20261031/archives/results/INDEX.json": {
+      "bytes": 100352,
+      "sha256": "1891b4cc920033ee0f6f2a69689fc56f9fbb47ef19574d23e42fb7dc1f1aad80"
+    },
+    "experiments/hcsn_validation_r13_20261031/archives/results/legacy-index.json.gz": {
+      "bytes": 19327,
+      "sha256": "1987799d63840a7b01a7065ee39a85f2008c1083134710576aad55cc45cb22de"
+    },
+    "experiments/hcsn_validation_r13_20261031/cost/README.md": {
+      "bytes": 4001,
+      "sha256": "c2795fa9811c01cf720b4f81688000b649d33a56c9c3cfb1afb2e5fa9fe0ca30"
+    },
+    "experiments/hcsn_validation_r13_20261031/cost/__init__.py": {
+      "bytes": 74,
+      "sha256": "2b14d44a07129769a52091c43a2a49bf1aaa62f8120456c0a7bfd33c1b209a70"
+    },
+    "experiments/hcsn_validation_r13_20261031/cost/audit.py": {
+      "bytes": 26884,
+      "sha256": "4fb19e85ac898de30af6c081f175d5e5f80cd0fb66bb566b9bd2410d1da9fa9e"
+    },
+    "experiments/hcsn_validation_r13_20261031/cost/figures.py": {
+      "bytes": 4984,
+      "sha256": "d6c89c8ee54010d3da8487844557f36f287a7d8b860cf59ed3edafcffe653e08"
+    },
+    "experiments/hcsn_validation_r13_20261031/cost/results/historical_002/per_seed_quality_cost.csv": {
+      "bytes": 642626,
+      "sha256": "41eca76f4a95ef8736bd219321c8f8c1da2139726c62f51f88536f6a2fc9aca2"
+    },
+    "experiments/hcsn_validation_r13_20261031/cost/sensors.py": {
+      "bytes": 2650,
+      "sha256": "c8bed3bec17222c44d4c88d99d87d67ca010bc51a08215a2b06dc122daf1fc2b"
+    },
+    "experiments/hcsn_validation_r13_20261031/evidence.py": {
+      "bytes": 6399,
+      "sha256": "a8a971b8d77f025422418491f1f14a1b2be5f384a600eca999c5d7c767c67cb9"
+    },
+    "experiments/hcsn_validation_r13_20261031/numerics/PROTOCOL.json": {
+      "bytes": 3790,
+      "sha256": "17175bde1cf415076f1dfe6521a1cf71c306bebc2ba12d4690b2b44cd9138c60"
+    },
+    "experiments/hcsn_validation_r13_20261031/numerics/README.md": {
+      "bytes": 4641,
+      "sha256": "904225ba1aab014e6c31f810e9d421e8448a52ebc223c2fc50a47cb34fb72bbc"
+    },
+    "experiments/hcsn_validation_r13_20261031/numerics/age_pde.py": {
+      "bytes": 10464,
+      "sha256": "1655fe6f7b4d8434daae62b4f5ae77ec8a03c39a0291786b5770bdf5da23ce4f"
+    },
+    "experiments/hcsn_validation_r13_20261031/numerics/age_reference.py": {
+      "bytes": 1962,
+      "sha256": "f2f45760c6370867fd7644d24a4ace337ba7b657243dddffbe8943892b648255"
+    },
+    "experiments/hcsn_validation_r13_20261031/numerics/audit.py": {
+      "bytes": 14930,
+      "sha256": "ffa9452ed1d5cc9d81a5dc047779a4bdb7bc52ed206caea13cb12b6ac57b0490"
+    },
+    "experiments/hcsn_validation_r13_20261031/numerics/launch.py": {
+      "bytes": 3036,
+      "sha256": "8dab9a4b25c96b49b6d0e300b5eb19688a32fde81cef7f5dd7488b7da509bb40"
+    },
+    "experiments/hcsn_validation_r13_20261031/numerics/resume.py": {
+      "bytes": 1085,
+      "sha256": "cd69222beee1aa972c5af5f384f81516195cdb8bdb59f344a022a0cf779d709e"
+    },
+    "experiments/hcsn_validation_r13_20261031/publication/TRANSPORT_VERIFICATION.json": {
+      "bytes": 12355,
+      "sha256": "9d652e7609eed40a9d30681cea26900d3fdf972d424c3137288df477d4f09b92"
+    },
+    "experiments/hcsn_validation_r13_20261031/publication/transport.py": {
+      "bytes": 7245,
+      "sha256": "7afb99a00a047be9c5d631f9b6283349698766e9c477fceb331d6e48a2549af5"
+    },
+    "experiments/hcsn_validation_r13_20261031/review/CI_CODESPELL_DIAGNOSIS.json": {
+      "bytes": 87241,
+      "sha256": "2457eb631a2bccb011b8fdeb1a314b9438bcc239ee27b20b7c5d82e5a7d04d97"
+    },
+    "experiments/hcsn_validation_r13_20261031/value/PROTOCOL.json": {
+      "bytes": 4660,
+      "sha256": "bd2d122d6e7cae2dd294ee1a77a82ea0d0b74cefd90a76775b8072fb8b9ffff0"
+    },
+    "experiments/hcsn_validation_r13_20261031/value/README.md": {
+      "bytes": 4127,
+      "sha256": "c50d086f201b6898e2b0398ccffc6f75d9ae8b17b72af8b38d065aa7264b0784"
+    },
+    "experiments/hcsn_validation_r13_20261031/value/SOURCE_FREEZE.json": {
+      "bytes": 19073,
+      "sha256": "ff2fc7489b3d114d0641627ed87e63a8fa0254fc996e5fb5f2d1cdf302e18012"
+    },
+    "experiments/hcsn_validation_r13_20261031/value/__init__.py": {
+      "bytes": 84,
+      "sha256": "e8554d84efca2b8be45349087d7cc861782f2f72007a4c56d63a5c8f637bb5ab"
+    },
+    "experiments/hcsn_validation_r13_20261031/value/analysis.py": {
+      "bytes": 6155,
+      "sha256": "735637df7c5f68b597deb0f2894dfa2034a3836db7199c27878245cdc2e55058"
+    },
+    "experiments/hcsn_validation_r13_20261031/value/dominance.py": {
+      "bytes": 2286,
+      "sha256": "494c06f7c774948e1ae27adece634d981b6f4ee177cf6dfe6792ec859b814471"
+    },
+    "experiments/hcsn_validation_r13_20261031/value/guard.py": {
+      "bytes": 3339,
+      "sha256": "d534bd89aef0069f413029903718f78471c8f90562ee5a511e7291573a766a67"
+    },
+    "experiments/hcsn_validation_r13_20261031/value/retrospective.py": {
+      "bytes": 3046,
+      "sha256": "4af84bebeef86349b0ddda52a0026e2c4fbb4226b9ee5b8ae69b18b71fb72bda"
+    },
+    "experiments/hcsn_validation_r13_20261031/value/run.py": {
+      "bytes": 13791,
+      "sha256": "323cbec70ee80fe689f5328f791cd38b4d5df3ce481cadca5ef7c27b7769a755"
+    },
+    "experiments/hcsn_validation_r13_20261031/value/tests.py": {
+      "bytes": 6356,
+      "sha256": "997783169194d6c948f8a4cc2d6cebde9bb0baa3dd5197c12e09ffd98c6ccc52"
+    }
+  },
+  "read_only_spelling_check": {
+    "checked_paths": [
+      "experiments/hcsn_validation_r13_20261031/review/CI_CODESPELL_DIAGNOSIS.json",
+      "experiments/hcsn_validation_r13_20261031/REPORT_ZH.md",
+      "experiments/hcsn_validation_r13_20261031/REPRODUCE.md"
+    ],
+    "configuration_source_commit": "14570fdb78c8a787b95a67b0c9cf4ffc76d531b1",
+    "default_dictionaries": [
+      "clear",
+      "rare"
+    ],
+    "explicit_arguments": [
+      "--config",
+      "/tmp/hcsn-codespell-official-source/.codespellrc",
+      "--ignore-words",
+      "/tmp/hcsn-codespell-official-source/.codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "official_core_and_dictionary_bytes_verified": true,
+    "official_release": "v2.4.3",
+    "returncode": 0,
+    "scope_limit": "Three local text files only, using the official core in Python 3.12; not a fresh whole-repository GitHub Actions job or proof that inherited findings are cleared.",
+    "source_blobs": [
+      {
+        "bytes": 51447,
+        "git_blob": "994c5c4a662950b9eaf51ae2fb1ca2831d7dc59d",
+        "sha256": "c7d51df2fad3ea830080abb9d9bd258a24c4375b5913a948db5fe816e1409821",
+        "upstream_path": "codespell_lib/_codespell.py"
+      },
+      {
+        "bytes": 2350,
+        "git_blob": "7b511e6d3e9e39bdf53eacb51c1a1725d1596a9f",
+        "sha256": "cdaabcba2110e57608fbf9781feba7b19f56bfde743c8e39fb16aec4e2f70521",
+        "upstream_path": "codespell_lib/_spellchecker.py"
+      },
+      {
+        "bytes": 1038,
+        "git_blob": "18a2ec89b402d400f05e3c5ae7483e06f6d229a3",
+        "sha256": "8fd03184a4e1b741feffd2714c25f7d0d812bc54c827feda3c76516616cdb110",
+        "upstream_path": "codespell_lib/_text_util.py"
+      },
+      {
+        "bytes": 6628,
+        "git_blob": "127f37e71b6446644ada3c00fad6ec1b4d25ce9c",
+        "sha256": "31726ccb1eb6f00716a558d1a7652a4e164e28910b63fef315527b47f7633cdf",
+        "upstream_path": "codespell_lib/data/dictionary_rare.txt"
+      },
+      {
+        "bytes": 1496821,
+        "git_blob": "35e487982f928001e3433362b9ffe7d1aa1f5f22",
+        "sha256": "a457564a466120c728361e9c759b6a6ef05c2acc05c7e12d1ba0eb251036f42d",
+        "upstream_path": "codespell_lib/data/dictionary.txt"
+      }
+    ],
+    "stdout_and_stderr": "",
+    "temporary_bootstrap": "Empty package initializer and declared __version__ metadata only; checker implementation and dictionaries exactly match the listed upstream Git blobs."
+  },
+  "recorded_at_utc": "2026-11-01T01:55:13.215296+00:00",
+  "remaining_CI_boundary": "The earlier 3321 inherited findings remain separate from the R13 publication correction; actual next-head CI readback is still required.",
+  "reviewer": "/root/cost_baselines",
+  "schema": "hcsn.r13.document-packaging-review.v1",
+  "scientific_execution_performed": false,
+  "scientific_tables": {
+    "REPORT_ZH.md": {
+      "all_table_rows_byte_identical": true,
+      "rows": 65,
+      "sha256": "66e4be9e3a98e4b113933da1eff7e5062d7d8c012749bd06af1441d6e4f10cf3"
+    },
+    "REPRODUCE.md": {
+      "all_table_rows_byte_identical": true,
+      "rows": 19,
+      "sha256": "c482da534ea2192f1164c1529faba49ba230fc643f243142ce540ba5b068efea"
+    }
+  },
+  "scope": "Compare the current publication documents against actual fixed-commit readback; check byte identity of all Markdown tables and protected scientific prose/commands; review transport CLI and retained archive/CSV identity; scan only the two documents and diagnosis using the same official checker core/dictionaries. No scientific experiments or archive restoration were run in this review.",
+  "transport_cli": {
+    "commands": [
+      "python -B -m experiments.hcsn_validation_r13_20261031.publication.transport restore \\\n  --index experiments/hcsn_validation_r13_20261031/archives/inputs/CONTAINERS.json \\\n  --destination .",
+      "python -B -m experiments.hcsn_validation_r13_20261031.publication.transport restore \\\n  --index experiments/hcsn_validation_r13_20261031/archives/results/CONTAINERS.json \\\n  --destination ."
+    ],
+    "help_returncode": 0,
+    "module_help_checked": true,
+    "restore_not_run_by_reviewer": true,
+    "source_arguments_match": true,
+    "transport_source_sha256": "7afb99a00a047be9c5d631f9b6283349698766e9c477fceb331d6e48a2549af5"
+  }
+}

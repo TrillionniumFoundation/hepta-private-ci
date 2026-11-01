@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/cost/audit.py", line 417, in <module>
+    main()
+  File "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/cost/audit.py", line 413, in main
+    worker(output)
+  File "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/cost/audit.py", line 344, in worker
+    ledger, indexed = receipts(study, protocol)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/cost/audit.py", line 129, in receipts
+    job = argv[argv.index("--job") + 1]
+               ^^^^^^^^^^^^^^^^^^^
+ValueError: '--job' is not in list

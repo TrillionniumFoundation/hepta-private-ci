@@ -1,0 +1,40 @@
+{
+  "schema": "hcsn.r13.age-checkpoint.wait4.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/numerics/audit.py",
+    "--out",
+    "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/numerics/results/development_01",
+    "--stage",
+    "development",
+    "--frozen-commit",
+    ""
+  ],
+  "started_utc": "2026-11-01T01:12:39.731326+00:00",
+  "finished_utc": "2026-11-01T01:12:43.227255+00:00",
+  "returncode": 0,
+  "wall_seconds": 3.4959456699998555,
+  "child_user_cpu_seconds": 3.295229,
+  "child_system_cpu_seconds": 0.113244,
+  "child_total_cpu_seconds": 3.408473,
+  "peak_rss_bytes": 84492288,
+  "limits": {
+    "threads": 1,
+    "address_space_bytes": 536870912,
+    "cpu_seconds": 120
+  },
+  "scope": "Linux wait4 accounting for the scientific child and its waited fresh-process recovery descendants; includes imports and evidence writes; excludes this launcher and unrelated concurrent work. Peak RSS is the maximum process RSS, not a sum or energy reading.",
+  "logs": [
+    {
+      "path": "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/numerics/results/development_01.stdout.log",
+      "sha256": "f71ca03e7303bc115fd06d1272944982900b71bab12090028b628b77a48c6584",
+      "bytes": 1367
+    },
+    {
+      "path": "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/numerics/results/development_01.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ]
+}

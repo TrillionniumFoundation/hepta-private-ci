@@ -1,0 +1,66 @@
+{
+  "schema": "hcsn.r13.recovery-checkpoint.protocol.v1",
+  "registered_before_development_execution": true,
+  "upstream_formal_source_commit": "3583d3c9a934be4049491c96f6419be3573ccaa5",
+  "upstream_source_readback_commit": "1eb979ff62499abf82118b6a4196c44324c11242",
+  "purpose": "Independently verify refractory-age observables and preserve the complete regenerative state across checkpointed observation partitions.",
+  "semantics": {
+    "active_process": "X=x+mu*t+sigma*W; hit zero, count immediately, wait deterministic refractory, then reset to positive distance",
+    "age_reference": "Independent continuous renewal hitting-density integral; existing R12 complete-successor moments crosschecked",
+    "discrete_solver": "Positive centered nearest-neighbor forward equation with an explicit deterministic-age queue; spatial upper absorption is metered",
+    "age_bins": "Finite-volume age bins uniformly distribute each step's absorbing flux over that step",
+    "checkpoint": "Complete active law, age queue and cursor, physical clock and step, accumulated count and loss, model and grid identities",
+    "partition_claim": "Bitwise identity only on the same fixed space/time lattice, without rebuilding the mesh at an observation boundary",
+    "unaligned_times": "Refuse requests off the fixed time lattice; arbitrary remeshing is not validated",
+    "training_scope": "No conclusion about the frozen R12 content gate or any learned recurrent content transition"
+  },
+  "cases": [
+    {"x": 0.4, "mu": -0.6, "sigma": 0.7, "horizon": 1.2, "reset": 0.8, "refractory": 0.2},
+    {"x": 0.4, "mu": 0.3, "sigma": 1.0, "horizon": 1.2, "reset": 0.8, "refractory": 0.2}
+  ],
+  "spacings": [0.04, 0.02, 0.01],
+  "upper": 8.0,
+  "maximum_diffusive_cfl": 0.4,
+  "time_grid": "M=ceil(refractory*sigma^2/(0.4*h^2)); dt=refractory/M; H/refractory is exactly six in the registered cases",
+  "active_bin_edges": [0.0, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0],
+  "relative_age_bin_edges": [0.0, 0.25, 0.5, 0.75, 1.0],
+  "partition_step_fractions": [0.13, 0.37, 0.61, 0.89],
+  "partition_rule": "floor(fraction*total_steps); retain actual integer steps and times",
+  "negative_control_split_fraction": 0.37,
+  "negative_controls": [
+    "drop_pending_recovery_mass",
+    "collapse_pending_recovery_to_youngest_age_preserving_mass"
+  ],
+  "negative_control_scope": "Both physical corruptions at every spatial grid; retain their failed equivalence rows and separately require the discrepancy to be detected",
+  "checkpoint_rejection_cases": [
+    "changed_payload_without_hash_update",
+    "missing_recovery_queue_with_recomputed_hash",
+    "wrong_expected_grid_identity",
+    "inconsistent_physical_time_with_recomputed_hash",
+    "negative_probability_with_recomputed_hash"
+  ],
+  "gates": {
+    "reference_crosscheck_atol": 2e-10,
+    "mass_atol": 2e-10,
+    "minimum_probability": -2e-13,
+    "upper_loss_max": 1e-8,
+    "final_active_bins_l1": 0.006,
+    "final_count_atol": 0.002,
+    "final_age_bins_l1": 0.003,
+    "final_normalized_age_moment_atol": 0.002,
+    "refinement_factor": 0.8,
+    "partition_exact_array_equality": true,
+    "negative_equivalence_atol": 1e-11,
+    "negative_detection_l1_min": 1e-6
+  },
+  "failure_policy": "Every attempt is a new immutable directory with source snapshots, raw final states, checkpoints, all failures and process metering. No gate is loosened after execution.",
+  "not_established": [
+    "uniform continuum error bound",
+    "arbitrary change of numerical grid at observation times",
+    "zero refractory or initial boundary atom",
+    "random, state-dependent or learned moving boundary",
+    "financial stopping-kernel equivalence to regeneration",
+    "training-path integration or neural quality gain",
+    "hardware energy or GPU performance"
+  ]
+}

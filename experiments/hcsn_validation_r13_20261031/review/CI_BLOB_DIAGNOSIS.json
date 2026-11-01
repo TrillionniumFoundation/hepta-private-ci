@@ -1,0 +1,1127 @@
+{
+  "schema": "hcsn.r13.ci_blob_diagnosis.v1",
+  "recorded_utc": "2026-11-01 01:48:38 UTC",
+  "status": "diagnosis_complete_packaging_review_pending",
+  "scope": "Read-only diagnosis of fixed PR head; this new report does not alter any frozen scientific source, data, result, receipt, policy or allowlist.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4544,
+  "job_ids": [
+    124717412332
+  ],
+  "jobs": [
+    {
+      "job_id": 124717412332,
+      "name": "Blob size policy / Blob size policy",
+      "failed_step": "Check changed blob sizes",
+      "failed_step_number": 5,
+      "failed_step_exit_code": 1,
+      "clean_worktree_check": "success"
+    }
+  ],
+  "revisions": {
+    "base": "1eb979ff62499abf82118b6a4196c44324c11242",
+    "head": "14570fdb78c8a787b95a67b0c9cf4ffc76d531b1",
+    "ci_merge": "fe4b60940b14b3d52b456b9a4864d93c2f87fcf5",
+    "scientific_source_freeze": "04436032a808a5a1bbda10a66e487a32b8c654ff"
+  },
+  "sources": [
+    {
+      "kind": "workflow_job_logs",
+      "tool": "github_fetch_workflow_job_logs",
+      "job_id": 124717412332,
+      "log_lines": 7648
+    },
+    {
+      "kind": "workflow_job_steps",
+      "tool": "github_fetch_workflow_job_steps",
+      "job_id": 124717412332
+    },
+    {
+      "kind": "workflow",
+      "path": ".github/workflows/blob-size-policy.yml",
+      "git_blob_sha": "60de74f581a2fa4f2b504f375bff39942fc2d499",
+      "same_actual_blob_verified_at": [
+        "1eb979ff62499abf82118b6a4196c44324c11242",
+        "14570fdb78c8a787b95a67b0c9cf4ffc76d531b1",
+        "fe4b60940b14b3d52b456b9a4864d93c2f87fcf5"
+      ]
+    },
+    {
+      "kind": "policy_implementation",
+      "path": "scripts/check_blob_size.py",
+      "git_blob_sha": "b63e1d19f0cba28e7954bc41d3800d3f967b6c9b",
+      "same_actual_blob_verified_at": [
+        "1eb979ff62499abf82118b6a4196c44324c11242",
+        "14570fdb78c8a787b95a67b0c9cf4ffc76d531b1",
+        "fe4b60940b14b3d52b456b9a4864d93c2f87fcf5"
+      ]
+    }
+  ],
+  "policy": {
+    "maximum_bytes": 512000,
+    "maximum_kib": 500,
+    "comparison": "blob.size_bytes > args.max_bytes and not blob.is_allowlisted",
+    "changed_paths_command": [
+      "git",
+      "diff",
+      "--name-only",
+      "--diff-filter=AM",
+      "--no-renames",
+      "-z",
+      "base",
+      "head"
+    ],
+    "size_command": [
+      "git",
+      "cat-file",
+      "-s",
+      "head:path"
+    ],
+    "scans_history": false,
+    "uses_rev_list": false,
+    "checks_head_blobs_only": true,
+    "fetch_depth_zero_is_not_history_scan": true,
+    "equality_to_threshold_allowed": true,
+    "binary_and_text_same_threshold": true,
+    "no_policy_or_allowlist_change_authorized": true,
+    "consequence": "An additive packaging fix can satisfy this policy without rewriting any prior commit or the scientific freeze. Intermediate oversized blobs are not checked by this policy."
+  },
+  "result": {
+    "changed_files_checked": 241,
+    "violations": 135,
+    "unique_violation_paths": 135,
+    "all_violation_paths_under": "experiments/hcsn_validation_r13_20261031/",
+    "inherited_r12_violations": 0,
+    "base_experiments_tree": "5463d4a60f2f8cb07a57789fafba61aaa6c7a5e7",
+    "base_experiments_tree_not_truncated": true,
+    "r13_directory_absent_from_base": true,
+    "grouped_violations": [
+      {
+        "path": "experiments/hcsn_validation_r13_20261031/LOCAL_INPUT_MANIFEST.json",
+        "count": 1,
+        "bytes": 911200
+      },
+      {
+        "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/INDEX.json",
+        "count": 1,
+        "bytes": 516373
+      },
+      {
+        "first": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0000",
+        "last": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0067",
+        "count": 68,
+        "bytes_each": 524288
+      },
+      {
+        "first": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0000",
+        "last": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0063",
+        "count": 64,
+        "bytes_each": 524288
+      },
+      {
+        "path": "experiments/hcsn_validation_r13_20261031/cost/results/historical_002/per_seed_quality_cost.csv",
+        "count": 1,
+        "bytes": 642626
+      }
+    ]
+  },
+  "violations": [
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/LOCAL_INPUT_MANIFEST.json",
+      "bytes": 911200,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 399200,
+      "kind": "non-binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/INDEX.json",
+      "bytes": 516373,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 4373,
+      "kind": "non-binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0000",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0001",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0002",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0003",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0004",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0005",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0006",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0007",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0008",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0009",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0010",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0011",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0012",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0013",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0014",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0015",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0016",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0017",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0018",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0019",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0020",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0021",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0022",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0023",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0024",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0025",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0026",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0027",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0028",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0029",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0030",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0031",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0032",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0033",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0034",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0035",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0036",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0037",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0038",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0039",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0040",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0041",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0042",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0043",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0044",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0045",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0046",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0047",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0048",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0049",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0050",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0051",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0052",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0053",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0054",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0055",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0056",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0057",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0058",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0059",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0060",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0061",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0062",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0063",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0064",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0065",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0066",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/inputs/evidence.tar.gz.part0067",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0000",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0001",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0002",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0003",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0004",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0005",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0006",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0007",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0008",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0009",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0010",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0011",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0012",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0013",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0014",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0015",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0016",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0017",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0018",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0019",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0020",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0021",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0022",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0023",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0024",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0025",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0026",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0027",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0028",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0029",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0030",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0031",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0032",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0033",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0034",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0035",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0036",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0037",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0038",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0039",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0040",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0041",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0042",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0043",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0044",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0045",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0046",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0047",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0048",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0049",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0050",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0051",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0052",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0053",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0054",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0055",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0056",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0057",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0058",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0059",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0060",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0061",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0062",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/archives/results/evidence.tar.gz.part0063",
+      "bytes": 524288,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 12288,
+      "kind": "binary"
+    },
+    {
+      "path": "experiments/hcsn_validation_r13_20261031/cost/results/historical_002/per_seed_quality_cost.csv",
+      "bytes": 642626,
+      "threshold_bytes": 512000,
+      "over_by_bytes": 130626,
+      "kind": "non-binary"
+    }
+  ],
+  "scientific_byte_protection": {
+    "preserve_source_freeze": "04436032a808a5a1bbda10a66e487a32b8c654ff",
+    "preserve_all_29_source_readback_hashes": true,
+    "preserve_existing_receipts_as_historical_records": true,
+    "do_not_truncate_or_reformat_scientific_data": true,
+    "do_not_rerun_science_for_transport_fix": true,
+    "packaging_cost_is_not_model_training_or_new_scientific_sample": true,
+    "archive_stream_identities": [
+      {
+        "archive": "inputs",
+        "files": 1934,
+        "original_inner_chunks": 69,
+        "compressed_bytes": 35939155,
+        "compressed_sha256": "2e18712d5b5af6ca8e3887401ed1a1f13619ace00ad89a34a99362bc1fe87104"
+      },
+      {
+        "archive": "results",
+        "files": 432,
+        "original_inner_chunks": 65,
+        "compressed_bytes": 33622234,
+        "compressed_sha256": "50d462e035f71ae02eed1bca96f0cceccfb278207f3e14117ea2f6409c16dc83"
+      }
+    ],
+    "already_archived_redundant_direct_copies": [
+      {
+        "path": "experiments/hcsn_validation_r13_20261031/LOCAL_INPUT_MANIFEST.json",
+        "archive_index": "experiments/hcsn_validation_r13_20261031/archives/inputs/INDEX.json",
+        "bytes": 911200,
+        "sha256": "1e313e3f395ca0b47cd3990688d277a0aee85174bb1435b784510d7f09217c20"
+      },
+      {
+        "path": "experiments/hcsn_validation_r13_20261031/cost/results/historical_002/per_seed_quality_cost.csv",
+        "archive_index": "experiments/hcsn_validation_r13_20261031/archives/results/INDEX.json",
+        "bytes": 642626,
+        "sha256": "41eca76f4a95ef8736bd219321c8f8c1da2139726c62f51f88536f6a2fc9aca2"
+      }
+    ]
+  },
+  "remediation_review_contract": {
+    "implementation_owner": "content_actions",
+    "intended_transport": "Independent gzip outer containers, raw payload blocks of 480000 bytes, each published outer blob <=512000 bytes; restore the exact original compressed stream and original 69/65 inner part identities.",
+    "intended_identity_rule": "Preserve original INDEX bytes and all inner member/part/stream hashes; add transport metadata without revising frozen or historical identities.",
+    "direct_duplicate_handling": "Remove only the redundant direct copies from the new Git head; retain their exact bytes in archives and restore their original paths.",
+    "requested_review": [
+      "Read the new package/restore source independently",
+      "Verify all prepared new-head entries are <=512000 bytes",
+      "Verify all 29 scientific source readback hashes remain unchanged",
+      "Check archive and outer-transport identity checks and path handling",
+      "Do not rerun science"
+    ],
+    "pending": true
+  }
+}

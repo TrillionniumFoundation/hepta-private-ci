@@ -1,0 +1,68 @@
+{
+  "amortization_rows": 1248,
+  "analysis_kind": "historical_reanalysis",
+  "checks": "Frozen bytes; source/protocol/candidate links; log hashes; actual receipt costs; selected step; raw scores; shared inputs; donor allocation; serial profiles",
+  "energy_probe": {
+    "attribution": "A readable host counter does not isolate this job from other tenants",
+    "counter_errors": [],
+    "historical_energy_joules": null,
+    "historical_measurement_status": "R12 did not integrate or retain physical energy",
+    "inference": "No historical joules, power integration, CPU-to-energy conversion or energy advantage inferred",
+    "nvidia_smi": {
+      "attempted": false,
+      "executable": null
+    },
+    "observed_at_utc": "2026-11-01T01:14:36.076275+00:00",
+    "probe_roots": [
+      {
+        "exists": false,
+        "path": "/sys/class/powercap"
+      },
+      {
+        "exists": false,
+        "path": "/sys/devices/virtual/powercap"
+      },
+      {
+        "exists": false,
+        "path": "/sys/class/hwmon"
+      }
+    ],
+    "readable_counters": [],
+    "scope": "Read-only current container visibility; not a claim about the physical host or original run",
+    "visible_telemetry": false
+  },
+  "fit_jobs": 96,
+  "input_manifest_sha256": "b41f2b7a3ad5fe0147444da543abf8cc730d4114b08d541da95b290734993a0b",
+  "limitations": "No new fitting, model execution, weight payload validation, fresh confirmation, population inference or remote-publication claim",
+  "passed": true,
+  "prediction_rows": 184320,
+  "prediction_tables": 720,
+  "process_totals": {
+    "audit": {
+      "cpu_seconds": 4.6045,
+      "failures": 0,
+      "peak_rss_bytes": 247668736,
+      "receipts": 1
+    },
+    "evaluate": {
+      "cpu_seconds": 176.235522,
+      "failures": 0,
+      "peak_rss_bytes": 229097472,
+      "receipts": 96
+    },
+    "profile": {
+      "cpu_seconds": 152.375027,
+      "failures": 0,
+      "peak_rss_bytes": 226267136,
+      "receipts": 96
+    },
+    "worker": {
+      "cpu_seconds": 361.400232,
+      "failures": 0,
+      "peak_rss_bytes": 295194624,
+      "receipts": 102
+    }
+  },
+  "profile_records": 96,
+  "source_manifest_sha256": "d6ab2389344229a53ff14e4fdc0c986fce9a1ea6fcc870f7dcccc0be4d8cfc4c"
+}

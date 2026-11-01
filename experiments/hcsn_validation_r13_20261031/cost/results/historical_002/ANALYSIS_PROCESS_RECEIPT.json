@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "experiments.hcsn_validation_r13_20261031.cost.audit",
+    "worker",
+    "--output",
+    "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/cost/results/historical_002"
+  ],
+  "cpu_seconds": 4.416525,
+  "energy_joules": null,
+  "log_sha256": "02d89e18b8bd9bc800601e2702619a6ef15aee8502788cf85dfff40daaa3bcc9",
+  "peak_rss_bytes": 115748864,
+  "python": "3.12.14",
+  "returncode": 0,
+  "scope": "This fresh historical reanalysis process including imports, hash checks, raw scores and figures; excluded from R12 totals",
+  "source_manifest_sha256": "d6ab2389344229a53ff14e4fdc0c986fce9a1ea6fcc870f7dcccc0be4d8cfc4c",
+  "wall_seconds": 4.488845114000014
+}

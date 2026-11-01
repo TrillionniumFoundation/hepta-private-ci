@@ -1,0 +1,29 @@
+{
+  "attribution": "A readable host counter does not isolate this job from other tenants",
+  "counter_errors": [],
+  "historical_energy_joules": null,
+  "historical_measurement_status": "R12 did not integrate or retain physical energy",
+  "inference": "No historical joules, power integration, CPU-to-energy conversion or energy advantage inferred",
+  "nvidia_smi": {
+    "attempted": false,
+    "executable": null
+  },
+  "observed_at_utc": "2026-11-01T01:14:36.076275+00:00",
+  "probe_roots": [
+    {
+      "exists": false,
+      "path": "/sys/class/powercap"
+    },
+    {
+      "exists": false,
+      "path": "/sys/devices/virtual/powercap"
+    },
+    {
+      "exists": false,
+      "path": "/sys/class/hwmon"
+    }
+  ],
+  "readable_counters": [],
+  "scope": "Read-only current container visibility; not a claim about the physical host or original run",
+  "visible_telemetry": false
+}
