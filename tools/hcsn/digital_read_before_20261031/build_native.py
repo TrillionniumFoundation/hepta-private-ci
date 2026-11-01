@@ -7,8 +7,6 @@ pinned runtime crates and this research binary. Registry dependencies are really
 compiled (or reused by Cargo after this build); a Cargo.lock binds their versions.
 This is not a full-repository CI claim or an archival pre-reset cache claim.
 """
-from __future__ import annotations
-
 import argparse
 import hashlib
 import json
