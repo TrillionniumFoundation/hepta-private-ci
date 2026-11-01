@@ -1,0 +1,23 @@
+{
+  "cgroup_limits": {
+    "cpu.max": "800000 100000",
+    "memory.max": "8589934592"
+  },
+  "cpu_count": 9,
+  "cuda_available": false,
+  "energy_sensor_paths": [],
+  "packages": {
+    "einops": "0.8.1",
+    "matplotlib": "3.10.8",
+    "mpmath": "1.3.0",
+    "ncps": "1.0.1",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu"
+  },
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "runtime_installation": "Task-isolated dependencies; no repository runtime files modified",
+  "scope": "Isolated CPU synthetic research; no GPU or energy qualification",
+  "threads_per_worker": 1
+}

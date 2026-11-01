@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/workspace/scratch/a46a5a0f4b65/hepta-private-ci/experiments/hcsn_validation_r12_20261031/schedule_content.py",
+    "train",
+    "--protocol",
+    "experiments/hcsn_validation_r12_20261031/content/results/formal001/PROTOCOL.json",
+    "--workers",
+    "4",
+    "--source-commit",
+    "3583d3c9a934be4049491c96f6419be3573ccaa5"
+  ],
+  "created_unix": 1793494440.9353094,
+  "energy_joules": null,
+  "host_cpu_count": 9,
+  "parallel_wall_scope": "Concurrent workers overlap. Do not sum worker wall seconds as study makespan.",
+  "parent_scope": "Scheduling only; all complete subprocess receipts are exclusive PID wait4 measurements.",
+  "protocol_sha256": "82274af680c32b7fc6adf431abbe8753bb72aaf40f4ad8c9b6c8a8507efc6512",
+  "python": "3.12.14",
+  "scheduler_sha256": "110c95f1f65a91ed53efeeaecbe8e0d32a2f1b5637130882916e14cc80a38130",
+  "source_commit": "3583d3c9a934be4049491c96f6419be3573ccaa5",
+  "stage": "train",
+  "workers": 4
+}
