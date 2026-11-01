@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "study": "HCSN discriminating validation R12",
+  "recorded_at_utc": "2026-11-01T00:48:10.679Z",
+  "status": "registered before new held-out results; module protocols bind exact fixtures and candidates",
+  "baseline_commit": "631d33ba7ee815ee48c017269033e94cb2bc107c",
+  "objectives": [
+    "independent continuous-process reference, complete successors and gradients",
+    "deployed-policy action values and paired actual successors",
+    "causal raw-content frozen/joint comparison with strong baselines",
+    "complete process costs and explicit unavailable energy"
+  ],
+  "primary_comparison": "analytic dynamics minus ordinary dynamics under the same task-value controller (D-B)",
+  "factorial": {
+    "A": "ordinary + lightweight",
+    "B": "ordinary + deployed-value",
+    "C": "analytic + lightweight",
+    "D": "analytic + deployed-value",
+    "contrasts": [
+      "B-A",
+      "D-C",
+      "C-A",
+      "D-B",
+      "(D-C)-(B-A)"
+    ]
+  },
+  "evidence_rules": [
+    "Preserve every frozen predecessor and negative result; do not overwrite prior evidence.",
+    "Module protocols, source hashes and candidate hashes precede held-out evaluation.",
+    "Select hyperparameters/checkpoints/controllers only on training/development data.",
+    "All input information, observed prefixes, external tariffs and legal actions are shared.",
+    "Qpi labels and actual executor use the same frozen continuation policy.",
+    "Different analytic models in separate tracks are named and never borrow qualification.",
+    "Engineering check success is separate from a positive scientific finding.",
+    "No observed test-driven repair may reuse its exposed test namespace as a fresh confirmation."
+  ],
+  "content_plan": {
+    "families": [
+      "ordinary_dual",
+      "probit",
+      "analytic",
+      "lif",
+      "continuous_rnn",
+      "cfc",
+      "mamba1",
+      "transformer_sdpa"
+    ],
+    "modes": [
+      "frozen_frontend",
+      "joint"
+    ],
+    "fit_seeds": [
+      11,
+      23,
+      37
+    ],
+    "synthetic_tasks": 2,
+    "planned_fits": 96,
+    "scope": "small CPU causal raw-input models, not natural media or foundation-model validation"
+  },
+  "cost_contract": {
+    "primary": "fresh-process CPU seconds including startup, data/model loading and output writes",
+    "secondary": [
+      "wall seconds",
+      "peak RSS bytes",
+      "serial cached request latency",
+      "actual parameter count",
+      "training and candidate-selection totals"
+    ],
+    "not_measured": [
+      "GPU performance",
+      "joule energy without physical sensor"
+    ],
+    "no_double_count": "nested worker CPU receipts are components of outer process totals; do not add both"
+  },
+  "analysis": {
+    "independent_unit": "fit seed; episodes or graph states are not independent fits",
+    "benefit": "report paired effect and uncertainty; do not claim architecture advantage from a positive point estimate alone",
+    "quality_cost": "jointly report paired quality and CPU; quality noninferiority margin 0.02 absolute task accuracy is diagnostic, no post-hoc relaxation",
+    "energy": "null when unavailable, never estimated from CPU seconds times invented power"
+  },
+  "release": "additive draft research PR; no production activation"
+}
