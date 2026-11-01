@@ -1,0 +1,284 @@
+{
+  "schema": "hcsn-v8-independent-mechanism-review.v1",
+  "all_checks_passed": true,
+  "primary_audit_assertions": 133975,
+  "supplemental_assertions": 532,
+  "primary_audit": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism001/AUDIT.json",
+  "worlds": 48,
+  "runs": 1728,
+  "outputs": 6912,
+  "selected_families": {
+    "81101": "gru",
+    "81103": "gru",
+    "81107": "gru",
+    "81109": "gru",
+    "81113": "gru"
+  },
+  "conditions": {
+    "matched": {
+      "selected_factorial": {
+        "A": 0.6719166666666666,
+        "B": 0.7074166666666667,
+        "C": 0.6437499999999999,
+        "D": 0.6991666666666667,
+        "ordinary_fixed_D": 0.7095833333333335,
+        "B-A": 0.03550000000000002,
+        "D-C": 0.05541666666666678,
+        "C-A": -0.02816666666666672,
+        "D-B": -0.008249999999999957,
+        "interaction": 0.01991666666666676
+      },
+      "all_families": {
+        "gru": {
+          "D_minus_B_mean": -0.008250000000000004,
+          "by_fit": {
+            "81101": -0.008333333333333337,
+            "81103": -0.012083333333333337,
+            "81107": -0.012083333333333337,
+            "81109": -0.01041666666666667,
+            "81113": 0.001666666666666666
+          }
+        },
+        "ssm": {
+          "D_minus_B_mean": -0.005500000000000002,
+          "by_fit": {
+            "81101": -0.043333333333333335,
+            "81103": -0.003333333333333336,
+            "81107": 0.012083333333333333,
+            "81109": 0.019166666666666665,
+            "81113": -0.012083333333333337
+          }
+        }
+      },
+      "mechanism_effects": {
+        "mean_two_point": {
+          "action_changed_worlds": 8,
+          "fixed_action_distribution_changes": 26,
+          "fixed_action_predicted_class_changes": 1,
+          "fixed_actions_identical": true,
+          "paired_worlds": 24,
+          "fixed_output_denominator": 96,
+          "intervention_minus_original_means": {
+            "closed_net_reward": 0.003333333333333334,
+            "fixed_net_reward": 0.010416666666666666,
+            "fixed_brier": 0.004579835594801716
+          }
+        },
+        "single_transition": {
+          "action_changed_worlds": 13,
+          "fixed_action_distribution_changes": 26,
+          "fixed_action_predicted_class_changes": 1,
+          "fixed_actions_identical": true,
+          "paired_worlds": 24,
+          "fixed_output_denominator": 96,
+          "intervention_minus_original_means": {
+            "closed_net_reward": 0.052083333333333336,
+            "fixed_net_reward": 0.010416666666666666,
+            "fixed_brier": 0.0014886781571719985
+          }
+        }
+      },
+      "reachable_support": {
+        "post_READ_output_states": 92,
+        "multiple_event_probability_mean": 0.0077563616469206184,
+        "multiple_event_probability_max": 0.17881571995635365,
+        "states_with_multi_probability_over_01": 9
+      }
+    },
+    "hidden_refractory_mismatch": {
+      "selected_factorial": {
+        "A": 0.7360833333333334,
+        "B": 0.7491666666666668,
+        "C": 0.7687499999999999,
+        "D": 0.7475,
+        "ordinary_fixed_D": 0.7475,
+        "B-A": 0.013083333333333336,
+        "D-C": -0.02124999999999988,
+        "C-A": 0.0326666666666666,
+        "D-B": -0.0016666666666666162,
+        "interaction": -0.034333333333333216
+      },
+      "all_families": {
+        "gru": {
+          "D_minus_B_mean": -0.001666666666666667,
+          "by_fit": {
+            "81101": -0.001666666666666668,
+            "81103": 0.008749999999999999,
+            "81107": -0.001666666666666668,
+            "81109": -0.003333333333333332,
+            "81113": -0.010416666666666666
+          }
+        },
+        "ssm": {
+          "D_minus_B_mean": 0.011916666666666666,
+          "by_fit": {
+            "81101": 0.00708333333333333,
+            "81103": 0.01916666666666666,
+            "81107": 0.008749999999999999,
+            "81109": 0.00875,
+            "81113": 0.015833333333333335
+          }
+        }
+      },
+      "mechanism_effects": {
+        "mean_two_point": {
+          "action_changed_worlds": 8,
+          "fixed_action_distribution_changes": 29,
+          "fixed_action_predicted_class_changes": 1,
+          "fixed_actions_identical": true,
+          "paired_worlds": 24,
+          "fixed_output_denominator": 96,
+          "intervention_minus_original_means": {
+            "closed_net_reward": 0.008749999999999999,
+            "fixed_net_reward": -0.010416666666666666,
+            "fixed_brier": 0.00999477354901393
+          }
+        },
+        "single_transition": {
+          "action_changed_worlds": 14,
+          "fixed_action_distribution_changes": 29,
+          "fixed_action_predicted_class_changes": 1,
+          "fixed_actions_identical": true,
+          "paired_worlds": 24,
+          "fixed_output_denominator": 96,
+          "intervention_minus_original_means": {
+            "closed_net_reward": 0.029583333333333333,
+            "fixed_net_reward": -0.010416666666666666,
+            "fixed_brier": 0.002235220332409474
+          }
+        }
+      },
+      "reachable_support": {
+        "post_READ_output_states": 89,
+        "multiple_event_probability_mean": 0.00922513486030922,
+        "multiple_event_probability_max": 0.2511243358148769,
+        "states_with_multi_probability_over_01": 7
+      }
+    }
+  },
+  "cost_receipts": {
+    "campaign_envelope": {
+      "cpu_seconds": 447.58238800000004,
+      "wall_seconds": 1023.519430844,
+      "begin_ns": 29023368536153,
+      "end_ns": 30046887966997,
+      "nested_in_campaign": false,
+      "receipt": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/campaign_envelope/RECEIPT.json"
+    },
+    "fit_81101": {
+      "cpu_seconds": 53.716093,
+      "wall_seconds": 199.849369213,
+      "begin_ns": 29023789600336,
+      "end_ns": 29223638969549,
+      "nested_in_campaign": true,
+      "receipt": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81101/RECEIPT.json"
+    },
+    "fit_81103": {
+      "cpu_seconds": 65.781889,
+      "wall_seconds": 205.672045562,
+      "begin_ns": 29223948100307,
+      "end_ns": 29429620145869,
+      "nested_in_campaign": true,
+      "receipt": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81103/RECEIPT.json"
+    },
+    "fit_81107": {
+      "cpu_seconds": 30.100091000000003,
+      "wall_seconds": 83.876349799,
+      "begin_ns": 29429759514803,
+      "end_ns": 29513635864602,
+      "nested_in_campaign": true,
+      "receipt": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81107/RECEIPT.json"
+    },
+    "fit_81109": {
+      "cpu_seconds": 25.754744000000002,
+      "wall_seconds": 45.939341882,
+      "begin_ns": 29513751626023,
+      "end_ns": 29559690967905,
+      "nested_in_campaign": true,
+      "receipt": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81109/RECEIPT.json"
+    },
+    "fit_81113": {
+      "cpu_seconds": 26.369287,
+      "wall_seconds": 61.350590727,
+      "begin_ns": 29559837036307,
+      "end_ns": 29621187627034,
+      "nested_in_campaign": true,
+      "receipt": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81113/RECEIPT.json"
+    },
+    "evaluate": {
+      "cpu_seconds": 221.204375,
+      "wall_seconds": 413.095577053,
+      "begin_ns": 29621305381390,
+      "end_ns": 30034400958443,
+      "nested_in_campaign": true,
+      "receipt": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/evaluate/RECEIPT.json"
+    },
+    "aggregate": {
+      "cpu_seconds": 4.971783,
+      "wall_seconds": 12.256778362,
+      "begin_ns": 30034537730224,
+      "end_ns": 30046794508586,
+      "nested_in_campaign": true,
+      "receipt": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/aggregate/RECEIPT.json"
+    },
+    "prepare001": {
+      "cpu_seconds": 3.930727,
+      "wall_seconds": 12.996964023,
+      "begin_ns": 28933928075752,
+      "end_ns": 28946925039775,
+      "nested_in_campaign": false,
+      "receipt": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/prepare001/RECEIPT.json"
+    },
+    "tests001": {
+      "cpu_seconds": 6.99976,
+      "wall_seconds": 15.451357069,
+      "begin_ns": 28863046150328,
+      "end_ns": 28878497507397,
+      "nested_in_campaign": false,
+      "receipt": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/tests001/RECEIPT.json"
+    }
+  },
+  "cost_accounting": {
+    "primary_campaign_cpu_seconds": 447.58238800000004,
+    "primary_campaign_wall_seconds": 1023.519430844,
+    "nested_stage_cpu_sum_seconds": 427.898262,
+    "outer_minus_stage_cpu_seconds": 19.68412600000005,
+    "five_paired_fit_stage_cpu_seconds": 201.722104,
+    "primary_raw_audit_cpu_seconds": 0.905915,
+    "primary_raw_audit_wall_seconds": 0.910810937,
+    "rule": "Charge the enclosing campaign once. Seven stage receipts are nested diagnostics. Preparation, earlier tests, and later audits are separate. This is not the complete project cost."
+  },
+  "amortization": {
+    "20": {
+      "observed_campaign_allocation_cpu_seconds": 22.3791194,
+      "observed_fit_stage_allocation_cpu_seconds": 10.0861052,
+      "complete_deployment_cpu_seconds_per_episode": null
+    },
+    "10000": {
+      "observed_campaign_allocation_cpu_seconds": 0.0447582388,
+      "observed_fit_stage_allocation_cpu_seconds": 0.0201722104,
+      "complete_deployment_cpu_seconds_per_episode": null
+    }
+  },
+  "amortization_scope": "These are allocations of measured development batches, not deployment estimates. The fit allocation is already inside the campaign allocation; do not add them. Per-candidate execution, deployment preparation/pretraining and acquisition costs are not isolated, so complete deployment amortization stays null.",
+  "complete_family_memory_bytes": null,
+  "device_energy_joules": null,
+  "deployment_episode_source_to_flush_seconds": null,
+  "candidate_economic_advantage": null,
+  "scientific_confirmation": false,
+  "claims": {
+    "positive_selected_D_minus_B_observed": false,
+    "interventions_change_actions_and_content": true,
+    "risk_mechanism_measured": false,
+    "mechanism_necessity_established": false,
+    "new_real_AV_test": false,
+    "v7_identical_fixed_schedule_gate_met": false
+  },
+  "evidence_sha256": {
+    "raw_runs": "7aeba42c7b3493256d3b80f588837afa7bc70325babe1732f8f6fb6710f470b7",
+    "summary": "e6c02c0b9fe0f0a41ecf99538ad7b55826105fa8e27027aa90b9bd732e5a2f85",
+    "primary_audit": "4d0b5a2dc0b3dcb955b862b44d1ce4dea35fae10112065362b2a87b151441194",
+    "primary_auditor_source_at_review": "580e0ae9cdf13657b15614c13c8f192689ff414c9edc1b250260295940041622",
+    "review_builder_source": "47b0d0da3b0105ab49a7e9433d7875cd25fd38e0dd2b8d5309bc4850b1488b45"
+  }
+}

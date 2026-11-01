@@ -1,0 +1,119 @@
+{
+  "schema": "hcsn-v8-economics-evidence-audit.v1",
+  "scientific_confirmation": false,
+  "checks": [
+    {
+      "name": "normal_tree_all_three_cpu_included_once",
+      "passed": true
+    },
+    {
+      "name": "orphan_tree_all_three_cpu_included_once",
+      "passed": true
+    },
+    {
+      "name": "smoke001_available_cost_and_unavailable_sensors_explicit",
+      "passed": true
+    },
+    {
+      "name": "tests001_available_cost_and_unavailable_sensors_explicit",
+      "passed": true
+    },
+    {
+      "name": "tests002_available_cost_and_unavailable_sensors_explicit",
+      "passed": true
+    },
+    {
+      "name": "normal_tree_available_cost_and_unavailable_sensors_explicit",
+      "passed": true
+    },
+    {
+      "name": "orphan_tree_available_cost_and_unavailable_sensors_explicit",
+      "passed": true
+    },
+    {
+      "name": "scheduler_live_available_cost_and_unavailable_sensors_explicit",
+      "passed": true
+    },
+    {
+      "name": "reserved_execution_key_cannot_hide_unknown_cost",
+      "passed": true
+    }
+  ],
+  "trees": {
+    "normal_tree": {
+      "process_self_cpu_sum": 0.38218299999999994,
+      "disjoint_task_wait_cpu_sum": 0.407436,
+      "enclosing_supervisor_cpu": 0.511664,
+      "waited_subtrees": 1,
+      "all_waitable_collected": true
+    },
+    "orphan_tree": {
+      "process_self_cpu_sum": 0.40253300000000003,
+      "disjoint_task_wait_cpu_sum": 0.43722799999999995,
+      "enclosing_supervisor_cpu": 0.535916,
+      "waited_subtrees": 2,
+      "all_waitable_collected": true
+    }
+  },
+  "measured_runs": {
+    "smoke001": {
+      "cpu_seconds": 0.099261,
+      "wall_seconds": 0.24938053,
+      "task_success": true,
+      "family_peak_rss_bytes": null,
+      "energy_joules": null,
+      "receipt_sha256": "faa0cd1532dadafc8ad8e968249366eb3db369720a0d9d4ab7390cfa0fcb1f24"
+    },
+    "tests001": {
+      "cpu_seconds": 1.3824729999999998,
+      "wall_seconds": 2.721656357,
+      "task_success": true,
+      "family_peak_rss_bytes": null,
+      "energy_joules": null,
+      "receipt_sha256": "09523665d6c94702980198474fdaf233dae668ddd03af69ef1651c0b48e9f074"
+    },
+    "tests002": {
+      "cpu_seconds": 1.3130899999999999,
+      "wall_seconds": 2.434923652,
+      "task_success": true,
+      "family_peak_rss_bytes": null,
+      "energy_joules": null,
+      "receipt_sha256": "74aff8044a12a85edc6f4ecb818babcb02cbadccdb703af157a566f42c2fa62d"
+    },
+    "normal_tree": {
+      "cpu_seconds": 0.511664,
+      "wall_seconds": 1.268679265,
+      "task_success": true,
+      "family_peak_rss_bytes": null,
+      "energy_joules": null,
+      "receipt_sha256": "28324774466d8eb1978f1f6307a19ccc0ddb487aafb10677bb7a15150a2f412e"
+    },
+    "orphan_tree": {
+      "cpu_seconds": 0.535916,
+      "wall_seconds": 1.242044419,
+      "task_success": true,
+      "family_peak_rss_bytes": null,
+      "energy_joules": null,
+      "receipt_sha256": "2dc1ab65546188d15d7415df0905a2dd68fd7e6e46166cdab10dd85f79ea2b23"
+    },
+    "scheduler_live": {
+      "cpu_seconds": 0.5850289999999999,
+      "wall_seconds": 4.027415702,
+      "task_success": true,
+      "family_peak_rss_bytes": null,
+      "energy_joules": null,
+      "receipt_sha256": "948f6af65f2b544553044f55a31afdd377a2d3760c8dcd24a1c326c74960f367"
+    },
+    "reserved_key_fix": {
+      "cpu_seconds": 0.150116,
+      "wall_seconds": 0.331367137,
+      "task_success": true,
+      "family_peak_rss_bytes": null,
+      "energy_joules": null,
+      "receipt_sha256": "61ede4dc3ead547899a724039b0e7cf033fb65eaa05af3f8321e5f27afeff965"
+    }
+  },
+  "all_checks_passed": true,
+  "nonoverlapping_observed_enclosing_cpu_seconds": 4.577548999999999,
+  "accounting": "Independent launched test/probe/scheduler envelopes are summed for development evidence only; nested child figures excluded. File inspection/audit work and external shell launch bootstrap are outside these receipts. No project-total or actual-model cost claimed."
+}
