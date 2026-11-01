@@ -1,0 +1,10 @@
+{
+  "role": "preliminary_environment_probe",
+  "command": "torch-only existing virtualenv -m unittest -v experiments.hcsn_v8_execution_20261101.mechanisms.test_mechanisms",
+  "outcome": "ImportError: scipy unavailable in reused virtualenv",
+  "tests_executed": 0,
+  "failure_retained": true,
+  "complete_process_cpu_seconds": null,
+  "cost_limitation": "Initial exploratory process was not enclosed by the new meter; it cannot be retrospectively assigned zero cost.",
+  "resolution": "Use primary runtime numpy/scipy and append the observed existing torch installation without modifying either installation."
+}
