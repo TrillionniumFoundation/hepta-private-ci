@@ -38,6 +38,9 @@ mod lease_delay;
 #[path = "authbus_policy_rollback_tests.rs"]
 mod policy_rollback;
 
+#[path = "authbus_checkpoint_sync_tests.rs"]
+mod checkpoint_sync;
+
 struct Fixture {
     _temp: tempfile::TempDir,
     state: Arc<AgentdState>,

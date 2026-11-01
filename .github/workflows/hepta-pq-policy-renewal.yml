@@ -105,14 +105,14 @@ jobs:
           --timeout-seconds 600 --
           cargo fetch --locked --manifest-path codex-rs/Cargo.toml
 
-      - name: Run all twelve original and added dispatcher controls
+      - name: Run all thirteen original and added dispatcher controls
         if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         env:
           CARGO_NET_OFFLINE: "true"
         run: >-
           python3 scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/pq-policy-renewal/dispatcher.json"
-          --minimum-tests 12 --timeout-seconds 3600 --
+          --minimum-tests 13 --timeout-seconds 3600 --
           just test --locked -p codex-hepta-agentd --lib
           -E 'test(authbus_dispatch::tests::)' --no-capture --retries 0 --test-threads=1
 
@@ -153,6 +153,7 @@ jobs:
                   "policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
                   "policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
                   "policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+                  "checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
               )},
               "product": {
                   "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",

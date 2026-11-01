@@ -38,6 +38,14 @@ pub(crate) struct TextIngress {
     pub scope: Digest32,
     algorithm: AuthBusAlgorithm,
     trust_update: tokio::sync::Mutex<()>,
+    #[cfg(test)]
+    checkpoint_read_pause: std::sync::Mutex<Option<CheckpointReadPause>>,
+}
+
+#[cfg(test)]
+struct CheckpointReadPause {
+    reached: tokio::sync::oneshot::Sender<()>,
+    resume: tokio::sync::oneshot::Receiver<()>,
 }
 
 impl TextIngress {
@@ -87,6 +95,8 @@ impl TextIngress {
             scope: scope(&identity.agent_id, algorithm),
             algorithm,
             trust_update: tokio::sync::Mutex::new(()),
+            #[cfg(test)]
+            checkpoint_read_pause: std::sync::Mutex::new(/*t*/ None),
         };
         host.refresh_trust(identity).await?;
         Ok(host)
@@ -104,7 +114,7 @@ impl TextIngress {
                 "owner cryptographic profile changed after activation",
             ));
         }
-        self.sync_replay_checkpoint().await?;
+        self.sync_replay_checkpoint_locked().await?;
         let issuer = trust.issuer()?;
         match self.algorithm {
             AuthBusAlgorithm::MlDsa65V2 => {
@@ -116,12 +126,39 @@ impl TextIngress {
             AuthBusAlgorithm::Ed25519V1 => self.evidence.pin_authbus_issuer(&issuer).await,
         }
         .map_err(|error| invalid(&error.to_string()))?;
-        self.sync_replay_checkpoint().await?;
+        self.sync_replay_checkpoint_locked().await?;
         Ok(trust)
     }
 
     pub async fn sync_replay_checkpoint(&self) -> Result<(), AgentdError> {
+        // Admission and the relay share this owner. The witness snapshot must
+        // be read after acquiring the same guard used by policy refresh, and
+        // retained through reconciliation, publication, and local promotion.
+        let _guard = self.trust_update.lock().await;
+        self.sync_replay_checkpoint_locked().await
+    }
+
+    // Called only while trust_update is held; refresh_trust already owns it.
+    async fn sync_replay_checkpoint_locked(&self) -> Result<(), AgentdError> {
         let external = self.checkpoint.read()?;
+        #[cfg(test)]
+        {
+            let pause = self
+                .checkpoint_read_pause
+                .lock()
+                .map_err(|_| invalid("checkpoint test pause poisoned"))?
+                .take();
+            if let Some(pause) = pause {
+                pause
+                    .reached
+                    .send(())
+                    .map_err(|_| invalid("checkpoint test observer dropped"))?;
+                pause
+                    .resume
+                    .await
+                    .map_err(|_| invalid("checkpoint test resume dropped"))?;
+            }
+        }
         if let Some(pending) = self
             .evidence
             .reconcile_authbus_restore_checkpoint(external)
@@ -135,6 +172,30 @@ impl TextIngress {
                 .map_err(|error| invalid(&error.to_string()))?;
         }
         Ok(())
+    }
+
+    #[cfg(test)]
+    pub(crate) fn pause_next_checkpoint_read(
+        &self,
+    ) -> (
+        tokio::sync::oneshot::Receiver<()>,
+        tokio::sync::oneshot::Sender<()>,
+    ) {
+        let (reached, observed) = tokio::sync::oneshot::channel();
+        let (resume, resumed) = tokio::sync::oneshot::channel();
+        let mut selected = self
+            .checkpoint_read_pause
+            .lock()
+            .expect("checkpoint test pause");
+        assert!(
+            selected.is_none(),
+            "checkpoint test pause is already installed"
+        );
+        *selected = Some(CheckpointReadPause {
+            reached,
+            resume: resumed,
+        });
+        (observed, resume)
     }
 }
 

@@ -53,17 +53,27 @@ check the actual operation permission before presenting its snapshot.
 
 ## Added native controls and required execution
 
-Two tests extend the existing signed SQLite lifecycle fixtures:
+Three tests extend the existing signed SQLite lifecycle fixtures:
 
 - A bound PQ domain rejects renewal through the legacy API without changing its
   lease; the real dispatcher subsequently completes the legitimate request.
 - A same-key policy update fences an older revision, a wrong commitment and an
   uninstalled future revision. Removed permission prevents transport. An
   explicitly newer policy restores the normal signed request and durable Ack.
+- Two concurrent checkpoint sync calls share the existing owner lock. One-shot
+  barriers stop the first actual witness read before SQLite reconciliation;
+  polling the second future proves it has not read an obsolete predecessor.
+  Both handshakes then succeed. A genuinely old witness still fails, and restoring
+  the exact newer witness permits another signed admission. This runs under
+  both explicit algorithms without sleeps or retry loops.
 
-The independent `Hepta PQ policy renewal` workflow runs all **12** original and
+The independent `Hepta PQ policy renewal` workflow runs all **13** original and
 new dispatcher controls plus all **3** existing real Agentd/App Server product
-controls, on x64 and ARM, for source-head and the exact prospective merge. Every
+controls, on x64 and ARM, for source-head and the exact prospective merge. The
+product controls are one ML-DSA-65 V2 text path, one Ed25519 V1 regression, and
+one Ed25519 request rejected without explicit trust. Their real Agentd/App Server
+processes use a test response service; they do not qualify Cell, FinalUse,
+RunStart, or an independently deployed model. Every
 lane executes even if two trees are identical. It retains the existing toolchain
 1.96.0, lockfile, just/nextest entry points, process prerequisites, test-profile
 settings and source-identity wrappers. Every selected test must be observed by
@@ -75,17 +85,47 @@ The original command wrapper treats any change to the tested source as failure.
 The new workflow has no dependency on a separate Chain pressure job, so a retained
 failure there cannot prevent collection of these authorization observations.
 
-## Initial validation status
+## Retained native failure and checkpoint synchronization follow-up
 
-The four changed Rust files have been parsed and formatted with the available
-Rust 1.95 rustfmt. This is **not** the required repository 1.96 build, native test,
+The initial policy-renewal candidate
+`17dc064f9af8b7c28f5cb41ca35cab8484bd3922` executed in
+[run 41328688564](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41328688564).
+The x64 source/merge and ARM merge jobs completed successfully. ARM source job
+`124913972865` passed its dispatcher controls but the PQ product case failed with
+`AuthBus external replay checkpoint indicates rollback or drift` in 0.96 seconds.
+The product result was 2 passed, 1 failed, 0 skipped; it was not a timeout.
+The failed command's exact bytes and SHA-256 are retained in
+`checkpoint-sync-predecessor-product.log` and
+`checkpoint-sync-predecessor-execution.json`. The failure remains evidence even
+if another execution succeeds.
+
+The follow-up is based on
+`69797ad95bd019f422df73281da1827e2e289d6d`. Source review identified a concrete
+same-owner interleaving: trust refresh holds `trust_update`, but admission
+previously called `sync_replay_checkpoint` without that lock. Two calls could
+read the same external predecessor. After one published and promoted the next
+checkpoint, the other's stale snapshot no longer matched the committed state.
+
+The public sync now takes the existing owner lock before reading the witness.
+Trust refresh calls the private already-locked helper. The lock covers the
+complete read/reconcile/publish/promote handshake. No recovery comparison,
+external checkpoint contents, timeout, retry policy, or authority source is
+relaxed. Test-only one-shot scheduling pauses have no production representation.
+This is coordination within one `TextIngress`; it does not provide cross-process
+CAS or independent external-witness operation.
+
+## Validation status
+
+The initial four changed Rust files and the three follow-up Rust files have been
+parsed and formatted with the available Rust 1.95 rustfmt. This is **not** the required repository 1.96 build, native test,
 scoped lint or `just fmt` result. The workflow YAML and embedded Python parse.
 Seven synthetic reader controls pass: one complete record is accepted; omission,
 duplication, an ignored selected case, wrong log hash, wrong count and a failed
 command record are refused. Those reader controls execute no application code.
 
-Native locked compilation and the new native controls are **pending** until
-their actual CI records are retained. The current local checkout is a selected
+Native locked compilation and the **13 + 3 follow-up controls are pending** until
+their actual CI records are retained. The predecessor's 12-case dispatcher
+observations do not execute the new concurrency control. The current local checkout is a selected
 source recovery, and direct Git transport could not reach its configured proxy;
 no alternate dependency graph or successful native result is inferred from that
 environment. `source-manifest.json` binds the exact original and candidate blobs.

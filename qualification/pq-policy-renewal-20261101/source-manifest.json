@@ -32,14 +32,41 @@
     {
       "path": ".github/workflows/hepta-pq-policy-renewal.yml",
       "baseline_blob": null,
-      "candidate_blob": "53484d9af2e544dc2a45ac13eb89039e01ec3242",
-      "sha256": "963033a35538c2d0c3388fe8fad91a569f8c243f6aad2205c2fe9bc8be573ae0",
-      "bytes": 10356
+      "candidate_blob": "f7eb7a6db25560c4691686bdb7aba2575597da87",
+      "sha256": "e8e9007adec3d0a88861b28f3ce176013687f400e59a080f33877ae1a0b6fe71",
+      "bytes": 10473,
+      "followup_baseline_blob": "53484d9af2e544dc2a45ac13eb89039e01ec3242"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "baseline_blob": "3d041a2bd4e258979d3c2be0a000bdd59af7b969",
+      "candidate_blob": "c02537df4c934fc20f36419d06812d575cd8b3a4",
+      "sha256": "0ad58796f5c9432b1e8777e605456c00ac4e67241c90fb752d83062e6941b3d2",
+      "bytes": 14681,
+      "change_base_commit": "69797ad95bd019f422df73281da1827e2e289d6d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "baseline_blob": "670bca1f31940892761443dd91d0ea0cbb6f6fe4",
+      "candidate_blob": "f880c98b1261d8d5d8c9a1d94602fbc4cb0e982e",
+      "sha256": "1a72763311cfa8e03e6c2992c75c413cab4c3ed0519376d856010cc4b6f18eed",
+      "bytes": 17730,
+      "change_base_commit": "69797ad95bd019f422df73281da1827e2e289d6d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs",
+      "baseline_blob": null,
+      "candidate_blob": "2c3512582d4284ac7229e5ef7fcfc31c313ec8aa",
+      "sha256": "267e561d0fcace25f3711992b449140f60fcaec8bde8e6bf7e610c08b26a254f",
+      "bytes": 4256,
+      "change_base_commit": "69797ad95bd019f422df73281da1827e2e289d6d"
     }
   ],
   "validation": {
-    "scoped_rustfmt": "passed Rust 1.95 parser and format; not full repository just fmt",
-    "native_tests": "not executed",
-    "locked_build": "not executed"
-  }
+    "scoped_rustfmt": "initial four and follow-up three Rust files passed Rust 1.95 parse/format; not follow-up repository 1.96 just fmt",
+    "native_tests": "follow-up 13 dispatcher + 3 product cases not executed; the superseded 17dc064f native failure is retained separately",
+    "locked_build": "follow-up not executed",
+    "workflow_reader_controls": "seven current 13+3 synthetic reader controls executed; not native application execution"
+  },
+  "followup_base_commit": "69797ad95bd019f422df73281da1827e2e289d6d"
 }
