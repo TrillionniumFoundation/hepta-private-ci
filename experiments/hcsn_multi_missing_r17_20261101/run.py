@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -114,14 +115,14 @@ def one_policy(name, models, rejected, world, price):
         models = acquired
         if not models:
             return dict(policy=name, invalid=True, rejections=rejected, read_index=index)
-    predictions = np.stack([model.marginals() for model in models.values()])
+    predictions = np.stack([model.marginals()[world["aliases"]] for model in models.values()])
     p = predictions.mean(0)
     accepted = np.ones(4, dtype=bool)
     if name == "unknown_finite_set":
         winner = p.argmax(1)
         accepted = np.all(predictions.argmax(2) == winner[None, :], axis=0)
         accepted &= np.min(predictions[:, np.arange(4), winner], axis=0) >= .8
-    stats = metrics(p, world["target"], accepted)
+    stats = metrics(p, world["target"][world["aliases"]], accepted)
     correct = np.asarray(stats["correct"])
     fee = price if index is not None else 0.
     return dict(policy=name, invalid=False, rejections=rejected, read_index=index,
@@ -139,6 +140,11 @@ def worker(output):
             raise ValueError(f"Frozen source mismatch: {name}")
     publication_path = ROOT / "SOURCE_PUBLICATION.json"
     publication = json.loads(publication_path.read_text()) if publication_path.exists() else None
+    if publication is not None:
+        if (publication.get("source_freeze_sha256") != hashlib.sha256((ROOT / "SOURCE_FREEZE.json").read_bytes()).hexdigest()
+                or publication.get("readback_verified") is not True
+                or not re.fullmatch("[0-9a-f]{40}", publication.get("commit_sha", ""))):
+            raise ValueError("Publication receipt does not bind this frozen source with verified readback")
     output.mkdir(exist_ok=False)
     cpu, wall, rows, failures = time.process_time(), time.perf_counter(), [], []
     for generator_index, generator in enumerate(protocol["profiles"]):
@@ -163,7 +169,8 @@ def worker(output):
                         failures.append(dict(generator=generator, task=task, missing=missing, episode=episode, policies=policies))
                     rows.append(dict(generator=generator, task=task, missing_count=missing, episode=episode,
                                      raw_prefix=world["prefix"].tolist(), observed=world["observed"].tolist(),
-                                     target=world["target"].tolist(), public_aliases=world["aliases"].tolist(),
+                                     target=world["target"].tolist(), query_targets=world["target"][world["aliases"]].tolist(),
+                                     public_aliases=world["aliases"].tolist(),
                                      price=price, policies=policies, cpu_seconds=time.process_time() - start))
     write_new(output / "RAW.json", rows)
     summaries = []

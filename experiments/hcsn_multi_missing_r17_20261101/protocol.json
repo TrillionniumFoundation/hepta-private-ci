@@ -1,23 +1,43 @@
 {
-  "schema": "hcsn.multi-missing.r17.v1",
-  "purpose": "Exact ordinary causal reference with multiple missing events and explicit finite generator uncertainty; no analytic core advantage claim",
-  "profiles": ["without_replacement", "with_replacement"],
-  "tasks": ["mqar", "selective", "binding"],
-  "missing_counts": [2, 3],
-  "episodes_per_cell": 24,
-  "seed": 17017331,
-  "holdout_role": "Development until source is published before first materialization; immutable publication may qualify fixed bounded new-world verification, not general architecture confirmation",
-  "missing_mechanism": "Choose exactly m prelude positions uniformly independently of event contents; complete binding bridges remain supplied",
-  "read": "Choose one missing causal index, retrieve its actual typed owner token, condition at original position; charge mean-four-key utility fee; hidden true labels never enter control",
-  "prices": [0.02, 0.08, 0.16, 0.24],
-  "known_policy": "READ iff maximum exact expected mean-key accuracy gain exceeds fee, then argmax posterior per key",
-  "unknown_policy": "Within explicit two-generator set, select READ iff minimum model gain exceeds fee; answer only when model argmax agree and minimum model probability >= 0.8; otherwise abstain",
-  "comparators": ["known true generator exact ordinary", "incorrect fixed without-replacement prior", "unknown finite generator set conservative"],
+  "binding": "Complete public alias-to-address permutation maps each of four alias queries to its address posterior; no learned or missing relation inference",
+  "comparators": [
+    "known true generator exact ordinary",
+    "incorrect fixed without-replacement prior",
+    "unknown finite generator set conservative"
+  ],
   "criteria": {
     "exact_reference": "Full independent tiny-world enumeration marginals and evidence max abs error <= 2e-12; READ conditionals <= 2e-12",
-    "support": "Known-law true target posterior positive on every key before and after actual READ; missing positions preserve marginalized distractor hypotheses",
     "read": "No known-law actual READ zero likelihood; all costs and mismatched-model failures counted",
-    "scope": "Four symbolic addresses/eight labels, 2 or 3 missing tokens, known finite support and complete symbolic alias map; no real AV or semantic learning"
+    "scope": "Four symbolic addresses/eight labels, 2 or 3 missing tokens, known finite support and complete symbolic alias map; no real AV or semantic learning",
+    "support": "Known-law true target posterior positive on every key before and after actual READ; missing positions preserve marginalized distractor hypotheses"
   },
-  "frozen_before_outcomes": true
+  "episodes_per_cell": 24,
+  "frozen_before_outcomes": true,
+  "holdout_role": "Development until source is published before first materialization; immutable publication may qualify fixed bounded new-world verification, not general architecture confirmation",
+  "known_policy": "READ iff maximum exact expected mean-key accuracy gain exceeds fee, then argmax posterior per key",
+  "missing_counts": [
+    2,
+    3
+  ],
+  "missing_mechanism": "Choose exactly m prelude positions uniformly independently of event contents; complete binding bridges remain supplied",
+  "prices": [
+    0.02,
+    0.08,
+    0.16,
+    0.24
+  ],
+  "profiles": [
+    "without_replacement",
+    "with_replacement"
+  ],
+  "purpose": "Exact ordinary causal reference with multiple missing events and explicit finite generator uncertainty; no analytic core advantage claim",
+  "read": "Choose one missing causal index, retrieve its actual typed owner token, condition at original position; charge mean-four-key utility fee; hidden true labels never enter control",
+  "schema": "hcsn.multi-missing.r17.v1",
+  "seed": 17017331,
+  "tasks": [
+    "mqar",
+    "selective",
+    "binding"
+  ],
+  "unknown_policy": "Within explicit two-generator set, select READ iff minimum model gain exceeds fee; answer only when model argmax agree and minimum model probability >= 0.8; otherwise abstain"
 }
