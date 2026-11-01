@@ -1,0 +1,20 @@
+{
+  "scope": "Additive review correction discovered during exact-byte recovery; original reviewed patch and receipt retained unchanged.",
+  "source_path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+  "source_sha256": "7e612cdedd779d61d2f792b012ec4b7aeab34cc0ed7ec3af6e64a19aaad2b408",
+  "candidate_sha256": "16abc27a86e96ff7609551143d0abd60b5addd5ff99dbcefeab82ed9ddcf4708",
+  "patch_sha256": "0037c4e14a2d0e184fdeb65a5b597d6eea3251b8b49b920bac3b067e5a6febea",
+  "finding": "The first reviewed patch updated ledger_at construction but left both reopened-ledger directory handles in the durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes test as std::fs::File::open. After construction succeeds on Windows, the same OS5 directory-open failure can occur during recovery.",
+  "change": "Use the already reviewed cfg(test) directory_test_support::open_directory helper for both recovery handles. All recover/from_durable calls, acknowledgement anchor, idempotent replay assertions and original byte equality checks remain.",
+  "evidence_scope": "Source-level followup; observed remote first-construction failure masks this subsequent fixture branch. This is not a claim that remote CI observed the later failure.",
+  "verification": {
+    "remaining_std_fs_File_open_directory_calls_in_file": 0,
+    "all_string_literals_identical": true,
+    "all_assert_invocation_lines_identical": true,
+    "assert_invocation_count": 43,
+    "candidate_hash_matches_initial_complete_reconstruction": true,
+    "native_windows": "Pending next-head Windows execution",
+    "formatter": "New executor has no restored Rust toolchain; parent final actual just fmt remains necessary. Identical continuation layout as previous formatter-checked fixture callsites."
+  },
+  "review_correction": "The earlier scope review missed the second directory handle pair during ledger recovery. Exact-byte reconstruction exposed this omission; it is disclosed rather than relabeling the original patch as complete."
+}
