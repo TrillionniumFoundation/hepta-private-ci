@@ -1,0 +1,98 @@
+{
+  "source_sha256": "59e21b69b977aee186f7e35d38fb3ff07dfce89274c22b2dcec103534ed6061a",
+  "fixture_root": "/tmp/hcsn-cross-statistics-_e3z_9_r",
+  "checks": [
+    {
+      "name": "ordinary_distribution/training_given_light",
+      "passed": true
+    },
+    {
+      "name": "ordinary_distribution/training_given_value",
+      "passed": true
+    },
+    {
+      "name": "ordinary_distribution/execution_given_light",
+      "passed": true
+    },
+    {
+      "name": "ordinary_distribution/execution_given_value",
+      "passed": true
+    },
+    {
+      "name": "ordinary_distribution/interaction",
+      "passed": true
+    },
+    {
+      "name": "analytic_distribution/training_given_light",
+      "passed": true
+    },
+    {
+      "name": "analytic_distribution/training_given_value",
+      "passed": true
+    },
+    {
+      "name": "analytic_distribution/execution_given_light",
+      "passed": true
+    },
+    {
+      "name": "analytic_distribution/execution_given_value",
+      "passed": true
+    },
+    {
+      "name": "analytic_distribution/interaction",
+      "passed": true
+    },
+    {
+      "name": "core_difference/LL",
+      "passed": true
+    },
+    {
+      "name": "core_difference/LV",
+      "passed": true
+    },
+    {
+      "name": "core_difference/VL",
+      "passed": true
+    },
+    {
+      "name": "core_difference/VV",
+      "passed": true
+    },
+    {
+      "name": "nonfinite_dt",
+      "passed": true
+    },
+    {
+      "name": "overread",
+      "passed": true
+    },
+    {
+      "name": "bad_fee",
+      "passed": true
+    },
+    {
+      "name": "invalid_prediction",
+      "passed": true
+    },
+    {
+      "name": "invalid_label",
+      "passed": true
+    },
+    {
+      "name": "model_role_is_light",
+      "passed": true
+    },
+    {
+      "name": "controller_role_is_value",
+      "passed": true
+    },
+    {
+      "name": "wrong_controller_identity_rejected",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "confirmation_data_accessed": false,
+  "real_checkpoint_loaded": false,
+  "scope": "Artificial raw outcomes and synthetic checkpoint role verification only; no real fit or test inputs"
+}

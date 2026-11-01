@@ -1,0 +1,94 @@
+{
+  "checks": [
+    {
+      "actual_reads": 0,
+      "family": "ordinary_distribution",
+      "passed": true,
+      "policy": "stop",
+      "task": "recall"
+    },
+    {
+      "actual_reads": 24,
+      "family": "ordinary_distribution",
+      "passed": true,
+      "policy": "prefix3",
+      "task": "recall"
+    },
+    {
+      "actual_reads": 96,
+      "family": "ordinary_distribution",
+      "passed": true,
+      "policy": "read",
+      "task": "recall"
+    },
+    {
+      "actual_reads": 0,
+      "family": "analytic_distribution",
+      "passed": true,
+      "policy": "stop",
+      "task": "recall"
+    },
+    {
+      "actual_reads": 24,
+      "family": "analytic_distribution",
+      "passed": true,
+      "policy": "prefix3",
+      "task": "recall"
+    },
+    {
+      "actual_reads": 96,
+      "family": "analytic_distribution",
+      "passed": true,
+      "policy": "read",
+      "task": "recall"
+    },
+    {
+      "actual_reads": 0,
+      "family": "ordinary_distribution",
+      "passed": true,
+      "policy": "stop",
+      "task": "binding"
+    },
+    {
+      "actual_reads": 24,
+      "family": "ordinary_distribution",
+      "passed": true,
+      "policy": "prefix3",
+      "task": "binding"
+    },
+    {
+      "actual_reads": 72,
+      "family": "ordinary_distribution",
+      "passed": true,
+      "policy": "read",
+      "task": "binding"
+    },
+    {
+      "actual_reads": 0,
+      "family": "analytic_distribution",
+      "passed": true,
+      "policy": "stop",
+      "task": "binding"
+    },
+    {
+      "actual_reads": 24,
+      "family": "analytic_distribution",
+      "passed": true,
+      "policy": "prefix3",
+      "task": "binding"
+    },
+    {
+      "actual_reads": 72,
+      "family": "analytic_distribution",
+      "passed": true,
+      "policy": "read",
+      "task": "binding"
+    }
+  ],
+  "confirmation_data_accessed": false,
+  "passed": true,
+  "real_checkpoint_loaded": false,
+  "schema": "hcsn.r15.train-execution-cross.development.v1",
+  "scope": "Distinct random light/value models, fixed controller, development objects. STOP/prefix3/READ, labels and unread future poisoning, identity and actual tariff checks.",
+  "source_sha256": "59e21b69b977aee186f7e35d38fb3ff07dfce89274c22b2dcec103534ed6061a"
+}

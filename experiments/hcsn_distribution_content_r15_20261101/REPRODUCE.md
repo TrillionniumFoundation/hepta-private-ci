@@ -19,6 +19,7 @@ previously registered runs or fit outputs.
 ```bash
 python -m experiments.hcsn_distribution_content_r15_20261101.campaign freeze --output /tmp/hcsn-new-run --updates 768
 python -m experiments.hcsn_distribution_content_r15_20261101.online_confirm register --output /tmp/hcsn-new-run
+python -m experiments.hcsn_distribution_content_r15_20261101.train_execution_cross register --output /tmp/hcsn-new-run
 python -m experiments.hcsn_distribution_content_r15_20261101.launch train --output /tmp/hcsn-new-run --workers 2
 python -m experiments.hcsn_distribution_content_r15_20261101.campaign index --output /tmp/hcsn-new-run
 ```
@@ -42,12 +43,32 @@ python -m experiments.hcsn_distribution_content_r15_20261101.launch recovery_con
 python -m experiments.hcsn_distribution_content_r15_20261101.recovery_run aggregate --output /tmp/hcsn-new-run
 python -m experiments.hcsn_distribution_content_r15_20261101.audit --run /tmp/hcsn-new-run --output /tmp/hcsn-new-run/INDEPENDENT_AUDIT.json
 python -m experiments.hcsn_distribution_content_r15_20261101.summarize --output /tmp/hcsn-new-run
+python -m experiments.hcsn_distribution_content_r15_20261101.train_execution_cross launch --output /tmp/hcsn-new-run --workers 2
+python -m experiments.hcsn_distribution_content_r15_20261101.train_execution_cross index --output /tmp/hcsn-new-run
 ```
 
 The complete-cohort online execution addendum is registered separately before
 confirmation by `online_confirm.py`. It retains the original recorded outcomes
 and reports every discrepancy without rewriting them. Its CLI and registration
 are preserved beside the run.
+
+The separate training/execution addendum completes LL/LV/VL/VV for each
+primary core. LL, VL and VV reuse the full-cohort actual records; LV executes
+the selected light-trained model with the same task/seed's selected value
+controller, without recalibration. Its 240 additional conditions are registered
+before confirmation but run only after the original five stages and summaries.
+This is distinct from the original core-by-value-program A/B/C/D estimand.
+The current six-model joint optimization, shared clipping and group checkpoint
+selection are described in `publication/ESTIMAND_REVIEW_ZH.md`.
+
+After all six stages, create the complete process-cost ledger with
+`publication/runtime_ledger_v2.py build --results PARENT_OF_RUNS --output NEW_LEDGER`.
+The recorded run names `formal_01`, `formal_02` and `formal_03` identify this
+campaign's retained failed and successful attempts; for this delivered campaign,
+use `experiments/hcsn_distribution_content_r15_20261101/results` as that parent.
+The ledger intentionally includes discarded training CPU and distinguishes
+complete receipts from interrupted-process lower bounds. A fresh independent
+reproduction has its own attempt history and must not fabricate these receipts.
 
 For kernel checks, use `law_checks --mode checks`, `--mode complete-successor`
 or `--mode benchmark`, each with a new `--output` path. The frozen
