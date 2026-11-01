@@ -1,0 +1,161 @@
+name: Memory cell V14 frozen routing and language experiments
+
+on:
+  push:
+    branches: [research/memory-cell-v14-20261031]
+    paths:
+      - 'qualification/memory-cell-v14/*.py'
+      - 'qualification/memory-cell-v14/*.json'
+      - 'qualification/memory-cell-v14/requirements-language.txt'
+      - '.github/workflows/memory-cell-v14-research.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-v14-research-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+  PYTHONUNBUFFERED: '1'
+  TOKENIZERS_PARALLELISM: 'false'
+
+jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      routing: ${{ steps.paths.outputs.routing }}
+      language: ${{ steps.paths.outputs.language }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+          sparse-checkout: qualification/memory-cell-v14
+      - id: paths
+        env:
+          PREVIOUS_SHA: ${{ github.event.before }}
+        run: |
+          python3 - <<'PY'
+          import os, subprocess
+          previous = os.environ.get('PREVIOUS_SHA', '')
+          both = os.environ['GITHUB_EVENT_NAME'] == 'workflow_dispatch' or not previous or set(previous) == {'0'}
+          if both:
+              routing = language = True
+          else:
+              if subprocess.run(['git', 'cat-file', '-e', previous + '^{commit}'], capture_output=True).returncode:
+                  subprocess.run(['git', 'fetch', '--depth=1', 'origin', previous], check=True)
+              changed = subprocess.check_output(['git', 'diff', '--name-only', previous, 'HEAD'], text=True).splitlines()
+              names = [path.rsplit('/', 1)[-1] for path in changed if path.startswith('qualification/memory-cell-v14/') and '/evidence/' not in path]
+              common = any(name in ('run_receipt.py', 'preserve_evidence.py') for name in names)
+              routing = common or any(name.startswith(('routing', 'isolation', 'ROUTING_PROTOCOL')) for name in names)
+              language = common or any(name.startswith(('language', 'LANGUAGE_PROTOCOL', 'requirements-language')) for name in names)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('routing=' + str(routing).lower() + '\nlanguage=' + str(language).lower() + '\n')
+          PY
+
+  routing:
+    needs: changes
+    if: needs.changes.outputs.routing == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/memory-cell-v13
+            qualification/memory-cell-v14
+      - name: Install pinned CPU encoder runtime
+        run: |
+          python3 -m venv /tmp/v14-routing-venv
+          /tmp/v14-routing-venv/bin/pip install -r qualification/memory-cell-v13/requirements-runtime.txt scipy==1.17.0
+      - name: Record contract tests, actual encoder, selection and untouched holdout
+        run: |
+          mkdir -p /tmp/v14-results
+          /tmp/v14-routing-venv/bin/python qualification/memory-cell-v14/run_receipt.py --receipt /tmp/v14-results/tests-process.json -- /tmp/v14-routing-venv/bin/python qualification/memory-cell-v14/routing_tests.py
+          /tmp/v14-routing-venv/bin/python qualification/memory-cell-v14/run_receipt.py --receipt /tmp/v14-results/encoder-download-process.json -- /tmp/v14-routing-venv/bin/python qualification/memory-cell-v13/download_model.py /tmp/v14-encoder
+          /tmp/v14-routing-venv/bin/python qualification/memory-cell-v14/run_receipt.py --receipt /tmp/v14-results/process.json -- /tmp/v14-routing-venv/bin/python qualification/memory-cell-v14/routing_experiment.py --model-dir /tmp/v14-encoder --output /tmp/v14-results/routing
+          /tmp/v14-routing-venv/bin/python qualification/memory-cell-v14/run_receipt.py --receipt /tmp/v14-results/isolation-tests-process.json -- /tmp/v14-routing-venv/bin/python qualification/memory-cell-v14/isolation_tests.py
+          /tmp/v14-routing-venv/bin/python qualification/memory-cell-v14/run_receipt.py --receipt /tmp/v14-results/isolation-process.json -- /tmp/v14-routing-venv/bin/python qualification/memory-cell-v14/isolation_experiment.py --inputs qualification/memory-cell-v13/evidence/inputs --output /tmp/v14-results/isolation
+      - name: Retain all candidates and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v14-routing-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/v14-results/
+          if-no-files-found: error
+          retention-days: 30
+
+  language:
+    needs: changes
+    if: needs.changes.outputs.language == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: [17, 29, 43]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: qualification/memory-cell-v14
+      - name: Install pinned actual Transformer runtime
+        run: |
+          python3 -m venv /tmp/v14-language-venv
+          /tmp/v14-language-venv/bin/pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/v14-language-venv/bin/pip install -r qualification/memory-cell-v14/requirements-language.txt
+      - name: Contract checks and two actual pretrained language memory tasks
+        run: |
+          mkdir -p /tmp/v14-language-results
+          /tmp/v14-language-venv/bin/python qualification/memory-cell-v14/language_checks.py
+          /tmp/v14-language-venv/bin/python qualification/memory-cell-v14/run_receipt.py --receipt /tmp/v14-language-results/process.json -- /tmp/v14-language-venv/bin/python qualification/memory-cell-v14/language_experiment.py --seed ${{ matrix.seed }} --output /tmp/v14-language-results
+      - name: Retain parameters, optimizer state, individual answers and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v14-language-${{ matrix.seed }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/v14-language-results/
+          if-no-files-found: error
+          retention-days: 30
+
+  preserve:
+    needs: [routing, language]
+    if: always() && (needs.routing.result != 'skipped' || needs.language.result != 'skipped')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: v14-*-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/v14-collected
+      - name: Preserve every attempted candidate and source identity in Git
+        env:
+          EVIDENCE_RUN: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          python3 qualification/memory-cell-v14/preserve_evidence.py --input /tmp/v14-collected --output /tmp/v14-packed --commit "$GITHUB_SHA" --run "$EVIDENCE_RUN"
+          git fetch origin "$GITHUB_REF_NAME"
+          git checkout --detach FETCH_HEAD
+          mkdir -p "qualification/memory-cell-v14/evidence/ci-$EVIDENCE_RUN"
+          cp -a /tmp/v14-packed/. "qualification/memory-cell-v14/evidence/ci-$EVIDENCE_RUN/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "qualification/memory-cell-v14/evidence/ci-$EVIDENCE_RUN"
+          git commit -m "research(memory): retain V14 executed evidence $EVIDENCE_RUN"
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"; then exit 0; fi
+            git fetch origin "$GITHUB_REF_NAME"
+            git rebase FETCH_HEAD
+          done
+          exit 1

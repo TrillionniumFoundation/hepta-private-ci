@@ -1,0 +1,190 @@
+{
+  "schema": "hepta.memory.routing.authored_holdout.v14",
+  "scope": "Finite instruction-to-existing-operation selection; not algorithm learning or production traffic.",
+  "authored_before_run": true,
+  "reused_payloads_are_not_independent_observations": true,
+  "operations": {
+    "unique_stable": {
+      "queries": [
+        "Emit each distinct string at its earliest position and omit its later appearances.",
+        "Make this list repetition-free without rearranging the first sightings.",
+        "For every repeated entry, keep the earliest copy; retain the encounter ordering.",
+        "Scan the supplied strings left to right, yielding a value only once.",
+        "Return the first-sighting sequence of distinct values from the supplied list.",
+        "Prune subsequent copies of equal list entries, preserving their initial order."
+      ],
+      "goldens": [
+        [["mango", "pear", "mango", "Pear", "pear", "lime"], ["mango", "pear", "Pear", "lime"]],
+        [["q", "q", "r", "s", "r", "q"], ["q", "r", "s"]]
+      ]
+    },
+    "sort_numeric": {
+      "queries": [
+        "Arrange these number strings by increasing mathematical value, preserving their spelling.",
+        "Treat the list entries as decimal quantities and order them from least to greatest.",
+        "Return the supplied numeric spellings in ascending quantity order.",
+        "Sort by the numbers represented by these strings, retaining equal-value input order.",
+        "Compare entries numerically and place the smallest quantity first.",
+        "Build an ascending sequence from these textual numbers without rewriting any entry."
+      ],
+      "goldens": [
+        [["-6", "12.5", "0", "-06", "2e1"], ["-6", "-06", "0", "12.5", "2e1"]],
+        [["4.2", "-3", "4.20", "0.5"], ["-3", "0.5", "4.2", "4.20"]]
+      ]
+    },
+    "sort_casefold": {
+      "queries": [
+        "Order these strings using their case-folded forms as keys, leaving the originals intact.",
+        "Alphabetize without case distinctions; preserve the original spelling of every item.",
+        "Sort the list stably according to Unicode caseless comparison keys.",
+        "Give a case-insensitive alphabetical ordering of these original strings.",
+        "Use Unicode case folding for the ordering comparison, not for the returned values.",
+        "Reorder the strings by caseless lexicographic order while preserving ties."
+      ],
+      "goldens": [
+        [["ß", "B", "SS", "a", "Ä", "A"], ["a", "A", "B", "ß", "SS", "Ä"]],
+        [["Zulu", "echo", "ALFA", "Echo"], ["ALFA", "echo", "Echo", "Zulu"]]
+      ]
+    },
+    "count_items": {
+      "queries": [
+        "Produce a mapping from each exact list value to its number of appearances.",
+        "Tally the frequency of every supplied string without merging case variants.",
+        "How often does each distinct entry occur? Return the counts keyed by the entry.",
+        "Convert this sequence into a frequency dictionary of its literal values.",
+        "Report an occurrence count for each different string in the list.",
+        "Count repetitions of every exact item and return the resulting key-count mapping."
+      ],
+      "goldens": [
+        [["mango", "pear", "mango", "Pear", "pear", "lime"], {"mango": 2, "pear": 2, "Pear": 1, "lime": 1}],
+        [["q", "q", "r", "s", "r", "q"], {"q": 3, "r": 2, "s": 1}]
+      ]
+    },
+    "normalize_nfc": {
+      "queries": [
+        "Compose canonically equivalent Unicode sequences, preserving compatibility distinctions.",
+        "Put the text in canonical composed form while leaving compatibility glyphs distinct.",
+        "Combine decomposed accents under Unicode NFC; do not fold ligatures or Roman numerals.",
+        "Normalize canonical combining sequences without compatibility conversion.",
+        "Return NFC text, keeping compatibility characters such as typographic ligatures.",
+        "Apply canonical Unicode composition only, retaining compatibility differences."
+      ],
+      "goldens": [
+        ["Café Ⅷ", "Café Ⅷ"],
+        ["Ångström ﬁ", "Ångström ﬁ"]
+      ]
+    },
+    "normalize_nfkc": {
+      "queries": [
+        "Normalize the text by composing Unicode and removing compatibility distinctions.",
+        "Fold compatibility characters to their standard forms and compose combining marks.",
+        "Use Unicode NFKC so ligatures and compatibility numerals are expanded as appropriate.",
+        "Return the compatibility-normalized composed representation of this text.",
+        "Standardize compatibility glyphs as well as canonical accent sequences.",
+        "Apply compatibility decomposition followed by canonical recomposition."
+      ],
+      "goldens": [
+        ["Café Ⅷ", "Café VIII"],
+        ["Ångström ﬁ", "Ångström fi"]
+      ]
+    },
+    "casefold": {
+      "queries": [
+        "Transform the text into Unicode case-folded form for caseless matching.",
+        "Return the full caseless form, including multi-character case folding expansions.",
+        "Erase case distinctions using case folding on the whole string.",
+        "Produce a Unicode caseless comparison string rather than merely changing capitals.",
+        "Apply the full Unicode case-fold operation to this text.",
+        "Make a caseless text representation that also handles sharp s and sigma variants."
+      ],
+      "goldens": [
+        ["Straße İ Σς", "strasse i̇ σσ"],
+        ["İSTANBUL K ﬃ", "i̇stanbul k ffi"]
+      ]
+    },
+    "collapse_whitespace": {
+      "queries": [
+        "Reduce every whitespace run to one space and strip the ends.",
+        "Clean up spacing so words are separated by single ordinary spaces only.",
+        "Trim outer whitespace and collapse interior tabs, breaks and spaces.",
+        "Join the whitespace-separated words with exactly one space between them.",
+        "Remove surrounding blank space and standardize all internal whitespace gaps.",
+        "Turn runs of whitespace into single spaces with no leading or trailing gap."
+      ],
+      "goldens": [
+        [" \tuno dos\n\n三  ", "uno dos 三"],
+        ["red\r\n green blue ", "red green blue"]
+      ]
+    },
+    "csv_parse": {
+      "queries": [
+        "Decode this CSV text into rows of string fields, honoring quoted commas.",
+        "Read the comma-separated document and return its table of fields.",
+        "Parse the CSV serialization into a list of records containing strings.",
+        "Interpret CSV quoting and convert the document to nested field lists.",
+        "Recover structured rows from this comma-separated text representation.",
+        "Use CSV parsing rules to obtain the original fields from this text."
+      ],
+      "goldens": [
+        ["name,note\nLuz,\"one,two\"\nRavi,\"He said \"\"hi\"\"\"\n", [["name", "note"], ["Luz", "one,two"], ["Ravi", "He said \"hi\""]]],
+        ["a,b\n\"line\nbreak\",z\n", [["a", "b"], ["line\nbreak", "z"]]]
+      ]
+    },
+    "csv_write": {
+      "queries": [
+        "Serialize these rows as CSV text, quoting fields wherever required.",
+        "Write the nested string lists into a comma-separated document.",
+        "Encode this table as properly quoted CSV with newline-terminated rows.",
+        "Produce a CSV string from the supplied records and their string fields.",
+        "Turn these field lists into CSV using standard escaping for commas and quotes.",
+        "Render the table as comma-separated text with correct CSV quoting."
+      ],
+      "goldens": [
+        [[["name", "note"], ["Luz", "one,two"], ["Ravi", "He said \"hi\""]], "name,note\nLuz,\"one,two\"\nRavi,\"He said \"\"hi\"\"\"\n"],
+        [[["a", "b"], ["line\nbreak", "z"]], "a,b\n\"line\nbreak\",z\n"]
+      ]
+    },
+    "json_parse": {
+      "queries": [
+        "Interpret this JSON document and return its structured value.",
+        "Decode the JSON string into native objects and arrays.",
+        "Read the serialized JSON and recover the represented data structure.",
+        "Convert the supplied JSON text into values rather than another text string.",
+        "Parse this JSON representation to return the contained object.",
+        "Return the data represented by this JSON document after decoding."
+      ],
+      "goldens": [
+        [" { \"city\": \"Zürich\", \"days\": [3, 1], \"open\": true } ", {"city": "Zürich", "days": [3, 1], "open": true}],
+        ["[ null, { \"p\": -2.5 }, \"雪\" ]", [null, {"p": -2.5}, "雪"]]
+      ]
+    },
+    "json_compact": {
+      "queries": [
+        "Re-encode the JSON text without optional formatting spaces, preserving its values.",
+        "Minify this JSON document and return compact JSON text.",
+        "Remove insignificant JSON formatting while keeping the result serialized.",
+        "Return a whitespace-minimized JSON string with the same data and key order.",
+        "Compact this JSON serialization while preserving Unicode characters.",
+        "Rewrite the JSON document using tight separators and no pretty-print whitespace."
+      ],
+      "goldens": [
+        [" { \"city\": \"Zürich\", \"days\": [3, 1], \"open\": true } ", "{\"city\":\"Zürich\",\"days\":[3,1],\"open\":true}"],
+        ["[ null, { \"p\": -2.5 }, \"雪\" ]", "[null,{\"p\":-2.5},\"雪\"]"]
+      ]
+    }
+  },
+  "ood": [
+    {"text": "Compute the SHA-256 checksum of this text.", "payload": "lemur"},
+    {"text": "Reverse the order of all characters in this string.", "payload": "lemur"},
+    {"text": "Translate this sentence into Finnish.", "payload": "The river is quiet."},
+    {"text": "Find the median of the supplied numbers.", "payload": ["2", "8", "9"]},
+    {"text": "Return only the even-valued entries from this sequence.", "payload": ["2", "3", "8"]},
+    {"text": "Encode this text in Base64.", "payload": "lemur"},
+    {"text": "Convert this YAML document to a structured object.", "payload": "name: lemur"},
+    {"text": "Evaluate the arithmetic expression in this string.", "payload": "6*(4+2)"},
+    {"text": "Convert these measurements from miles to kilometers.", "payload": ["3", "7"]},
+    {"text": "Extract all email addresses from the supplied prose.", "payload": "Write to a@example.test."},
+    {"text": "Calculate a cryptographic signature for this document.", "payload": "lemur"},
+    {"text": "Return the current weather for the city named in the text.", "payload": "Oslo"}
+  ]
+}

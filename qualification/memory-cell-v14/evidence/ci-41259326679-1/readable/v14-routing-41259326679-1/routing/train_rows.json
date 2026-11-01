@@ -1,0 +1,2058 @@
+[
+  {
+    "domain": "sequence",
+    "expected": [
+      "a",
+      "b",
+      "c"
+    ],
+    "fixture_id": "unique_stable:train:0",
+    "id": "4986c6805ed6cb165cfdcc5c40183385344b574257e0359bc80ce918df6b6c9f",
+    "label": 0,
+    "payload": [
+      "a",
+      "b",
+      "a",
+      "c"
+    ],
+    "query": "Remove repeated items but keep their first-seen order.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "split": "train",
+    "text": "Remove repeated items but keep their first-seen order."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "x",
+      "y"
+    ],
+    "fixture_id": "unique_stable:train:1",
+    "id": "a3a132f5ee5433574cdd28f6080b51173f672ea854e155ae76cf2693daed3f13",
+    "label": 0,
+    "payload": [
+      "x",
+      "x",
+      "y",
+      "x"
+    ],
+    "query": "Deduplicate this sequence without sorting it.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "split": "train",
+    "text": "Deduplicate this sequence without sorting it."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "B",
+      "b"
+    ],
+    "fixture_id": "unique_stable:train:2",
+    "id": "b9f320baec14562f2ea66d7b3ef6099336ae80f30bdec4aa3cce9b0987151416",
+    "label": 0,
+    "payload": [
+      "B",
+      "b",
+      "B"
+    ],
+    "query": "Keep the earliest occurrence of every distinct value.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "split": "train",
+    "text": "Keep the earliest occurrence of every distinct value."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "a",
+      "b",
+      "c"
+    ],
+    "fixture_id": "unique_stable:train:0",
+    "id": "0e111a9f68d41171baa4bbad4b8637621b0f3e825c28bea3cc2187d504e58657",
+    "label": 0,
+    "payload": [
+      "a",
+      "b",
+      "a",
+      "c"
+    ],
+    "query": "Discard later copies of an item and leave the survivors in place.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "split": "train",
+    "text": "Discard later copies of an item and leave the survivors in place."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "x",
+      "y"
+    ],
+    "fixture_id": "unique_stable:train:1",
+    "id": "34185d430248e6b59862e9999bbbf55a92678499a2ea873006455a3e7640bfda",
+    "label": 0,
+    "payload": [
+      "x",
+      "x",
+      "y",
+      "x"
+    ],
+    "query": "Build a unique list in the order values arrived.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "split": "train",
+    "text": "Build a unique list in the order values arrived."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "B",
+      "b"
+    ],
+    "fixture_id": "unique_stable:train:2",
+    "id": "73fa4deb273115c64f88cdbcf596a9a063950035ff92042baac32ccb83357c05",
+    "label": 0,
+    "payload": [
+      "B",
+      "b",
+      "B"
+    ],
+    "query": "When the same string appears again, omit that later entry.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "split": "train",
+    "text": "When the same string appears again, omit that later entry."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "a",
+      "b",
+      "c"
+    ],
+    "fixture_id": "unique_stable:train:0",
+    "id": "38e1f54592203960f25e3cde9de734b0df0d94a154e0f34c1a08204d7b98aa65",
+    "label": 0,
+    "payload": [
+      "a",
+      "b",
+      "a",
+      "c"
+    ],
+    "query": "Retain one copy of each item, following the original ordering.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "split": "train",
+    "text": "Retain one copy of each item, following the original ordering."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "x",
+      "y"
+    ],
+    "fixture_id": "unique_stable:train:1",
+    "id": "6fad3129a850faaa44fdeb237004931091b618feefddd349bc4434b60683833e",
+    "label": 0,
+    "payload": [
+      "x",
+      "x",
+      "y",
+      "x"
+    ],
+    "query": "Clean duplicate list entries while preserving first occurrence positions.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "split": "train",
+    "text": "Clean duplicate list entries while preserving first occurrence positions."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "B",
+      "b"
+    ],
+    "fixture_id": "unique_stable:train:2",
+    "id": "1868c660d83076438fd3c683b78b8cecead763090adb1f3c8abb3b6a2d5cc4c2",
+    "label": 0,
+    "payload": [
+      "B",
+      "b",
+      "B"
+    ],
+    "query": "Produce the ordered set of values encountered in this list.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "split": "train",
+    "text": "Produce the ordered set of values encountered in this list."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "a",
+      "b",
+      "c"
+    ],
+    "fixture_id": "unique_stable:train:0",
+    "id": "c4c3fe1fbc30afc0b02aa61407e3ec176cbcd95c724ad53837c70647ba57f187",
+    "label": 0,
+    "payload": [
+      "a",
+      "b",
+      "a",
+      "c"
+    ],
+    "query": "Leave the first instance untouched and drop all its repetitions.",
+    "skill": "unique_stable",
+    "skill_id": "unique_stable",
+    "split": "train",
+    "text": "Leave the first instance untouched and drop all its repetitions."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "-3",
+      "2",
+      "10"
+    ],
+    "fixture_id": "sort_numeric:train:0",
+    "id": "8367f7ac9206aa42e32a83071599fb0a09268be1e9e08615bdf069c81f4439e6",
+    "label": 1,
+    "payload": [
+      "10",
+      "2",
+      "-3"
+    ],
+    "query": "Sort these numeric strings by numerical value in ascending order.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "split": "train",
+    "text": "Sort these numeric strings by numerical value in ascending order."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "0",
+      "1.05",
+      "1.5"
+    ],
+    "fixture_id": "sort_numeric:train:1",
+    "id": "0071fb9a35623dd87bace1d64b94ce0bd999b32cce96e1edc5bc5caf22f6bd01",
+    "label": 1,
+    "payload": [
+      "1.5",
+      "1.05",
+      "0"
+    ],
+    "query": "Order the listed numbers from smallest to largest.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "split": "train",
+    "text": "Order the listed numbers from smallest to largest."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "-1",
+      "02",
+      "2"
+    ],
+    "fixture_id": "sort_numeric:train:2",
+    "id": "32dc12d982358785b2977a02687f07d78057c42e823a412759d50b20904a97bc",
+    "label": 1,
+    "payload": [
+      "02",
+      "2",
+      "-1"
+    ],
+    "query": "Arrange the text numbers numerically, keeping their original spellings.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "split": "train",
+    "text": "Arrange the text numbers numerically, keeping their original spellings."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "-3",
+      "2",
+      "10"
+    ],
+    "fixture_id": "sort_numeric:train:0",
+    "id": "4a856a4d0db6df13e57d9d91aa00d6b84ef213709a9a1a0c13c27d8c1e455bd7",
+    "label": 1,
+    "payload": [
+      "10",
+      "2",
+      "-3"
+    ],
+    "query": "Put negative values before zero and larger values after it.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "split": "train",
+    "text": "Put negative values before zero and larger values after it."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "0",
+      "1.05",
+      "1.5"
+    ],
+    "fixture_id": "sort_numeric:train:1",
+    "id": "f4c3c920d641e2f12102116f4d1ba36500368638c5196415c6121d1a318ac55c",
+    "label": 1,
+    "payload": [
+      "1.5",
+      "1.05",
+      "0"
+    ],
+    "query": "Use number magnitude, not alphabetic order, to sort this list.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "split": "train",
+    "text": "Use number magnitude, not alphabetic order, to sort this list."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "-1",
+      "02",
+      "2"
+    ],
+    "fixture_id": "sort_numeric:train:2",
+    "id": "4972fb81a81c66e4e327fde1a359a8604533f2ea00506295dbe28c0e775f28a5",
+    "label": 1,
+    "payload": [
+      "02",
+      "2",
+      "-1"
+    ],
+    "query": "Return the ascending numeric ordering of these strings.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "split": "train",
+    "text": "Return the ascending numeric ordering of these strings."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "-3",
+      "2",
+      "10"
+    ],
+    "fixture_id": "sort_numeric:train:0",
+    "id": "5cb2b787c00ef29aaa85429b9a20c97f955ebcf3e2c604b7f6f77941ed04fc33",
+    "label": 1,
+    "payload": [
+      "10",
+      "2",
+      "-3"
+    ],
+    "query": "Compare each item's decimal value when ordering the sequence.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "split": "train",
+    "text": "Compare each item's decimal value when ordering the sequence."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "0",
+      "1.05",
+      "1.5"
+    ],
+    "fixture_id": "sort_numeric:train:1",
+    "id": "7f6e9275af9164ff49b454683723276cee057bcf0225af2ef4708c90124e053c",
+    "label": 1,
+    "payload": [
+      "1.5",
+      "1.05",
+      "0"
+    ],
+    "query": "Rank these number representations from lowest value to highest.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "split": "train",
+    "text": "Rank these number representations from lowest value to highest."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "-1",
+      "02",
+      "2"
+    ],
+    "fixture_id": "sort_numeric:train:2",
+    "id": "47472f1a0416cb90555f226c218c68de510410ba7928be4341fbce60ae7e9fc8",
+    "label": 1,
+    "payload": [
+      "02",
+      "2",
+      "-1"
+    ],
+    "query": "Sort the quantities in increasing order without converting the output strings.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "split": "train",
+    "text": "Sort the quantities in increasing order without converting the output strings."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "-3",
+      "2",
+      "10"
+    ],
+    "fixture_id": "sort_numeric:train:0",
+    "id": "0dbbcab50a7c033989a9c73e366575dc4cc230ea1d2373bdc771081c403fdf66",
+    "label": 1,
+    "payload": [
+      "10",
+      "2",
+      "-3"
+    ],
+    "query": "Reorder this list according to the numbers the strings denote.",
+    "skill": "sort_numeric",
+    "skill_id": "sort_numeric",
+    "split": "train",
+    "text": "Reorder this list according to the numbers the strings denote."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "A",
+      "a",
+      "b",
+      "C"
+    ],
+    "fixture_id": "sort_casefold:train:0",
+    "id": "602d48d9ab3a2b667d030ff5bf27e75c87472d67cd2f55a12e80dfc72d7661c5",
+    "label": 2,
+    "payload": [
+      "b",
+      "A",
+      "a",
+      "C"
+    ],
+    "query": "Sort the strings alphabetically without regard to letter case.",
+    "skill": "sort_casefold",
+    "skill_id": "sort_casefold",
+    "split": "train",
+    "text": "Sort the strings alphabetically without regard to letter case."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "apple",
+      "Banana",
+      "Zoo"
+    ],
+    "fixture_id": "sort_casefold:train:1",
+    "id": "18b8286d45f2b835a61272b51660bff2f4400fbfd194affc79cd20102f1c9eba",
+    "label": 2,
+    "payload": [
+      "Zoo",
+      "apple",
+      "Banana"
+    ],
+    "query": "Order these names by their casefolded text, preserving their spelling.",
+    "skill": "sort_casefold",
+    "skill_id": "sort_casefold",
+    "split": "train",
+    "text": "Order these names by their casefolded text, preserving their spelling."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "ß",
+      "SS",
+      "t"
+    ],
+    "fixture_id": "sort_casefold:train:2",
+    "id": "7ecd9f16bfe5509a2d1372aa368028d8605b8d5255439c6260cac900ac7cc721",
+    "label": 2,
+    "payload": [
+      "ß",
+      "SS",
+      "t"
+    ],
+    "query": "Use a case-insensitive sort for this sequence.",
+    "skill": "sort_casefold",
+    "skill_id": "sort_casefold",
+    "split": "train",
+    "text": "Use a case-insensitive sort for this sequence."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "A",
+      "a",
+      "b",
+      "C"
+    ],
+    "fixture_id": "sort_casefold:train:0",
+    "id": "53132183fb9b6e7a8463537030941f041aead39d0d4c5ef1a6797e168c97143c",
+    "label": 2,
+    "payload": [
+      "b",
+      "A",
+      "a",
+      "C"
+    ],
+    "query": "Arrange the entries as if capital and small letters were equivalent.",
+    "skill": "sort_casefold",
+    "skill_id": "sort_casefold",
+    "split": "train",
+    "text": "Arrange the entries as if capital and small letters were equivalent."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "apple",
+      "Banana",
+      "Zoo"
+    ],
+    "fixture_id": "sort_casefold:train:1",
+    "id": "92030fcf911a087d969cc465ecb98f5c32b2df36654ab461b319ef3721184b54",
+    "label": 2,
+    "payload": [
+      "Zoo",
+      "apple",
+      "Banana"
+    ],
+    "query": "Alphabetize this list with Unicode case folding as the comparison key.",
+    "skill": "sort_casefold",
+    "skill_id": "sort_casefold",
+    "split": "train",
+    "text": "Alphabetize this list with Unicode case folding as the comparison key."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "ß",
+      "SS",
+      "t"
+    ],
+    "fixture_id": "sort_casefold:train:2",
+    "id": "270e8346fb84e19e9e75a9a4a4e9321be1347e35480ebf34ca1179f8ca3ed991",
+    "label": 2,
+    "payload": [
+      "ß",
+      "SS",
+      "t"
+    ],
+    "query": "Reorder the names ignoring capitalization, but do not lowercase the output.",
+    "skill": "sort_casefold",
+    "skill_id": "sort_casefold",
+    "split": "train",
+    "text": "Reorder the names ignoring capitalization, but do not lowercase the output."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "A",
+      "a",
+      "b",
+      "C"
+    ],
+    "fixture_id": "sort_casefold:train:0",
+    "id": "00691790763f5d1752b3aea00d4dc3a31a3449eac3462df954da0b65817e5939",
+    "label": 2,
+    "payload": [
+      "b",
+      "A",
+      "a",
+      "C"
+    ],
+    "query": "Sort words without giving uppercase letters a separate priority.",
+    "skill": "sort_casefold",
+    "skill_id": "sort_casefold",
+    "split": "train",
+    "text": "Sort words without giving uppercase letters a separate priority."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "apple",
+      "Banana",
+      "Zoo"
+    ],
+    "fixture_id": "sort_casefold:train:1",
+    "id": "8138334225ae09689a0eb7740cb4bceba9d80d6cde07f58128eae49fc5e27acb",
+    "label": 2,
+    "payload": [
+      "Zoo",
+      "apple",
+      "Banana"
+    ],
+    "query": "Produce alphabetical order under casefold comparison.",
+    "skill": "sort_casefold",
+    "skill_id": "sort_casefold",
+    "split": "train",
+    "text": "Produce alphabetical order under casefold comparison."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "ß",
+      "SS",
+      "t"
+    ],
+    "fixture_id": "sort_casefold:train:2",
+    "id": "29bd04cd5478107a727ff1f079c0f655c9ca4c9497e2280e7f263c1c3618d9e2",
+    "label": 2,
+    "payload": [
+      "ß",
+      "SS",
+      "t"
+    ],
+    "query": "Use caseless ordering and keep equal keys in their original order.",
+    "skill": "sort_casefold",
+    "skill_id": "sort_casefold",
+    "split": "train",
+    "text": "Use caseless ordering and keep equal keys in their original order."
+  },
+  {
+    "domain": "sequence",
+    "expected": [
+      "A",
+      "a",
+      "b",
+      "C"
+    ],
+    "fixture_id": "sort_casefold:train:0",
+    "id": "39f0b0acd4fe492ff8570b841ef259cb66500d09dd8a2f9727f500dd742a4bc6",
+    "label": 2,
+    "payload": [
+      "b",
+      "A",
+      "a",
+      "C"
+    ],
+    "query": "Compare each string's casefolded form when sorting the list.",
+    "skill": "sort_casefold",
+    "skill_id": "sort_casefold",
+    "split": "train",
+    "text": "Compare each string's casefolded form when sorting the list."
+  },
+  {
+    "domain": "sequence",
+    "expected": {
+      "a": 2,
+      "b": 1
+    },
+    "fixture_id": "count_items:train:0",
+    "id": "e5e6503e32ed6731cabe5588b54caee4f6c0f03353c03d599a926dfea93def24",
+    "label": 3,
+    "payload": [
+      "a",
+      "b",
+      "a"
+    ],
+    "query": "Count how often each distinct list item appears.",
+    "skill": "count_items",
+    "skill_id": "count_items",
+    "split": "train",
+    "text": "Count how often each distinct list item appears."
+  },
+  {
+    "domain": "sequence",
+    "expected": {
+      "x": 3,
+      "y": 1
+    },
+    "fixture_id": "count_items:train:1",
+    "id": "7224494375a597aa84172386e27540a5c125151cbfcf305888626d2c8112dd38",
+    "label": 3,
+    "payload": [
+      "x",
+      "x",
+      "x",
+      "y"
+    ],
+    "query": "Return a frequency map for these strings.",
+    "skill": "count_items",
+    "skill_id": "count_items",
+    "split": "train",
+    "text": "Return a frequency map for these strings."
+  },
+  {
+    "domain": "sequence",
+    "expected": {
+      "A": 2,
+      "a": 1
+    },
+    "fixture_id": "count_items:train:2",
+    "id": "83a0baedaa4d32bffa9d5498645ca6ab5afd5dc81c7364616d735ad9a429e222",
+    "label": 3,
+    "payload": [
+      "A",
+      "a",
+      "A"
+    ],
+    "query": "Tally occurrences of every value in this sequence.",
+    "skill": "count_items",
+    "skill_id": "count_items",
+    "split": "train",
+    "text": "Tally occurrences of every value in this sequence."
+  },
+  {
+    "domain": "sequence",
+    "expected": {
+      "a": 2,
+      "b": 1
+    },
+    "fixture_id": "count_items:train:0",
+    "id": "b0977f6e21afa6f5f6ea38af1f00be5b64110f0c331dffd96d3f9854a04648ba",
+    "label": 3,
+    "payload": [
+      "a",
+      "b",
+      "a"
+    ],
+    "query": "Make a dictionary mapping each item to its number of repetitions.",
+    "skill": "count_items",
+    "skill_id": "count_items",
+    "split": "train",
+    "text": "Make a dictionary mapping each item to its number of repetitions."
+  },
+  {
+    "domain": "sequence",
+    "expected": {
+      "x": 3,
+      "y": 1
+    },
+    "fixture_id": "count_items:train:1",
+    "id": "a3ccc6dc1c3d098f829df48bf4b8f3f8b82f2d47466d8c7a54a1df8f3637222a",
+    "label": 3,
+    "payload": [
+      "x",
+      "x",
+      "x",
+      "y"
+    ],
+    "query": "Report the multiplicity of each exact string.",
+    "skill": "count_items",
+    "skill_id": "count_items",
+    "split": "train",
+    "text": "Report the multiplicity of each exact string."
+  },
+  {
+    "domain": "sequence",
+    "expected": {
+      "A": 2,
+      "a": 1
+    },
+    "fixture_id": "count_items:train:2",
+    "id": "4b86d31e4ec386242caaf8b42d9f8a92ed912bb4a367051844bb69dea7f7098c",
+    "label": 3,
+    "payload": [
+      "A",
+      "a",
+      "A"
+    ],
+    "query": "Build a histogram of the listed items.",
+    "skill": "count_items",
+    "skill_id": "count_items",
+    "split": "train",
+    "text": "Build a histogram of the listed items."
+  },
+  {
+    "domain": "sequence",
+    "expected": {
+      "a": 2,
+      "b": 1
+    },
+    "fixture_id": "count_items:train:0",
+    "id": "6752cfdeca303a32e3416215113241df7b21be977d85d628110312849141089e",
+    "label": 3,
+    "payload": [
+      "a",
+      "b",
+      "a"
+    ],
+    "query": "Give the occurrence count for every unique value.",
+    "skill": "count_items",
+    "skill_id": "count_items",
+    "split": "train",
+    "text": "Give the occurrence count for every unique value."
+  },
+  {
+    "domain": "sequence",
+    "expected": {
+      "x": 3,
+      "y": 1
+    },
+    "fixture_id": "count_items:train:1",
+    "id": "9c0066cbc7da0babedc942dd6643e83c899824604f0287f46cbdca8f4a66ec9c",
+    "label": 3,
+    "payload": [
+      "x",
+      "x",
+      "x",
+      "y"
+    ],
+    "query": "Accumulate one count each time an item is encountered.",
+    "skill": "count_items",
+    "skill_id": "count_items",
+    "split": "train",
+    "text": "Accumulate one count each time an item is encountered."
+  },
+  {
+    "domain": "sequence",
+    "expected": {
+      "A": 2,
+      "a": 1
+    },
+    "fixture_id": "count_items:train:2",
+    "id": "b0d998ca4b3efec2b77bb8c7d0e8882cc92bf57f2c77a99356f0c2f9dea04745",
+    "label": 3,
+    "payload": [
+      "A",
+      "a",
+      "A"
+    ],
+    "query": "Summarize this list as item-to-frequency pairs.",
+    "skill": "count_items",
+    "skill_id": "count_items",
+    "split": "train",
+    "text": "Summarize this list as item-to-frequency pairs."
+  },
+  {
+    "domain": "sequence",
+    "expected": {
+      "a": 2,
+      "b": 1
+    },
+    "fixture_id": "count_items:train:0",
+    "id": "d0321863c23100618117b200a0f51acb3313c078b3ff1433003e5c94e7c107c4",
+    "label": 3,
+    "payload": [
+      "a",
+      "b",
+      "a"
+    ],
+    "query": "Count duplicates as additional occurrences instead of discarding them.",
+    "skill": "count_items",
+    "skill_id": "count_items",
+    "split": "train",
+    "text": "Count duplicates as additional occurrences instead of discarding them."
+  },
+  {
+    "domain": "text",
+    "expected": "Café",
+    "fixture_id": "normalize_nfc:train:0",
+    "id": "7b24df9b5ac52fe02ed04556118ee7c0f2e0b755bb34640d342cfc327e99c899",
+    "label": 4,
+    "payload": "Café",
+    "query": "Normalize this Unicode text to NFC.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "split": "train",
+    "text": "Normalize this Unicode text to NFC."
+  },
+  {
+    "domain": "text",
+    "expected": "Å",
+    "fixture_id": "normalize_nfc:train:1",
+    "id": "df2a220c4c9352e070776d757cf3b574a5521dbfa27a5a4924aa2c849d771ee0",
+    "label": 4,
+    "payload": "Å",
+    "query": "Compose canonical Unicode sequences without compatibility folding.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "split": "train",
+    "text": "Compose canonical Unicode sequences without compatibility folding."
+  },
+  {
+    "domain": "text",
+    "expected": "ﬁ é",
+    "fixture_id": "normalize_nfc:train:2",
+    "id": "63fb5bc115ee166b383f4f01370e5a3cbe9cbcb55bcd5dae8ff0ca5a58e2b89f",
+    "label": 4,
+    "payload": "ﬁ é",
+    "query": "Combine decomposed accents using canonical composition.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "split": "train",
+    "text": "Combine decomposed accents using canonical composition."
+  },
+  {
+    "domain": "text",
+    "expected": "Café",
+    "fixture_id": "normalize_nfc:train:0",
+    "id": "dba26409a22e080d240ae04615b042b524693e6aa748125be2921a4a81868a41",
+    "label": 4,
+    "payload": "Café",
+    "query": "Use NFC normalization and preserve fullwidth and circled characters.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "split": "train",
+    "text": "Use NFC normalization and preserve fullwidth and circled characters."
+  },
+  {
+    "domain": "text",
+    "expected": "Å",
+    "fixture_id": "normalize_nfc:train:1",
+    "id": "7a6fd12257215853b253ead28a0a242f3971927686dde3c0d9f8aca79e2b9c7d",
+    "label": 4,
+    "payload": "Å",
+    "query": "Apply canonical decomposition followed by canonical composition.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "split": "train",
+    "text": "Apply canonical decomposition followed by canonical composition."
+  },
+  {
+    "domain": "text",
+    "expected": "ﬁ é",
+    "fixture_id": "normalize_nfc:train:2",
+    "id": "c36ac279e57393c1a6a1fbf7062e7ae399e45668f6d7e774ca4850f5a61c69c0",
+    "label": 4,
+    "payload": "ﬁ é",
+    "query": "Put this string into Unicode canonical composed form.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "split": "train",
+    "text": "Put this string into Unicode canonical composed form."
+  },
+  {
+    "domain": "text",
+    "expected": "Café",
+    "fixture_id": "normalize_nfc:train:0",
+    "id": "54326757ab777a4a3bdaf6f0c26549a0e615f40eb3b0c9823cf2ca632451d211",
+    "label": 4,
+    "payload": "Café",
+    "query": "Make canonically equivalent spellings share the composed representation.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "split": "train",
+    "text": "Make canonically equivalent spellings share the composed representation."
+  },
+  {
+    "domain": "text",
+    "expected": "Å",
+    "fixture_id": "normalize_nfc:train:1",
+    "id": "90caadec84a2a9e0801922a7804a86c0d62df3f8623261644230964f24489581",
+    "label": 4,
+    "payload": "Å",
+    "query": "Compose accent marks with their base letters when Unicode permits.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "split": "train",
+    "text": "Compose accent marks with their base letters when Unicode permits."
+  },
+  {
+    "domain": "text",
+    "expected": "ﬁ é",
+    "fixture_id": "normalize_nfc:train:2",
+    "id": "aa293bfe73d0715b1406bfc07d5c798bd755b7ad8ab84b76f139cbcf82ebc9cf",
+    "label": 4,
+    "payload": "ﬁ é",
+    "query": "Normalize accents canonically, leaving compatibility distinctions intact.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "split": "train",
+    "text": "Normalize accents canonically, leaving compatibility distinctions intact."
+  },
+  {
+    "domain": "text",
+    "expected": "Café",
+    "fixture_id": "normalize_nfc:train:0",
+    "id": "fe1f8fa5537e82938dde8873949310c9853a472d03ab52ee6507bf126bd32243",
+    "label": 4,
+    "payload": "Café",
+    "query": "Use canonical normalization, not compatibility normalization, on this text.",
+    "skill": "normalize_nfc",
+    "skill_id": "normalize_nfc",
+    "split": "train",
+    "text": "Use canonical normalization, not compatibility normalization, on this text."
+  },
+  {
+    "domain": "text",
+    "expected": "Café",
+    "fixture_id": "normalize_nfkc:train:0",
+    "id": "e772ec77fc99eef8b62e10f9d9e1dbb7d4338bb3ce1cb900324156cd7b113e38",
+    "label": 5,
+    "payload": "Café",
+    "query": "Normalize this Unicode text to NFKC.",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "split": "train",
+    "text": "Normalize this Unicode text to NFKC."
+  },
+  {
+    "domain": "text",
+    "expected": "ABC",
+    "fixture_id": "normalize_nfkc:train:1",
+    "id": "0c9a4f37650afab2e1e75a78605fd8b697ad7a54040dec48e45f59ff83965f78",
+    "label": 5,
+    "payload": "ＡＢＣ",
+    "query": "Apply compatibility decomposition and then canonical composition.",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "split": "train",
+    "text": "Apply compatibility decomposition and then canonical composition."
+  },
+  {
+    "domain": "text",
+    "expected": "fi é",
+    "fixture_id": "normalize_nfkc:train:2",
+    "id": "23169718989bcfffd98985c90e5c50c26ee483b8527d6e13df78af8841166e71",
+    "label": 5,
+    "payload": "ﬁ é",
+    "query": "Convert fullwidth characters to their ordinary equivalents through Unicode normalization.",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "split": "train",
+    "text": "Convert fullwidth characters to their ordinary equivalents through Unicode normalization."
+  },
+  {
+    "domain": "text",
+    "expected": "Café",
+    "fixture_id": "normalize_nfkc:train:0",
+    "id": "91e32c98c4654f89d581e77aa3645071f7d6860b5844023b29996d9a76b17a3e",
+    "label": 5,
+    "payload": "Café",
+    "query": "Fold compatibility variants such as ligatures and circled digits.",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "split": "train",
+    "text": "Fold compatibility variants such as ligatures and circled digits."
+  },
+  {
+    "domain": "text",
+    "expected": "ABC",
+    "fixture_id": "normalize_nfkc:train:1",
+    "id": "15a164a5e4eff3627b5a8a0547cf3c335e65a9e17daf4d74a7a6af27b14a37fd",
+    "label": 5,
+    "payload": "ＡＢＣ",
+    "query": "Use NFKC compatibility normalization on the string.",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "split": "train",
+    "text": "Use NFKC compatibility normalization on the string."
+  },
+  {
+    "domain": "text",
+    "expected": "fi é",
+    "fixture_id": "normalize_nfkc:train:2",
+    "id": "9170bf13c80ba3602d8f5804a4efd0a20b67cd55bdac0c83c6fcd071c5eda180",
+    "label": 5,
+    "payload": "ﬁ é",
+    "query": "Make presentation forms equivalent to their standard character sequences.",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "split": "train",
+    "text": "Make presentation forms equivalent to their standard character sequences."
+  },
+  {
+    "domain": "text",
+    "expected": "Café",
+    "fixture_id": "normalize_nfkc:train:0",
+    "id": "7ed731cc5c4ccbf1b3b7efa427c59484a3f5a9e168207a0e0aa5833e329ef4cd",
+    "label": 5,
+    "payload": "Café",
+    "query": "Normalize both canonical and compatibility Unicode differences.",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "split": "train",
+    "text": "Normalize both canonical and compatibility Unicode differences."
+  },
+  {
+    "domain": "text",
+    "expected": "ABC",
+    "fixture_id": "normalize_nfkc:train:1",
+    "id": "cbb0b0498ac1869f5032f1b40361c2b6852d19a926c6ebe7860012c6ab3c5632",
+    "label": 5,
+    "payload": "ＡＢＣ",
+    "query": "Expand compatibility glyphs and compose the resulting Unicode text.",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "split": "train",
+    "text": "Expand compatibility glyphs and compose the resulting Unicode text."
+  },
+  {
+    "domain": "text",
+    "expected": "fi é",
+    "fixture_id": "normalize_nfkc:train:2",
+    "id": "86aad15c608c00b09cd916aa97c9812ea80d637f3501a4ccb534368482c8cca4",
+    "label": 5,
+    "payload": "ﬁ é",
+    "query": "Standardize width and compatibility variants without doing case folding.",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "split": "train",
+    "text": "Standardize width and compatibility variants without doing case folding."
+  },
+  {
+    "domain": "text",
+    "expected": "Café",
+    "fixture_id": "normalize_nfkc:train:0",
+    "id": "a1261fb28cc5d2f1e12cc12500c2063fee46a180badc58341138ba1c7ad5b771",
+    "label": 5,
+    "payload": "Café",
+    "query": "Use compatibility-composed Unicode normalization.",
+    "skill": "normalize_nfkc",
+    "skill_id": "normalize_nfkc",
+    "split": "train",
+    "text": "Use compatibility-composed Unicode normalization."
+  },
+  {
+    "domain": "text",
+    "expected": "strasse",
+    "fixture_id": "casefold:train:0",
+    "id": "bf0be8814afb54788a4037c4549bdd338cfc9c1ae98f250b4afdfb1dd0cf85ad",
+    "label": 6,
+    "payload": "Straße",
+    "query": "Casefold this text for caseless matching.",
+    "skill": "casefold",
+    "skill_id": "casefold",
+    "split": "train",
+    "text": "Casefold this text for caseless matching."
+  },
+  {
+    "domain": "text",
+    "expected": "hello world",
+    "fixture_id": "casefold:train:1",
+    "id": "ba8e10568b05c26ec776559bee67ceea49f5909c005015c12a7dad93e983326f",
+    "label": 6,
+    "payload": "HELLO World",
+    "query": "Convert the string using Unicode case folding.",
+    "skill": "casefold",
+    "skill_id": "casefold",
+    "split": "train",
+    "text": "Convert the string using Unicode case folding."
+  },
+  {
+    "domain": "text",
+    "expected": "σσσ",
+    "fixture_id": "casefold:train:2",
+    "id": "5db77b3007bd082760ce48587436c1d32f23ddf1bfdb90a9a060fe3342a0beea",
+    "label": 6,
+    "payload": "Σςσ",
+    "query": "Remove letter-case distinctions with casefold rather than simple lowercase.",
+    "skill": "casefold",
+    "skill_id": "casefold",
+    "split": "train",
+    "text": "Remove letter-case distinctions with casefold rather than simple lowercase."
+  },
+  {
+    "domain": "text",
+    "expected": "strasse",
+    "fixture_id": "casefold:train:0",
+    "id": "e327d0465c9fda80c38370bb2c1a43b32af1d19805e984b90802931e10bf2f7f",
+    "label": 6,
+    "payload": "Straße",
+    "query": "Make uppercase and lowercase variants share a casefolded representation.",
+    "skill": "casefold",
+    "skill_id": "casefold",
+    "split": "train",
+    "text": "Make uppercase and lowercase variants share a casefolded representation."
+  },
+  {
+    "domain": "text",
+    "expected": "hello world",
+    "fixture_id": "casefold:train:1",
+    "id": "12040b0ef19b265dc9c73114da444a471cd6273926fbb1f29a8a2f1624e16aa6",
+    "label": 6,
+    "payload": "HELLO World",
+    "query": "Apply the Unicode caseless conversion to this whole string.",
+    "skill": "casefold",
+    "skill_id": "casefold",
+    "split": "train",
+    "text": "Apply the Unicode caseless conversion to this whole string."
+  },
+  {
+    "domain": "text",
+    "expected": "σσσ",
+    "fixture_id": "casefold:train:2",
+    "id": "aeb797ed2e93b33909c60387fbd5fe268a73a4c51ebb8ab3e5a872967d128200",
+    "label": 6,
+    "payload": "Σςσ",
+    "query": "Fold capital letters and special case variants in this text.",
+    "skill": "casefold",
+    "skill_id": "casefold",
+    "split": "train",
+    "text": "Fold capital letters and special case variants in this text."
+  },
+  {
+    "domain": "text",
+    "expected": "strasse",
+    "fixture_id": "casefold:train:0",
+    "id": "405b42f5e1556db15f1995c8858c303f1ac0e909b588aa21e6bdec6d8227d0d5",
+    "label": 6,
+    "payload": "Straße",
+    "query": "Prepare this text for case-insensitive comparison using casefold.",
+    "skill": "casefold",
+    "skill_id": "casefold",
+    "split": "train",
+    "text": "Prepare this text for case-insensitive comparison using casefold."
+  },
+  {
+    "domain": "text",
+    "expected": "hello world",
+    "fixture_id": "casefold:train:1",
+    "id": "07eff612677f36692ad7ec1a3e8bc769e0fbe82e8ea921e950e14626727e54ea",
+    "label": 6,
+    "payload": "HELLO World",
+    "query": "Return the casefolded form of the supplied string.",
+    "skill": "casefold",
+    "skill_id": "casefold",
+    "split": "train",
+    "text": "Return the casefolded form of the supplied string."
+  },
+  {
+    "domain": "text",
+    "expected": "σσσ",
+    "fixture_id": "casefold:train:2",
+    "id": "3969f516521f4b8490de77c52cbf8be5b09a4a3af7dd271dcff409734d6a7f8f",
+    "label": 6,
+    "payload": "Σςσ",
+    "query": "Use Unicode case folding, including expansions such as sharp s.",
+    "skill": "casefold",
+    "skill_id": "casefold",
+    "split": "train",
+    "text": "Use Unicode case folding, including expansions such as sharp s."
+  },
+  {
+    "domain": "text",
+    "expected": "strasse",
+    "fixture_id": "casefold:train:0",
+    "id": "9f10f6ff4567bf977f5c787d33bf672e242a89a7432f288fcf23c76783263a2f",
+    "label": 6,
+    "payload": "Straße",
+    "query": "Convert case comprehensively without sorting or splitting the text.",
+    "skill": "casefold",
+    "skill_id": "casefold",
+    "split": "train",
+    "text": "Convert case comprehensively without sorting or splitting the text."
+  },
+  {
+    "domain": "text",
+    "expected": "a b",
+    "fixture_id": "collapse_whitespace:train:0",
+    "id": "0c1686b16ff973ff4239b7e411ba6d629eaf5c401466aae00a73e4ce65fdf825",
+    "label": 7,
+    "payload": "  a   b  ",
+    "query": "Replace runs of whitespace with one ordinary space and trim the ends.",
+    "skill": "collapse_whitespace",
+    "skill_id": "collapse_whitespace",
+    "split": "train",
+    "text": "Replace runs of whitespace with one ordinary space and trim the ends."
+  },
+  {
+    "domain": "text",
+    "expected": "one two three",
+    "fixture_id": "collapse_whitespace:train:1",
+    "id": "ae16276e54554ec9ac5f568fa5058e129494bd79b1779c7e946ce02d5cd8f840",
+    "label": 7,
+    "payload": "one\ttwo\nthree",
+    "query": "Collapse tabs and newlines into single spaces.",
+    "skill": "collapse_whitespace",
+    "skill_id": "collapse_whitespace",
+    "split": "train",
+    "text": "Collapse tabs and newlines into single spaces."
+  },
+  {
+    "domain": "text",
+    "expected": "Keep CASE!",
+    "fixture_id": "collapse_whitespace:train:2",
+    "id": "ee26018a5ffe3eb75da3d254d2eb273f4e457dba18b68d3d95cdbd4affdefb5a",
+    "label": 7,
+    "payload": "  Keep CASE!\n",
+    "query": "Normalize spacing by joining whitespace-separated words with spaces.",
+    "skill": "collapse_whitespace",
+    "skill_id": "collapse_whitespace",
+    "split": "train",
+    "text": "Normalize spacing by joining whitespace-separated words with spaces."
+  },
+  {
+    "domain": "text",
+    "expected": "a b",
+    "fixture_id": "collapse_whitespace:train:0",
+    "id": "1551e19161d90dbdbad68c433a80e4d7e2afcea8e70e5b5eedd1a2350561e522",
+    "label": 7,
+    "payload": "  a   b  ",
+    "query": "Remove leading and trailing whitespace and squash internal whitespace runs.",
+    "skill": "collapse_whitespace",
+    "skill_id": "collapse_whitespace",
+    "split": "train",
+    "text": "Remove leading and trailing whitespace and squash internal whitespace runs."
+  },
+  {
+    "domain": "text",
+    "expected": "one two three",
+    "fixture_id": "collapse_whitespace:train:1",
+    "id": "e86d9dc0c251054fc0034288ae1ccb64333b9f4ec4b5cabd69089aced6477428",
+    "label": 7,
+    "payload": "one\ttwo\nthree",
+    "query": "Make all whitespace gaps a single space.",
+    "skill": "collapse_whitespace",
+    "skill_id": "collapse_whitespace",
+    "split": "train",
+    "text": "Make all whitespace gaps a single space."
+  },
+  {
+    "domain": "text",
+    "expected": "Keep CASE!",
+    "fixture_id": "collapse_whitespace:train:2",
+    "id": "7cdca81c1f84b3db715c0ac220e366569ebb93a7f91a630bb745f58893dfc5b5",
+    "label": 7,
+    "payload": "  Keep CASE!\n",
+    "query": "Clean repeated spacing without changing the actual words.",
+    "skill": "collapse_whitespace",
+    "skill_id": "collapse_whitespace",
+    "split": "train",
+    "text": "Clean repeated spacing without changing the actual words."
+  },
+  {
+    "domain": "text",
+    "expected": "a b",
+    "fixture_id": "collapse_whitespace:train:0",
+    "id": "05cd972797e48422fe84015aac19bcf55607bd72b959e974bf471a73aa394f55",
+    "label": 7,
+    "payload": "  a   b  ",
+    "query": "Split on whitespace and rejoin with one ASCII space.",
+    "skill": "collapse_whitespace",
+    "skill_id": "collapse_whitespace",
+    "split": "train",
+    "text": "Split on whitespace and rejoin with one ASCII space."
+  },
+  {
+    "domain": "text",
+    "expected": "one two three",
+    "fixture_id": "collapse_whitespace:train:1",
+    "id": "5b6eff612624b27fec5328faf663f30bb607fcb8871be193a02c40a74ab92db1",
+    "label": 7,
+    "payload": "one\ttwo\nthree",
+    "query": "Trim this text and compress every whitespace sequence.",
+    "skill": "collapse_whitespace",
+    "skill_id": "collapse_whitespace",
+    "split": "train",
+    "text": "Trim this text and compress every whitespace sequence."
+  },
+  {
+    "domain": "text",
+    "expected": "Keep CASE!",
+    "fixture_id": "collapse_whitespace:train:2",
+    "id": "ae2c8cf36c546be808b6dc7a5b90514ef251f2f61c14601e1ec6cae44438db24",
+    "label": 7,
+    "payload": "  Keep CASE!\n",
+    "query": "Use one space between tokens, even where tabs or line breaks appear.",
+    "skill": "collapse_whitespace",
+    "skill_id": "collapse_whitespace",
+    "split": "train",
+    "text": "Use one space between tokens, even where tabs or line breaks appear."
+  },
+  {
+    "domain": "text",
+    "expected": "a b",
+    "fixture_id": "collapse_whitespace:train:0",
+    "id": "cba3b8a787991599b4efcb2e23e1b79a7a9c1611e0bde6bab578aeeb4b662a8d",
+    "label": 7,
+    "payload": "  a   b  ",
+    "query": "Turn irregular whitespace into ordinary single-space word separation.",
+    "skill": "collapse_whitespace",
+    "skill_id": "collapse_whitespace",
+    "split": "train",
+    "text": "Turn irregular whitespace into ordinary single-space word separation."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "1",
+        "2"
+      ]
+    ],
+    "fixture_id": "csv_parse:train:0",
+    "id": "09dcad6bd49dc4a063d247ddb7ddeaa47b383edbe01e61832832bb3d2502172e",
+    "label": 8,
+    "payload": "a,b\n1,2\n",
+    "query": "Parse this comma-separated text into rows of string fields.",
+    "skill": "csv_parse",
+    "skill_id": "csv_parse",
+    "split": "train",
+    "text": "Parse this comma-separated text into rows of string fields."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      [
+        "a,b",
+        "c"
+      ]
+    ],
+    "fixture_id": "csv_parse:train:1",
+    "id": "59e533bbe0517e296a5729fac0a9810ab66ff8f8c13857af5c60171ad83902cf",
+    "label": 8,
+    "payload": "\"a,b\",c\n",
+    "query": "Read the CSV document, respecting quoted commas.",
+    "skill": "csv_parse",
+    "skill_id": "csv_parse",
+    "split": "train",
+    "text": "Read the CSV document, respecting quoted commas."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      [
+        "say \"hi\"",
+        "z"
+      ]
+    ],
+    "fixture_id": "csv_parse:train:2",
+    "id": "439c55a24a32f715ec586b9c622d16efe4a09567f4be9b30b358171949f2dad8",
+    "label": 8,
+    "payload": "\"say \"\"hi\"\"\",z\n",
+    "query": "Decode CSV text into a nested list of cells.",
+    "skill": "csv_parse",
+    "skill_id": "csv_parse",
+    "split": "train",
+    "text": "Decode CSV text into a nested list of cells."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "1",
+        "2"
+      ]
+    ],
+    "fixture_id": "csv_parse:train:0",
+    "id": "0f1711286919ae5ad342dad05782e638d611cc25c2f651e2ebe0d1fd84be0981",
+    "label": 8,
+    "payload": "a,b\n1,2\n",
+    "query": "Use CSV quoting rules to recover the rows and columns.",
+    "skill": "csv_parse",
+    "skill_id": "csv_parse",
+    "split": "train",
+    "text": "Use CSV quoting rules to recover the rows and columns."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      [
+        "a,b",
+        "c"
+      ]
+    ],
+    "fixture_id": "csv_parse:train:1",
+    "id": "66a69a2dea7194c4b94a2830712d829fa188bb0cd3d09c86fe4fe66141b41f1a",
+    "label": 8,
+    "payload": "\"a,b\",c\n",
+    "query": "Convert this CSV string to a table of strings.",
+    "skill": "csv_parse",
+    "skill_id": "csv_parse",
+    "split": "train",
+    "text": "Convert this CSV string to a table of strings."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      [
+        "say \"hi\"",
+        "z"
+      ]
+    ],
+    "fixture_id": "csv_parse:train:2",
+    "id": "2ed07821a40689592ca9c6eef7cb93f0b09465282b68fb919ea94971bd0ade86",
+    "label": 8,
+    "payload": "\"say \"\"hi\"\"\",z\n",
+    "query": "Interpret doubled quotes inside quoted CSV fields correctly.",
+    "skill": "csv_parse",
+    "skill_id": "csv_parse",
+    "split": "train",
+    "text": "Interpret doubled quotes inside quoted CSV fields correctly."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "1",
+        "2"
+      ]
+    ],
+    "fixture_id": "csv_parse:train:0",
+    "id": "9d370dddf6ec46d99356ffad3ad3e93aca438630a3217876086b8d5ecc47030b",
+    "label": 8,
+    "payload": "a,b\n1,2\n",
+    "query": "Split this CSV into records without breaking quoted fields.",
+    "skill": "csv_parse",
+    "skill_id": "csv_parse",
+    "split": "train",
+    "text": "Split this CSV into records without breaking quoted fields."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      [
+        "a,b",
+        "c"
+      ]
+    ],
+    "fixture_id": "csv_parse:train:1",
+    "id": "2b647de54961c92d30c52a06a33bcb8e3c30b5a16dd282e96d0645288bef468c",
+    "label": 8,
+    "payload": "\"a,b\",c\n",
+    "query": "Load the comma-separated document as rows, not a plain string.",
+    "skill": "csv_parse",
+    "skill_id": "csv_parse",
+    "split": "train",
+    "text": "Load the comma-separated document as rows, not a plain string."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      [
+        "say \"hi\"",
+        "z"
+      ]
+    ],
+    "fixture_id": "csv_parse:train:2",
+    "id": "ff89de5cef01acfdbe6ae9d748e7d0a9ec05b5fe86448ffc3da2f17d4fdfb12f",
+    "label": 8,
+    "payload": "\"say \"\"hi\"\"\",z\n",
+    "query": "Read CSV while preserving embedded newlines in quoted cells.",
+    "skill": "csv_parse",
+    "skill_id": "csv_parse",
+    "split": "train",
+    "text": "Read CSV while preserving embedded newlines in quoted cells."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "1",
+        "2"
+      ]
+    ],
+    "fixture_id": "csv_parse:train:0",
+    "id": "9f5b971ec98481c7d24b7202c0bdc9d6a0a91fc03ded937a6320e5c2ef75516d",
+    "label": 8,
+    "payload": "a,b\n1,2\n",
+    "query": "Turn the textual CSV data into lists of field values.",
+    "skill": "csv_parse",
+    "skill_id": "csv_parse",
+    "split": "train",
+    "text": "Turn the textual CSV data into lists of field values."
+  },
+  {
+    "domain": "serialization",
+    "expected": "a,b\n1,2\n",
+    "fixture_id": "csv_write:train:0",
+    "id": "b0e0ca847deb481cd6f41cea27498b9ea431f27bfe697f1683e05758616a9800",
+    "label": 9,
+    "payload": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "1",
+        "2"
+      ]
+    ],
+    "query": "Write these rows of strings as comma-separated CSV text.",
+    "skill": "csv_write",
+    "skill_id": "csv_write",
+    "split": "train",
+    "text": "Write these rows of strings as comma-separated CSV text."
+  },
+  {
+    "domain": "serialization",
+    "expected": "\"a,b\",c\n",
+    "fixture_id": "csv_write:train:1",
+    "id": "a1f579306f51b9a2d55e076b1201d5b56e59bfd2d1a9a45057e0b17d28be211b",
+    "label": 9,
+    "payload": [
+      [
+        "a,b",
+        "c"
+      ]
+    ],
+    "query": "Serialize the table to CSV with proper quoting.",
+    "skill": "csv_write",
+    "skill_id": "csv_write",
+    "split": "train",
+    "text": "Serialize the table to CSV with proper quoting."
+  },
+  {
+    "domain": "serialization",
+    "expected": "\"say \"\"hi\"\"\",z\n",
+    "fixture_id": "csv_write:train:2",
+    "id": "687335b5361d2b85f3e7e3a53177226b32639e22325b8d2514c97bd0db6a89cf",
+    "label": 9,
+    "payload": [
+      [
+        "say \"hi\"",
+        "z"
+      ]
+    ],
+    "query": "Produce CSV from the nested list, using newline record terminators.",
+    "skill": "csv_write",
+    "skill_id": "csv_write",
+    "split": "train",
+    "text": "Produce CSV from the nested list, using newline record terminators."
+  },
+  {
+    "domain": "serialization",
+    "expected": "a,b\n1,2\n",
+    "fixture_id": "csv_write:train:0",
+    "id": "37603278d79c588141fa771bebc851fce9f4fc915e7b7670018d6d7c3ec462a9",
+    "label": 9,
+    "payload": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "1",
+        "2"
+      ]
+    ],
+    "query": "Encode these cells as a comma-delimited document.",
+    "skill": "csv_write",
+    "skill_id": "csv_write",
+    "split": "train",
+    "text": "Encode these cells as a comma-delimited document."
+  },
+  {
+    "domain": "serialization",
+    "expected": "\"a,b\",c\n",
+    "fixture_id": "csv_write:train:1",
+    "id": "23db52cadcb469ac86dd8abe8219115d132a9df2155d1758d179acc1f2a0c77f",
+    "label": 9,
+    "payload": [
+      [
+        "a,b",
+        "c"
+      ]
+    ],
+    "query": "Quote fields containing commas, quotes, or line breaks when writing CSV.",
+    "skill": "csv_write",
+    "skill_id": "csv_write",
+    "split": "train",
+    "text": "Quote fields containing commas, quotes, or line breaks when writing CSV."
+  },
+  {
+    "domain": "serialization",
+    "expected": "\"say \"\"hi\"\"\",z\n",
+    "fixture_id": "csv_write:train:2",
+    "id": "1a9ecd5d55c6b46ce311df334e755be16401c079ebf26195fb2428f3ae4b1502",
+    "label": 9,
+    "payload": [
+      [
+        "say \"hi\"",
+        "z"
+      ]
+    ],
+    "query": "Convert the row lists to a textual CSV file.",
+    "skill": "csv_write",
+    "skill_id": "csv_write",
+    "split": "train",
+    "text": "Convert the row lists to a textual CSV file."
+  },
+  {
+    "domain": "serialization",
+    "expected": "a,b\n1,2\n",
+    "fixture_id": "csv_write:train:0",
+    "id": "3e3bd036ece7c4578f18f7cc97f054c689794dc5202c0eb68cdde9e9d48889bb",
+    "label": 9,
+    "payload": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "1",
+        "2"
+      ]
+    ],
+    "query": "Use doubled quotes to escape quotation marks inside CSV cells.",
+    "skill": "csv_write",
+    "skill_id": "csv_write",
+    "split": "train",
+    "text": "Use doubled quotes to escape quotation marks inside CSV cells."
+  },
+  {
+    "domain": "serialization",
+    "expected": "\"a,b\",c\n",
+    "fixture_id": "csv_write:train:1",
+    "id": "d33f79a9f3463870c2fa1742a598b386e6b9e9c88a9b314f374fdab1dc2a5ce6",
+    "label": 9,
+    "payload": [
+      [
+        "a,b",
+        "c"
+      ]
+    ],
+    "query": "Render this table as CSV ending each record with a newline.",
+    "skill": "csv_write",
+    "skill_id": "csv_write",
+    "split": "train",
+    "text": "Render this table as CSV ending each record with a newline."
+  },
+  {
+    "domain": "serialization",
+    "expected": "\"say \"\"hi\"\"\",z\n",
+    "fixture_id": "csv_write:train:2",
+    "id": "ff7f4d297d7a4b8e78478e956adbeac19397525ef2cef1721e8fcaeb3a20be25",
+    "label": 9,
+    "payload": [
+      [
+        "say \"hi\"",
+        "z"
+      ]
+    ],
+    "query": "Write comma-separated records from the supplied structured rows.",
+    "skill": "csv_write",
+    "skill_id": "csv_write",
+    "split": "train",
+    "text": "Write comma-separated records from the supplied structured rows."
+  },
+  {
+    "domain": "serialization",
+    "expected": "a,b\n1,2\n",
+    "fixture_id": "csv_write:train:0",
+    "id": "fd89b64b6fc30d2212330400dd11896b67b02d694ea616c9e7198debaf8d6882",
+    "label": 9,
+    "payload": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "1",
+        "2"
+      ]
+    ],
+    "query": "Generate CSV text while preserving every cell's content.",
+    "skill": "csv_write",
+    "skill_id": "csv_write",
+    "split": "train",
+    "text": "Generate CSV text while preserving every cell's content."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "a": 1,
+      "b": [
+        2,
+        3
+      ]
+    },
+    "fixture_id": "json_parse:train:0",
+    "id": "ef7ee52b420b2afb424b044991f9135d3dc4431a4cfef5bf868e324c63643716",
+    "label": 10,
+    "payload": "{\"a\":1,\"b\":[2,3]}",
+    "query": "Parse this JSON text into structured values.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "split": "train",
+    "text": "Parse this JSON text into structured values."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      true,
+      null,
+      "x"
+    ],
+    "fixture_id": "json_parse:train:1",
+    "id": "4ee92666f76b4a2d8a3da714279e4bcb8a33b1db180352d3a5afe7bbb92ae090",
+    "label": 10,
+    "payload": "[ true, null, \"x\" ]",
+    "query": "Decode the JSON document rather than returning text.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "split": "train",
+    "text": "Decode the JSON document rather than returning text."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "text": "hello world"
+    },
+    "fixture_id": "json_parse:train:2",
+    "id": "b703ae93f753d2aeec964d8232e73c1ba63a3dc0e8eb0c6d9e5572ede1a0c9ac",
+    "label": 10,
+    "payload": "{\"text\":\"hello world\"}",
+    "query": "Load the JSON string as dictionaries, lists, and scalar values.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "split": "train",
+    "text": "Load the JSON string as dictionaries, lists, and scalar values."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "a": 1,
+      "b": [
+        2,
+        3
+      ]
+    },
+    "fixture_id": "json_parse:train:0",
+    "id": "ff508735404c426fa16b0d0232410fccb4fd65393744d927107fbe48a39374fd",
+    "label": 10,
+    "payload": "{\"a\":1,\"b\":[2,3]}",
+    "query": "Deserialize this JSON to its underlying data structure.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "split": "train",
+    "text": "Deserialize this JSON to its underlying data structure."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      true,
+      null,
+      "x"
+    ],
+    "fixture_id": "json_parse:train:1",
+    "id": "7d6d1c8bbf5097e9b7fa8a6b9a5328870785f3abcc1c4d389eb27d59ae7fad03",
+    "label": 10,
+    "payload": "[ true, null, \"x\" ]",
+    "query": "Convert JSON syntax into actual structured data.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "split": "train",
+    "text": "Convert JSON syntax into actual structured data."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "text": "hello world"
+    },
+    "fixture_id": "json_parse:train:2",
+    "id": "91f3d68399a5937e441bfcec8f3036f831a87ce03c9f43fe27943b1529208317",
+    "label": 10,
+    "payload": "{\"text\":\"hello world\"}",
+    "query": "Interpret this JSON document and return its values.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "split": "train",
+    "text": "Interpret this JSON document and return its values."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "a": 1,
+      "b": [
+        2,
+        3
+      ]
+    },
+    "fixture_id": "json_parse:train:0",
+    "id": "fc5f8e9ced6dcfaeaee3371414be7c9d01f70e0670565f5bf6663922a666a125",
+    "label": 10,
+    "payload": "{\"a\":1,\"b\":[2,3]}",
+    "query": "Read the serialized JSON as an object or array.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "split": "train",
+    "text": "Read the serialized JSON as an object or array."
+  },
+  {
+    "domain": "serialization",
+    "expected": [
+      true,
+      null,
+      "x"
+    ],
+    "fixture_id": "json_parse:train:1",
+    "id": "e13fd5b429ce7443f0604eefe6d0f1a5068062a120e687cdfa8069fad9a249c7",
+    "label": 10,
+    "payload": "[ true, null, \"x\" ]",
+    "query": "Turn the JSON text into data, including booleans and null values.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "split": "train",
+    "text": "Turn the JSON text into data, including booleans and null values."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "text": "hello world"
+    },
+    "fixture_id": "json_parse:train:2",
+    "id": "e09286dd5b05c665ff3d718f211eb02a2a9c0d623e1e0903f32dd9fcce89db9b",
+    "label": 10,
+    "payload": "{\"text\":\"hello world\"}",
+    "query": "Unpack the JSON string into its nested structure.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "split": "train",
+    "text": "Unpack the JSON string into its nested structure."
+  },
+  {
+    "domain": "serialization",
+    "expected": {
+      "a": 1,
+      "b": [
+        2,
+        3
+      ]
+    },
+    "fixture_id": "json_parse:train:0",
+    "id": "f474f2f5f56392ae98bdb301964d3e6792edc8ddc02323cb8eefbad83ecf75f2",
+    "label": 10,
+    "payload": "{\"a\":1,\"b\":[2,3]}",
+    "query": "Use a JSON decoder on this document.",
+    "skill": "json_parse",
+    "skill_id": "json_parse",
+    "split": "train",
+    "text": "Use a JSON decoder on this document."
+  },
+  {
+    "domain": "serialization",
+    "expected": "{\"a\":1,\"b\":[2,3]}",
+    "fixture_id": "json_compact:train:0",
+    "id": "62e46b930bd0e781a985955248fceef55abc04918ba652e7757f59905389de0f",
+    "label": 11,
+    "payload": " { \"a\" : 1, \"b\" : [ 2, 3 ] } ",
+    "query": "Compact this JSON text by removing optional formatting whitespace.",
+    "skill": "json_compact",
+    "skill_id": "json_compact",
+    "split": "train",
+    "text": "Compact this JSON text by removing optional formatting whitespace."
+  },
+  {
+    "domain": "serialization",
+    "expected": "[true,null,\"x\"]",
+    "fixture_id": "json_compact:train:1",
+    "id": "d91833b749e971c45fadd13a96969f61253007d38b2b72d00812ce1005b53ea7",
+    "label": 11,
+    "payload": "[ true, null, \"x\" ]",
+    "query": "Return a minified JSON string preserving the data and key order.",
+    "skill": "json_compact",
+    "skill_id": "json_compact",
+    "split": "train",
+    "text": "Return a minified JSON string preserving the data and key order."
+  },
+  {
+    "domain": "serialization",
+    "expected": "{\"text\":\"hello world\"}",
+    "fixture_id": "json_compact:train:2",
+    "id": "7968e98a639515192772e28ef081c328e09a509f0f2499610b79899cd2c26d27",
+    "label": 11,
+    "payload": "{ \"text\" : \"hello world\" }",
+    "query": "Parse and reserialize this JSON without pretty-print spacing.",
+    "skill": "json_compact",
+    "skill_id": "json_compact",
+    "split": "train",
+    "text": "Parse and reserialize this JSON without pretty-print spacing."
+  },
+  {
+    "domain": "serialization",
+    "expected": "{\"a\":1,\"b\":[2,3]}",
+    "fixture_id": "json_compact:train:0",
+    "id": "d5562761f1062eb71beb689bf38ff77dcc28ffa85b4468d3329d31fac44009ec",
+    "label": 11,
+    "payload": " { \"a\" : 1, \"b\" : [ 2, 3 ] } ",
+    "query": "Make the JSON document compact while keeping it as text.",
+    "skill": "json_compact",
+    "skill_id": "json_compact",
+    "split": "train",
+    "text": "Make the JSON document compact while keeping it as text."
+  },
+  {
+    "domain": "serialization",
+    "expected": "[true,null,\"x\"]",
+    "fixture_id": "json_compact:train:1",
+    "id": "d7df0cdcde9c9b77d6b9b60b88212e48b35c9b696231e5f33411343716e5b1d5",
+    "label": 11,
+    "payload": "[ true, null, \"x\" ]",
+    "query": "Write the same JSON data with no unnecessary spaces after separators.",
+    "skill": "json_compact",
+    "skill_id": "json_compact",
+    "split": "train",
+    "text": "Write the same JSON data with no unnecessary spaces after separators."
+  },
+  {
+    "domain": "serialization",
+    "expected": "{\"text\":\"hello world\"}",
+    "fixture_id": "json_compact:train:2",
+    "id": "e4ee75d4c1a4d9eb7aee4340f77673e4a9e9a069ab56bffe5ec004d2fbf46952",
+    "label": 11,
+    "payload": "{ \"text\" : \"hello world\" }",
+    "query": "Minify the JSON but preserve spaces inside string values.",
+    "skill": "json_compact",
+    "skill_id": "json_compact",
+    "split": "train",
+    "text": "Minify the JSON but preserve spaces inside string values."
+  },
+  {
+    "domain": "serialization",
+    "expected": "{\"a\":1,\"b\":[2,3]}",
+    "fixture_id": "json_compact:train:0",
+    "id": "6470d16b43d1e437df934f499f50aa2595bf5cbc3b2968a149fdb8c3f04d8ab2",
+    "label": 11,
+    "payload": " { \"a\" : 1, \"b\" : [ 2, 3 ] } ",
+    "query": "Remove indentation and line breaks used only to format this JSON.",
+    "skill": "json_compact",
+    "skill_id": "json_compact",
+    "split": "train",
+    "text": "Remove indentation and line breaks used only to format this JSON."
+  },
+  {
+    "domain": "serialization",
+    "expected": "[true,null,\"x\"]",
+    "fixture_id": "json_compact:train:1",
+    "id": "92f70ce35edf8b62be43b41642e390bf931b42d1e4623c16e2092cd00397b022",
+    "label": 11,
+    "payload": "[ true, null, \"x\" ]",
+    "query": "Use compact JSON separators without sorting object keys.",
+    "skill": "json_compact",
+    "skill_id": "json_compact",
+    "split": "train",
+    "text": "Use compact JSON separators without sorting object keys."
+  },
+  {
+    "domain": "serialization",
+    "expected": "{\"text\":\"hello world\"}",
+    "fixture_id": "json_compact:train:2",
+    "id": "02a6cecdbaa0d00859130318d5ceff61a9a7cf406703bdb13b11fff7ac23b08b",
+    "label": 11,
+    "payload": "{ \"text\" : \"hello world\" }",
+    "query": "Produce the compact textual form of this JSON document.",
+    "skill": "json_compact",
+    "skill_id": "json_compact",
+    "split": "train",
+    "text": "Produce the compact textual form of this JSON document."
+  },
+  {
+    "domain": "serialization",
+    "expected": "{\"a\":1,\"b\":[2,3]}",
+    "fixture_id": "json_compact:train:0",
+    "id": "80427ba4f624dbc9eb183272c8230b4803fc0b15e30b759b47c4c5826bb357b1",
+    "label": 11,
+    "payload": " { \"a\" : 1, \"b\" : [ 2, 3 ] } ",
+    "query": "Shrink formatting whitespace in the JSON representation, retaining Unicode text.",
+    "skill": "json_compact",
+    "skill_id": "json_compact",
+    "split": "train",
+    "text": "Shrink formatting whitespace in the JSON representation, retaining Unicode text."
+  }
+]

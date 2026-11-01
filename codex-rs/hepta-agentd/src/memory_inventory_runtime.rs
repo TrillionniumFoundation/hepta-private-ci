@@ -22,6 +22,7 @@ use serde_json::Value;
 use crate::AgentdError;
 use crate::LoadedMemoryInventoryBundleV1;
 use crate::MemoryInventoryReleaseHostV1;
+use crate::MemoryIsolatedServiceV14;
 use crate::memory_cell_runtime::now_unix_seconds;
 
 #[path = "memory_inventory_execution.rs"]
@@ -62,9 +63,14 @@ pub struct AgentdMemoryInventoryRuntimeV1 {
     spawn_generation: u64,
     scope: CognitiveScope,
     access: CognitiveAccess,
-    release: Arc<MemoryInventoryReleaseHostV1>,
+    release: InventoryRelease,
     resolver: Arc<dyn MemoryInventoryAddressResolverV1>,
     resolver_digest: ContractDigestV1,
+}
+
+enum InventoryRelease {
+    Bundle(Arc<MemoryInventoryReleaseHostV1>),
+    Independent(Arc<MemoryIsolatedServiceV14>),
 }
 
 impl AgentdMemoryInventoryRuntimeV1 {
@@ -73,6 +79,39 @@ impl AgentdMemoryInventoryRuntimeV1 {
         spawn_generation: u64,
         scope: CognitiveScope,
         release: Arc<MemoryInventoryReleaseHostV1>,
+        resolver: Arc<dyn MemoryInventoryAddressResolverV1>,
+    ) -> Result<Self, AgentdError> {
+        Self::configured(
+            owner_agent_id,
+            spawn_generation,
+            scope,
+            InventoryRelease::Bundle(release),
+            resolver,
+        )
+    }
+
+    /// Opt-in V14 service; the existing bundled profile retains its V1 contract.
+    pub fn with_independent_cells(
+        owner_agent_id: AgentId,
+        spawn_generation: u64,
+        scope: CognitiveScope,
+        service: Arc<MemoryIsolatedServiceV14>,
+        resolver: Arc<dyn MemoryInventoryAddressResolverV1>,
+    ) -> Result<Self, AgentdError> {
+        Self::configured(
+            owner_agent_id,
+            spawn_generation,
+            scope,
+            InventoryRelease::Independent(service),
+            resolver,
+        )
+    }
+
+    fn configured(
+        owner_agent_id: AgentId,
+        spawn_generation: u64,
+        scope: CognitiveScope,
+        release: InventoryRelease,
         resolver: Arc<dyn MemoryInventoryAddressResolverV1>,
     ) -> Result<Self, AgentdError> {
         if spawn_generation == 0 {
@@ -141,8 +180,14 @@ impl AgentdMemoryInventoryRuntimeV1 {
                 "memory inventory store owner differs from host".to_string(),
             ));
         }
+        let release = match &self.release {
+            InventoryRelease::Bundle(release) => release,
+            InventoryRelease::Independent(service) => {
+                return self.read_independent(store, request, service).await;
+            }
+        };
         let started = Instant::now();
-        let bundle = self.release.load_current().map_err(|_| {
+        let bundle = release.load_current().map_err(|_| {
             AgentdError::Protocol("selected memory inventory release is unavailable".to_string())
         })?;
         let mut readout = failed(
@@ -153,7 +198,7 @@ impl AgentdMemoryInventoryRuntimeV1 {
         );
         let result = match tokio::time::timeout(
             Duration::from_secs(5),
-            self.read_bound(store, request, &bundle),
+            self.read_bound(store, request, &bundle, release),
         )
         .await
         {
@@ -179,6 +224,7 @@ impl AgentdMemoryInventoryRuntimeV1 {
         store: &DurableCognitiveStore,
         request: &MemoryInventoryRequestV1,
         bundle: &LoadedMemoryInventoryBundleV1,
+        release: &MemoryInventoryReleaseHostV1,
     ) -> Result<MemoryInventoryReadoutV1, ReadFailure> {
         let now = now_unix_seconds().map_err(|_| unavailable("host clock is unavailable"))?;
         let acquired = store
@@ -218,7 +264,7 @@ impl AgentdMemoryInventoryRuntimeV1 {
             ));
         }
         let readout = execution::execute(request, decision.operation, bundle, &acquired)?;
-        self.release.revalidate(bundle).map_err(|_| {
+        release.revalidate(bundle).map_err(|_| {
             (
                 MemoryReadStatusV1::Stale,
                 "memory inventory publication changed before final use",
@@ -245,7 +291,7 @@ impl AgentdMemoryInventoryRuntimeV1 {
             })?;
         // The source-owner check awaits SQLite. Recheck publication afterward
         // so a withdrawal during that wait cannot escape this final fence.
-        self.release.revalidate(bundle).map_err(|_| {
+        release.revalidate(bundle).map_err(|_| {
             (
                 MemoryReadStatusV1::Stale,
                 "memory inventory publication changed during source revalidation",
@@ -253,9 +299,84 @@ impl AgentdMemoryInventoryRuntimeV1 {
         })?;
         Ok(readout)
     }
+
+    async fn read_independent(
+        &self,
+        store: &DurableCognitiveStore,
+        request: &MemoryInventoryRequestV1,
+        service: &MemoryIsolatedServiceV14,
+    ) -> Result<MemoryInventoryReadoutV1, AgentdError> {
+        let started = Instant::now();
+        let future = async {
+            let now = now_unix_seconds().map_err(|_| unavailable("host clock is unavailable"))?;
+            let acquired = store
+                .memory_inventory_snapshot(&self.access, &self.scope, now)
+                .await
+                .map_err(|_| unavailable("canonical memory inventory owner is unavailable"))?;
+            if request.scope != *acquired.scope() {
+                return Err((
+                    MemoryReadStatusV1::Abstain,
+                    "request scope differs from authenticated owner scope",
+                ));
+            }
+            if self.resolver.model_digest() != self.resolver_digest {
+                return Err(unavailable("configured address resolver changed its model"));
+            }
+            let decision = self
+                .resolver
+                .resolve(request, &acquired)
+                .await
+                .map_err(|_| unavailable("configured address resolver is unavailable"))?
+                .ok_or((
+                    MemoryReadStatusV1::Abstain,
+                    "address resolver declined the request",
+                ))?;
+            if decision.request != *request
+                || decision.owner_cut_digest != acquired.owner_cut_digest()
+                || decision.model_digest != self.resolver_digest
+            {
+                return Err(unavailable(
+                    "address decision differs from its request or owner binding",
+                ));
+            }
+            service
+                .read_acquired(
+                    store,
+                    &self.access,
+                    &self.scope,
+                    request,
+                    decision.operation,
+                    acquired,
+                )
+                .await
+        };
+        let result = tokio::time::timeout(Duration::from_secs(5), future).await;
+        let mut readout = if started.elapsed() > Duration::from_secs(5) {
+            service.failed(
+                request,
+                MemoryReadStatusV1::Unavailable,
+                "memory inventory read deadline exceeded",
+            )
+        } else {
+            match result {
+                Ok(Ok(readout)) => readout,
+                Ok(Err((status, reason))) => service.failed(request, status, reason),
+                Err(_) => service.failed(
+                    request,
+                    MemoryReadStatusV1::Unavailable,
+                    "memory inventory read deadline exceeded",
+                ),
+            }
+        };
+        readout.elapsed_seconds = started.elapsed().as_secs_f64();
+        readout
+            .validate()
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        Ok(readout)
+    }
 }
 
-type ReadFailure = (MemoryReadStatusV1, &'static str);
+pub(crate) type ReadFailure = (MemoryReadStatusV1, &'static str);
 
 fn unavailable(reason: &'static str) -> ReadFailure {
     (MemoryReadStatusV1::Unavailable, reason)

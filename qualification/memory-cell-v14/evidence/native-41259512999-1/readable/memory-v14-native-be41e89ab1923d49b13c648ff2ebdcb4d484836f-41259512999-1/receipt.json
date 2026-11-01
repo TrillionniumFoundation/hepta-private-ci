@@ -1,0 +1,110 @@
+{
+  "schema": "hepta.memory.v14.native-ci-receipt.v1",
+  "passed": false,
+  "tests_command_started": true,
+  "tests_executed": false,
+  "final_fix_executed": false,
+  "formatter_executed": false,
+  "tests_executed_after_fix_or_format": false,
+  "production_activation_allowed": false,
+  "trained_quality_claimed": false,
+  "baseline_commit": "b020a9b1648513ed7cb4edfbca6893c2b9ec99d4",
+  "commands": [
+    {
+      "name": "rustc-version",
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.7431989520000002
+    },
+    {
+      "name": "cargo-version",
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.030493671999977323
+    },
+    {
+      "name": "nextest-version",
+      "command": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.041098422000004575
+    },
+    {
+      "name": "just-version",
+      "command": [
+        "just",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.001281962999996722
+    },
+    {
+      "name": "scoped-native-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "--retries",
+        "0",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "-E",
+        "test(memory_v14_) | test(memory_v12_) | test(memory_v11_) | test(inventory_v14_)"
+      ],
+      "started": true,
+      "exit_code": 101,
+      "wall_seconds": 525.28116927
+    }
+  ],
+  "github": {
+    "GITHUB_SHA": "be41e89ab1923d49b13c648ff2ebdcb4d484836f",
+    "GITHUB_REF": "refs/heads/research/memory-cell-v14-20261031",
+    "GITHUB_RUN_ID": "41259512999",
+    "GITHUB_RUN_ATTEMPT": "1",
+    "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci"
+  },
+  "resource_settings": {
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2"
+  },
+  "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+  "disk_before": {
+    "total": 154894188544,
+    "used": 70880129024,
+    "free": 83997282304
+  },
+  "source_commit": "be41e89ab1923d49b13c648ff2ebdcb4d484836f",
+  "source_tree": "42296661406c09151070625460dccd614798b834",
+  "initial_changed_tree": false,
+  "source_inventory_sha256": "2a554d3e1b5d4a2c49d872f1dffcb03a86fd0c0550b56d1ddb513aeb668a3328",
+  "junit_source": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml",
+  "error_type": "RuntimeError",
+  "error": "scoped-native-tests exited 101",
+  "final_changed_tree": false,
+  "wall_seconds": 526.572474392,
+  "disk_after": {
+    "total": 154894188544,
+    "used": 76128567296,
+    "free": 78748844032
+  }
+}

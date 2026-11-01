@@ -1,0 +1,73 @@
+{
+  "caller_payload": [
+    "iris",
+    "cedar",
+    "iris",
+    "oak",
+    "cedar"
+  ],
+  "load": {
+    "checkpoint_bytes_read": 35823,
+    "complete_neural_training_state_restored": false,
+    "cpu_seconds": 0.006845845999999989,
+    "materialization_notes": [],
+    "resident_ram_unmeasured": true,
+    "runtime_source_bytes_read": 59165,
+    "shared_encoder_resident_in_this_loader": false,
+    "source_sha256": "5c410b1b3485935a53a86b4f21487a92e7a54398f6c3451872c8fbabadcd27de",
+    "verified_artifact_bytes_read": 415695,
+    "wall_seconds": 0.006845626999989918
+  },
+  "next_query": {
+    "accepted": true,
+    "error": null,
+    "executor_cpu_seconds": 3.1122000000105565e-05,
+    "executor_wall_seconds": 3.097699999443648e-05,
+    "operation_id": "unique_stable",
+    "output": [
+      "iris",
+      "cedar",
+      "oak"
+    ],
+    "prediction": 0,
+    "receipt": {
+      "checkpoint_bytes_read_this_prediction": 0,
+      "cpu_seconds_excluding_encoder_and_executor": 0.00016027100000004513,
+      "encoder": {
+        "cpu_seconds": 0.006566591999999982,
+        "encoder_load_seconds_external_to_policy": 0.34231056499999113,
+        "mode": "live",
+        "statistics_delta": {
+          "calls": 1,
+          "encode_seconds": 0.0065386459999956514,
+          "encoded_tokens": 19,
+          "examples": 1,
+          "input_tokens": 19,
+          "padded_tokens": 19,
+          "truncated_examples": 0
+        },
+        "wall_seconds": 0.006566654000010885
+      },
+      "encoder_hash": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+      "expert_example_invocations": 0,
+      "feature_sha256": "62564bc081a6b830395c8e9d82c83cbc2b53604954b147f5946614290f5ca6c3",
+      "load_cost_charged_once_separately": true,
+      "native_installation_authority": false,
+      "novelty_similarity": 0.7436997294425964,
+      "novelty_threshold": 0.5411433577537537,
+      "policy_identity": "d43f1d5b67420421cce16cb4d1a8620d8634bd9725905f0d4514131a06a3cb00",
+      "query_count": 1,
+      "request_text_sha256": "09fd8a14e70eb66e8e3a4af2357399948d6dae14e3704c493d4181ab706159fe",
+      "seed": 713,
+      "selected": "centroid",
+      "source_freshness_authority_checked": false,
+      "source_version": "19ebe0c1c2686688df7327baf7334165b18d5d95c8fac4f3ce013809a8ae328f",
+      "wall_seconds_excluding_encoder_and_executor": 0.00015977699999325523
+    }
+  },
+  "no_training_or_held_selection_performed": true,
+  "protocol_sha256": "29b1737c6a66161d02766bc5e8444fb940eb31f3de5006534967999e0f48ade5",
+  "request_text": "Delete repeated string values, preserving the order in which each distinct value first occurs.",
+  "schema": "hepta.memory.selected-policy-recovery.v14",
+  "scope": "Original-checkpoint recovery and callable research inference; no native installation or new efficacy claim."
+}

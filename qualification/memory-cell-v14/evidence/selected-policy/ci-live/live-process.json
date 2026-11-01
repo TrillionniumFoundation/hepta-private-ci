@@ -1,0 +1,42 @@
+{
+  "boot_id": "2389821e-6efb-4655-8eef-795c15516c93",
+  "child_cpu_seconds": 0.793673,
+  "child_peak_rss_bytes": 265166848,
+  "cloud_bill_usd": null,
+  "command": [
+    "/tmp/v14-policy-venv/bin/python",
+    "qualification/memory-cell-v14/selected_routing_policy.py",
+    "--routing",
+    "qualification/memory-cell-v14/evidence/ci-41259326679-1/readable/v14-routing-41259326679-1/routing",
+    "--inventory",
+    "qualification/memory-cell-v14/evidence/structural-admission/ROUTING_INPUT_INDEX.json",
+    "--inventory-sha256",
+    "4443b123889066a30f4edeca9cc79c32d74ec0b0427bc716ad2e63926df19ba3",
+    "--encoder-hash",
+    "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+    "--source-version",
+    "19ebe0c1c2686688df7327baf7334165b18d5d95c8fac4f3ce013809a8ae328f",
+    "--seed",
+    "713",
+    "--live-probe",
+    "--model-dir",
+    "/tmp/v14-policy-encoder",
+    "--output",
+    "/tmp/v14-policy-results/LIVE_NEXT_QUERY.json"
+  ],
+  "energy_joules": null,
+  "exit_code": 0,
+  "network_scope": "All interfaces in this runner during the command; includes unrelated runner traffic.",
+  "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "run_attempt": "1",
+  "run_id": "41261014074",
+  "runner_network_delta": {
+    "rx_bytes": 354,
+    "tx_bytes": 6090
+  },
+  "schema": "hepta.memory.v14.process-receipt.v1",
+  "script_sha256": "fd52de08acd577ba89b775869b468750d115a6fac3cf7a7f45bfa8a586f71ed7",
+  "source_commit": "91edc5971b79f72769d33b2b544fab5b93925bc3",
+  "wall_seconds": 0.7944836570000007
+}

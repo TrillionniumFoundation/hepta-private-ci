@@ -1,0 +1,7 @@
+{
+  "exception_type": "TypeError",
+  "message": "only integer tensors of a single element can be converted to an index",
+  "seed": 29,
+  "status": "failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v14/language_experiment.py\", line 272, in <module>\n    main(args)\n  File \"/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v14/language_experiment.py\", line 160, in main\n    training = train_network(network, optimizer, inputs, torch.tensor([row[\"label\"] for row in rows]), steps, args.seed + phase)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v14/language_models.py\", line 168, in train_network\n    batch = {key: value[index] for key, value in inputs.items()} if isinstance(inputs, dict) else inputs[index]\n                                                                                                  ~~~~~~^^^^^^^\n  File \"/tmp/v14-language-venv/lib/python3.12/site-packages/transformers/tokenization_utils_base.py\", line 273, in __getitem__\n    return self._encodings[item]\n           ~~~~~~~~~~~~~~~^^^^^^\nTypeError: only integer tensors of a single element can be converted to an index\n"
+}

@@ -1,0 +1,180 @@
+{
+  "schema": "hepta.semantic.protocol.v1",
+  "status": "preregistered_paired_bugfix_recheck_of_previously_evaluated_holdout",
+  "purpose": "Test language understanding for repeated reuse of registered skills, where exact-address KV alone is insufficient, while retaining strong lexical and pretrained implementations.",
+  "task_scope": "Instruction-to-skill selection and explicitly decomposed composition; no claim of algorithm synthesis, learned planning, arbitrary new fact memory, or open-domain generality.",
+  "information": "All selectors receive the identical raw request text and V13 train/calibration examples. Payloads go to the identical shared executor. No selector receives skill labels, expected outputs, project-to-label maps, or holdout metadata.",
+  "sources": {
+    "training": "../memory-cell-v13/evidence/inputs/train_rows.json",
+    "calibration": "../memory-cell-v13/evidence/inputs/calibration_rows.json",
+    "training_rows": 120,
+    "calibration_rows": 48,
+    "new_holdout": "semantic_holdout.json",
+    "new_authored_queries": 96,
+    "new_compositions": 12,
+    "manifest": "semantic_manifest.json",
+    "previous_v13_or_routing_holdout_used_for_selection": false,
+    "new_project_names": "Aurora project distractors now come from a single frozen salted hash of request body only, independent of labels, indexes, oracle metadata, and row order. They remain unseen in train/calibration. Same previously evaluated requests; no new independent holdout samples."
+  },
+  "models": {
+    "bert": {
+      "repository": "google/bert_uncased_L-2_H-128_A-2",
+      "revision": "30b0a37ccaaa32f332884b96992754e246e48c5f",
+      "safetensors_sha256": "7fb69ad9f6866d8983183c930e33828f326470bf6ad8bbb2ad4ed957a92e9414",
+      "pooling": "CLS",
+      "max_tokens": 96
+    },
+    "minilm": {
+      "repository": "sentence-transformers/all-MiniLM-L6-v2",
+      "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+      "onnx_sha256": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452",
+      "onnx_bytes": 90405214,
+      "pooling": "attention-masked mean and L2",
+      "max_tokens": 256
+    },
+    "random_model_fallback": false,
+    "different_pretrained_encoders_allowed_as_strong_baselines": true
+  },
+  "arms": [
+    "exact_kv",
+    "bm25",
+    "kv_bm25",
+    "lexical_ridge",
+    "bert_nearest",
+    "bert_centroid",
+    "bert_ridge",
+    "bert_fast_weights",
+    "minilm_nearest",
+    "minilm_centroid",
+    "minilm_ridge",
+    "bert_linear",
+    "bert_mlp",
+    "bert_lora"
+  ],
+  "target_arms": [
+    "bert_lora",
+    "bert_mlp",
+    "bert_fast_weights"
+  ],
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "statistical_units": "The same 96 authored requests are used for all seeds; optimizer seeds are not 288 independent language examples. Queries and their skill groups must remain paired in inference.",
+  "training_and_selection": {
+    "backbone_frozen": true,
+    "lora_targets": "BERT attention query/value",
+    "lora_rank": 4,
+    "lora_alpha": 8,
+    "linear_reader": "128-to-12, same initialization for LoRA and frozen linear control",
+    "mlp_hidden": 32,
+    "optimizer": "AdamW",
+    "learning_rate": 0.002,
+    "weight_decay": 0.001,
+    "gradient_clip": 1.0,
+    "batch_size": 32,
+    "neural_cumulative_candidate_steps": [
+      80,
+      160,
+      320
+    ],
+    "ridge_candidates": [
+      0.01,
+      0.1,
+      1.0,
+      10.0
+    ],
+    "fastweight_candidate_passes": [
+      2,
+      6,
+      12
+    ],
+    "fastweight_learning_rate": 0.4,
+    "lexical_features": "TFIDF word unigrams/bigrams plus char_wb 2-5 grams",
+    "selection": "V13 calibration executed task success, then label accuracy, then earliest candidate; never new holdout outcomes.",
+    "all_attempt_costs_included": true,
+    "cpu_threads": 2
+  },
+  "acceptance": {
+    "quality": "A target improves held-out actual execution success over every prespecified implementation baseline, consistently across the three fixed seeds. Costs and label accuracy are separately reported.",
+    "net_utility": "At 1000 reads/one-hour storage window, actual execution success minus 0.01 reward per total wall-second/query minus 0.001 reward per GiB-hour/query exceeds every prespecified baseline.",
+    "read_horizon_sensitivity": [
+      1,
+      10,
+      100,
+      10000
+    ],
+    "statistical_review": "Root aggregation must account for shared requests across seeds and paired skill/query groups; single-seed candidate flags do not establish stable gain.",
+    "energy_dollars_and_unimplemented_distributed_transport": "Explicit unknowns outside the local service claim; not additional quality gates."
+  },
+  "cost_scope": {
+    "included": [
+      "actual model acquisition/load",
+      "actual per-arm train/calibration encoding",
+      "all calibration candidate training",
+      "every candidate checkpoint",
+      "selection",
+      "restore",
+      "source bytes",
+      "base bytes",
+      "sequential query encoding/reading/shared execution",
+      "physical experiment wall time",
+      "RSS",
+      "known previous failed and unsuccessful exploration"
+    ],
+    "prior_cost_ledger": "semantic_prior_costs.json; optional override accepts cost-only entries, never prior holdout predictions",
+    "unknown_prior_costs": "Remain null and visible; never treated as measured zero. Quality evidence remains assessable, while complete research-amortized cost claims require these values."
+  },
+  "runtime": {
+    "additional_dependency": "onnxruntime==1.23.2",
+    "other_dependencies": "requirements-language.txt",
+    "command": "python qualification/memory-cell-v14/semantic_run.py --seed 17 --output /tmp/semantic-v14-17",
+    "final_execution_requires_prior_commit": true
+  },
+  "paired_bugfix": {
+    "original_source_commit": "5e2561adeeae4237542e39e57f36e0096536df75",
+    "original_run_id": "41260194939",
+    "original_evidence_commit": "cb32b3b290b894ded7d8f63e7da0262c70f6692e",
+    "original_holdout_sha256": "36d87fb2f4dc05967fe5868f52dfbd0ce208be0173e8fb17783e4e3f167edea1",
+    "original_protocol_sha256": "ca780c0444e116b1bdfcfdb237b29cff3ae52f14c4ee2e8415e477361bf7791f",
+    "reason": "Original query project IDs explicitly encoded the gold category and within-category index. Repair this construction error without retuning on observed quality.",
+    "repair_file": "semantic_project_ids.py",
+    "mapping_file": "semantic_project_id_mapping.json",
+    "mapping_sha256": "f2efd392f9de411266e1aeea1f237d873e541b092e672bae71a4f53e8becd2c6",
+    "salt": "hepta-semantic-v14-project-cue-repair-v1",
+    "changed_row_fields": [
+      "text",
+      "query",
+      "unseen_project"
+    ],
+    "unchanged": [
+      "semantic bodies",
+      "payloads",
+      "labels",
+      "expected outputs",
+      "row order",
+      "12 compositions",
+      "V13 train/calibration",
+      "all model identities",
+      "all hyperparameters",
+      "all calibration choices",
+      "target/control identities",
+      "utility weights"
+    ],
+    "unchanged_source_sha256": {
+      "semantic_run.py": "3fa2091c2a77f63a134789fbd4cd1445e9428c9f3f3cd27084c118a0a0f75945",
+      "semantic_models.py": "040b3ce6a5582935ce8eac5e2c30b97d6a244b99064d9b9f8ad8a7c568f3c87f",
+      "semantic_costs.py": "b1cc05b95ad663072c861d9fc09844b22a4fc63349bf4e9aecda695483a0f2c0",
+      "semantic_data.py": "1175c11f5d08b94135e6755379b9fbf5ab0a9231c2a8a0cdddf7a3389d7a5a67",
+      "language_data.py": "69fd5e49a8aa86e710b1f97d6376a3338a2db56794739ca6910fdb3e642ccc4a",
+      "language_models.py": "1f4bb18b583b9b1c2e209c369cada072abc3c8b9cd3e46acceb0cd573332034e"
+    },
+    "independent_new_samples": 0,
+    "statistical_interpretation": "A paired cue-removal sensitivity check on the same evaluated 96 requests and 12 compositions. Original negative results remain reported. No new independent generalization evidence and no hyperparameter selection from either held-out result.",
+    "original_data_copy": "semantic_holdout_labelcue_original.json",
+    "original_protocol_copy": "semantic_protocol_labelcue_original.json",
+    "prior_semantic_costs_preserved": true,
+    "final_execution_requires_prior_commit": true
+  }
+}

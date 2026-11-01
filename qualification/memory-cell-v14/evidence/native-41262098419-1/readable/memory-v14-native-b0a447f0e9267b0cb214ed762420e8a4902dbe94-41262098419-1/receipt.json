@@ -1,0 +1,163 @@
+{
+  "schema": "hepta.memory.v14.native-ci-receipt.v1",
+  "passed": false,
+  "tests_command_started": true,
+  "tests_executed": true,
+  "final_fix_executed": true,
+  "formatter_executed": true,
+  "tests_executed_after_fix_or_format": false,
+  "production_activation_allowed": false,
+  "trained_quality_claimed": false,
+  "baseline_commit": "b020a9b1648513ed7cb4edfbca6893c2b9ec99d4",
+  "commands": [
+    {
+      "name": "rustc-version",
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 1.0791425310000022
+    },
+    {
+      "name": "cargo-version",
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.02062012899997967
+    },
+    {
+      "name": "nextest-version",
+      "command": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.026062690000003386
+    },
+    {
+      "name": "just-version",
+      "command": [
+        "just",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.0009713999999974021
+    },
+    {
+      "name": "scoped-native-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "--retries",
+        "0",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "-E",
+        "test(memory_v14_) | test(memory_v12_) | test(memory_v11_) | test(inventory_v14_)"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 180.75059711100002
+    },
+    {
+      "name": "final-scoped-fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-cognitive-types"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 175.80831664599998
+    },
+    {
+      "name": "final-format",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "b020a9b1648513ed7cb4edfbca6893c2b9ec99d4"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.5224627500000452
+    }
+  ],
+  "github": {
+    "GITHUB_SHA": "b0a447f0e9267b0cb214ed762420e8a4902dbe94",
+    "GITHUB_REF": "refs/heads/research/memory-cell-v14-20261031",
+    "GITHUB_RUN_ID": "41262098419",
+    "GITHUB_RUN_ATTEMPT": "1",
+    "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci"
+  },
+  "resource_settings": {
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2"
+  },
+  "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+  "disk_before": {
+    "total": 154894188544,
+    "used": 70817947648,
+    "free": 84059463680
+  },
+  "source_commit": "b0a447f0e9267b0cb214ed762420e8a4902dbe94",
+  "source_tree": "2b1191665d3c98b83ec93d8a7ed92e21feec1a04",
+  "initial_changed_tree": false,
+  "source_inventory_sha256": "bfa10c90561774a1ccaa7b04a2030a1bc739fc0236165454ee664e74589dd026",
+  "junit_source": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml",
+  "executed_cases": 16,
+  "required_lifecycle_cases": [
+    "inventory_v14_exact_fallback_roundtrips_without_relaxing_v1",
+    "inventory_v14_preserves_empty_failure_and_typed_value_constraints",
+    "memory_v11_candidate_binds_the_complete_owner_partition_and_acquisition_cut",
+    "memory_v11_independent_cells_reuse_weights_with_fresh_queries_and_replace_one_version",
+    "memory_v11_new_effective_version_and_tombstone_cannot_hide_behind_old_source_ids",
+    "memory_v11_owner_projection_is_local_complete_and_recoverable",
+    "memory_v11_plan_rejects_duplicate_and_ambiguous_ownership",
+    "memory_v11_query_fences_reject_source_and_selected_version_races",
+    "memory_v11_recovery_requires_live_signed_selection_and_withdrawal_frontier",
+    "memory_v11_return_fence_rechecks_timed_dependencies_outside_query_support",
+    "memory_v12_python_trained_bytes_match_native_reader",
+    "memory_v12_trained_cells_publish_read_restart_correct_and_forget",
+    "memory_v12_trained_payload_rejects_version_and_parameter_substitution",
+    "memory_v14_preserves_full_fitted_dependencies_and_return_fences",
+    "memory_v14_trained_cells_fallback_reject_retrain_restart_and_withdraw",
+    "memory_v14_two_process_control_and_cold_migration"
+  ],
+  "after_tests_changed_tree": false,
+  "after_fix_changed_tree": false,
+  "after_format_changed_tree": true,
+  "error_type": "RuntimeError",
+  "error": "Final fix or format changed the tested source tree; review the saved patch",
+  "junit_skipped_cases": 0,
+  "failed_cases": [],
+  "nextest_summary": "Summary [   4.251s] 16 tests run: 16 passed, 570 skipped",
+  "nextest_reported_skipped_cases": 570,
+  "final_changed_tree": true,
+  "wall_seconds": 358.68106199500005,
+  "disk_after": {
+    "total": 154894188544,
+    "used": 71530258432,
+    "free": 83347152896
+  }
+}

@@ -1,0 +1,102 @@
+name: Memory cell V14 semantic skill reuse and complete local costs
+
+on:
+  push:
+    branches: [research/memory-cell-v14-20261031]
+    paths:
+      - 'qualification/memory-cell-v14/semantic_*'
+      - '.github/workflows/memory-cell-v14-semantic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-v14-semantic-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+  PYTHONUNBUFFERED: '1'
+  TOKENIZERS_PARALLELISM: 'false'
+
+jobs:
+  semantic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: [17, 29, 43]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/memory-cell-v13
+            qualification/memory-cell-v14
+      - name: Install pinned actual Transformer runtime
+        run: |
+          python3 -m venv /tmp/v14-semantic-venv
+          /tmp/v14-semantic-venv/bin/pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/v14-semantic-venv/bin/pip install -r qualification/memory-cell-v14/requirements-language.txt onnxruntime==1.23.2
+      - name: Contracts and the frozen semantic skill reuse task
+        run: |
+          mkdir -p /tmp/v14-semantic-results
+          /tmp/v14-semantic-venv/bin/python qualification/memory-cell-v14/semantic_checks.py
+          /tmp/v14-semantic-venv/bin/python qualification/memory-cell-v14/run_receipt.py --receipt /tmp/v14-semantic-results/process.json -- /tmp/v14-semantic-venv/bin/python qualification/memory-cell-v14/semantic_run.py --seed ${{ matrix.seed }} --output /tmp/v14-semantic-results --cache-dir /tmp/v14-semantic-models
+      - name: Retain parameters, optimizer state, individual answers and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v14-semantic-${{ matrix.seed }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/v14-semantic-results/
+          if-no-files-found: error
+          retention-days: 30
+
+  preserve:
+    needs: semantic
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: v14-semantic-*-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/v14-semantic-collected
+      - name: Preserve every attempted candidate and source identity in Git
+        env:
+          EVIDENCE_RUN: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          python3 qualification/memory-cell-v14/preserve_evidence.py --input /tmp/v14-semantic-collected --output /tmp/v14-semantic-packed --commit "$GITHUB_SHA" --run "$EVIDENCE_RUN"
+          python3 - <<'PY'
+          from pathlib import Path
+          for path in Path("/tmp/v14-semantic-collected").rglob("*.json"):
+              if path.name in ("semantic_run.json", "semantic_failure.json"):
+                  target = Path("/tmp/v14-semantic-packed/readable") / path.relative_to("/tmp/v14-semantic-collected")
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(path.read_bytes())
+          PY
+          git fetch origin "$GITHUB_REF_NAME"
+          git checkout --detach FETCH_HEAD
+          mkdir -p "qualification/memory-cell-v14/evidence/semantic-$EVIDENCE_RUN"
+          cp -a /tmp/v14-semantic-packed/. "qualification/memory-cell-v14/evidence/semantic-$EVIDENCE_RUN/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "qualification/memory-cell-v14/evidence/semantic-$EVIDENCE_RUN"
+          git commit -m "research(memory): retain V14 semantic skill evidence $EVIDENCE_RUN"
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"; then exit 0; fi
+            git fetch origin "$GITHUB_REF_NAME"
+            git rebase FETCH_HEAD
+          done
+          exit 1
+

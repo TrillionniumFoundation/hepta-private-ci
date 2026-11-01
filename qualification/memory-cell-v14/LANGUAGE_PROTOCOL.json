@@ -1,0 +1,143 @@
+{
+  "schema": "hepta.memory.language.v14.1",
+  "status": "preregistered_not_executed",
+  "model": {
+    "repository": "google/bert_uncased_L-2_H-128_A-2",
+    "revision": "30b0a37ccaaa32f332884b96992754e246e48c5f",
+    "model_safetensors_sha256": "7fb69ad9f6866d8983183c930e33828f326470bf6ad8bbb2ad4ed957a92e9414",
+    "original_source": "https://huggingface.co/google/bert_uncased_L-2_H-128_A-2/commit/30b0a37ccaaa32f332884b96992754e246e48c5f",
+    "pretrained": true,
+    "random_backbone_fallback": false,
+    "trust_remote_code": false,
+    "shared_feature_controls": "The identical frozen BERT-Tiny CLS representation is used by all feature baselines."
+  },
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "smoke_seed_excluded_from_final": 101,
+  "tasks": [
+    "facts",
+    "procedure_selection"
+  ],
+  "claims": {
+    "facts": "Recall newly sampled random entity/field bindings under held-out text templates.",
+    "procedure_selection": "Recall a program identifier and compose supplied interpreter operations; this does not demonstrate arithmetic algorithm learning or learned topology.",
+    "new_entities": "Phase 1 adds new entities with equal source access for every method. Phase 0 evaluation exposes pre-write ignorance; phase 1 tests learning and old-entity retention.",
+    "open_domain_language": false,
+    "distributed_memory": false,
+    "quality_route": "Held-out accuracy improves over the strongest prespecified baseline, with separately reported complete measured service costs; requires stable independent seeds.",
+    "utility_route": "At 1000 reads in a one-hour service window, accuracy minus 0.01 per CPU wall-second/query minus 0.001 per GiB-hour/query exceeds every prespecified baseline; sensitivity at 1,10,100,10000 reads.",
+    "unmeasured_external_energy_or_dollars_are_not_additional_quality_gates": true
+  },
+  "data": {
+    "manifest": "language_manifest.json",
+    "generator": "language_data.py",
+    "sources_created_after_model_revision_is_fixed": true,
+    "first_phase_entities": 24,
+    "second_phase_entities": 8,
+    "unknown_entities": 4,
+    "training_templates": 6,
+    "validation_templates": 1,
+    "held_out_templates": 3,
+    "classes": 8,
+    "validation_selects_hyperparameters": false,
+    "final_test_selects_hyperparameters": false
+  },
+  "arms": [
+    "exact_kv",
+    "bm25",
+    "lexical_ridge",
+    "feature_nearest",
+    "feature_ridge",
+    "fast_weights",
+    "feature_linear",
+    "feature_mlp",
+    "attention_lora"
+  ],
+  "training": {
+    "pretrained_backbone": "Frozen except added LoRA deltas; dropout disabled equally for training/evaluation.",
+    "lora_targets": "All BERT attention query and value projections",
+    "lora_rank": 4,
+    "lora_alpha": 8,
+    "output_head": "128-to-8 linear; the matched feature_linear arm uses the same head.",
+    "feature_mlp_hidden": 32,
+    "optimizer": "AdamW",
+    "learning_rate": 0.002,
+    "weight_decay": 0.001,
+    "gradient_norm_cap": 1.0,
+    "phase_steps": [
+      220,
+      120
+    ],
+    "replay": "Phase 1 reuses old and new supervised examples with identical access for all arms.",
+    "batch_size": 32,
+    "maximum_token_length": 48,
+    "cpu_threads": 2,
+    "fast_weights": "Normalized delta-rule on frozen features, 12 passes, learning rate 0.4; no pretrained-transformer claim for this arm."
+  },
+  "evidence": [
+    "actual parameter and optimizer checkpoints",
+    "frozen backbone hash",
+    "raw predictions and probabilities",
+    "new-write and old-retention accuracy",
+    "unseen-template and unknown-entity outcomes",
+    "LoRA disabled with trained head",
+    "all trainable parameters reset",
+    "checkpoint and optimizer restore",
+    "source/training/held-out hashes",
+    "write/read/checkpoint and backbone costs",
+    "all failures"
+  ],
+  "cost": {
+    "recorded": [
+      "checkpoint bytes",
+      "trainable bytes",
+      "optimizer bytes",
+      "shared base bytes",
+      "source bytes",
+      "write wall seconds",
+      "read wall seconds",
+      "download-or-cache-check wall seconds",
+      "base load seconds",
+      "peak process RSS",
+      "actual checkpoint restore seconds",
+      "replay bytes",
+      "all retained checkpoint bytes",
+      "qualification/evaluation seconds",
+      "initialization seconds",
+      "48 per-query read timings"
+    ],
+    "feature_construction": "Actually rerun and timed independently for each feature arm and write phase, using the same frozen backbone.",
+    "read_measure": "Both batched throughput and 48 sequential query samples, including required encoding and shared interpreter.",
+    "unmeasured": [
+      "physical network bytes",
+      "energy",
+      "distributed placement/migration",
+      "production resident opportunity cost"
+    ],
+    "strongest_structured_baseline": "Exact source-bound KV receives raw query and source text, not evaluation labels.",
+    "break_even": "Extra write time divided by per-read time savings only if savings are positive; quality noninferiority separately required.",
+    "boundary": "Local CPU service: source admission, writes, fixed qualification, retained model and versions, checkpoint restore, and queries. No hyperparameter search or post-test tuning is permitted. Distributed migration is not deployed in this experiment.",
+    "utility_prices": {
+      "reward_correct": 1.0,
+      "wall_second_per_query": 0.01,
+      "GiB_hour_per_query": 0.001,
+      "window_hours": 1,
+      "primary_reads": 1000,
+      "sensitivity_reads": [
+        1,
+        10,
+        100,
+        10000
+      ]
+    }
+  },
+  "execution": {
+    "command": "python qualification/memory-cell-v14/language_experiment.py --seed 17 --output /tmp/language-v14-17",
+    "scientific_negative_is_execution_success": true,
+    "missing_dependencies_or_download_is_failure": true,
+    "final_execution_requires_prior_git_commit": true
+  }
+}

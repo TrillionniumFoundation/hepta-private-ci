@@ -1,0 +1,96 @@
+name: Memory cell V14 recovered selected policy live probe
+
+on:
+  push:
+    branches: [research/memory-cell-v14-20261031]
+    paths:
+      - 'qualification/memory-cell-v14/selected_routing_policy*.py'
+      - 'qualification/memory-cell-v14/SELECTED_POLICY_PROTOCOL.json'
+      - '.github/workflows/memory-cell-v14-selected-policy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-v14-selected-policy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+  PYTHONUNBUFFERED: '1'
+  TOKENIZERS_PARALLELISM: 'false'
+
+jobs:
+  live-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/memory-cell-v13
+            qualification/memory-cell-v14
+      - name: Install the original pinned CPU encoder runtime
+        run: |
+          python3 -m venv /tmp/v14-policy-venv
+          /tmp/v14-policy-venv/bin/pip install -r qualification/memory-cell-v13/requirements-runtime.txt scipy==1.17.0
+      - name: Restore original winner and invoke one frozen new query
+        run: |
+          mkdir -p /tmp/v14-policy-results
+          /tmp/v14-policy-venv/bin/python qualification/memory-cell-v14/run_receipt.py --receipt /tmp/v14-policy-results/tests-process.json -- /tmp/v14-policy-venv/bin/python qualification/memory-cell-v14/selected_routing_policy_tests.py
+          /tmp/v14-policy-venv/bin/python qualification/memory-cell-v14/run_receipt.py --receipt /tmp/v14-policy-results/encoder-download-process.json -- /tmp/v14-policy-venv/bin/python qualification/memory-cell-v13/download_model.py /tmp/v14-policy-encoder
+          /tmp/v14-policy-venv/bin/python qualification/memory-cell-v14/run_receipt.py --receipt /tmp/v14-policy-results/live-process.json -- /tmp/v14-policy-venv/bin/python qualification/memory-cell-v14/selected_routing_policy.py \
+            --routing qualification/memory-cell-v14/evidence/ci-41259326679-1/readable/v14-routing-41259326679-1/routing \
+            --inventory qualification/memory-cell-v14/evidence/structural-admission/ROUTING_INPUT_INDEX.json \
+            --inventory-sha256 4443b123889066a30f4edeca9cc79c32d74ec0b0427bc716ad2e63926df19ba3 \
+            --encoder-hash 8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa \
+            --source-version 19ebe0c1c2686688df7327baf7334165b18d5d95c8fac4f3ce013809a8ae328f \
+            --seed 713 --live-probe --model-dir /tmp/v14-policy-encoder \
+            --output /tmp/v14-policy-results/LIVE_NEXT_QUERY.json
+      - name: Retain actual output and all process receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v14-selected-policy-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/v14-policy-results/
+          if-no-files-found: error
+          retention-days: 30
+
+  preserve:
+    needs: live-probe
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v14-selected-policy-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/v14-policy-evidence
+      - name: Preserve the operational probe without rerunning original experiments
+        env:
+          PROBE_RUN: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          git fetch origin "$GITHUB_REF_NAME"
+          git checkout --detach FETCH_HEAD
+          mkdir -p "qualification/memory-cell-v14/evidence/selected-policy-ci-$PROBE_RUN"
+          cp -a /tmp/v14-policy-evidence/. "qualification/memory-cell-v14/evidence/selected-policy-ci-$PROBE_RUN/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "qualification/memory-cell-v14/evidence/selected-policy-ci-$PROBE_RUN"
+          git commit -m "research(memory): retain selected policy operational probe $PROBE_RUN"
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"; then exit 0; fi
+            git fetch origin "$GITHUB_REF_NAME"
+            git rebase FETCH_HEAD
+          done
+          exit 1
