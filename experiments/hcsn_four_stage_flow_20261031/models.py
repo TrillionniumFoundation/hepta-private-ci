@@ -19,6 +19,23 @@ WIDTH = 24
 STATES = 5
 
 
+class AttentionBlock(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.qkv = nn.Linear(WIDTH, 3 * WIDTH)
+        self.project = nn.Linear(WIDTH, WIDTH)
+        self.norm1, self.norm2 = nn.LayerNorm(WIDTH), nn.LayerNorm(WIDTH)
+        self.ff = nn.Sequential(nn.Linear(WIDTH, 4 * WIDTH), nn.GELU(),
+                                nn.Linear(4 * WIDTH, WIDTH))
+
+    def forward(self, h, allowed):
+        b, t, _ = h.shape
+        q, k, v = self.qkv(h).reshape(b, t, 3, 4, WIDTH // 4).permute(2, 0, 3, 1, 4)
+        attended = F.scaled_dot_product_attention(q, k, v, attn_mask=allowed[:, None])
+        h = self.norm1(h + self.project(attended.transpose(1, 2).reshape(b, t, WIDTH)))
+        return self.norm2(h + self.ff(h))
+
+
 class SurrogateSpike(torch.autograd.Function):
     @staticmethod
     def forward(ctx, voltage):
@@ -44,7 +61,9 @@ class ContentModel(nn.Module):
             self.write = nn.Linear(WIDTH, 1)
             nn.init.constant_(self.write.bias, -1.5)
             self.control = nn.Linear(WIDTH, 2 if arm == "flow" else STATES)
-            self.physical = nn.Parameter(torch.tensor([-1., -1., 0., 1., -3.]))
+            initial = (torch.tensor([-1., -1., 0., 1., -3.]) if arm == "flow" else
+                       torch.expm1(torch.tensor([.005, .02, .08, .32, 1.28])).log())
+            self.physical = nn.Parameter(initial)
             self.read = nn.Sequential(nn.Linear(STATES * WIDTH + STATES + 3 + WIDTH, 64),
                                       nn.Tanh(), nn.Linear(64, classes))
         elif arm == "gru":
@@ -60,11 +79,7 @@ class ContentModel(nn.Module):
                                       nn.Linear(64, classes))
         else:
             self.time = nn.Linear(4, WIDTH)
-            self.qkv = nn.Linear(WIDTH, 3 * WIDTH)
-            self.project = nn.Linear(WIDTH, WIDTH)
-            self.norm1, self.norm2 = nn.LayerNorm(WIDTH), nn.LayerNorm(WIDTH)
-            self.ff = nn.Sequential(nn.Linear(WIDTH, 4 * WIDTH), nn.GELU(),
-                                    nn.Linear(4 * WIDTH, WIDTH))
+            self.blocks = nn.ModuleList([AttentionBlock(), AttentionBlock()])
             self.read = nn.Linear(WIDTH, classes)
 
     def _flow_matrices(self, encoded, dt, observed):
@@ -125,14 +140,12 @@ class ContentModel(nn.Module):
                                  torch.cos(elapsed), position / 16), -1)
             h = encoded + self.time(times)
             b, t, _ = h.shape
-            q, k, v = self.qkv(h).reshape(b, t, 3, 4, WIDTH // 4).permute(2, 0, 3, 1, 4)
             causal = torch.ones(t, t, dtype=torch.bool, device=x.device).tril()
             allowed = causal[None] & observed[:, None, :]
             # All-masked propagation placeholders are never scored or retained.
             allowed = allowed | ((~allowed.any(-1))[..., None] & torch.eye(t, dtype=torch.bool, device=x.device))
-            attended = F.scaled_dot_product_attention(q, k, v, attn_mask=allowed[:, None])
-            h = self.norm1(h + self.project(attended.transpose(1, 2).reshape(b, t, WIDTH)))
-            h = self.norm2(h + self.ff(h))
+            for block in self.blocks:
+                h = block(h, allowed)
             return self.read(h)
         batch, steps = dt.shape
         outputs = []
@@ -188,7 +201,7 @@ class ContentModel(nn.Module):
     def resource_shape(self, sequence_length):
         parameters = sum(p.numel() for p in self.parameters())
         state = {"flow": STATES * (WIDTH + 1) + 2, "diagonal": STATES * WIDTH,
-                 "gru": 64, "snn": 128, "transformer": 2 * WIDTH * sequence_length}[self.arm]
+                 "gru": 64, "snn": 128, "transformer": 4 * WIDTH * sequence_length}[self.arm]
         return dict(parameters=parameters, persistent_state_scalars=state,
                     matrix_precision="float64" if self.arm == "flow" else None,
                     content_precision="float32", compiled=False,

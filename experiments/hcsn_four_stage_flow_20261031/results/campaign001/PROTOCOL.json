@@ -1,0 +1,80 @@
+{
+  "arms": [
+    "flow",
+    "diagonal",
+    "gru",
+    "snn",
+    "transformer"
+  ],
+  "batch_size": 24,
+  "cost": {
+    "acquisition": "Existing CREMA-D files reused; historical acquisition cost unknown",
+    "energy": "Unmeasured; CPU seconds are not joules",
+    "frontend": "Fixed causal-prefix features, no pretrained encoder; offline decode measured separately",
+    "gpu": "Unavailable in this run",
+    "inference": "CPU complete sequence, 3 warmups, 9 measured repeats; shared host",
+    "training": "all fixed steps, failures, evaluation and data preparation retained"
+  },
+  "data_seeds": "Synthetic train=100000+seed*10000+step; dev=71001; test=81001; separate split namespaces",
+  "evaluation_episodes": 512,
+  "frozen_utc": "2026-11-01T04:37:35.566880+00:00",
+  "gates": {
+    "adoption": "No adoption claim unless quality and complete deployment cost improve",
+    "avt": "Two-modality Bayes oracle=5/6; >chance alone does not establish trimodal binding",
+    "content": "MQAR/selective/binding all-query correctness must improve, not majority shortcuts",
+    "operator": "All fixed numerical tolerances pass",
+    "resampling": "Max observed-logit error <= 1e-4 in float32"
+  },
+  "gradient_norm_clip": 1.0,
+  "inference": "Three seeds are independent fits; episodes or actors are clustered, not token IID",
+  "learning_rate": 0.003,
+  "limits": [
+    "Single recurrent core, no deep boundary-communicating model",
+    "Finite CTMC, not full He-Xiong equity or an optimal stopping proof",
+    "J/G are readout features, not independently established dual force channels",
+    "Matched information and steps, measured but unequal parameters and compute",
+    "Intervention ablations are sensitivity, not retrained causal necessity tests",
+    "Two-sentence AVT is not foundation-model validation"
+  ],
+  "metrics": [
+    "weighted accuracy",
+    "cross entropy",
+    "all queries correct",
+    "paired per-episode predictions"
+  ],
+  "optimizer": "AdamW",
+  "runtime": {
+    "cuda_available": false,
+    "device": "cpu",
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "threads": 1,
+    "torch": "2.8.0+cpu"
+  },
+  "schema": "hcsn-four-stage.run.v1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "selection": "Final step only; no per-arm hyperparameter search or early stopping",
+  "source_hashes": {
+    "experiments/hcsn_distributional_v2/distribution_kernel.py": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+    "experiments/hcsn_four_stage_flow_20261031/av_data.py": "465f1d2bf296dc5df4b25cd5cdc781551740a16766bb631b937a80fb3ef7767f",
+    "experiments/hcsn_four_stage_flow_20261031/dynamic_data.py": "df016a6142ecc5a9fffaa45956ec253169ce33adb7101f8b18d41b4a845102c7",
+    "experiments/hcsn_four_stage_flow_20261031/marked_flow.py": "f7ccf2ea965b77ed08da488142d1023fb1c7a6a11580b13e8e7aba2dd861836c",
+    "experiments/hcsn_four_stage_flow_20261031/models.py": "7cfcf15a24673041150353072e799ba8f93f9bc459701fe5a68c39d2814d840a",
+    "experiments/hcsn_four_stage_flow_20261031/runner.py": "4382bdead5e15a6e651b96645ed1ede0104b4fa90336f849af9806b0f94e73bc",
+    "experiments/hcsn_four_stage_flow_20261031/synthetic_data.py": "4fbb836356e6017ae3baeb30f37e6cc3818de7caf7b01f98baf736c14511c35e"
+  },
+  "steps": 600,
+  "tasks": [
+    "dynamics",
+    "mqar",
+    "selective",
+    "binding",
+    "avt"
+  ],
+  "weight_decay": 0.0001
+}
