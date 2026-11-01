@@ -1,0 +1,44 @@
+{
+  "schema": "hcsn.addressed.analysis.v1",
+  "confirmation_opened": false,
+  "primary_content": {
+    "tasks": ["mqar", "selective", "binding"],
+    "metric": "all four answers correct in an episode",
+    "threshold": 0.95,
+    "required": "Every registered seed, task and base condition; stress tests reported separately",
+    "comparison": "Addressed Flow versus addressed diagonal with common initialization, information, typed-address prior, state capacity and training data",
+    "old_architecture_control": "Legacy Flow and causal Transformer are freshly trained on identical streams; parameter and persistent-state differences disclosed"
+  },
+  "intervals": {
+    "method": "Paired hierarchical bootstrap: resample training seeds, then shared episode identifiers within each seed; retain cross-arm pairing",
+    "replicates": 2000,
+    "seed": 991101,
+    "descriptive_interval": 0.95,
+    "primary_three_task_family_interval": 0.9833333333333333,
+    "limitations": "Only three independent training seeds; bootstrap degenerates with all-success or all-failure observations and is not proof of population certainty"
+  },
+  "control_2x2": {
+    "A": "addressed diagonal, development-selected lightweight price threshold",
+    "B": "addressed diagonal, common task-value READ controller",
+    "C": "addressed Flow, same lightweight price threshold",
+    "D": "addressed Flow, same common task-value READ controller",
+    "effects": ["B-A", "D-C", "C-A", "D-B", "(D-C)-(B-A)"],
+    "target": "Mean four-query correctness minus quoted READ price; all actual READ/STOP counterfactual continuations retained",
+    "cost_separation": "Symbolic task price, training/calibration CPU, evaluation counterfactual CPU and measured inference latency are distinct; no CPU-to-joule conversion",
+    "selection": "Content checkpoints frozen first; common controller trained on separate train trajectories; lightweight threshold selected on dev; policy frozen before control confirmation"
+  },
+  "continuous_dynamics": {
+    "conditions": ["irregular", "resample", "missing", "unit_clock", "reverse_clock"],
+    "metrics": ["all-query accuracy", "first query after jump", "later queries after jump", "resampling maximum logit difference"],
+    "interpretation": "Clock intervention changes supplied time but retains the world's labels; it is not numerical resampling. A time-use effect alone is not analytical-core superiority."
+  },
+  "cost": {
+    "include": ["retained development trials", "all registered training fits", "all candidate calibration", "confirmation", "feature preparation", "media acquisition receipt", "actual sequence inference"],
+    "aggregation": "Disjoint outer-meter receipts only; nested fit and decoder timers are reported but never added twice",
+    "energy_joules": null,
+    "energy_gate": "Unmet unless a real attributable meter is available",
+    "GPU": "Unavailable in current runtime"
+  },
+  "adoption": "Requires valid content, real frontend quality, matched analytical increment and deployment economics. Completing runs is not satisfying capability or adoption gates.",
+  "failure_policy": "Preserve every failed run and original condition; repairs before confirmation create new source/protocol identities; do not retune after inspecting confirmation."
+}
