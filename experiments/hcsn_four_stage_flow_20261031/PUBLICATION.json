@@ -1,0 +1,35 @@
+{
+  "schema": "hcsn.publication.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/hcsn-four-stage-flow-20261031",
+  "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4546",
+  "evidence_commit": "ea98f8d6b7ebdb21bb8572798ab6d051700b60a4",
+  "training_source_commit": "8044dbfc3c41356eaf3f8ac69c7537e2091eda80",
+  "candidate_freeze_commit": "650ad8a8b64f2977915a83da5b4966b751d74116",
+  "verified_project_tree": "6da528048b8ccc0e1595eefb66a25b556a63d549",
+  "verification": {
+    "method": "Independent remote Git tree readback against local Git blob SHA and SHA256 manifests",
+    "readable_files": 224,
+    "binary_parts": 36,
+    "all_matched": true
+  },
+  "completed": {
+    "fits": 75,
+    "extension_conditions": 225,
+    "formal_operator_checks": 174,
+    "model_semantics_checks": 38
+  },
+  "archive": {
+    "bytes": 111476686,
+    "sha256": "13e411eac843a44e6a168fa6e7f0e7e6a54a53fe10ea45633aa9efd6ef1bd1bd",
+    "members": 1073
+  },
+  "qualification": {
+    "finite_operator_audit": "passed in declared tested domain",
+    "content_binding": "not qualified",
+    "real_avt": "not qualified",
+    "foundation_model": "not run",
+    "energy_joules": null
+  },
+  "verified_at": "2026-11-01T05:14:33.513Z"
+}
