@@ -209,6 +209,10 @@ common:ci-v8 --config=ci
 common:ci-v8 --build_metadata=TAG_workflow=v8
 common:ci-v8 --build_metadata=TAG_os=linux
 
+# V8 artifact staging also consumes client threads when actions run remotely.
+# Keep hosted macOS requests within the ordinary client concurrency budget.
+common:v8-macos-client --jobs=30
+
 # Source-built Bazel V8 artifacts use the in-process sandbox by default. This
 # does not affect Cargo's default prebuilt rusty_v8 path.
 common --@v8//:v8_enable_pointer_compression=True

@@ -232,6 +232,9 @@ jobs:
             "${pair_target}"
             --build_metadata=COMMIT_SHA=$(git rev-parse HEAD)
           )
+          if [[ "${RUNNER_OS}" == "macOS" ]]; then
+            bazel_args+=(--config=v8-macos-client)
+          fi
           if [[ "${SANDBOX}" != "true" ]]; then
             bazel_args+=(--config=v8-release-compat)
           fi
@@ -279,6 +282,9 @@ jobs:
             --bazel-config "${BAZEL_CONFIG}"
             --bazel-config "v8-target-${V8_CPU}"
           )
+          if [[ "${RUNNER_OS}" == "macOS" ]]; then
+            stage_args+=(--bazel-config v8-macos-client)
+          fi
           if [[ "${SANDBOX}" == "true" ]]; then
             stage_args+=(--sandbox)
           else
