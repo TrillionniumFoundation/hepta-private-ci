@@ -1,0 +1,85 @@
+{
+  "checks": {
+    "count_and_first_match_independent_poisson_reference": true,
+    "endpoint_only_reset_is_detectably_wrong": true,
+    "first_hit_is_not_event_count": true,
+    "independent_quadrature_converged": true,
+    "multiple_events_not_clamped_to_one": true,
+    "no_spurious_segmentation_effect": true,
+    "remaining_time_renewal": true,
+    "same_marginals_different_surviving_content": true,
+    "sensor_overlay_preserves_natural_dynamics": true
+  },
+  "natural_reset_remaining_time": {
+    "coarse_nodes": 80,
+    "correct_bit_one_probability": 0.16100145357575532,
+    "duration": 8.0,
+    "quadrature_refinement_max_error": 2.393918396847994e-16,
+    "refined_nodes": 112,
+    "renewal_max_error": 2.220446049250313e-16,
+    "wrong_endpoint_bit_one_probability": 0.0,
+    "wrong_endpoint_mass": 1.0000000000000016,
+    "wrong_endpoint_max_error": 0.7534742395323355
+  },
+  "position_content_correlation": {
+    "bit_marginal_error": 0.0,
+    "bit_one_given_survival": [
+      0.8881339532784394,
+      0.1118660467215609
+    ],
+    "content_posterior_difference": 0.7762679065568785,
+    "phase_marginal_error": 0.0,
+    "survival_probability_difference": 0.0
+  },
+  "repeated_events": [
+    {
+      "duration": 0.4,
+      "implementation_count": 0.08808374180479037,
+      "implementation_first_probability": 0.08796056636923434,
+      "poisson_mass": 0.9999999999999987,
+      "poisson_terms": 33,
+      "reference_count": 0.08808374180478977,
+      "reference_first_probability": 0.08796056636923381,
+      "state_error": 1.3877787807814457e-16
+    },
+    {
+      "duration": 1.4,
+      "implementation_count": 0.3762443520526848,
+      "implementation_first_probability": 0.3405818390796385,
+      "poisson_mass": 0.9999999999999986,
+      "poisson_terms": 63,
+      "reference_count": 0.3762443520526833,
+      "reference_first_probability": 0.34058183907963707,
+      "state_error": 2.0816681711721685e-16
+    },
+    {
+      "duration": 8.0,
+      "implementation_count": 1.6395196080243633,
+      "implementation_first_probability": 0.7798191021862846,
+      "poisson_mass": 0.9999999999999953,
+      "poisson_terms": 199,
+      "reference_count": 1.6395196080243593,
+      "reference_first_probability": 0.7798191021862779,
+      "state_error": 1.3877787807814457e-16
+    },
+    {
+      "duration": 25.0,
+      "implementation_count": 4.737032480493799,
+      "implementation_first_probability": 0.9842725257567182,
+      "poisson_mass": 0.999999999999895,
+      "poisson_terms": 492,
+      "reference_count": 4.737032480493375,
+      "reference_first_probability": 0.9842725257566146,
+      "state_error": 7.93809462606987e-15
+    }
+  ],
+  "schema": "hcsn-r14-propagation-audit-v1",
+  "scope": "Fixed finite CTMC only; no new observation or action opportunity at the numerical split.",
+  "sensor_overlay": {
+    "after_repair_full_vs_split_error": 1.5959455978986625e-16,
+    "joint_vs_base_count_error": 4.218847493575595e-15,
+    "joint_vs_base_state_error": 2.914335439641036e-16,
+    "repaired_vs_unrepaired_natural_count_error": 2.6645352591003757e-15
+  },
+  "unchanged_input_semigroup_max_error": 4.718447854656915e-16
+}
