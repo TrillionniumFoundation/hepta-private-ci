@@ -1,0 +1,20 @@
+{
+  "scope": "Constructed and development mechanisms only; no formal-fit or confirmation files are accessed.",
+  "seed": 311000,
+  "episode_count": 128,
+  "times": [0.15, 0.45, 1.05],
+  "horizon": 3,
+  "read_budget": 2,
+  "correlated_content_weights": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95],
+  "independent_content_weights": [0.05, 0.15, 0.30, 0.50, 0.70, 0.85, 0.95],
+  "distance_mixture_weights": [0.25, 0.50, 0.75],
+  "witness_search": "All unordered active-site pairs; both content orientations for factorization. Retain every action/regret trace and the maximum one-decision-regret witness per projection. This is a constructive search, not a frequency claim for reachable tasks.",
+  "constant_read_cost": "True-model initial-prior expectation of its original state-dependent read_cost.",
+  "recovery_means": [0.05, 0.35, 1.0],
+  "causal_prefix_count": 16,
+  "causal_prefix_length": 6,
+  "mc_future_dt": 0.45,
+  "mc_samples": 32,
+  "mc_repetitions": 64,
+  "formal_gain_acceptance": false
+}
