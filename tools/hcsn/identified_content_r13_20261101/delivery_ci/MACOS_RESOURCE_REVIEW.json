@@ -1,0 +1,204 @@
+{
+  "schema": "hepta.r13.delivery.macos-resource-review.v1",
+  "timestamp_utc": "2026-11-01T02:48:51.738412+00:00",
+  "status": "Resource-budget candidate; requires subsequent actual CI validation",
+  "observed_old_failure": {
+    "run_id": 41265424224,
+    "job_id": 124727579221,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41265424224/job/124727579221",
+    "platform": "macos-15 aarch64-apple-darwin",
+    "native_thread_error_occurrences": 8,
+    "fatal_stage": "Remote action preparation/execution client, gRPC callbacks and build-event artifact upload",
+    "log_excerpt": [
+      "2026-11-01T02:34:36.6693710Z [1,054 / 2,184] [Prepa] Compiling external/llvm++llvm+llvm-project/compiler-rt/lse_ldset_8_2.S [for tool] ... (263 actions, 0 running)",
+      "2026-11-01T02:34:37.7853770Z [1,228 / 2,184] Compiling external/llvm++llvm+llvm-project/compiler-rt/lse_ldeor_8_1.S [for tool]; 0s remote, remote-cache ... (193 actions, 0 running)",
+      "2026-11-01T02:34:38.2297680Z FATAL: bazel ran out of memory and crashed. Printing stack trace:"
+    ],
+    "causal_boundary": "The logs establish failed native-thread creation. They do not distinguish physical memory exhaustion from process/thread limits and do not establish a local test-process storm."
+  },
+  "distinct_clippy_failure": {
+    "job_id": 124727579198,
+    "native_thread_error_occurrences": 0,
+    "explanation": "Separate Rust API and lint failures; handled by source-fixture repairs, not this resource budget"
+  },
+  "configuration": {
+    "original_blob": "0ce81ff3d71d30aeedd7240ee001dd8166364ee2",
+    "before_sha256": "3dc5174e2b8a3c51aa88cbd0c9031e596f5c8a4fa90dac753ac6f39c1ad71db0",
+    "after_sha256": "e29d01f999b4b9f6a885410aa86aed9e3d62f94af34df6620d26823060126410",
+    "modified_file": ".bazelrc",
+    "modified_scope": "common:ci-macos",
+    "options": [
+      "--jobs=32",
+      "--local_test_jobs=2"
+    ],
+    "rationale": "The authenticated wrapper inserts the RBE configuration before ci-macos. The previous effective jobs=800 budget also creates work on the local Bazel client. The candidate limits that client workload and independently caps concurrent local test processes.",
+    "remote_execution_retained": true,
+    "build_event_service_retained": true,
+    "targets_assertions_and_failure_gates_unchanged": true,
+    "static_platform_comparison": [
+      {
+        "platform": "macOS",
+        "credentialed": true,
+        "before": {
+          "ordered_resource_flags": [
+            "--jobs=30",
+            "--jobs=800"
+          ],
+          "effective": {
+            "jobs": "800",
+            "local_test_jobs": "auto"
+          }
+        },
+        "after": {
+          "ordered_resource_flags": [
+            "--jobs=30",
+            "--jobs=800",
+            "--jobs=32",
+            "--local_test_jobs=2"
+          ],
+          "effective": {
+            "jobs": "32",
+            "local_test_jobs": "2"
+          }
+        },
+        "targets_unchanged": true
+      },
+      {
+        "platform": "Linux",
+        "credentialed": true,
+        "before": {
+          "ordered_resource_flags": [
+            "--jobs=30",
+            "--jobs=800"
+          ],
+          "effective": {
+            "jobs": "800",
+            "local_test_jobs": "auto"
+          }
+        },
+        "after": {
+          "ordered_resource_flags": [
+            "--jobs=30",
+            "--jobs=800"
+          ],
+          "effective": {
+            "jobs": "800",
+            "local_test_jobs": "auto"
+          }
+        },
+        "targets_unchanged": true
+      },
+      {
+        "platform": "Windows",
+        "credentialed": true,
+        "before": {
+          "ordered_resource_flags": [
+            "--jobs=30",
+            "--jobs=800",
+            "--local_test_jobs=8"
+          ],
+          "effective": {
+            "jobs": "800",
+            "local_test_jobs": "8"
+          }
+        },
+        "after": {
+          "ordered_resource_flags": [
+            "--jobs=30",
+            "--jobs=800",
+            "--local_test_jobs=8"
+          ],
+          "effective": {
+            "jobs": "800",
+            "local_test_jobs": "8"
+          }
+        },
+        "targets_unchanged": true
+      },
+      {
+        "platform": "macOS",
+        "credentialed": false,
+        "before": {
+          "ordered_resource_flags": [
+            "--jobs=30"
+          ],
+          "effective": {
+            "jobs": "30",
+            "local_test_jobs": "auto"
+          }
+        },
+        "after": {
+          "ordered_resource_flags": [
+            "--jobs=30"
+          ],
+          "effective": {
+            "jobs": "30",
+            "local_test_jobs": "auto"
+          }
+        },
+        "note": "Existing keyless wrapper removes ci-macos; the ordinary jobs=30 remains, and local test scheduling uses Bazel defaults"
+      }
+    ],
+    "limits": "Keyless wrapper behavior is unchanged: it removes ci-macos and falls back to global jobs=30 and automatic local-resource scheduling. Automatic is not an unlimited local-execution setting."
+  },
+  "option_legality": {
+    "bazel_version": "9.0.0",
+    "official_reference": "https://bazel.build/versions/9.0.0/reference/command-line-reference",
+    "sources": [
+      {
+        "display_url": "https://github.com/bazelbuild/bazel/blob/9.0.0/src/main/java/com/google/devtools/build/lib/runtime/commands/BuildCommand.java",
+        "sha": "27c853e3e3ba379b5b9b371818b51bd7edbf2e67"
+      },
+      {
+        "display_url": "https://github.com/bazelbuild/bazel/blob/9.0.0/src/main/java/com/google/devtools/build/lib/runtime/commands/TestCommand.java",
+        "sha": "90422116fa803771841cc15667892008e5fa9259"
+      },
+      {
+        "display_url": "https://github.com/bazelbuild/bazel/blob/9.0.0/src/main/java/com/google/devtools/build/lib/exec/ExecutionOptions.java",
+        "sha": "839d375b08363cfb1daf420220836934886ebf37"
+      }
+    ],
+    "reasoning": "ExecutionOptions defines local_test_jobs. BuildCommand declares ExecutionOptions, and TestCommand inherits BuildCommand options. The repository Clippy and release workflows invoke build, while the test workflow invokes test, so all three command types accept this flag."
+  },
+  "unpatched_natural_rerun": {
+    "head": "eeb17ab1f4127d365025e9b1b53f9cc44eed01a5",
+    "run_id": 41266239169,
+    "macos_jobs": [
+      {
+        "id": 124730177004,
+        "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 124730177049,
+        "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 124730177104,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null
+      },
+      {
+        "id": 124730177251,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null
+      }
+    ],
+    "interpretation": "Jobs were still in progress at this snapshot; recurrence or absence of the resource failure has not been established."
+  },
+  "validation": {
+    "method": "Read actual wrapper source, expand relevant rc sections in emitted configuration order, compare non-macOS settings and unchanged target suffix; no build was run in this Linux environment",
+    "patch_sha256": "566668997c9cde1b268aeec087bc0c2b4f80c9f6911d7db71cfad11005793920",
+    "actual_macos_execution": false
+  },
+  "detailed_evidence": {
+    "path": "MACOS_RESOURCE_VALIDATION.json.gz",
+    "bytes": 157076,
+    "sha256": "9962eae9d9cd8632f6cac005f3b1fe09304d13b7d733537f5a8c7c3f0ab32f51"
+  }
+}
