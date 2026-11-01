@@ -1,0 +1,136 @@
+{
+  "schema": "hepta.memory.v14.native-ci-receipt.v1",
+  "passed": false,
+  "tests_command_started": true,
+  "tests_executed": true,
+  "final_fix_executed": false,
+  "formatter_executed": false,
+  "tests_executed_after_fix_or_format": false,
+  "production_activation_allowed": false,
+  "trained_quality_claimed": false,
+  "baseline_commit": "b020a9b1648513ed7cb4edfbca6893c2b9ec99d4",
+  "commands": [
+    {
+      "name": "rustc-version",
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 1.6757306510000092
+    },
+    {
+      "name": "cargo-version",
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.025356673000004548
+    },
+    {
+      "name": "nextest-version",
+      "command": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.03381288599999266
+    },
+    {
+      "name": "just-version",
+      "command": [
+        "just",
+        "--version"
+      ],
+      "started": true,
+      "exit_code": 0,
+      "wall_seconds": 0.0011263439999993352
+    },
+    {
+      "name": "scoped-native-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "--retries",
+        "0",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "-E",
+        "test(memory_v14_) | test(memory_v12_) | test(memory_v11_) | test(inventory_v14_)"
+      ],
+      "started": true,
+      "exit_code": 100,
+      "wall_seconds": 238.42612448899996
+    }
+  ],
+  "github": {
+    "GITHUB_SHA": "1c4e9b020615baaa468ca1a9299076a58c514e3d",
+    "GITHUB_REF": "refs/heads/research/memory-cell-v14-20261031",
+    "GITHUB_RUN_ID": "41261491806",
+    "GITHUB_RUN_ATTEMPT": "1",
+    "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci"
+  },
+  "resource_settings": {
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2"
+  },
+  "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+  "disk_before": {
+    "total": 154894188544,
+    "used": 70282215424,
+    "free": 84595195904
+  },
+  "source_commit": "1c4e9b020615baaa468ca1a9299076a58c514e3d",
+  "source_tree": "8f4dba223cedf22ad2e61c69b75b21f791c61d08",
+  "initial_changed_tree": false,
+  "source_inventory_sha256": "c1a4d5d82e3ca7e9c20d50ed72fd9b7d9196c15e9ff4b7dc0f06b57607b90715",
+  "junit_source": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml",
+  "error_type": "RuntimeError",
+  "error": "scoped-native-tests exited 100",
+  "executed_cases": 16,
+  "junit_skipped_cases": 0,
+  "failed_cases": [
+    "memory_inventory_actual_tests::isolated_v14::memory_v14_two_process_control_and_cold_migration",
+    "memory_inventory::v14_tests::inventory_v14_preserves_empty_failure_and_typed_value_constraints"
+  ],
+  "required_lifecycle_cases": [
+    "inventory_v14_exact_fallback_roundtrips_without_relaxing_v1",
+    "inventory_v14_preserves_empty_failure_and_typed_value_constraints",
+    "memory_v11_candidate_binds_the_complete_owner_partition_and_acquisition_cut",
+    "memory_v11_independent_cells_reuse_weights_with_fresh_queries_and_replace_one_version",
+    "memory_v11_new_effective_version_and_tombstone_cannot_hide_behind_old_source_ids",
+    "memory_v11_owner_projection_is_local_complete_and_recoverable",
+    "memory_v11_plan_rejects_duplicate_and_ambiguous_ownership",
+    "memory_v11_query_fences_reject_source_and_selected_version_races",
+    "memory_v11_recovery_requires_live_signed_selection_and_withdrawal_frontier",
+    "memory_v11_return_fence_rechecks_timed_dependencies_outside_query_support",
+    "memory_v12_python_trained_bytes_match_native_reader",
+    "memory_v12_trained_cells_publish_read_restart_correct_and_forget",
+    "memory_v12_trained_payload_rejects_version_and_parameter_substitution",
+    "memory_v14_preserves_full_fitted_dependencies_and_return_fences",
+    "memory_v14_trained_cells_fallback_reject_retrain_restart_and_withdraw",
+    "memory_v14_two_process_control_and_cold_migration"
+  ],
+  "nextest_summary": "Summary [   6.267s] 16 tests run: 14 passed, 2 failed, 570 skipped",
+  "nextest_reported_skipped_cases": 570,
+  "final_changed_tree": false,
+  "wall_seconds": 240.91462235699998,
+  "disk_after": {
+    "total": 154894188544,
+    "used": 70855106560,
+    "free": 84022304768
+  }
+}
