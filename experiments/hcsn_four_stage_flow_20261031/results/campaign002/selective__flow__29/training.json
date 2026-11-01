@@ -1,0 +1,27 @@
+{
+  "arm": "flow",
+  "checkpoint_sha256": "18a838d0a2b6cbe6ae5c82ea93c1832832864266f969ad317b0d0e6e2d58bcad",
+  "data_identities": {},
+  "final_training_loss": 1.861883521080017,
+  "frozen_commit": "8044dbfc3c41356eaf3f8ac69c7537e2091eda80",
+  "loss_log_sha256": "8ba9b14fd0ad43cc177d689e54c8671b09c664eff373ea622ac43645763295c0",
+  "protocol_sha256": "26e401d211a3c72f80b68d292b54980ef18601bafbb519ee4ffd3dd2f27babdc",
+  "seed": 29,
+  "shape": {
+    "compiled": false,
+    "content_precision": "float32",
+    "matrix_precision": "float64",
+    "parameters": 11592,
+    "persistent_state_scalars": 127,
+    "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+  },
+  "status": "trained",
+  "task": "selective",
+  "training": {
+    "cpu_seconds": 15.410449623999995,
+    "examples": 14400,
+    "scope": "Model/optimizer construction, training, loss logging and final artifact serialization",
+    "wall_seconds": 15.416264481998951
+  },
+  "training_curve_sha256": "6edcc63dd64233c799d075be2a7db26dd776133003f2faf7dda6c16c3dd7b6ec"
+}

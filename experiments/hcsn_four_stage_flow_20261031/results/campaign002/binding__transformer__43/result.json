@@ -1,0 +1,114 @@
+{
+  "arm": "transformer",
+  "candidate_freeze_sha256": "d9b9bd020e3a7166ba5bdbef64645d85319543b7959b65b4c7c5d684b28e7ac8",
+  "checkpoint_sha256": "efeac18073c1a1869b4c59589c50e4646b3d9d8f65bb3bfe1f524898e2118883",
+  "data_identities": {},
+  "evaluation": {
+    "cpu_seconds": 0.38671817999999547,
+    "scope": "Checkpoint verification/loading, model construction, evaluation, artifacts and timing repeats",
+    "wall_seconds": 0.38677492100032396
+  },
+  "evaluations": {
+    "dev__base": {
+      "accuracy": 0.23486328125,
+      "all_queries_correct": 0.0,
+      "cross_entropy": 1.3974218368530273,
+      "episodes": 512,
+      "missing_target_accuracy": null,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.23486328125
+    },
+    "test__base": {
+      "accuracy": 0.25732421875,
+      "all_queries_correct": 0.0,
+      "cross_entropy": 1.3945560455322266,
+      "episodes": 512,
+      "missing_target_accuracy": null,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.25732421875
+    },
+    "test__irregular": {
+      "accuracy": 0.2626953125,
+      "all_queries_correct": 0.0,
+      "cross_entropy": 1.39350426197052,
+      "episodes": 512,
+      "missing_target_accuracy": null,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.2626953125
+    },
+    "test__long_delay": {
+      "accuracy": 0.2529296875,
+      "all_queries_correct": 0.001953125,
+      "cross_entropy": 1.3949110507965088,
+      "episodes": 512,
+      "missing_target_accuracy": null,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.2529296875
+    },
+    "test__missing": {
+      "accuracy": 0.24951171875,
+      "all_queries_correct": 0.0,
+      "cross_entropy": 2.412710666656494,
+      "episodes": 512,
+      "missing_target_accuracy": 0.0,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.3326822916666667
+    },
+    "test__resample": {
+      "accuracy": 0.25732421875,
+      "all_queries_correct": 0.0,
+      "cross_entropy": 1.3945560455322266,
+      "episodes": 512,
+      "missing_target_accuracy": null,
+      "observed_logit_max_difference": 2.9802322387695312e-06,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.25732421875
+    }
+  },
+  "final_training_loss": 1.3945503234863281,
+  "frozen_commit": "8044dbfc3c41356eaf3f8ac69c7537e2091eda80",
+  "inference": {
+    "batch_size": 24,
+    "dedicated_hardware": false,
+    "device": "cpu",
+    "energy_joules": null,
+    "episodes_per_second": 21411.72882457184,
+    "median_seconds": 0.0011208809992240276,
+    "scope": "Prepared-feature complete-sequence forward; raw media preparation is separate",
+    "sequence_length": 16,
+    "wall_seconds": [
+      0.0010241969976050314,
+      0.0009914390029734932,
+      0.0011208809992240276,
+      0.0011269200003880542,
+      0.0010371469979872927,
+      0.0012128669986850582,
+      0.00123788400014746,
+      0.0010949930001515895,
+      0.001222742001118604
+    ]
+  },
+  "peak_rss_scope": "Cumulative maximum of this evaluation process, not an isolated per-fit peak",
+  "predictions_sha256": "7a0fe72f03844bc380351af59db0133728f0aaaea54365718050b4ae4ee59a38",
+  "process_peak_rss_kib": 255244,
+  "protocol_sha256": "26e401d211a3c72f80b68d292b54980ef18601bafbb519ee4ffd3dd2f27babdc",
+  "seed": 43,
+  "shape": {
+    "compiled": false,
+    "content_precision": "float32",
+    "matrix_precision": null,
+    "parameters": 15968,
+    "persistent_state_scalars": 1536,
+    "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+  },
+  "status": "completed",
+  "task": "binding",
+  "total_fit_cpu_seconds": 4.525221993999985,
+  "total_fit_wall_seconds": 4.53062784100257,
+  "training": {
+    "cpu_seconds": 4.138503813999989,
+    "examples": 14400,
+    "scope": "Model/optimizer construction, training, loss logging and final artifact serialization",
+    "wall_seconds": 4.143852920002246
+  }
+}

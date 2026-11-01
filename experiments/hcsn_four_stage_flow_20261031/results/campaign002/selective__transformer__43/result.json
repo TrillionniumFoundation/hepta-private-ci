@@ -1,0 +1,114 @@
+{
+  "arm": "transformer",
+  "candidate_freeze_sha256": "d9b9bd020e3a7166ba5bdbef64645d85319543b7959b65b4c7c5d684b28e7ac8",
+  "checkpoint_sha256": "3c4dc9bb1f8caf9b9c542678914d4c2400f4d381559c5f42269f49ead491ecf1",
+  "data_identities": {},
+  "evaluation": {
+    "cpu_seconds": 0.5103154150000009,
+    "scope": "Checkpoint verification/loading, model construction, evaluation, artifacts and timing repeats",
+    "wall_seconds": 0.5659897299992735
+  },
+  "evaluations": {
+    "dev__base": {
+      "accuracy": 0.77685546875,
+      "all_queries_correct": 0.333984375,
+      "cross_entropy": 0.6047530174255371,
+      "episodes": 512,
+      "missing_target_accuracy": null,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.77685546875
+    },
+    "test__base": {
+      "accuracy": 0.77783203125,
+      "all_queries_correct": 0.353515625,
+      "cross_entropy": 0.6117222309112549,
+      "episodes": 512,
+      "missing_target_accuracy": null,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.77783203125
+    },
+    "test__irregular": {
+      "accuracy": 0.77880859375,
+      "all_queries_correct": 0.34765625,
+      "cross_entropy": 0.6135284900665283,
+      "episodes": 512,
+      "missing_target_accuracy": null,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.77880859375
+    },
+    "test__long_delay": {
+      "accuracy": 0.77978515625,
+      "all_queries_correct": 0.34765625,
+      "cross_entropy": 0.592882513999939,
+      "episodes": 512,
+      "missing_target_accuracy": null,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.77978515625
+    },
+    "test__missing": {
+      "accuracy": 0.666015625,
+      "all_queries_correct": 0.138671875,
+      "cross_entropy": 1.2426860332489014,
+      "episodes": 512,
+      "missing_target_accuracy": 0.016853932584269662,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.8026004728132388
+    },
+    "test__resample": {
+      "accuracy": 0.77783203125,
+      "all_queries_correct": 0.353515625,
+      "cross_entropy": 0.6117221117019653,
+      "episodes": 512,
+      "missing_target_accuracy": null,
+      "observed_logit_max_difference": 9.775161743164062e-06,
+      "query_count": 2048,
+      "visible_target_accuracy": 0.77783203125
+    }
+  },
+  "final_training_loss": 0.7850838303565979,
+  "frozen_commit": "8044dbfc3c41356eaf3f8ac69c7537e2091eda80",
+  "inference": {
+    "batch_size": 24,
+    "dedicated_hardware": false,
+    "device": "cpu",
+    "energy_joules": null,
+    "episodes_per_second": 16743.59417002592,
+    "median_seconds": 0.0014333840008475818,
+    "scope": "Prepared-feature complete-sequence forward; raw media preparation is separate",
+    "sequence_length": 14,
+    "wall_seconds": [
+      0.0014939739994588308,
+      0.0014164490021357778,
+      0.0014333840008475818,
+      0.0014407050002773758,
+      0.0014292179985204712,
+      0.001428036001016153,
+      0.0014024280026205815,
+      0.0014462939980148803,
+      0.0014919710010872222
+    ]
+  },
+  "peak_rss_scope": "Cumulative maximum of this evaluation process, not an isolated per-fit peak",
+  "predictions_sha256": "437c3c0c34a201b1ff9ce3ccadeae8ccd005f7d59e3ed4cceca4f9d92693c64b",
+  "process_peak_rss_kib": 253160,
+  "protocol_sha256": "26e401d211a3c72f80b68d292b54980ef18601bafbb519ee4ffd3dd2f27babdc",
+  "seed": 43,
+  "shape": {
+    "compiled": false,
+    "content_precision": "float32",
+    "matrix_precision": null,
+    "parameters": 15968,
+    "persistent_state_scalars": 1344,
+    "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+  },
+  "status": "completed",
+  "task": "selective",
+  "total_fit_cpu_seconds": 4.476397724999991,
+  "total_fit_wall_seconds": 4.559822516999702,
+  "training": {
+    "cpu_seconds": 3.9660823099999902,
+    "examples": 14400,
+    "scope": "Model/optimizer construction, training, loss logging and final artifact serialization",
+    "wall_seconds": 3.9938327870004287
+  }
+}

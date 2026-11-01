@@ -1,5 +1,13 @@
 # Hepta: a four-stage marked-flow experiment
 
+**Completed results:** [Chinese execution report](REPORT.md),
+[main statistical summary](results/campaign002_analysis001/SUMMARY.md),
+[long-distance and query-swap summary](results/EXTENDED_SUMMARY.md).
+All 75 training/evaluation fits and 225 extension conditions completed. The
+operator audit passes in its stated domain; this candidate did not establish
+reliable content binding or a quality/cost advantage. Full raw evidence and
+checkpoints are published in [verified archive parts](artifacts/README.md).
+
 This additive research experiment starts from public baseline
 `1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d`. It does not modify the inherited
 `hcsn_distributional_v2` implementation or import uncommitted results from other

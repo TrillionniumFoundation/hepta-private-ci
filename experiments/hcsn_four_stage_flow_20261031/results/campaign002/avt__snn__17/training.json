@@ -1,0 +1,34 @@
+{
+  "arm": "snn",
+  "checkpoint_sha256": "27944b7e52ef5d1dba9a612fd05633ba714770fad195d5594252230b3cd4fe3b",
+  "data_identities": {
+    "train": {
+      "candidate_freeze_sha256": null,
+      "npz_sha256": "5eee881d5196e6837272cb12a8972ac46c2da914a629885f0614e88b2da6bb55",
+      "plan_sha256": "630e0708f8f797c8e68ad1361e273277d072ad318cec3eaf4d9d251285d38e51",
+      "receipt_sha256": "8bcca2add7326bf677f3fe6b62de3c12b28805c3c369d780228880f6dc54635d"
+    }
+  },
+  "final_training_loss": 0.6998648047447205,
+  "frozen_commit": "8044dbfc3c41356eaf3f8ac69c7537e2091eda80",
+  "loss_log_sha256": "5374a33b7c2fb633038ffcade5220e8ee4456b5393526d33c44ca5a37ae1b2b7",
+  "protocol_sha256": "26e401d211a3c72f80b68d292b54980ef18601bafbb519ee4ffd3dd2f27babdc",
+  "seed": 17,
+  "shape": {
+    "compiled": false,
+    "content_precision": "float32",
+    "matrix_precision": null,
+    "parameters": 19738,
+    "persistent_state_scalars": 128,
+    "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+  },
+  "status": "trained",
+  "task": "avt",
+  "training": {
+    "cpu_seconds": 1.282584120000024,
+    "examples": 14400,
+    "scope": "Model/optimizer construction, training, loss logging and final artifact serialization",
+    "wall_seconds": 1.28280169899881
+  },
+  "training_curve_sha256": "bd8cbd4f4abdb77d6036a70ce0c25f52cbccb0e4128a82f71575f846aea8b907"
+}
