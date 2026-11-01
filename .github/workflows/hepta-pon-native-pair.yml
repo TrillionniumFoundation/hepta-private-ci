@@ -1032,8 +1032,8 @@ jobs:
       TESTED_SHA: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       HEPTA_CI_LANE: source-head
-      CHAIN_INSTALLED_SOURCE_SHA: 553db1f5ea78ebcee65ea22008dc1d8e90f8ba14
-      CHAIN_INSTALLED_TREE: 49adf498e18f8454a9c080026d618c457bc394e1
+      CHAIN_INSTALLED_SOURCE_SHA: 0e9eac5d2a8cdb0a6f0cc7920f84e290e0d5d0d0
+      CHAIN_INSTALLED_TREE: 7b973f6891c74e2ac1dfb36e0368fae2ba41f3cb
       RUSTUP_TOOLCHAIN: "1.95.0"
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
@@ -1056,6 +1056,8 @@ jobs:
           printf 'CARGO_TARGET_DIR=%s/installed-cell-target\nTRNM_CI_RECEIPT_DIR=%s/installed-cell\n' "$RUNNER_TEMP" "$RUNNER_TEMP" >> "$GITHUB_ENV"
           python3 scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" --lane "$HEPTA_CI_LANE" > "$RUNNER_TEMP/installed-cell/hepta-candidate.json"
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/artifact-controls.json" --minimum-tests 17 -- python3 -m unittest -v scripts.tests.test_hepta_ci_installed_cell
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/execution-source-controls.json" --minimum-tests 51 -- python3 -m unittest discover -s scripts -p 'test_hepta_smollm_execution_source*.py' -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/diverse-source-controls.json" --minimum-tests 32 -- python3 -m unittest discover -s scripts -p 'test_hepta_neural_*diverse_v3.py' -v
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: TrillionniumFoundation/Trillionnium-Chain
@@ -1090,6 +1092,15 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$CHAIN_INSTALLED_SOURCE_SHA"
           test "$(git rev-parse HEAD^{tree})" = "$CHAIN_INSTALLED_TREE"
+          python3 ../hepta/scripts/hepta_smollm_execution_source_v1.py --chain "$GITHUB_WORKSPACE/chain" --profile hepta-integrated-chain-execution-v5 > "$RUNNER_TEMP/installed-cell/execution-source.json"
+          python3 - <<'PYSOURCE'
+          import json, os
+          from pathlib import Path
+          value = json.loads((Path(os.environ['RUNNER_TEMP']) / 'installed-cell/execution-source.json').read_bytes())
+          assert value['chain_commit'] == os.environ['CHAIN_INSTALLED_SOURCE_SHA']
+          assert value['chain_tree'] == os.environ['CHAIN_INSTALLED_TREE']
+          assert value['profile'] == 'hepta-integrated-chain-execution-v5'
+          PYSOURCE
           python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/chain-preflight.json" -- bash scripts/project-preflight.sh --audit
       - name: Prepare the Chain's original pinned PQ provider with its real smoke controls
         working-directory: chain
@@ -1125,6 +1136,38 @@ jobs:
       - name: Require all original 14 and protected-installed 8 controls with zero skips
         run: |
           python3 scripts/hepta_ci_installed_controls.py --chain "$GITHUB_WORKSPACE/chain" --chain-sha "$CHAIN_INSTALLED_SOURCE_SHA" --chain-tree "$CHAIN_INSTALLED_TREE" --host "$RUNNER_TEMP/installed-cell-bin/hepta-neural-agentd" --cell "$CARGO_TARGET_DIR/release/trnm-cell" --imported "$RUNNER_TEMP/installed-cell/verified-native.json" --output "$RUNNER_TEMP/installed-cell"
+      # Current-source groups retain their actual selectors and separate receipts.
+      # The c165 pair above remains unchanged; its TPQ1 and SQL results cannot
+      # qualify these PNQ2/continuous owners or the unsupported growth/PQ mix.
+      - name: Exercise current PQ startup History recovery and original growth CLI
+        working-directory: chain
+        env:
+          SOURCE_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          TESTED_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          BASE_SHA: ""
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/current-node-build.json" -- cargo +1.95.0 build --locked --release --features pq-native-openssl --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node
+          gzip -n -c "$CARGO_TARGET_DIR/release/trnm-pon-node" > "$RUNNER_TEMP/installed-cell/current-node-pq.gz"
+          sha256sum "$CARGO_TARGET_DIR/release/trnm-pon-node" "$RUNNER_TEMP/installed-cell/current-node-pq.gz" > "$RUNNER_TEMP/installed-cell/current-node-binary.sha256"
+          python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/current-pq-continuous.json" --minimum-tests 14 -- cargo +1.95.0 test --locked --release --features pq-native-openssl --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib operator_pq_startup::tests:: -- --show-output --test-threads=1
+          # The sixteenth test is a deliberately killed child fixture. Its parent
+          # below invokes it with --ignored at five real SIGKILL cut points.
+          python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/current-history-import.json" --minimum-tests 15 -- cargo +1.95.0 test --locked --release --features pq-native-openssl --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib ingress::history_import::tests:: -- --show-output --test-threads=1 --skip ingress::history_import::tests::history_kill_cut_child
+          python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/current-growth-cli.json" --minimum-tests 7 -- cargo +1.95.0 test --locked --release --features pq-native-openssl --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --test native_growth_cli --test native_growth_public_cli -- --show-output --test-threads=1
+      - name: Preserve original current-source pressure wrapper and all five native cases
+        working-directory: chain
+        env:
+          SOURCE_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          TESTED_SHA: ${{ env.CHAIN_INSTALLED_SOURCE_SHA }}
+          BASE_SHA: ""
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/current-from-zero-host-controls.json" --minimum-tests 20 -- python3 scripts/ci/test_from_zero_host_ci.py -v
+          python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/current-from-zero-reader-controls.json" --minimum-tests 86 -- python3 scripts/ci/test_run_from_zero_native.py -v
+          python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/current-from-zero.json" -- python3 scripts/ci/run_from_zero_host.py -- python3 scripts/ci/run_from_zero_native.py --out "$RUNNER_TEMP/installed-cell/current-from-zero"
       - name: Retain original failures and exact installed-profile observations
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

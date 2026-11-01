@@ -35,6 +35,11 @@ PROFILE_V4 = "hepta-integrated-chain-execution-v4"
 CHAIN_COMMIT_V4 = "c16507147b65285ea94dead22d3b93c5db7295af"
 MANIFEST_NAME_V4 = "smollm2-public-initial-v2.execution-sources-v4.json"
 MANIFEST_SHA256_V4 = "cc88782c649504cbab886ba5040f183e27fb87d278d682492d68253101bc8f31"
+PROFILE_V5 = "hepta-integrated-chain-execution-v5"
+CHAIN_COMMIT_V5 = "0e9eac5d2a8cdb0a6f0cc7920f84e290e0d5d0d0"
+CHAIN_TREE_V5 = "7b973f6891c74e2ac1dfb36e0368fae2ba41f3cb"
+MANIFEST_NAME_V5 = "smollm2-public-initial-v2.execution-sources-v5.json"
+MANIFEST_SHA256_V5 = "443aafb67c56b24cf776f38d55a0a82bebd637c1db5776a510521c9269025b6d"
 HISTORICAL_PROFILE_SHA256 = (
     "695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8"
 )
@@ -67,6 +72,7 @@ def registered_sources():
         PROFILE_V2: (CHAIN_COMMIT_V2, MANIFEST_NAME_V2, MANIFEST_SHA256_V2),
         PROFILE_V3: (CHAIN_COMMIT_V3, MANIFEST_NAME_V3, MANIFEST_SHA256_V3),
         PROFILE_V4: (CHAIN_COMMIT_V4, MANIFEST_NAME_V4, MANIFEST_SHA256_V4),
+        PROFILE_V5: (CHAIN_COMMIT_V5, MANIFEST_NAME_V5, MANIFEST_SHA256_V5),
     }
 
 
@@ -112,11 +118,20 @@ def checked_manifest(profile):
             "historical_sources_sha256",
             "files",
         }
-        and value["schema"] == "hepta-smollm-public-initial-execution-sources-v1"
+        | ({"chain_tree"} if profile == PROFILE_V5 else set())
+        and value["schema"]
+        == "hepta-smollm-public-initial-execution-sources-"
+        + ("v2" if profile == PROFILE_V5 else "v1")
         and value["profile"] == profile
         and value["chain_commit"] == commit,
         "closed exact execution-source identity",
     )
+    if profile == PROFILE_V5:
+        require(
+            re.fullmatch(r"[0-9a-f]{40}", CHAIN_TREE_V5) is not None
+            and value["chain_tree"] == CHAIN_TREE_V5,
+            "exact integrated Chain tree required",
+        )
     for name, field, expected in (
         (
             "smollm2-public-initial-v2.profile",
@@ -160,6 +175,11 @@ def verify(chain, profile):
     # Reuse the existing reader's environment, replacement and hook policy.
     head = git("rev-parse", "HEAD", repository=chain)
     require(head == value["chain_commit"], "exact integrated Chain commit required")
+    if profile == PROFILE_V5:
+        require(
+            git("rev-parse", "HEAD^{tree}", repository=chain) == value["chain_tree"],
+            "exact integrated Chain tree required",
+        )
     git(
         "diff",
         "--exit-code",
@@ -218,7 +238,7 @@ def verify(chain, profile):
             len(source) == expected["size"] and digest(source) == expected["sha256"],
             f"execution source bytes changed: {relative}",
         )
-    return {
+    result = {
         "schema": "hepta-smollm-public-initial-execution-source-verified-v1",
         "profile": profile,
         "chain_commit": head,
@@ -230,6 +250,9 @@ def verify(chain, profile):
         "product_qualification": False,
         "installation_authorized": False,
     }
+    if profile == PROFILE_V5:
+        result["chain_tree"] = value["chain_tree"]
+    return result
 
 
 def main():
