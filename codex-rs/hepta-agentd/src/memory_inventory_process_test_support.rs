@@ -7,13 +7,25 @@ use std::process::Stdio;
 use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::{AgentLifecycle, AgentManifest, FleetRegistry, ResourceBudget, WorkspaceBinding};
+use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::AgentManifest;
+use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::ResourceBudget;
+use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use pretty_assertions::assert_eq;
-use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
-use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
-use tokio::process::{Child, ChildStdin, ChildStdout, Command};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json::Value;
+use serde_json::json;
+use tokio::io::AsyncBufReadExt;
+use tokio::io::AsyncReadExt;
+use tokio::io::AsyncWriteExt;
+use tokio::io::BufReader;
+use tokio::process::Child;
+use tokio::process::ChildStdin;
+use tokio::process::ChildStdout;
+use tokio::process::Command;
 
 use crate::AgentdClient;
 use crate::MemoryCellMigrationPinV9;
@@ -66,8 +78,12 @@ struct Spec {
 }
 
 enum LaunchProfile {
-    Bundle { records: Option<PathBuf>, resume: Option<InventoryReleaseCheckpoint>,
-        worker: Option<WorkerSpec>, recovery: Option<RecoverySpec> },
+    Bundle {
+        records: Option<PathBuf>,
+        resume: Option<InventoryReleaseCheckpoint>,
+        worker: Option<WorkerSpec>,
+        recovery: Option<RecoverySpec>,
+    },
     Independent(IndependentSpecV14),
 }
 
@@ -87,7 +103,15 @@ pub(super) fn fleet(root: &Path) -> (FleetRegistry, AgentId) {
     let owner = AgentId::parse("00000000-0000-4000-9000-000000000010").expect("owner ID");
     let workspace = root.join("workspace");
     std::fs::create_dir(&workspace).expect("workspace");
-    registry.register(AgentManifest::new(owner.clone(), WorkspaceBinding::new(workspace, &fleet).expect("workspace binding"), ResourceBudget::local_default()).expect("manifest"))
+    registry
+        .register(
+            AgentManifest::new(
+                owner.clone(),
+                WorkspaceBinding::new(workspace, &fleet).expect("workspace binding"),
+                ResourceBudget::local_default(),
+            )
+            .expect("manifest"),
+        )
         .expect("registered owner");
     (registry, owner)
 }
@@ -102,24 +126,68 @@ impl NativeOwner {
         worker: Option<WorkerSpec>,
         recovery: Option<RecoverySpec>,
     ) -> Self {
-        Self::spawn_profile(root, registry, owner, LaunchProfile::Bundle { records, resume, worker, recovery }).await
+        Self::spawn_profile(
+            root,
+            registry,
+            owner,
+            LaunchProfile::Bundle {
+                records,
+                resume,
+                worker,
+                recovery,
+            },
+        )
+        .await
     }
 
-    pub async fn spawn_independent(root: &Path, registry: &FleetRegistry, owner: AgentId,
-        independent: IndependentSpecV14) -> Self {
-        Self::spawn_profile(root, registry, owner, LaunchProfile::Independent(independent)).await
+    pub async fn spawn_independent(
+        root: &Path,
+        registry: &FleetRegistry,
+        owner: AgentId,
+        independent: IndependentSpecV14,
+    ) -> Self {
+        Self::spawn_profile(
+            root,
+            registry,
+            owner,
+            LaunchProfile::Independent(independent),
+        )
+        .await
     }
 
-    async fn spawn_profile(root: &Path, registry: &FleetRegistry, owner: AgentId, profile: LaunchProfile) -> Self {
+    async fn spawn_profile(
+        root: &Path,
+        registry: &FleetRegistry,
+        owner: AgentId,
+        profile: LaunchProfile,
+    ) -> Self {
         let record = registry.load_agent(&owner).expect("registered owner");
-        let lifecycle = registry.compare_and_transition(&owner, record.lifecycle.generation, AgentLifecycle::Starting).expect("starting transition");
+        let lifecycle = registry
+            .compare_and_transition(
+                &owner,
+                record.lifecycle.generation,
+                AgentLifecycle::Starting,
+            )
+            .expect("starting transition");
         let (records, resume, worker, recovery, independent) = match profile {
-            LaunchProfile::Bundle { records, resume, worker, recovery } => (records, resume, worker, recovery, None),
+            LaunchProfile::Bundle {
+                records,
+                resume,
+                worker,
+                recovery,
+            } => (records, resume, worker, recovery, None),
             LaunchProfile::Independent(independent) => (None, None, None, None, Some(independent)),
         };
         let spec = Spec {
-            fleet_root: registry.layout().fleet_root().as_path().to_path_buf(), owner: owner.clone(),
-            spawn_generation: lifecycle.generation, artifact_root: root.join("artifacts"), records, resume, worker, recovery, independent,
+            fleet_root: registry.layout().fleet_root().as_path().to_path_buf(),
+            owner: owner.clone(),
+            spawn_generation: lifecycle.generation,
+            artifact_root: root.join("artifacts"),
+            records,
+            resume,
+            worker,
+            recovery,
+            independent,
         };
         let path = root.join(format!("child-{}.json", lifecycle.generation));
         let bytes = serde_json::to_vec(&spec).expect("child spec");
@@ -128,11 +196,22 @@ impl NativeOwner {
         file.write_all(&bytes).expect("spec bytes");
         file.sync_all().expect("durable spec");
         let mut child = Command::new(std::env::current_exe().expect("test executable"))
-            .args(["--ignored", "--exact", CHILD_TEST, "--nocapture", "--test-threads=1"])
-            .env(SPEC_ENV, path).env("TMPDIR", root)
+            .args([
+                "--ignored",
+                "--exact",
+                CHILD_TEST,
+                "--nocapture",
+                "--test-threads=1",
+            ])
+            .env(SPEC_ENV, path)
+            .env("TMPDIR", root)
             .current_dir(record.manifest.workspace.as_path())
-            .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::inherit()).kill_on_drop(true)
-            .spawn().expect("separate native owner process");
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::inherit())
+            .kill_on_drop(true)
+            .spawn()
+            .expect("separate native owner process");
         let pid = child.id().expect("child PID");
         let input = child.stdin.take().expect("child input");
         let mut output = BufReader::new(child.stdout.take().expect("child output"));
@@ -140,21 +219,80 @@ impl NativeOwner {
         assert_eq!(ready["pid"].as_u64(), Some(u64::from(pid)));
         assert_ne!(pid, std::process::id());
         if ready["refused"] == json!(true) {
-            assert!(spec.recovery.as_ref().is_some_and(|recovery| recovery.withdrawal.is_some()), "only the explicit negative frontier recovery may refuse startup");
-            let status = tokio::time::timeout(DEADLINE, child.wait()).await.expect("refused child deadline").expect("reap refused child");
-            assert!(status.success(), "refusal must be an explicit receipt, not a panic");
+            assert!(
+                spec.recovery
+                    .as_ref()
+                    .is_some_and(|recovery| recovery.withdrawal.is_some()),
+                "only the explicit negative frontier recovery may refuse startup"
+            );
+            let status = tokio::time::timeout(DEADLINE, child.wait())
+                .await
+                .expect("refused child deadline")
+                .expect("reap refused child");
+            assert!(
+                status.success(),
+                "refusal must be an explicit receipt, not a panic"
+            );
             let mut trailer = Vec::new();
-            tokio::time::timeout(DEADLINE, (&mut output).take((LIMIT + 1) as u64).read_to_end(&mut trailer)).await.expect("refused child EOF deadline").expect("refused child EOF");
+            tokio::time::timeout(
+                DEADLINE,
+                (&mut output)
+                    .take((LIMIT + 1) as u64)
+                    .read_to_end(&mut trailer),
+            )
+            .await
+            .expect("refused child EOF deadline")
+            .expect("refused child EOF");
             assert!(trailer.len() <= LIMIT);
-            registry.compare_and_transition(&owner, lifecycle.generation, AgentLifecycle::Failed).expect("supervisor observes refused startup");
-            let client = AgentdClient::new(record.layout.agentd_control_socket().to_path_buf(), owner, lifecycle.generation).expect("refused owner client");
-            return Self { child:None, input:None, output, client, ready, frames_tx_bytes:0, frames_rx_bytes:rx + trailer.len() as u64 };
+            registry
+                .compare_and_transition(&owner, lifecycle.generation, AgentLifecycle::Failed)
+                .expect("supervisor observes refused startup");
+            let client = AgentdClient::new(
+                record.layout.agentd_control_socket().to_path_buf(),
+                owner,
+                lifecycle.generation,
+            )
+            .expect("refused owner client");
+            return Self {
+                child: None,
+                input: None,
+                output,
+                client,
+                ready,
+                frames_tx_bytes: 0,
+                frames_rx_bytes: rx + trailer.len() as u64,
+            };
         }
-        registry.compare_and_transition(&owner, lifecycle.generation, AgentLifecycle::Running).expect("running transition");
-        let client = AgentdClient::new(record.layout.agentd_control_socket().to_path_buf(), owner, lifecycle.generation).expect("real control client");
-        let mut process = Self { child: Some(child), input: Some(input), output, client, ready, frames_tx_bytes: 0, frames_rx_bytes: rx };
-        assert_eq!(process.command(json!({"op":"activate"})).await, json!({"ready":true}));
-        assert!(process.client.health().await.expect("owner readiness").ready);
+        registry
+            .compare_and_transition(&owner, lifecycle.generation, AgentLifecycle::Running)
+            .expect("running transition");
+        let client = AgentdClient::new(
+            record.layout.agentd_control_socket().to_path_buf(),
+            owner,
+            lifecycle.generation,
+        )
+        .expect("real control client");
+        let mut process = Self {
+            child: Some(child),
+            input: Some(input),
+            output,
+            client,
+            ready,
+            frames_tx_bytes: 0,
+            frames_rx_bytes: rx,
+        };
+        assert_eq!(
+            process.command(json!({"op":"activate"})).await,
+            json!({"ready":true})
+        );
+        assert!(
+            process
+                .client
+                .health()
+                .await
+                .expect("owner readiness")
+                .ready
+        );
         process
     }
 
@@ -162,7 +300,12 @@ impl NativeOwner {
         let mut bytes = serde_json::to_vec(&command).expect("test command");
         bytes.push(b'\n');
         assert!(bytes.len() <= LIMIT);
-        self.input.as_mut().expect("owner input").write_all(&bytes).await.expect("command write");
+        self.input
+            .as_mut()
+            .expect("owner input")
+            .write_all(&bytes)
+            .await
+            .expect("command write");
         self.frames_tx_bytes += bytes.len() as u64;
         let (frame, bytes) = read_frame(&mut self.output).await;
         self.frames_rx_bytes += bytes;
@@ -172,19 +315,39 @@ impl NativeOwner {
     pub async fn stop(&mut self, registry: &FleetRegistry, owner: &AgentId) -> Value {
         let record = registry.load_agent(owner).expect("live owner");
         if record.lifecycle.lifecycle == AgentLifecycle::Running {
-            registry.compare_and_transition(owner, record.lifecycle.generation, AgentLifecycle::Draining).expect("draining transition");
+            registry
+                .compare_and_transition(
+                    owner,
+                    record.lifecycle.generation,
+                    AgentLifecycle::Draining,
+                )
+                .expect("draining transition");
         }
         let stopped = self.command(json!({"op":"stop"})).await;
         self.input.take();
-        let status = tokio::time::timeout(DEADLINE, self.child.as_mut().expect("owner child").wait()).await.expect("owner exit deadline").expect("reap owner");
+        let status =
+            tokio::time::timeout(DEADLINE, self.child.as_mut().expect("owner child").wait())
+                .await
+                .expect("owner exit deadline")
+                .expect("reap owner");
         assert!(status.success());
         self.child.take();
         let mut trailer = Vec::new();
-        tokio::time::timeout(DEADLINE, (&mut self.output).take((LIMIT + 1) as u64).read_to_end(&mut trailer)).await.expect("owner EOF deadline").expect("owner EOF");
+        tokio::time::timeout(
+            DEADLINE,
+            (&mut self.output)
+                .take((LIMIT + 1) as u64)
+                .read_to_end(&mut trailer),
+        )
+        .await
+        .expect("owner EOF deadline")
+        .expect("owner EOF");
         assert!(trailer.len() <= LIMIT);
         self.frames_rx_bytes += trailer.len() as u64;
         let record = registry.load_agent(owner).expect("draining owner");
-        registry.compare_and_transition(owner, record.lifecycle.generation, AgentLifecycle::Stopped).expect("stopped transition");
+        registry
+            .compare_and_transition(owner, record.lifecycle.generation, AgentLifecycle::Stopped)
+            .expect("stopped transition");
         json!({"process":self.ready,"ack":stopped,"exit_status":status.to_string(),"control":self.client.traffic_snapshot(),
             "frames_tx_bytes":self.frames_tx_bytes,"frames_rx_bytes":self.frames_rx_bytes,"reaped":true})
     }
@@ -195,22 +358,34 @@ async fn read_frame(output: &mut BufReader<ChildStdout>) -> (Value, u64) {
         let mut total = 0_u64;
         loop {
             let mut line = Vec::new();
-            (&mut *output).take((LIMIT + 1) as u64).read_until(b'\n', &mut line).await.expect("child frame");
+            (&mut *output)
+                .take((LIMIT + 1) as u64)
+                .read_until(b'\n', &mut line)
+                .await
+                .expect("child frame");
             total += line.len() as u64;
             assert!(!line.is_empty() && line.len() <= LIMIT && total <= (LIMIT * 2) as u64);
-            if let Some(offset) = line.windows(PREFIX.len()).position(|window| window == PREFIX.as_bytes()) {
-                let value = serde_json::from_slice(&line[offset + PREFIX.len()..]).expect("typed child frame");
+            if let Some(offset) = line
+                .windows(PREFIX.len())
+                .position(|window| window == PREFIX.as_bytes())
+            {
+                let value = serde_json::from_slice(&line[offset + PREFIX.len()..])
+                    .expect("typed child frame");
                 return (value, total);
             }
         }
-    }).await.expect("child frame deadline")
+    })
+    .await
+    .expect("child frame deadline")
 }
 
 fn emit(value: Value) {
-    let line = format!("{PREFIX}{}\n", serde_json::to_string(&value).expect("child frame"));
+    let line = format!(
+        "{PREFIX}{}\n",
+        serde_json::to_string(&value).expect("child frame")
+    );
     assert!(line.len() < LIMIT);
     let mut output = std::io::stdout().lock();
     output.write_all(line.as_bytes()).expect("frame write");
     output.flush().expect("frame flush");
 }
-

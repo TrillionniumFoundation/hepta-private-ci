@@ -62,7 +62,6 @@ mod memory_cell_training_tests;
 #[cfg(test)]
 mod memory_cell_v9_continual_tests;
 mod memory_independent_cell_v11;
-mod memory_isolated_service_v14;
 mod memory_independent_model_v12;
 #[cfg(all(test, unix))]
 mod memory_inventory_actual_tests;
@@ -77,6 +76,7 @@ mod memory_inventory_runtime;
 mod memory_inventory_test_support;
 #[cfg(test)]
 mod memory_inventory_withdrawal_test_support;
+mod memory_isolated_service_v14;
 mod memory_mlp_v12;
 mod memory_serving_plan_v11;
 mod neuron_runtime;
@@ -286,13 +286,13 @@ pub use memory_independent_cell_v11::MemoryCellCandidateV11;
 pub use memory_independent_cell_v11::MemoryCellCandidateV12;
 pub use memory_independent_cell_v11::MemoryCellReleaseV11;
 pub use memory_independent_cell_v11::SelectedMemoryCellV11;
-pub use memory_isolated_service_v14::MemoryIsolatedServiceV14;
 pub use memory_inventory_bundle::LoadedMemoryInventoryBundleV1;
 pub use memory_inventory_bundle::MemoryInventoryBundleCandidateV1;
 pub use memory_inventory_release::MemoryInventoryReleaseHostV1;
 pub use memory_inventory_runtime::AgentdMemoryInventoryRuntimeV1;
 pub use memory_inventory_runtime::MemoryInventoryAddressResolverV1;
 pub use memory_inventory_runtime::MemoryInventoryResolvedAddressV1;
+pub use memory_isolated_service_v14::MemoryIsolatedServiceV14;
 pub use memory_serving_plan_v11::MemoryCellVersionV11;
 pub use memory_serving_plan_v11::MemoryPlanReadoutV11;
 pub use memory_serving_plan_v11::MemoryServingPlanV11;

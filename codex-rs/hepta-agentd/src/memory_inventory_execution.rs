@@ -201,7 +201,10 @@ pub(crate) fn execute(
     }
     let prediction_kind = if models.is_empty() {
         MemoryPredictionKindV1::SourceEvidence
-    } else if matches!(operation, MemoryOperationV1::Semantic | MemoryOperationV1::Procedure) {
+    } else if matches!(
+        operation,
+        MemoryOperationV1::Semantic | MemoryOperationV1::Procedure
+    ) {
         MemoryPredictionKindV1::ModelPrediction
     } else {
         MemoryPredictionKindV1::Mixed
@@ -295,4 +298,3 @@ fn inner_value(value: MemoryInventoryValueV1) -> Result<Value, ReadFailure> {
     }
     .map_err(|_| unavailable("native inventory value could not be encoded"))
 }
-

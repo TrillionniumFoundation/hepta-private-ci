@@ -37,7 +37,8 @@ pub struct MemoryInventoryRequestV1 {
 
 impl MemoryInventoryRequestV1 {
     pub fn validate(&self) -> Result<(), HnmfContractError> {
-        if self.schema != "hepta.memory.inventory-request.v1" || !(1..=4).contains(&self.max_steps) {
+        if self.schema != "hepta.memory.inventory-request.v1" || !(1..=4).contains(&self.max_steps)
+        {
             return Err(HnmfContractError::Invalid("inventory request envelope"));
         }
         // Reuse only the established identifier/text/time/budget constraints.
@@ -52,7 +53,8 @@ impl MemoryInventoryRequestV1 {
             since: self.since,
             max_hops: self.max_hops,
             max_cells: self.max_cells,
-        }.validate()
+        }
+        .validate()
     }
 }
 
@@ -97,13 +99,18 @@ impl MemoryInventoryReadoutV1 {
             hops: self.hops,
             elapsed_seconds: self.elapsed_seconds,
             reason: self.reason.clone(),
-        }.validate()?;
+        }
+        .validate()?;
         if self.status != MemoryReadStatusV1::Ok {
             return Ok(());
         }
         match self.operation {
-            Some(MemoryOperationV1::Current | MemoryOperationV1::History | MemoryOperationV1::Change) => {
-                if self.value.as_i64().is_none() || self.prediction_kind != MemoryPredictionKindV1::SourceEvidence {
+            Some(
+                MemoryOperationV1::Current | MemoryOperationV1::History | MemoryOperationV1::Change,
+            ) => {
+                if self.value.as_i64().is_none()
+                    || self.prediction_kind != MemoryPredictionKindV1::SourceEvidence
+                {
                     return Err(HnmfContractError::Invalid("inventory event evidence"));
                 }
             }
@@ -122,20 +129,30 @@ impl MemoryInventoryReadoutV1 {
                 }
             }
             Some(MemoryOperationV1::Apply) => {
-                let execution: MemoryInventoryExecutionV1 = serde_json::from_value(self.value.clone())
-                    .map_err(|_| HnmfContractError::Invalid("inventory execution shape"))?;
+                let execution: MemoryInventoryExecutionV1 =
+                    serde_json::from_value(self.value.clone())
+                        .map_err(|_| HnmfContractError::Invalid("inventory execution shape"))?;
                 if (self.prediction_kind != MemoryPredictionKindV1::Mixed
                     && !(current_source_fallback
                         && self.prediction_kind == MemoryPredictionKindV1::SourceEvidence))
                     || execution.status != MemoryInventoryExecutionStatusV1::Completed
-                    || execution.trace.is_empty() || execution.trace.len() > 4
+                    || execution.trace.is_empty()
+                    || execution.trace.len() > 4
                     || execution.trace.last().is_none_or(|step| {
-                        step.op != MemoryInventoryOpcodeV1::Stop || Some(step.after) != execution.value
+                        step.op != MemoryInventoryOpcodeV1::Stop
+                            || Some(step.after) != execution.value
                     })
-                    || execution.trace[..execution.trace.len() - 1].iter().any(|step| step.op == MemoryInventoryOpcodeV1::Stop)
-                    || execution.trace.windows(2).any(|steps| steps[0].after != steps[1].before)
+                    || execution.trace[..execution.trace.len() - 1]
+                        .iter()
+                        .any(|step| step.op == MemoryInventoryOpcodeV1::Stop)
+                    || execution
+                        .trace
+                        .windows(2)
+                        .any(|steps| steps[0].after != steps[1].before)
                     || execution.trace.iter().any(|step| match step.op {
-                        MemoryInventoryOpcodeV1::Keep | MemoryInventoryOpcodeV1::Stop => step.after != step.before,
+                        MemoryInventoryOpcodeV1::Keep | MemoryInventoryOpcodeV1::Stop => {
+                            step.after != step.before
+                        }
                         MemoryInventoryOpcodeV1::Halve => step.after != step.before.div_euclid(2),
                         MemoryInventoryOpcodeV1::ReserveGap
                         | MemoryInventoryOpcodeV1::Pack
@@ -152,7 +169,9 @@ impl MemoryInventoryReadoutV1 {
     }
 }
 
-pub fn decode_memory_inventory_request_v1(bytes: &[u8]) -> Result<MemoryInventoryRequestV1, HnmfContractError> {
+pub fn decode_memory_inventory_request_v1(
+    bytes: &[u8],
+) -> Result<MemoryInventoryRequestV1, HnmfContractError> {
     if bytes.len() > 131_072 {
         return Err(HnmfContractError::Invalid("inventory request wire bound"));
     }
@@ -162,7 +181,9 @@ pub fn decode_memory_inventory_request_v1(bytes: &[u8]) -> Result<MemoryInventor
     Ok(request)
 }
 
-pub fn decode_memory_inventory_readout_v1(bytes: &[u8]) -> Result<MemoryInventoryReadoutV1, HnmfContractError> {
+pub fn decode_memory_inventory_readout_v1(
+    bytes: &[u8],
+) -> Result<MemoryInventoryReadoutV1, HnmfContractError> {
     if bytes.len() > 131_072 {
         return Err(HnmfContractError::Invalid("inventory readout wire bound"));
     }
@@ -175,4 +196,3 @@ pub fn decode_memory_inventory_readout_v1(bytes: &[u8]) -> Result<MemoryInventor
 #[cfg(test)]
 #[path = "memory_inventory_v14_tests.rs"]
 mod v14_tests;
-

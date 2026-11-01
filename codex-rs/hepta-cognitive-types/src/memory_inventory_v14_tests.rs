@@ -48,26 +48,49 @@ fn inventory_v14_exact_fallback_roundtrips_without_relaxing_v1() {
         );
         let mut old = candidate.clone();
         old.schema = "hepta.memory.inventory-readout.v1".to_string();
-        assert!(old.validate().is_err(), "V1 still requires parameter artifacts");
+        assert!(
+            old.validate().is_err(),
+            "V1 still requires parameter artifacts"
+        );
         let mut forged = candidate.clone();
         forged.prediction_kind = MemoryPredictionKindV1::ModelPrediction;
-        assert!(forged.validate().is_err(), "no invented model without an artifact");
+        assert!(
+            forged.validate().is_err(),
+            "no invented model without an artifact"
+        );
         let mut forged = candidate;
-        forged.cell_digests.push(ContractDigestV1::parse(&"33".repeat(32)).expect("artifact"));
-        assert!(forged.validate().is_err(), "source evidence cannot claim a model");
+        forged
+            .cell_digests
+            .push(ContractDigestV1::parse(&"33".repeat(32)).expect("artifact"));
+        assert!(
+            forged.validate().is_err(),
+            "source evidence cannot claim a model"
+        );
     }
 }
 
 #[test]
 fn inventory_v14_preserves_empty_failure_and_typed_value_constraints() {
-    let mut candidate = readout(MemoryOperationV1::Semantic, json!({"reserve":11,"pack":16,"limit":14}));
-    assert!(candidate.validate().is_err(), "invalid policy cannot enter through fallback");
+    let mut candidate = readout(
+        MemoryOperationV1::Semantic,
+        json!({"reserve":11,"pack":16,"limit":14}),
+    );
+    assert!(
+        candidate.validate().is_err(),
+        "invalid policy cannot enter through fallback"
+    );
     candidate.status = MemoryReadStatusV1::Abstain;
     candidate.reason = Some("current source withdrawn".to_string());
-    assert!(candidate.validate().is_err(), "failed reads cannot expose partial evidence");
+    assert!(
+        candidate.validate().is_err(),
+        "failed reads cannot expose partial evidence"
+    );
     candidate.value = Value::Null;
     candidate.source_ids.clear();
     candidate.prediction_kind = MemoryPredictionKindV1::None;
     let bytes = serde_json::to_vec(&candidate).expect("failure wire");
-    assert_eq!(decode_memory_inventory_readout_v1(&bytes).expect("empty failure"), candidate);
+    assert_eq!(
+        decode_memory_inventory_readout_v1(&bytes).expect("empty failure"),
+        candidate
+    );
 }
