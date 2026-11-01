@@ -23,6 +23,9 @@ use crate::memory_inventory_withdrawal_test_support::InventoryWithdrawalCheckpoi
 #[path = "memory_inventory_owner_test_child.rs"]
 mod child;
 pub(super) use child::child_main;
+#[path = "memory_isolated_owner_v14_test_support.rs"]
+mod independent;
+pub(super) use independent::IndependentSpecV14;
 
 const CHILD_TEST: &str = "memory_inventory_actual_tests::memory_inventory_owner_child";
 const SPEC_ENV: &str = "HEPTA_MEMORY_INVENTORY_CHILD_SPEC";
@@ -58,6 +61,14 @@ struct Spec {
     resume: Option<InventoryReleaseCheckpoint>,
     worker: Option<WorkerSpec>,
     recovery: Option<RecoverySpec>,
+    #[serde(default)]
+    independent: Option<IndependentSpecV14>,
+}
+
+enum LaunchProfile {
+    Bundle { records: Option<PathBuf>, resume: Option<InventoryReleaseCheckpoint>,
+        worker: Option<WorkerSpec>, recovery: Option<RecoverySpec> },
+    Independent(IndependentSpecV14),
 }
 
 pub(super) struct NativeOwner {
@@ -91,11 +102,24 @@ impl NativeOwner {
         worker: Option<WorkerSpec>,
         recovery: Option<RecoverySpec>,
     ) -> Self {
+        Self::spawn_profile(root, registry, owner, LaunchProfile::Bundle { records, resume, worker, recovery }).await
+    }
+
+    pub async fn spawn_independent(root: &Path, registry: &FleetRegistry, owner: AgentId,
+        independent: IndependentSpecV14) -> Self {
+        Self::spawn_profile(root, registry, owner, LaunchProfile::Independent(independent)).await
+    }
+
+    async fn spawn_profile(root: &Path, registry: &FleetRegistry, owner: AgentId, profile: LaunchProfile) -> Self {
         let record = registry.load_agent(&owner).expect("registered owner");
         let lifecycle = registry.compare_and_transition(&owner, record.lifecycle.generation, AgentLifecycle::Starting).expect("starting transition");
+        let (records, resume, worker, recovery, independent) = match profile {
+            LaunchProfile::Bundle { records, resume, worker, recovery } => (records, resume, worker, recovery, None),
+            LaunchProfile::Independent(independent) => (None, None, None, None, Some(independent)),
+        };
         let spec = Spec {
             fleet_root: registry.layout().fleet_root().as_path().to_path_buf(), owner: owner.clone(),
-            spawn_generation: lifecycle.generation, artifact_root: root.join("artifacts"), records, resume, worker, recovery,
+            spawn_generation: lifecycle.generation, artifact_root: root.join("artifacts"), records, resume, worker, recovery, independent,
         };
         let path = root.join(format!("child-{}.json", lifecycle.generation));
         let bytes = serde_json::to_vec(&spec).expect("child spec");
@@ -189,3 +213,4 @@ fn emit(value: Value) {
     output.write_all(line.as_bytes()).expect("frame write");
     output.flush().expect("frame flush");
 }
+

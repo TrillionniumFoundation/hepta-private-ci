@@ -68,8 +68,10 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         timeout-minutes: 10
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
+      - name: Fetch only the exact formatter baseline
+        run: git fetch --no-tags --depth=1 origin b020a9b1648513ed7cb4edfbca6893c2b9ec99d4
       - uses: ./.github/actions/setup-ci
         timeout-minutes: 5
       - name: Install the pinned Rust toolchain
@@ -198,6 +200,7 @@ jobs:
               report.unlink(missing_ok=True)
               receipt["junit_source"] = str(report)
               receipt["tests_command_started"] = True
+              os.environ["HEPTA_MEMORY_V14_NATIVE_EVIDENCE"] = str(output / "native-two-process.json")
               execute("scoped-native-tests", ["just", "test", "--locked", "--lib", "--retries", "0",
                       "-p", "codex-hepta-memory", "-p", "codex-hepta-agentd", "-p", "codex-hepta-cognitive-types",
                       "-E", "test(memory_v14_) | test(memory_v12_) | test(memory_v11_) | test(inventory_v14_)"])
@@ -219,6 +222,7 @@ jobs:
               expected.update({
                   "memory_v14_trained_cells_fallback_reject_retrain_restart_and_withdraw",
                   "memory_v14_preserves_full_fitted_dependencies_and_return_fences",
+                  "memory_v14_two_process_control_and_cold_migration",
                   "inventory_v14_exact_fallback_roundtrips_without_relaxing_v1",
                   "inventory_v14_preserves_empty_failure_and_typed_value_constraints",
               })
@@ -309,7 +313,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          fetch-depth: 0
+          fetch-depth: 1
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           pattern: memory-v14-native-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}

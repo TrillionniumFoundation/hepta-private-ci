@@ -1,5 +1,5 @@
-//! Inventory composition reads event and hold evidence; values and programs
-//! come exclusively from the selected immutable parameter artifacts.
+//! Inventory composition reads event and hold evidence. Values and programs use
+//! authenticated parameters, or an explicitly selected V14 current-source fallback.
 
 use std::collections::BTreeSet;
 

@@ -28,7 +28,7 @@ use crate::memory_inventory_withdrawal_test_support::InventoryWithdrawalCheckpoi
 use super::{SPEC_ENV, Spec, WorkerSpec, emit};
 
 #[derive(Default)]
-struct OracleGate {
+pub(super) struct OracleGate {
     entered: Notify,
     resume: Notify,
 }
@@ -60,6 +60,10 @@ impl MemoryInventoryAddressResolverV1 for OracleGate {
 
 pub(crate) async fn child_main() {
     let spec: Spec = serde_json::from_slice(&std::fs::read(std::env::var_os(SPEC_ENV).expect("parent launch spec")).expect("spec bytes")).expect("child spec");
+    if spec.independent.is_some() {
+        super::independent::child_main(spec).await;
+        return;
+    }
     let registry = FleetRegistry::open_existing(HeptaFleetRoot::parse(spec.fleet_root.clone()).expect("fleet root")).expect("existing fleet");
     let record = registry.load_agent(&spec.owner).expect("registered owner");
     if let Some(recovery) = &spec.recovery {
@@ -235,3 +239,4 @@ async fn start_worker(spec: WorkerSpec) -> MemoryInventoryAddressWorkerV1 {
         model_digest, encoder_directory:spec.encoder, aliases:BTreeMap::new(), request_timeout:Duration::from_millis(1_500), startup_timeout:Duration::from_secs(30),
     }).await.expect("actual trained inventory address worker")
 }
+

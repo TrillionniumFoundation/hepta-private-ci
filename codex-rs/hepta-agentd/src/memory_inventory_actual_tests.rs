@@ -21,6 +21,8 @@ mod process;
 mod migration;
 #[path = "memory_inventory_numeric_actual.rs"]
 mod numeric;
+#[path = "memory_isolated_process_v14_tests.rs"]
+mod isolated_v14;
 use cases::{Inputs, check_composition, check_written_values, empty_failure, export, initial_records, install, query, record, save};
 use process::{NativeOwner, WorkerSpec};
 
@@ -174,3 +176,4 @@ async fn memory_inventory_actual_trained_owner_lifecycle() {
         "migration":migration_evidence,"migration_claim":"actual_same_host_TCP_to_independent_root; no cross_physical_host_claim", "rss_claim":false,
     }));
 }
+
