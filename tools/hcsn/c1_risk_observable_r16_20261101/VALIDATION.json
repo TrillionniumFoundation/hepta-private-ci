@@ -1,0 +1,43 @@
+{
+  "provenance": "Observed exec_command result chunk a17f03, exit_code0; recorded from the displayed output without claiming a separate original log file.",
+  "candidate_only": true,
+  "frozen_kernel_or_gates_changed": false,
+  "max_interior_gradient_absolute_error": 3.7193470525664907e-11,
+  "max_boundary_centered_difference_at_h_1e_5": 0.000008550249397387688,
+  "boundary_approach": [
+    {
+      "distance": 0.01,
+      "max_joint_gradient": 0.03341126468136875,
+      "risk_gap": 0.00016750574531865237,
+      "equity": 0.00010286977407930956
+    },
+    {
+      "distance": 0.001,
+      "max_joint_gradient": 0.003412106861213565,
+      "risk_gap": 0.0000017065127172477546,
+      "equity": 0.0000010374772210562482
+    },
+    {
+      "distance": 0.0001,
+      "max_joint_gradient": 0.00034193160573825444,
+      "risk_gap": 1.709704045005367e-8,
+      "equity": 1.038363026655963e-8
+    },
+    {
+      "distance": 0.00001,
+      "max_joint_gradient": 0.00003420038103245451,
+      "risk_gap": 1.7100232341249466e-10,
+      "equity": 1.0384516864985057e-10
+    }
+  ],
+  "max_generator_identity_absolute_error": 2.7755575615628914e-17,
+  "conclusions_not_established": [
+    "Original put/first-passage semantics unchanged",
+    "C2 smoothness",
+    "C1 force field when using value derivatives",
+    "Genuine spike generation",
+    "Sparse execution or energy savings",
+    "Quality or cost superiority",
+    "All-network differentiability"
+  ]
+}
