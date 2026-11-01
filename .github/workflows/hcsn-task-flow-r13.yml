@@ -1,0 +1,44 @@
+name: HCSN task flow R13
+
+on:
+  pull_request:
+    paths:
+      - tools/hcsn/unified_cell_r12_20261031/**
+      - tools/hcsn/calibrated_operator_r11_20261031/numerics/kernel.py
+      - .github/workflows/hcsn-task-flow-r13.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  numerical-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            tools/hcsn/unified_cell_r12_20261031
+            tools/hcsn/calibrated_operator_r11_20261031/numerics
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install the declared numerical runtime
+        run: python -m pip install -r tools/hcsn/unified_cell_r12_20261031/requirements-numpy.txt
+      - name: Verify gradients, execution contracts and statistics
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: python -m unittest discover -s tools/hcsn/unified_cell_r12_20261031 -t . -v
+      - name: Audit independent native finite propagation
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          python - <<'PY'
+          import json
+          from tools.hcsn.unified_cell_r12_20261031.audit import run_audit
+          from tools.hcsn.unified_cell_r12_20261031.cell import Cell
+          print(json.dumps(run_audit(Cell(), include_native=True), sort_keys=True))
+          PY
