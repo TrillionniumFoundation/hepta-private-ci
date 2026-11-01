@@ -1,0 +1,29 @@
+{
+  "boot_id": "b7c9eae0-903d-4dac-a73c-b111c8e094ce",
+  "child_cpu_seconds": 10.478042,
+  "child_peak_rss_bytes": 262455296,
+  "cloud_bill_usd": null,
+  "command": [
+    "/tmp/v14-routing-venv/bin/python",
+    "qualification/memory-cell-v14/routing_experiment.py",
+    "--model-dir",
+    "/tmp/v14-encoder",
+    "--output",
+    "/tmp/v14-results/routing"
+  ],
+  "energy_joules": null,
+  "exit_code": 0,
+  "network_scope": "All interfaces in this runner during the command; includes unrelated runner traffic.",
+  "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "run_attempt": "1",
+  "run_id": "41259326679",
+  "runner_network_delta": {
+    "rx_bytes": 8286,
+    "tx_bytes": 24370
+  },
+  "schema": "hepta.memory.v14.process-receipt.v1",
+  "script_sha256": "fd52de08acd577ba89b775869b468750d115a6fac3cf7a7f45bfa8a586f71ed7",
+  "source_commit": "b020a9b1648513ed7cb4edfbca6893c2b9ec99d4",
+  "wall_seconds": 10.526865573999999
+}
