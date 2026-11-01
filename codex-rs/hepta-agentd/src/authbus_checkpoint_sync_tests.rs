@@ -51,11 +51,16 @@ async fn concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_reje
         let (first_read, resume_first) = host.pause_next_checkpoint_read();
         let first = host.sync_replay_checkpoint();
         tokio::pin!(first);
-        poll_pending(first.as_mut()).await;
-        first_read.await.unwrap();
+        tokio::select! {
+            result = &mut first => panic!("sync completed before its read pause: {result:?}"),
+            reached = first_read => reached.unwrap(),
+        }
 
         let (mut second_read, resume_second) = host.pause_next_checkpoint_read();
-        let second = host.sync_replay_checkpoint();
+        // Disable only the scheduler's cooperative early yield for this poll:
+        // an unguarded implementation must reach the installed second read
+        // pause, while the guarded implementation must wait for the owner.
+        let second = tokio::task::unconstrained(host.sync_replay_checkpoint());
         tokio::pin!(second);
         poll_pending(second.as_mut()).await;
         assert!(
