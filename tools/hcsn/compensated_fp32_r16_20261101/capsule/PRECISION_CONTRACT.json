@@ -1,0 +1,31 @@
+{
+  "schema": "hcsn.r16.precision-contract.v1",
+  "public_mode_name": "compensated32",
+  "primal_and_tangent_storage": "Two float32 words per scalar/tangent component",
+  "financial_arithmetic": "Float32 operations only; TwoSum/Dekker/corrected division plus range-reduced elementary functions",
+  "effective_precision": "Approximately 44\u201348 significand bits in well-scaled normal arithmetic; not ordinary one-word FP32 and not an all-normal-range primitive guarantee",
+  "allowed_higher_precision": "Fixed coefficient/quadrature preparation and independent reference/error-reporting only",
+  "outputs": "All five outputs and 5\u00d710 Jacobian entries round to single float32 words",
+  "derivatives": "Numerical AD of mathematical functions, not rounding-map derivatives; default risk/debt seam remains non-C1",
+  "precision_admission": "Finite compensated-FP32 V1 validation only; original ordinary-FP32 gate remains failed",
+  "known_generic_limitations": [
+    "sqrt(0) returns NaN",
+    "The 4097 splitter may overflow for an otherwise-finite product"
+  ],
+  "scientific_scope_exclusions": [
+    "Uniform parameter/state-domain theorem",
+    "Global optimal stopping proof",
+    "R14 task confirmation replacement",
+    "Network training qualification",
+    "GPU/energy or speed advantage"
+  ],
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "threadpoolctl": "3.6.0"
+  },
+  "frozen_r11_kernel_sha256": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+  "original_archived_kernel_sha256": "1a7fb9480bca8fd127241b2488834bc682626f817469f8a69e07097f74adf4b6",
+  "kernel_copy_difference": "One extra final newline; financial formula bytes otherwise identical."
+}
