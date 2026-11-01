@@ -1,0 +1,396 @@
+{
+  "schema": "hcsn-r12-independent-finite-grid-refinement-v1",
+  "scope": "Sparse finite-grid refinement; no continuum certification or task superiority claim",
+  "physical_parameters": [
+    0.08,
+    0.02,
+    0.3,
+    0.6,
+    0.27,
+    0.02,
+    1.3,
+    6.39,
+    61.68
+  ],
+  "horizons": [
+    0.15,
+    0.45,
+    1.05,
+    2.1
+  ],
+  "grids": [
+    {
+      "cells": 8,
+      "state_count": 20,
+      "rows": [
+        {
+          "horizon": 0.15,
+          "expected_events": 0.012516513385496184,
+          "first_event_probability": 0.012516334534481007,
+          "survival_mass": 0.987483665465519,
+          "recovery_mass": 0.01208444431712808,
+          "mean_log_distance": 0.33137966545809533,
+          "probability_bit_zero": 0.9999459914116345,
+          "total_mass": 1.0000000000000004,
+          "minimum_probability": 1.936973742104629e-09
+        },
+        {
+          "horizon": 0.45,
+          "expected_events": 0.10557318924171079,
+          "first_event_probability": 0.10532799526862725,
+          "survival_mass": 0.894672004731373,
+          "recovery_mass": 0.07954076084016273,
+          "mean_log_distance": 0.3637215347966849,
+          "probability_bit_zero": 0.9967464827257384,
+          "total_mass": 1.0000000000000004,
+          "minimum_probability": 6.374726199037732e-06
+        },
+        {
+          "horizon": 1.05,
+          "expected_events": 0.28842961047073284,
+          "first_event_probability": 0.274669816605169,
+          "survival_mass": 0.7253301833948314,
+          "recovery_mass": 0.10096486314442646,
+          "mean_log_distance": 0.4134301205481053,
+          "probability_bit_zero": 0.9767004107933598,
+          "total_mass": 1.0000000000000007,
+          "minimum_probability": 0.00046194270223105777
+        },
+        {
+          "horizon": 2.1,
+          "expected_events": 0.5331526409094162,
+          "first_event_probability": 0.43367170366498853,
+          "survival_mass": 0.5663282963350112,
+          "recovery_mass": 0.07744606511698701,
+          "mean_log_distance": 0.4515456657998184,
+          "probability_bit_zero": 0.9452006643492618,
+          "total_mass": 0.9999999999999996,
+          "minimum_probability": 0.0016005395582704622
+        }
+      ],
+      "cpu_seconds": 0.009689320999999973,
+      "max_abs_difference_from_512": {
+        "first_event_probability": 0.007646584504235917,
+        "expected_events": 0.007646763317471609,
+        "recovery_mass": 0.007279919597583428,
+        "mean_log_distance": 0.002432243989634042,
+        "probability_bit_zero": 0.0006099914762306424
+      }
+    },
+    {
+      "cells": 16,
+      "state_count": 36,
+      "rows": [
+        {
+          "horizon": 0.15,
+          "expected_events": 0.00603292335232697,
+          "first_event_probability": 0.0060329216932215185,
+          "survival_mass": 0.9939670783067788,
+          "recovery_mass": 0.005919061044021696,
+          "mean_log_distance": 0.3293191997726592,
+          "probability_bit_zero": 0.9999857672116417,
+          "total_mass": 1.0000000000000004,
+          "minimum_probability": 2.5292106406568272e-12
+        },
+        {
+          "horizon": 0.45,
+          "expected_events": 0.09963684527155597,
+          "first_event_probability": 0.0995485670465551,
+          "survival_mass": 0.9004514329534455,
+          "recovery_mass": 0.07824513460224516,
+          "mean_log_distance": 0.3625457493757963,
+          "probability_bit_zero": 0.9973261648351953,
+          "total_mass": 1.0000000000000009,
+          "minimum_probability": 7.593761271962441e-07
+        },
+        {
+          "horizon": 1.05,
+          "expected_events": 0.2852586715541958,
+          "first_event_probability": 0.2734772497900093,
+          "survival_mass": 0.7265227502099922,
+          "recovery_mass": 0.10171361908805429,
+          "mean_log_distance": 0.4140656484795619,
+          "probability_bit_zero": 0.9771596861245933,
+          "total_mass": 1.000000000000002,
+          "minimum_probability": 0.00016010722223506102
+        },
+        {
+          "horizon": 2.1,
+          "expected_events": 0.5295295221072565,
+          "first_event_probability": 0.43281304221812356,
+          "survival_mass": 0.5671869577818744,
+          "recovery_mass": 0.07729858074396637,
+          "mean_log_distance": 0.45257425963700326,
+          "probability_bit_zero": 0.945539231184333,
+          "total_mass": 0.9999999999999973,
+          "minimum_probability": 0.00039640170467196466
+        }
+      ],
+      "cpu_seconds": 0.013593166000000045,
+      "max_abs_difference_from_512": {
+        "first_event_probability": 0.0012863179519528867,
+        "expected_events": 0.0013942757609163303,
+        "recovery_mass": 0.001235571712145181,
+        "mean_log_distance": 0.0007344008037720728,
+        "probability_bit_zero": 0.00015339847171691456
+      }
+    },
+    {
+      "cells": 32,
+      "state_count": 68,
+      "rows": [
+        {
+          "horizon": 0.15,
+          "expected_events": 0.005422110157437056,
+          "first_event_probability": 0.005422109916740328,
+          "survival_mass": 0.9945778900832586,
+          "recovery_mass": 0.005338477485707453,
+          "mean_log_distance": 0.32912532816929563,
+          "probability_bit_zero": 0.999989545916049,
+          "total_mass": 0.9999999999999987,
+          "minimum_probability": 3.763570387436789e-14
+        },
+        {
+          "horizon": 0.45,
+          "expected_events": 0.10103416611455818,
+          "first_event_probability": 0.10095480314486394,
+          "survival_mass": 0.8990451968551324,
+          "recovery_mass": 0.07953243485653103,
+          "mean_log_distance": 0.3631094074824317,
+          "probability_bit_zero": 0.997312388587051,
+          "total_mass": 0.9999999999999956,
+          "minimum_probability": 2.6814872240256347e-07
+        },
+        {
+          "horizon": 1.05,
+          "expected_events": 0.28685670462764296,
+          "first_event_probability": 0.27485492590344957,
+          "survival_mass": 0.7251450740965409,
+          "recovery_mass": 0.10185730898029642,
+          "mean_log_distance": 0.4147327980197261,
+          "probability_bit_zero": 0.9769792748253037,
+          "total_mass": 0.99999999999999,
+          "minimum_probability": 4.080952050612027e-05
+        },
+        {
+          "horizon": 2.1,
+          "expected_events": 0.5312063887223182,
+          "first_event_probability": 0.433473539199934,
+          "survival_mass": 0.5665264608000538,
+          "recovery_mass": 0.07732266681584446,
+          "mean_log_distance": 0.45318407794556254,
+          "probability_bit_zero": 0.9453594020114253,
+          "total_mass": 0.9999999999999871,
+          "minimum_probability": 9.972407713337047e-05
+        }
+      ],
+      "cpu_seconds": 0.029703415999999982,
+      "max_abs_difference_from_512": {
+        "first_event_probability": 0.000552359886495238,
+        "expected_events": 0.0005523600894124818,
+        "recovery_mass": 0.0005339527661628006,
+        "mean_log_distance": 0.00017790670083434046,
+        "probability_bit_zero": 4.4085614918087934e-05
+      }
+    },
+    {
+      "cells": 64,
+      "state_count": 132,
+      "rows": [
+        {
+          "horizon": 0.15,
+          "expected_events": 0.005007690055262245,
+          "first_event_probability": 0.005007689988271266,
+          "survival_mass": 0.9949923100117227,
+          "recovery_mass": 0.0049379780801478155,
+          "mean_log_distance": 0.3289918841299269,
+          "probability_bit_zero": 0.9999912860031083,
+          "total_mass": 0.9999999999999941,
+          "minimum_probability": 1.8400880016185673e-15
+        },
+        {
+          "horizon": 0.45,
+          "expected_events": 0.10072930848600244,
+          "first_event_probability": 0.10065703541502109,
+          "survival_mass": 0.8993429645849902,
+          "recovery_mass": 0.07949299302988296,
+          "mean_log_distance": 0.3630605546492335,
+          "probability_bit_zero": 0.9973455515567073,
+          "total_mass": 1.0000000000000115,
+          "minimum_probability": 1.1183188956558875e-07
+        },
+        {
+          "horizon": 1.05,
+          "expected_events": 0.2866775171056591,
+          "first_event_probability": 0.27478607942477873,
+          "survival_mass": 0.7252139205752659,
+          "recovery_mass": 0.10189000668078056,
+          "mean_log_distance": 0.41478341944024855,
+          "probability_bit_zero": 0.9770040619209068,
+          "total_mass": 1.0000000000000437,
+          "minimum_probability": 1.017165645873857e-05
+        },
+        {
+          "horizon": 2.1,
+          "expected_events": 0.530993610103561,
+          "first_event_probability": 0.4334151532736436,
+          "survival_mass": 0.5665848467263825,
+          "recovery_mass": 0.07731154723747427,
+          "mean_log_distance": 0.45325591959296613,
+          "probability_bit_zero": 0.9453793036935878,
+          "total_mass": 1.0000000000000064,
+          "minimum_probability": 2.491692241141592e-05
+        }
+      ],
+      "cpu_seconds": 0.07958593400000002,
+      "max_abs_difference_from_512": {
+        "first_event_probability": 0.00013793995802617587,
+        "expected_events": 0.0001379399872376702,
+        "recovery_mass": 0.00013345336060316317,
+        "mean_log_distance": 4.4462661465627384e-05,
+        "probability_bit_zero": 1.0922645261701724e-05
+      }
+    },
+    {
+      "cells": 256,
+      "state_count": 516,
+      "rows": [
+        {
+          "horizon": 0.15,
+          "expected_events": 0.004876341359060203,
+          "first_event_probability": 0.004876341320131431,
+          "survival_mass": 0.9951236586799289,
+          "recovery_mass": 0.0048109032874290355,
+          "mean_log_distance": 0.32894954657270226,
+          "probability_bit_zero": 0.9999918202411082,
+          "total_mass": 1.0000000000000604,
+          "minimum_probability": 1.5504888287352483e-16
+        },
+        {
+          "horizon": 0.45,
+          "expected_events": 0.10063434925282494,
+          "first_event_probability": 0.10056425995310092,
+          "survival_mass": 0.8994357400469777,
+          "recovery_mass": 0.07948128402196879,
+          "mean_log_distance": 0.36304539917105816,
+          "probability_bit_zero": 0.9973559536161647,
+          "total_mass": 1.0000000000000782,
+          "minimum_probability": 1.7635613917172052e-08
+        },
+        {
+          "horizon": 1.05,
+          "expected_events": 0.2866215402751704,
+          "first_event_probability": 0.2747646388497442,
+          "survival_mass": 0.7252353611511699,
+          "recovery_mass": 0.10190015570975153,
+          "mean_log_distance": 0.4147992571665237,
+          "probability_bit_zero": 0.9770117963005002,
+          "total_mass": 1.000000000000947,
+          "minimum_probability": 6.35129089688883e-07
+        },
+        {
+          "horizon": 2.1,
+          "expected_events": 0.5309271221963492,
+          "first_event_probability": 0.4333969059176485,
+          "survival_mass": 0.5666030940827256,
+          "recovery_mass": 0.0773080693434531,
+          "mean_log_distance": 0.4532783751883292,
+          "probability_bit_zero": 0.9453855218221808,
+          "total_mass": 1.0000000000001215,
+          "minimum_probability": 1.5570324500885182e-06
+        }
+      ],
+      "cpu_seconds": 1.5164615969999997,
+      "max_abs_difference_from_512": {
+        "first_event_probability": 6.591289886340862e-06,
+        "expected_events": 6.5912910356281246e-06,
+        "recovery_mass": 6.378567884383207e-06,
+        "mean_log_distance": 2.1251042409686782e-06,
+        "probability_bit_zero": 5.20585804353324e-07
+      }
+    },
+    {
+      "cells": 512,
+      "state_count": 1028,
+      "rows": [
+        {
+          "horizon": 0.15,
+          "expected_events": 0.004869750068024575,
+          "first_event_probability": 0.00486975003024509,
+          "survival_mass": 0.99513024996983,
+          "recovery_mass": 0.004804524719544652,
+          "mean_log_distance": 0.3289474214684613,
+          "probability_bit_zero": 0.9999918468315154,
+          "total_mass": 1.0000000000000737,
+          "minimum_probability": 7.282850529627641e-17
+        },
+        {
+          "horizon": 0.45,
+          "expected_events": 0.10062960519119936,
+          "first_event_probability": 0.1005596246784901,
+          "survival_mass": 0.8994403753221076,
+          "recovery_mass": 0.07948070631439035,
+          "mean_log_distance": 0.36304464280304605,
+          "probability_bit_zero": 0.997356474201969,
+          "total_mass": 1.0000000000005773,
+          "minimum_probability": 4.4042657086100564e-09
+        },
+        {
+          "horizon": 1.05,
+          "expected_events": 0.2866187416695274,
+          "first_event_probability": 0.2747635677419622,
+          "survival_mass": 0.7252364322613849,
+          "recovery_mass": 0.10190066229331421,
+          "mean_log_distance": 0.41480004928333397,
+          "probability_bit_zero": 0.9770121828768639,
+          "total_mass": 1.0000000000033515,
+          "minimum_probability": 1.5877478147192982e-07
+        },
+        {
+          "horizon": 2.1,
+          "expected_events": 0.5309237978681728,
+          "first_event_probability": 0.4333959935270619,
+          "survival_mass": 0.5666040064718803,
+          "recovery_mass": 0.07730789541080835,
+          "mean_log_distance": 0.45327949803064993,
+          "probability_bit_zero": 0.9453858327126161,
+          "total_mass": 0.9999999999983133,
+          "minimum_probability": 3.8925467291401936e-07
+        }
+      ],
+      "cpu_seconds": 7.94197385,
+      "max_abs_difference_from_512": {
+        "first_event_probability": 0.0,
+        "expected_events": 0.0,
+        "recovery_mass": 0.0,
+        "mean_log_distance": 0.0,
+        "probability_bit_zero": 0.0
+      }
+    }
+  ],
+  "fine_reference_cells": 512,
+  "fine_reference_is_continuum": false,
+  "reference_256_to_512_gap": {
+    "first_event_probability": 6.591289886340862e-06,
+    "expected_events": 6.5912910356281246e-06,
+    "recovery_mass": 6.378567884383207e-06,
+    "mean_log_distance": 2.1251042409686782e-06,
+    "probability_bit_zero": 5.20585804353324e-07
+  },
+  "deployed_generator_max_abs_error": 0.0,
+  "deployed_expm_vs_sparse_reference_max_abs_error": 8.881784197001252e-16,
+  "fixed_recovery_law": "Erlang(2, mean=.35)",
+  "fixed_upper_boundary": "reflecting log distance .8",
+  "unmeasured_errors": [
+    "finite upper-domain truncation vs unbounded process",
+    "Erlang recovery vs deterministic refractory delay",
+    "uniform continuum error bound",
+    "task-level filtering/quality error"
+  ],
+  "cpu_seconds": 9.601579666000001,
+  "wall_seconds": 9.604556477000187,
+  "python": "3.12.14",
+  "energy_joules": null,
+  "source_sha256": "98e1a4cc325cf88f04266e95ba91ea49eb9beff72bf98791c240cca727745a2b",
+  "cell_sha256": "c76e6d128ecefe871b14ee3855e44420cfdfd4553e4afb588142db9a60931345"
+}
