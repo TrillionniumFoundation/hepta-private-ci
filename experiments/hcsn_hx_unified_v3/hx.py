@@ -176,7 +176,69 @@ def boundary(p: HX) -> float:
     return asset_boundary
 
 
-def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = None) -> float:
+def _coupon_survival_annuity(p: HX, x: float, tau: float) -> float:
+    """Integrate E[int_0^min(hit,tau) exp(-q*t) dt] directly.
+
+    Uses reflected survival probabilities, not a difference of discounted
+    passage probabilities. Adaptive error estimates are diagnostic, not
+    rigorous enclosures. This slow research path has no production claim.
+    """
+    import warnings
+    from scipy.integrate import IntegrationWarning, quad
+
+    sigma=p.volatility
+    drift=p.rate-p.payout-.5*sigma*sigma
+    q=p.q
+    if not all(math.isfinite(z) for z in (x,drift,q)) or q <= 0:
+        raise ArithmeticError('HX coupon transformed parameters unresolved')
+    upper=math.sqrt(tau)
+    transition=x/sigma
+    if not math.isfinite(transition) or transition <= 0:
+        raise ArithmeticError('HX coupon time scale unresolved')
+    def integrand(s):
+        if s == 0:
+            return 0.
+        scaled_time=sigma*s
+        if not math.isfinite(scaled_time) or scaled_time <= 0:
+            raise ArithmeticError('HX coupon survival time scale unresolved')
+        a=x/scaled_time
+        b=drift*s/sigma
+        log_first=float(log_ndtr(a+b))
+        log_second=-2*(drift/sigma)*(x/sigma)+float(log_ndtr(-a+b))
+        delta=log_second-log_first
+        if not math.isfinite(delta) or delta >= 0:
+            raise ArithmeticError('HX coupon survival cancellation unresolved')
+        survival=math.exp(log_first)*(-math.expm1(delta))
+        return 2*s*math.exp(-q*s*s)*survival
+    # Resolve both first-passage and discount boundary layers. Whole-interval
+    # adaptive quadrature can otherwise miss a narrow positive contribution
+    # and misleadingly report zero estimated error.
+    scales=[transition,1/math.sqrt(q)]
+    if drift:
+        drift_scale=math.sqrt(x)/math.sqrt(abs(drift))
+        if not math.isfinite(drift_scale) or drift_scale <= 0:
+            raise ArithmeticError('HX coupon drift time scale unresolved')
+        scales.append(drift_scale)
+    cuts=sorted({0.,upper,*[z for scale in scales for z in (scale,4*scale,8*scale)
+                          if 0<z<upper]})
+    total=error=0.
+    with warnings.catch_warnings():
+        warnings.simplefilter('error',IntegrationWarning)
+        try:
+            for lo,hi in zip(cuts,cuts[1:]):
+                val,err=quad(integrand,lo,hi,epsabs=1e-11*min(tau,1.),epsrel=2e-10,limit=200)
+                total+=val
+                error+=err
+        except IntegrationWarning as exc:
+            raise ArithmeticError('HX coupon survival integration unresolved') from exc
+    if not (math.isfinite(total) and math.isfinite(error) and 0 <= total <= tau+error
+            and error <= (len(cuts)-1)*max(1e-11*min(tau,1.),2e-10*abs(total))):
+        raise ArithmeticError('HX coupon survival integral outside diagnostic budget')
+    return total
+
+
+def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = None,
+               *, direct_coupon_survival: bool = False) -> float:
     """Finite-maturity defaultable bond, published equation (8), including endpoints."""
     b=boundary(p) if asset_boundary is None else asset_boundary
     if not (math.isfinite(asset) and math.isfinite(tau) and math.isfinite(b)
@@ -188,6 +250,13 @@ def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = N
     if tau==0:
         return p.per_bond_principal
     F,G=_first_passage_factors(p,_log_asset_ratio(asset,b),tau)
+    # Explicit slow research opt-in; never propagated to equity_resolvent
+    # or mechanism_channels. Default formula/refusal policy is unchanged.
+    if direct_coupon_survival:
+        coupon_pv=(p.per_bond_coupon*_coupon_survival_annuity(p,_log_asset_ratio(asset,b),tau)
+                   if p.per_bond_coupon else 0.)
+        return (coupon_pv+math.exp(-p.q*tau)*p.per_bond_principal*(1-F)
+                +recovery*G)
     qt=p.q*tau
     # For q*tau below the conservative f64 danger band, coupon/q-sized
     # terms can cancel catastrophically EVEN when exp(-q*tau) is < 1.
