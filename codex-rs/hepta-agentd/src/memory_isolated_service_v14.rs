@@ -78,7 +78,7 @@ impl MemoryIsolatedServiceV14 {
                     return Err("V14 ambiguous independent ownership".to_string());
                 }
             }
-            pins.push((selector.clone(), registry));
+            pins.push((selector.clone(), registry.to_string()));
             cells.push(RegisteredCell { selector, release });
         }
         let bytes = serde_json::to_vec(&(SCHEMA, owner.owner_agent_id(), owner.scope(), generation, pins))

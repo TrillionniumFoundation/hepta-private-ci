@@ -5,9 +5,9 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
 use codex_hepta_cognitive_store::DurableCognitiveStore;
-use codex_hepta_learning_artifacts::{ArtifactSelectionVerifierV1, LearningArtifactManifestV2,
+use codex_hepta_learning_artifacts::{ArtifactKind, ArtifactSelectionVerifierV1, LearningArtifactManifestV2,
     LearningArtifactOwnerService, LearningArtifactOwnerServiceConfigV1, LearningArtifactPublishRequestV1,
-    RegistryHeadWitnessV1, SignedCurrentArtifactHeadV1, admit_manifest_at_withdrawal_head_v3};
+    ProvenanceModeV1, RegistryHeadWitnessV1, SignedCurrentArtifactHeadV1, admit_manifest_at_withdrawal_head_v3};
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_memory::{CognitiveAccess, CognitiveRecoveryAnchor, CognitiveRecoveryRequirement,
     CognitiveScope, MemoryCellWriteModeV1, MemoryInventoryOwnerSnapshotV1,
@@ -48,22 +48,100 @@ struct Checkpoint {
 struct CellCheckpoint {
     selector: MemoryTrainingSelectorV11,
     created_at: u64,
-    manifest: LearningArtifactManifestV2,
+    manifest: ManifestPins,
     head_generation: u64,
-    head_digest: Digest32,
-    predecessor: Digest32,
+    head_digest: String,
+    predecessor: String,
     issued_at: u64,
+}
+
+/// Primitive integrity pins preserve every original manifest field. The real
+/// manifest/admission types intentionally do not deserialize authority.
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct ManifestPins {
+    artifact_id: String,
+    kind: String,
+    generation: u64,
+    provenance_mode: String,
+    source_dataset_digests: Vec<String>,
+    lineage_digests: Vec<String>,
+    predecessor_ids: Vec<String>,
+    rollback_predecessor: Option<String>,
+    bytes_digest: String,
+    encoded_size_bytes: u64,
+    training_code_digest: String,
+    runtime_tuple_digest: String,
+    device_profile_digest: String,
+    objective_class_digest: String,
+    compatibility_digest: String,
+    schema_profile_digest: String,
+    normalization_digest: String,
+    producer_id: String,
+    created_at: u64,
+    expires_at: u64,
+}
+
+impl ManifestPins {
+    fn capture(manifest: &LearningArtifactManifestV2) -> Self {
+        assert_eq!(manifest.kind, ArtifactKind::Parameters);
+        assert_eq!(manifest.provenance_mode, ProvenanceModeV1::DatasetDerived);
+        let pins = Self {
+            artifact_id: manifest.artifact_id.to_string(), kind: "parameters".to_string(),
+            generation: manifest.generation.get(), provenance_mode: "dataset_derived".to_string(),
+            source_dataset_digests: manifest.source_dataset_digests.iter().map(ToString::to_string).collect(),
+            lineage_digests: manifest.lineage_digests.iter().map(ToString::to_string).collect(),
+            predecessor_ids: manifest.predecessor_ids.iter().map(ToString::to_string).collect(),
+            rollback_predecessor: manifest.rollback_predecessor.as_ref().map(ToString::to_string),
+            bytes_digest: manifest.bytes_digest.to_string(), encoded_size_bytes: manifest.encoded_size_bytes,
+            training_code_digest: manifest.training_code_digest.to_string(),
+            runtime_tuple_digest: manifest.runtime_tuple_digest.to_string(),
+            device_profile_digest: manifest.device_profile_digest.to_string(),
+            objective_class_digest: manifest.objective_class_digest.to_string(),
+            compatibility_digest: manifest.compatibility_digest.to_string(),
+            schema_profile_digest: manifest.schema_profile_digest.to_string(),
+            normalization_digest: manifest.normalization_digest.to_string(),
+            producer_id: manifest.producer_id.to_string(), created_at: manifest.created_at, expires_at: manifest.expires_at,
+        };
+        assert_eq!(&pins.restore(), manifest, "full original manifest preserved");
+        pins
+    }
+
+    fn restore(&self) -> LearningArtifactManifestV2 {
+        assert_eq!(self.kind, "parameters");
+        assert_eq!(self.provenance_mode, "dataset_derived");
+        let digest = |value: &str| value.parse::<Digest32>().expect("canonical manifest digest");
+        LearningArtifactManifestV2 {
+            artifact_id: id(&self.artifact_id), kind: ArtifactKind::Parameters,
+            generation: Generation::new(self.generation).expect("manifest generation"),
+            provenance_mode: ProvenanceModeV1::DatasetDerived,
+            source_dataset_digests: self.source_dataset_digests.iter().map(|value| digest(value)).collect(),
+            lineage_digests: self.lineage_digests.iter().map(|value| digest(value)).collect(),
+            predecessor_ids: self.predecessor_ids.iter().map(|value| id(value)).collect(),
+            rollback_predecessor: self.rollback_predecessor.as_ref().map(|value| id(value)),
+            bytes_digest: digest(&self.bytes_digest), encoded_size_bytes: self.encoded_size_bytes,
+            training_code_digest: digest(&self.training_code_digest),
+            runtime_tuple_digest: digest(&self.runtime_tuple_digest),
+            device_profile_digest: digest(&self.device_profile_digest),
+            objective_class_digest: digest(&self.objective_class_digest),
+            compatibility_digest: digest(&self.compatibility_digest),
+            schema_profile_digest: digest(&self.schema_profile_digest),
+            normalization_digest: digest(&self.normalization_digest),
+            producer_id: id(&self.producer_id), created_at: self.created_at, expires_at: self.expires_at,
+        }
+    }
 }
 
 fn capture(cell: &CellFixture) -> CellCheckpoint {
     let head = &cell.publication.signed_current_head.witness;
     CellCheckpoint { selector: cell.selector.clone(), created_at: cell.config.now,
-        manifest: cell.publication.admission.validated_manifest.manifest.clone(),
-        head_generation: head.generation.get(), head_digest: head.head_digest,
-        predecessor: head.predecessor_head_digest, issued_at: head.issued_at }
+        manifest: ManifestPins::capture(&cell.publication.admission.validated_manifest.manifest),
+        head_generation: head.generation.get(), head_digest: head.head_digest.to_string(),
+        predecessor: head.predecessor_head_digest.to_string(), issued_at: head.issued_at }
 }
 
 fn restore(root: PathBuf, owner: &MemoryInventoryOwnerSnapshotV1, checkpoint: CellCheckpoint) -> CellFixture {
+    let manifest = checkpoint.manifest.restore();
     let mut config = fixture_config_for_scope(owner.scope(), root, checkpoint.created_at);
     config.storage_binding = Digest32::of_bytes(checkpoint.selector.cell_id.as_str().as_bytes());
     config.trust.registry_id = id(&format!("registry:{}", checkpoint.selector.cell_id));
@@ -72,7 +150,8 @@ fn restore(root: PathBuf, owner: &MemoryInventoryOwnerSnapshotV1, checkpoint: Ce
     let mut head = SignedCurrentArtifactHeadV1 { withdrawal_scope_digest: config.trust.withdrawal_scope_digest,
         binding: config.storage_binding, witness: RegistryHeadWitnessV1 {
             registry_id: config.trust.registry_id.clone(), generation: Generation::new(checkpoint.head_generation).expect("head generation"),
-            head_digest: checkpoint.head_digest, predecessor_head_digest: checkpoint.predecessor,
+            head_digest: checkpoint.head_digest.parse().expect("head digest"),
+            predecessor_head_digest: checkpoint.predecessor.parse().expect("predecessor digest"),
             authority_epoch: 1, signer_id: id("memory-artifact-owner"),
             signing_key_digest: Digest32::of_bytes(&owner_key().verifying_key().to_bytes()),
             issued_at: checkpoint.issued_at, expires_at: checkpoint.created_at + 3_600 }, signature: [0; 64] };
@@ -81,12 +160,12 @@ fn restore(root: PathBuf, owner: &MemoryInventoryOwnerSnapshotV1, checkpoint: Ce
         required_current_head: Some(head.clone()), now: now() as u64, ..config.clone()
     }).expect("independent cold registry owner")));
     let payload = std::fs::read(config.root.join("payloads").join(format!("{}-{}.bin",
-        checkpoint.manifest.artifact_id, checkpoint.manifest.bytes_digest))).expect("transferred exact MLP bytes");
-    assert_eq!(Digest32::of_bytes(&payload), checkpoint.manifest.bytes_digest);
+        manifest.artifact_id, manifest.bytes_digest))).expect("transferred exact MLP bytes");
+    assert_eq!(Digest32::of_bytes(&payload), manifest.bytes_digest);
     let admission = {
         let locked = service.lock().expect("artifact owner");
         let frontier = locked.withdrawal_registry();
-        admit_manifest_at_withdrawal_head_v3(frontier, frontier.head_digest(), checkpoint.manifest, now() as u64)
+        admit_manifest_at_withdrawal_head_v3(frontier, frontier.head_digest(), manifest, now() as u64)
             .expect("fresh admission against live restored frontier")
     };
     let publication = LearningArtifactPublishRequestV1 {
