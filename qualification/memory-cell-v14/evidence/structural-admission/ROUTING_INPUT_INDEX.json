@@ -1,0 +1,992 @@
+{
+  "github_run": "41259326679-1",
+  "source_commit": "b020a9b1648513ed7cb4edfbca6893c2b9ec99d4",
+  "index_git_blob": "c4b570802db8240d7bf0579a3d2f4e3962c83e82",
+  "archive": "v14-routing-41259326679-1",
+  "files": {
+    "encoder-download-process.json": {
+      "bytes": 947,
+      "sha256": "05f9cbdb2d9e1103c466d9d60dd10b60e970b535424711e494f07ae918f5b841"
+    },
+    "isolation-process.json": {
+      "bytes": 1032,
+      "sha256": "7bdaab316cb35655e54fde2aefd7f4fef8453ce968f935ca71353d83deaefc3e"
+    },
+    "isolation-tests-process.json": {
+      "bytes": 911,
+      "sha256": "51c11c211539c53ae46ddbf86a8c79c93653e6a4ff4e5b47f4d13f7a70165117"
+    },
+    "isolation/PLAN.json": {
+      "bytes": 8443,
+      "sha256": "50facc2c1954a92c5c06753a4b6a665e2fc51ad76e73616f10bac95e7e045a35"
+    },
+    "isolation/SUMMARY.json": {
+      "bytes": 15384,
+      "sha256": "42e07e35cd018735279b507df5d6e57330d6f6e745de559048c002285d1df74b"
+    },
+    "isolation/seed-1237/RESULTS.json": {
+      "bytes": 1565296,
+      "sha256": "5301623dceabcd569640e620730c14bab89920b6e1c387e90ba68ab8fa8ee84c"
+    },
+    "isolation/seed-1237/owner/artifacts/14bdce8b0d6834c49579cdfb4874ff5ca3f8a5f91091dbcd2635daeebab5487b/manifest.json": {
+      "bytes": 618,
+      "sha256": "14bdce8b0d6834c49579cdfb4874ff5ca3f8a5f91091dbcd2635daeebab5487b"
+    },
+    "isolation/seed-1237/owner/artifacts/14bdce8b0d6834c49579cdfb4874ff5ca3f8a5f91091dbcd2635daeebab5487b/model.npz": {
+      "bytes": 249845,
+      "sha256": "b7ed9014ec108c4d0bad338be4e63649220d7698bde1c7d5b2cb48dfdaf06b4a"
+    },
+    "isolation/seed-1237/owner/artifacts/1e6c86df4da30c9252c3fe409c8defa82b9bea3c928f7e2bdc4bfdfeddd8d54a/manifest.json": {
+      "bytes": 617,
+      "sha256": "1e6c86df4da30c9252c3fe409c8defa82b9bea3c928f7e2bdc4bfdfeddd8d54a"
+    },
+    "isolation/seed-1237/owner/artifacts/1e6c86df4da30c9252c3fe409c8defa82b9bea3c928f7e2bdc4bfdfeddd8d54a/model.npz": {
+      "bytes": 251232,
+      "sha256": "b7e1fdce4a85ccca8b1b87117f0629780f11c7768bf4651f0ac91b37c263d7be"
+    },
+    "isolation/seed-1237/owner/artifacts/30616976e77b097e5548511fbddec4ca5297ad30685d5190edf1063df0300ed8/manifest.json": {
+      "bytes": 610,
+      "sha256": "30616976e77b097e5548511fbddec4ca5297ad30685d5190edf1063df0300ed8"
+    },
+    "isolation/seed-1237/owner/artifacts/30616976e77b097e5548511fbddec4ca5297ad30685d5190edf1063df0300ed8/model.npz": {
+      "bytes": 250008,
+      "sha256": "4beafce96a4ace9839576881b91bec8e480046197da5ee8d0db4000c41769881"
+    },
+    "isolation/seed-1237/owner/artifacts/39da17521195584d8cada2f48417cecc6d0a7ae6ccbceffd61b5272dd859e906/manifest.json": {
+      "bytes": 617,
+      "sha256": "39da17521195584d8cada2f48417cecc6d0a7ae6ccbceffd61b5272dd859e906"
+    },
+    "isolation/seed-1237/owner/artifacts/39da17521195584d8cada2f48417cecc6d0a7ae6ccbceffd61b5272dd859e906/model.npz": {
+      "bytes": 249864,
+      "sha256": "28f30a391eb0fa9ef1b048e092e103487892f7af194a44de80ba5232d1428231"
+    },
+    "isolation/seed-1237/owner/artifacts/55153163ae5a1c99ff390886e39ce17757304414463a4d575bb1b5f121b15b7f/manifest.json": {
+      "bytes": 618,
+      "sha256": "55153163ae5a1c99ff390886e39ce17757304414463a4d575bb1b5f121b15b7f"
+    },
+    "isolation/seed-1237/owner/artifacts/55153163ae5a1c99ff390886e39ce17757304414463a4d575bb1b5f121b15b7f/model.npz": {
+      "bytes": 251086,
+      "sha256": "ce7b20be7e7f7b66767377da3bdcfa2d5fce0c1236ad72bb21e789c7a76ad547"
+    },
+    "isolation/seed-1237/owner/artifacts/709dcab4f49ad82971af3734f90d9f88837d771c5279a4dec501cebd53ab39b0/manifest.json": {
+      "bytes": 617,
+      "sha256": "709dcab4f49ad82971af3734f90d9f88837d771c5279a4dec501cebd53ab39b0"
+    },
+    "isolation/seed-1237/owner/artifacts/709dcab4f49ad82971af3734f90d9f88837d771c5279a4dec501cebd53ab39b0/model.npz": {
+      "bytes": 250045,
+      "sha256": "e52be60c5b7f28820502a83bf495999b6972ee1a372c393abd01203caeda7e87"
+    },
+    "isolation/seed-1237/owner/artifacts/ae5c5f5d043fe293632420a601ecf9db7a71fa4d9a5e43cf7a3af0b14f471b9b/manifest.json": {
+      "bytes": 617,
+      "sha256": "ae5c5f5d043fe293632420a601ecf9db7a71fa4d9a5e43cf7a3af0b14f471b9b"
+    },
+    "isolation/seed-1237/owner/artifacts/ae5c5f5d043fe293632420a601ecf9db7a71fa4d9a5e43cf7a3af0b14f471b9b/model.npz": {
+      "bytes": 250074,
+      "sha256": "a70fd5dc82c0ee15a585276a74ce5e144c9e87bee26d61a6888b6794b5686834"
+    },
+    "isolation/seed-1237/owner/artifacts/c814e2142bdda7afffedb1a25b7c3e5cbdb1032f1dc82ee2e68b3de62a001f65/manifest.json": {
+      "bytes": 618,
+      "sha256": "c814e2142bdda7afffedb1a25b7c3e5cbdb1032f1dc82ee2e68b3de62a001f65"
+    },
+    "isolation/seed-1237/owner/artifacts/c814e2142bdda7afffedb1a25b7c3e5cbdb1032f1dc82ee2e68b3de62a001f65/model.npz": {
+      "bytes": 250147,
+      "sha256": "8fa86741099c14a60878bea73620dc9a69f1cf6063e283c0bf6fa344d3a62228"
+    },
+    "isolation/seed-1237/owner/artifacts/d5ee2ad2d6729e87aadc44f62ab232c7717d519f5d26528b1eed28be3b787206/manifest.json": {
+      "bytes": 617,
+      "sha256": "d5ee2ad2d6729e87aadc44f62ab232c7717d519f5d26528b1eed28be3b787206"
+    },
+    "isolation/seed-1237/owner/artifacts/d5ee2ad2d6729e87aadc44f62ab232c7717d519f5d26528b1eed28be3b787206/model.npz": {
+      "bytes": 251047,
+      "sha256": "b4f2c9c1a47a04b41dbf14d66471e241dacb363fdb1c8deef8930dabd0de6999"
+    },
+    "isolation/seed-1237/owner/artifacts/f698d2aa8fcb692e0ead40fdc49ead6848d3d7eb468337d3382e2fcd2301ce2b/manifest.json": {
+      "bytes": 617,
+      "sha256": "f698d2aa8fcb692e0ead40fdc49ead6848d3d7eb468337d3382e2fcd2301ce2b"
+    },
+    "isolation/seed-1237/owner/artifacts/f698d2aa8fcb692e0ead40fdc49ead6848d3d7eb468337d3382e2fcd2301ce2b/model.npz": {
+      "bytes": 249906,
+      "sha256": "8e4c7dd7f594be73e3b7d9ae87cbfc3c85d9e9c7ef0fbd44ac5c78b7a4f4fdab"
+    },
+    "isolation/seed-1237/owner/sources.sqlite": {
+      "bytes": 98304,
+      "sha256": "d13bf6f2225075fce6e2ccb1910f106e4f49618259706476fdd1052210bf478d"
+    },
+    "isolation/seed-713/RESULTS.json": {
+      "bytes": 1565271,
+      "sha256": "8d427a0495fbb2cf1f317f51908a0a27b34980f640455a455491149531d9944b"
+    },
+    "isolation/seed-713/owner/artifacts/15a5b56304ffa0e1efd99d6dbab0d61a7d81395ca696b8b7be63bbe149afd969/manifest.json": {
+      "bytes": 615,
+      "sha256": "15a5b56304ffa0e1efd99d6dbab0d61a7d81395ca696b8b7be63bbe149afd969"
+    },
+    "isolation/seed-713/owner/artifacts/15a5b56304ffa0e1efd99d6dbab0d61a7d81395ca696b8b7be63bbe149afd969/model.npz": {
+      "bytes": 249951,
+      "sha256": "bf5588b6507663fbf0844d9c355c414cc035e762466f3132f6f3505e3f32a853"
+    },
+    "isolation/seed-713/owner/artifacts/2ad3ceada1f09380b09182c6317a8e947645e340922ab985c4c9f52809ea0680/manifest.json": {
+      "bytes": 616,
+      "sha256": "2ad3ceada1f09380b09182c6317a8e947645e340922ab985c4c9f52809ea0680"
+    },
+    "isolation/seed-713/owner/artifacts/2ad3ceada1f09380b09182c6317a8e947645e340922ab985c4c9f52809ea0680/model.npz": {
+      "bytes": 249845,
+      "sha256": "24eef51a428a45ece9b2db6c97e8dd9665591e4d5ce22a6c040958e7d3f8dcb4"
+    },
+    "isolation/seed-713/owner/artifacts/40658a1c7786107318897e74128bf32f879344d30cc15bfadb4eb9cde906c206/manifest.json": {
+      "bytes": 615,
+      "sha256": "40658a1c7786107318897e74128bf32f879344d30cc15bfadb4eb9cde906c206"
+    },
+    "isolation/seed-713/owner/artifacts/40658a1c7786107318897e74128bf32f879344d30cc15bfadb4eb9cde906c206/model.npz": {
+      "bytes": 251220,
+      "sha256": "1510a1441abce190dcd94da452c34dcebe8de3a3c31cbe43fc8ef78077de6073"
+    },
+    "isolation/seed-713/owner/artifacts/578eaa83e7552b571bb8805ae0b9b27bc79cad2b17b72c90496b974a9408c2f6/manifest.json": {
+      "bytes": 608,
+      "sha256": "578eaa83e7552b571bb8805ae0b9b27bc79cad2b17b72c90496b974a9408c2f6"
+    },
+    "isolation/seed-713/owner/artifacts/578eaa83e7552b571bb8805ae0b9b27bc79cad2b17b72c90496b974a9408c2f6/model.npz": {
+      "bytes": 250007,
+      "sha256": "8ba613ad7afc14f58276da06d91725808d54890d025b0b58481067bd171181ba"
+    },
+    "isolation/seed-713/owner/artifacts/769e05ca19431e9c2ec02ae21009dee5f27fb213ff6f7f1decf2bc9ff49c26a8/manifest.json": {
+      "bytes": 615,
+      "sha256": "769e05ca19431e9c2ec02ae21009dee5f27fb213ff6f7f1decf2bc9ff49c26a8"
+    },
+    "isolation/seed-713/owner/artifacts/769e05ca19431e9c2ec02ae21009dee5f27fb213ff6f7f1decf2bc9ff49c26a8/model.npz": {
+      "bytes": 251239,
+      "sha256": "b19e4a25a0975c3e040ac877edcdff8c2520428840287a3b6a3a826ad13cb5a9"
+    },
+    "isolation/seed-713/owner/artifacts/9c49d3080fa988b019c7d4f3e0c8577499f481324cd10f15562e5c206bcea8f8/manifest.json": {
+      "bytes": 615,
+      "sha256": "9c49d3080fa988b019c7d4f3e0c8577499f481324cd10f15562e5c206bcea8f8"
+    },
+    "isolation/seed-713/owner/artifacts/9c49d3080fa988b019c7d4f3e0c8577499f481324cd10f15562e5c206bcea8f8/model.npz": {
+      "bytes": 249882,
+      "sha256": "c47023fde3134a580ce532fc879e61931022b34e8346f8dedf3a81b96ea9a6f5"
+    },
+    "isolation/seed-713/owner/artifacts/a8331d50f631eddb9b009c10790fc416c1516d7f4815949f13e45de9b14d8323/manifest.json": {
+      "bytes": 615,
+      "sha256": "a8331d50f631eddb9b009c10790fc416c1516d7f4815949f13e45de9b14d8323"
+    },
+    "isolation/seed-713/owner/artifacts/a8331d50f631eddb9b009c10790fc416c1516d7f4815949f13e45de9b14d8323/model.npz": {
+      "bytes": 249954,
+      "sha256": "73358f51eabcca8c94e7b5dd65d77a7d2396cf868a04bf1e1d3898f20e677152"
+    },
+    "isolation/seed-713/owner/artifacts/c80daf8d4ab0f28b4ef107cdbd72fca3650f4e30b541587b1bb4752b59f71a7e/manifest.json": {
+      "bytes": 615,
+      "sha256": "c80daf8d4ab0f28b4ef107cdbd72fca3650f4e30b541587b1bb4752b59f71a7e"
+    },
+    "isolation/seed-713/owner/artifacts/c80daf8d4ab0f28b4ef107cdbd72fca3650f4e30b541587b1bb4752b59f71a7e/model.npz": {
+      "bytes": 250183,
+      "sha256": "c3f4e5fed482904d031111a4b2511c57ceb3de6dcfa62a479a4ae3b5e03fb74b"
+    },
+    "isolation/seed-713/owner/artifacts/d6f1dedb0855cecf4ff0ee5444117865cdb2cb7d4c5696e334843f3e2090c317/manifest.json": {
+      "bytes": 616,
+      "sha256": "d6f1dedb0855cecf4ff0ee5444117865cdb2cb7d4c5696e334843f3e2090c317"
+    },
+    "isolation/seed-713/owner/artifacts/d6f1dedb0855cecf4ff0ee5444117865cdb2cb7d4c5696e334843f3e2090c317/model.npz": {
+      "bytes": 251063,
+      "sha256": "06e6a06d3551ffa2a64ad7e488f0ac6a0c0cd9f9bd469456ebcb933fddffdfb7"
+    },
+    "isolation/seed-713/owner/artifacts/e70a0927d18ebea44b9ef22c198cda055ba794d4fae36b68ae3682f30fe5c69b/manifest.json": {
+      "bytes": 616,
+      "sha256": "e70a0927d18ebea44b9ef22c198cda055ba794d4fae36b68ae3682f30fe5c69b"
+    },
+    "isolation/seed-713/owner/artifacts/e70a0927d18ebea44b9ef22c198cda055ba794d4fae36b68ae3682f30fe5c69b/model.npz": {
+      "bytes": 250181,
+      "sha256": "c5a37caf8a6d387c5de90f5cca789d40a4e590cbe2253b77b6281bcb8e4f5167"
+    },
+    "isolation/seed-713/owner/sources.sqlite": {
+      "bytes": 98304,
+      "sha256": "4fa798b44b1c69169f49f32b37da25552582533073083d4680f4a8284d938493"
+    },
+    "isolation/seed-971/RESULTS.json": {
+      "bytes": 1565237,
+      "sha256": "ca9ff77fe5c95aecb9306ca12dcdba3d55aced45eb6e29e475c8a4846aded9f3"
+    },
+    "isolation/seed-971/owner/artifacts/09e8fd606998280f750697bec87719ef2906ca467e30e91777d2bb6ffb9fc36a/manifest.json": {
+      "bytes": 615,
+      "sha256": "09e8fd606998280f750697bec87719ef2906ca467e30e91777d2bb6ffb9fc36a"
+    },
+    "isolation/seed-971/owner/artifacts/09e8fd606998280f750697bec87719ef2906ca467e30e91777d2bb6ffb9fc36a/model.npz": {
+      "bytes": 250176,
+      "sha256": "b9a19716b4961f7dc46e17f3200f757e6c351c9a15c38f8715376b3f725cb78f"
+    },
+    "isolation/seed-971/owner/artifacts/4c6f31d10a67de361a287395c9bc6491994b5b41ca25196d95b70e7f8cf3f826/manifest.json": {
+      "bytes": 616,
+      "sha256": "4c6f31d10a67de361a287395c9bc6491994b5b41ca25196d95b70e7f8cf3f826"
+    },
+    "isolation/seed-971/owner/artifacts/4c6f31d10a67de361a287395c9bc6491994b5b41ca25196d95b70e7f8cf3f826/model.npz": {
+      "bytes": 250996,
+      "sha256": "61af2e0d533218c483f0532b314a913b441add86154d0f2b75147e474a422cc9"
+    },
+    "isolation/seed-971/owner/artifacts/6e996180df2206d5804066da91c1b40b2332fb089466acf88ad47bd3675dd099/manifest.json": {
+      "bytes": 616,
+      "sha256": "6e996180df2206d5804066da91c1b40b2332fb089466acf88ad47bd3675dd099"
+    },
+    "isolation/seed-971/owner/artifacts/6e996180df2206d5804066da91c1b40b2332fb089466acf88ad47bd3675dd099/model.npz": {
+      "bytes": 249802,
+      "sha256": "cf27b837b4302d7964530c716ee9b8c8b5ce6df2a7b5caf6ef4650ef1b7043e0"
+    },
+    "isolation/seed-971/owner/artifacts/7e3ee6a0b33a637ab864ea3483ff68b1c667598e60bbc7fb526f702aa1d806fc/manifest.json": {
+      "bytes": 616,
+      "sha256": "7e3ee6a0b33a637ab864ea3483ff68b1c667598e60bbc7fb526f702aa1d806fc"
+    },
+    "isolation/seed-971/owner/artifacts/7e3ee6a0b33a637ab864ea3483ff68b1c667598e60bbc7fb526f702aa1d806fc/model.npz": {
+      "bytes": 250069,
+      "sha256": "0acd7da82c38f1ae45f4f700dd88e87e329b8b47b228cbb66675241dd19244aa"
+    },
+    "isolation/seed-971/owner/artifacts/7f20e767650c846ef9b37c0d0162a9ad57de7e0eeaf283643dcb572f53758cff/manifest.json": {
+      "bytes": 615,
+      "sha256": "7f20e767650c846ef9b37c0d0162a9ad57de7e0eeaf283643dcb572f53758cff"
+    },
+    "isolation/seed-971/owner/artifacts/7f20e767650c846ef9b37c0d0162a9ad57de7e0eeaf283643dcb572f53758cff/model.npz": {
+      "bytes": 251013,
+      "sha256": "a4b6d90dd3c07934e33c33081c0072ee7048cb5dda8086814d11ed958472800d"
+    },
+    "isolation/seed-971/owner/artifacts/a6b816b0f0c05ac924bae6897c65c647ceb4e06704825c0f3be802af0db79e70/manifest.json": {
+      "bytes": 615,
+      "sha256": "a6b816b0f0c05ac924bae6897c65c647ceb4e06704825c0f3be802af0db79e70"
+    },
+    "isolation/seed-971/owner/artifacts/a6b816b0f0c05ac924bae6897c65c647ceb4e06704825c0f3be802af0db79e70/model.npz": {
+      "bytes": 250289,
+      "sha256": "b4a40c4d0d8647e316158a59a97f607f456ba08408bef060d38dc0ef1663da2a"
+    },
+    "isolation/seed-971/owner/artifacts/bd8639aac71bd5cd66175ec11fb99f6a34528b266387fde6f1a0f828a41b9660/manifest.json": {
+      "bytes": 615,
+      "sha256": "bd8639aac71bd5cd66175ec11fb99f6a34528b266387fde6f1a0f828a41b9660"
+    },
+    "isolation/seed-971/owner/artifacts/bd8639aac71bd5cd66175ec11fb99f6a34528b266387fde6f1a0f828a41b9660/model.npz": {
+      "bytes": 250258,
+      "sha256": "4715e431d04128eb7a70fb2c5629a765239ad75bde6e320467e8f587083e5496"
+    },
+    "isolation/seed-971/owner/artifacts/e4176bbdf0525628f97a705e21ae0ce1af39e1f3885c345403600bd360fe036c/manifest.json": {
+      "bytes": 615,
+      "sha256": "e4176bbdf0525628f97a705e21ae0ce1af39e1f3885c345403600bd360fe036c"
+    },
+    "isolation/seed-971/owner/artifacts/e4176bbdf0525628f97a705e21ae0ce1af39e1f3885c345403600bd360fe036c/model.npz": {
+      "bytes": 250069,
+      "sha256": "604793c5653b16a90a8b47f69244b0eaaa443384c2fd30b18464896ec8a96029"
+    },
+    "isolation/seed-971/owner/artifacts/e436a7c50dc1d37aacaee6c56c2f90e97343bebe9b6018905cf7bfc046dae611/manifest.json": {
+      "bytes": 608,
+      "sha256": "e436a7c50dc1d37aacaee6c56c2f90e97343bebe9b6018905cf7bfc046dae611"
+    },
+    "isolation/seed-971/owner/artifacts/e436a7c50dc1d37aacaee6c56c2f90e97343bebe9b6018905cf7bfc046dae611/model.npz": {
+      "bytes": 250007,
+      "sha256": "a25d25987fe05a1d452878235be9766df034ed41ae0d5c8d9e7452fd8a01b6ed"
+    },
+    "isolation/seed-971/owner/artifacts/e6903df9d3d156fab8039251c344236494ca0bebe735626418b4a974e5e096fe/manifest.json": {
+      "bytes": 615,
+      "sha256": "e6903df9d3d156fab8039251c344236494ca0bebe735626418b4a974e5e096fe"
+    },
+    "isolation/seed-971/owner/artifacts/e6903df9d3d156fab8039251c344236494ca0bebe735626418b4a974e5e096fe/model.npz": {
+      "bytes": 251141,
+      "sha256": "97e8203ee36b81a9f8613de602d423063ddf634f60201d0d09b0f9410a7f9dfc"
+    },
+    "isolation/seed-971/owner/sources.sqlite": {
+      "bytes": 98304,
+      "sha256": "de797030a0a34103608e51b1b623ef66fe9865df4e902fd5c31be6fc6fa1ac53"
+    },
+    "process.json": {
+      "bytes": 1004,
+      "sha256": "cf084577eda9e963088fd432dba344bc18fc16c6020fbeb8b86b023a9b06dddc"
+    },
+    "routing/EXECUTED_SOURCE/ROUTING_PROTOCOL.json": {
+      "bytes": 3213,
+      "sha256": "bf9ad7232b5c802c75fe65dd5be76f3d4ff745f0e22cccf8f1f1cc317795f201"
+    },
+    "routing/EXECUTED_SOURCE/routing.py": {
+      "bytes": 9101,
+      "sha256": "3e470480f1a8dc95d7585ab6af3aeb0dd1962a50a2ac66b7ab28200012293600"
+    },
+    "routing/EXECUTED_SOURCE/routing_experiment.py": {
+      "bytes": 17138,
+      "sha256": "5b10bea90a43ce178bbe204f9326a3d2699c896a7a231ae70986f0ca988045f6"
+    },
+    "routing/EXECUTED_SOURCE/routing_holdout.json": {
+      "bytes": 10371,
+      "sha256": "ff91aec5adcf3907f259f2ec919c8c315a8679dba145329e3c1c8e72df2102b1"
+    },
+    "routing/EXECUTED_SOURCE/routing_tests.py": {
+      "bytes": 4446,
+      "sha256": "43d8023dc1e9ca9575869dfec8fa2b1c085cc19b703071e87a6674588deba40f"
+    },
+    "routing/EXECUTED_SOURCE/v13-adapter.py": {
+      "bytes": 10822,
+      "sha256": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9"
+    },
+    "routing/EXECUTED_SOURCE/v13-backend.py": {
+      "bytes": 5128,
+      "sha256": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53"
+    },
+    "routing/EXECUTED_SOURCE/v13-baselines.py": {
+      "bytes": 7161,
+      "sha256": "92022d8450a7edea3d97f1b3084d83680bcdd35fb7c766b7c01aa5181f53a355"
+    },
+    "routing/EXECUTED_SOURCE/v13-download_model.py": {
+      "bytes": 2927,
+      "sha256": "fd0a7e1ba831c4f2929ee8d29d22495c61ecfdbf7ceee3daec9f5110ff09c0f7"
+    },
+    "routing/EXECUTED_SOURCE/v13-structural.py": {
+      "bytes": 11105,
+      "sha256": "fbe3321e2246f85505f64ffa71f1e6168fe35e2c058a0fa092b7fab10e7a10fc"
+    },
+    "routing/EXECUTED_SOURCE/v13-task_fixtures.json": {
+      "bytes": 36126,
+      "sha256": "4c137d48950f320a9a1a0f14cd8cbc2992f7ddc073ce7bbaf7e8c898d67a519f"
+    },
+    "routing/EXECUTED_SOURCE/v13-tasks.py": {
+      "bytes": 12921,
+      "sha256": "b2e9942631aa645b3e9e2d77ecd7bb8092fa4c7a2a3fa96efae0b9e6bbb49b54"
+    },
+    "routing/FREEZE.json": {
+      "bytes": 2238,
+      "sha256": "170284c85d486dd10e24a1c0a94a54b597b3f27a7485fdc4b48ec1311ba1f8d5"
+    },
+    "routing/INPUT_IDENTITIES.json": {
+      "bytes": 861,
+      "sha256": "98ef926f289cdf31ac5cff69ffc1f0c4416de98fcf8947c13aa2a9b183dba6f4"
+    },
+    "routing/SUMMARY.json": {
+      "bytes": 2887,
+      "sha256": "6eb73ebe266f91a1f31e94500344155b57f84bf4210d6bdba29a9a43a5db4cf7"
+    },
+    "routing/calibration_features.npz": {
+      "bytes": 68773,
+      "sha256": "4832ee41c3f6183a24d45e1ca06a5abf9a18b29e92dad303b86d69f71f6174f2"
+    },
+    "routing/calibration_rows.json": {
+      "bytes": 25067,
+      "sha256": "09f2b715d0cf405e79b73b6161037285446a79533a2e40bb0a1f9615c7a6c0e7"
+    },
+    "routing/encoder_manifest.json": {
+      "bytes": 3050,
+      "sha256": "805633961e199994c7e490ead723010739050f7f075dc72aa12d1762124cbafc"
+    },
+    "routing/routing_holdout_features.npz": {
+      "bytes": 120017,
+      "sha256": "016bbe50a46524136a60b28b2cb7cb83b4ac6f1453f9b1b2a648219f08fbaa75"
+    },
+    "routing/routing_holdout_manifest.json": {
+      "bytes": 265,
+      "sha256": "ba6600575118834d184de4b80324706a269f112632392043cc57836075a13cb7"
+    },
+    "routing/routing_holdout_rows.json": {
+      "bytes": 33521,
+      "sha256": "f9a641ebcc006f0e8e4de53e59efc30e2520fffacbc18f109e26fa53752e4855"
+    },
+    "routing/seed-1237/RESULTS.json": {
+      "bytes": 1300979,
+      "sha256": "a86cde4512e69083399d3cc02ad9a6acc01b7b5b06d6e1ced80feddb00a1ab9f"
+    },
+    "routing/seed-1237/SELECTION.json": {
+      "bytes": 6995,
+      "sha256": "bf49e48e445172f33aeae92567940ec0d8a4206679c1dc1deccfb114470149f5"
+    },
+    "routing/seed-1237/bm25/arrays.npz": {
+      "bytes": 246,
+      "sha256": "f5094b75d7d49e72be9a53072f049927d30536b50706f98432010a3d613569a8"
+    },
+    "routing/seed-1237/bm25/metadata.json": {
+      "bytes": 34475,
+      "sha256": "9a7b6c4b18a8d38c83fcbe63af87c53a93f6ef8392b7d3d1e25c8001d569c79a"
+    },
+    "routing/seed-1237/centroid/arrays.npz": {
+      "bytes": 35820,
+      "sha256": "0ce8f3557ff7db8a08824af46fc6a0bbf7f942471f235a35395353e500651337"
+    },
+    "routing/seed-1237/centroid/metadata.json": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "routing/seed-1237/continue/model.npz": {
+      "bytes": 249913,
+      "sha256": "9eafba5123929b1bd410dcfb929f9c5560a0ccd8cdc83b6930eaf39746b352d9"
+    },
+    "routing/seed-1237/fixed_calibrated/calibration.json": {
+      "bytes": 560,
+      "sha256": "c744647d2e98b1dd8995e3f2d838e01d89ad650c6151557893120b21967e647d"
+    },
+    "routing/seed-1237/fixed_calibrated/network/expert-0.npz": {
+      "bytes": 179176,
+      "sha256": "8e45f505cab0eab9d0c58f0e45167ab4c0e014dc0509367b0a316527d1141bcb"
+    },
+    "routing/seed-1237/fixed_calibrated/network/expert-1.npz": {
+      "bytes": 179138,
+      "sha256": "70d0d3f7b221cec547f7028cb60088e8aabeaa5389f310d8647cd236d1831508"
+    },
+    "routing/seed-1237/fixed_calibrated/network/expert-2.npz": {
+      "bytes": 179270,
+      "sha256": "1e4dcdeffc4230077422a67fae7ecf41ae3494e13da20a67bae434712f58b56c"
+    },
+    "routing/seed-1237/fixed_calibrated/network/network.json": {
+      "bytes": 387,
+      "sha256": "9f8b340bc9ca0701505644f308079c91de64ecf7a65381c2bd0bf12590a3f0c3"
+    },
+    "routing/seed-1237/fixed_calibrated/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "2ecf5d1733c75e39d9104b115f34ff117c38328de59f286ccbdff810c34e7a29"
+    },
+    "routing/seed-1237/fixed_raw/calibration.json": {
+      "bytes": 27,
+      "sha256": "cc444f32f373378c4d2a476a35e928839d69f2a18980db138604308c07c8d972"
+    },
+    "routing/seed-1237/fixed_raw/network/expert-0.npz": {
+      "bytes": 179176,
+      "sha256": "8e45f505cab0eab9d0c58f0e45167ab4c0e014dc0509367b0a316527d1141bcb"
+    },
+    "routing/seed-1237/fixed_raw/network/expert-1.npz": {
+      "bytes": 179138,
+      "sha256": "70d0d3f7b221cec547f7028cb60088e8aabeaa5389f310d8647cd236d1831508"
+    },
+    "routing/seed-1237/fixed_raw/network/expert-2.npz": {
+      "bytes": 179270,
+      "sha256": "1e4dcdeffc4230077422a67fae7ecf41ae3494e13da20a67bae434712f58b56c"
+    },
+    "routing/seed-1237/fixed_raw/network/network.json": {
+      "bytes": 387,
+      "sha256": "9f8b340bc9ca0701505644f308079c91de64ecf7a65381c2bd0bf12590a3f0c3"
+    },
+    "routing/seed-1237/fixed_raw/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "2ecf5d1733c75e39d9104b115f34ff117c38328de59f286ccbdff810c34e7a29"
+    },
+    "routing/seed-1237/gradient_calibrated/calibration.json": {
+      "bytes": 560,
+      "sha256": "00633b2dd0c95adb0e85b5f957b818f982f6c0ed074658be62018ea23c21e170"
+    },
+    "routing/seed-1237/gradient_calibrated/network/expert-0.npz": {
+      "bytes": 179229,
+      "sha256": "50f01a0142698c42182cf832efbdb5adc6f817475ffc1f22b13be7c1190d38fe"
+    },
+    "routing/seed-1237/gradient_calibrated/network/expert-1.npz": {
+      "bytes": 179183,
+      "sha256": "5b0fec10d07de435464315e589ab94e84147ddd92540f1f17215b050013e92b6"
+    },
+    "routing/seed-1237/gradient_calibrated/network/expert-2.npz": {
+      "bytes": 179153,
+      "sha256": "b111a413d19881dab854466f986d13943a27e5377b567527395469de2746bd6a"
+    },
+    "routing/seed-1237/gradient_calibrated/network/network.json": {
+      "bytes": 387,
+      "sha256": "72237c0a19f937bba18691713dc7cf4ed1fedc9bf14621ee81720ded26d12c40"
+    },
+    "routing/seed-1237/gradient_calibrated/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "2957c2a358aa99d4be5d72bb12c5b6d829da2b7f77cc868b184d820f48389f45"
+    },
+    "routing/seed-1237/gradient_raw/calibration.json": {
+      "bytes": 27,
+      "sha256": "cc444f32f373378c4d2a476a35e928839d69f2a18980db138604308c07c8d972"
+    },
+    "routing/seed-1237/gradient_raw/network/expert-0.npz": {
+      "bytes": 179229,
+      "sha256": "50f01a0142698c42182cf832efbdb5adc6f817475ffc1f22b13be7c1190d38fe"
+    },
+    "routing/seed-1237/gradient_raw/network/expert-1.npz": {
+      "bytes": 179183,
+      "sha256": "5b0fec10d07de435464315e589ab94e84147ddd92540f1f17215b050013e92b6"
+    },
+    "routing/seed-1237/gradient_raw/network/expert-2.npz": {
+      "bytes": 179153,
+      "sha256": "b111a413d19881dab854466f986d13943a27e5377b567527395469de2746bd6a"
+    },
+    "routing/seed-1237/gradient_raw/network/network.json": {
+      "bytes": 387,
+      "sha256": "72237c0a19f937bba18691713dc7cf4ed1fedc9bf14621ee81720ded26d12c40"
+    },
+    "routing/seed-1237/gradient_raw/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "2957c2a358aa99d4be5d72bb12c5b6d829da2b7f77cc868b184d820f48389f45"
+    },
+    "routing/seed-1237/merge_retrain/model.npz": {
+      "bytes": 249913,
+      "sha256": "9eafba5123929b1bd410dcfb929f9c5560a0ccd8cdc83b6930eaf39746b352d9"
+    },
+    "routing/seed-1237/nearest/arrays.npz": {
+      "bytes": 352823,
+      "sha256": "87c2f2a7c2ffcc59d4344d097cc524f8554f47bfd228a8eec0ea128b8ff84716"
+    },
+    "routing/seed-1237/nearest/metadata.json": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "routing/seed-1237/random_calibrated/calibration.json": {
+      "bytes": 566,
+      "sha256": "4f0ab3717ffc2910b0da81fd1ec6755669c331f4ea602bee8cf268457ca317a1"
+    },
+    "routing/seed-1237/random_calibrated/network/expert-0.npz": {
+      "bytes": 179210,
+      "sha256": "50916a75e2ec6b47cc7237930b59476ff93987a72619194178cabf518781fe3f"
+    },
+    "routing/seed-1237/random_calibrated/network/expert-1.npz": {
+      "bytes": 179349,
+      "sha256": "69d52afa48075f1ad734803b82fd599bb1eaeef73b94d839666f777c046052e9"
+    },
+    "routing/seed-1237/random_calibrated/network/expert-2.npz": {
+      "bytes": 179230,
+      "sha256": "4bf1ed20bb1f6937a7a1f9a31d1abfa6f858b573a33e14b6678c4fa8e9a6b17d"
+    },
+    "routing/seed-1237/random_calibrated/network/network.json": {
+      "bytes": 387,
+      "sha256": "3fc2cd6c6a1c5169ee8f1260440a23875e4accd098cc04df9e81d31deb84ec99"
+    },
+    "routing/seed-1237/random_calibrated/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "f40cae8a3b8de4c33b18063b7c25cb846685118a8739f04343e25ff0a03ba1b4"
+    },
+    "routing/seed-1237/random_raw/calibration.json": {
+      "bytes": 27,
+      "sha256": "cc444f32f373378c4d2a476a35e928839d69f2a18980db138604308c07c8d972"
+    },
+    "routing/seed-1237/random_raw/network/expert-0.npz": {
+      "bytes": 179210,
+      "sha256": "50916a75e2ec6b47cc7237930b59476ff93987a72619194178cabf518781fe3f"
+    },
+    "routing/seed-1237/random_raw/network/expert-1.npz": {
+      "bytes": 179349,
+      "sha256": "69d52afa48075f1ad734803b82fd599bb1eaeef73b94d839666f777c046052e9"
+    },
+    "routing/seed-1237/random_raw/network/expert-2.npz": {
+      "bytes": 179230,
+      "sha256": "4bf1ed20bb1f6937a7a1f9a31d1abfa6f858b573a33e14b6678c4fa8e9a6b17d"
+    },
+    "routing/seed-1237/random_raw/network/network.json": {
+      "bytes": 387,
+      "sha256": "3fc2cd6c6a1c5169ee8f1260440a23875e4accd098cc04df9e81d31deb84ec99"
+    },
+    "routing/seed-1237/random_raw/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "f40cae8a3b8de4c33b18063b7c25cb846685118a8739f04343e25ff0a03ba1b4"
+    },
+    "routing/seed-1237/ridge/arrays.npz": {
+      "bytes": 35645,
+      "sha256": "03fed63f6f67026521a0a4730e053813ed614ab99722307de1d814e7ef485572"
+    },
+    "routing/seed-1237/ridge/metadata.json": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "routing/seed-1237/single/model.npz": {
+      "bytes": 250161,
+      "sha256": "a22b958cfd454f0100430c0713b553cd38196d66b67162ed0a74eafded3431d7"
+    },
+    "routing/seed-1237/wide/model.npz": {
+      "bytes": 531899,
+      "sha256": "6700b836bc122a078dfad8b7dc44755fbf53599445dd6037e64b0a20b6aabbbc"
+    },
+    "routing/seed-713/RESULTS.json": {
+      "bytes": 1300864,
+      "sha256": "f1f908d83c57b408cef3fa7d5c27f6051783cb0b3b5970fce99270381d87e61a"
+    },
+    "routing/seed-713/SELECTION.json": {
+      "bytes": 6992,
+      "sha256": "f2681a801eaa2c8da95d2285a5ee19b6bfb5ba326d7656460adfd0e3e2048b14"
+    },
+    "routing/seed-713/bm25/arrays.npz": {
+      "bytes": 246,
+      "sha256": "f5094b75d7d49e72be9a53072f049927d30536b50706f98432010a3d613569a8"
+    },
+    "routing/seed-713/bm25/metadata.json": {
+      "bytes": 34475,
+      "sha256": "9a7b6c4b18a8d38c83fcbe63af87c53a93f6ef8392b7d3d1e25c8001d569c79a"
+    },
+    "routing/seed-713/centroid/arrays.npz": {
+      "bytes": 35820,
+      "sha256": "0ce8f3557ff7db8a08824af46fc6a0bbf7f942471f235a35395353e500651337"
+    },
+    "routing/seed-713/centroid/metadata.json": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "routing/seed-713/continue/model.npz": {
+      "bytes": 249851,
+      "sha256": "33b783cbd1c8ad803a6655cbca2c2330e7d03f97963484affb0f889f001a6e6d"
+    },
+    "routing/seed-713/fixed_calibrated/calibration.json": {
+      "bytes": 559,
+      "sha256": "a96016170d30ec48609d0d8af28c1fc9762d7639287aec38a364bbea1d17b770"
+    },
+    "routing/seed-713/fixed_calibrated/network/expert-0.npz": {
+      "bytes": 179163,
+      "sha256": "2337c71f80716de87ef53005b0a56cc07ad5f1dcb3c135c0391c46f3f2823740"
+    },
+    "routing/seed-713/fixed_calibrated/network/expert-1.npz": {
+      "bytes": 179134,
+      "sha256": "f44caf4562d4ea826dee1db6e3acfb0596f26a1dd354c89e3ece1abbc91d0097"
+    },
+    "routing/seed-713/fixed_calibrated/network/expert-2.npz": {
+      "bytes": 179146,
+      "sha256": "b455f77c5f187c349579b0af85d2e8295dd1f99a44c36156d5438ca8a5337182"
+    },
+    "routing/seed-713/fixed_calibrated/network/network.json": {
+      "bytes": 387,
+      "sha256": "9f8b340bc9ca0701505644f308079c91de64ecf7a65381c2bd0bf12590a3f0c3"
+    },
+    "routing/seed-713/fixed_calibrated/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "2ecf5d1733c75e39d9104b115f34ff117c38328de59f286ccbdff810c34e7a29"
+    },
+    "routing/seed-713/fixed_raw/calibration.json": {
+      "bytes": 27,
+      "sha256": "cc444f32f373378c4d2a476a35e928839d69f2a18980db138604308c07c8d972"
+    },
+    "routing/seed-713/fixed_raw/network/expert-0.npz": {
+      "bytes": 179163,
+      "sha256": "2337c71f80716de87ef53005b0a56cc07ad5f1dcb3c135c0391c46f3f2823740"
+    },
+    "routing/seed-713/fixed_raw/network/expert-1.npz": {
+      "bytes": 179134,
+      "sha256": "f44caf4562d4ea826dee1db6e3acfb0596f26a1dd354c89e3ece1abbc91d0097"
+    },
+    "routing/seed-713/fixed_raw/network/expert-2.npz": {
+      "bytes": 179146,
+      "sha256": "b455f77c5f187c349579b0af85d2e8295dd1f99a44c36156d5438ca8a5337182"
+    },
+    "routing/seed-713/fixed_raw/network/network.json": {
+      "bytes": 387,
+      "sha256": "9f8b340bc9ca0701505644f308079c91de64ecf7a65381c2bd0bf12590a3f0c3"
+    },
+    "routing/seed-713/fixed_raw/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "2ecf5d1733c75e39d9104b115f34ff117c38328de59f286ccbdff810c34e7a29"
+    },
+    "routing/seed-713/gradient_calibrated/calibration.json": {
+      "bytes": 561,
+      "sha256": "ce891fba878f9e9146605f3a6df085eaf1ca8bbfc5f3714bbe7158e0ce802af8"
+    },
+    "routing/seed-713/gradient_calibrated/network/expert-0.npz": {
+      "bytes": 179137,
+      "sha256": "6759609a6624fec853e9d6355d494e7c9195abae7d75867a7faf2be4f020adab"
+    },
+    "routing/seed-713/gradient_calibrated/network/expert-1.npz": {
+      "bytes": 179141,
+      "sha256": "a5aa9fe6cab4660be1665e24e6fc7b82c80b2033082e19d6e6fa26604ee65580"
+    },
+    "routing/seed-713/gradient_calibrated/network/expert-2.npz": {
+      "bytes": 179190,
+      "sha256": "0e3b6b9fa1cb49993f645b989ab1862bd4e368fb4830ced69420425321b87e03"
+    },
+    "routing/seed-713/gradient_calibrated/network/network.json": {
+      "bytes": 387,
+      "sha256": "d88f66d738f1a826e9a02debc6f68c46f069184a148e3e038c776f55927749e3"
+    },
+    "routing/seed-713/gradient_calibrated/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "638c6c9db308d6942fdd3072ae712236193efae03b1141dcdaeb2cea1701e02d"
+    },
+    "routing/seed-713/gradient_raw/calibration.json": {
+      "bytes": 27,
+      "sha256": "cc444f32f373378c4d2a476a35e928839d69f2a18980db138604308c07c8d972"
+    },
+    "routing/seed-713/gradient_raw/network/expert-0.npz": {
+      "bytes": 179137,
+      "sha256": "6759609a6624fec853e9d6355d494e7c9195abae7d75867a7faf2be4f020adab"
+    },
+    "routing/seed-713/gradient_raw/network/expert-1.npz": {
+      "bytes": 179141,
+      "sha256": "a5aa9fe6cab4660be1665e24e6fc7b82c80b2033082e19d6e6fa26604ee65580"
+    },
+    "routing/seed-713/gradient_raw/network/expert-2.npz": {
+      "bytes": 179190,
+      "sha256": "0e3b6b9fa1cb49993f645b989ab1862bd4e368fb4830ced69420425321b87e03"
+    },
+    "routing/seed-713/gradient_raw/network/network.json": {
+      "bytes": 387,
+      "sha256": "d88f66d738f1a826e9a02debc6f68c46f069184a148e3e038c776f55927749e3"
+    },
+    "routing/seed-713/gradient_raw/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "638c6c9db308d6942fdd3072ae712236193efae03b1141dcdaeb2cea1701e02d"
+    },
+    "routing/seed-713/merge_retrain/model.npz": {
+      "bytes": 249851,
+      "sha256": "33b783cbd1c8ad803a6655cbca2c2330e7d03f97963484affb0f889f001a6e6d"
+    },
+    "routing/seed-713/nearest/arrays.npz": {
+      "bytes": 352823,
+      "sha256": "87c2f2a7c2ffcc59d4344d097cc524f8554f47bfd228a8eec0ea128b8ff84716"
+    },
+    "routing/seed-713/nearest/metadata.json": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "routing/seed-713/random_calibrated/calibration.json": {
+      "bytes": 559,
+      "sha256": "ba2ba772d879845dab67901b9ff409c5800dbf42ba6ec7ab1e7c189b5888c673"
+    },
+    "routing/seed-713/random_calibrated/network/expert-0.npz": {
+      "bytes": 179142,
+      "sha256": "ede21a6cfc3510654ad91aa2c8c7d403d46ea2a5989a4bafb1b39424f695b70c"
+    },
+    "routing/seed-713/random_calibrated/network/expert-1.npz": {
+      "bytes": 179111,
+      "sha256": "4cbc66edf2bd659304a5caaecc9d5fbbde90998e07216d62422298deac0dff91"
+    },
+    "routing/seed-713/random_calibrated/network/expert-2.npz": {
+      "bytes": 179187,
+      "sha256": "4d586ec89848bbe55049cc1693a35baa5bad073d01900c01ae5c780dbf253916"
+    },
+    "routing/seed-713/random_calibrated/network/network.json": {
+      "bytes": 387,
+      "sha256": "f1d11952af26c382999a7e0d222d1046de4e2212c5e77b6240a19c8965cb9552"
+    },
+    "routing/seed-713/random_calibrated/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "5e189edb08138e107490b6822dd0e1db8136bd33b1d97e8d125ab1e39e8d8f81"
+    },
+    "routing/seed-713/random_raw/calibration.json": {
+      "bytes": 27,
+      "sha256": "cc444f32f373378c4d2a476a35e928839d69f2a18980db138604308c07c8d972"
+    },
+    "routing/seed-713/random_raw/network/expert-0.npz": {
+      "bytes": 179142,
+      "sha256": "ede21a6cfc3510654ad91aa2c8c7d403d46ea2a5989a4bafb1b39424f695b70c"
+    },
+    "routing/seed-713/random_raw/network/expert-1.npz": {
+      "bytes": 179111,
+      "sha256": "4cbc66edf2bd659304a5caaecc9d5fbbde90998e07216d62422298deac0dff91"
+    },
+    "routing/seed-713/random_raw/network/expert-2.npz": {
+      "bytes": 179187,
+      "sha256": "4d586ec89848bbe55049cc1693a35baa5bad073d01900c01ae5c780dbf253916"
+    },
+    "routing/seed-713/random_raw/network/network.json": {
+      "bytes": 387,
+      "sha256": "f1d11952af26c382999a7e0d222d1046de4e2212c5e77b6240a19c8965cb9552"
+    },
+    "routing/seed-713/random_raw/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "5e189edb08138e107490b6822dd0e1db8136bd33b1d97e8d125ab1e39e8d8f81"
+    },
+    "routing/seed-713/ridge/arrays.npz": {
+      "bytes": 35645,
+      "sha256": "03fed63f6f67026521a0a4730e053813ed614ab99722307de1d814e7ef485572"
+    },
+    "routing/seed-713/ridge/metadata.json": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "routing/seed-713/single/model.npz": {
+      "bytes": 250003,
+      "sha256": "4b35635c260fab5c44c71f01ad8633eefb3e9a478c3613b4a1885d9d25ea3dd3"
+    },
+    "routing/seed-713/wide/model.npz": {
+      "bytes": 531947,
+      "sha256": "a256f3d898431d5a0d0922bc98cc67348e6232baf8a286de4c6bd48b9f0d6d16"
+    },
+    "routing/seed-971/RESULTS.json": {
+      "bytes": 1300270,
+      "sha256": "68d6a3ffe7b2970621bc1822c55de1c05ec2f2f9c35c12b2edb315e4e87fdae8"
+    },
+    "routing/seed-971/SELECTION.json": {
+      "bytes": 6993,
+      "sha256": "dd5a3da322d79468b6e2bd1d22b0b08faeaa5c4b27df33936484170ac5073784"
+    },
+    "routing/seed-971/bm25/arrays.npz": {
+      "bytes": 246,
+      "sha256": "f5094b75d7d49e72be9a53072f049927d30536b50706f98432010a3d613569a8"
+    },
+    "routing/seed-971/bm25/metadata.json": {
+      "bytes": 34475,
+      "sha256": "9a7b6c4b18a8d38c83fcbe63af87c53a93f6ef8392b7d3d1e25c8001d569c79a"
+    },
+    "routing/seed-971/centroid/arrays.npz": {
+      "bytes": 35820,
+      "sha256": "0ce8f3557ff7db8a08824af46fc6a0bbf7f942471f235a35395353e500651337"
+    },
+    "routing/seed-971/centroid/metadata.json": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "routing/seed-971/continue/model.npz": {
+      "bytes": 249795,
+      "sha256": "7236d3254a61696f8fb27d3edbdd5630394d494a0ab668e0bf5aa485e39868ee"
+    },
+    "routing/seed-971/fixed_calibrated/calibration.json": {
+      "bytes": 560,
+      "sha256": "0b8b525a6d4a31550a6b9aba2bf3141e944dd4555865ad02d785f563d9ccd693"
+    },
+    "routing/seed-971/fixed_calibrated/network/expert-0.npz": {
+      "bytes": 179168,
+      "sha256": "6bb312dcef33870fc720e0c9caf7a376e486e968306e3cdd8ebb1e2decfd7c73"
+    },
+    "routing/seed-971/fixed_calibrated/network/expert-1.npz": {
+      "bytes": 179222,
+      "sha256": "d213d908ec6cce28ee0a899de478f52689cba234e4d862ddaeafd97d3ac2c606"
+    },
+    "routing/seed-971/fixed_calibrated/network/expert-2.npz": {
+      "bytes": 179254,
+      "sha256": "7c5f2272b861b258b86b05d80bd54b8c31ba5014eee2e02bc576474e67802fde"
+    },
+    "routing/seed-971/fixed_calibrated/network/network.json": {
+      "bytes": 387,
+      "sha256": "9f8b340bc9ca0701505644f308079c91de64ecf7a65381c2bd0bf12590a3f0c3"
+    },
+    "routing/seed-971/fixed_calibrated/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "2ecf5d1733c75e39d9104b115f34ff117c38328de59f286ccbdff810c34e7a29"
+    },
+    "routing/seed-971/fixed_raw/calibration.json": {
+      "bytes": 27,
+      "sha256": "cc444f32f373378c4d2a476a35e928839d69f2a18980db138604308c07c8d972"
+    },
+    "routing/seed-971/fixed_raw/network/expert-0.npz": {
+      "bytes": 179168,
+      "sha256": "6bb312dcef33870fc720e0c9caf7a376e486e968306e3cdd8ebb1e2decfd7c73"
+    },
+    "routing/seed-971/fixed_raw/network/expert-1.npz": {
+      "bytes": 179222,
+      "sha256": "d213d908ec6cce28ee0a899de478f52689cba234e4d862ddaeafd97d3ac2c606"
+    },
+    "routing/seed-971/fixed_raw/network/expert-2.npz": {
+      "bytes": 179254,
+      "sha256": "7c5f2272b861b258b86b05d80bd54b8c31ba5014eee2e02bc576474e67802fde"
+    },
+    "routing/seed-971/fixed_raw/network/network.json": {
+      "bytes": 387,
+      "sha256": "9f8b340bc9ca0701505644f308079c91de64ecf7a65381c2bd0bf12590a3f0c3"
+    },
+    "routing/seed-971/fixed_raw/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "2ecf5d1733c75e39d9104b115f34ff117c38328de59f286ccbdff810c34e7a29"
+    },
+    "routing/seed-971/gradient_calibrated/calibration.json": {
+      "bytes": 564,
+      "sha256": "d7c2e9a613ec59a21c71e4a292f17111dc9accbce4a8394c112b283dfff30edb"
+    },
+    "routing/seed-971/gradient_calibrated/network/expert-0.npz": {
+      "bytes": 179149,
+      "sha256": "8ebd2818e41be3cd570913bf444aa3db08b4481502a62874168df2842f97192e"
+    },
+    "routing/seed-971/gradient_calibrated/network/expert-1.npz": {
+      "bytes": 179177,
+      "sha256": "e3fdb8d2bd2ae30d25fbaa42859ab30d788e0211b9b8800a7716f2275fe74aa0"
+    },
+    "routing/seed-971/gradient_calibrated/network/expert-2.npz": {
+      "bytes": 179231,
+      "sha256": "a9a3ee6b6c46d7f26aeff5b8a641f1d7732a136e27ffc21bcbd2cc3d1c8138f4"
+    },
+    "routing/seed-971/gradient_calibrated/network/network.json": {
+      "bytes": 387,
+      "sha256": "df6dd889db167ec999d2c8e5d611610923930833e142843c84cd2e7dbb3a5d2c"
+    },
+    "routing/seed-971/gradient_calibrated/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "6bdeaa847ab2312091b90ba8204f232647ffe7fbf29b07ad9a731710266a83bd"
+    },
+    "routing/seed-971/gradient_raw/calibration.json": {
+      "bytes": 27,
+      "sha256": "cc444f32f373378c4d2a476a35e928839d69f2a18980db138604308c07c8d972"
+    },
+    "routing/seed-971/gradient_raw/network/expert-0.npz": {
+      "bytes": 179149,
+      "sha256": "8ebd2818e41be3cd570913bf444aa3db08b4481502a62874168df2842f97192e"
+    },
+    "routing/seed-971/gradient_raw/network/expert-1.npz": {
+      "bytes": 179177,
+      "sha256": "e3fdb8d2bd2ae30d25fbaa42859ab30d788e0211b9b8800a7716f2275fe74aa0"
+    },
+    "routing/seed-971/gradient_raw/network/expert-2.npz": {
+      "bytes": 179231,
+      "sha256": "a9a3ee6b6c46d7f26aeff5b8a641f1d7732a136e27ffc21bcbd2cc3d1c8138f4"
+    },
+    "routing/seed-971/gradient_raw/network/network.json": {
+      "bytes": 387,
+      "sha256": "df6dd889db167ec999d2c8e5d611610923930833e142843c84cd2e7dbb3a5d2c"
+    },
+    "routing/seed-971/gradient_raw/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "6bdeaa847ab2312091b90ba8204f232647ffe7fbf29b07ad9a731710266a83bd"
+    },
+    "routing/seed-971/merge_retrain/model.npz": {
+      "bytes": 249795,
+      "sha256": "7236d3254a61696f8fb27d3edbdd5630394d494a0ab668e0bf5aa485e39868ee"
+    },
+    "routing/seed-971/nearest/arrays.npz": {
+      "bytes": 352823,
+      "sha256": "87c2f2a7c2ffcc59d4344d097cc524f8554f47bfd228a8eec0ea128b8ff84716"
+    },
+    "routing/seed-971/nearest/metadata.json": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "routing/seed-971/random_calibrated/calibration.json": {
+      "bytes": 563,
+      "sha256": "1e4d55ac39fc270892e80a622eb3dee80a9d3d11e9e2fd63e87aeaf03d76e8a5"
+    },
+    "routing/seed-971/random_calibrated/network/expert-0.npz": {
+      "bytes": 179245,
+      "sha256": "73f9922fa64ab53f850cc10096824e00730d7504346e0ae5ce3ec3070701ab01"
+    },
+    "routing/seed-971/random_calibrated/network/expert-1.npz": {
+      "bytes": 179209,
+      "sha256": "614f039b8eaab7356e4af39e01f429fae9cc22550fa8b051e77b98f94c008bca"
+    },
+    "routing/seed-971/random_calibrated/network/expert-2.npz": {
+      "bytes": 179138,
+      "sha256": "2ea200aed5b95a8dc66398414b977c9ce69f44c493ba9ceb86810677d28bafa2"
+    },
+    "routing/seed-971/random_calibrated/network/network.json": {
+      "bytes": 387,
+      "sha256": "c942c35e42ed6a7ef780392ec7ad9f3e39b4fc0610ee8eb34770cd65043d4151"
+    },
+    "routing/seed-971/random_calibrated/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "387b2110147626f5241f7f9cbd98ee13f224d731d62868cc071cf830d49b80d1"
+    },
+    "routing/seed-971/random_raw/calibration.json": {
+      "bytes": 27,
+      "sha256": "cc444f32f373378c4d2a476a35e928839d69f2a18980db138604308c07c8d972"
+    },
+    "routing/seed-971/random_raw/network/expert-0.npz": {
+      "bytes": 179245,
+      "sha256": "73f9922fa64ab53f850cc10096824e00730d7504346e0ae5ce3ec3070701ab01"
+    },
+    "routing/seed-971/random_raw/network/expert-1.npz": {
+      "bytes": 179209,
+      "sha256": "614f039b8eaab7356e4af39e01f429fae9cc22550fa8b051e77b98f94c008bca"
+    },
+    "routing/seed-971/random_raw/network/expert-2.npz": {
+      "bytes": 179138,
+      "sha256": "2ea200aed5b95a8dc66398414b977c9ce69f44c493ba9ceb86810677d28bafa2"
+    },
+    "routing/seed-971/random_raw/network/network.json": {
+      "bytes": 387,
+      "sha256": "c942c35e42ed6a7ef780392ec7ad9f3e39b4fc0610ee8eb34770cd65043d4151"
+    },
+    "routing/seed-971/random_raw/network/router.npy": {
+      "bytes": 9368,
+      "sha256": "387b2110147626f5241f7f9cbd98ee13f224d731d62868cc071cf830d49b80d1"
+    },
+    "routing/seed-971/ridge/arrays.npz": {
+      "bytes": 35645,
+      "sha256": "03fed63f6f67026521a0a4730e053813ed614ab99722307de1d814e7ef485572"
+    },
+    "routing/seed-971/ridge/metadata.json": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "routing/seed-971/single/model.npz": {
+      "bytes": 249958,
+      "sha256": "b84f1f32a74bc62e4d471045764818959e6e6bf4bbb32afbd57857d7e57f9ca6"
+    },
+    "routing/seed-971/wide/model.npz": {
+      "bytes": 531308,
+      "sha256": "fa1e525d01554e818ae0b064c6a3ab6695be876840671bab10880104013f79ff"
+    },
+    "routing/train_features.npz": {
+      "bytes": 171341,
+      "sha256": "1068b600f6ddc0b2751f71f20ebe11521acf19a742ccc1d3f7017f4163dfa775"
+    },
+    "routing/train_rows.json": {
+      "bytes": 59692,
+      "sha256": "28d9333c70f9da7cb6266b31a994840ec52c9100e426431becb53d9c79ce9858"
+    },
+    "tests-process.json": {
+      "bytes": 917,
+      "sha256": "5f48ee9ebfa76b37d76dea39002fc294e4db129a99bb4bf2643da70865c73e14"
+    }
+  }
+}

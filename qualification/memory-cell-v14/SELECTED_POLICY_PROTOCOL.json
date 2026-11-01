@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.memory.selected-policy.protocol.v14",
+  "timing": "Implemented after the original V14 evaluation to close checkpoint recovery and callable-inference gaps; no original routing code, candidate selection, thresholds or held data are changed.",
+  "scope": "Python research policy for the existing twelve public operations. This does not grant native installation, structural publication, authenticated source freshness, or algorithm-learning authority.",
+  "eligible_candidates": ["single", "continue", "wide", "merge_retrain", "ridge", "centroid", "nearest", "bm25", "fixed_raw", "fixed_calibrated", "gradient_raw", "gradient_calibrated", "random_raw", "random_calibrated"],
+  "load_contract": "Require a caller-pinned original artifact inventory SHA-256, encoder manifest hash and training source version. Verify the frozen runtime source hashes, SELECTION.json, all selected checkpoint components, train/calibration feature bytes and source rows. Do not use RESULTS.json or held artifacts. Recompute the already-declared fifth-percentile novelty threshold from the original calibration cache; do not fit a model or select again.",
+  "serialization": "JSON plus NumPy numeric arrays loaded with allow_pickle=False, including full adapter parameters, Adam moments, optimizer schedule, RNG and sampler state. Sparse models restore router, all children and calibration parameters. BM25 JSON dictionaries are reconstructed as Counter objects. No pickle, torch.load or untrusted artifact source execution is used.",
+  "query_contract": "predict_text calls the supplied matching encoder on the actual new text and records its statistics delta. predict_cached only accepts indexed original train/calibration features verified against the original artifact inventory; this is labeled replay, with no live-encoder or new-generalization claim. execute_prediction receives the selected operation and actual caller payload, never expected labels or fixture answers.",
+  "live_probe": {
+    "text": "Delete repeated string values, preserving the order in which each distinct value first occurs.",
+    "payload": ["iris", "cedar", "iris", "oak", "cedar"],
+    "frozen_before_live_encoding": true,
+    "purpose": "One operational integration probe through the real encoder, recovered selected checkpoint and executor. No training, parameter selection, aggregate efficacy claim or held reevaluation. Preserve its actual output, including failure."
+  },
+  "costs": "Charge inventory, source verification, every selected checkpoint and original feature-cache read at load; report load wall/CPU, runtime source bytes, checkpoint bytes and artifact bytes separately. Each prediction reports matching encoder statistics where live, decision wall/CPU and actual expert invocations. Executor wall/CPU are separate. Encoder residency and model RAM are not inferred from file sizes.",
+  "tests": "Synthetic tensor fixtures test recovery behavior and identities only, with no semantic performance claim. Every eligible candidate family must reproduce its in-memory prediction after serialized recovery; neural optimizer/RNG/sampler hashes must match. Original CI artifact recovery is reported separately.",
+  "authority_boundary": "The selected-policy loader is not a replacement for structural_gate.require_structural_admission or an owner installation validator. Serving a recovered checkpoint in this research API creates no production deployment. Source-version matching proves snapshot identity, not current authorization or source freshness."
+}
