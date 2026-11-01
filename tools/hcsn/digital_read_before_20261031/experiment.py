@@ -110,10 +110,20 @@ def native_episode(binary, content_model, model_path, artifact, public_path, con
                "--seed", str(seed), "--steps", "7"]
     cpu0 = resource.getrusage(resource.RUSAGE_CHILDREN)
     wall0 = time.perf_counter()
-    process = subprocess.run(command, capture_output=True, text=True, timeout=60)
+    try:
+        process = subprocess.run(command, capture_output=True, text=True, timeout=60)
+    except subprocess.TimeoutExpired as error:
+        save(snapshot.with_suffix(".FAILED.json"), dict(command=command, error="TimeoutExpired",
+             stdout=str(error.stdout), stderr=str(error.stderr)))
+        raise
     wall = time.perf_counter()-wall0
     cpu1 = resource.getrusage(resource.RUSAGE_CHILDREN)
     cpu = cpu1.ru_utime+cpu1.ru_stime-cpu0.ru_utime-cpu0.ru_stime
+    # Preserve raw evidence before JSON parsing or any cross-language assertions.
+    with snapshot.with_suffix(".stdout.json").open("x") as stream:
+        stream.write(process.stdout)
+    with snapshot.with_suffix(".stderr.txt").open("x") as stream:
+        stream.write(process.stderr)
     if process.returncode != 0:
         save(snapshot.with_suffix(".FAILED.json"), dict(command=command, returncode=process.returncode,
                                                      stdout=process.stdout, stderr=process.stderr))

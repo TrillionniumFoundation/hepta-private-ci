@@ -24,6 +24,8 @@ PUBLIC_NAMES += [f"slot_{i}_{name}" for i in range(6)
 def validate_public(p):
     if p["schema"] != "digital-read-before-public-v1" or p["deadline"] != 6 or p["initial_budget"] != 3:
         raise ValueError("incompatible task schema or dimensions")
+    if not isinstance(p["id"], str) or not 0 < len(p["id"]) <= 256:
+        raise ValueError("bounded public id required")
     for key in ("duration", "reliability", "read_price", "read_delay", "packets", "packet_sha256"):
         if len(p[key]) != 6:
             raise ValueError((key, "requires six entries"))
@@ -96,6 +98,8 @@ def successor(public, state, action, completion=None):
     if source is not None:
         s["pending"] = None
         if completion.get("failure", False):
+            if completion.get("observation") is not None:
+                raise ValueError("failure and observation conflict")
             s["broken"] = True
         else:
             y = completion.get("observation")
