@@ -10,6 +10,7 @@ import unittest
 
 from . import prepare
 from . import resolve
+from . import semantic
 
 
 def archive_fixture(entries):
@@ -92,6 +93,34 @@ class SourceContracts(unittest.TestCase):
         next(item for item in changed["package"] if item["name"] == "matrix-sdk-crypto")["source"] = "registry+unpatched"
         with self.assertRaises(ValueError):
             resolve.graph_contract(changed)
+
+    def test_actual_junit_requires_executed_named_regressions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "junit.xml"
+            path.write_text('<testsuites><testsuite><testcase name="tests::actual_regression"/></testsuite></testsuites>')
+            result = semantic.check_tests(path, ["actual_regression"])
+            self.assertEqual(result["executed"], 1)
+            for payload in (
+                '<testsuites><testsuite/></testsuites>',
+                '<testsuites><testsuite><testcase name="tests::other"/></testsuite></testsuites>',
+                '<testsuites><testsuite><testcase name="actual_regression"><skipped/></testcase></testsuite></testsuites>',
+                '<testsuites><testsuite><testcase name="actual_regression"><failure>panic</failure></testcase></testsuite></testsuites>',
+            ):
+                path.write_text(payload)
+                with self.assertRaises(ValueError):
+                    semantic.check_tests(path, ["actual_regression"])
+
+    def test_matrix_negative_control_accepts_only_original_panic(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "junit.xml"
+            message = "Should have verification violation if device_owner_identity is None"
+            path.write_text('<testsuites><testsuite><testcase name="test_share_strategy_prevents_encryption"><failure>'
+                            + message + '</failure></testcase></testsuite></testsuites>')
+            result = semantic.check_tests(path, ["test_share_strategy_prevents_encryption"], negative=True)
+            self.assertEqual(result["failed"], 1)
+            path.write_text(path.read_text().replace(message, "unrelated missing fixture"))
+            with self.assertRaises(ValueError):
+                semantic.check_tests(path, ["test_share_strategy_prevents_encryption"], negative=True)
 
 
 if __name__ == "__main__":

@@ -134,6 +134,11 @@ def run(root, output):
                 invoke("pin_" + name.replace("-", "_"), [
                     "cargo", "update", "-p", name + "@" + selected[0]["version"], "--precise", version,
                 ])
+        # The inherited lock can initially keep TOML below the maintained
+        # parser's requirement and make Cargo select registry i18n-config 0.4.7.
+        # Resolve the declared 0.4.8 backport after its real TOML dependency is
+        # unlocked; the graph contract below still requires this exact path source.
+        invoke("select_i18n_backport", ["cargo", "update", "-p", "i18n-config", "--precise", "0.4.8"])
         after_raw = (root / "codex-rs/Cargo.lock").read_bytes()
         after = tomllib.loads(after_raw.decode())
         receipt["selected_implementations"] = graph_contract(after)

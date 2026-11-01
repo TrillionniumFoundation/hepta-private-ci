@@ -21,6 +21,8 @@ jobs:
     name: Real resolver and unchanged dependency policy
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    outputs:
+      resolved: ${{ steps.resolve.outcome == 'success' }}
     steps:
       - name: Checkout exact diagnostic source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -61,5 +63,57 @@ jobs:
         with:
           name: security-resolution-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/security-resolution/
+          if-no-files-found: error
+          retention-days: 30
+
+  semantic:
+    name: Real Rust regressions (${{ matrix.group }})
+    needs: resolve
+    if: always() && needs.resolve.outputs.resolved == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [matrix, aws, compat, zip]
+    steps:
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install inherited Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Require actual independent BZip2 implementation
+        if: matrix.group == 'zip'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes bzip2
+          bzip2 --version
+      - name: Download exact same-run candidate resolver evidence
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: security-resolution-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/security-resolved
+      - name: Test literal source and JUnit failure boundaries
+        run: python3 -B -m unittest operational.parameter_field_security_closure_20261031.test_contracts -v
+      - name: Execute isolated byte-identical candidate with real just test
+        id: semantics
+        run: >-
+          python3 -B -m operational.parameter_field_security_closure_20261031.semantic
+          --repo "$GITHUB_WORKSPACE" --resolved "$RUNNER_TEMP/security-resolved"
+          --output "$RUNNER_TEMP/security-${{ matrix.group }}" --group "${{ matrix.group }}"
+      - name: Preserve actual regression results and every isolated lock delta
+        if: always() && steps.semantics.outcome != 'skipped'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: security-semantics-${{ matrix.group }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/security-${{ matrix.group }}/evidence/
           if-no-files-found: error
           retention-days: 30
