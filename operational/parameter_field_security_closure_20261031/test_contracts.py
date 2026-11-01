@@ -46,7 +46,7 @@ class SourceContracts(unittest.TestCase):
         for item in plan["patches"]:
             patch = prepare.HERE / item["patch"]
             prepare.check(patch.read_bytes(), item["patch_identity"], item["patch"])
-            stat = prepare.git(prepare.HERE, "apply", "--numstat", str(patch)).decode().splitlines()
+            stat = prepare.git(prepare.HERE.parents[1], "apply", "--numstat", str(patch)).decode().splitlines()
             self.assertEqual([line.split("\t")[-1] for line in stat], [item["path"]])
             self.assertNotEqual(item["before"], item["after"])
             covered.add(item["path"])
