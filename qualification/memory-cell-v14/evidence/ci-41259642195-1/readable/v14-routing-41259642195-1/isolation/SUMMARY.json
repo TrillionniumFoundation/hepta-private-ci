@@ -1,0 +1,616 @@
+{
+  "all_lifecycle_checks": true,
+  "bytes_on_disk": 12528161,
+  "cpu_seconds": 17.658734719999998,
+  "efficacy_advantage_over_exact_storage_established": false,
+  "runs": [
+    {
+      "candidates": 10,
+      "checkpoint_bytes": 2503525,
+      "checks": {
+        "active_frontiers_serviceable": true,
+        "actual_rejection_observed": true,
+        "complete_state_identity": true,
+        "current_project_outputs": true,
+        "restart_semantic_identity": true,
+        "revoked_only_amber": true,
+        "skill_retention_exact": true
+      },
+      "fixed_skill_seed": 713,
+      "initial_skill_correct": 59,
+      "project_seed": 713,
+      "rejected": 3,
+      "stages": [
+        {
+          "frontier": 0,
+          "modes": {
+            "fallback": 0,
+            "learned": 72,
+            "refused": 0
+          },
+          "project_correct": 0,
+          "requests": 72,
+          "served": 72,
+          "skill_correct": 59,
+          "stage": "initial_skills"
+        },
+        {
+          "frontier": 3,
+          "modes": {
+            "fallback": 12,
+            "learned": 72,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 3,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 4,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 4,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_one_small_actual_update"
+        },
+        {
+          "frontier": 4,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 5,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 5,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_one_small_actual_update"
+        },
+        {
+          "frontier": 5,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_one_small_actual_update"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 0,
+            "learned": 80,
+            "refused": 4
+          },
+          "project_correct": 8,
+          "requests": 84,
+          "served": 80,
+          "skill_correct": 59,
+          "stage": "amber_revoked"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 0,
+            "learned": 80,
+            "refused": 4
+          },
+          "project_correct": 8,
+          "requests": 84,
+          "served": 80,
+          "skill_correct": 59,
+          "stage": "restart"
+        }
+      ],
+      "training_seconds": 0.405345104999995
+    },
+    {
+      "candidates": 10,
+      "checkpoint_bytes": 2503820,
+      "checks": {
+        "active_frontiers_serviceable": true,
+        "actual_rejection_observed": true,
+        "complete_state_identity": true,
+        "current_project_outputs": true,
+        "restart_semantic_identity": true,
+        "revoked_only_amber": true,
+        "skill_retention_exact": true
+      },
+      "fixed_skill_seed": 713,
+      "initial_skill_correct": 59,
+      "project_seed": 971,
+      "rejected": 3,
+      "stages": [
+        {
+          "frontier": 0,
+          "modes": {
+            "fallback": 0,
+            "learned": 72,
+            "refused": 0
+          },
+          "project_correct": 0,
+          "requests": 72,
+          "served": 72,
+          "skill_correct": 59,
+          "stage": "initial_skills"
+        },
+        {
+          "frontier": 3,
+          "modes": {
+            "fallback": 12,
+            "learned": 72,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 3,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 4,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 4,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_one_small_actual_update"
+        },
+        {
+          "frontier": 4,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 5,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 5,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_one_small_actual_update"
+        },
+        {
+          "frontier": 5,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_one_small_actual_update"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 0,
+            "learned": 80,
+            "refused": 4
+          },
+          "project_correct": 8,
+          "requests": 84,
+          "served": 80,
+          "skill_correct": 59,
+          "stage": "amber_revoked"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 0,
+            "learned": 80,
+            "refused": 4
+          },
+          "project_correct": 8,
+          "requests": 84,
+          "served": 80,
+          "skill_correct": 59,
+          "stage": "restart"
+        }
+      ],
+      "training_seconds": 0.404806533999988
+    },
+    {
+      "candidates": 10,
+      "checkpoint_bytes": 2503254,
+      "checks": {
+        "active_frontiers_serviceable": true,
+        "actual_rejection_observed": true,
+        "complete_state_identity": true,
+        "current_project_outputs": true,
+        "restart_semantic_identity": true,
+        "revoked_only_amber": true,
+        "skill_retention_exact": true
+      },
+      "fixed_skill_seed": 713,
+      "initial_skill_correct": 59,
+      "project_seed": 1237,
+      "rejected": 3,
+      "stages": [
+        {
+          "frontier": 0,
+          "modes": {
+            "fallback": 0,
+            "learned": 72,
+            "refused": 0
+          },
+          "project_correct": 0,
+          "requests": 72,
+          "served": 72,
+          "skill_correct": 59,
+          "stage": "initial_skills"
+        },
+        {
+          "frontier": 3,
+          "modes": {
+            "fallback": 12,
+            "learned": 72,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 3,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 4,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 4,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_one_small_actual_update"
+        },
+        {
+          "frontier": 4,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 5,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 5,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_one_small_actual_update"
+        },
+        {
+          "frontier": 5,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "source_changed_before_candidate"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 4,
+            "learned": 80,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_one_small_actual_update"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 0,
+            "learned": 84,
+            "refused": 0
+          },
+          "project_correct": 12,
+          "requests": 84,
+          "served": 84,
+          "skill_correct": 59,
+          "stage": "after_full_candidate"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 0,
+            "learned": 80,
+            "refused": 4
+          },
+          "project_correct": 8,
+          "requests": 84,
+          "served": 80,
+          "skill_correct": 59,
+          "stage": "amber_revoked"
+        },
+        {
+          "frontier": 6,
+          "modes": {
+            "fallback": 0,
+            "learned": 80,
+            "refused": 4
+          },
+          "project_correct": 8,
+          "requests": 84,
+          "served": 80,
+          "skill_correct": 59,
+          "stage": "restart"
+        }
+      ],
+      "training_seconds": 0.4053898020000162
+    }
+  ],
+  "scope": "single SQLite owner with independent cell artifacts; no production or unlearning claim",
+  "wall_seconds": 17.739144848000002
+}
