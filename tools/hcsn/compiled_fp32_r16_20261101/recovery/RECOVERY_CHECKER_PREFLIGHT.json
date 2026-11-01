@@ -1,0 +1,95 @@
+{
+  "schema": "hcsn.recovery-checker-preflight-faults.v1",
+  "all_checks_passed": true,
+  "numerical_evaluations": 0,
+  "scope": "Only cheap rejection and recorded ordinary-FP32 failure handling. No numerical admission from synthetic controls.",
+  "checker_sha256": "e5428232e7d3c81428e04eabfb5a595b014c9fc56cc9fdcaa3622c60e1663b07",
+  "script_sha256": "69750a4234875c8a0ca938a6d79d5c44ae0da04a091bc22da7e60886fbba11ee",
+  "protocol_sha256": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+  "trials": [
+    {
+      "trial": "complete_synthetic_preflight",
+      "expected_reach_pre_reference_sentinel": true,
+      "reached_pre_reference_sentinel": true,
+      "passed": true,
+      "detail": "Deliberate pre-reference sentinel; no numerical field evaluated"
+    },
+    {
+      "trial": "native_fp32_recorded_rejection",
+      "expected_reach_pre_reference_sentinel": true,
+      "reached_pre_reference_sentinel": true,
+      "passed": true,
+      "detail": "Deliberate pre-reference sentinel; no numerical field evaluated"
+    },
+    {
+      "trial": "missing_required_row",
+      "expected_reach_pre_reference_sentinel": false,
+      "reached_pre_reference_sentinel": false,
+      "passed": true,
+      "detail": "Missing/extra state rows"
+    },
+    {
+      "trial": "duplicate_reference_id",
+      "expected_reach_pre_reference_sentinel": false,
+      "reached_pre_reference_sentinel": false,
+      "passed": true,
+      "detail": "Reference ID/slot mismatch"
+    },
+    {
+      "trial": "nine_jacobian_columns",
+      "expected_reach_pre_reference_sentinel": false,
+      "reached_pre_reference_sentinel": false,
+      "passed": true,
+      "detail": "Wrong vector length"
+    },
+    {
+      "trial": "nan_json_token",
+      "expected_reach_pre_reference_sentinel": false,
+      "reached_pre_reference_sentinel": false,
+      "passed": true,
+      "detail": "Nonfinite JSON token"
+    },
+    {
+      "trial": "required_mode_rejection",
+      "expected_reach_pre_reference_sentinel": false,
+      "reached_pre_reference_sentinel": false,
+      "passed": true,
+      "detail": "Required mode rejected/error state"
+    },
+    {
+      "trial": "parameter_substitution",
+      "expected_reach_pre_reference_sentinel": false,
+      "reached_pre_reference_sentinel": false,
+      "passed": true,
+      "detail": "Rejected/unbound parameter point"
+    },
+    {
+      "trial": "mode_source_substitution",
+      "expected_reach_pre_reference_sentinel": false,
+      "reached_pre_reference_sentinel": false,
+      "passed": true,
+      "detail": "Payload source mismatch"
+    },
+    {
+      "trial": "mode_state_substitution",
+      "expected_reach_pre_reference_sentinel": false,
+      "reached_pre_reference_sentinel": false,
+      "passed": true,
+      "detail": "Input binding mismatch"
+    },
+    {
+      "trial": "mode_reference_substitution",
+      "expected_reach_pre_reference_sentinel": false,
+      "reached_pre_reference_sentinel": false,
+      "passed": true,
+      "detail": "Mode/reference mismatch"
+    },
+    {
+      "trial": "artifact_bytes_substitution",
+      "expected_reach_pre_reference_sentinel": false,
+      "reached_pre_reference_sentinel": false,
+      "passed": true,
+      "detail": "Artifact binding mismatch"
+    }
+  ]
+}

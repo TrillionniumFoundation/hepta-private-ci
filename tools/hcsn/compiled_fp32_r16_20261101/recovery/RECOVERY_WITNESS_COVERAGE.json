@@ -1,0 +1,164 @@
+{
+  "schema": "hcsn.recovery-original-witness-coverage.v1",
+  "scope": "No new evaluation: exact FP32-word match of all five original witness inputs to full development regression rows",
+  "original_witness_sha256": "f756bf83641763bcf0990f9a4eaaddde946432dad061e04cbeaeb4c54e1c74eb",
+  "witness_count": 5,
+  "all_required_passed": true,
+  "rows": [
+    {
+      "case": "maturity_0.01",
+      "coordinate": "log_distance",
+      "state": 0.00034500000765547156,
+      "modes": {
+        "float64": [
+          {
+            "regression_row_index": 66,
+            "passed": true,
+            "value_error": 6.937059108570731e-12,
+            "jacobian_error": 2.65284261417552e-08
+          }
+        ],
+        "float32": [
+          {
+            "regression_row_index": 66,
+            "passed": false,
+            "value_error": 0.0031032781014886067,
+            "jacobian_error": 11.963416134058651
+          }
+        ],
+        "compensated32": [
+          {
+            "regression_row_index": 66,
+            "passed": true,
+            "value_error": 2.8654386308168966e-08,
+            "jacobian_error": 5.16690447981041e-07
+          }
+        ]
+      }
+    },
+    {
+      "case": "maturity_0.01",
+      "coordinate": "log_distance",
+      "state": 0.0004600004758685827,
+      "modes": {
+        "float64": [
+          {
+            "regression_row_index": 69,
+            "passed": true,
+            "value_error": 2.2563728229590962e-12,
+            "jacobian_error": 4.544532528072409e-10
+          }
+        ],
+        "float32": [
+          {
+            "regression_row_index": 69,
+            "passed": false,
+            "value_error": 0.003060867386704702,
+            "jacobian_error": 0.4920574063155997
+          }
+        ],
+        "compensated32": [
+          {
+            "regression_row_index": 69,
+            "passed": true,
+            "value_error": 2.8822873696164887e-08,
+            "jacobian_error": 4.744021342593285e-08
+          }
+        ]
+      }
+    },
+    {
+      "case": "maturity_0.1",
+      "coordinate": "asset",
+      "state": 87.50782775878906,
+      "modes": {
+        "float64": [
+          {
+            "regression_row_index": 95,
+            "passed": true,
+            "value_error": 1.554312234475219e-14,
+            "jacobian_error": 6.378244286897594e-12
+          }
+        ],
+        "float32": [
+          {
+            "regression_row_index": 95,
+            "passed": false,
+            "value_error": 9.502692119633949e-06,
+            "jacobian_error": 0.0038611992967263736
+          }
+        ],
+        "compensated32": [
+          {
+            "regression_row_index": 95,
+            "passed": true,
+            "value_error": 2.555360034683929e-08,
+            "jacobian_error": 5.445520265492062e-08
+          }
+        ]
+      }
+    },
+    {
+      "case": "delta_0.2",
+      "coordinate": "log_distance",
+      "state": 0.0,
+      "modes": {
+        "float64": [
+          {
+            "regression_row_index": 192,
+            "passed": true,
+            "value_error": 9.933092551740455e-16,
+            "jacobian_error": 2.6358318925223955e-13
+          }
+        ],
+        "float32": [
+          {
+            "regression_row_index": 192,
+            "passed": false,
+            "value_error": 8.810244625643475e-07,
+            "jacobian_error": 0.0002070641124284191
+          }
+        ],
+        "compensated32": [
+          {
+            "regression_row_index": 192,
+            "passed": true,
+            "value_error": 1.1958085379881835e-08,
+            "jacobian_error": 4.416785087217468e-08
+          }
+        ]
+      }
+    },
+    {
+      "case": "recovery_0",
+      "coordinate": "asset",
+      "state": 128.73773193359375,
+      "modes": {
+        "float64": [
+          {
+            "regression_row_index": 239,
+            "passed": true,
+            "value_error": 9.262415053695738e-13,
+            "jacobian_error": 6.358219853397351e-11
+          }
+        ],
+        "float32": [
+          {
+            "regression_row_index": 239,
+            "passed": false,
+            "value_error": 0.0002739197321684863,
+            "jacobian_error": 0.017896694390234242
+          }
+        ],
+        "compensated32": [
+          {
+            "regression_row_index": 239,
+            "passed": true,
+            "value_error": 2.9108803256683302e-08,
+            "jacobian_error": 5.490084990121779e-08
+          }
+        ]
+      }
+    }
+  ]
+}
