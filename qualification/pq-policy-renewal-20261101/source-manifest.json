@@ -1,0 +1,45 @@
+{
+  "base_commit": "0f7c63418a7eec6cff5e4348e8cdc733850f8386",
+  "files": [
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_owner_policy.rs",
+      "baseline_blob": "44584018f7ec90d0dcd1a0e38bdd1b4cc3ec81e9",
+      "candidate_blob": "90376d0eff8ddd969fb2128266a016f6311e8546",
+      "sha256": "5e7317bbde2339494d8c4b7edf822f176d6b08628ad63a23ab55752f3bde729a",
+      "bytes": 4371
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_worker.rs",
+      "baseline_blob": "8fd5c2cc88c792437f73f0de8f31f407231e080e",
+      "candidate_blob": "dde6248630028006eb16daf73bf43c89885d3971",
+      "sha256": "664c80177acce57eb509d5e4eecb62dda694b313349f64e5c5360bab536f4c74",
+      "bytes": 13407
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch.rs",
+      "baseline_blob": "220700e70232c464f721b2dd3c55d05c618479fa",
+      "candidate_blob": "8c586d41e07575fd41236076e462c15eca179cde",
+      "sha256": "ce031f618454ba60f6b8830f343ed76ba037b3047029e3334d4044a5ffece792",
+      "bytes": 12647
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+      "baseline_blob": "27deff998fa54d540ac3262f78a314670e94b487",
+      "candidate_blob": "ee0fc17125fa7c74f82ff500330d2bdcea9b6485",
+      "sha256": "46d49bb9e0ebf7e602b52123d13f7e646af8c8114da2505922c538cb7ae8b761",
+      "bytes": 13058
+    },
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "baseline_blob": null,
+      "candidate_blob": "53484d9af2e544dc2a45ac13eb89039e01ec3242",
+      "sha256": "963033a35538c2d0c3388fe8fad91a569f8c243f6aad2205c2fe9bc8be573ae0",
+      "bytes": 10356
+    }
+  ],
+  "validation": {
+    "scoped_rustfmt": "passed Rust 1.95 parser and format; not full repository just fmt",
+    "native_tests": "not executed",
+    "locked_build": "not executed"
+  }
+}
