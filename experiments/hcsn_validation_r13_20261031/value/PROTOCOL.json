@@ -1,0 +1,32 @@
+{
+  "schema": "hcsn.r13.tailstop.protocol.v1",
+  "inherited_backbone_commit": "631d33ba7ee815ee48c017269033e94cb2bc107c",
+  "inherited_r12_source_commit": "3583d3c9a934be4049491c96f6419be3573ccaa5",
+  "inherited_r12_candidate_commit": "5541566818846808db0cdc043d6adcfca6a8c1f3",
+  "families": ["ordinary", "analytic"],
+  "seeds": [11, 23, 37],
+  "controllers": ["lightweight", "original_qstar", "matched_qstar", "qpi_selected"],
+  "intervention": "For every frozen controller, retain original and add TailStop. Simulate only public deterministic SKIP states until the first READ or STOP. If STOP arrives without READ, stop now. No content/control training or threshold selection.",
+  "fresh": [
+    ["confirm13_a", "ABABAB", 0.715, 0.805, 0.033, 0.0048, [0.82,1.18,0.82,1.18,0.82,1.18]],
+    ["confirm13_b", "BABABA", 0.685, 0.815, 0.112, 0.0062, [0.72,1.28,0.72,1.28,0.72,1.28]],
+    ["confirm13_c", "ABABAB", 0.755, 0.665, 0.315, 0.0042, [1.42,0.58,1.42,0.58,1.42,0.58]],
+    ["confirm13_d", "BABABA", 0.555, 0.885, 0.073, 0.0073, [0.42,1.58,0.42,1.58,0.42,1.58]]
+  ],
+  "configuration_scope": "Four fixed unseen configurations within the original six-slot causal observation model. Reliability, READ/SKIP tariffs and clocks differ from all inherited train/dev/fresh configurations. They are not new independent trained models or random population draws.",
+  "paired_worlds_per_config": 64,
+  "paired_world_seed_formula": "13103100 + model_seed*100 + configuration_index; identical across cores and controllers",
+  "paired_order": "Rotate the fixed eight-controller order by world_index modulo eight; complete every baseline/guarded pair on exactly the same raw world.",
+  "forced_prefixes": "Root plus one nonroot positive-occupancy prefix. Prefer prefixes with at least one actual READ if any are occupied; then select maximum summed occupancy across eight policies, shortest prefix and lexicographic history. Force every legal first action, followed by each of all eight frozen policies. Enumerate conditional raw worlds with the independent lazy executor. This is a bounded prefix sample; all-history metrics are separate.",
+  "primary_factorial": {"A":"ordinary/lightweight_tailstop", "B":"ordinary/qpi_selected_tailstop", "C":"analytic/lightweight_tailstop", "D":"analytic/qpi_selected_tailstop"},
+  "retained_factorials": ["original lightweight x original qpi_selected", "guarded lightweight x guarded qpi_selected", "original lightweight x original matched_qstar", "guarded lightweight x guarded matched_qstar"],
+  "primary_contrasts": ["B-A", "D-C", "C-A", "D-B", "(D-C)-(B-A)"],
+  "strong_control": "Always retain original and guarded matched_qstar on both cores. Do not replace a stronger ordinary result with a weaker ordinary policy to claim analytic superiority.",
+  "calibration": "Unchanged base predictor scores versus the actually executed original or guarded policy's Qpi; report scale, sign, pairwise rank, one-step improvement regret and full-history Qstar occupancy regret separately. Lightweight has no fabricated value predictions.",
+  "exact_gate": "All reachable public histories must preserve expected correctness/READ counts, not reduce expected utility, and satisfy saved utility = reduced SKIP tariff within 2e-10. Every sampled real trajectory must preserve raw accesses, READ successors and terminal classification. Conditional actual Qpi, fee/mass and regret identities must hold within 2e-10 with zero invalid-action guard fallbacks.",
+  "cost": "Meter actual actor CPU/wall including wrapper's extra policy calls, all per-stage counters, complete fresh child process startup/import/hash verification/graph/actual execution/raw evidence writing/exit, plus supervisor overhead separately. Retain old fitting cost as inherited sunk work; no refit here. Never add nested stage times to child totals. CPU is not energy; device Joules null.",
+  "statistical_unit": "Three pre-existing fit seeds, six fixed backbone checkpoints; four task configurations are conditions. Report every seed, fixed-condition mean and observed seed range, not confidence intervals or significance. No natural-media, full financial-HX propagation, content-learning, GPU or foundation-network claim.",
+  "old48": "Already seen R12 confirmations may be used only as explicitly retrospective regression diagnostics; no old data are relabeled fresh.",
+  "publication": "Freeze source, protocol and exact inherited input manifests before any confirm13 evaluation. Obtain remote source readback receipt first. No new checkpoint selection, retraining or adaptive follow-up after scores.",
+  "runtime": {"threads": 1, "device": "cpu", "energy_joules": null}
+}
