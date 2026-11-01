@@ -1,0 +1,164 @@
+{
+  "schema": "hcsn-supervisor-lifecycle-repair-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "base": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "tested_merge": "73ffeaf2d120289b935f3aed3cc4608866c20b4a",
+  "ci": {
+    "head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+    "merge": "73ffeaf2d120289b935f3aed3cc4608866c20b4a",
+    "base": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+    "run": 41294998586,
+    "job": 124814581056,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41294998586/job/124814581056",
+    "failures": [
+      {
+        "test": "restart_budget_survives_repeated_supervisord_recovery",
+        "line": 8134,
+        "text": "2026-11-01T10:00:43.7966070Z ---- restart_budget_survives_repeated_supervisord_recovery stdout ----\n2026-11-01T10:00:43.7975537Z \n2026-11-01T10:00:43.7976343Z thread 'restart_budget_survives_repeated_supervisord_recovery' (15) panicked at hepta-supervisor/tests/restart_budget_recovery.rs:251:5:\n2026-11-01T10:00:43.7977752Z assertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|\n2026-11-01T10:00:43.7978746Z         matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued\n2026-11-01T10:00:43.7979384Z             { attempt: 2 }))\n2026-11-01T10:00:43.7979975Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T10:00:43.7980492Z \n2026-11-01T10:00:43.7980498Z "
+      },
+      {
+        "test": "exact_digest_abort_terminalizes_unresolved_intent",
+        "line": 8158,
+        "text": "2026-11-01T10:00:43.8097297Z ---- exact_digest_abort_terminalizes_unresolved_intent stdout ----\n2026-11-01T10:00:43.8098124Z \n2026-11-01T10:00:43.8098825Z thread 'exact_digest_abort_terminalizes_unresolved_intent' (15) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:\n2026-11-01T10:00:43.8100148Z assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))\n2026-11-01T10:00:43.8100951Z     if agent_id == fleet.agent_id)\n2026-11-01T10:00:43.8101590Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T10:00:43.8102107Z \n2026-11-01T10:00:43.8102112Z "
+      },
+      {
+        "test": "unexpected_agent_crashes_back_off_and_stop_after_three_restarts",
+        "line": 8181,
+        "text": "2026-11-01T10:00:43.8135851Z ---- unexpected_agent_crashes_back_off_and_stop_after_three_restarts stdout ----\n2026-11-01T10:00:43.8165624Z \n2026-11-01T10:00:43.8196208Z thread 'unexpected_agent_crashes_back_off_and_stop_after_three_restarts' (15) panicked at hepta-supervisor/tests/restart_budget.rs:238:9:\n2026-11-01T10:00:43.8225923Z assertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|\n2026-11-01T10:00:43.8238396Z         matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued\n2026-11-01T10:00:43.8239101Z             { attempt } if *attempt == expected_attempt))\n2026-11-01T10:00:43.8239638Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T10:00:43.8239944Z \n2026-11-01T10:00:43.8239949Z "
+      },
+      {
+        "test": "two_real_pairs_restart_one_without_peer_pid_churn",
+        "line": 8480,
+        "text": "2026-11-01T10:01:57.2213626Z ---- two_real_pairs_restart_one_without_peer_pid_churn stdout ----\n2026-11-01T10:01:57.2214655Z Error: tick faults: [AgentFault { agent_id: AgentId(\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\"), message: \"process driver failed for agent 018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12: Agentd drain request did not return a drain acknowledgement\" }]\n2026-11-01T10:01:57.2216033Z \n2026-11-01T10:01:57.2216039Z "
+      }
+    ]
+  },
+  "ci_raw_log_sha256": "221e6d67c5b2c267db11303c832065535d92da9ba04be5f53682df0d4fc5b137",
+  "attribution": {
+    "status": "inherited",
+    "source_blobs_equal_at_base_and_head": [
+      "codex-rs/hepta-supervisor/src/tick.rs",
+      "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "codex-rs/hepta-supervisor/src/unix.rs",
+      "codex-rs/hepta-supervisor/tests/restart_budget.rs",
+      "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+      "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs"
+    ]
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "original_git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+      "original_sha256": "41a6deb682fa12fd2c8220dd69df00ae08e3c1cf4823d1bcd673bb0bf4864975",
+      "candidate_sha256": "020c539fad73186cc285d2b222631a25389af30e3f54b02c04af26cded9dfbdf",
+      "bytes": 13863,
+      "original_assertion_count": 0,
+      "candidate_assertion_count": 0
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+      "original_git_blob": "520a02e30b25d5a2b20694e5d2e18039b1efb148",
+      "original_sha256": "2ea6a3d90b18c21094130de7ef31b4ec3e53ac845009210177c2761fc4a04d82",
+      "candidate_sha256": "0b1fe3e8f756d3c36413cabece8c19a79d533c45b111551c6e07abfa970ad096",
+      "bytes": 24901,
+      "original_assertion_count": 8,
+      "candidate_assertion_count": 8
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget.rs",
+      "original_git_blob": "eefe955d392c6a2e0d0ecabfdd4c9a67df0502ab",
+      "original_sha256": "79a1801d82edc8179022347e0c52340dff09912e6fabb22f17e0978b5978a288",
+      "candidate_sha256": "4bda56b4fe8d49d098a52f7d6db9130fd3c3c72527f7daf7953e0deb5d96e029",
+      "bytes": 9226,
+      "original_assertion_count": 17,
+      "candidate_assertion_count": 17
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "original_git_blob": "e9e079316e42b20a09c259217ec9ff68e03d6ae4",
+      "original_sha256": "7f98a1d45e5d0dabf53dd58f65e05f412f7702c42a3348c4134da65d4f41676a",
+      "candidate_sha256": "92dd039fc3c3dec1662c93549e69afc61bb73b8dccd4842b0ccbc7feb42ea744",
+      "bytes": 10904,
+      "original_assertion_count": 26,
+      "candidate_assertion_count": 26
+    }
+  ],
+  "patch_sha256": "d0d6e5c35f7fdc52a5d0d885e1ea1ffa3a4f03ed8fb2071b54e050df7103c026",
+  "semantics": [
+    "Emit already-declared AutomaticRestartQueued only after the existing durable claim succeeds; preserve RestartQueued and exact claimed attempt/backoff.",
+    "Emit already-declared AutomaticRestartBudgetExhausted after storage reports exhaustion; retain production RestartBudgetExhausted error and closed pending state.",
+    "Both existing restart tests now assert the full single-fault TickReport at final exhaustion; all delay, spawn-cap, attempt and terminal inactivity assertions are retained.",
+    "Controlled paired child returns DrainSnapshot for a Drain request only using actual registry lifecycle; admission_closed/drained are true only at Draining, and the fixture admits no assistant turns.",
+    "Production Unix drain envelope, generation, lifecycle, admission, running-turn and fencing checks remain exact original bytes."
+  ],
+  "validation": {
+    "just_fmt": {
+      "command": "env PATH=/tmp/hcsn-r15-runtime-tools/cargo/bin:/tmp/hcsn-r15-yaml-alias-tools:$PATH CARGO_HOME=/tmp/hcsn-r15-runtime-tools/cargo RUSTUP_HOME=/tmp/hcsn-r15-runtime-tools/rustup RUSTUP_TOOLCHAIN=1.95.0 /tmp/hcsn-r15-yaml-alias-tools/just fmt",
+      "cwd": "/tmp/hcsn-r15-supervisor-review/candidate/codex-rs",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "implementation": "unchanged exact repository justfile and scripts/format.py; scoped exact-file Git fixture"
+    },
+    "source_fragment_red_green": {
+      "artifact": "SOURCE_FRAGMENT_RED_GREEN.json",
+      "sha256": "35d84b98cf53d4666a78ef0c218acfb7d2b1ff7d600c6c1e66f4e5aa6496e2ea",
+      "original": "3 passed, 3 failed",
+      "candidate": "6 passed, 0 failed",
+      "compiler": "official Rust 1.95.0",
+      "scope": "Actual extracted queue method, fixture response construction and unchanged production drain guard tail; synthetic claim/registry/type boundaries. This is not a native repository/process/storage or JSON wire test.",
+      "harness_initial_attempt": "An ambiguous extraction marker was rejected before compilation; scoped extraction to the exact functions, then executed both variants."
+    },
+    "patch_checks": [
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "cwd": "/tmp/hcsn-r15-supervisor-review/candidate",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "apply",
+          "--reverse",
+          "--check",
+          "/tmp/hcsn-r15-supervisor-review/supervisor_lifecycle.patch"
+        ],
+        "cwd": "/tmp/hcsn-r15-supervisor-review/candidate",
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "native_suite": {
+      "status": "not_run_locally",
+      "command": "just test -p codex-hepta-supervisor --locked --offline",
+      "reason": "Parent directs full dependency-closure native validation to new-head CI; local checkout is exact-file fixture and full workspace build would exceed authorized local scope. No feature reductions or skipped tests.",
+      "required_remote": "Original GNU/macOS/Windows affected native Bazel suites on the combined new head; paired process test is Unix-only by its existing cfg."
+    }
+  },
+  "independent_review": {
+    "agent": "/root/architecture_comparison",
+    "patch_sha256": "d0d6e5c35f7fdc52a5d0d885e1ea1ffa3a4f03ed8fb2071b54e050df7103c026",
+    "scope": "Read-only four-file diff, exact original model enum/field/Eq/re-export and existing pretty_assertions dev dependency; no immediate type or permission expansion found. No native execution claim."
+  },
+  "unchanged_security_constraints": [
+    "restart budget and durable claim logic",
+    "spawn count/backoff/timeouts",
+    "Unix production drain acknowledgements",
+    "generation fencing",
+    "no additional ignored tests or lint allowances"
+  ],
+  "remaining_separate_issue": {
+    "test": "exact_digest_abort_terminalizes_unresolved_intent",
+    "status": "under separate safety review",
+    "reason": "Abort directive reader is not connected to recovery; existing recovery intentionally returns Ok while quarantining. This patch does not claim to close or weaken that contract."
+  }
+}
