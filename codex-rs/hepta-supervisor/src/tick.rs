@@ -19,6 +19,7 @@ use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
+use crate::signed_intent::SignedIntentStatus;
 
 enum RuntimeTickOutcome {
     Keep,
@@ -54,6 +55,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.runtime.is_none()
             && slot.release_change.is_none()
             && slot.restart_pending
+            // Keep the pending witness intact while the signed operation is
+            // quarantined. Authorized target/rollback startup above follows
+            // the release-change state machine, not this automatic restart.
+            && !slot.signed_intent.as_ref().is_some_and(|intent| {
+                intent.status == SignedIntentStatus::RecoveryRequired
+            })
             && slot
                 .restart_not_before
                 .is_none_or(|eligible| now >= eligible)

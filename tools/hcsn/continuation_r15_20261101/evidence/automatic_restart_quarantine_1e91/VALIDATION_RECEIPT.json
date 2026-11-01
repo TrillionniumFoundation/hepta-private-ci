@@ -1,0 +1,126 @@
+{
+  "schema": "hcsn-automatic-restart-quarantine-v1",
+  "status": "source_fix_ready_native_gate_pending",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "ordered_predecessor_patch_sha256": "d0d6e5c35f7fdc52a5d0d885e1ea1ffa3a4f03ed8fb2071b54e050df7103c026",
+  "patch_sha256": "e1c3c383fe038b488d2e657bfacd018209f54867dd75358ca330119d1ccc18ef",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "base_sha256": "020c539fad73186cc285d2b222631a25389af30e3f54b02c04af26cded9dfbdf",
+      "candidate_sha256": "efe3ba56c541783397c8ec06158fa3624aed059f3a80bb50db1fabaa8a43248a",
+      "bytes": 14292,
+      "derived_base_git_blob": "a97ff7d83dbe60b45e922843a5d02e61e9250bd5"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "base_sha256": "92dd039fc3c3dec1662c93549e69afc61bb73b8dccd4842b0ccbc7feb42ea744",
+      "candidate_sha256": "23c447c6de225320e5452de20393bcea60bf1e0c361b1ae99260cdeb73038c43",
+      "bytes": 15235,
+      "derived_base_git_blob": "cf1995e08107fe1619f5ac23afce08676e458939"
+    }
+  ],
+  "problem": {
+    "discovery": "Source-composed reachable state; no direct new native CI execution is claimed.",
+    "trace": [
+      "A crash persists a pending restart claim and finalizes the old process exit.",
+      "recover_restart_budget restores restart_pending when there is no runtime.",
+      "recover_signed_intent hydrates RecoveryRequired but retains the pending witness.",
+      "The old tick_slot automatic branch sees no runtime/release change, pending=true and an elapsed deadline, then calls start_release_slot without checking the signed recovery status.",
+      "Daemon RPC mutation rejection does not guard its autonomous ticker."
+    ]
+  },
+  "repair": {
+    "scope": "Only pending automatic MAIN restart while slot.signed_intent.status is RecoveryRequired.",
+    "behavior": "Read the borrowed slot status in the autonomous branch predicate and keep the branch closed while recovery is required. Preserve pending flag, deadline, current intent, durable restart witness and every independent fence.",
+    "why_borrow_slot": "Supervisor::with_slot temporarily removes the slot from self.slots, so querying production_recovery_required through self would not be valid here.",
+    "preserved_paths": [
+      "continue_release_change_after_exit remains before the guard",
+      "authorized target/rollback internal startup helper unchanged",
+      "ordinary unsigned and terminal-signed automatic restarts unchanged",
+      "existing backoff and startup-failure cleanup unchanged",
+      "existing process-poll error restores its runtime as before"
+    ],
+    "not_claimed": [
+      "all quarantine paths closed",
+      "owner-lock or multi-file atomicity repaired",
+      "Matrix lifetime/exit evidence repaired",
+      "Abort directive activation or terminalization"
+    ]
+  },
+  "added_native_regression": {
+    "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+    "name": "recovered_pending_restart_waits_for_signed_intent_recovery",
+    "setup": "Use the existing FakeControl with real Supervisor crash/claim/exit and actual restart journal. Persist a valid RecoveryRequired signed intent, drop/recreate Supervisor, then tick after the restored eligibility.",
+    "assertions": [
+      "Only the original one process was spawned",
+      "Agent remains inactive and production_recovery_required remains true",
+      "Whole raw restart journal bytes remain equal",
+      "Whole lifecycle state and signed intent remain equal"
+    ],
+    "simulated_times_seconds": [
+      1,
+      10
+    ],
+    "real_sleeps_added": 0,
+    "prior_26_assertion_test_byte_identical": true,
+    "new_native_assertion_sites": 15,
+    "native_execution": "NOT RUN locally; this is a checked-in regression for original project CI."
+  },
+  "local_validation": {
+    "source_extraction": {
+      "script": "audit_tick_quarantine.py",
+      "result": "SOURCE_FRAGMENT_RED_GREEN.json",
+      "script_sha256": "d6060afc964955e99d5e8d06d878f86ad22d768dcb9f806ecc42d5530d9cfc11",
+      "result_sha256": "27efa487f3c8f5bb4b4aed55a193609edda558fc5adb52d085f03db9cdddf747",
+      "scope": "Entire source-extracted tick_slot method, unchanged text in each variant. Process polling/spawn, storage, registry and release continuation helpers are explicit synthetic boundaries.",
+      "actual_result": {
+        "before": "6 passed, 2 failed",
+        "after": "8 passed, 0 failed",
+        "original_exit_code": 101,
+        "candidate_exit_code": 0
+      },
+      "controls": [
+        "eligible RecoveryRequired retains pending without starting",
+        "RecoveryRequired without prior command never enters startup",
+        "normal pending restart starts exactly once",
+        "Committed/RolledBack keep ordinary restart behavior",
+        "future deadline retains backoff",
+        "Queued admitted upgrade/rollback still reaches the preexisting continuation call",
+        "startup failure retains completion/error cleanup",
+        "poll failure retains runtime handle"
+      ],
+      "release_control_limit": "The release continuation helper is a stub; the test proves that the unchanged outer tick path still invokes it, not the validity of real production authorization or transaction effects."
+    },
+    "formatter": {
+      "command": "env PATH=/tmp/hcsn-r15-runtime-tools/cargo/bin:/tmp/hcsn-r15-yaml-alias-tools:$PATH CARGO_HOME=/tmp/hcsn-r15-runtime-tools/cargo RUSTUP_HOME=/tmp/hcsn-r15-runtime-tools/rustup RUSTUP_TOOLCHAIN=1.95.0 /tmp/hcsn-r15-yaml-alias-tools/just fmt",
+      "cwd": "/tmp/hcsn-r15-restart-quarantine/candidate/codex-rs",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "tested_tick_bytes_unchanged_after_format": true,
+      "implementation": "Unchanged real repository justfile/format.py in exact-file Git fixture."
+    },
+    "git_diff_check": {
+      "exit_code": 0
+    },
+    "git_reverse_apply_check": {
+      "exit_code": 0
+    },
+    "project_native": {
+      "status": "not_run_locally",
+      "required": "New-head original Bazel native suites and project just test -p codex-hepta-supervisor --locked --offline when the complete workspace is available.",
+      "reason": "Parent explicitly limits local dependency-closure builds; exact-file candidate fixture is not a full Cargo workspace. No test feature reduction, skip or timeout increase was introduced."
+    }
+  },
+  "independent_review": {
+    "agent": "/root/architecture_comparison",
+    "status": "passed_read_only_final_patch_hash_bound",
+    "scope": "Two-file diff, exact restart schema2 main.pending, recovery eligibility and public types; no immediate type/semantic blocker found. Guard and native fixture preserve pending/intent/journal and preexisting release continuation. Native execution remains pending.",
+    "patch_sha256": "e1c3c383fe038b488d2e657bfacd018209f54867dd75358ca330119d1ccc18ef",
+    "artifact": "INDEPENDENT_REVIEW.json",
+    "artifact_sha256": "30ba7770a002dc123c949fa061358742ccea0630de37fa3bb6cc930a164585e8"
+  },
+  "related_blocker_receipt_sha256": "0fc033044d70f27023244ca549699d32302c859b850c974b85a9e09208da36c4"
+}

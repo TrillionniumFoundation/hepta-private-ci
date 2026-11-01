@@ -10,6 +10,7 @@ use std::time::Duration;
 use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ReleaseId;
@@ -20,6 +21,7 @@ use codex_hepta_supervisor::AdoptSpec;
 use codex_hepta_supervisor::Adoption;
 use codex_hepta_supervisor::AgentFault;
 use codex_hepta_supervisor::AgentRelease;
+use codex_hepta_supervisor::H7H89ProductionTransition;
 use codex_hepta_supervisor::ManagedProcess;
 use codex_hepta_supervisor::ProcessDriver;
 use codex_hepta_supervisor::ProcessDriverError;
@@ -27,6 +29,9 @@ use codex_hepta_supervisor::ProcessExit;
 use codex_hepta_supervisor::ProcessIdentity;
 use codex_hepta_supervisor::ProcessObservation;
 use codex_hepta_supervisor::ProcessState;
+use codex_hepta_supervisor::SIGNED_INTENT_FILE;
+use codex_hepta_supervisor::SignedIntentStatus;
+use codex_hepta_supervisor::SignedSupervisorIntent;
 use codex_hepta_supervisor::SpawnSpec;
 use codex_hepta_supervisor::SpawnedProcess;
 use codex_hepta_supervisor::Supervisor;
@@ -34,6 +39,7 @@ use codex_hepta_supervisor::SupervisorConfig;
 use codex_hepta_supervisor::SupervisorError;
 use codex_hepta_supervisor::SupervisorEventKind;
 use codex_hepta_supervisor::TickReport;
+use codex_hepta_supervisor::read_signed_intent;
 use pretty_assertions::assert_eq;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
@@ -321,5 +327,88 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
     )));
     assert_eq!(control.spawn_count(&agent_id), 4);
+    Ok(())
+}
+
+#[test]
+fn recovered_pending_restart_waits_for_signed_intent_recovery() -> Result<(), SupervisorError> {
+    let temp = tempfile::tempdir()?;
+    let root = HeptaFleetRoot::parse(temp.path().join("fleet"))
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let registry = FleetRegistry::initialize(root.clone())?;
+    let workspace = temp.path().join("workspace");
+    std::fs::create_dir(&workspace)?;
+    let agent_id =
+        AgentId::parse(AGENT_ID).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    registry.register(AgentManifest::new(
+        agent_id.clone(),
+        WorkspaceBinding::new(workspace.canonicalize()?, &root)?,
+        ResourceBudget::local_default(),
+    )?)?;
+    let release_id = ReleaseId::parse("quarantined-restart-source")?;
+    let release_source = temp.path().join("quarantined-restart-source");
+    std::fs::write(&release_source, b"#!/bin/sh\nexit 0\n")?;
+    registry.install_release(release_id.clone(), &release_source, Vec::new())?;
+    registry.allow_release(&agent_id, &release_id)?;
+    let release = AgentRelease::try_from(registry.resolve_release(&agent_id, &release_id)?)?;
+    let control = FakeControl::default();
+    let mut now = Instant::now();
+    let (mut supervisor, report) =
+        Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    supervisor.start_release(&agent_id, release, now)?;
+    control.healthy(&agent_id);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    now += Duration::from_millis(1);
+    control.crash(&agent_id);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(control.spawn_count(&agent_id), 1);
+    assert!(!supervisor.snapshot(&agent_id).expect("snapshot").active);
+    let record = registry.load_agent(&agent_id)?;
+    let budget_path = record
+        .layout
+        .run_root()
+        .join("supervisor-restart-budget.json");
+    let pending_budget = std::fs::read(&budget_path)?;
+    let pending_record: serde_json::Value = serde_json::from_slice(&pending_budget)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    assert_eq!(pending_record["main"]["pending"], serde_json::json!(true));
+    drop(supervisor);
+
+    // Model the crash cut with both a durable pending restart and an unresolved
+    // signed operation. Recovery must retain both witnesses without restarting.
+    let intent = SignedSupervisorIntent::new(
+        Sha256Digest::for_bytes(b"quarantined-restart-grant"),
+        agent_id.to_string(),
+        H7H89ProductionTransition::Upgrade,
+        release_id.as_str(),
+        "quarantined-restart-target",
+        /*expected_control_revision*/ 1,
+        record.lifecycle.generation,
+        /*authority_epoch*/ 1,
+        SignedIntentStatus::RecoveryRequired,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    std::fs::write(
+        record.layout.run_root().join(SIGNED_INTENT_FILE),
+        serde_json::to_vec(&intent).map_err(|error| SupervisorError::Invalid(error.to_string()))?,
+    )?;
+    let (mut recovered, report) =
+        Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    assert!(recovered.production_recovery_required(&agent_id)?);
+    for advance in [Duration::from_secs(1), Duration::from_secs(10)] {
+        assert_eq!(recovered.tick(now + advance), TickReport::default());
+        assert_eq!(control.spawn_count(&agent_id), 1);
+        assert!(!recovered.snapshot(&agent_id).expect("snapshot").active);
+        assert!(recovered.production_recovery_required(&agent_id)?);
+        assert_eq!(std::fs::read(&budget_path)?, pending_budget);
+        assert_eq!(registry.load_agent(&agent_id)?.lifecycle, record.lifecycle);
+        assert_eq!(
+            read_signed_intent(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?,
+            Some(intent.clone())
+        );
+    }
     Ok(())
 }
