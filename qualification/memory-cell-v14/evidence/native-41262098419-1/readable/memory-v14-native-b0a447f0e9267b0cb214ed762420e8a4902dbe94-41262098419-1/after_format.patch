@@ -1,0 +1,3830 @@
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index ab577049c2cb393c13b7c2820366133f6bbb9b56..6c3d49334d81de5f0c12feb430f2ba3c95420180 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -62,7 +62,6 @@ mod memory_cell_training_tests;
+ #[cfg(test)]
+ mod memory_cell_v9_continual_tests;
+ mod memory_independent_cell_v11;
+-mod memory_isolated_service_v14;
+ mod memory_independent_model_v12;
+ #[cfg(all(test, unix))]
+ mod memory_inventory_actual_tests;
+@@ -77,6 +76,7 @@ mod memory_inventory_runtime;
+ mod memory_inventory_test_support;
+ #[cfg(test)]
+ mod memory_inventory_withdrawal_test_support;
++mod memory_isolated_service_v14;
+ mod memory_mlp_v12;
+ mod memory_serving_plan_v11;
+ mod neuron_runtime;
+@@ -286,13 +286,13 @@ pub use memory_independent_cell_v11::MemoryCellCandidateV11;
+ pub use memory_independent_cell_v11::MemoryCellCandidateV12;
+ pub use memory_independent_cell_v11::MemoryCellReleaseV11;
+ pub use memory_independent_cell_v11::SelectedMemoryCellV11;
+-pub use memory_isolated_service_v14::MemoryIsolatedServiceV14;
+ pub use memory_inventory_bundle::LoadedMemoryInventoryBundleV1;
+ pub use memory_inventory_bundle::MemoryInventoryBundleCandidateV1;
+ pub use memory_inventory_release::MemoryInventoryReleaseHostV1;
+ pub use memory_inventory_runtime::AgentdMemoryInventoryRuntimeV1;
+ pub use memory_inventory_runtime::MemoryInventoryAddressResolverV1;
+ pub use memory_inventory_runtime::MemoryInventoryResolvedAddressV1;
++pub use memory_isolated_service_v14::MemoryIsolatedServiceV14;
+ pub use memory_serving_plan_v11::MemoryCellVersionV11;
+ pub use memory_serving_plan_v11::MemoryPlanReadoutV11;
+ pub use memory_serving_plan_v11::MemoryServingPlanV11;
+diff --git a/codex-rs/hepta-agentd/src/memory_inventory_actual_tests.rs b/codex-rs/hepta-agentd/src/memory_inventory_actual_tests.rs
+index 3175c9120b746732ca9db63d821f0bf04fb008c6..e39123e632c2e713ff11c488d0c6704be09464a6 100644
+--- a/codex-rs/hepta-agentd/src/memory_inventory_actual_tests.rs
++++ b/codex-rs/hepta-agentd/src/memory_inventory_actual_tests.rs
+@@ -4,10 +4,12 @@
+ 
+ use std::path::PathBuf;
+ 
+-use codex_hepta_cognitive_types::{MemoryInventoryKindV1, MemoryReadStatusV1};
++use codex_hepta_cognitive_types::MemoryInventoryKindV1;
++use codex_hepta_cognitive_types::MemoryReadStatusV1;
+ use codex_hepta_fleet::AgentLifecycle;
+ use pretty_assertions::assert_eq;
+-use serde_json::{Value, json};
++use serde_json::Value;
++use serde_json::json;
+ 
+ use crate::AgentdClient;
+ use crate::memory_inventory_release_test_support::InventoryReleaseCheckpoint;
+@@ -15,20 +17,32 @@ use crate::memory_inventory_withdrawal_test_support::InventoryWithdrawalCheckpoi
+ 
+ #[path = "memory_inventory_actual_cases.rs"]
+ mod cases;
+-#[path = "memory_inventory_process_test_support.rs"]
+-mod process;
++#[path = "memory_isolated_process_v14_tests.rs"]
++mod isolated_v14;
+ #[path = "memory_inventory_migration_actual.rs"]
+ mod migration;
+ #[path = "memory_inventory_numeric_actual.rs"]
+ mod numeric;
+-#[path = "memory_isolated_process_v14_tests.rs"]
+-mod isolated_v14;
+-use cases::{Inputs, check_composition, check_written_values, empty_failure, export, initial_records, install, query, record, save};
+-use process::{NativeOwner, WorkerSpec};
++#[path = "memory_inventory_process_test_support.rs"]
++mod process;
++use cases::Inputs;
++use cases::check_composition;
++use cases::check_written_values;
++use cases::empty_failure;
++use cases::export;
++use cases::initial_records;
++use cases::install;
++use cases::query;
++use cases::record;
++use cases::save;
++use process::NativeOwner;
++use process::WorkerSpec;
+ 
+ #[tokio::test]
+ #[ignore = "only the native actual parent launches this separate owner process"]
+-async fn memory_inventory_owner_child() { process::child_main().await; }
++async fn memory_inventory_owner_child() {
++    process::child_main().await;
++}
+ 
+ #[tokio::test]
+ #[ignore = "requires explicit V10 Python, encoder, legacy checkpoint and fresh evidence paths"]
+@@ -40,17 +54,38 @@ async fn memory_inventory_actual_trained_owner_lifecycle() {
+     let records = initial_records(&inputs.legacy);
+     let records_path = root.join("authored-records.json");
+     save(&records_path, &json!(records));
+-    let mut process = NativeOwner::spawn(&root, &registry, owner.clone(), Some(records_path), None, None, None).await;
++    let mut process = NativeOwner::spawn(
++        &root,
++        &registry,
++        owner.clone(),
++        Some(records_path),
++        None,
++        None,
++        None,
++    )
++    .await;
+     let mut processes = Vec::new();
+     let mut observations = Vec::<Value>::new();
+     let snapshot_path = inputs.output.join("owner-before.json");
+     let pages = export(&process.client, &snapshot_path).await;
+-    assert_eq!(pages.iter().map(|page| page.records.len()).sum::<usize>(), 32);
++    assert_eq!(
++        pages.iter().map(|page| page.records.len()).sum::<usize>(),
++        32
++    );
+     let scope = pages[0].scope.clone();
+-    let models = inputs.fit_or_export("original-checkpoint", &snapshot_path, true).await;
++    let models = inputs
++        .fit_or_export("original-checkpoint", &snapshot_path, true)
++        .await;
+     observations.push(json!({"stage":"original_checkpoint_native_numeric_parity","receipt":numeric::verify(&models, &pages)}));
+-    let installed = install(&mut process, &models, &inputs.research.join("legacy_worker.py")).await;
+-    let checkpoint: InventoryReleaseCheckpoint = serde_json::from_value(installed["checkpoint"].clone()).expect("durable release checkpoint");
++    let installed = install(
++        &mut process,
++        &models,
++        &inputs.research.join("legacy_worker.py"),
++    )
++    .await;
++    let checkpoint: InventoryReleaseCheckpoint =
++        serde_json::from_value(installed["checkpoint"].clone())
++            .expect("durable release checkpoint");
+     let initial = check_written_values(&process.client, &pages).await;
+     observations.push(json!({"stage":"original_parameters_on_actual_owner","reads":initial,"selection":installed}));
+     for (entity, workflow) in [(0, 0), (0, 1), (1, 0), (1, 1)] {
+@@ -59,10 +94,17 @@ async fn memory_inventory_actual_trained_owner_lifecycle() {
+     }
+     let mut bounded = query(&scope, "apply", 0, 0);
+     bounded.max_steps = 2;
+-    let stopped = process.client.memory_inventory_read(bounded).await.expect("step-bound read");
++    let stopped = process
++        .client
++        .memory_inventory_read(bounded)
++        .await
++        .expect("step-bound read");
+     empty_failure(&stopped, MemoryReadStatusV1::BudgetExceeded);
+     observations.push(json!({"stage":"step_budget","read":stopped}));
+-    assert_eq!(process.command(json!({"op":"sleep"})).await, json!({"slept":true}));
++    assert_eq!(
++        process.command(json!({"op":"sleep"})).await,
++        json!({"slept":true})
++    );
+     let woke = check_composition(&process.client, &pages, 0, 0).await;
+     observations.push(json!({"stage":"decoded_cache_reloaded","read":woke,"rss_claim":false}));
+     let malformed_path = inputs.output.join("malformed-semantic.json");
+@@ -76,104 +118,283 @@ async fn memory_inventory_actual_trained_owner_lifecycle() {
+     // Suspend a real socket request inside addressing, then close the real
+     // lifecycle before releasing it. A successful model result cannot escape.
+     let registration = registry.load_agent(&owner).expect("owner registration");
+-    let client = AgentdClient::new(registration.layout.agentd_control_socket().to_path_buf(), owner.clone(), process.ready["spawn_generation"].as_u64().expect("spawn generation")).expect("inflight client");
++    let client = AgentdClient::new(
++        registration.layout.agentd_control_socket().to_path_buf(),
++        owner.clone(),
++        process.ready["spawn_generation"]
++            .as_u64()
++            .expect("spawn generation"),
++    )
++    .expect("inflight client");
+     let gated = query(&scope, "gate:apply", 0, 0);
+     let inflight = tokio::spawn(async move { client.memory_inventory_read(gated).await });
+-    assert_eq!(process.command(json!({"op":"wait_gate"})).await, json!({"entered":true}));
+-    registry.compare_and_transition(&owner, registration.lifecycle.generation, AgentLifecycle::Draining).expect("real owner draining");
++    assert_eq!(
++        process.command(json!({"op":"wait_gate"})).await,
++        json!({"entered":true})
++    );
++    registry
++        .compare_and_transition(
++            &owner,
++            registration.lifecycle.generation,
++            AgentLifecycle::Draining,
++        )
++        .expect("real owner draining");
+     process.command(json!({"op":"release_gate"})).await;
+     assert!(inflight.await.expect("join inflight read").is_err());
+-    assert!(process.client.memory_inventory_snapshot(None, None, 16).await.is_err());
+-    assert!(process.client.memory_inventory_read(query(&scope, "apply", 0, 0)).await.is_err());
++    assert!(
++        process
++            .client
++            .memory_inventory_snapshot(None, None, 16)
++            .await
++            .is_err()
++    );
++    assert!(
++        process
++            .client
++            .memory_inventory_read(query(&scope, "apply", 0, 0))
++            .await
++            .is_err()
++    );
+     processes.push(process.stop(&registry, &owner).await);
+-    assert!(process.client.memory_inventory_read(query(&scope, "apply", 0, 0)).await.is_err());
+-    save(&inputs.output.join("native-progress.json"), &json!({"observations":observations,"processes":processes}));
++    assert!(
++        process
++            .client
++            .memory_inventory_read(query(&scope, "apply", 0, 0))
++            .await
++            .is_err()
++    );
++    save(
++        &inputs.output.join("native-progress.json"),
++        &json!({"observations":observations,"processes":processes}),
++    );
+ 
+     // Reopen the exact persisted owner and selected residual bytes in a fresh
+     // OS process after the original Torch and original owner have both exited.
+-    let mut process = NativeOwner::spawn(&root, &registry, owner.clone(), None, Some(checkpoint), None, None).await;
++    let mut process = NativeOwner::spawn(
++        &root,
++        &registry,
++        owner.clone(),
++        None,
++        Some(checkpoint),
++        None,
++        None,
++    )
++    .await;
+     let resumed = check_written_values(&process.client, &pages).await;
+     observations.push(json!({"stage":"fresh_process_original_parameters","reads":resumed,"process":process.ready}));
+-    let corrected = record(MemoryInventoryKindV1::Semantic, 1, json!({"reserve":5,"pack":4,"limit":11}));
+-    process.command(json!({"op":"correct","record":corrected,"revision":1})).await;
+-    let unrelated = process.client.memory_inventory_read(query(&scope, "semantic", 0, 0)).await.expect("stale full cut read");
++    let corrected = record(
++        MemoryInventoryKindV1::Semantic,
++        1,
++        json!({"reserve":5,"pack":4,"limit":11}),
++    );
++    process
++        .command(json!({"op":"correct","record":corrected,"revision":1}))
++        .await;
++    let unrelated = process
++        .client
++        .memory_inventory_read(query(&scope, "semantic", 0, 0))
++        .await
++        .expect("stale full cut read");
+     empty_failure(&unrelated, MemoryReadStatusV1::Stale);
+     let hold = record(MemoryInventoryKindV1::Hold, 2, json!(true));
+-    process.command(json!({"op":"correct","record":hold,"revision":1})).await;
+-    observations.push(json!({"stage":"unqueried_correction_invalidates_complete_cut","read":unrelated}));
++    process
++        .command(json!({"op":"correct","record":hold,"revision":1}))
++        .await;
++    observations
++        .push(json!({"stage":"unqueried_correction_invalidates_complete_cut","read":unrelated}));
+     let corrected_snapshot = inputs.output.join("owner-corrected.json");
+     let corrected_pages = export(&process.client, &corrected_snapshot).await;
+-    assert_ne!(corrected_pages[0].owner_cut_digest, pages[0].owner_cut_digest);
+-    let updated = inputs.fit_or_export("corrected-training", &corrected_snapshot, false).await;
++    assert_ne!(
++        corrected_pages[0].owner_cut_digest,
++        pages[0].owner_cut_digest
++    );
++    let updated = inputs
++        .fit_or_export("corrected-training", &corrected_snapshot, false)
++        .await;
+     observations.push(json!({"stage":"corrected_training_native_numeric_parity","receipt":numeric::verify(&updated, &corrected_pages)}));
+-    let installed = install(&mut process, &updated, &inputs.research.join("native_train_worker.py")).await;
+-    let checkpoint: InventoryReleaseCheckpoint = serde_json::from_value(installed["checkpoint"].clone()).expect("trained release checkpoint");
++    let installed = install(
++        &mut process,
++        &updated,
++        &inputs.research.join("native_train_worker.py"),
++    )
++    .await;
++    let checkpoint: InventoryReleaseCheckpoint =
++        serde_json::from_value(installed["checkpoint"].clone())
++            .expect("trained release checkpoint");
+     let retained = check_written_values(&process.client, &corrected_pages).await;
+-    observations.push(json!({"stage":"actual_new_training_and_retention","selection":installed,"reads":retained}));
+-    let held = process.client.memory_inventory_read(query(&scope, "apply", 2, 0)).await.expect("explicit hold read");
++    observations.push(
++        json!({"stage":"actual_new_training_and_retention","selection":installed,"reads":retained}),
++    );
++    let held = process
++        .client
++        .memory_inventory_read(query(&scope, "apply", 2, 0))
++        .await
++        .expect("explicit hold read");
+     empty_failure(&held, MemoryReadStatusV1::Abstain);
+     assert_eq!(held.reason.as_deref(), Some("inventory entity is on hold"));
+     observations.push(json!({"stage":"owner_exception","read":held}));
+     processes.push(process.stop(&registry, &owner).await);
+ 
+-    let mut process = NativeOwner::spawn(&root, &registry, owner.clone(), None, Some(checkpoint), None, None).await;
++    let mut process = NativeOwner::spawn(
++        &root,
++        &registry,
++        owner.clone(),
++        None,
++        Some(checkpoint),
++        None,
++        None,
++    )
++    .await;
+     let cold = check_written_values(&process.client, &corrected_pages).await;
+-    observations.push(json!({"stage":"fresh_process_new_training","reads":cold,"process":process.ready}));
++    observations
++        .push(json!({"stage":"fresh_process_new_training","reads":cold,"process":process.ready}));
+     check_composition(&process.client, &corrected_pages, 1, 0).await;
+-    let removed = records.iter().find(|row| row.kind == MemoryInventoryKindV1::Semantic && row.key.as_str() == "inventory:semantic:0").expect("source being deleted");
+-    process.command(json!({"op":"forget","record":removed,"revision":1})).await;
+-    let stale = process.client.memory_inventory_read(query(&scope, "semantic", 1, 0)).await.expect("post-delete stale read");
++    let removed = records
++        .iter()
++        .find(|row| {
++            row.kind == MemoryInventoryKindV1::Semantic
++                && row.key.as_str() == "inventory:semantic:0"
++        })
++        .expect("source being deleted");
++    process
++        .command(json!({"op":"forget","record":removed,"revision":1}))
++        .await;
++    let stale = process
++        .client
++        .memory_inventory_read(query(&scope, "semantic", 1, 0))
++        .await
++        .expect("post-delete stale read");
+     empty_failure(&stale, MemoryReadStatusV1::Stale);
+     let deleted_snapshot = inputs.output.join("owner-deleted.json");
+     let deleted_pages = export(&process.client, &deleted_snapshot).await;
+-    assert_eq!(deleted_pages.iter().map(|page| page.records.len()).sum::<usize>(), 31);
+-    let rebuilt = inputs.fit_or_export("deleted-rebuild", &deleted_snapshot, false).await;
++    assert_eq!(
++        deleted_pages
++            .iter()
++            .map(|page| page.records.len())
++            .sum::<usize>(),
++        31
++    );
++    let rebuilt = inputs
++        .fit_or_export("deleted-rebuild", &deleted_snapshot, false)
++        .await;
+     observations.push(json!({"stage":"deleted_rebuild_native_numeric_parity","receipt":numeric::verify(&rebuilt, &deleted_pages)}));
+-    let installed = install(&mut process, &rebuilt, &inputs.research.join("native_train_worker.py")).await;
+-    let checkpoint: InventoryReleaseCheckpoint = serde_json::from_value(installed["checkpoint"].clone()).expect("rebuilt checkpoint");
++    let installed = install(
++        &mut process,
++        &rebuilt,
++        &inputs.research.join("native_train_worker.py"),
++    )
++    .await;
++    let checkpoint: InventoryReleaseCheckpoint =
++        serde_json::from_value(installed["checkpoint"].clone()).expect("rebuilt checkpoint");
+     let survivors = check_written_values(&process.client, &deleted_pages).await;
+-    let forgotten = process.client.memory_inventory_read(query(&scope, "semantic", 0, 0)).await.expect("removed key read");
++    let forgotten = process
++        .client
++        .memory_inventory_read(query(&scope, "semantic", 0, 0))
++        .await
++        .expect("removed key read");
+     empty_failure(&forgotten, MemoryReadStatusV1::Abstain);
+     observations.push(json!({"stage":"delete_and_rebuild_from_remaining_sources","selection":installed,"reads":survivors,"removed_key":forgotten}));
+     processes.push(process.stop(&registry, &owner).await);
+-    save(&inputs.output.join("native-progress.json"), &json!({"observations":observations,"processes":processes}));
++    save(
++        &inputs.output.join("native-progress.json"),
++        &json!({"observations":observations,"processes":processes}),
++    );
+ 
+-    let router = std::env::var_os("HEPTA_MEMORY_V10_ROUTER").map(PathBuf::from).unwrap_or_else(|| rebuilt.join("inventory-router"));
+-    assert!(router.join("manifest.json").is_file(), "explicit trained inventory router is required for actual worker qualification");
+-    let (destination, destination_registry, mut recovery, migration_evidence) = migration::transfer(&inputs.output, &root, &registry, &owner, &checkpoint).await;
+-    let worker = WorkerSpec { python:inputs.python.clone(), research:inputs.research.clone(), model:router, encoder:inputs.encoder.clone() };
+-    let mut process = NativeOwner::spawn(&destination, &destination_registry, owner.clone(), None, Some(checkpoint.clone()), Some(worker), Some(recovery.clone())).await;
++    let router = std::env::var_os("HEPTA_MEMORY_V10_ROUTER")
++        .map(PathBuf::from)
++        .unwrap_or_else(|| rebuilt.join("inventory-router"));
++    assert!(
++        router.join("manifest.json").is_file(),
++        "explicit trained inventory router is required for actual worker qualification"
++    );
++    let (destination, destination_registry, mut recovery, migration_evidence) =
++        migration::transfer(&inputs.output, &root, &registry, &owner, &checkpoint).await;
++    let worker = WorkerSpec {
++        python: inputs.python.clone(),
++        research: inputs.research.clone(),
++        model: router,
++        encoder: inputs.encoder.clone(),
++    };
++    let mut process = NativeOwner::spawn(
++        &destination,
++        &destination_registry,
++        owner.clone(),
++        None,
++        Some(checkpoint.clone()),
++        Some(worker),
++        Some(recovery.clone()),
++    )
++    .await;
+     let mut routed_query = query(&scope, "apply", 1, 0);
+-    routed_query.text = "Use workflow inventory:procedure:0 with the current stock for inventory:semantic:1.".into();
+-    let routed = process.client.memory_inventory_read(routed_query.clone()).await.expect("actual worker exchange and model execution");
++    routed_query.text =
++        "Use workflow inventory:procedure:0 with the current stock for inventory:semantic:1."
++            .into();
++    let routed = process
++        .client
++        .memory_inventory_read(routed_query.clone())
++        .await
++        .expect("actual worker exchange and model execution");
+     assert_eq!(routed.status, MemoryReadStatusV1::Ok);
+     assert_eq!(routed.cell_digests.len(), 2);
+     let worker_receipt = process.command(json!({"op":"worker_receipt"})).await;
+     observations.push(json!({"stage":"fresh_process_trained_hybrid_worker","read":routed,"process":process.ready,
+         "operation_learned":true,"key_binding":"deterministic_unique_registry_match","worker_receipt":worker_receipt}));
+     let mut unsupported = routed_query.clone();
+-    unsupported.text = "Use workflow inventory:procedure:0 for inventory:semantic:1 and inventory:semantic:3.".into();
+-    let declined = process.client.memory_inventory_read(unsupported).await.expect("ambiguous worker request");
++    unsupported.text =
++        "Use workflow inventory:procedure:0 for inventory:semantic:1 and inventory:semantic:3."
++            .into();
++    let declined = process
++        .client
++        .memory_inventory_read(unsupported)
++        .await
++        .expect("ambiguous worker request");
+     empty_failure(&declined, MemoryReadStatusV1::Abstain);
+     let revoked = process.command(json!({"op":"revoke"})).await;
+-    let withdrawal: InventoryWithdrawalCheckpoint = serde_json::from_value(revoked["withdrawal_checkpoint"].clone()).expect("independently retained frontier receipt");
+-    assert!(process.client.memory_inventory_read(routed_query).await.is_err());
++    let withdrawal: InventoryWithdrawalCheckpoint =
++        serde_json::from_value(revoked["withdrawal_checkpoint"].clone())
++            .expect("independently retained frontier receipt");
++    assert!(
++        process
++            .client
++            .memory_inventory_read(routed_query)
++            .await
++            .is_err()
++    );
+     observations.push(json!({"stage":"ambiguous_address_and_real_artifact_revocation","ambiguous":declined,"revoked_read_rejected":true,
+         "withdrawal":revoked,"revocation_scope":"live frontier followed by parent-pinned cold frontier restoration"}));
+     processes.push(process.stop(&destination_registry, &owner).await);
+     recovery.withdrawal = Some(withdrawal);
+-    let refused = NativeOwner::spawn(&destination, &destination_registry, owner.clone(), None, Some(checkpoint), None, Some(recovery)).await;
++    let refused = NativeOwner::spawn(
++        &destination,
++        &destination_registry,
++        owner.clone(),
++        None,
++        Some(checkpoint),
++        None,
++        Some(recovery),
++    )
++    .await;
+     assert_eq!(refused.ready["refused"], json!(true));
+-    assert!(refused.client.memory_inventory_read(query(&scope, "apply", 1, 0)).await.is_err());
++    assert!(
++        refused
++            .client
++            .memory_inventory_read(query(&scope, "apply", 1, 0))
++            .await
++            .is_err()
++    );
+     observations.push(json!({"stage":"cold_reopen_with_retained_withdrawal_frontier","refusal":refused.ready,
+         "control_read_rejected":true,"frontier_floor":"independent parent-held receipt; production authentication remains a control-plane responsibility"}));
+-    processes.push(json!({"process":refused.ready,"reaped":true,"control":refused.client.traffic_snapshot(),
+-        "frames_tx_bytes":refused.frames_tx_bytes,"frames_rx_bytes":refused.frames_rx_bytes}));
+-    save(&inputs.output.join("NATIVE_ACTUAL.json"), &json!({
+-        "schema":"hepta.memory.inventory-native-actual.v1","status":"passed","parent_pid":std::process::id(),
+-        "separate_owner_processes":processes.len(),"readiness":"explicit_control_only_test_seam","old_holdout_run":false,
+-        "authority":"real_SQLite_owner_and_signed_artifact_owner_with_explicit_test_keys", "observations":observations,"processes":processes,
+-        "migration":migration_evidence,"migration_claim":"actual_same_host_TCP_to_independent_root; no cross_physical_host_claim", "rss_claim":false,
+-    }));
++    processes.push(
++        json!({"process":refused.ready,"reaped":true,"control":refused.client.traffic_snapshot(),
++        "frames_tx_bytes":refused.frames_tx_bytes,"frames_rx_bytes":refused.frames_rx_bytes}),
++    );
++    save(
++        &inputs.output.join("NATIVE_ACTUAL.json"),
++        &json!({
++            "schema":"hepta.memory.inventory-native-actual.v1","status":"passed","parent_pid":std::process::id(),
++            "separate_owner_processes":processes.len(),"readiness":"explicit_control_only_test_seam","old_holdout_run":false,
++            "authority":"real_SQLite_owner_and_signed_artifact_owner_with_explicit_test_keys", "observations":observations,"processes":processes,
++            "migration":migration_evidence,"migration_claim":"actual_same_host_TCP_to_independent_root; no cross_physical_host_claim", "rss_claim":false,
++        }),
++    );
+ }
+-
+diff --git a/codex-rs/hepta-agentd/src/memory_inventory_execution.rs b/codex-rs/hepta-agentd/src/memory_inventory_execution.rs
+index 12d3d89a3f419e1c45d32b6f325749ca18bc652d..81da147855ce7921e5cce8dbcb8faeb54fcb0b77 100644
+--- a/codex-rs/hepta-agentd/src/memory_inventory_execution.rs
++++ b/codex-rs/hepta-agentd/src/memory_inventory_execution.rs
+@@ -201,7 +201,10 @@ pub(crate) fn execute(
+     }
+     let prediction_kind = if models.is_empty() {
+         MemoryPredictionKindV1::SourceEvidence
+-    } else if matches!(operation, MemoryOperationV1::Semantic | MemoryOperationV1::Procedure) {
++    } else if matches!(
++        operation,
++        MemoryOperationV1::Semantic | MemoryOperationV1::Procedure
++    ) {
+         MemoryPredictionKindV1::ModelPrediction
+     } else {
+         MemoryPredictionKindV1::Mixed
+@@ -295,4 +298,3 @@ fn inner_value(value: MemoryInventoryValueV1) -> Result<Value, ReadFailure> {
+     }
+     .map_err(|_| unavailable("native inventory value could not be encoded"))
+ }
+-
+diff --git a/codex-rs/hepta-agentd/src/memory_inventory_owner_test_child.rs b/codex-rs/hepta-agentd/src/memory_inventory_owner_test_child.rs
+index d0fd7952ed112255b64b286c4e3d6ab3a9bfa25b..c9f65f02f3c9cea4da8f099c86c814651736616e 100644
+--- a/codex-rs/hepta-agentd/src/memory_inventory_owner_test_child.rs
++++ b/codex-rs/hepta-agentd/src/memory_inventory_owner_test_child.rs
+@@ -8,24 +8,44 @@ use std::sync::Arc;
+ use std::time::Duration;
+ 
+ use codex_hepta_cognitive_store::DurableCognitiveStore;
+-use codex_hepta_cognitive_types::{MemoryInventoryRequestV1, MemoryOperationV1};
+-use codex_hepta_cognitive_types::hnmf::{ContractDigestV1, ContractGenerationV1};
++use codex_hepta_cognitive_types::MemoryInventoryRequestV1;
++use codex_hepta_cognitive_types::MemoryOperationV1;
++use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
++use codex_hepta_cognitive_types::hnmf::ContractGenerationV1;
+ use codex_hepta_fleet::FleetRegistry;
+ use codex_hepta_learning_artifacts::DatasetWithdrawalNoticeV1;
+-use codex_hepta_memory::{CognitiveAccess, CognitiveRecoveryRequirement, CognitiveScope, MemoryCellWriteModeV1, MemoryInventoryOwnerSnapshotV1, MemoryInventoryRecordV1};
++use codex_hepta_memory::CognitiveAccess;
++use codex_hepta_memory::CognitiveRecoveryRequirement;
++use codex_hepta_memory::CognitiveScope;
++use codex_hepta_memory::MemoryCellWriteModeV1;
++use codex_hepta_memory::MemoryInventoryOwnerSnapshotV1;
++use codex_hepta_memory::MemoryInventoryRecordV1;
+ use codex_hepta_paths::HeptaFleetRoot;
+ use codex_hepta_types::Digest32;
+-use serde_json::{Value, json};
+-use tokio::io::{AsyncBufReadExt, BufReader};
++use serde_json::Value;
++use serde_json::json;
++use tokio::io::AsyncBufReadExt;
++use tokio::io::BufReader;
+ use tokio::sync::Notify;
+ use tokio_util::sync::CancellationToken;
+ 
+-use crate::{AgentdConfig, AgentdControlServer, AgentdMemoryInventoryRuntimeV1, AgentdState, MemoryCellAddressWorkerConfigV1,
+-    MemoryInventoryAddressResolverV1, MemoryInventoryAddressWorkerV1, MemoryInventoryBundleCandidateV1, MemoryInventoryResolvedAddressV1};
+-use crate::memory_cell_release::test_support::{digest, id};
++use super::SPEC_ENV;
++use super::Spec;
++use super::WorkerSpec;
++use super::emit;
++use crate::AgentdConfig;
++use crate::AgentdControlServer;
++use crate::AgentdMemoryInventoryRuntimeV1;
++use crate::AgentdState;
++use crate::MemoryCellAddressWorkerConfigV1;
++use crate::MemoryInventoryAddressResolverV1;
++use crate::MemoryInventoryAddressWorkerV1;
++use crate::MemoryInventoryBundleCandidateV1;
++use crate::MemoryInventoryResolvedAddressV1;
++use crate::memory_cell_release::test_support::digest;
++use crate::memory_cell_release::test_support::id;
+ use crate::memory_inventory_release_test_support::InventoryReleaseFixture;
+ use crate::memory_inventory_withdrawal_test_support::InventoryWithdrawalCheckpoint;
+-use super::{SPEC_ENV, Spec, WorkerSpec, emit};
+ 
+ #[derive(Default)]
+ pub(super) struct OracleGate {
+@@ -35,119 +55,251 @@ pub(super) struct OracleGate {
+ 
+ impl MemoryInventoryAddressResolverV1 for OracleGate {
+     fn model_digest(&self) -> ContractDigestV1 {
+-        ContractDigestV1::from_digest(digest("inventory-native-actual-explicit-oracle-v1")).expect("oracle label")
++        ContractDigestV1::from_digest(digest("inventory-native-actual-explicit-oracle-v1"))
++            .expect("oracle label")
+     }
+ 
+-    fn resolve<'a>(&'a self, request: &'a MemoryInventoryRequestV1, owner: &'a MemoryInventoryOwnerSnapshotV1)
+-        -> Pin<Box<dyn Future<Output = Result<Option<MemoryInventoryResolvedAddressV1>, String>> + Send + 'a>> {
++    fn resolve<'a>(
++        &'a self,
++        request: &'a MemoryInventoryRequestV1,
++        owner: &'a MemoryInventoryOwnerSnapshotV1,
++    ) -> Pin<
++        Box<
++            dyn Future<Output = Result<Option<MemoryInventoryResolvedAddressV1>, String>>
++                + Send
++                + 'a,
++        >,
++    > {
+         Box::pin(async move {
+             let text = if let Some(text) = request.text.strip_prefix("gate:") {
+                 self.entered.notify_one();
+                 self.resume.notified().await;
+                 text
+-            } else { &request.text };
++            } else {
++                &request.text
++            };
+             let operation = match text {
+-                "current" => MemoryOperationV1::Current, "history" => MemoryOperationV1::History,
+-                "change" => MemoryOperationV1::Change, "semantic" => MemoryOperationV1::Semantic,
+-                "procedure" => MemoryOperationV1::Procedure, "apply" => MemoryOperationV1::Apply,
++                "current" => MemoryOperationV1::Current,
++                "history" => MemoryOperationV1::History,
++                "change" => MemoryOperationV1::Change,
++                "semantic" => MemoryOperationV1::Semantic,
++                "procedure" => MemoryOperationV1::Procedure,
++                "apply" => MemoryOperationV1::Apply,
+                 _ => return Ok(None),
+             };
+-            Ok(Some(MemoryInventoryResolvedAddressV1 { request: request.clone(), operation,
+-                owner_cut_digest: owner.owner_cut_digest(), model_digest: self.model_digest() }))
++            Ok(Some(MemoryInventoryResolvedAddressV1 {
++                request: request.clone(),
++                operation,
++                owner_cut_digest: owner.owner_cut_digest(),
++                model_digest: self.model_digest(),
++            }))
+         })
+     }
+ }
+ 
+ pub(crate) async fn child_main() {
+-    let spec: Spec = serde_json::from_slice(&std::fs::read(std::env::var_os(SPEC_ENV).expect("parent launch spec")).expect("spec bytes")).expect("child spec");
++    let spec: Spec = serde_json::from_slice(
++        &std::fs::read(std::env::var_os(SPEC_ENV).expect("parent launch spec"))
++            .expect("spec bytes"),
++    )
++    .expect("child spec");
+     if spec.independent.is_some() {
+         super::independent::child_main(spec).await;
+         return;
+     }
+-    let registry = FleetRegistry::open_existing(HeptaFleetRoot::parse(spec.fleet_root.clone()).expect("fleet root")).expect("existing fleet");
++    let registry = FleetRegistry::open_existing(
++        HeptaFleetRoot::parse(spec.fleet_root.clone()).expect("fleet root"),
++    )
++    .expect("existing fleet");
+     let record = registry.load_agent(&spec.owner).expect("registered owner");
+     if let Some(recovery) = &spec.recovery {
+-        assert!(!recovery.unavailable_source.exists(), "original source path must be absent");
+-        let admitted = DurableCognitiveStore::open_read_only_recovery(&record.layout,
+-            CognitiveRecoveryRequirement::ExactCurrentCut(&recovery.pin.cognitive_anchor)).await.expect("independent cold-image exact anchor admission");
++        assert!(
++            !recovery.unavailable_source.exists(),
++            "original source path must be absent"
++        );
++        let admitted = DurableCognitiveStore::open_read_only_recovery(
++            &record.layout,
++            CognitiveRecoveryRequirement::ExactCurrentCut(&recovery.pin.cognitive_anchor),
++        )
++        .await
++        .expect("independent cold-image exact anchor admission");
+         assert!(admitted.anchor() == &recovery.pin.cognitive_anchor);
+         drop(admitted);
+     }
+-    let config = AgentdConfig::load(spec.fleet_root, spec.owner.clone(), spec.spawn_generation,
+-        record.layout.home_root().to_path_buf(), record.layout.run_root().to_path_buf(), record.layout.home_root().to_path_buf(),
+-        record.manifest.workspace.as_path().to_path_buf()).expect("exclusive Agentd writer lock");
++    let config = AgentdConfig::load(
++        spec.fleet_root,
++        spec.owner.clone(),
++        spec.spawn_generation,
++        record.layout.home_root().to_path_buf(),
++        record.layout.run_root().to_path_buf(),
++        record.layout.home_root().to_path_buf(),
++        record.manifest.workspace.as_path().to_path_buf(),
++    )
++    .expect("exclusive Agentd writer lock");
+     let identity = config.identity().clone();
+-    let state = Arc::new(AgentdState::new(identity.clone(), registry, 16).expect("actual Agentd state"));
+-    let store = Arc::new(DurableCognitiveStore::open(&identity.layout).await.expect("actual SQLite owner"));
++    let state =
++        Arc::new(AgentdState::new(identity.clone(), registry, 16).expect("actual Agentd state"));
++    let store = Arc::new(
++        DurableCognitiveStore::open(&identity.layout)
++            .await
++            .expect("actual SQLite owner"),
++    );
+     let access = CognitiveAccess::agent_private(spec.owner.clone());
+     if let Some(path) = spec.records {
+-        let records: Vec<MemoryInventoryRecordV1> = serde_json::from_slice(&std::fs::read(path).expect("initial source bytes")).expect("typed records");
+-        for record in records { store.write_memory_inventory(&access, &CognitiveScope::AgentPrivate, &record, MemoryCellWriteModeV1::Create).await.expect("owner source creation"); }
++        let records: Vec<MemoryInventoryRecordV1> =
++            serde_json::from_slice(&std::fs::read(path).expect("initial source bytes"))
++                .expect("typed records");
++        for record in records {
++            store
++                .write_memory_inventory(
++                    &access,
++                    &CognitiveScope::AgentPrivate,
++                    &record,
++                    MemoryCellWriteModeV1::Create,
++                )
++                .await
++                .expect("owner source creation");
++        }
+     }
+     let gate = Arc::new(OracleGate::default());
+-    let worker = match spec.worker { Some(worker) => Some(Arc::new(start_worker(worker).await)), None => None };
++    let worker = match spec.worker {
++        Some(worker) => Some(Arc::new(start_worker(worker).await)),
++        None => None,
++    };
+     let resolver: Arc<dyn MemoryInventoryAddressResolverV1> = match &worker {
+-        Some(worker) => worker.clone(), None => gate.clone(),
++        Some(worker) => worker.clone(),
++        None => gate.clone(),
+     };
+     let mut release = match spec.resume {
+         Some(checkpoint) => {
+-            let withdrawals = spec.recovery.as_ref().and_then(|recovery| recovery.withdrawal.as_ref())
++            let withdrawals = spec
++                .recovery
++                .as_ref()
++                .and_then(|recovery| recovery.withdrawal.as_ref())
+                 .map(|withdrawal| withdrawal.restore(&spec.artifact_root));
+             let expected_refusal = withdrawals.is_some();
+-            let result = InventoryReleaseFixture::try_reopen(spec.artifact_root.clone(), &snapshot(&store, &access).await, checkpoint, withdrawals);
++            let result = InventoryReleaseFixture::try_reopen(
++                spec.artifact_root.clone(),
++                &snapshot(&store, &access).await,
++                checkpoint,
++                withdrawals,
++            );
+             if expected_refusal {
+-                let Err(reason) = result else { panic!("revoked parameters were reselected after restoring their frontier"); };
+-                assert!(reason.to_lowercase().contains("withdraw"), "refusal must identify the restored withdrawal frontier: {reason}");
++                let Err(reason) = result else {
++                    panic!("revoked parameters were reselected after restoring their frontier");
++                };
++                assert!(
++                    reason.to_lowercase().contains("withdraw"),
++                    "refusal must identify the restored withdrawal frontier: {reason}"
++                );
+                 drop(state);
+                 store.as_ref().clone().close().await;
+                 drop(store);
+                 drop(config);
+-                emit(json!({"pid":std::process::id(),"owner":spec.owner,"spawn_generation":spec.spawn_generation,
+-                    "refused":true,"reason":reason,"recovery":spec.recovery,"reaped_by_parent":true}));
++                emit(
++                    json!({"pid":std::process::id(),"owner":spec.owner,"spawn_generation":spec.spawn_generation,
++                    "refused":true,"reason":reason,"recovery":spec.recovery,"reaped_by_parent":true}),
++                );
+                 return;
+             }
+             Some(result.expect("inventory owner readmission"))
+         }
+         None => None,
+     };
+-    if let Some(release) = &release { attach(&state, &spec.owner, spec.spawn_generation, release, Arc::clone(&resolver)); }
++    if let Some(release) = &release {
++        attach(
++            &state,
++            &spec.owner,
++            spec.spawn_generation,
++            release,
++            Arc::clone(&resolver),
++        );
++    }
+     if let Some(recovery) = &spec.recovery {
+         let current = snapshot(&store, &access).await;
+-        let selected = release.as_ref().expect("migrated selection").host.load_current().expect("actual migrated selected bundle");
+-        assert!(current.owner_agent_id() == &recovery.pin.owner_agent_id && current.scope() == &recovery.pin.scope
+-            && current.owner_cut_digest() == recovery.pin.owner_cut_digest && selected.bundle_digest() == recovery.pin.bundle_digest
+-            && selected.generation() == recovery.pin.generation);
++        let selected = release
++            .as_ref()
++            .expect("migrated selection")
++            .host
++            .load_current()
++            .expect("actual migrated selected bundle");
++        assert!(
++            current.owner_agent_id() == &recovery.pin.owner_agent_id
++                && current.scope() == &recovery.pin.scope
++                && current.owner_cut_digest() == recovery.pin.owner_cut_digest
++                && selected.bundle_digest() == recovery.pin.bundle_digest
++                && selected.generation() == recovery.pin.generation
++        );
+     }
+-    state.attach_cognitive_store(Arc::clone(&store)).expect("owner attachment");
++    state
++        .attach_cognitive_store(Arc::clone(&store))
++        .expect("owner attachment");
+     let cancellation = CancellationToken::new();
+-    let server = AgentdControlServer::bind(identity.control_socket, Arc::clone(&state), cancellation.clone()).await.expect("real control socket");
++    let server = AgentdControlServer::bind(
++        identity.control_socket,
++        Arc::clone(&state),
++        cancellation.clone(),
++    )
++    .await
++    .expect("real control socket");
+     let control = tokio::spawn(server.run());
+-    emit(json!({"pid":std::process::id(),"owner":spec.owner,"spawn_generation":spec.spawn_generation,
+-        "resolver":if worker.is_some(){"trained_operation_with_deterministic_keys"}else{"explicit_oracle_test_seam"},"recovery":spec.recovery}));
++    emit(
++        json!({"pid":std::process::id(),"owner":spec.owner,"spawn_generation":spec.spawn_generation,
++        "resolver":if worker.is_some(){"trained_operation_with_deterministic_keys"}else{"explicit_oracle_test_seam"},"recovery":spec.recovery}),
++    );
+     let mut input = BufReader::new(tokio::io::stdin()).lines();
+     while let Some(line) = input.next_line().await.expect("owner command") {
+         let command: Value = serde_json::from_str(&line).expect("test command JSON");
+         let response = match command["op"].as_str().expect("command kind") {
+             "activate" => {
+                 state.refresh_generation().expect("Running fence");
+-                state.mark_runtime_prerequisites_ready().expect("real stores ready");
+-                state.mark_app_server_ready().expect("explicit control-only readiness seam");
++                state
++                    .mark_runtime_prerequisites_ready()
++                    .expect("real stores ready");
++                state
++                    .mark_app_server_ready()
++                    .expect("explicit control-only readiness seam");
+                 json!({"ready":true})
+             }
+             "install" | "validate" => {
+-                let semantic = std::fs::read(command["semantic"].as_str().expect("semantic path")).expect("semantic bytes");
+-                let procedure = std::fs::read(command["procedure"].as_str().expect("procedure path")).expect("procedure bytes");
++                let semantic = std::fs::read(command["semantic"].as_str().expect("semantic path"))
++                    .expect("semantic bytes");
++                let procedure =
++                    std::fs::read(command["procedure"].as_str().expect("procedure path"))
++                        .expect("procedure bytes");
+                 let owner = snapshot(&store, &access).await;
+                 if command["op"] == "validate" {
+-                    let accepted = MemoryInventoryBundleCandidateV1::from_owner_snapshot(&owner, ContractGenerationV1::new(1).expect("generation"), &semantic, &procedure).is_ok();
++                    let accepted = MemoryInventoryBundleCandidateV1::from_owner_snapshot(
++                        &owner,
++                        ContractGenerationV1::new(1).expect("generation"),
++                        &semantic,
++                        &procedure,
++                    )
++                    .is_ok();
+                     json!({"accepted":accepted})
+                 } else {
+-                    let code: Digest32 = command["code"].as_str().expect("code digest").parse().expect("code digest");
++                    let code: Digest32 = command["code"]
++                        .as_str()
++                        .expect("code digest")
++                        .parse()
++                        .expect("code digest");
+                     match &mut release {
+                         Some(release) => release.replace(&owner, &semantic, &procedure, code),
+                         None => {
+-                            let installed = InventoryReleaseFixture::create(spec.artifact_root.clone(), &owner, &semantic, &procedure, code);
+-                            attach(&state, &spec.owner, spec.spawn_generation, &installed, Arc::clone(&resolver));
++                            let installed = InventoryReleaseFixture::create(
++                                spec.artifact_root.clone(),
++                                &owner,
++                                &semantic,
++                                &procedure,
++                                code,
++                            );
++                            attach(
++                                &state,
++                                &spec.owner,
++                                spec.spawn_generation,
++                                &installed,
++                                Arc::clone(&resolver),
++                            );
+                             release = Some(installed);
+                         }
+                     }
+@@ -155,38 +307,93 @@ pub(crate) async fn child_main() {
+                     json!({"checkpoint":release.checkpoint(),"bundle":release.host.load_current().expect("selected bundle").bundle_digest()})
+                 }
+             }
+-            "sleep" => { release.as_ref().expect("release").host.sleep_selected().expect("cache sleep"); json!({"slept":true}) }
++            "sleep" => {
++                release
++                    .as_ref()
++                    .expect("release")
++                    .host
++                    .sleep_selected()
++                    .expect("cache sleep");
++                json!({"slept":true})
++            }
+             "correct" => {
+-                let record: MemoryInventoryRecordV1 = serde_json::from_value(command["record"].clone()).expect("corrected record");
+-                store.write_memory_inventory(&access, &CognitiveScope::AgentPrivate, &record,
+-                    MemoryCellWriteModeV1::Correct { expected_revision: command["revision"].as_u64().expect("revision") }).await.expect("actual owner correction");
++                let record: MemoryInventoryRecordV1 =
++                    serde_json::from_value(command["record"].clone()).expect("corrected record");
++                store
++                    .write_memory_inventory(
++                        &access,
++                        &CognitiveScope::AgentPrivate,
++                        &record,
++                        MemoryCellWriteModeV1::Correct {
++                            expected_revision: command["revision"].as_u64().expect("revision"),
++                        },
++                    )
++                    .await
++                    .expect("actual owner correction");
+                 json!({"corrected":true})
+             }
+             "forget" => {
+-                let record: MemoryInventoryRecordV1 = serde_json::from_value(command["record"].clone()).expect("forgotten address");
+-                store.forget_memory_inventory(&access, &CognitiveScope::AgentPrivate, &record.address(), command["revision"].as_u64().expect("revision"),
+-                    "explicit native actual owner deletion", now()).await.expect("actual owner deletion");
++                let record: MemoryInventoryRecordV1 =
++                    serde_json::from_value(command["record"].clone()).expect("forgotten address");
++                store
++                    .forget_memory_inventory(
++                        &access,
++                        &CognitiveScope::AgentPrivate,
++                        &record.address(),
++                        command["revision"].as_u64().expect("revision"),
++                        "explicit native actual owner deletion",
++                        now(),
++                    )
++                    .await
++                    .expect("actual owner deletion");
+                 json!({"forgotten":true})
+             }
+             "revoke" => {
+                 let release = release.as_ref().expect("release");
+                 let mut owner = release.service.lock().expect("artifact owner");
+                 let mut withdrawals = owner.withdrawal_registry().clone();
+-                withdrawals.append(DatasetWithdrawalNoticeV1 {
+-                    notice_id:id("inventory-native-actual-withdrawal"), dataset_digest:release.request.admission.validated_manifest.manifest.lineage_digests[0],
+-                    source_tombstone_digest:digest("inventory-native-actual-tombstone"), authority_id:id("memory-dataset-owner"),
+-                    credential_chain_digest:digest("inventory-test-credential"), signing_key_digest:digest("inventory-test-dataset-signer"), authority_epoch:1, issued_at:now() as u64,
+-                }).expect("actual withdrawal frontier");
+-                owner.install_withdrawal_frontier(withdrawals).expect("owner withdrawal installation");
+-                let receipt = InventoryWithdrawalCheckpoint::capture(&spec.artifact_root, owner.withdrawal_registry());
++                withdrawals
++                    .append(DatasetWithdrawalNoticeV1 {
++                        notice_id: id("inventory-native-actual-withdrawal"),
++                        dataset_digest: release
++                            .request
++                            .admission
++                            .validated_manifest
++                            .manifest
++                            .lineage_digests[0],
++                        source_tombstone_digest: digest("inventory-native-actual-tombstone"),
++                        authority_id: id("memory-dataset-owner"),
++                        credential_chain_digest: digest("inventory-test-credential"),
++                        signing_key_digest: digest("inventory-test-dataset-signer"),
++                        authority_epoch: 1,
++                        issued_at: now() as u64,
++                    })
++                    .expect("actual withdrawal frontier");
++                owner
++                    .install_withdrawal_frontier(withdrawals)
++                    .expect("owner withdrawal installation");
++                let receipt = InventoryWithdrawalCheckpoint::capture(
++                    &spec.artifact_root,
++                    owner.withdrawal_registry(),
++                );
+                 json!({"revoked":true,"withdrawal_checkpoint":receipt})
+             }
+-            "wait_gate" => { gate.entered.notified().await; json!({"entered":true}) }
+-            "release_gate" => { gate.resume.notify_one(); json!({"released":true}) }
++            "wait_gate" => {
++                gate.entered.notified().await;
++                json!({"entered":true})
++            }
++            "release_gate" => {
++                gate.resume.notify_one();
++                json!({"released":true})
++            }
+             "worker_receipt" => {
+                 let worker = worker.as_ref().expect("actual address worker");
+-                let response = worker.take_last_validated_response().await.expect("validated response");
+-                let response: Value = serde_json::from_slice(&response).expect("validated response JSON");
++                let response = worker
++                    .take_last_validated_response()
++                    .await
++                    .expect("validated response");
++                let response: Value =
++                    serde_json::from_slice(&response).expect("validated response JSON");
+                 json!({"response":response,"model_digest":worker.model_digest()})
+             }
+             "stop" => {
+@@ -198,7 +405,10 @@ pub(crate) async fn child_main() {
+         emit(response);
+     }
+     cancellation.cancel();
+-    control.await.expect("join actual control server").expect("stop actual control server");
++    control
++        .await
++        .expect("join actual control server")
++        .expect("stop actual control server");
+     let metrics = worker.as_ref().map(|worker| {
+         let m=worker.metrics(); json!({"attempted":m.attempted_requests,"validated":m.validated_responses,"process_starts":m.process_starts,
+             "stdin_bytes":m.stdin_bytes,"stdout_bytes":m.stdout_bytes,"cpu_nanoseconds":m.reported_cpu_nanoseconds,"wall_nanoseconds":m.reported_wall_nanoseconds})
+@@ -211,32 +421,81 @@ pub(crate) async fn child_main() {
+     emit(json!({"stopped":true,"worker_metrics":metrics}));
+ }
+ 
+-fn attach(state: &AgentdState, owner: &codex_hepta_contracts::AgentId, generation: u64, release: &InventoryReleaseFixture, resolver: Arc<dyn MemoryInventoryAddressResolverV1>) {
+-    state.attach_memory_inventory(Arc::new(AgentdMemoryInventoryRuntimeV1::new(owner.clone(), generation, CognitiveScope::AgentPrivate,
+-        Arc::clone(&release.host), resolver).expect("inventory runtime"))).expect("actual runtime attachment");
++fn attach(
++    state: &AgentdState,
++    owner: &codex_hepta_contracts::AgentId,
++    generation: u64,
++    release: &InventoryReleaseFixture,
++    resolver: Arc<dyn MemoryInventoryAddressResolverV1>,
++) {
++    state
++        .attach_memory_inventory(Arc::new(
++            AgentdMemoryInventoryRuntimeV1::new(
++                owner.clone(),
++                generation,
++                CognitiveScope::AgentPrivate,
++                Arc::clone(&release.host),
++                resolver,
++            )
++            .expect("inventory runtime"),
++        ))
++        .expect("actual runtime attachment");
+ }
+ 
+-async fn snapshot(store: &DurableCognitiveStore, access: &CognitiveAccess) -> MemoryInventoryOwnerSnapshotV1 {
+-    store.memory_inventory_snapshot(access, &CognitiveScope::AgentPrivate, now()).await.expect("actual owner snapshot")
++async fn snapshot(
++    store: &DurableCognitiveStore,
++    access: &CognitiveAccess,
++) -> MemoryInventoryOwnerSnapshotV1 {
++    store
++        .memory_inventory_snapshot(access, &CognitiveScope::AgentPrivate, now())
++        .await
++        .expect("actual owner snapshot")
+ }
+ 
+-fn now() -> i64 { crate::memory_cell_runtime::now_unix_seconds().expect("clock") }
++fn now() -> i64 {
++    crate::memory_cell_runtime::now_unix_seconds().expect("clock")
++}
+ 
+ async fn start_worker(spec: WorkerSpec) -> MemoryInventoryAddressWorkerV1 {
+     let mut pins = BTreeMap::new();
+-    for directory in [&spec.research, &spec.research.parent().expect("qualification").join("memory-cell-adapters")] {
++    for directory in [
++        &spec.research,
++        &spec
++            .research
++            .parent()
++            .expect("qualification")
++            .join("memory-cell-adapters"),
++    ] {
+         for entry in std::fs::read_dir(directory).expect("first-party closure") {
+             let path = entry.expect("code entry").path();
+             if path.extension().is_some_and(|extension| extension == "py") {
+-                pins.insert(path.clone(), ContractDigestV1::from_digest(Digest32::of_bytes(&std::fs::read(path).expect("code bytes"))).expect("code pin"));
++                pins.insert(
++                    path.clone(),
++                    ContractDigestV1::from_digest(Digest32::of_bytes(
++                        &std::fs::read(path).expect("code bytes"),
++                    ))
++                    .expect("code pin"),
++                );
+             }
+         }
+     }
+     let script = spec.research.join("inventory_worker.py");
+-    let model_digest = ContractDigestV1::from_digest(Digest32::of_bytes(&std::fs::read(spec.model.join("manifest.json")).expect("router manifest"))).expect("model digest");
++    let model_digest = ContractDigestV1::from_digest(Digest32::of_bytes(
++        &std::fs::read(spec.model.join("manifest.json")).expect("router manifest"),
++    ))
++    .expect("model digest");
+     MemoryInventoryAddressWorkerV1::start(MemoryCellAddressWorkerConfigV1 {
+-        python:spec.python, worker_script_digest:pins[&script], worker_script:script, code_pins:pins, model_directory:spec.model,
+-        model_digest, encoder_directory:spec.encoder, aliases:BTreeMap::new(), request_timeout:Duration::from_millis(1_500), startup_timeout:Duration::from_secs(30),
+-    }).await.expect("actual trained inventory address worker")
++        python: spec.python,
++        worker_script_digest: pins[&script],
++        worker_script: script,
++        code_pins: pins,
++        model_directory: spec.model,
++        model_digest,
++        encoder_directory: spec.encoder,
++        aliases: BTreeMap::new(),
++        request_timeout: Duration::from_millis(1_500),
++        startup_timeout: Duration::from_secs(30),
++    })
++    .await
++    .expect("actual trained inventory address worker")
+ }
+-
+diff --git a/codex-rs/hepta-agentd/src/memory_inventory_process_test_support.rs b/codex-rs/hepta-agentd/src/memory_inventory_process_test_support.rs
+index d15cb0dd65688a18881fa774f285c4aaf42b849c..f20de40317a8aead866250a7891a4e7baa067619 100644
+--- a/codex-rs/hepta-agentd/src/memory_inventory_process_test_support.rs
++++ b/codex-rs/hepta-agentd/src/memory_inventory_process_test_support.rs
+@@ -7,13 +7,25 @@ use std::process::Stdio;
+ use std::time::Duration;
+ 
+ use codex_hepta_contracts::AgentId;
+-use codex_hepta_fleet::{AgentLifecycle, AgentManifest, FleetRegistry, ResourceBudget, WorkspaceBinding};
++use codex_hepta_fleet::AgentLifecycle;
++use codex_hepta_fleet::AgentManifest;
++use codex_hepta_fleet::FleetRegistry;
++use codex_hepta_fleet::ResourceBudget;
++use codex_hepta_fleet::WorkspaceBinding;
+ use codex_hepta_paths::HeptaFleetRoot;
+ use pretty_assertions::assert_eq;
+-use serde::{Deserialize, Serialize};
+-use serde_json::{Value, json};
+-use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
+-use tokio::process::{Child, ChildStdin, ChildStdout, Command};
++use serde::Deserialize;
++use serde::Serialize;
++use serde_json::Value;
++use serde_json::json;
++use tokio::io::AsyncBufReadExt;
++use tokio::io::AsyncReadExt;
++use tokio::io::AsyncWriteExt;
++use tokio::io::BufReader;
++use tokio::process::Child;
++use tokio::process::ChildStdin;
++use tokio::process::ChildStdout;
++use tokio::process::Command;
+ 
+ use crate::AgentdClient;
+ use crate::MemoryCellMigrationPinV9;
+@@ -66,8 +78,12 @@ struct Spec {
+ }
+ 
+ enum LaunchProfile {
+-    Bundle { records: Option<PathBuf>, resume: Option<InventoryReleaseCheckpoint>,
+-        worker: Option<WorkerSpec>, recovery: Option<RecoverySpec> },
++    Bundle {
++        records: Option<PathBuf>,
++        resume: Option<InventoryReleaseCheckpoint>,
++        worker: Option<WorkerSpec>,
++        recovery: Option<RecoverySpec>,
++    },
+     Independent(IndependentSpecV14),
+ }
+ 
+@@ -87,7 +103,15 @@ pub(super) fn fleet(root: &Path) -> (FleetRegistry, AgentId) {
+     let owner = AgentId::parse("00000000-0000-4000-9000-000000000010").expect("owner ID");
+     let workspace = root.join("workspace");
+     std::fs::create_dir(&workspace).expect("workspace");
+-    registry.register(AgentManifest::new(owner.clone(), WorkspaceBinding::new(workspace, &fleet).expect("workspace binding"), ResourceBudget::local_default()).expect("manifest"))
++    registry
++        .register(
++            AgentManifest::new(
++                owner.clone(),
++                WorkspaceBinding::new(workspace, &fleet).expect("workspace binding"),
++                ResourceBudget::local_default(),
++            )
++            .expect("manifest"),
++        )
+         .expect("registered owner");
+     (registry, owner)
+ }
+@@ -102,24 +126,68 @@ impl NativeOwner {
+         worker: Option<WorkerSpec>,
+         recovery: Option<RecoverySpec>,
+     ) -> Self {
+-        Self::spawn_profile(root, registry, owner, LaunchProfile::Bundle { records, resume, worker, recovery }).await
++        Self::spawn_profile(
++            root,
++            registry,
++            owner,
++            LaunchProfile::Bundle {
++                records,
++                resume,
++                worker,
++                recovery,
++            },
++        )
++        .await
+     }
+ 
+-    pub async fn spawn_independent(root: &Path, registry: &FleetRegistry, owner: AgentId,
+-        independent: IndependentSpecV14) -> Self {
+-        Self::spawn_profile(root, registry, owner, LaunchProfile::Independent(independent)).await
++    pub async fn spawn_independent(
++        root: &Path,
++        registry: &FleetRegistry,
++        owner: AgentId,
++        independent: IndependentSpecV14,
++    ) -> Self {
++        Self::spawn_profile(
++            root,
++            registry,
++            owner,
++            LaunchProfile::Independent(independent),
++        )
++        .await
+     }
+ 
+-    async fn spawn_profile(root: &Path, registry: &FleetRegistry, owner: AgentId, profile: LaunchProfile) -> Self {
++    async fn spawn_profile(
++        root: &Path,
++        registry: &FleetRegistry,
++        owner: AgentId,
++        profile: LaunchProfile,
++    ) -> Self {
+         let record = registry.load_agent(&owner).expect("registered owner");
+-        let lifecycle = registry.compare_and_transition(&owner, record.lifecycle.generation, AgentLifecycle::Starting).expect("starting transition");
++        let lifecycle = registry
++            .compare_and_transition(
++                &owner,
++                record.lifecycle.generation,
++                AgentLifecycle::Starting,
++            )
++            .expect("starting transition");
+         let (records, resume, worker, recovery, independent) = match profile {
+-            LaunchProfile::Bundle { records, resume, worker, recovery } => (records, resume, worker, recovery, None),
++            LaunchProfile::Bundle {
++                records,
++                resume,
++                worker,
++                recovery,
++            } => (records, resume, worker, recovery, None),
+             LaunchProfile::Independent(independent) => (None, None, None, None, Some(independent)),
+         };
+         let spec = Spec {
+-            fleet_root: registry.layout().fleet_root().as_path().to_path_buf(), owner: owner.clone(),
+-            spawn_generation: lifecycle.generation, artifact_root: root.join("artifacts"), records, resume, worker, recovery, independent,
++            fleet_root: registry.layout().fleet_root().as_path().to_path_buf(),
++            owner: owner.clone(),
++            spawn_generation: lifecycle.generation,
++            artifact_root: root.join("artifacts"),
++            records,
++            resume,
++            worker,
++            recovery,
++            independent,
+         };
+         let path = root.join(format!("child-{}.json", lifecycle.generation));
+         let bytes = serde_json::to_vec(&spec).expect("child spec");
+@@ -128,11 +196,22 @@ impl NativeOwner {
+         file.write_all(&bytes).expect("spec bytes");
+         file.sync_all().expect("durable spec");
+         let mut child = Command::new(std::env::current_exe().expect("test executable"))
+-            .args(["--ignored", "--exact", CHILD_TEST, "--nocapture", "--test-threads=1"])
+-            .env(SPEC_ENV, path).env("TMPDIR", root)
++            .args([
++                "--ignored",
++                "--exact",
++                CHILD_TEST,
++                "--nocapture",
++                "--test-threads=1",
++            ])
++            .env(SPEC_ENV, path)
++            .env("TMPDIR", root)
+             .current_dir(record.manifest.workspace.as_path())
+-            .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::inherit()).kill_on_drop(true)
+-            .spawn().expect("separate native owner process");
++            .stdin(Stdio::piped())
++            .stdout(Stdio::piped())
++            .stderr(Stdio::inherit())
++            .kill_on_drop(true)
++            .spawn()
++            .expect("separate native owner process");
+         let pid = child.id().expect("child PID");
+         let input = child.stdin.take().expect("child input");
+         let mut output = BufReader::new(child.stdout.take().expect("child output"));
+@@ -140,21 +219,80 @@ impl NativeOwner {
+         assert_eq!(ready["pid"].as_u64(), Some(u64::from(pid)));
+         assert_ne!(pid, std::process::id());
+         if ready["refused"] == json!(true) {
+-            assert!(spec.recovery.as_ref().is_some_and(|recovery| recovery.withdrawal.is_some()), "only the explicit negative frontier recovery may refuse startup");
+-            let status = tokio::time::timeout(DEADLINE, child.wait()).await.expect("refused child deadline").expect("reap refused child");
+-            assert!(status.success(), "refusal must be an explicit receipt, not a panic");
++            assert!(
++                spec.recovery
++                    .as_ref()
++                    .is_some_and(|recovery| recovery.withdrawal.is_some()),
++                "only the explicit negative frontier recovery may refuse startup"
++            );
++            let status = tokio::time::timeout(DEADLINE, child.wait())
++                .await
++                .expect("refused child deadline")
++                .expect("reap refused child");
++            assert!(
++                status.success(),
++                "refusal must be an explicit receipt, not a panic"
++            );
+             let mut trailer = Vec::new();
+-            tokio::time::timeout(DEADLINE, (&mut output).take((LIMIT + 1) as u64).read_to_end(&mut trailer)).await.expect("refused child EOF deadline").expect("refused child EOF");
++            tokio::time::timeout(
++                DEADLINE,
++                (&mut output)
++                    .take((LIMIT + 1) as u64)
++                    .read_to_end(&mut trailer),
++            )
++            .await
++            .expect("refused child EOF deadline")
++            .expect("refused child EOF");
+             assert!(trailer.len() <= LIMIT);
+-            registry.compare_and_transition(&owner, lifecycle.generation, AgentLifecycle::Failed).expect("supervisor observes refused startup");
+-            let client = AgentdClient::new(record.layout.agentd_control_socket().to_path_buf(), owner, lifecycle.generation).expect("refused owner client");
+-            return Self { child:None, input:None, output, client, ready, frames_tx_bytes:0, frames_rx_bytes:rx + trailer.len() as u64 };
++            registry
++                .compare_and_transition(&owner, lifecycle.generation, AgentLifecycle::Failed)
++                .expect("supervisor observes refused startup");
++            let client = AgentdClient::new(
++                record.layout.agentd_control_socket().to_path_buf(),
++                owner,
++                lifecycle.generation,
++            )
++            .expect("refused owner client");
++            return Self {
++                child: None,
++                input: None,
++                output,
++                client,
++                ready,
++                frames_tx_bytes: 0,
++                frames_rx_bytes: rx + trailer.len() as u64,
++            };
+         }
+-        registry.compare_and_transition(&owner, lifecycle.generation, AgentLifecycle::Running).expect("running transition");
+-        let client = AgentdClient::new(record.layout.agentd_control_socket().to_path_buf(), owner, lifecycle.generation).expect("real control client");
+-        let mut process = Self { child: Some(child), input: Some(input), output, client, ready, frames_tx_bytes: 0, frames_rx_bytes: rx };
+-        assert_eq!(process.command(json!({"op":"activate"})).await, json!({"ready":true}));
+-        assert!(process.client.health().await.expect("owner readiness").ready);
++        registry
++            .compare_and_transition(&owner, lifecycle.generation, AgentLifecycle::Running)
++            .expect("running transition");
++        let client = AgentdClient::new(
++            record.layout.agentd_control_socket().to_path_buf(),
++            owner,
++            lifecycle.generation,
++        )
++        .expect("real control client");
++        let mut process = Self {
++            child: Some(child),
++            input: Some(input),
++            output,
++            client,
++            ready,
++            frames_tx_bytes: 0,
++            frames_rx_bytes: rx,
++        };
++        assert_eq!(
++            process.command(json!({"op":"activate"})).await,
++            json!({"ready":true})
++        );
++        assert!(
++            process
++                .client
++                .health()
++                .await
++                .expect("owner readiness")
++                .ready
++        );
+         process
+     }
+ 
+@@ -162,7 +300,12 @@ impl NativeOwner {
+         let mut bytes = serde_json::to_vec(&command).expect("test command");
+         bytes.push(b'\n');
+         assert!(bytes.len() <= LIMIT);
+-        self.input.as_mut().expect("owner input").write_all(&bytes).await.expect("command write");
++        self.input
++            .as_mut()
++            .expect("owner input")
++            .write_all(&bytes)
++            .await
++            .expect("command write");
+         self.frames_tx_bytes += bytes.len() as u64;
+         let (frame, bytes) = read_frame(&mut self.output).await;
+         self.frames_rx_bytes += bytes;
+@@ -172,19 +315,39 @@ impl NativeOwner {
+     pub async fn stop(&mut self, registry: &FleetRegistry, owner: &AgentId) -> Value {
+         let record = registry.load_agent(owner).expect("live owner");
+         if record.lifecycle.lifecycle == AgentLifecycle::Running {
+-            registry.compare_and_transition(owner, record.lifecycle.generation, AgentLifecycle::Draining).expect("draining transition");
++            registry
++                .compare_and_transition(
++                    owner,
++                    record.lifecycle.generation,
++                    AgentLifecycle::Draining,
++                )
++                .expect("draining transition");
+         }
+         let stopped = self.command(json!({"op":"stop"})).await;
+         self.input.take();
+-        let status = tokio::time::timeout(DEADLINE, self.child.as_mut().expect("owner child").wait()).await.expect("owner exit deadline").expect("reap owner");
++        let status =
++            tokio::time::timeout(DEADLINE, self.child.as_mut().expect("owner child").wait())
++                .await
++                .expect("owner exit deadline")
++                .expect("reap owner");
+         assert!(status.success());
+         self.child.take();
+         let mut trailer = Vec::new();
+-        tokio::time::timeout(DEADLINE, (&mut self.output).take((LIMIT + 1) as u64).read_to_end(&mut trailer)).await.expect("owner EOF deadline").expect("owner EOF");
++        tokio::time::timeout(
++            DEADLINE,
++            (&mut self.output)
++                .take((LIMIT + 1) as u64)
++                .read_to_end(&mut trailer),
++        )
++        .await
++        .expect("owner EOF deadline")
++        .expect("owner EOF");
+         assert!(trailer.len() <= LIMIT);
+         self.frames_rx_bytes += trailer.len() as u64;
+         let record = registry.load_agent(owner).expect("draining owner");
+-        registry.compare_and_transition(owner, record.lifecycle.generation, AgentLifecycle::Stopped).expect("stopped transition");
++        registry
++            .compare_and_transition(owner, record.lifecycle.generation, AgentLifecycle::Stopped)
++            .expect("stopped transition");
+         json!({"process":self.ready,"ack":stopped,"exit_status":status.to_string(),"control":self.client.traffic_snapshot(),
+             "frames_tx_bytes":self.frames_tx_bytes,"frames_rx_bytes":self.frames_rx_bytes,"reaped":true})
+     }
+@@ -195,22 +358,34 @@ async fn read_frame(output: &mut BufReader<ChildStdout>) -> (Value, u64) {
+         let mut total = 0_u64;
+         loop {
+             let mut line = Vec::new();
+-            (&mut *output).take((LIMIT + 1) as u64).read_until(b'\n', &mut line).await.expect("child frame");
++            (&mut *output)
++                .take((LIMIT + 1) as u64)
++                .read_until(b'\n', &mut line)
++                .await
++                .expect("child frame");
+             total += line.len() as u64;
+             assert!(!line.is_empty() && line.len() <= LIMIT && total <= (LIMIT * 2) as u64);
+-            if let Some(offset) = line.windows(PREFIX.len()).position(|window| window == PREFIX.as_bytes()) {
+-                let value = serde_json::from_slice(&line[offset + PREFIX.len()..]).expect("typed child frame");
++            if let Some(offset) = line
++                .windows(PREFIX.len())
++                .position(|window| window == PREFIX.as_bytes())
++            {
++                let value = serde_json::from_slice(&line[offset + PREFIX.len()..])
++                    .expect("typed child frame");
+                 return (value, total);
+             }
+         }
+-    }).await.expect("child frame deadline")
++    })
++    .await
++    .expect("child frame deadline")
+ }
+ 
+ fn emit(value: Value) {
+-    let line = format!("{PREFIX}{}\n", serde_json::to_string(&value).expect("child frame"));
++    let line = format!(
++        "{PREFIX}{}\n",
++        serde_json::to_string(&value).expect("child frame")
++    );
+     assert!(line.len() < LIMIT);
+     let mut output = std::io::stdout().lock();
+     output.write_all(line.as_bytes()).expect("frame write");
+     output.flush().expect("frame flush");
+ }
+-
+diff --git a/codex-rs/hepta-agentd/src/memory_inventory_runtime.rs b/codex-rs/hepta-agentd/src/memory_inventory_runtime.rs
+index d8448391baf3119e4566b04acf4eff2a2e5b9ae6..0e5c8bad174da8fd0754005b9cef5546755cad5a 100644
+--- a/codex-rs/hepta-agentd/src/memory_inventory_runtime.rs
++++ b/codex-rs/hepta-agentd/src/memory_inventory_runtime.rs
+@@ -81,7 +81,13 @@ impl AgentdMemoryInventoryRuntimeV1 {
+         release: Arc<MemoryInventoryReleaseHostV1>,
+         resolver: Arc<dyn MemoryInventoryAddressResolverV1>,
+     ) -> Result<Self, AgentdError> {
+-        Self::configured(owner_agent_id, spawn_generation, scope, InventoryRelease::Bundle(release), resolver)
++        Self::configured(
++            owner_agent_id,
++            spawn_generation,
++            scope,
++            InventoryRelease::Bundle(release),
++            resolver,
++        )
+     }
+ 
+     /// Opt-in V14 service; the existing bundled profile retains its V1 contract.
+@@ -92,7 +98,13 @@ impl AgentdMemoryInventoryRuntimeV1 {
+         service: Arc<MemoryIsolatedServiceV14>,
+         resolver: Arc<dyn MemoryInventoryAddressResolverV1>,
+     ) -> Result<Self, AgentdError> {
+-        Self::configured(owner_agent_id, spawn_generation, scope, InventoryRelease::Independent(service), resolver)
++        Self::configured(
++            owner_agent_id,
++            spawn_generation,
++            scope,
++            InventoryRelease::Independent(service),
++            resolver,
++        )
+     }
+ 
+     fn configured(
+@@ -288,41 +300,78 @@ impl AgentdMemoryInventoryRuntimeV1 {
+         Ok(readout)
+     }
+ 
+-    async fn read_independent(&self, store: &DurableCognitiveStore,
+-        request: &MemoryInventoryRequestV1, service: &MemoryIsolatedServiceV14,
++    async fn read_independent(
++        &self,
++        store: &DurableCognitiveStore,
++        request: &MemoryInventoryRequestV1,
++        service: &MemoryIsolatedServiceV14,
+     ) -> Result<MemoryInventoryReadoutV1, AgentdError> {
+         let started = Instant::now();
+         let future = async {
+             let now = now_unix_seconds().map_err(|_| unavailable("host clock is unavailable"))?;
+-            let acquired = store.memory_inventory_snapshot(&self.access, &self.scope, now).await
++            let acquired = store
++                .memory_inventory_snapshot(&self.access, &self.scope, now)
++                .await
+                 .map_err(|_| unavailable("canonical memory inventory owner is unavailable"))?;
+             if request.scope != *acquired.scope() {
+-                return Err((MemoryReadStatusV1::Abstain, "request scope differs from authenticated owner scope"));
++                return Err((
++                    MemoryReadStatusV1::Abstain,
++                    "request scope differs from authenticated owner scope",
++                ));
+             }
+             if self.resolver.model_digest() != self.resolver_digest {
+                 return Err(unavailable("configured address resolver changed its model"));
+             }
+-            let decision = self.resolver.resolve(request, &acquired).await
++            let decision = self
++                .resolver
++                .resolve(request, &acquired)
++                .await
+                 .map_err(|_| unavailable("configured address resolver is unavailable"))?
+-                .ok_or((MemoryReadStatusV1::Abstain, "address resolver declined the request"))?;
+-            if decision.request != *request || decision.owner_cut_digest != acquired.owner_cut_digest()
+-                || decision.model_digest != self.resolver_digest {
+-                return Err(unavailable("address decision differs from its request or owner binding"));
++                .ok_or((
++                    MemoryReadStatusV1::Abstain,
++                    "address resolver declined the request",
++                ))?;
++            if decision.request != *request
++                || decision.owner_cut_digest != acquired.owner_cut_digest()
++                || decision.model_digest != self.resolver_digest
++            {
++                return Err(unavailable(
++                    "address decision differs from its request or owner binding",
++                ));
+             }
+-            service.read_acquired(store, &self.access, &self.scope, request, decision.operation, acquired).await
++            service
++                .read_acquired(
++                    store,
++                    &self.access,
++                    &self.scope,
++                    request,
++                    decision.operation,
++                    acquired,
++                )
++                .await
+         };
+         let result = tokio::time::timeout(Duration::from_secs(5), future).await;
+         let mut readout = if started.elapsed() > Duration::from_secs(5) {
+-            service.failed(request, MemoryReadStatusV1::Unavailable, "memory inventory read deadline exceeded")
++            service.failed(
++                request,
++                MemoryReadStatusV1::Unavailable,
++                "memory inventory read deadline exceeded",
++            )
+         } else {
+             match result {
+                 Ok(Ok(readout)) => readout,
+                 Ok(Err((status, reason))) => service.failed(request, status, reason),
+-                Err(_) => service.failed(request, MemoryReadStatusV1::Unavailable, "memory inventory read deadline exceeded"),
++                Err(_) => service.failed(
++                    request,
++                    MemoryReadStatusV1::Unavailable,
++                    "memory inventory read deadline exceeded",
++                ),
+             }
+         };
+         readout.elapsed_seconds = started.elapsed().as_secs_f64();
+-        readout.validate().map_err(|error| AgentdError::Protocol(error.to_string()))?;
++        readout
++            .validate()
++            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+         Ok(readout)
+     }
+ }
+@@ -355,4 +404,3 @@ fn failed(
+         reason: Some(reason.to_string()),
+     }
+ }
+-
+diff --git a/codex-rs/hepta-agentd/src/memory_isolated_owner_v14_test_support.rs b/codex-rs/hepta-agentd/src/memory_isolated_owner_v14_test_support.rs
+index ac76291a4f546adf1e97679a8b4f157f492a307d..0e21dba6f915dd4dcea793c0d44ab51ecffcbee5 100644
+--- a/codex-rs/hepta-agentd/src/memory_isolated_owner_v14_test_support.rs
++++ b/codex-rs/hepta-agentd/src/memory_isolated_owner_v14_test_support.rs
+@@ -2,31 +2,60 @@
+ //! travel through the existing Agentd control server and client.
+ 
+ use std::path::PathBuf;
+-use std::sync::{Arc, Mutex};
++use std::sync::Arc;
++use std::sync::Mutex;
+ 
+ use codex_hepta_cognitive_store::DurableCognitiveStore;
+-use codex_hepta_learning_artifacts::{ArtifactKind, ArtifactSelectionVerifierV1, LearningArtifactManifestV2,
+-    LearningArtifactOwnerService, LearningArtifactOwnerServiceConfigV1, LearningArtifactPublishRequestV1,
+-    ProvenanceModeV1, RegistryHeadWitnessV1, SignedCurrentArtifactHeadV1, admit_manifest_at_withdrawal_head_v3};
++use codex_hepta_cognitive_types::MemoryInventoryKindV1;
++use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+ use codex_hepta_fleet::FleetRegistry;
+-use codex_hepta_memory::{CognitiveAccess, CognitiveRecoveryAnchor, CognitiveRecoveryRequirement,
+-    CognitiveScope, MemoryCellWriteModeV1, MemoryInventoryOwnerSnapshotV1,
+-    MemoryInventoryRecordV1, MemoryTrainingSelectorV11};
+-use codex_hepta_cognitive_types::{MemoryInventoryKindV1, hnmf::ContractDigestV1};
++use codex_hepta_learning_artifacts::ArtifactKind;
++use codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1;
++use codex_hepta_learning_artifacts::LearningArtifactManifestV2;
++use codex_hepta_learning_artifacts::LearningArtifactOwnerService;
++use codex_hepta_learning_artifacts::LearningArtifactOwnerServiceConfigV1;
++use codex_hepta_learning_artifacts::LearningArtifactPublishRequestV1;
++use codex_hepta_learning_artifacts::ProvenanceModeV1;
++use codex_hepta_learning_artifacts::RegistryHeadWitnessV1;
++use codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1;
++use codex_hepta_learning_artifacts::admit_manifest_at_withdrawal_head_v3;
++use codex_hepta_memory::CognitiveAccess;
++use codex_hepta_memory::CognitiveRecoveryAnchor;
++use codex_hepta_memory::CognitiveRecoveryRequirement;
++use codex_hepta_memory::CognitiveScope;
++use codex_hepta_memory::MemoryCellWriteModeV1;
++use codex_hepta_memory::MemoryInventoryOwnerSnapshotV1;
++use codex_hepta_memory::MemoryInventoryRecordV1;
++use codex_hepta_memory::MemoryTrainingSelectorV11;
+ use codex_hepta_paths::HeptaFleetRoot;
+-use codex_hepta_types::{Digest32, Generation};
++use codex_hepta_types::Digest32;
++use codex_hepta_types::Generation;
+ use ed25519_dalek::Signer;
+-use serde::{Deserialize, Serialize};
+-use serde_json::{Value, json};
+-use tokio::io::{AsyncBufReadExt, BufReader};
++use serde::Deserialize;
++use serde::Serialize;
++use serde_json::Value;
++use serde_json::json;
++use tokio::io::AsyncBufReadExt;
++use tokio::io::BufReader;
+ use tokio_util::sync::CancellationToken;
+ 
+-use crate::{AgentdConfig, AgentdControlServer, AgentdMemoryInventoryRuntimeV1, AgentdState,
+-    MemoryCellReleaseV11, MemoryIsolatedServiceV14};
+-use crate::memory_cell_release::test_support::{fixture_config_for_scope, id, owner_key, selection_trust};
++use super::Spec;
++use super::emit;
++use crate::AgentdConfig;
++use crate::AgentdControlServer;
++use crate::AgentdMemoryInventoryRuntimeV1;
++use crate::AgentdState;
++use crate::MemoryCellReleaseV11;
++use crate::MemoryIsolatedServiceV14;
++use crate::memory_cell_release::test_support::fixture_config_for_scope;
++use crate::memory_cell_release::test_support::id;
++use crate::memory_cell_release::test_support::owner_key;
++use crate::memory_cell_release::test_support::selection_trust;
+ use crate::memory_serving_plan_v11::learned_test_support::publish_trained;
+-use crate::memory_serving_plan_v11::test_support::{CellFixture, generation, now, record};
+-use super::{Spec, emit};
++use crate::memory_serving_plan_v11::test_support::CellFixture;
++use crate::memory_serving_plan_v11::test_support::generation;
++use crate::memory_serving_plan_v11::test_support::now;
++use crate::memory_serving_plan_v11::test_support::record;
+ 
+ #[derive(Clone, Deserialize, Serialize)]
+ #[serde(deny_unknown_fields)]
+@@ -87,13 +116,31 @@ impl ManifestPins {
+         assert_eq!(manifest.kind, ArtifactKind::Parameters);
+         assert_eq!(manifest.provenance_mode, ProvenanceModeV1::DatasetDerived);
+         let pins = Self {
+-            artifact_id: manifest.artifact_id.to_string(), kind: "parameters".to_string(),
+-            generation: manifest.generation.get(), provenance_mode: "dataset_derived".to_string(),
+-            source_dataset_digests: manifest.source_dataset_digests.iter().map(ToString::to_string).collect(),
+-            lineage_digests: manifest.lineage_digests.iter().map(ToString::to_string).collect(),
+-            predecessor_ids: manifest.predecessor_ids.iter().map(ToString::to_string).collect(),
+-            rollback_predecessor: manifest.rollback_predecessor.as_ref().map(ToString::to_string),
+-            bytes_digest: manifest.bytes_digest.to_string(), encoded_size_bytes: manifest.encoded_size_bytes,
++            artifact_id: manifest.artifact_id.to_string(),
++            kind: "parameters".to_string(),
++            generation: manifest.generation.get(),
++            provenance_mode: "dataset_derived".to_string(),
++            source_dataset_digests: manifest
++                .source_dataset_digests
++                .iter()
++                .map(ToString::to_string)
++                .collect(),
++            lineage_digests: manifest
++                .lineage_digests
++                .iter()
++                .map(ToString::to_string)
++                .collect(),
++            predecessor_ids: manifest
++                .predecessor_ids
++                .iter()
++                .map(ToString::to_string)
++                .collect(),
++            rollback_predecessor: manifest
++                .rollback_predecessor
++                .as_ref()
++                .map(ToString::to_string),
++            bytes_digest: manifest.bytes_digest.to_string(),
++            encoded_size_bytes: manifest.encoded_size_bytes,
+             training_code_digest: manifest.training_code_digest.to_string(),
+             runtime_tuple_digest: manifest.runtime_tuple_digest.to_string(),
+             device_profile_digest: manifest.device_profile_digest.to_string(),
+@@ -101,25 +148,45 @@ impl ManifestPins {
+             compatibility_digest: manifest.compatibility_digest.to_string(),
+             schema_profile_digest: manifest.schema_profile_digest.to_string(),
+             normalization_digest: manifest.normalization_digest.to_string(),
+-            producer_id: manifest.producer_id.to_string(), created_at: manifest.created_at, expires_at: manifest.expires_at,
++            producer_id: manifest.producer_id.to_string(),
++            created_at: manifest.created_at,
++            expires_at: manifest.expires_at,
+         };
+-        assert_eq!(&pins.restore(), manifest, "full original manifest preserved");
++        assert_eq!(
++            &pins.restore(),
++            manifest,
++            "full original manifest preserved"
++        );
+         pins
+     }
+ 
+     fn restore(&self) -> LearningArtifactManifestV2 {
+         assert_eq!(self.kind, "parameters");
+         assert_eq!(self.provenance_mode, "dataset_derived");
+-        let digest = |value: &str| value.parse::<Digest32>().expect("canonical manifest digest");
++        let digest = |value: &str| {
++            value
++                .parse::<Digest32>()
++                .expect("canonical manifest digest")
++        };
+         LearningArtifactManifestV2 {
+-            artifact_id: id(&self.artifact_id), kind: ArtifactKind::Parameters,
++            artifact_id: id(&self.artifact_id),
++            kind: ArtifactKind::Parameters,
+             generation: Generation::new(self.generation).expect("manifest generation"),
+             provenance_mode: ProvenanceModeV1::DatasetDerived,
+-            source_dataset_digests: self.source_dataset_digests.iter().map(|value| digest(value)).collect(),
+-            lineage_digests: self.lineage_digests.iter().map(|value| digest(value)).collect(),
++            source_dataset_digests: self
++                .source_dataset_digests
++                .iter()
++                .map(|value| digest(value))
++                .collect(),
++            lineage_digests: self
++                .lineage_digests
++                .iter()
++                .map(|value| digest(value))
++                .collect(),
+             predecessor_ids: self.predecessor_ids.iter().map(|value| id(value)).collect(),
+             rollback_predecessor: self.rollback_predecessor.as_ref().map(|value| id(value)),
+-            bytes_digest: digest(&self.bytes_digest), encoded_size_bytes: self.encoded_size_bytes,
++            bytes_digest: digest(&self.bytes_digest),
++            encoded_size_bytes: self.encoded_size_bytes,
+             training_code_digest: digest(&self.training_code_digest),
+             runtime_tuple_digest: digest(&self.runtime_tuple_digest),
+             device_profile_digest: digest(&self.device_profile_digest),
+@@ -127,157 +194,356 @@ impl ManifestPins {
+             compatibility_digest: digest(&self.compatibility_digest),
+             schema_profile_digest: digest(&self.schema_profile_digest),
+             normalization_digest: digest(&self.normalization_digest),
+-            producer_id: id(&self.producer_id), created_at: self.created_at, expires_at: self.expires_at,
++            producer_id: id(&self.producer_id),
++            created_at: self.created_at,
++            expires_at: self.expires_at,
+         }
+     }
+ }
+ 
+ fn capture(cell: &CellFixture) -> CellCheckpoint {
+     let head = &cell.publication.signed_current_head.witness;
+-    CellCheckpoint { selector: cell.selector.clone(), created_at: cell.config.now,
++    CellCheckpoint {
++        selector: cell.selector.clone(),
++        created_at: cell.config.now,
+         manifest: ManifestPins::capture(&cell.publication.admission.validated_manifest.manifest),
+-        head_generation: head.generation.get(), head_digest: head.head_digest.to_string(),
+-        predecessor: head.predecessor_head_digest.to_string(), issued_at: head.issued_at }
++        head_generation: head.generation.get(),
++        head_digest: head.head_digest.to_string(),
++        predecessor: head.predecessor_head_digest.to_string(),
++        issued_at: head.issued_at,
++    }
+ }
+ 
+-fn restore(root: PathBuf, owner: &MemoryInventoryOwnerSnapshotV1, checkpoint: CellCheckpoint) -> CellFixture {
++fn restore(
++    root: PathBuf,
++    owner: &MemoryInventoryOwnerSnapshotV1,
++    checkpoint: CellCheckpoint,
++) -> CellFixture {
+     let manifest = checkpoint.manifest.restore();
+     let mut config = fixture_config_for_scope(owner.scope(), root, checkpoint.created_at);
+     config.storage_binding = Digest32::of_bytes(checkpoint.selector.cell_id.as_str().as_bytes());
+     config.trust.registry_id = id(&format!("registry:{}", checkpoint.selector.cell_id));
+     config.writer_lease.registry_id = config.trust.registry_id.clone();
+-    config.writer_lease.signature = owner_key().sign(&config.writer_lease.signing_bytes()).to_bytes();
+-    let mut head = SignedCurrentArtifactHeadV1 { withdrawal_scope_digest: config.trust.withdrawal_scope_digest,
+-        binding: config.storage_binding, witness: RegistryHeadWitnessV1 {
+-            registry_id: config.trust.registry_id.clone(), generation: Generation::new(checkpoint.head_generation).expect("head generation"),
++    config.writer_lease.signature = owner_key()
++        .sign(&config.writer_lease.signing_bytes())
++        .to_bytes();
++    let mut head = SignedCurrentArtifactHeadV1 {
++        withdrawal_scope_digest: config.trust.withdrawal_scope_digest,
++        binding: config.storage_binding,
++        witness: RegistryHeadWitnessV1 {
++            registry_id: config.trust.registry_id.clone(),
++            generation: Generation::new(checkpoint.head_generation).expect("head generation"),
+             head_digest: checkpoint.head_digest.parse().expect("head digest"),
+             predecessor_head_digest: checkpoint.predecessor.parse().expect("predecessor digest"),
+-            authority_epoch: 1, signer_id: id("memory-artifact-owner"),
++            authority_epoch: 1,
++            signer_id: id("memory-artifact-owner"),
+             signing_key_digest: Digest32::of_bytes(&owner_key().verifying_key().to_bytes()),
+-            issued_at: checkpoint.issued_at, expires_at: checkpoint.created_at + 3_600 }, signature: [0; 64] };
++            issued_at: checkpoint.issued_at,
++            expires_at: checkpoint.created_at + 3_600,
++        },
++        signature: [0; 64],
++    };
+     head.signature = owner_key().sign(&head.signing_bytes()).to_bytes();
+-    let service = Arc::new(Mutex::new(LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+-        required_current_head: Some(head.clone()), now: now() as u64, ..config.clone()
+-    }).expect("independent cold registry owner")));
+-    let payload = std::fs::read(config.root.join("payloads").join(format!("{}-{}.bin",
+-        manifest.artifact_id, manifest.bytes_digest))).expect("transferred exact MLP bytes");
++    let service = Arc::new(Mutex::new(
++        LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
++            required_current_head: Some(head.clone()),
++            now: now() as u64,
++            ..config.clone()
++        })
++        .expect("independent cold registry owner"),
++    ));
++    let payload = std::fs::read(config.root.join("payloads").join(format!(
++        "{}-{}.bin",
++        manifest.artifact_id, manifest.bytes_digest
++    )))
++    .expect("transferred exact MLP bytes");
+     assert_eq!(Digest32::of_bytes(&payload), manifest.bytes_digest);
+     let admission = {
+         let locked = service.lock().expect("artifact owner");
+         let frontier = locked.withdrawal_registry();
+-        admit_manifest_at_withdrawal_head_v3(frontier, frontier.head_digest(), manifest, now() as u64)
+-            .expect("fresh admission against live restored frontier")
++        admit_manifest_at_withdrawal_head_v3(
++            frontier,
++            frontier.head_digest(),
++            manifest,
++            now() as u64,
++        )
++        .expect("fresh admission against live restored frontier")
+     };
+     let publication = LearningArtifactPublishRequestV1 {
+-        operation_id: id(&format!("memory-publication:{}", admission.validated_manifest.manifest.generation.get())),
+-        admission, payload, expected_registry_predecessor_head: head.witness.predecessor_head_digest,
+-        signed_current_head: head, now: now() as u64 };
+-    let verifier = ArtifactSelectionVerifierV1::new(selection_trust(&config), &config.trust).expect("fresh selection verifier");
+-    let host = Arc::new(MemoryCellReleaseV11::new(checkpoint.selector.cell_id.clone(), Arc::clone(&service), verifier));
+-    assert!(host.load_current().is_err(), "checkpoint alone grants no selected model");
+-    let result = CellFixture { host, service, config, publication, selector: checkpoint.selector };
++        operation_id: id(&format!(
++            "memory-publication:{}",
++            admission.validated_manifest.manifest.generation.get()
++        )),
++        admission,
++        payload,
++        expected_registry_predecessor_head: head.witness.predecessor_head_digest,
++        signed_current_head: head,
++        now: now() as u64,
++    };
++    let verifier = ArtifactSelectionVerifierV1::new(selection_trust(&config), &config.trust)
++        .expect("fresh selection verifier");
++    let host = Arc::new(MemoryCellReleaseV11::new(
++        checkpoint.selector.cell_id.clone(),
++        Arc::clone(&service),
++        verifier,
++    ));
++    assert!(
++        host.load_current().is_err(),
++        "checkpoint alone grants no selected model"
++    );
++    let result = CellFixture {
++        host,
++        service,
++        config,
++        publication,
++        selector: checkpoint.selector,
++    };
+     result.install();
+-    result.host.load_current().expect("fresh authenticated selected bytes").validate_owner_snapshot(owner).expect("complete current partition");
++    result
++        .host
++        .load_current()
++        .expect("fresh authenticated selected bytes")
++        .validate_owner_snapshot(owner)
++        .expect("complete current partition");
+     result
+ }
+ 
+ pub(super) async fn child_main(spec: Spec) {
+     let independent = spec.independent.expect("V14 launch profile");
+     if let Some(path) = &independent.unavailable_source {
+-        assert!(!path.exists(), "source root must be unavailable during cold recovery");
++        assert!(
++            !path.exists(),
++            "source root must be unavailable during cold recovery"
++        );
+     }
+-    let checkpoint: Option<Checkpoint> = independent.checkpoint.map(|path|
+-        serde_json::from_slice(&std::fs::read(path).expect("checkpoint bytes")).expect("authority-free checkpoint pins"));
+-    let registry = FleetRegistry::open_existing(HeptaFleetRoot::parse(spec.fleet_root.clone()).expect("fleet root")).expect("fleet");
++    let checkpoint: Option<Checkpoint> = independent.checkpoint.map(|path| {
++        serde_json::from_slice(&std::fs::read(path).expect("checkpoint bytes"))
++            .expect("authority-free checkpoint pins")
++    });
++    let registry = FleetRegistry::open_existing(
++        HeptaFleetRoot::parse(spec.fleet_root.clone()).expect("fleet root"),
++    )
++    .expect("fleet");
+     let registration = registry.load_agent(&spec.owner).expect("owner");
+     if let Some(checkpoint) = &checkpoint {
+-        let recovered = DurableCognitiveStore::open_read_only_recovery(&registration.layout,
+-            CognitiveRecoveryRequirement::ExactCurrentCut(&checkpoint.anchor)).await.expect("cold SQLite exact recovery anchor");
++        let recovered = DurableCognitiveStore::open_read_only_recovery(
++            &registration.layout,
++            CognitiveRecoveryRequirement::ExactCurrentCut(&checkpoint.anchor),
++        )
++        .await
++        .expect("cold SQLite exact recovery anchor");
+         assert!(recovered.anchor() == &checkpoint.anchor);
+         drop(recovered);
+     }
+-    let config = AgentdConfig::load(spec.fleet_root, spec.owner.clone(), spec.spawn_generation,
+-        registration.layout.home_root().to_path_buf(), registration.layout.run_root().to_path_buf(),
+-        registration.layout.home_root().to_path_buf(), registration.manifest.workspace.as_path().to_path_buf()).expect("real exclusive Agentd lock");
++    let config = AgentdConfig::load(
++        spec.fleet_root,
++        spec.owner.clone(),
++        spec.spawn_generation,
++        registration.layout.home_root().to_path_buf(),
++        registration.layout.run_root().to_path_buf(),
++        registration.layout.home_root().to_path_buf(),
++        registration.manifest.workspace.as_path().to_path_buf(),
++    )
++    .expect("real exclusive Agentd lock");
+     let identity = config.identity().clone();
+-    let state = Arc::new(AgentdState::new(identity.clone(), registry, 16).expect("real Agentd state"));
+-    let store = Arc::new(DurableCognitiveStore::open(&identity.layout).await.expect("real SQLite owner"));
++    let state =
++        Arc::new(AgentdState::new(identity.clone(), registry, 16).expect("real Agentd state"));
++    let store = Arc::new(
++        DurableCognitiveStore::open(&identity.layout)
++            .await
++            .expect("real SQLite owner"),
++    );
+     let access = CognitiveAccess::agent_private(spec.owner.clone());
+     let scope = CognitiveScope::AgentPrivate;
+     let mut cells = if let Some(checkpoint) = checkpoint {
+-        let owner = store.memory_inventory_snapshot(&access, &scope, now()).await.expect("restored source cut");
++        let owner = store
++            .memory_inventory_snapshot(&access, &scope, now())
++            .await
++            .expect("restored source cut");
+         assert_eq!(owner.owner_cut_digest(), checkpoint.owner_cut);
+-        checkpoint.cells.into_iter().map(|cell| {
+-            let directory = if cell.selector.kind == MemoryInventoryKindV1::Semantic { "semantic" } else { "procedure" };
+-            restore(spec.artifact_root.join(directory), &owner, cell)
+-        }).collect::<Vec<_>>()
++        checkpoint
++            .cells
++            .into_iter()
++            .map(|cell| {
++                let directory = if cell.selector.kind == MemoryInventoryKindV1::Semantic {
++                    "semantic"
++                } else {
++                    "procedure"
++                };
++                restore(spec.artifact_root.join(directory), &owner, cell)
++            })
++            .collect::<Vec<_>>()
+     } else {
+-        for row in [record("item:a", MemoryInventoryKindV1::Event, json!(4)),
++        for row in [
++            record("item:a", MemoryInventoryKindV1::Event, json!(4)),
+             record("item:a", MemoryInventoryKindV1::Hold, json!(false)),
+-            record("item:a", MemoryInventoryKindV1::Semantic, json!({"reserve":11,"pack":3,"limit":14})),
+-            record("flow:a", MemoryInventoryKindV1::Procedure, json!({"opcodes":[1,2,3,6]}))] {
+-            store.write_memory_inventory(&access, &scope, &row, MemoryCellWriteModeV1::Create).await.expect("authored source ingestion");
++            record(
++                "item:a",
++                MemoryInventoryKindV1::Semantic,
++                json!({"reserve":11,"pack":3,"limit":14}),
++            ),
++            record(
++                "flow:a",
++                MemoryInventoryKindV1::Procedure,
++                json!({"opcodes":[1,2,3,6]}),
++            ),
++        ] {
++            store
++                .write_memory_inventory(&access, &scope, &row, MemoryCellWriteModeV1::Create)
++                .await
++                .expect("authored source ingestion");
+         }
+-        let owner = store.memory_inventory_snapshot(&access, &scope, now()).await.expect("initial source cut");
++        let owner = store
++            .memory_inventory_snapshot(&access, &scope, now())
++            .await
++            .expect("initial source cut");
+         let mut cells = vec![
+-            CellFixture::new(spec.artifact_root.join("semantic"), &owner, "cell:semantic", MemoryInventoryKindV1::Semantic, "item:a"),
+-            CellFixture::new(spec.artifact_root.join("procedure"), &owner, "cell:procedure", MemoryInventoryKindV1::Procedure, "flow:a")];
+-        for cell in &mut cells { publish_trained(cell, &owner); }
++            CellFixture::new(
++                spec.artifact_root.join("semantic"),
++                &owner,
++                "cell:semantic",
++                MemoryInventoryKindV1::Semantic,
++                "item:a",
++            ),
++            CellFixture::new(
++                spec.artifact_root.join("procedure"),
++                &owner,
++                "cell:procedure",
++                MemoryInventoryKindV1::Procedure,
++                "flow:a",
++            ),
++        ];
++        for cell in &mut cells {
++            publish_trained(cell, &owner);
++        }
+         cells
+     };
+-    let owner = store.memory_inventory_snapshot(&access, &scope, now()).await.expect("startup owner");
+-    let service = Arc::new(MemoryIsolatedServiceV14::new(&owner, generation(1), cells.iter()
+-        .map(|cell| (cell.selector.clone(), Arc::clone(&cell.host))).collect()).expect("native isolated service"));
+-    let runtime = AgentdMemoryInventoryRuntimeV1::with_independent_cells(spec.owner.clone(), spec.spawn_generation,
+-        scope.clone(), service, Arc::new(super::child::OracleGate::default())).expect("native existing runtime");
+-    state.attach_memory_inventory(Arc::new(runtime)).expect("runtime attachment");
+-    state.attach_cognitive_store(Arc::clone(&store)).expect("store attachment");
++    let owner = store
++        .memory_inventory_snapshot(&access, &scope, now())
++        .await
++        .expect("startup owner");
++    let service = Arc::new(
++        MemoryIsolatedServiceV14::new(
++            &owner,
++            generation(1),
++            cells
++                .iter()
++                .map(|cell| (cell.selector.clone(), Arc::clone(&cell.host)))
++                .collect(),
++        )
++        .expect("native isolated service"),
++    );
++    let runtime = AgentdMemoryInventoryRuntimeV1::with_independent_cells(
++        spec.owner.clone(),
++        spec.spawn_generation,
++        scope.clone(),
++        service,
++        Arc::new(super::child::OracleGate::default()),
++    )
++    .expect("native existing runtime");
++    state
++        .attach_memory_inventory(Arc::new(runtime))
++        .expect("runtime attachment");
++    state
++        .attach_cognitive_store(Arc::clone(&store))
++        .expect("store attachment");
+     let cancellation = CancellationToken::new();
+-    let server = AgentdControlServer::bind(identity.control_socket, Arc::clone(&state), cancellation.clone()).await.expect("real control socket");
++    let server = AgentdControlServer::bind(
++        identity.control_socket,
++        Arc::clone(&state),
++        cancellation.clone(),
++    )
++    .await
++    .expect("real control socket");
+     let control = tokio::spawn(server.run());
+-    emit(json!({"pid":std::process::id(),"owner":spec.owner,"spawn_generation":spec.spawn_generation,
++    emit(
++        json!({"pid":std::process::id(),"owner":spec.owner,"spawn_generation":spec.spawn_generation,
+         "profile":"V14_independent_trained_MLP","resolver":"explicit_oracle_test_seam",
+-        "source_root_unavailable":independent.unavailable_source}));
++        "source_root_unavailable":independent.unavailable_source}),
++    );
+     let mut input = BufReader::new(tokio::io::stdin()).lines();
+     while let Some(line) = input.next_line().await.expect("control fixture command") {
+         let command: Value = serde_json::from_str(&line).expect("test command");
+         let response = match command["op"].as_str().expect("command kind") {
+             "activate" => {
+                 state.refresh_generation().expect("Running fence");
+-                state.mark_runtime_prerequisites_ready().expect("stores ready");
+-                state.mark_app_server_ready().expect("explicit control-only readiness seam");
++                state
++                    .mark_runtime_prerequisites_ready()
++                    .expect("stores ready");
++                state
++                    .mark_app_server_ready()
++                    .expect("explicit control-only readiness seam");
+                 json!({"ready":true})
+             }
+             "correct" => {
+-                let row: MemoryInventoryRecordV1 = serde_json::from_value(command["record"].clone()).expect("typed source");
+-                store.write_memory_inventory(&access, &scope, &row, MemoryCellWriteModeV1::Correct {
+-                    expected_revision: command["revision"].as_u64().expect("source revision") }).await.expect("actual correction");
++                let row: MemoryInventoryRecordV1 =
++                    serde_json::from_value(command["record"].clone()).expect("typed source");
++                store
++                    .write_memory_inventory(
++                        &access,
++                        &scope,
++                        &row,
++                        MemoryCellWriteModeV1::Correct {
++                            expected_revision: command["revision"]
++                                .as_u64()
++                                .expect("source revision"),
++                        },
++                    )
++                    .await
++                    .expect("actual correction");
+                 json!({"corrected":true})
+             }
+             "retrain" => {
+-                let owner = store.memory_inventory_snapshot(&access, &scope, now()).await.expect("current source cut");
+-                let cell = cells.iter_mut().find(|cell| cell.selector.cell_id.as_str() == command["cell"].as_str().expect("cell ID")).expect("registered cell");
++                let owner = store
++                    .memory_inventory_snapshot(&access, &scope, now())
++                    .await
++                    .expect("current source cut");
++                let cell = cells
++                    .iter_mut()
++                    .find(|cell| {
++                        cell.selector.cell_id.as_str() == command["cell"].as_str().expect("cell ID")
++                    })
++                    .expect("registered cell");
+                 publish_trained(cell, &owner);
+                 json!({"trained":true,"artifact":cell.host.load_current().expect("selected learned cell").digest()})
+             }
+             "forget" => {
+-                let row: MemoryInventoryRecordV1 = serde_json::from_value(command["record"].clone()).expect("typed source");
+-                store.forget_memory_inventory(&access, &scope, &row.address(), command["revision"].as_u64().expect("revision"),
+-                    "V14 explicit source withdrawal", now()).await.expect("actual withdrawal");
++                let row: MemoryInventoryRecordV1 =
++                    serde_json::from_value(command["record"].clone()).expect("typed source");
++                store
++                    .forget_memory_inventory(
++                        &access,
++                        &scope,
++                        &row.address(),
++                        command["revision"].as_u64().expect("revision"),
++                        "V14 explicit source withdrawal",
++                        now(),
++                    )
++                    .await
++                    .expect("actual withdrawal");
+                 json!({"forgotten":true})
+             }
+             "checkpoint" => {
+-                let owner = store.memory_inventory_snapshot(&access, &scope, now()).await.expect("checkpoint source cut");
++                let owner = store
++                    .memory_inventory_snapshot(&access, &scope, now())
++                    .await
++                    .expect("checkpoint source cut");
+                 json!({"checkpoint":Checkpoint { owner_cut:owner.owner_cut_digest(),
+                     anchor:store.recovery_anchor().await.expect("exact current SQLite anchor"), cells:cells.iter().map(capture).collect() }})
+             }
+-            "stop" => { cancellation.cancel(); break; }
++            "stop" => {
++                cancellation.cancel();
++                break;
++            }
+             _ => panic!("unknown V14 fixture command"),
+         };
+         emit(response);
+     }
+     cancellation.cancel();
+-    control.await.expect("join actual control").expect("control stopped");
++    control
++        .await
++        .expect("join actual control")
++        .expect("control stopped");
+     drop(state);
+     drop(cells);
+     store.as_ref().clone().close().await;
+diff --git a/codex-rs/hepta-agentd/src/memory_isolated_process_v14_tests.rs b/codex-rs/hepta-agentd/src/memory_isolated_process_v14_tests.rs
+index d4d9525e73c5d4af27ac072efd56d2bc4f83f301..7990833d7a37fd3c84cc72f71605a37ad6d59b8c 100644
+--- a/codex-rs/hepta-agentd/src/memory_isolated_process_v14_tests.rs
++++ b/codex-rs/hepta-agentd/src/memory_isolated_process_v14_tests.rs
+@@ -2,59 +2,127 @@
+ //! transfer. This does not claim separate physical hosts or native Adam replay.
+ 
+ use std::io::Write;
+-use std::os::unix::fs::{DirBuilderExt, OpenOptionsExt, PermissionsExt};
+-use std::path::{Path, PathBuf};
++use std::os::unix::fs::DirBuilderExt;
++use std::os::unix::fs::OpenOptionsExt;
++use std::os::unix::fs::PermissionsExt;
++use std::path::Path;
++use std::path::PathBuf;
+ 
+-use codex_hepta_cognitive_types::{MemoryInventoryKindV1, MemoryInventoryRequestV1,
+-    MemoryPredictionKindV1, MemoryReadStatusV1, hnmf::ContractIdV1};
++use codex_hepta_cognitive_types::MemoryInventoryKindV1;
++use codex_hepta_cognitive_types::MemoryInventoryRequestV1;
++use codex_hepta_cognitive_types::MemoryPredictionKindV1;
++use codex_hepta_cognitive_types::MemoryReadStatusV1;
++use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+ use codex_hepta_types::Digest32;
+ use pretty_assertions::assert_eq;
+-use serde::{Deserialize, Serialize};
+-use serde_json::{Value, json};
+-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+-use tokio::net::{TcpListener, TcpStream};
++use serde::Deserialize;
++use serde::Serialize;
++use serde_json::Value;
++use serde_json::json;
++use tokio::io::AsyncReadExt;
++use tokio::io::AsyncWriteExt;
++use tokio::net::TcpListener;
++use tokio::net::TcpStream;
+ 
+-use super::process::{IndependentSpecV14, NativeOwner, fleet};
++use super::process::IndependentSpecV14;
++use super::process::NativeOwner;
++use super::process::fleet;
+ use crate::memory_serving_plan_v11::test_support::record;
+ 
+ fn query(scope: &ContractIdV1, operation: &str) -> MemoryInventoryRequestV1 {
+-    MemoryInventoryRequestV1 { schema:"hepta.memory.inventory-request.v1".to_string(),
+-        query_id:ContractIdV1::new(format!("v14:{operation}")).expect("query"), scope:scope.clone(),
+-        entity_key:ContractIdV1::new("item:a").expect("entity"), workflow_key:ContractIdV1::new("flow:a").expect("workflow"),
+-        text:operation.to_string(), at:20, since:20, max_hops:3, max_cells:4, max_steps:4 }
++    MemoryInventoryRequestV1 {
++        schema: "hepta.memory.inventory-request.v1".to_string(),
++        query_id: ContractIdV1::new(format!("v14:{operation}")).expect("query"),
++        scope: scope.clone(),
++        entity_key: ContractIdV1::new("item:a").expect("entity"),
++        workflow_key: ContractIdV1::new("flow:a").expect("workflow"),
++        text: operation.to_string(),
++        at: 20,
++        since: 20,
++        max_hops: 3,
++        max_cells: 4,
++        max_steps: 4,
++    }
+ }
+ 
+ #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+-struct FilePin { name: String, bytes: u64, sha256: String, mode: u32 }
++struct FilePin {
++    name: String,
++    bytes: u64,
++    sha256: String,
++    mode: u32,
++}
+ 
+ fn files(root: &Path, prefix: &str) -> Vec<(String, Vec<u8>, u32)> {
+     let mut result = Vec::new();
+     for entry in std::fs::read_dir(root).expect("cold directory") {
+         let entry = entry.expect("directory entry");
+-        let name = format!("{prefix}{}", entry.file_name().to_str().expect("fixture UTF8 path"));
++        let name = format!(
++            "{prefix}{}",
++            entry.file_name().to_str().expect("fixture UTF8 path")
++        );
+         let kind = entry.file_type().expect("file type");
+-        assert!(!kind.is_symlink(), "migration fixture only transports regular files");
+-        if kind.is_dir() { result.extend(files(&entry.path(), &format!("{name}/"))); }
+-        else { assert!(kind.is_file()); result.push((name, std::fs::read(entry.path()).expect("cold file bytes"),
+-            entry.metadata().expect("cold file metadata").permissions().mode() & 0o7777)); }
++        assert!(
++            !kind.is_symlink(),
++            "migration fixture only transports regular files"
++        );
++        if kind.is_dir() {
++            result.extend(files(&entry.path(), &format!("{name}/")));
++        } else {
++            assert!(kind.is_file());
++            result.push((
++                name,
++                std::fs::read(entry.path()).expect("cold file bytes"),
++                entry
++                    .metadata()
++                    .expect("cold file metadata")
++                    .permissions()
++                    .mode()
++                    & 0o7777,
++            ));
++        }
+     }
+     result.sort_by(|a, b| a.0.cmp(&b.0));
+     result
+ }
+ 
+-async fn transfer(source: &Path, cognitive: &Path, destination: &Path, target_cognitive: &Path) -> Value {
++async fn transfer(
++    source: &Path,
++    cognitive: &Path,
++    destination: &Path,
++    target_cognitive: &Path,
++) -> Value {
+     let mut data = files(&source.join("artifacts"), "artifacts/");
+     let database = cognitive.join(codex_hepta_cognitive_store::DURABLE_DATABASE_BASENAME);
+     for suffix in ["-wal", "-shm", "-journal"] {
+-        assert!(!PathBuf::from(format!("{}{suffix}", database.display())).exists(), "source must be fully quiesced");
++        assert!(
++            !PathBuf::from(format!("{}{suffix}", database.display())).exists(),
++            "source must be fully quiesced"
++        );
+     }
+-    data.push(("cognitive/database".to_string(), std::fs::read(&database).expect("closed real SQLite file"),
+-        std::fs::metadata(&database).expect("cold SQLite metadata").permissions().mode() & 0o7777));
+-    let pins: Vec<_> = data.iter().map(|(name, bytes, mode)| FilePin {
+-        name:name.clone(), bytes:bytes.len() as u64, sha256:Digest32::of_bytes(bytes).to_string(), mode:*mode }).collect();
++    data.push((
++        "cognitive/database".to_string(),
++        std::fs::read(&database).expect("closed real SQLite file"),
++        std::fs::metadata(&database)
++            .expect("cold SQLite metadata")
++            .permissions()
++            .mode()
++            & 0o7777,
++    ));
++    let pins: Vec<_> = data
++        .iter()
++        .map(|(name, bytes, mode)| FilePin {
++            name: name.clone(),
++            bytes: bytes.len() as u64,
++            sha256: Digest32::of_bytes(bytes).to_string(),
++            mode: *mode,
++        })
++        .collect();
+     assert!(pins.len() <= 256 && pins.iter().map(|p| p.bytes).sum::<u64>() <= 32 * 1024 * 1024);
+     let manifest = serde_json::to_vec(&pins).expect("transfer inventory");
+-    let listener = TcpListener::bind("127.0.0.1:0").await.expect("real TCP receiver");
++    let listener = TcpListener::bind("127.0.0.1:0")
++        .await
++        .expect("real TCP receiver");
+     let address = listener.local_addr().expect("receiver address");
+     let expected = pins.clone();
+     let target = destination.to_path_buf();
+@@ -64,32 +132,67 @@ async fn transfer(source: &Path, cognitive: &Path, destination: &Path, target_co
+         let count = stream.read_u64().await.expect("inventory byte length");
+         assert!(count <= 65_536);
+         let mut raw = vec![0_u8; count as usize];
+-        stream.read_exact(&mut raw).await.expect("actual inventory bytes");
++        stream
++            .read_exact(&mut raw)
++            .await
++            .expect("actual inventory bytes");
+         let actual: Vec<FilePin> = serde_json::from_slice(&raw).expect("received inventory");
+         assert_eq!(actual, expected, "independently held transport pins");
+         for pin in actual {
+             let mut bytes = vec![0_u8; pin.bytes as usize];
+-            stream.read_exact(&mut bytes).await.expect("actual file transfer");
++            stream
++                .read_exact(&mut bytes)
++                .await
++                .expect("actual file transfer");
+             assert_eq!(Digest32::of_bytes(&bytes).to_string(), pin.sha256);
+-            let path = if pin.name == "cognitive/database" { cognitive.join(codex_hepta_cognitive_store::DURABLE_DATABASE_BASENAME) }
+-                else { assert!(pin.name.starts_with("artifacts/") && !pin.name.split('/').any(|part| part == "..")); target.join(pin.name) };
++            let path = if pin.name == "cognitive/database" {
++                cognitive.join(codex_hepta_cognitive_store::DURABLE_DATABASE_BASENAME)
++            } else {
++                assert!(
++                    pin.name.starts_with("artifacts/")
++                        && !pin.name.split('/').any(|part| part == "..")
++                );
++                target.join(pin.name)
++            };
+             let parent = path.parent().expect("target directory");
+-            std::fs::DirBuilder::new().recursive(true).mode(0o700).create(parent).expect("private target directories");
+-            std::fs::set_permissions(parent, std::fs::Permissions::from_mode(0o700)).expect("private target parent");
+-            let mut file = std::fs::OpenOptions::new().write(true).create_new(true).mode(pin.mode)
+-                .open(&path).expect("distinct new target inode");
++            std::fs::DirBuilder::new()
++                .recursive(true)
++                .mode(0o700)
++                .create(parent)
++                .expect("private target directories");
++            std::fs::set_permissions(parent, std::fs::Permissions::from_mode(0o700))
++                .expect("private target parent");
++            let mut file = std::fs::OpenOptions::new()
++                .write(true)
++                .create_new(true)
++                .mode(pin.mode)
++                .open(&path)
++                .expect("distinct new target inode");
+             file.write_all(&bytes).expect("received cold bytes");
+-            file.set_permissions(std::fs::Permissions::from_mode(pin.mode)).expect("preserve exact source file mode");
++            file.set_permissions(std::fs::Permissions::from_mode(pin.mode))
++                .expect("preserve exact source file mode");
+             file.sync_all().expect("durable target file");
+-            std::fs::File::open(parent).and_then(|directory| directory.sync_all()).expect("durable target directory");
++            std::fs::File::open(parent)
++                .and_then(|directory| directory.sync_all())
++                .expect("durable target directory");
+         }
+         let mut extra = [0_u8; 1];
+         assert_eq!(stream.read(&mut extra).await.expect("transfer EOF"), 0);
+     });
+-    let mut stream = TcpStream::connect(address).await.expect("actual TCP sender");
+-    stream.write_u64(manifest.len() as u64).await.expect("inventory length");
+-    stream.write_all(&manifest).await.expect("inventory transfer");
+-    for (_, bytes, _) in &data { stream.write_all(bytes).await.expect("raw file transfer"); }
++    let mut stream = TcpStream::connect(address)
++        .await
++        .expect("actual TCP sender");
++    stream
++        .write_u64(manifest.len() as u64)
++        .await
++        .expect("inventory length");
++    stream
++        .write_all(&manifest)
++        .await
++        .expect("inventory transfer");
++    for (_, bytes, _) in &data {
++        stream.write_all(bytes).await.expect("raw file transfer");
++    }
+     stream.shutdown().await.expect("sender EOF");
+     receiving.await.expect("receiver completed");
+     json!({"transport":"same_host_loopback_TCP","receiver":"parent_test_transport_task",
+@@ -102,61 +205,218 @@ async fn memory_v14_two_process_control_and_cold_migration() {
+     let origin = temporary.path().join("origin");
+     std::fs::create_dir(&origin).expect("origin");
+     let (registry, owner) = fleet(&origin);
+-    let mut first = NativeOwner::spawn_independent(&origin, &registry, owner.clone(),
+-        IndependentSpecV14 { checkpoint:None, unavailable_source:None }).await;
+-    let source = first.client.memory_inventory_snapshot(/*after*/ None, /*expected_owner_cut*/ None, /*limit*/ 16).await.expect("real control source page");
++    let mut first = NativeOwner::spawn_independent(
++        &origin,
++        &registry,
++        owner.clone(),
++        IndependentSpecV14 {
++            checkpoint: None,
++            unavailable_source: None,
++        },
++    )
++    .await;
++    let source = first
++        .client
++        .memory_inventory_snapshot(
++            /*after*/ None, /*expected_owner_cut*/ None, /*limit*/ 16,
++        )
++        .await
++        .expect("real control source page");
+     let scope = source.scope;
+-    let initial = first.client.memory_inventory_read(query(&scope, "semantic")).await.expect("first process learned control read");
+-    assert_eq!((initial.prediction_kind, initial.value.clone()),
+-        (MemoryPredictionKindV1::ModelPrediction, json!({"reserve":11,"pack":3,"limit":14})));
+-    let procedure = first.client.memory_inventory_read(query(&scope, "procedure")).await.expect("procedure read");
+-    first.command(json!({"op":"correct","record":record("item:a",MemoryInventoryKindV1::Semantic,
+-        json!({"reserve":14,"pack":2,"limit":15})),"revision":1})).await;
+-    let fallback = first.client.memory_inventory_read(query(&scope, "semantic")).await.expect("real control fallback");
+-    assert_eq!((fallback.prediction_kind, fallback.value.clone(), fallback.cell_digests.clone()),
+-        (MemoryPredictionKindV1::SourceEvidence, json!({"reserve":14,"pack":2,"limit":15}), Vec::new()));
++    let initial = first
++        .client
++        .memory_inventory_read(query(&scope, "semantic"))
++        .await
++        .expect("first process learned control read");
++    assert_eq!(
++        (initial.prediction_kind, initial.value.clone()),
++        (
++            MemoryPredictionKindV1::ModelPrediction,
++            json!({"reserve":11,"pack":3,"limit":14})
++        )
++    );
++    let procedure = first
++        .client
++        .memory_inventory_read(query(&scope, "procedure"))
++        .await
++        .expect("procedure read");
++    first
++        .command(
++            json!({"op":"correct","record":record("item:a",MemoryInventoryKindV1::Semantic,
++        json!({"reserve":14,"pack":2,"limit":15})),"revision":1}),
++        )
++        .await;
++    let fallback = first
++        .client
++        .memory_inventory_read(query(&scope, "semantic"))
++        .await
++        .expect("real control fallback");
++    assert_eq!(
++        (
++            fallback.prediction_kind,
++            fallback.value.clone(),
++            fallback.cell_digests.clone()
++        ),
++        (
++            MemoryPredictionKindV1::SourceEvidence,
++            json!({"reserve":14,"pack":2,"limit":15}),
++            Vec::new()
++        )
++    );
+     assert_ne!(initial.source_ids, fallback.source_ids);
+-    let preserved = first.client.memory_inventory_read(query(&scope, "procedure")).await.expect("independent procedure");
+-    assert_eq!((preserved.value, preserved.cell_digests), (procedure.value.clone(), procedure.cell_digests.clone()));
+-    let training = first.command(json!({"op":"retrain","cell":"cell:semantic"})).await;
+-    let learned = first.client.memory_inventory_read(query(&scope, "semantic")).await.expect("actual retrained artifact");
+-    assert_eq!((learned.prediction_kind, learned.value.clone()), (MemoryPredictionKindV1::ModelPrediction, fallback.value.clone()));
++    let preserved = first
++        .client
++        .memory_inventory_read(query(&scope, "procedure"))
++        .await
++        .expect("independent procedure");
++    assert_eq!(
++        (preserved.value, preserved.cell_digests),
++        (procedure.value.clone(), procedure.cell_digests.clone())
++    );
++    let training = first
++        .command(json!({"op":"retrain","cell":"cell:semantic"}))
++        .await;
++    let learned = first
++        .client
++        .memory_inventory_read(query(&scope, "semantic"))
++        .await
++        .expect("actual retrained artifact");
++    assert_eq!(
++        (learned.prediction_kind, learned.value.clone()),
++        (
++            MemoryPredictionKindV1::ModelPrediction,
++            fallback.value.clone()
++        )
++    );
+     assert_ne!(initial.cell_digests, learned.cell_digests);
+     let checkpoint = first.command(json!({"op":"checkpoint"})).await["checkpoint"].clone();
+     let first_stop = first.stop(&registry, &owner).await;
+-    assert!(first.client.memory_inventory_read(query(&scope, "semantic")).await.is_err());
++    assert!(
++        first
++            .client
++            .memory_inventory_read(query(&scope, "semantic"))
++            .await
++            .is_err()
++    );
+     let destination = temporary.path().join("destination");
+     std::fs::create_dir(&destination).expect("independent destination");
+     let (target_registry, target_owner) = fleet(&destination);
+     assert_eq!(target_owner, owner);
+     let old = registry.load_agent(&owner).expect("quiesced source layout");
+-    let target = target_registry.load_agent(&owner).expect("independent destination layout");
+-    let transport = tokio::time::timeout(std::time::Duration::from_secs(30),
+-        transfer(&origin, old.layout.cognitive_root(), &destination, target.layout.cognitive_root())).await.expect("bounded transfer");
++    let target = target_registry
++        .load_agent(&owner)
++        .expect("independent destination layout");
++    let transport = tokio::time::timeout(
++        std::time::Duration::from_secs(30),
++        transfer(
++            &origin,
++            old.layout.cognitive_root(),
++            &destination,
++            target.layout.cognitive_root(),
++        ),
++    )
++    .await
++    .expect("bounded transfer");
+     let checkpoint_path = destination.join("v14-checkpoint.json");
+-    std::fs::write(&checkpoint_path, serde_json::to_vec(&checkpoint).expect("checkpoint pins")).expect("independent pins");
+-    std::fs::rename(&origin, temporary.path().join("retained-source-evidence")).expect("original source root becomes unavailable");
++    std::fs::write(
++        &checkpoint_path,
++        serde_json::to_vec(&checkpoint).expect("checkpoint pins"),
++    )
++    .expect("independent pins");
++    std::fs::rename(&origin, temporary.path().join("retained-source-evidence"))
++        .expect("original source root becomes unavailable");
+     assert!(!origin.exists());
+-    let mut second = NativeOwner::spawn_independent(&destination, &target_registry, owner.clone(),
+-        IndependentSpecV14 { checkpoint:Some(checkpoint_path), unavailable_source:Some(origin.clone()) }).await;
+-    assert_ne!(first.ready["pid"], second.ready["pid"], "distinct actual owner processes");
+-    let restored = second.client.memory_inventory_read(query(&scope, "semantic")).await.expect("cold recovered read through AgentdClient");
+-    assert_eq!((restored.value.clone(), restored.source_ids.clone(), restored.cell_digests.clone()),
+-        (learned.value.clone(), learned.source_ids.clone(), learned.cell_digests.clone()));
+-    let applied = second.client.memory_inventory_read(query(&scope, "apply")).await.expect("cold recovered composition");
+-    assert_eq!((applied.value["value"].clone(), applied.prediction_kind, applied.cell_digests.len()),
+-        (json!(15), MemoryPredictionKindV1::Mixed, 2));
+-    second.command(json!({"op":"correct","record":record("item:a",MemoryInventoryKindV1::Semantic,
+-        json!({"reserve":3,"pack":2,"limit":8})),"revision":2})).await;
+-    let corrected = second.client.memory_inventory_read(query(&scope, "semantic")).await.expect("destination source fallback");
+-    assert_eq!((corrected.prediction_kind, corrected.value.clone()),
+-        (MemoryPredictionKindV1::SourceEvidence, json!({"reserve":3,"pack":2,"limit":8})));
++    let mut second = NativeOwner::spawn_independent(
++        &destination,
++        &target_registry,
++        owner.clone(),
++        IndependentSpecV14 {
++            checkpoint: Some(checkpoint_path),
++            unavailable_source: Some(origin.clone()),
++        },
++    )
++    .await;
++    assert_ne!(
++        first.ready["pid"], second.ready["pid"],
++        "distinct actual owner processes"
++    );
++    let restored = second
++        .client
++        .memory_inventory_read(query(&scope, "semantic"))
++        .await
++        .expect("cold recovered read through AgentdClient");
++    assert_eq!(
++        (
++            restored.value.clone(),
++            restored.source_ids.clone(),
++            restored.cell_digests.clone()
++        ),
++        (
++            learned.value.clone(),
++            learned.source_ids.clone(),
++            learned.cell_digests.clone()
++        )
++    );
++    let applied = second
++        .client
++        .memory_inventory_read(query(&scope, "apply"))
++        .await
++        .expect("cold recovered composition");
++    assert_eq!(
++        (
++            applied.value["value"].clone(),
++            applied.prediction_kind,
++            applied.cell_digests.len()
++        ),
++        (json!(15), MemoryPredictionKindV1::Mixed, 2)
++    );
++    second
++        .command(
++            json!({"op":"correct","record":record("item:a",MemoryInventoryKindV1::Semantic,
++        json!({"reserve":3,"pack":2,"limit":8})),"revision":2}),
++        )
++        .await;
++    let corrected = second
++        .client
++        .memory_inventory_read(query(&scope, "semantic"))
++        .await
++        .expect("destination source fallback");
++    assert_eq!(
++        (corrected.prediction_kind, corrected.value.clone()),
++        (
++            MemoryPredictionKindV1::SourceEvidence,
++            json!({"reserve":3,"pack":2,"limit":8})
++        )
++    );
+     second.command(json!({"op":"forget","record":record("item:a",MemoryInventoryKindV1::Semantic,json!(null)),"revision":3})).await;
+-    let refused = second.client.memory_inventory_read(query(&scope, "semantic")).await.expect("destination withdrawal refusal");
+-    assert_eq!((refused.status, refused.value.clone(), refused.source_ids.clone(), refused.cell_digests.clone()),
+-        (MemoryReadStatusV1::Abstain, json!(null), Vec::new(), Vec::new()));
+-    let survivor = second.client.memory_inventory_read(query(&scope, "procedure")).await.expect("destination independent procedure");
+-    assert_eq!((survivor.value.clone(), survivor.cell_digests.clone()), (procedure.value.clone(), procedure.cell_digests.clone()));
++    let refused = second
++        .client
++        .memory_inventory_read(query(&scope, "semantic"))
++        .await
++        .expect("destination withdrawal refusal");
++    assert_eq!(
++        (
++            refused.status,
++            refused.value.clone(),
++            refused.source_ids.clone(),
++            refused.cell_digests.clone()
++        ),
++        (
++            MemoryReadStatusV1::Abstain,
++            json!(null),
++            Vec::new(),
++            Vec::new()
++        )
++    );
++    let survivor = second
++        .client
++        .memory_inventory_read(query(&scope, "procedure"))
++        .await
++        .expect("destination independent procedure");
++    assert_eq!(
++        (survivor.value.clone(), survivor.cell_digests.clone()),
++        (procedure.value.clone(), procedure.cell_digests.clone())
++    );
+     let second_stop = second.stop(&target_registry, &owner).await;
+     let evidence = json!({"schema":"hepta.memory.native-two-process.v14","parent_pid":std::process::id(),
+         "processes":[first_stop,second_stop],"transport":transport,"checkpoint":checkpoint,
+@@ -165,7 +425,14 @@ async fn memory_v14_two_process_control_and_cold_migration() {
+         "training":training,"same_host":true,"cross_physical_host_claim":false,
+         "native_optimizer_continuation_claim":false,"resolver":"explicit_oracle_test_seam"});
+     if let Some(path) = std::env::var_os("HEPTA_MEMORY_V14_NATIVE_EVIDENCE") {
+-        std::fs::write(path, serde_json::to_vec_pretty(&evidence).expect("evidence JSON")).expect("persist process evidence");
++        std::fs::write(
++            path,
++            serde_json::to_vec_pretty(&evidence).expect("evidence JSON"),
++        )
++        .expect("persist process evidence");
+     }
+-    println!("V14_NATIVE_TWO_PROCESS:{}", serde_json::to_string(&evidence).expect("bounded process evidence"));
++    println!(
++        "V14_NATIVE_TWO_PROCESS:{}",
++        serde_json::to_string(&evidence).expect("bounded process evidence")
++    );
+ }
+diff --git a/codex-rs/hepta-agentd/src/memory_isolated_service_v14.rs b/codex-rs/hepta-agentd/src/memory_isolated_service_v14.rs
+index 5219e8820afe50daaf9de1463b793b5355e449b1..39d0c4e67f184ba6e4d1d64978196c59025b2d3a 100644
+--- a/codex-rs/hepta-agentd/src/memory_isolated_service_v14.rs
++++ b/codex-rs/hepta-agentd/src/memory_isolated_service_v14.rs
+@@ -4,22 +4,34 @@
+ 
+ use std::collections::BTreeSet;
+ use std::sync::Arc;
+-use std::time::{Duration, Instant};
++use std::time::Duration;
++use std::time::Instant;
+ 
+-use codex_hepta_cognitive_types::{MemoryCellKindV1, MemoryInventoryKindV1,
+-    MemoryInventoryReadoutV1, MemoryInventoryRequestV1, MemoryOperationV1,
+-    MemoryPredictionKindV1, MemoryReadStatusV1};
+-use codex_hepta_cognitive_types::hnmf::{ContractDigestV1, ContractGenerationV1, ContractIdV1};
++use codex_hepta_cognitive_types::MemoryCellKindV1;
++use codex_hepta_cognitive_types::MemoryInventoryKindV1;
++use codex_hepta_cognitive_types::MemoryInventoryReadoutV1;
++use codex_hepta_cognitive_types::MemoryInventoryRequestV1;
++use codex_hepta_cognitive_types::MemoryOperationV1;
++use codex_hepta_cognitive_types::MemoryPredictionKindV1;
++use codex_hepta_cognitive_types::MemoryReadStatusV1;
++use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
++use codex_hepta_cognitive_types::hnmf::ContractGenerationV1;
++use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+ use codex_hepta_contracts::AgentId;
+-use codex_hepta_memory::{CognitiveAccess, CognitiveScope, CognitiveStore,
+-    MemoryInventoryOwnerSnapshotV1, MemoryTrainingSelectorV11};
++use codex_hepta_memory::CognitiveAccess;
++use codex_hepta_memory::CognitiveScope;
++use codex_hepta_memory::CognitiveStore;
++use codex_hepta_memory::MemoryInventoryOwnerSnapshotV1;
++use codex_hepta_memory::MemoryTrainingSelectorV11;
+ use codex_hepta_neuron::MemoryResidualPredictionV1;
+ use codex_hepta_types::Digest32;
+ use serde_json::Value;
+ 
+-use crate::{MemoryCellReleaseV11, SelectedMemoryCellV11};
++use crate::MemoryCellReleaseV11;
++use crate::SelectedMemoryCellV11;
+ use crate::memory_inventory_runtime::ReadFailure;
+-use crate::memory_inventory_runtime::execution::{InventoryParameters, execute};
++use crate::memory_inventory_runtime::execution::InventoryParameters;
++use crate::memory_inventory_runtime::execution::execute;
+ 
+ const SCHEMA: &str = "hepta.memory.inventory-readout.v14";
+ const DEADLINE: Duration = Duration::from_secs(5);
+@@ -53,8 +65,11 @@ pub(crate) struct IsolatedReadV14 {
+ }
+ 
+ impl MemoryIsolatedServiceV14 {
+-    pub fn new(owner: &MemoryInventoryOwnerSnapshotV1, generation: ContractGenerationV1,
+-               releases: Vec<(MemoryTrainingSelectorV11, Arc<MemoryCellReleaseV11>)>) -> Result<Self, String> {
++    pub fn new(
++        owner: &MemoryInventoryOwnerSnapshotV1,
++        generation: ContractGenerationV1,
++        releases: Vec<(MemoryTrainingSelectorV11, Arc<MemoryCellReleaseV11>)>,
++    ) -> Result<Self, String> {
+         if releases.len() > 64 || generation.get() >= 1_u64 << 53 {
+             return Err("V14 independent cell or generation bound".to_string());
+         }
+@@ -67,8 +82,13 @@ impl MemoryIsolatedServiceV14 {
+             selector.validate().map_err(|error| error.to_string())?;
+             let registry = release.registry_binding()?;
+             if &selector.cell_id != release.cell_id()
+-                || !ids.insert(selector.cell_id.clone()) || !registries.insert(registry)
+-                || !matches!(selector.kind, MemoryInventoryKindV1::Semantic | MemoryInventoryKindV1::Procedure) {
++                || !ids.insert(selector.cell_id.clone())
++                || !registries.insert(registry)
++                || !matches!(
++                    selector.kind,
++                    MemoryInventoryKindV1::Semantic | MemoryInventoryKindV1::Procedure
++                )
++            {
+                 return Err("V14 scope, duplicate cell or shared registry".to_string());
+             }
+             for key in &selector.keys {
+@@ -81,23 +101,46 @@ impl MemoryIsolatedServiceV14 {
+             pins.push((selector.clone(), registry.to_string()));
+             cells.push(RegisteredCell { selector, release });
+         }
+-        let bytes = serde_json::to_vec(&(SCHEMA, owner.owner_agent_id(), owner.scope(), generation, pins))
+-            .map_err(|error| error.to_string())?;
+-        Ok(Self { owner: owner.owner_agent_id().clone(), scope: owner.scope().clone(), generation,
+-            digest: ContractDigestV1::from_digest(Digest32::of_bytes(&bytes)).map_err(|error| error.to_string())?, cells })
++        let bytes = serde_json::to_vec(&(
++            SCHEMA,
++            owner.owner_agent_id(),
++            owner.scope(),
++            generation,
++            pins,
++        ))
++        .map_err(|error| error.to_string())?;
++        Ok(Self {
++            owner: owner.owner_agent_id().clone(),
++            scope: owner.scope().clone(),
++            generation,
++            digest: ContractDigestV1::from_digest(Digest32::of_bytes(&bytes))
++                .map_err(|error| error.to_string())?,
++            cells,
++        })
+     }
+ 
+-    pub async fn read(&self, store: &CognitiveStore, access: &CognitiveAccess,
+-                      scope: &CognitiveScope, request: &MemoryInventoryRequestV1,
+-                      operation: MemoryOperationV1) -> Result<MemoryInventoryReadoutV1, String> {
++    pub async fn read(
++        &self,
++        store: &CognitiveStore,
++        access: &CognitiveAccess,
++        scope: &CognitiveScope,
++        request: &MemoryInventoryRequestV1,
++        operation: MemoryOperationV1,
++    ) -> Result<MemoryInventoryReadoutV1, String> {
+         let started = Instant::now();
+         let future = async {
+-            let now = crate::memory_cell_runtime::now_unix_seconds().map_err(|error| error.to_string())?;
+-            let snapshot = store.memory_inventory_snapshot(access, scope, now).await.map_err(|error| error.to_string())?;
+-            self.read_acquired(store, access, scope, request, operation, snapshot).await
++            let now = crate::memory_cell_runtime::now_unix_seconds()
++                .map_err(|error| error.to_string())?;
++            let snapshot = store
++                .memory_inventory_snapshot(access, scope, now)
++                .await
++                .map_err(|error| error.to_string())?;
++            self.read_acquired(store, access, scope, request, operation, snapshot)
++                .await
+                 .map_err(|(_, reason)| reason.to_string())
+         };
+-        let mut result = tokio::time::timeout(DEADLINE, future).await
++        let mut result = tokio::time::timeout(DEADLINE, future)
++            .await
+             .map_err(|_| "V14 read deadline exceeded".to_string())??;
+         if started.elapsed() > DEADLINE {
+             return Err("V14 read deadline exceeded".to_string());
+@@ -106,114 +149,258 @@ impl MemoryIsolatedServiceV14 {
+         Ok(result)
+     }
+ 
+-    pub(crate) async fn read_acquired(&self, store: &CognitiveStore, access: &CognitiveAccess,
+-        scope: &CognitiveScope, request: &MemoryInventoryRequestV1, operation: MemoryOperationV1,
+-        snapshot: MemoryInventoryOwnerSnapshotV1) -> Result<MemoryInventoryReadoutV1, ReadFailure> {
++    pub(crate) async fn read_acquired(
++        &self,
++        store: &CognitiveStore,
++        access: &CognitiveAccess,
++        scope: &CognitiveScope,
++        request: &MemoryInventoryRequestV1,
++        operation: MemoryOperationV1,
++        snapshot: MemoryInventoryOwnerSnapshotV1,
++    ) -> Result<MemoryInventoryReadoutV1, ReadFailure> {
+         let prepared = self.prepare_read(request, operation, snapshot)?;
+         let readout = prepared.execute(request, operation)?;
+-        self.finish_read(store, access, scope, request, prepared, readout).await
++        self.finish_read(store, access, scope, request, prepared, readout)
++            .await
+     }
+ 
+-    pub(crate) fn prepare_read(&self, request: &MemoryInventoryRequestV1, operation: MemoryOperationV1,
+-        snapshot: MemoryInventoryOwnerSnapshotV1) -> Result<IsolatedReadV14, ReadFailure> {
+-        request.validate().map_err(|_| (MemoryReadStatusV1::Abstain, "invalid V14 request"))?;
+-        if snapshot.owner_agent_id() != &self.owner || snapshot.scope() != &self.scope || request.scope != self.scope {
++    pub(crate) fn prepare_read(
++        &self,
++        request: &MemoryInventoryRequestV1,
++        operation: MemoryOperationV1,
++        snapshot: MemoryInventoryOwnerSnapshotV1,
++    ) -> Result<IsolatedReadV14, ReadFailure> {
++        request
++            .validate()
++            .map_err(|_| (MemoryReadStatusV1::Abstain, "invalid V14 request"))?;
++        if snapshot.owner_agent_id() != &self.owner
++            || snapshot.scope() != &self.scope
++            || request.scope != self.scope
++        {
+             return Err((MemoryReadStatusV1::Abstain, "V14 owner or scope differs"));
+         }
+         let addresses = match operation {
+             MemoryOperationV1::Semantic => vec![(MemoryCellKindV1::Semantic, &request.entity_key)],
+-            MemoryOperationV1::Procedure => vec![(MemoryCellKindV1::Procedure, &request.workflow_key)],
+-            MemoryOperationV1::Apply => vec![(MemoryCellKindV1::Semantic, &request.entity_key),
+-                                           (MemoryCellKindV1::Procedure, &request.workflow_key)],
+-            MemoryOperationV1::Current | MemoryOperationV1::History | MemoryOperationV1::Change => Vec::new(),
++            MemoryOperationV1::Procedure => {
++                vec![(MemoryCellKindV1::Procedure, &request.workflow_key)]
++            }
++            MemoryOperationV1::Apply => vec![
++                (MemoryCellKindV1::Semantic, &request.entity_key),
++                (MemoryCellKindV1::Procedure, &request.workflow_key),
++            ],
++            MemoryOperationV1::Current | MemoryOperationV1::History | MemoryOperationV1::Change => {
++                Vec::new()
++            }
+         };
+         let mut cells = Vec::new();
+         let mut fallbacks = Vec::new();
+         for (kind, key) in addresses {
+-            let configured = self.cells.iter().find(|cell| matches_kind(cell.selector.kind, kind)
+-                && cell.selector.keys.iter().any(|address| address == key));
+-            let selected = configured.and_then(|cell| cell.release.load_current().ok().map(|selected| (cell, selected)))
+-                .filter(|(cell, selected)| selected.selector() == &cell.selector
+-                    && selected.validate_owner_snapshot(&snapshot).is_ok()
+-                    && cell.release.revalidate(selected).is_ok())
+-                .filter(|(_, selected)| selected.predict(key.as_str()).is_ok_and(|p| p.value.is_some() && p.abstain.is_none()));
++            let configured = self.cells.iter().find(|cell| {
++                matches_kind(cell.selector.kind, kind)
++                    && cell.selector.keys.iter().any(|address| address == key)
++            });
++            let selected = configured
++                .and_then(|cell| {
++                    cell.release
++                        .load_current()
++                        .ok()
++                        .map(|selected| (cell, selected))
++                })
++                .filter(|(cell, selected)| {
++                    selected.selector() == &cell.selector
++                        && selected.validate_owner_snapshot(&snapshot).is_ok()
++                        && cell.release.revalidate(selected).is_ok()
++                })
++                .filter(|(_, selected)| {
++                    selected
++                        .predict(key.as_str())
++                        .is_ok_and(|p| p.value.is_some() && p.abstain.is_none())
++                });
+             if let Some((cell, selected)) = selected {
+-                cells.push(UsedCell { release: Arc::clone(&cell.release), selected });
++                cells.push(UsedCell {
++                    release: Arc::clone(&cell.release),
++                    selected,
++                });
+             } else {
+                 fallbacks.push((kind, key.to_string()));
+             }
+         }
+-        let pins: Vec<_> = cells.iter().map(|cell| (cell.selected.cell_id(), cell.selected.generation(),
+-            cell.selected.digest(), cell.selected.training_projection_digest())).collect();
+-        let bytes = serde_json::to_vec(&(SCHEMA, self.digest, snapshot.owner_cut_digest(), pins, &fallbacks))
+-            .map_err(|_| (MemoryReadStatusV1::Unavailable, "V14 read identity encoding"))?;
++        let pins: Vec<_> = cells
++            .iter()
++            .map(|cell| {
++                (
++                    cell.selected.cell_id(),
++                    cell.selected.generation(),
++                    cell.selected.digest(),
++                    cell.selected.training_projection_digest(),
++                )
++            })
++            .collect();
++        let bytes = serde_json::to_vec(&(
++            SCHEMA,
++            self.digest,
++            snapshot.owner_cut_digest(),
++            pins,
++            &fallbacks,
++        ))
++        .map_err(|_| {
++            (
++                MemoryReadStatusV1::Unavailable,
++                "V14 read identity encoding",
++            )
++        })?;
+         let digest = ContractDigestV1::from_digest(Digest32::of_bytes(&bytes))
+             .map_err(|_| (MemoryReadStatusV1::Unavailable, "V14 read identity digest"))?;
+-        Ok(IsolatedReadV14 { snapshot, generation: self.generation, digest, cells, fallbacks })
++        Ok(IsolatedReadV14 {
++            snapshot,
++            generation: self.generation,
++            digest,
++            cells,
++            fallbacks,
++        })
+     }
+ 
+-    pub(crate) async fn finish_read(&self, store: &CognitiveStore, access: &CognitiveAccess,
+-        scope: &CognitiveScope, request: &MemoryInventoryRequestV1, prepared: IsolatedReadV14,
+-        readout: MemoryInventoryReadoutV1) -> Result<MemoryInventoryReadoutV1, ReadFailure> {
++    pub(crate) async fn finish_read(
++        &self,
++        store: &CognitiveStore,
++        access: &CognitiveAccess,
++        scope: &CognitiveScope,
++        request: &MemoryInventoryRequestV1,
++        prepared: IsolatedReadV14,
++        readout: MemoryInventoryReadoutV1,
++    ) -> Result<MemoryInventoryReadoutV1, ReadFailure> {
+         prepared.revalidate()?;
+         let now = crate::memory_cell_runtime::now_unix_seconds()
+             .map_err(|_| (MemoryReadStatusV1::Unavailable, "V14 clock unavailable"))?;
+-        let current = store.memory_inventory_snapshot(access, scope, now).await
+-            .map_err(|_| (MemoryReadStatusV1::Unavailable, "V14 current owner unavailable"))?;
+-        let operation = readout.operation.ok_or((MemoryReadStatusV1::Unavailable, "V14 operation missing"))?;
+-        if current.owner_agent_id() != &self.owner || current.scope() != &self.scope
++        let current = store
++            .memory_inventory_snapshot(access, scope, now)
++            .await
++            .map_err(|_| {
++                (
++                    MemoryReadStatusV1::Unavailable,
++                    "V14 current owner unavailable",
++                )
++            })?;
++        let operation = readout
++            .operation
++            .ok_or((MemoryReadStatusV1::Unavailable, "V14 operation missing"))?;
++        if current.owner_agent_id() != &self.owner
++            || current.scope() != &self.scope
+             || current.owner_cut_digest() != prepared.snapshot.owner_cut_digest()
+-            || current.required_sources(request, operation).map_err(|_| (MemoryReadStatusV1::Stale, "V14 support withdrawn"))?
+-                != readout.source_ids.iter().copied().collect::<BTreeSet<_>>() {
+-            return Err((MemoryReadStatusV1::Stale, "V14 complete source cut changed before use"));
++            || current
++                .required_sources(request, operation)
++                .map_err(|_| (MemoryReadStatusV1::Stale, "V14 support withdrawn"))?
++                != readout.source_ids.iter().copied().collect::<BTreeSet<_>>()
++        {
++            return Err((
++                MemoryReadStatusV1::Stale,
++                "V14 complete source cut changed before use",
++            ));
+         }
+         for cell in &prepared.cells {
+-            cell.selected.validate_owner_snapshot(&current)
+-                .map_err(|_| (MemoryReadStatusV1::Stale, "V14 used model full projection changed"))?;
++            cell.selected
++                .validate_owner_snapshot(&current)
++                .map_err(|_| {
++                    (
++                        MemoryReadStatusV1::Stale,
++                        "V14 used model full projection changed",
++                    )
++                })?;
+         }
+         prepared.revalidate()?;
+         Ok(readout)
+     }
+ 
+-    pub(crate) fn failed(&self, request: &MemoryInventoryRequestV1, status: MemoryReadStatusV1,
+-                         reason: &str) -> MemoryInventoryReadoutV1 {
+-        MemoryInventoryReadoutV1 { schema: SCHEMA.to_string(), query_id: request.query_id.clone(),
+-            operation: None, status, value: Value::Null, source_ids: Vec::new(), generation: self.generation,
+-            snapshot_digest: self.digest, prediction_kind: MemoryPredictionKindV1::None,
+-            cell_digests: Vec::new(), hops: 0, elapsed_seconds: 0.0, reason: Some(reason.to_string()) }
++    pub(crate) fn failed(
++        &self,
++        request: &MemoryInventoryRequestV1,
++        status: MemoryReadStatusV1,
++        reason: &str,
++    ) -> MemoryInventoryReadoutV1 {
++        MemoryInventoryReadoutV1 {
++            schema: SCHEMA.to_string(),
++            query_id: request.query_id.clone(),
++            operation: None,
++            status,
++            value: Value::Null,
++            source_ids: Vec::new(),
++            generation: self.generation,
++            snapshot_digest: self.digest,
++            prediction_kind: MemoryPredictionKindV1::None,
++            cell_digests: Vec::new(),
++            hops: 0,
++            elapsed_seconds: 0.0,
++            reason: Some(reason.to_string()),
++        }
+     }
+ }
+ 
+ impl IsolatedReadV14 {
+-    pub(crate) fn execute(&self, request: &MemoryInventoryRequestV1, operation: MemoryOperationV1)
+-        -> Result<MemoryInventoryReadoutV1, ReadFailure> {
++    pub(crate) fn execute(
++        &self,
++        request: &MemoryInventoryRequestV1,
++        operation: MemoryOperationV1,
++    ) -> Result<MemoryInventoryReadoutV1, ReadFailure> {
+         execute(request, operation, self, &self.snapshot)
+     }
+ 
+     fn revalidate(&self) -> Result<(), ReadFailure> {
+         for cell in &self.cells {
+-            cell.release.revalidate(&cell.selected)
+-                .map_err(|_| (MemoryReadStatusV1::Stale, "V14 used publication changed before use"))?;
++            cell.release.revalidate(&cell.selected).map_err(|_| {
++                (
++                    MemoryReadStatusV1::Stale,
++                    "V14 used publication changed before use",
++                )
++            })?;
+         }
+         Ok(())
+     }
+ }
+ 
+ impl InventoryParameters for IsolatedReadV14 {
+-    fn generation(&self) -> ContractGenerationV1 { self.generation }
+-    fn bundle_digest(&self) -> ContractDigestV1 { self.digest }
+-    fn readout_schema(&self) -> &'static str { SCHEMA }
++    fn generation(&self) -> ContractGenerationV1 {
++        self.generation
++    }
++    fn bundle_digest(&self) -> ContractDigestV1 {
++        self.digest
++    }
++    fn readout_schema(&self) -> &'static str {
++        SCHEMA
++    }
+     fn current_source_fallback(&self, kind: MemoryCellKindV1, key: &str) -> bool {
+-        self.fallbacks.iter().any(|(k, address)| *k == kind && address == key)
++        self.fallbacks
++            .iter()
++            .any(|(k, address)| *k == kind && address == key)
+     }
+-    fn predict(&self, kind: MemoryCellKindV1, key: &str) -> Result<MemoryResidualPredictionV1, String> {
+-        self.cells.iter().find(|cell| matches_kind(cell.selected.selector().kind, kind)
+-            && cell.selected.selector().keys.iter().any(|address| address.as_str() == key))
+-            .ok_or_else(|| "V14 no selected numerical cell".to_string())?.selected.predict(key)
++    fn predict(
++        &self,
++        kind: MemoryCellKindV1,
++        key: &str,
++    ) -> Result<MemoryResidualPredictionV1, String> {
++        self.cells
++            .iter()
++            .find(|cell| {
++                matches_kind(cell.selected.selector().kind, kind)
++                    && cell
++                        .selected
++                        .selector()
++                        .keys
++                        .iter()
++                        .any(|address| address.as_str() == key)
++            })
++            .ok_or_else(|| "V14 no selected numerical cell".to_string())?
++            .selected
++            .predict(key)
+     }
+ }
+ 
+ fn matches_kind(inventory: MemoryInventoryKindV1, cell: MemoryCellKindV1) -> bool {
+-    matches!((inventory, cell), (MemoryInventoryKindV1::Semantic, MemoryCellKindV1::Semantic)
+-        | (MemoryInventoryKindV1::Procedure, MemoryCellKindV1::Procedure))
++    matches!(
++        (inventory, cell),
++        (MemoryInventoryKindV1::Semantic, MemoryCellKindV1::Semantic)
++            | (
++                MemoryInventoryKindV1::Procedure,
++                MemoryCellKindV1::Procedure
++            )
++    )
+ }
+diff --git a/codex-rs/hepta-agentd/src/memory_isolated_service_v14_tests.rs b/codex-rs/hepta-agentd/src/memory_isolated_service_v14_tests.rs
+index 9abb9011108ed9a8362ca26ad4f02e8542dadc78..4fa8ff4d6dee9a19fab51ef7b0dc0ac717a42888 100644
+--- a/codex-rs/hepta-agentd/src/memory_isolated_service_v14_tests.rs
++++ b/codex-rs/hepta-agentd/src/memory_isolated_service_v14_tests.rs
+@@ -5,30 +5,62 @@ use std::future::Future;
+ use std::pin::Pin;
+ use std::sync::Arc;
+ 
+-use codex_hepta_cognitive_types::{MemoryInventoryKindV1, MemoryInventoryRequestV1,
+-    MemoryOperationV1, MemoryPredictionKindV1, MemoryReadStatusV1};
++use codex_hepta_cognitive_types::MemoryInventoryKindV1;
++use codex_hepta_cognitive_types::MemoryInventoryRequestV1;
++use codex_hepta_cognitive_types::MemoryOperationV1;
++use codex_hepta_cognitive_types::MemoryPredictionKindV1;
++use codex_hepta_cognitive_types::MemoryReadStatusV1;
+ use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+-use codex_hepta_memory::{CognitiveScope, MemoryCellWriteModeV1, MemoryInventoryOwnerSnapshotV1};
++use codex_hepta_memory::CognitiveScope;
++use codex_hepta_memory::MemoryCellWriteModeV1;
++use codex_hepta_memory::MemoryInventoryOwnerSnapshotV1;
+ use codex_hepta_types::Digest32;
+ use pretty_assertions::assert_eq;
+ use serde_json::json;
+ 
+-use super::learned_test_support::{publish_trained, train};
+-use super::test_support::{CellFixture, generation, key, now, owner_fixture, record, request, snapshot};
+-use crate::{AgentdMemoryInventoryRuntimeV1, MemoryCellCandidateV12,
+-    MemoryInventoryAddressResolverV1, MemoryInventoryResolvedAddressV1, MemoryIsolatedServiceV14};
+-use crate::memory_cell_release::test_support::{fixture_manifest_template, prepare_payload_request};
++use super::learned_test_support::publish_trained;
++use super::learned_test_support::train;
++use super::test_support::CellFixture;
++use super::test_support::generation;
++use super::test_support::key;
++use super::test_support::now;
++use super::test_support::owner_fixture;
++use super::test_support::record;
++use super::test_support::request;
++use super::test_support::snapshot;
++use crate::AgentdMemoryInventoryRuntimeV1;
++use crate::MemoryCellCandidateV12;
++use crate::MemoryInventoryAddressResolverV1;
++use crate::MemoryInventoryResolvedAddressV1;
++use crate::MemoryIsolatedServiceV14;
++use crate::memory_cell_release::test_support::fixture_manifest_template;
++use crate::memory_cell_release::test_support::prepare_payload_request;
+ 
+ struct SemanticResolver;
+ impl MemoryInventoryAddressResolverV1 for SemanticResolver {
+     fn model_digest(&self) -> ContractDigestV1 {
+-        ContractDigestV1::from_digest(Digest32::of_bytes(b"v14-fixed-semantic-test-resolver")).expect("digest")
++        ContractDigestV1::from_digest(Digest32::of_bytes(b"v14-fixed-semantic-test-resolver"))
++            .expect("digest")
+     }
+-    fn resolve<'a>(&'a self, request: &'a MemoryInventoryRequestV1, owner: &'a MemoryInventoryOwnerSnapshotV1)
+-        -> Pin<Box<dyn Future<Output = Result<Option<MemoryInventoryResolvedAddressV1>, String>> + Send + 'a>> {
+-        Box::pin(async move { Ok(Some(MemoryInventoryResolvedAddressV1 { request: request.clone(),
+-            operation: MemoryOperationV1::Semantic, owner_cut_digest: owner.owner_cut_digest(),
+-            model_digest: self.model_digest() })) })
++    fn resolve<'a>(
++        &'a self,
++        request: &'a MemoryInventoryRequestV1,
++        owner: &'a MemoryInventoryOwnerSnapshotV1,
++    ) -> Pin<
++        Box<
++            dyn Future<Output = Result<Option<MemoryInventoryResolvedAddressV1>, String>>
++                + Send
++                + 'a,
++        >,
++    > {
++        Box::pin(async move {
++            Ok(Some(MemoryInventoryResolvedAddressV1 {
++                request: request.clone(),
++                operation: MemoryOperationV1::Semantic,
++                owner_cut_digest: owner.owner_cut_digest(),
++                model_digest: self.model_digest(),
++            }))
++        })
+     }
+ }
+ 
+@@ -37,68 +69,250 @@ async fn memory_v14_trained_cells_fallback_reject_retrain_restart_and_withdraw()
+     let (root, store, access) = owner_fixture().await;
+     let owner = snapshot(&store, &access).await;
+     let scope = CognitiveScope::AgentPrivate;
+-    let mut semantic = CellFixture::new(root.path().join("semantic"), &owner,
+-        "cell:semantic", MemoryInventoryKindV1::Semantic, "item:a");
+-    let mut procedure = CellFixture::new(root.path().join("procedure"), &owner,
+-        "cell:procedure", MemoryInventoryKindV1::Procedure, "flow:a");
++    let mut semantic = CellFixture::new(
++        root.path().join("semantic"),
++        &owner,
++        "cell:semantic",
++        MemoryInventoryKindV1::Semantic,
++        "item:a",
++    );
++    let mut procedure = CellFixture::new(
++        root.path().join("procedure"),
++        &owner,
++        "cell:procedure",
++        MemoryInventoryKindV1::Procedure,
++        "flow:a",
++    );
+     publish_trained(&mut semantic, &owner);
+     publish_trained(&mut procedure, &owner);
+-    let service = Arc::new(MemoryIsolatedServiceV14::new(&owner, generation(1), vec![
+-        (semantic.selector.clone(), Arc::clone(&semantic.host)),
+-        (procedure.selector.clone(), Arc::clone(&procedure.host))]).expect("independent service"));
+-    let runtime = AgentdMemoryInventoryRuntimeV1::with_independent_cells(owner.owner_agent_id().clone(),
+-        /*spawn_generation*/ 1, scope.clone(), Arc::clone(&service), Arc::new(SemanticResolver)).expect("existing Agentd runtime");
++    let service = Arc::new(
++        MemoryIsolatedServiceV14::new(
++            &owner,
++            generation(1),
++            vec![
++                (semantic.selector.clone(), Arc::clone(&semantic.host)),
++                (procedure.selector.clone(), Arc::clone(&procedure.host)),
++            ],
++        )
++        .expect("independent service"),
++    );
++    let runtime = AgentdMemoryInventoryRuntimeV1::with_independent_cells(
++        owner.owner_agent_id().clone(),
++        /*spawn_generation*/ 1,
++        scope.clone(),
++        Arc::clone(&service),
++        Arc::new(SemanticResolver),
++    )
++    .expect("existing Agentd runtime");
+     let query = request(&owner);
+     let first = runtime.read(&store, &query).await.expect("real MLP read");
+-    assert_eq!((first.status, first.prediction_kind, first.cell_digests.len()),
+-               (MemoryReadStatusV1::Ok, MemoryPredictionKindV1::ModelPrediction, 1));
+-    let sibling = service.read(&store, &access, &scope, &query, MemoryOperationV1::Procedure).await.expect("procedure");
+-    store.write_memory_inventory(&access, &scope,
+-        &record("item:a", MemoryInventoryKindV1::Semantic, json!({"reserve":14,"pack":2,"limit":15})),
+-        MemoryCellWriteModeV1::Correct { expected_revision: 1 }).await.expect("correction");
+-    let fallback = runtime.read(&store, &query).await.expect("runtime source fallback");
+-    assert_eq!((fallback.value.clone(), fallback.prediction_kind, fallback.cell_digests.clone()),
+-               (json!({"reserve":14,"pack":2,"limit":15}), MemoryPredictionKindV1::SourceEvidence, Vec::new()));
++    assert_eq!(
++        (
++            first.status,
++            first.prediction_kind,
++            first.cell_digests.len()
++        ),
++        (
++            MemoryReadStatusV1::Ok,
++            MemoryPredictionKindV1::ModelPrediction,
++            1
++        )
++    );
++    let sibling = service
++        .read(
++            &store,
++            &access,
++            &scope,
++            &query,
++            MemoryOperationV1::Procedure,
++        )
++        .await
++        .expect("procedure");
++    store
++        .write_memory_inventory(
++            &access,
++            &scope,
++            &record(
++                "item:a",
++                MemoryInventoryKindV1::Semantic,
++                json!({"reserve":14,"pack":2,"limit":15}),
++            ),
++            MemoryCellWriteModeV1::Correct {
++                expected_revision: 1,
++            },
++        )
++        .await
++        .expect("correction");
++    let fallback = runtime
++        .read(&store, &query)
++        .await
++        .expect("runtime source fallback");
++    assert_eq!(
++        (
++            fallback.value.clone(),
++            fallback.prediction_kind,
++            fallback.cell_digests.clone()
++        ),
++        (
++            json!({"reserve":14,"pack":2,"limit":15}),
++            MemoryPredictionKindV1::SourceEvidence,
++            Vec::new()
++        )
++    );
+     assert_ne!(fallback.source_ids, first.source_ids);
+-    let independent = service.read(&store, &access, &scope, &query, MemoryOperationV1::Procedure).await.expect("unaffected procedure");
+-    assert_eq!((independent.value, independent.cell_digests), (sibling.value.clone(), sibling.cell_digests.clone()));
+-    let mixed = service.read(&store, &access, &scope, &query, MemoryOperationV1::Apply).await.expect("source plus model");
+-    assert_eq!((mixed.value["value"].clone(), mixed.prediction_kind, mixed.cell_digests.len()),
+-               (json!(15), MemoryPredictionKindV1::Mixed, 1));
++    let independent = service
++        .read(
++            &store,
++            &access,
++            &scope,
++            &query,
++            MemoryOperationV1::Procedure,
++        )
++        .await
++        .expect("unaffected procedure");
++    assert_eq!(
++        (independent.value, independent.cell_digests),
++        (sibling.value.clone(), sibling.cell_digests.clone())
++    );
++    let mixed = service
++        .read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
++        .await
++        .expect("source plus model");
++    assert_eq!(
++        (
++            mixed.value["value"].clone(),
++            mixed.prediction_kind,
++            mixed.cell_digests.len()
++        ),
++        (json!(15), MemoryPredictionKindV1::Mixed, 1)
++    );
+     // Real training on the old cut loses the race; publication must reject it.
+     let candidate_generation = 3;
+-    let old = owner.training_projection_v11(&semantic.selector).expect("old source cut");
+-    let candidate = MemoryCellCandidateV12::from_projection(&old, generation(candidate_generation), &train(&old)).expect("actual trained candidate");
+-    let manifest = candidate.bind_manifest(fixture_manifest_template(&semantic.config, candidate_generation,
+-        Digest32::of_bytes(b"v14-stale-training-candidate"))).expect("candidate manifest");
+-    let rejected = prepare_payload_request(&semantic.service, &semantic.config, manifest, candidate.bytes().to_vec(), candidate_generation);
++    let old = owner
++        .training_projection_v11(&semantic.selector)
++        .expect("old source cut");
++    let candidate = MemoryCellCandidateV12::from_projection(
++        &old,
++        generation(candidate_generation),
++        &train(&old),
++    )
++    .expect("actual trained candidate");
++    let manifest = candidate
++        .bind_manifest(fixture_manifest_template(
++            &semantic.config,
++            candidate_generation,
++            Digest32::of_bytes(b"v14-stale-training-candidate"),
++        ))
++        .expect("candidate manifest");
++    let rejected = prepare_payload_request(
++        &semantic.service,
++        &semantic.config,
++        manifest,
++        candidate.bytes().to_vec(),
++        candidate_generation,
++    );
+     let current = snapshot(&store, &access).await;
+     assert!(semantic.host.publish(rejected, &current).is_err());
+-    let after_reject = runtime.read(&store, &query).await.expect("rejected candidate retains fallback");
+-    assert_eq!((after_reject.value, after_reject.prediction_kind, after_reject.cell_digests),
+-               (fallback.value.clone(), MemoryPredictionKindV1::SourceEvidence, Vec::new()));
++    let after_reject = runtime
++        .read(&store, &query)
++        .await
++        .expect("rejected candidate retains fallback");
++    assert_eq!(
++        (
++            after_reject.value,
++            after_reject.prediction_kind,
++            after_reject.cell_digests
++        ),
++        (
++            fallback.value.clone(),
++            MemoryPredictionKindV1::SourceEvidence,
++            Vec::new()
++        )
++    );
+     publish_trained(&mut semantic, &current);
+-    let learned = runtime.read(&store, &query).await.expect("new learned version");
+-    assert_eq!((learned.value, learned.prediction_kind), (fallback.value, MemoryPredictionKindV1::ModelPrediction));
++    let learned = runtime
++        .read(&store, &query)
++        .await
++        .expect("new learned version");
++    assert_eq!(
++        (learned.value, learned.prediction_kind),
++        (fallback.value, MemoryPredictionKindV1::ModelPrediction)
++    );
+     assert_ne!(learned.cell_digests, first.cell_digests);
+     drop(runtime);
+     drop(service);
+     let semantic = semantic.reopen();
+     let procedure = procedure.reopen();
+-    let restored = Arc::new(MemoryIsolatedServiceV14::new(&current, generation(1), vec![
+-        (semantic.selector.clone(), Arc::clone(&semantic.host)),
+-        (procedure.selector.clone(), Arc::clone(&procedure.host))]).expect("reauthenticated selected owners"));
+-    let runtime = AgentdMemoryInventoryRuntimeV1::with_independent_cells(current.owner_agent_id().clone(),
+-        /*spawn_generation*/ 1, scope.clone(), Arc::clone(&restored), Arc::new(SemanticResolver)).expect("restored runtime");
+-    assert_eq!(runtime.read(&store, &query).await.expect("restored learned model").cell_digests, learned.cell_digests);
+-    store.forget_memory_inventory(&access, &scope,
+-        &record("item:a", MemoryInventoryKindV1::Semantic, json!(null)).address(), /*expected_revision*/ 2,
+-        "withdraw current source", now()).await.expect("source withdrawal");
+-    let refused = runtime.read(&store, &query).await.expect("bounded refused readout");
+-    assert_eq!((refused.status, refused.value, refused.source_ids, refused.cell_digests),
+-               (MemoryReadStatusV1::Abstain, json!(null), Vec::new(), Vec::new()));
+-    assert_eq!(restored.read(&store, &access, &scope, &query, MemoryOperationV1::Procedure).await.expect("procedure survives").cell_digests,
+-               sibling.cell_digests);
++    let restored = Arc::new(
++        MemoryIsolatedServiceV14::new(
++            &current,
++            generation(1),
++            vec![
++                (semantic.selector.clone(), Arc::clone(&semantic.host)),
++                (procedure.selector.clone(), Arc::clone(&procedure.host)),
++            ],
++        )
++        .expect("reauthenticated selected owners"),
++    );
++    let runtime = AgentdMemoryInventoryRuntimeV1::with_independent_cells(
++        current.owner_agent_id().clone(),
++        /*spawn_generation*/ 1,
++        scope.clone(),
++        Arc::clone(&restored),
++        Arc::new(SemanticResolver),
++    )
++    .expect("restored runtime");
++    assert_eq!(
++        runtime
++            .read(&store, &query)
++            .await
++            .expect("restored learned model")
++            .cell_digests,
++        learned.cell_digests
++    );
++    store
++        .forget_memory_inventory(
++            &access,
++            &scope,
++            &record("item:a", MemoryInventoryKindV1::Semantic, json!(null)).address(),
++            /*expected_revision*/ 2,
++            "withdraw current source",
++            now(),
++        )
++        .await
++        .expect("source withdrawal");
++    let refused = runtime
++        .read(&store, &query)
++        .await
++        .expect("bounded refused readout");
++    assert_eq!(
++        (
++            refused.status,
++            refused.value,
++            refused.source_ids,
++            refused.cell_digests
++        ),
++        (
++            MemoryReadStatusV1::Abstain,
++            json!(null),
++            Vec::new(),
++            Vec::new()
++        )
++    );
++    assert_eq!(
++        restored
++            .read(
++                &store,
++                &access,
++                &scope,
++                &query,
++                MemoryOperationV1::Procedure
++            )
++            .await
++            .expect("procedure survives")
++            .cell_digests,
++        sibling.cell_digests
++    );
+ }
+ 
+ #[tokio::test]
+@@ -106,33 +320,98 @@ async fn memory_v14_preserves_full_fitted_dependencies_and_return_fences() {
+     let (root, store, access) = owner_fixture().await;
+     let owner = snapshot(&store, &access).await;
+     let scope = CognitiveScope::AgentPrivate;
+-    let mut semantic = CellFixture::new(root.path().join("semantic"), &owner,
+-        "cell:semantic", MemoryInventoryKindV1::Semantic, "item:a");
++    let mut semantic = CellFixture::new(
++        root.path().join("semantic"),
++        &owner,
++        "cell:semantic",
++        MemoryInventoryKindV1::Semantic,
++        "item:a",
++    );
+     semantic.selector.keys.push(key("item:b"));
+     publish_trained(&mut semantic, &owner);
+-    let service = MemoryIsolatedServiceV14::new(&owner, generation(1),
+-        vec![(semantic.selector.clone(), Arc::clone(&semantic.host))]).expect("full-partition cell");
++    let service = MemoryIsolatedServiceV14::new(
++        &owner,
++        generation(1),
++        vec![(semantic.selector.clone(), Arc::clone(&semantic.host))],
++    )
++    .expect("full-partition cell");
+     let query = request(&owner);
+-    store.write_memory_inventory(&access, &scope,
+-        &record("item:b", MemoryInventoryKindV1::Semantic, json!({"reserve":1,"pack":1,"limit":2})),
+-        MemoryCellWriteModeV1::Correct { expected_revision: 1 }).await.expect("unqueried fitted dependency changes");
+-    let fallback = service.read(&store, &access, &scope, &query, MemoryOperationV1::Semantic).await.expect("exact current a fallback");
+-    assert_eq!((fallback.prediction_kind, fallback.cell_digests), (MemoryPredictionKindV1::SourceEvidence, Vec::new()));
++    store
++        .write_memory_inventory(
++            &access,
++            &scope,
++            &record(
++                "item:b",
++                MemoryInventoryKindV1::Semantic,
++                json!({"reserve":1,"pack":1,"limit":2}),
++            ),
++            MemoryCellWriteModeV1::Correct {
++                expected_revision: 1,
++            },
++        )
++        .await
++        .expect("unqueried fitted dependency changes");
++    let fallback = service
++        .read(&store, &access, &scope, &query, MemoryOperationV1::Semantic)
++        .await
++        .expect("exact current a fallback");
++    assert_eq!(
++        (fallback.prediction_kind, fallback.cell_digests),
++        (MemoryPredictionKindV1::SourceEvidence, Vec::new())
++    );
+     let current = snapshot(&store, &access).await;
+     publish_trained(&mut semantic, &current);
+-    let prepared = service.prepare_read(&query, MemoryOperationV1::Semantic, current).expect("prepared learned read");
+-    let value = prepared.execute(&query, MemoryOperationV1::Semantic).expect("native execution");
+-    store.write_memory_inventory(&access, &scope, &record("item:a", MemoryInventoryKindV1::Event, json!(8)),
+-        MemoryCellWriteModeV1::Correct { expected_revision: 1 }).await.expect("concurrent source commit");
+-    assert!(service.finish_read(&store, &access, &scope, &query, prepared, value).await.is_err());
++    let prepared = service
++        .prepare_read(&query, MemoryOperationV1::Semantic, current)
++        .expect("prepared learned read");
++    let value = prepared
++        .execute(&query, MemoryOperationV1::Semantic)
++        .expect("native execution");
++    store
++        .write_memory_inventory(
++            &access,
++            &scope,
++            &record("item:a", MemoryInventoryKindV1::Event, json!(8)),
++            MemoryCellWriteModeV1::Correct {
++                expected_revision: 1,
++            },
++        )
++        .await
++        .expect("concurrent source commit");
++    assert!(
++        service
++            .finish_read(&store, &access, &scope, &query, prepared, value)
++            .await
++            .is_err()
++    );
+     let current = snapshot(&store, &access).await;
+-    let prepared = service.prepare_read(&query, MemoryOperationV1::Semantic, current).expect("next query reuses model");
+-    let value = prepared.execute(&query, MemoryOperationV1::Semantic).expect("native execution");
++    let prepared = service
++        .prepare_read(&query, MemoryOperationV1::Semantic, current)
++        .expect("next query reuses model");
++    let value = prepared
++        .execute(&query, MemoryOperationV1::Semantic)
++        .expect("native execution");
+     publish_trained(&mut semantic, &snapshot(&store, &access).await);
+-    assert!(service.finish_read(&store, &access, &scope, &query, prepared, value).await.is_err());
+-    assert_eq!(service.read(&store, &access, &scope, &query, MemoryOperationV1::Semantic).await.expect("fresh selected version").prediction_kind,
+-               MemoryPredictionKindV1::ModelPrediction);
++    assert!(
++        service
++            .finish_read(&store, &access, &scope, &query, prepared, value)
++            .await
++            .is_err()
++    );
++    assert_eq!(
++        service
++            .read(&store, &access, &scope, &query, MemoryOperationV1::Semantic)
++            .await
++            .expect("fresh selected version")
++            .prediction_kind,
++        MemoryPredictionKindV1::ModelPrediction
++    );
+     let mut wrong = query;
+     wrong.scope = key("different-scope");
+-    assert!(service.read(&store, &access, &scope, &wrong, MemoryOperationV1::Semantic).await.is_err());
++    assert!(
++        service
++            .read(&store, &access, &scope, &wrong, MemoryOperationV1::Semantic)
++            .await
++            .is_err()
++    );
+ }
+diff --git a/codex-rs/hepta-cognitive-types/src/memory_inventory.rs b/codex-rs/hepta-cognitive-types/src/memory_inventory.rs
+index 9d686c5c2a68cd7d1602b572dbe9f88a9ea06b4e..ca21cc7f7646b5d7dd640cacab742fec2866c12e 100644
+--- a/codex-rs/hepta-cognitive-types/src/memory_inventory.rs
++++ b/codex-rs/hepta-cognitive-types/src/memory_inventory.rs
+@@ -37,7 +37,8 @@ pub struct MemoryInventoryRequestV1 {
+ 
+ impl MemoryInventoryRequestV1 {
+     pub fn validate(&self) -> Result<(), HnmfContractError> {
+-        if self.schema != "hepta.memory.inventory-request.v1" || !(1..=4).contains(&self.max_steps) {
++        if self.schema != "hepta.memory.inventory-request.v1" || !(1..=4).contains(&self.max_steps)
++        {
+             return Err(HnmfContractError::Invalid("inventory request envelope"));
+         }
+         // Reuse only the established identifier/text/time/budget constraints.
+@@ -52,7 +53,8 @@ impl MemoryInventoryRequestV1 {
+             since: self.since,
+             max_hops: self.max_hops,
+             max_cells: self.max_cells,
+-        }.validate()
++        }
++        .validate()
+     }
+ }
+ 
+@@ -97,13 +99,18 @@ impl MemoryInventoryReadoutV1 {
+             hops: self.hops,
+             elapsed_seconds: self.elapsed_seconds,
+             reason: self.reason.clone(),
+-        }.validate()?;
++        }
++        .validate()?;
+         if self.status != MemoryReadStatusV1::Ok {
+             return Ok(());
+         }
+         match self.operation {
+-            Some(MemoryOperationV1::Current | MemoryOperationV1::History | MemoryOperationV1::Change) => {
+-                if self.value.as_i64().is_none() || self.prediction_kind != MemoryPredictionKindV1::SourceEvidence {
++            Some(
++                MemoryOperationV1::Current | MemoryOperationV1::History | MemoryOperationV1::Change,
++            ) => {
++                if self.value.as_i64().is_none()
++                    || self.prediction_kind != MemoryPredictionKindV1::SourceEvidence
++                {
+                     return Err(HnmfContractError::Invalid("inventory event evidence"));
+                 }
+             }
+@@ -122,20 +129,30 @@ impl MemoryInventoryReadoutV1 {
+                 }
+             }
+             Some(MemoryOperationV1::Apply) => {
+-                let execution: MemoryInventoryExecutionV1 = serde_json::from_value(self.value.clone())
+-                    .map_err(|_| HnmfContractError::Invalid("inventory execution shape"))?;
++                let execution: MemoryInventoryExecutionV1 =
++                    serde_json::from_value(self.value.clone())
++                        .map_err(|_| HnmfContractError::Invalid("inventory execution shape"))?;
+                 if (self.prediction_kind != MemoryPredictionKindV1::Mixed
+                     && !(current_source_fallback
+                         && self.prediction_kind == MemoryPredictionKindV1::SourceEvidence))
+                     || execution.status != MemoryInventoryExecutionStatusV1::Completed
+-                    || execution.trace.is_empty() || execution.trace.len() > 4
++                    || execution.trace.is_empty()
++                    || execution.trace.len() > 4
+                     || execution.trace.last().is_none_or(|step| {
+-                        step.op != MemoryInventoryOpcodeV1::Stop || Some(step.after) != execution.value
++                        step.op != MemoryInventoryOpcodeV1::Stop
++                            || Some(step.after) != execution.value
+                     })
+-                    || execution.trace[..execution.trace.len() - 1].iter().any(|step| step.op == MemoryInventoryOpcodeV1::Stop)
+-                    || execution.trace.windows(2).any(|steps| steps[0].after != steps[1].before)
++                    || execution.trace[..execution.trace.len() - 1]
++                        .iter()
++                        .any(|step| step.op == MemoryInventoryOpcodeV1::Stop)
++                    || execution
++                        .trace
++                        .windows(2)
++                        .any(|steps| steps[0].after != steps[1].before)
+                     || execution.trace.iter().any(|step| match step.op {
+-                        MemoryInventoryOpcodeV1::Keep | MemoryInventoryOpcodeV1::Stop => step.after != step.before,
++                        MemoryInventoryOpcodeV1::Keep | MemoryInventoryOpcodeV1::Stop => {
++                            step.after != step.before
++                        }
+                         MemoryInventoryOpcodeV1::Halve => step.after != step.before.div_euclid(2),
+                         MemoryInventoryOpcodeV1::ReserveGap
+                         | MemoryInventoryOpcodeV1::Pack
+@@ -152,7 +169,9 @@ impl MemoryInventoryReadoutV1 {
+     }
+ }
+ 
+-pub fn decode_memory_inventory_request_v1(bytes: &[u8]) -> Result<MemoryInventoryRequestV1, HnmfContractError> {
++pub fn decode_memory_inventory_request_v1(
++    bytes: &[u8],
++) -> Result<MemoryInventoryRequestV1, HnmfContractError> {
+     if bytes.len() > 131_072 {
+         return Err(HnmfContractError::Invalid("inventory request wire bound"));
+     }
+@@ -162,7 +181,9 @@ pub fn decode_memory_inventory_request_v1(bytes: &[u8]) -> Result<MemoryInventor
+     Ok(request)
+ }
+ 
+-pub fn decode_memory_inventory_readout_v1(bytes: &[u8]) -> Result<MemoryInventoryReadoutV1, HnmfContractError> {
++pub fn decode_memory_inventory_readout_v1(
++    bytes: &[u8],
++) -> Result<MemoryInventoryReadoutV1, HnmfContractError> {
+     if bytes.len() > 131_072 {
+         return Err(HnmfContractError::Invalid("inventory readout wire bound"));
+     }
+@@ -175,4 +196,3 @@ pub fn decode_memory_inventory_readout_v1(bytes: &[u8]) -> Result<MemoryInventor
+ #[cfg(test)]
+ #[path = "memory_inventory_v14_tests.rs"]
+ mod v14_tests;
+-
+diff --git a/codex-rs/hepta-cognitive-types/src/memory_inventory_v14_tests.rs b/codex-rs/hepta-cognitive-types/src/memory_inventory_v14_tests.rs
+index 6db736c29eef8b88479078451af54b9d9d02f2ee..784a07d62066ee97d521e9fab62561d4f0334bd3 100644
+--- a/codex-rs/hepta-cognitive-types/src/memory_inventory_v14_tests.rs
++++ b/codex-rs/hepta-cognitive-types/src/memory_inventory_v14_tests.rs
+@@ -48,26 +48,49 @@ fn inventory_v14_exact_fallback_roundtrips_without_relaxing_v1() {
+         );
+         let mut old = candidate.clone();
+         old.schema = "hepta.memory.inventory-readout.v1".to_string();
+-        assert!(old.validate().is_err(), "V1 still requires parameter artifacts");
++        assert!(
++            old.validate().is_err(),
++            "V1 still requires parameter artifacts"
++        );
+         let mut forged = candidate.clone();
+         forged.prediction_kind = MemoryPredictionKindV1::ModelPrediction;
+-        assert!(forged.validate().is_err(), "no invented model without an artifact");
++        assert!(
++            forged.validate().is_err(),
++            "no invented model without an artifact"
++        );
+         let mut forged = candidate;
+-        forged.cell_digests.push(ContractDigestV1::parse(&"33".repeat(32)).expect("artifact"));
+-        assert!(forged.validate().is_err(), "source evidence cannot claim a model");
++        forged
++            .cell_digests
++            .push(ContractDigestV1::parse(&"33".repeat(32)).expect("artifact"));
++        assert!(
++            forged.validate().is_err(),
++            "source evidence cannot claim a model"
++        );
+     }
+ }
+ 
+ #[test]
+ fn inventory_v14_preserves_empty_failure_and_typed_value_constraints() {
+-    let mut candidate = readout(MemoryOperationV1::Semantic, json!({"reserve":11,"pack":16,"limit":14}));
+-    assert!(candidate.validate().is_err(), "invalid policy cannot enter through fallback");
++    let mut candidate = readout(
++        MemoryOperationV1::Semantic,
++        json!({"reserve":11,"pack":16,"limit":14}),
++    );
++    assert!(
++        candidate.validate().is_err(),
++        "invalid policy cannot enter through fallback"
++    );
+     candidate.status = MemoryReadStatusV1::Abstain;
+     candidate.reason = Some("current source withdrawn".to_string());
+-    assert!(candidate.validate().is_err(), "failed reads cannot expose partial evidence");
++    assert!(
++        candidate.validate().is_err(),
++        "failed reads cannot expose partial evidence"
++    );
+     candidate.value = Value::Null;
+     candidate.source_ids.clear();
+     candidate.prediction_kind = MemoryPredictionKindV1::None;
+     let bytes = serde_json::to_vec(&candidate).expect("failure wire");
+-    assert_eq!(decode_memory_inventory_readout_v1(&bytes).expect("empty failure"), candidate);
++    assert_eq!(
++        decode_memory_inventory_readout_v1(&bytes).expect("empty failure"),
++        candidate
++    );
+ }
