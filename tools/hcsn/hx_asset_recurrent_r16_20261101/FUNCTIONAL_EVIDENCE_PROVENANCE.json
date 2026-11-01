@@ -1,0 +1,26 @@
+{
+  "schema": "hcsn.fixed-potential-functional-figure.v1",
+  "source_sha256": {
+    "ASSET_PROTOCOL.json": "7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa",
+    "ASSET_AUDIT_V1.json.gz": "4cf14304a8e38340f72b278bd14d96ae8cb69dbef280352cd3e6e6788324b450",
+    "ASSET_TRAINING_V1.json.gz": "c128dd57936ce1f113b745223deb3ad8e1055b7002cf6373b0d8daedcafb2d1c",
+    "ASSET_RESULT_CHECK_V1.json": "41aa48f552a3b83a71ca48cde130b683b05da5e21bfc094b09ed5bae46c70e82"
+  },
+  "script_sha256": "ed59e459ec597439b0a21b62a752dc4b3218924e5e3d1377e7697ff67b3a0ed0",
+  "matplotlib_version": "3.10.8",
+  "files": [
+    {
+      "name": "FUNCTIONAL_EVIDENCE.png",
+      "bytes": 323565,
+      "sha256": "1c8c176dbf6c0aef1a42b72d0473a6c8450faf09ce0f503840195066e6d0551f"
+    },
+    {
+      "name": "FUNCTIONAL_EVIDENCE.svg",
+      "bytes": 143606,
+      "sha256": "6f795646860267e2c9f218750004d5fa085431ee4a07ea5fa71fcf40e89d6a37"
+    }
+  ],
+  "financial_kernel_calls": 0,
+  "training_reruns": 0,
+  "caption": "Existing fixed-z functional records. Boundary movement and BPTT are observed, while default occupancy increases and the training loss change is tiny. Lines join Euler samples; they are not analytic trajectories or spike events."
+}
