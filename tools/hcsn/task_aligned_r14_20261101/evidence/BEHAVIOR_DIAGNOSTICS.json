@@ -1,0 +1,61 @@
+{
+  "iid": {
+    "B": {
+      "episodes": 4096,
+      "first_actions": {
+        "RESET": 3172,
+        "WAIT": 924
+      },
+      "total_resets": 4096,
+      "reset_after_read": 0,
+      "on_policy_mean_regret": 7.6766530146786e-06,
+      "on_policy_mean_planner_q_mse": 0.0005071921644075168,
+      "audited_episodes": 64,
+      "audited_prefixes": 214
+    },
+    "D": {
+      "episodes": 4096,
+      "first_actions": {
+        "RESET": 3172,
+        "WAIT": 924
+      },
+      "total_resets": 4096,
+      "reset_after_read": 0,
+      "on_policy_mean_regret": 5.114024305309873e-06,
+      "on_policy_mean_planner_q_mse": 4.0408926033549416e-07,
+      "audited_episodes": 64,
+      "audited_prefixes": 214
+    }
+  },
+  "ood": {
+    "B": {
+      "episodes": 4096,
+      "first_actions": {
+        "RESET": 2119,
+        "WAIT": 1046,
+        "READ": 931
+      },
+      "total_resets": 3619,
+      "reset_after_read": 454,
+      "on_policy_mean_regret": 1.1252745045712767e-05,
+      "on_policy_mean_planner_q_mse": 0.0002142791367512901,
+      "audited_episodes": 64,
+      "audited_prefixes": 213
+    },
+    "D": {
+      "episodes": 4096,
+      "first_actions": {
+        "RESET": 2119,
+        "WAIT": 1046,
+        "READ": 931
+      },
+      "total_resets": 3585,
+      "reset_after_read": 420,
+      "on_policy_mean_regret": 5.342610870849667e-17,
+      "on_policy_mean_planner_q_mse": 2.21632080944191e-07,
+      "audited_episodes": 64,
+      "audited_prefixes": 214
+    }
+  },
+  "scope": "Descriptive accounting of the complete immutable confirmation cohort. Actual-visit calibration uses the preregistered first8 episodes per fit, not all episodes. No extra selection or retraining."
+}
