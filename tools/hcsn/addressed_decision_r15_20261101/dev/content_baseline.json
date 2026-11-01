@@ -1,0 +1,34 @@
+{
+  "schema": "hcsn-r15-static-typed-content-contract-v1",
+  "seed": 815300,
+  "episodes": 4096,
+  "queries": 24576,
+  "correct": 24576,
+  "accuracy": 1.0,
+  "all_correct_episodes": 4096,
+  "all_correct_rate": 1.0,
+  "public_writes": 24576,
+  "public_distractors": 24576,
+  "changed_overwrites": 8192,
+  "address_permutations_covered": 24,
+  "possible_address_permutations": 24,
+  "public_tape_sha256": "29879a9f13998b2d72560b8f9f06f82dd21758ce65986037725ef205957ba749",
+  "first_failures": [],
+  "cpu_seconds": 0.5477021990000001,
+  "wall_seconds": 0.6068276719997812,
+  "diagnostic_wrong_implementations": {
+    "ignores_overwrites_accuracy": 0.6383870442708334,
+    "accepts_distractors_accuracy": 0.0,
+    "scope": "Contract-negative checks only; not strong ordinary-model baselines"
+  },
+  "test_logic": [
+    "An independent per-episode permutation remaps four logical keys to public integer addresses.",
+    "The first four queries visit every address; two further queries revisit addresses.",
+    "Every query has a preceding same-key distractor with a different value.",
+    "Queries two and four have genuine changed-value overwrites, then immediate queries.",
+    "Actual BeliefMemory.write and its content-marginal readout are checked against a separate event oracle.",
+    "QUERY inputs have no answer field. Actor receives no oracle dictionary.",
+    "No time advance, hidden drift, noise, optimization or confirmation-dependent selection occurs."
+  ],
+  "scope": "Only the common typed public-address memory contract; no learned semantic addressing, drift retention, analytic-core benefit, or deployment admission."
+}

@@ -1,0 +1,135 @@
+{
+  "schema": "hcsn-addressed-decision-r15-v1",
+  "base_commit": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "addressing_reference_commit": "63b348005c468e29e89f9f309d525d87661ee06b",
+  "scope": "Four explicit typed addresses, four categorical contents, ten physical/recovery phases, six fixed-deadline queries. Synthetic finite CTMC mechanism and decision study. Routing is supplied identically, not learned semantic addressing. No production activation or continuum optimality claim.",
+  "question": "Does retained conditional state change valuable actions once address binding is reliable, and does HX improve over a matched ordinary generator/HMM after full cost?",
+  "seeds": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "world_theta": [
+    0.3,
+    0.018
+  ],
+  "maturity": 1.3,
+  "query_count": 6,
+  "slots_per_query": 3,
+  "iid_dt": [
+    0.25,
+    0.5,
+    0.75
+  ],
+  "ood_dt": [
+    0.35,
+    0.65,
+    0.95
+  ],
+  "initial_content": "Random permutation of four values over four explicit keys. Source phase sampled independently. Public WRITE reveals content only.",
+  "overwrite": "At query indices 2 and 4, publicly overwrite one key preserving its current latent phase. Previous deadline is observed/scored before the next WRITE.",
+  "distractors": "One typed distractor per query start, routed through the shared event interface and never treated as a WRITE.",
+  "observations": {
+    "read": "active: correct .70, three alternatives .10; recovery: erasure",
+    "refresh": "correct .97, three alternatives .01 in every phase"
+  },
+  "actions": {
+    "STOP": "Submit forecast for fixed deadline; all states then propagate to that deadline.",
+    "WAIT": "One time slot; no information.",
+    "READ": "One time slot; only then observe the query address.",
+    "REFRESH": "Two slots; only then obtain an independently keyed higher quality observation."
+  },
+  "costs": {
+    "read": 0.025,
+    "refresh": 0.07,
+    "public_price_scales": [
+      0.5,
+      1,
+      2,
+      4
+    ],
+    "active_time_price": 0.003,
+    "correct_answer_reward": 1
+  },
+  "reward": "Mean across six fixed-deadline correctness rewards minus actual observation/active-time fees. The four arms share the same entire world tape and target times.",
+  "calibration": {
+    "train_sequences": 64,
+    "validation_sequences": 32,
+    "length": 8,
+    "max_evals": 80,
+    "max_cpu_seconds": 8,
+    "method": "L-BFGS-B on observed raw sequence likelihood. Two HX parameters and four free-rate parameters; all attempts charged.",
+    "shared_model_hmm": "Same fitted HX matrices, full charge of reused calibration, structural equivalence reference."
+  },
+  "policy_train_episodes": 48,
+  "selection_episodes": 32,
+  "confirmation_episodes_per_fit_domain": 128,
+  "ordinary_selection": "Choose free-generator HMM or same-HX-matrix HMM using actual validation task net utility under the common value controller. Retain both results. Calibration loglik selection is a separate diagnostic.",
+  "light_control_selection": "Choose one fixed action sequence by pooled HX and selected-ordinary validation utility. Freeze it for both A and C.",
+  "patterns": [
+    "stop",
+    "read",
+    "refresh",
+    "two_read",
+    "wait_read",
+    "read_refresh",
+    "wait_refresh",
+    "wait_wait_read",
+    "wait_read_read",
+    "read_wait_read",
+    "three_read",
+    "refresh_read"
+  ],
+  "learned_policy": "One-action READ/REFRESH then STOP ridge policies fit on realized paired returns at fixed-STOP training prefixes. Four predeclared feature sets. They are not trained Q-star or unrestricted Q-pi controllers.",
+  "primary_arms": {
+    "A": "selected ordinary + shared fixed pattern",
+    "B": "same selected ordinary + shared finite-deadline controller",
+    "C": "HX + shared fixed pattern",
+    "D": "HX + shared finite-deadline controller"
+  },
+  "secondary_arms": [
+    "hmm_same_matrix",
+    "free_value",
+    "factorized_value",
+    "mean_value",
+    "memoryless_value",
+    "learned_state_confidence",
+    "learned_stop_value",
+    "learned_value_risk",
+    "learned_ordinary_dual"
+  ],
+  "mechanism_scope": "Factorized, index-mean and memoryless recovery interventions keep fitted parameters and inputs fixed; they are descriptive same-weight sensitivities, not retrained necessity proofs. Ordinary dual uses the same feature count as value+risk.",
+  "controller_scope": "Exact enumeration only within the current query's three slots under its supplied finite model. Does not optimize information value for future queries. No continuous QVI or smooth-pasting guarantee.",
+  "statistics": {
+    "independent_unit": "paired fitted seed, n=8",
+    "primary": "D-B mean utility IID and OOD, exhaustive two-sided sign flip and Holm across two domains",
+    "minimum_gain": 0.01,
+    "alpha": 0.05,
+    "ci": "Student t with seven degrees of freedom; seed is the replicate",
+    "quality_noninferiority_margin": 0.01,
+    "cost_ratio_maximum": 0.9,
+    "secondary": "descriptive, no primary rescue or causal necessity claim",
+    "quality_noninferiority_ci": "Four one-sided 98.75% Student-t lower bounds (utility/reward x IID/OOD), Bonferroni family alpha .05.",
+    "quality_gain_gate": "Both domains must separately meet minimum mean .01, t95 lower >0 and Holm-adjusted two-sided sign-flip p<.05.",
+    "quality_cost_gate": "All four simultaneous noninferiority lower bounds >-.01 and both domains measured online plus whole-search-at-1000-episode-reuses CPU ratio D/B <=.90."
+  },
+  "cost_scope": "Record all calibration candidates, validation/controller fitting, cold construction, all hypothetical planner branches, online execution, checkpoint serialization and file roundtrips, shared world generation, worker startup/import/final writes. Report whole-search/standalone/equal-calibration and reuse 1/100/1000/10000. Simulated task fees are separate from measured CPU seconds.",
+  "unmeasured": [
+    "GPU",
+    "energy",
+    "production networking",
+    "production Rust ownership"
+  ],
+  "source_freeze": "Publish exact source/protocol before formal training. Publish all fitted candidates and selections with hashes before first confirmation generation. No source/model/threshold changes after confirmation is opened.",
+  "production_activation": false,
+  "channel_feature_scope": "Base is phase-index mean plus content confidence/time/prices/entropy, not literal V-Vb. The value feature is terminal STOP forecast, not original financial equity or optimal continuation. Risk is next natural first passage. Common feature-work is charged to every learned-policy variant.",
+  "checkpoint_scope": "Belief/model/clock checkpoint with checksum and local fsync/read/restore, not full owner crash recovery or network transport.",
+  "active_time_scope": "Synthetic active action duration tariff .003; STOP padding is free, so this is not all physical delay or measured energy.",
+  "seeds_scope": "Calibration 11m/21m plus fit seed; episode namespaces phase_id*10^12 + fit_seed*10^5 + domain_offset + index. Phase policy=1 selection=2 confirmation=3; OOD offset=10000.",
+  "ood_scope": "Only observation/query intervals change; the latent law, observation kernels and price scale distribution remain the same. This is temporal extrapolation, not cross-family or real-world OOD."
+}

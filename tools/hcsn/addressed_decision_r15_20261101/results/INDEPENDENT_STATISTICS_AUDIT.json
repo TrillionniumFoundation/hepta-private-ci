@@ -1,0 +1,712 @@
+{
+  "admission": {
+    "HX_exclusive_operator_gain": false,
+    "all_thirteen_arms_valid": false,
+    "design_complete": true,
+    "mean_secondary_admissible": false,
+    "quality_gain": false,
+    "quality_guarded_cost": false,
+    "quality_noninferiority": true,
+    "same_matrix_HMM_behavior_identical": true
+  },
+  "audit_process_cpu_seconds_through_report": 4.609877,
+  "audit_wall_seconds_through_report": 2.9452131559992267,
+  "cohorts": 16,
+  "comparison": {
+    "discrepancies": [],
+    "maximum_absolute_difference": 5.684341886080802e-14,
+    "numeric_checks": 1379725,
+    "summary_path": "tools/hcsn/addressed_decision_r15_20261101/results/SUMMARY.json"
+  },
+  "cumulative_confirmation_cpu": {
+    "both_runs_cpu_seconds": 464.95423800000003,
+    "new_worker_cpu_seconds": 293.51855,
+    "original_confirmation_results_read": false,
+    "original_cpu_seconds": 171.435688,
+    "original_failed_worker_cpu_seconds": 22.476902,
+    "original_workers": 16
+  },
+  "domains": {
+    "iid": {
+      "Holm_p": 1.0,
+      "contrasts": {
+        "B_minus_A": {
+          "ci": [
+            0.009899915336590839,
+            0.027131741564450786
+          ],
+          "mean": 0.018515828450520813,
+          "se": 0.0036436711279292646,
+          "values": [
+            0.010400390624999978,
+            0.02912011718749996,
+            0.004335937499999942,
+            0.011201822916666604,
+            0.030953450520833314,
+            0.0303720703125,
+            0.01669270833333336,
+            0.015050130208333345
+          ]
+        },
+        "C_minus_A": {
+          "ci": [
+            0.0,
+            0.0
+          ],
+          "mean": 0.0,
+          "se": 0.0,
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "D_minus_B": {
+          "ci": [
+            -0.00012153921689128915,
+            0.00021585887834963107
+          ],
+          "mean": 4.715983072917096e-05,
+          "se": 7.134285606130712e-05,
+          "values": [
+            0.0,
+            -0.00015169270833326198,
+            0.0005289713541666297,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "D_minus_C": {
+          "ci": [
+            0.010051623491738501,
+            0.02707435307076147
+          ],
+          "mean": 0.018562988281249984,
+          "se": 0.003599457623670366,
+          "values": [
+            0.010400390624999978,
+            0.0289684244791667,
+            0.004864908854166572,
+            0.011201822916666604,
+            0.030953450520833314,
+            0.0303720703125,
+            0.01669270833333336,
+            0.015050130208333345
+          ]
+        },
+        "interaction": {
+          "ci": [
+            -0.00012153921689128915,
+            0.00021585887834963107
+          ],
+          "mean": 4.715983072917096e-05,
+          "se": 7.134285606130712e-05,
+          "values": [
+            0.0,
+            -0.00015169270833326198,
+            0.0005289713541666297,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "cost_gate": false,
+      "full_D_over_B_by_uses": {
+        "1": 0.9999501900969467,
+        "100": 0.99798571111604,
+        "1000": 0.9941591937933183,
+        "10000": 0.9927755075883951
+      },
+      "gain_gate": false,
+      "mean_invalid_support": 0,
+      "noninferiority": {
+        "reward": {
+          "lower": -0.00029968168108532897,
+          "mean": 0.0001627604166666713,
+          "passes": true
+        },
+        "utility": {
+          "lower": -0.00015554264873287433,
+          "mean": 4.715983072917096e-05,
+          "passes": true
+        }
+      },
+      "online_D_over_B": 0.9925800358943798,
+      "sign_flip_extreme": 256,
+      "sign_flip_p": 1.0
+    },
+    "ood": {
+      "Holm_p": 1.0,
+      "contrasts": {
+        "B_minus_A": {
+          "ci": [
+            0.01802375716186541,
+            0.04120962499959288
+          ],
+          "mean": 0.029616691080729146,
+          "se": 0.004902653734966503,
+          "values": [
+            0.03673430989583326,
+            0.025021093749999945,
+            0.03168873697916674,
+            0.024304231770833407,
+            0.05744557291666663,
+            0.022802799479166636,
+            0.00910332031249994,
+            0.029833463541666605
+          ]
+        },
+        "C_minus_A": {
+          "ci": [
+            0.0,
+            0.0
+          ],
+          "mean": 0.0,
+          "se": 0.0,
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "D_minus_B": {
+          "ci": [
+            -0.000288352722528486,
+            6.312485794516992e-05
+          ],
+          "mean": -0.00011261393229165806,
+          "se": 7.431996441652508e-05,
+          "values": [
+            0.0,
+            -0.00040071614583325754,
+            -0.0005001953125000069,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "D_minus_C": {
+          "ci": [
+            0.01790287998845104,
+            0.041105274308423936
+          ],
+          "mean": 0.029504077148437488,
+          "se": 0.004906148261049091,
+          "values": [
+            0.03673430989583326,
+            0.024620377604166688,
+            0.031188541666666736,
+            0.024304231770833407,
+            0.05744557291666663,
+            0.022802799479166636,
+            0.00910332031249994,
+            0.029833463541666605
+          ]
+        },
+        "interaction": {
+          "ci": [
+            -0.000288352722528486,
+            6.312485794516992e-05
+          ],
+          "mean": -0.00011261393229165806,
+          "se": 7.431996441652508e-05,
+          "values": [
+            0.0,
+            -0.00040071614583325754,
+            -0.0005001953125000069,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "cost_gate": false,
+      "full_D_over_B_by_uses": {
+        "1": 0.9998906770610495,
+        "100": 0.9943327160044112,
+        "1000": 0.9839596474261221,
+        "10000": 0.9803485193717105
+      },
+      "gain_gate": false,
+      "mean_invalid_support": 16,
+      "noninferiority": {
+        "reward": {
+          "lower": -0.00029968168108532897,
+          "mean": 0.0001627604166666713,
+          "passes": true
+        },
+        "utility": {
+          "lower": -0.00032377510374539026,
+          "mean": -0.00011261393229165806,
+          "passes": true
+        }
+      },
+      "online_D_over_B": 0.9798441351542361,
+      "sign_flip_extreme": 128,
+      "sign_flip_p": 0.5
+    }
+  },
+  "episodes_per_cohort": 128,
+  "frozen_core_files_verified": 18,
+  "frozen_source_unchanged": true,
+  "frozen_supplement_files_verified": 3,
+  "input_sha256": {
+    "tools/hcsn/addressed_decision_r15_20261101/PROTOCOL.json": "dbd4e096c3a4fdf814a48eeb41d712a040e09f3be861f6700fe4fabf0c6c5461",
+    "tools/hcsn/addressed_decision_r15_20261101/SOURCE_MANIFEST.json": "6c06773eadb2ccf9edb4f992fcebd338e34854d5a7ba36c938a0014fa7e2dbf2",
+    "tools/hcsn/addressed_decision_r15_20261101/SUPPLEMENT_MANIFEST.json": "f705e77ab930318ab395c1584e7d639ec1fb423e5bbdaec9fc348fc0948dec81",
+    "tools/hcsn/addressed_decision_r15_20261101/SUPPLEMENT_PROTOCOL.json": "38c22a588a8afa46c72e0aa25844dcfcf31d0119b9d2f5ce0f666adef77fa05c",
+    "tools/hcsn/addressed_decision_r15_20261101/__init__.py": "176b49d47d06af0e4e71ec723aa0576e94d208812f450f66491d2aa6eb4ca54e",
+    "tools/hcsn/addressed_decision_r15_20261101/audit.py": "fb05911e625e1332a05ee82564700888ca7950a6cc42cb6c9831bf4d59e03e3d",
+    "tools/hcsn/addressed_decision_r15_20261101/calibration.py": "39d47e857809d80e06fdf02171e35499ae2fddb215b4b4c4fd7c19f94d865a21",
+    "tools/hcsn/addressed_decision_r15_20261101/campaign.py": "02997ee4d91ffd07b782b20ece2fe8089b44124f1a740fcac580601e22aa117a",
+    "tools/hcsn/addressed_decision_r15_20261101/content_baseline.py": "02e2ec1b639373a502ead99bb0f14bfedeab52839b571aa4a8b664a52556b859",
+    "tools/hcsn/addressed_decision_r15_20261101/decision_probe.py": "f45f8c6f3765d3535a2cf522efe878dd51549e328278d121a38ccdd50180c7d6",
+    "tools/hcsn/addressed_decision_r15_20261101/execution.py": "28c8876e8e5fe2087d98883986aa8a04c9afb96d83fbfb89d3ea1930c824a4b0",
+    "tools/hcsn/addressed_decision_r15_20261101/law.py": "d405c6dc629173b338828fef9bbe2b639cdc5a24de89023266786369d8997ef8",
+    "tools/hcsn/addressed_decision_r15_20261101/numerics_study.py": "4c21e00672a2fab547b0330ce7a5986b30fdf70a1c40ef58a5089001b596822a",
+    "tools/hcsn/addressed_decision_r15_20261101/planner.py": "2ca6033e52a0f941cd499230b04d9789bc761cf769ddb9a644de9641e09cc833",
+    "tools/hcsn/addressed_decision_r15_20261101/results/SUMMARY.json": "80b62cfeba264de5683cd72d81291ad5197986339706dc9ee991a51e412be140",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151101_iid.json": "7845fbc2da3b39b03e9ced15b8a35fd14c6804f58fd63c2cfc78acb8a1ae8b42",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151101_ood.json": "2046abe4407ac388a9c35014d8bea2c1ce8742e6b403f7d1e97866dd7211c7db",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151103_iid.json": "40d5629749ee6ad0c5a676bd616776049f175522ff5560173660207532e779d6",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151103_ood.json": "9dabb752ba78fbcdb543a6bfa58f62e2b75caa12d4e900073fc6f1308f3d07ed",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151107_iid.json": "18d9a30133a4c8b20f821c91ecb0fca1b36eeb946dfdab71090d272e92fdf862",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151107_ood.json": "7bed4bf13f241c827c84cb46a0de67670a2b69b613bb68cbec5cba8fcd9be005",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151109_iid.json": "0195776251ee7c02a4beca8a1681879591d7f455c33e8272967131cf964b0011",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151109_ood.json": "509042d1ff9259eb7150ba2e229350d6ccf4df00aa51b512affcea128200722c",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151113_iid.json": "dc237929ace74011d0476467bb9d85adaabe72c38e9671a9360d6335c1761dfb",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151113_ood.json": "a8d3448e51baecdef594c463747dfd3f5adafcaed73a1a8ab9b8da6561badafc",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151117_iid.json": "84a39824371d98c8e6f73fea1580c05970c4e5145ae665de3d306db1c7347339",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151117_ood.json": "f7de756dd47750cabae6853e6b716e705ec3999e846dee1b5136de5f29f8c221",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151119_iid.json": "aa661b5df5ccf6b9e1f311de5a363d4695435cc320ca4029c3f9a93542e2d4e7",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151119_ood.json": "1d56e886129ecdd1a5efdbe06aa8be43865863fd0916495229d4329df7ea94e9",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151123_iid.json": "df3569bf555ca15577df2379bf53269c7710d6a84354b4b455713600ba44a72d",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/confirm_151123_ood.json": "dd4bf825de84dbb15d0268a56a6d40b6d407c84ef9644d0a111f9289444f9ffb",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/train_151101.json": "8ec8623271d79565a0e4ad9e8942e2f2f19ed2369546bd84cf9b3234e14eb64d",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/train_151103.json": "8cbdb0a8693717d43a0fe55c71b90251883f3780d61ad751a2dabdd7c7b9c9eb",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/train_151107.json": "86aebd5c729ffd70c8e4f907dbffab3570581fd7a9e68faba17f103503c22dfa",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/train_151109.json": "d89661dfb8f6b608d841e92f9195f02f838b0f92de91bb10d1157b583267b119",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/train_151113.json": "2f4d712fa19153964d5b64fd037d87b239395a9ab7875798284cbcbaeb939dad",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/train_151117.json": "bbeb630561451c3681b907740f05b577d58aa44b8f4e1af0763f3f2293dcd013",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/train_151119.json": "258a0715a7e590a5beb7e403eae12fe65d217ffd82f46744784dc51917c8c0c4",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/supervisor/train_151123.json": "0848631684c0888ca81982ff724583ffae306facec0955a1e6fbb0f70b18b377",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151101.json.gz": "fb363dd8b7b09881ad93f784ec8b65aed68157236909d2352f365c7bb9412c4d",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151103.json.gz": "cd3f0990be5ceae1ca5957676b4ad23b7b68961d7be7f65e2d2848e635b8ec54",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151107.json.gz": "668934006a25b5888d353ed8f9a7b4eaf84332b085aa777c7a14e8534e14b59a",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151109.json.gz": "77d2596f95a16809cbf697352b2aeff73fb697688884eafdb2e72727e572b66a",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151113.json.gz": "b3eb578ac4ba91f769aaa65f8aea1311ad8217dbea0f24096b2fa8b3199d6e33",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151117.json.gz": "c0b88fa6a2158f988dcbd8d5fbcde80d1b7b1d12301c9c70cd9c8a153166457a",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151119.json.gz": "5f44641e2b511a9ef5837349550fa4f65cea52f3dbe2d50263d95817de76db9c",
+    "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151123.json.gz": "bb5033efe564e836eb68d499351e88bb1be743323fa82606737fba2e1e0f4ad1",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/FREEZE.json": "7fa3959a6244d98e90f081337d5ab6dc6172b396176017f9b02dff623156ff96",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/SUPPLEMENT_PUBLICATION.json": "63d162123e092be79c2c0a0b51ce4c2a28b2c294b7f9ec92189af47c6d052707",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151101_iid.json.gz": "d9ce78212df2a224877d209ed06ad23aa44d911953d3ff9fefc57e790dea7add",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151101_ood.json.gz": "ffc6770d75f9d55c35ad809b6e0298c00ede4626e6a9c63ad9dad0b9086f66d4",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151103_iid.json.gz": "b22cb6a950e7052d4bb5198284853c3c8fae4248af5628acb3d14903d3ba79a5",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151103_ood.json.gz": "be80c0e8908ca0cdc8f3d56be4d6905a1d90ac8cc705426f783e4bb01ddd2437",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151107_iid.json.gz": "8dc07efeb047d156501825e3381b6fad4d0c1ea7c7cd6da6db5ca4adf8ff400d",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151107_ood.json.gz": "abed73120f0c8c55cb812baf0af1eab4fb7e29a21e9e73b386058622f7d3de50",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151109_iid.json.gz": "f10108c3c25cc2940df727b6189a329019121cad2a9c9dbe1e4f7bf93539992b",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151109_ood.json.gz": "c42399ac7a963eb714d286c1505d9b207253702f0ac59cab691fbb6667cf3e4c",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151113_iid.json.gz": "6141b0fdbe1b99b989df2c168343634d1138739dc35a2a7948c3742587732d9b",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151113_ood.json.gz": "f338339c823617e86edfb35a871eee3c1d951e09e1a1988cdd7628bf6028acac",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151117_iid.json.gz": "4a9572afb2c940f1d64f780d578ff67777bb08fd69dca8b308031670b5620bc2",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151117_ood.json.gz": "c485161c1017bded7c49dc062f990e95ef0a4adb8c755c6b637eda9db0ed3e15",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151119_iid.json.gz": "33da87e871f14dad6075ef6b84dc73d2d8374a5bd01e40c1cfbf005c94497b0a",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151119_ood.json.gz": "b3629994f7c92962408a243e551d903ef39b9763d6a6e0483467b1da8f447878",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151123_iid.json.gz": "90198040771056079e229e61199029609d8736c60d963b592bb17503d00796bf",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/confirmation/151123_ood.json.gz": "1931ef4973b5a0f10fd2dd70bce9127fb98fa8f3124a11131cb12c6712ade03d",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151101_iid.json": "6cdc0cad7884caeb1e87e027f146d5ac0dcff8eb0b7bf8e21029ca1850d3783c",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151101_ood.json": "d1d0e906df4467671aeb5233c327072d55fe6df0b6d2e3a1fb01d224401f07fc",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151103_iid.json": "4c490335dfc55ebc421c365eef9cae167f98cdd608d71dd695cc8d997cb16e0e",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151103_ood.json": "cee4d1d97c96d1caaa0a2d9b8599af2a53ec38df9af6de76a5b419510010fe19",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151107_iid.json": "6e8373fe2d93761c1afb0f8c9be8c9fbebe2a44721268eb2fd2a84fd04a5185c",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151107_ood.json": "41c3330419e67e051ebdd5458fd9641b5c6e59a81c4feac1056607afcd88ab7e",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151109_iid.json": "eedcbe6bf47853f437c3a2d64242cccb422495f53b29cb650e4f00bee65f1596",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151109_ood.json": "6a7ca22b3cf9021c6f5d08d38f62856c6c34ce8e53f6d0b43640896f68723a0e",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151113_iid.json": "d41770e334b6e3e91c11dece8bbbd3530cb7c89d0ca20173aa52e9f49cc3c73b",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151113_ood.json": "3450c361c7861306d79203a8017d47eebfe3459e5dd656ad9484e5aae9db86e4",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151117_iid.json": "bc497ba4dd7737a8e9395870ea424c20515f8f46ca9ced6168cd7fd858ad58e5",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151117_ood.json": "3901e19047865d2f6b82c876733f11044abc1553ee903c35549ce9af7753eb13",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151119_iid.json": "734920a2d5c3a7633125adf88b6286d430aab4797879062739463a18cbb6d1af",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151119_ood.json": "84b2a1285cef204545e755939d9bf6260a7621dd7ddd04b1fc617cc51274739a",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151123_iid.json": "1d7b6eda6f3f0099af58890ed4a6058fdd62d8d81670b75c525d9c6ff99f718e",
+    "tools/hcsn/addressed_decision_r15_20261101/run_02/supervisor/confirm_151123_ood.json": "c75680dda48e3e33f97726cfa24b358ed60d3f17a8af1e921771a39212fd94ed",
+    "tools/hcsn/addressed_decision_r15_20261101/statistics.py": "8cfa4d07ab5953e22275bb16d03453dcf98f6b0d915db358cf3f0e6fe777efcc",
+    "tools/hcsn/addressed_decision_r15_20261101/supervisor.py": "b2769a2231890623c0aaf5c60d9d990d145d504f6e705294bcc6cc3cb01fe9e5",
+    "tools/hcsn/addressed_decision_r15_20261101/supplement.py": "2a77361b98597b0ede9ce023b454be766ecaa949e20865d37bdc217871eabf0a",
+    "tools/hcsn/addressed_decision_r15_20261101/supplement_statistics.py": "3aca79cc40123e00b3c11662c92125140d50fa80256b14270a0cf94c626a4cb7",
+    "tools/hcsn/addressed_decision_r15_20261101/test_audit.py": "f9d94e729b9a14b0dafc810d4390713c4d19482452dce24d0d50daa3807c366f",
+    "tools/hcsn/addressed_decision_r15_20261101/world.py": "e3f584515dfe5272122a6647aeb36c781505f4cd7f98f916cace2bc76206ed1f",
+    "tools/hcsn/calibrated_operator_r11_20261031/numerics/kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "tools/hcsn/unified_cell_r12_20261031/PROTOCOL.json": "e14f397784e0c3b80edbbcf85e68b8d86f39d15004e375ee92a1f4a22b4c3621",
+    "tools/hcsn/unified_cell_r12_20261031/cell.py": "c76e6d128ecefe871b14ee3855e44420cfdfd4553e4afb588142db9a60931345"
+  },
+  "limits": [
+    "CPU timing is independently reconciled to receipts, not rebenchmarked.",
+    "Original run_01 performance is excluded; only its cost receipts enter cumulative research accounting.",
+    "Fit-level t intervals and four simultaneous NI bounds use the frozen parametric convention.",
+    "Exact sign-flip inference assumes paired sign exchangeability.",
+    "No claim of continuum convergence, production Rust performance, GPU energy or learned semantic addressing follows."
+  ],
+  "mean_failure_ledger": [
+    {
+      "all_cpu": 3.5737472230000016,
+      "attempted": 128,
+      "domain": "iid",
+      "failed_cpu": 0.0,
+      "failures": [],
+      "incurred_fees": 1.9379999999999984,
+      "invalid": 0,
+      "seed": 151101,
+      "total_cpu": 3.5756363080000013
+    },
+    {
+      "all_cpu": 3.791607212999991,
+      "attempted": 128,
+      "domain": "iid",
+      "failed_cpu": 0.0,
+      "failures": [],
+      "incurred_fees": 2.1840000000000015,
+      "invalid": 0,
+      "seed": 151103,
+      "total_cpu": 3.793804122999991
+    },
+    {
+      "all_cpu": 3.60453406999999,
+      "attempted": 128,
+      "domain": "iid",
+      "failed_cpu": 0.0,
+      "failures": [],
+      "incurred_fees": 2.19025,
+      "invalid": 0,
+      "seed": 151107,
+      "total_cpu": 3.60724197899999
+    },
+    {
+      "all_cpu": 3.214326172000007,
+      "attempted": 128,
+      "domain": "iid",
+      "failed_cpu": 0.0,
+      "failures": [],
+      "incurred_fees": 1.5765,
+      "invalid": 0,
+      "seed": 151109,
+      "total_cpu": 3.2173927640000066
+    },
+    {
+      "all_cpu": 3.8329698250000024,
+      "attempted": 128,
+      "domain": "iid",
+      "failed_cpu": 0.0,
+      "failures": [],
+      "incurred_fees": 2.5852499999999985,
+      "invalid": 0,
+      "seed": 151113,
+      "total_cpu": 3.8350284790000027
+    },
+    {
+      "all_cpu": 3.6867521340000122,
+      "attempted": 128,
+      "domain": "iid",
+      "failed_cpu": 0.0,
+      "failures": [],
+      "incurred_fees": 2.1719999999999984,
+      "invalid": 0,
+      "seed": 151117,
+      "total_cpu": 3.689795872000012
+    },
+    {
+      "all_cpu": 3.879674012000005,
+      "attempted": 128,
+      "domain": "iid",
+      "failed_cpu": 0.0,
+      "failures": [],
+      "incurred_fees": 2.20275,
+      "invalid": 0,
+      "seed": 151119,
+      "total_cpu": 3.8828769660000053
+    },
+    {
+      "all_cpu": 3.7190471510000114,
+      "attempted": 128,
+      "domain": "iid",
+      "failed_cpu": 0.0,
+      "failures": [],
+      "incurred_fees": 2.23175,
+      "invalid": 0,
+      "seed": 151123,
+      "total_cpu": 3.7208550730000116
+    },
+    {
+      "all_cpu": 3.620779728999997,
+      "attempted": 128,
+      "domain": "ood",
+      "failed_cpu": 0.0,
+      "failures": [],
+      "incurred_fees": 2.7563999999999997,
+      "invalid": 0,
+      "seed": 151101,
+      "total_cpu": 3.6240363719999973
+    },
+    {
+      "all_cpu": 3.7032684620000054,
+      "attempted": 128,
+      "domain": "ood",
+      "failed_cpu": 0.07377945499999927,
+      "failures": [
+        {
+          "cpu_seconds": 0.009805744000000116,
+          "episode_seed": 4015110310006,
+          "incurred_fee": 0.02105,
+          "key": 1,
+          "query": 1,
+          "token": 4
+        },
+        {
+          "cpu_seconds": 0.019425260999999416,
+          "episode_seed": 4015110310025,
+          "incurred_fee": 0.08280000000000001,
+          "key": 3,
+          "query": 3,
+          "token": 4
+        },
+        {
+          "cpu_seconds": 0.02117500800000016,
+          "episode_seed": 4015110310036,
+          "incurred_fee": 0.03665,
+          "key": 2,
+          "query": 5,
+          "token": 4
+        },
+        {
+          "cpu_seconds": 0.023373441999999578,
+          "episode_seed": 4015110310046,
+          "incurred_fee": 0.03275,
+          "key": 0,
+          "query": 4,
+          "token": 4
+        }
+      ],
+      "incurred_fees": 4.039549999999998,
+      "invalid": 4,
+      "seed": 151103,
+      "total_cpu": 3.7060041020000054
+    },
+    {
+      "all_cpu": 3.8174052089999937,
+      "attempted": 128,
+      "domain": "ood",
+      "failed_cpu": 0.15932555899999823,
+      "failures": [
+        {
+          "cpu_seconds": 0.03537386299999934,
+          "episode_seed": 4015110710041,
+          "incurred_fee": 0.03005,
+          "key": 1,
+          "query": 4,
+          "token": 4
+        },
+        {
+          "cpu_seconds": 0.03789771100000028,
+          "episode_seed": 4015110710044,
+          "incurred_fee": 0.03665,
+          "key": 3,
+          "query": 5,
+          "token": 4
+        },
+        {
+          "cpu_seconds": 0.02740156999999943,
+          "episode_seed": 4015110710046,
+          "incurred_fee": 0.05545,
+          "key": 2,
+          "query": 5,
+          "token": 4
+        },
+        {
+          "cpu_seconds": 0.017069936000000396,
+          "episode_seed": 4015110710070,
+          "incurred_fee": 0.034550000000000004,
+          "key": 3,
+          "query": 4,
+          "token": 4
+        },
+        {
+          "cpu_seconds": 0.028400974999998496,
+          "episode_seed": 4015110710079,
+          "incurred_fee": 0.030950000000000005,
+          "key": 0,
+          "query": 4,
+          "token": 4
+        },
+        {
+          "cpu_seconds": 0.013181504000000288,
+          "episode_seed": 4015110710104,
+          "incurred_fee": 0.027950000000000003,
+          "key": 0,
+          "query": 3,
+          "token": 4
+        }
+      ],
+      "incurred_fees": 4.004499999999999,
+      "invalid": 6,
+      "seed": 151107,
+      "total_cpu": 3.8204421359999934
+    },
+    {
+      "all_cpu": 3.505911926000003,
+      "attempted": 128,
+      "domain": "ood",
+      "failed_cpu": 0.0,
+      "failures": [],
+      "incurred_fees": 2.3260500000000004,
+      "invalid": 0,
+      "seed": 151109,
+      "total_cpu": 3.5094278240000034
+    },
+    {
+      "all_cpu": 3.678855828999998,
+      "attempted": 128,
+      "domain": "ood",
+      "failed_cpu": 0.08093202399999999,
+      "failures": [
+        {
+          "cpu_seconds": 0.0216540519999997,
+          "episode_seed": 4015111310056,
+          "incurred_fee": 0.02885,
+          "key": 0,
+          "query": 3,
+          "token": 4
+        },
+        {
+          "cpu_seconds": 0.01732153000000025,
+          "episode_seed": 4015111310089,
+          "incurred_fee": 0.06815,
+          "key": 0,
+          "query": 3,
+          "token": 4
+        },
+        {
+          "cpu_seconds": 0.01838707900000003,
+          "episode_seed": 4015111310091,
+          "incurred_fee": 0.023150000000000004,
+          "key": 0,
+          "query": 2,
+          "token": 4
+        },
+        {
+          "cpu_seconds": 0.02356936300000001,
+          "episode_seed": 4015111310113,
+          "incurred_fee": 0.035750000000000004,
+          "key": 2,
+          "query": 5,
+          "token": 4
+        }
+      ],
+      "incurred_fees": 5.07325,
+      "invalid": 4,
+      "seed": 151113,
+      "total_cpu": 3.680887646999998
+    },
+    {
+      "all_cpu": 4.134725859999999,
+      "attempted": 128,
+      "domain": "ood",
+      "failed_cpu": 0.0330867080000008,
+      "failures": [
+        {
+          "cpu_seconds": 0.0330867080000008,
+          "episode_seed": 4015111710062,
+          "incurred_fee": 0.029150000000000002,
+          "key": 0,
+          "query": 4,
+          "token": 4
+        }
+      ],
+      "incurred_fees": 3.9315999999999995,
+      "invalid": 1,
+      "seed": 151117,
+      "total_cpu": 4.138877822999999
+    },
+    {
+      "all_cpu": 3.9469704479999965,
+      "attempted": 128,
+      "domain": "ood",
+      "failed_cpu": 0.0,
+      "failures": [],
+      "incurred_fees": 3.454200000000001,
+      "invalid": 0,
+      "seed": 151119,
+      "total_cpu": 3.9500321909999965
+    },
+    {
+      "all_cpu": 3.9832515210000032,
+      "attempted": 128,
+      "domain": "ood",
+      "failed_cpu": 0.03448617099999929,
+      "failures": [
+        {
+          "cpu_seconds": 0.03448617099999929,
+          "episode_seed": 4015112310084,
+          "incurred_fee": 0.034550000000000004,
+          "key": 0,
+          "query": 4,
+          "token": 4
+        }
+      ],
+      "incurred_fees": 4.254399999999999,
+      "invalid": 1,
+      "seed": 151123,
+      "total_cpu": 3.9864896280000033
+    }
+  ],
+  "method": "Independent raw world/query/action reconstruction and scalar arithmetic; no project statistical functions imported or called",
+  "paired_world_tapes": 2048,
+  "passed": true,
+  "raw_complete_query_records_verified": 159648,
+  "registered_fit_seeds": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "same_matrix_HMM_identical_episode_traces": 2048,
+  "schema": "hcsn-r15-independent-statistics-audit-v1",
+  "serialization_retry": {
+    "audit_process_cpu_seconds_through_report": 4.863528,
+    "audit_wall_seconds_through_report": 2.9118368620002,
+    "error": "NumPy int64 serialization after all calculations and comparisons completed",
+    "maximum_absolute_difference": 5.684341886080802e-14,
+    "numeric_checks": 1379725.0,
+    "partial_report": "tools/hcsn/addressed_decision_r15_20261101/results/INDEPENDENT_STATISTICS_AUDIT.serialization_failed.partial.json",
+    "performance_recomputation_changed": false
+  },
+  "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+  "supplement_commit": "e4b51213bd19b6532553d252056573c17abc4814",
+  "total_mean_attempts": 2048,
+  "total_mean_invalid_support": 16
+}

@@ -1,0 +1,116 @@
+{
+  "core_formal_train_plus_both_confirmation_worker_cpu_seconds": 495.065461,
+  "deployment_curve_definition": "Entire original training search worker CPU + one model/P preparation and one belief checkpoint disk roundtrip + N*mean measured episode CPU. Same whole-search allocation to B/D. This curve excludes the separately recorded research confirmation/diagnostic bill.",
+  "entries": [
+    {
+      "complete_worker_scope": true,
+      "cpu_seconds": 30.111223,
+      "scope": "run_01 train full workers",
+      "source": "run_01/supervisor/train_summary.json"
+    },
+    {
+      "complete_worker_scope": false,
+      "cpu_seconds": 0.010269239999999999,
+      "scope": "run_01 train supervisor",
+      "source": "run_01/supervisor/train_summary.json"
+    },
+    {
+      "complete_worker_scope": true,
+      "cpu_seconds": 171.435688,
+      "scope": "run_01 confirm full workers",
+      "source": "run_01/supervisor/confirm_summary.json"
+    },
+    {
+      "complete_worker_scope": false,
+      "cpu_seconds": 0.029520183999999998,
+      "scope": "run_01 confirm supervisor",
+      "source": "run_01/supervisor/confirm_summary.json"
+    },
+    {
+      "complete_worker_scope": true,
+      "cpu_seconds": 293.51855,
+      "scope": "run_02 confirm full workers",
+      "source": "run_02/supervisor/confirm_summary.json"
+    },
+    {
+      "complete_worker_scope": false,
+      "cpu_seconds": 0.063630666,
+      "scope": "run_02 confirm supervisor",
+      "source": "run_02/supervisor/confirm_summary.json"
+    },
+    {
+      "complete_worker_scope": true,
+      "cpu_seconds": 1.835315,
+      "scope": "decision_probe frozen diagnostic worker",
+      "source": "results/decision_probe.process_receipt.json"
+    },
+    {
+      "complete_worker_scope": true,
+      "cpu_seconds": 0.9031469999999999,
+      "scope": "numerics frozen diagnostic worker",
+      "source": "results/numerics.process_receipt.json"
+    },
+    {
+      "complete_worker_scope": false,
+      "cpu_seconds": 7.7585939999999995,
+      "scope": "support-failure diagnostic through report construction",
+      "source": "results/FAILURE_DIAGNOSIS.json"
+    },
+    {
+      "complete_worker_scope": false,
+      "cpu_seconds": 4.609877,
+      "scope": "successful independent statistics audit through report construction",
+      "source": "results/INDEPENDENT_STATISTICS_AUDIT.json"
+    },
+    {
+      "complete_worker_scope": false,
+      "cpu_seconds": 4.863528,
+      "scope": "first statistics audit including serialization failure",
+      "source": "results/INDEPENDENT_STATISTICS_AUDIT.json:serialization_retry"
+    },
+    {
+      "complete_worker_scope": false,
+      "cpu_seconds": 26.895125999999998,
+      "scope": "independent execution audit child",
+      "source": "results/INDEPENDENT_EXECUTION_AUDIT.json:audit_process_receipt"
+    },
+    {
+      "complete_worker_scope": true,
+      "cpu_seconds": 1.0553038819999998,
+      "scope": "pipeline_v1 train development workers and supervisor",
+      "source": "DEVELOPMENT_EVIDENCE.tar.gz:dev/pipeline_v1/supervisor/train_summary.json"
+    },
+    {
+      "complete_worker_scope": true,
+      "cpu_seconds": 1.717014126,
+      "scope": "pipeline_v1 confirm development workers and supervisor",
+      "source": "DEVELOPMENT_EVIDENCE.tar.gz:dev/pipeline_v1/supervisor/confirm_summary.json"
+    },
+    {
+      "complete_worker_scope": true,
+      "cpu_seconds": 0.788382058,
+      "scope": "pipeline_v2 train development workers and supervisor",
+      "source": "DEVELOPMENT_EVIDENCE.tar.gz:dev/pipeline_v2/supervisor/train_summary.json"
+    },
+    {
+      "complete_worker_scope": true,
+      "cpu_seconds": 1.479845773,
+      "scope": "pipeline_v2 confirm development workers and supervisor",
+      "source": "DEVELOPMENT_EVIDENCE.tar.gz:dev/pipeline_v2/supervisor/confirm_summary.json"
+    }
+  ],
+  "no_double_counting": "Worker CPU contains inner timers; only disjoint envelopes are added here. Failed original workers are included in run_01 confirm total.",
+  "not_a_total_project_energy_or_money_bill": true,
+  "not_completely_metered": [
+    "early development routines without parent receipts",
+    "failed diagnostic setup imports with wall-only records",
+    "mechanism-count report generation",
+    "summary and report/plot generation",
+    "artifact packaging, GitHub API transfer and remote storage",
+    "outer wrappers/final writes excluded by individual audit scopes",
+    "human/agent design time, GPU/energy and production network/owner recovery"
+  ],
+  "original_failed_worker_cpu_seconds_included_not_added_twice": 22.476902,
+  "schema": "hcsn-r15-measured-research-cpu-ledger-v1",
+  "sum_nonoverlapping_recorded_cpu_seconds": 547.075013929
+}

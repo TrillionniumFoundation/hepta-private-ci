@@ -1,0 +1,1378 @@
+{
+  "schema": "hcsn-r15-numerics-study-v1",
+  "law_identity": "f9bbedf121707d5d78515698c05c2bc5f915f8a8fac78df42e5664f4d842ddf7",
+  "implementation_identity": "9883abd249b3ed79745e567cf377421546589de4d989e65e91559f85d648311f",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "threadpools": [
+      {
+        "user_api": "blas",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-fdde5778.so",
+        "version": "0.3.30",
+        "threading_layer": "pthreads",
+        "architecture": "SkylakeX"
+      },
+      {
+        "user_api": "blas",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/scipy.libs/libscipy_openblas-6cdc3b4a.so",
+        "version": "0.3.30",
+        "threading_layer": "pthreads",
+        "architecture": "SkylakeX"
+      }
+    ]
+  },
+  "timing_scope": "Warm imported libraries; cold means no cached transition result. Per-call timings include Python call overhead.",
+  "preparation": {
+    "full_financial_boundary_with_three_tangents": {
+      "repeats": 7,
+      "iterations_per_repeat": 1,
+      "calls_total": 7,
+      "cpu_total_seconds": 0.002803471,
+      "wall_total_seconds": 0.007759389,
+      "cpu_median_seconds_per_call": 0.000457299,
+      "wall_median_seconds_per_call": 0.000489196,
+      "cpu_repeat_seconds": [
+        0.000457299,
+        0.000504058,
+        0.000255559,
+        0.000270111,
+        0.000309089,
+        0.000488374,
+        0.000518981
+      ],
+      "wall_repeat_seconds": [
+        0.00045809,
+        0.000505019,
+        0.00025618,
+        0.000270661,
+        0.005259921,
+        0.000489196,
+        0.000520322
+      ]
+    },
+    "eight_center_financial_value_bank_with_tangents": {
+      "repeats": 7,
+      "iterations_per_repeat": 1,
+      "calls_total": 7,
+      "cpu_total_seconds": 0.041075596,
+      "wall_total_seconds": 0.084200045,
+      "cpu_median_seconds_per_call": 0.005045979,
+      "wall_median_seconds_per_call": 0.009797719,
+      "cpu_repeat_seconds": [
+        0.008464162,
+        0.007500513,
+        0.004812563,
+        0.005817195,
+        0.005045979,
+        0.00493158,
+        0.004503604
+      ],
+      "wall_repeat_seconds": [
+        0.016456765,
+        0.019356465,
+        0.008805478,
+        0.009797719,
+        0.012351196,
+        0.008931556,
+        0.008500866
+      ]
+    },
+    "full_hx_to_law_construction": {
+      "repeats": 7,
+      "iterations_per_repeat": 1,
+      "calls_total": 7,
+      "cpu_total_seconds": 0.045787631,
+      "wall_total_seconds": 0.094258895,
+      "cpu_median_seconds_per_call": 0.006505537,
+      "wall_median_seconds_per_call": 0.0122119,
+      "cpu_repeat_seconds": [
+        0.006724672,
+        0.006505537,
+        0.006354852,
+        0.006332599,
+        0.006538485,
+        0.007035793,
+        0.006295693
+      ],
+      "wall_repeat_seconds": [
+        0.014714362,
+        0.010503466,
+        0.020464199,
+        0.011538691,
+        0.010535203,
+        0.0122119,
+        0.014291074
+      ]
+    },
+    "frozen_matrix_restore": {
+      "repeats": 7,
+      "iterations_per_repeat": 1,
+      "calls_total": 7,
+      "cpu_total_seconds": 0.004118194,
+      "wall_total_seconds": 0.008875483,
+      "cpu_median_seconds_per_call": 0.000557658,
+      "wall_median_seconds_per_call": 0.000568714,
+      "cpu_repeat_seconds": [
+        0.000557658,
+        0.000567553,
+        0.000505661,
+        0.000480053,
+        0.000531549,
+        0.000622253,
+        0.000853467
+      ],
+      "wall_repeat_seconds": [
+        0.000558448,
+        0.000568714,
+        0.000506491,
+        0.005231849,
+        0.000531989,
+        0.000623394,
+        0.000854598
+      ]
+    }
+  },
+  "transitions": [
+    {
+      "dt": 0.25,
+      "max_absolute_error": 9.658940314238862e-15,
+      "row_l1_error": 4.6374355907024406e-14,
+      "row_sum_error": 4.596323321948148e-14,
+      "min_entry": 5.649010878818416e-13,
+      "series": {
+        "poisson_terms": 25,
+        "segments": 1,
+        "series_tail_bound": 4.604775042194975e-14,
+        "rate": 13.574999999999998,
+        "error_scope": "Series truncation only; floating-point error is separately compared"
+      },
+      "expm_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.002314776,
+        "wall_total_seconds": 0.002315914,
+        "cpu_median_seconds_per_call": 0.00030294,
+        "wall_median_seconds_per_call": 0.00030394,
+        "cpu_repeat_seconds": [
+          0.000511028,
+          0.000271423,
+          8.9022e-05,
+          0.00030294,
+          0.000369859,
+          9.0084e-05,
+          0.00068042
+        ],
+        "wall_repeat_seconds": [
+          0.000507292,
+          0.000272675,
+          8.9242e-05,
+          0.00030394,
+          0.00037099,
+          9.0284e-05,
+          0.000681491
+        ]
+      },
+      "uniformization_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.001325738,
+        "wall_total_seconds": 0.006507799,
+        "cpu_median_seconds_per_call": 0.000193057,
+        "wall_median_seconds_per_call": 0.000193517,
+        "cpu_repeat_seconds": [
+          0.000206837,
+          0.000207298,
+          0.000206446,
+          0.000167779,
+          0.000178195,
+          0.000193057,
+          0.000166126
+        ],
+        "wall_repeat_seconds": [
+          0.000207187,
+          0.005387279,
+          0.000206706,
+          0.000168069,
+          0.000178685,
+          0.000193517,
+          0.000166356
+        ]
+      }
+    },
+    {
+      "dt": 0.35,
+      "max_absolute_error": 9.381384558082573e-15,
+      "row_l1_error": 4.954370247389761e-14,
+      "row_sum_error": 4.9182879990894435e-14,
+      "min_entry": 3.137906749362912e-11,
+      "series": {
+        "poisson_terms": 29,
+        "segments": 1,
+        "series_tail_bound": 4.924129782896019e-14,
+        "rate": 13.574999999999998,
+        "error_scope": "Series truncation only; floating-point error is separately compared"
+      },
+      "expm_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.000703113,
+        "wall_total_seconds": 0.0007058489999999999,
+        "cpu_median_seconds_per_call": 9.9408e-05,
+        "wall_median_seconds_per_call": 9.9658e-05,
+        "cpu_repeat_seconds": [
+          0.00012172,
+          9.9408e-05,
+          9.0264e-05,
+          8.5897e-05,
+          8.5116e-05,
+          0.00011459,
+          0.000106118
+        ],
+        "wall_repeat_seconds": [
+          0.000121901,
+          9.9658e-05,
+          9.0495e-05,
+          8.6128e-05,
+          8.5447e-05,
+          0.000115201,
+          0.000107019
+        ]
+      },
+      "uniformization_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.001633774,
+        "wall_total_seconds": 0.001639209,
+        "cpu_median_seconds_per_call": 0.000231774,
+        "wall_median_seconds_per_call": 0.000232214,
+        "cpu_repeat_seconds": [
+          0.000251143,
+          0.000231774,
+          0.000221488,
+          0.000256821,
+          0.000232625,
+          0.000222811,
+          0.000217112
+        ],
+        "wall_repeat_seconds": [
+          0.000251623,
+          0.000232214,
+          0.000222129,
+          0.000257452,
+          0.000234557,
+          0.000223601,
+          0.000217633
+        ]
+      }
+    },
+    {
+      "dt": 0.5,
+      "max_absolute_error": 1.6486811915683575e-14,
+      "row_l1_error": 9.049769486342443e-14,
+      "row_sum_error": 8.93729534823251e-14,
+      "min_entry": 1.668573723325149e-09,
+      "series": {
+        "poisson_terms": 34,
+        "segments": 1,
+        "series_tail_bound": 8.991304808193661e-14,
+        "rate": 13.574999999999998,
+        "error_scope": "Series truncation only; floating-point error is separately compared"
+      },
+      "expm_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.000701572,
+        "wall_total_seconds": 0.004319745,
+        "cpu_median_seconds_per_call": 9.0464e-05,
+        "wall_median_seconds_per_call": 9.0914e-05,
+        "cpu_repeat_seconds": [
+          0.000117685,
+          0.000131806,
+          9.5902e-05,
+          9.0464e-05,
+          9.0385e-05,
+          8.789e-05,
+          8.744e-05
+        ],
+        "wall_repeat_seconds": [
+          0.003734488,
+          0.000131886,
+          9.6113e-05,
+          9.0724e-05,
+          9.0914e-05,
+          8.8011e-05,
+          8.7609e-05
+        ]
+      },
+      "uniformization_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.001841803,
+        "wall_total_seconds": 0.0018458370000000001,
+        "cpu_median_seconds_per_call": 0.000257372,
+        "wall_median_seconds_per_call": 0.000258763,
+        "cpu_repeat_seconds": [
+          0.000300296,
+          0.000259845,
+          0.00024931,
+          0.000275879,
+          0.000257372,
+          0.000251443,
+          0.000247658
+        ],
+        "wall_repeat_seconds": [
+          0.000300425,
+          0.000260206,
+          0.00024967,
+          0.00027664,
+          0.000258763,
+          0.000251654,
+          0.000248479
+        ]
+      }
+    },
+    {
+      "dt": 0.65,
+      "max_absolute_error": 1.2378986724570495e-14,
+      "row_l1_error": 7.091076434394208e-14,
+      "row_sum_error": 6.994405055138486e-14,
+      "min_entry": 2.4318555938687955e-08,
+      "series": {
+        "poisson_terms": 39,
+        "segments": 1,
+        "series_tail_bound": 7.031042218125646e-14,
+        "rate": 13.574999999999998,
+        "error_scope": "Series truncation only; floating-point error is separately compared"
+      },
+      "expm_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.000789363,
+        "wall_total_seconds": 0.005170349,
+        "cpu_median_seconds_per_call": 0.000100369,
+        "wall_median_seconds_per_call": 0.000113108,
+        "cpu_repeat_seconds": [
+          0.00012102,
+          0.000100369,
+          0.000178706,
+          0.000112607,
+          9.437e-05,
+          9.2267e-05,
+          9.0024e-05
+        ],
+        "wall_repeat_seconds": [
+          0.000119678,
+          0.0001012,
+          0.000179967,
+          0.000113108,
+          9.473e-05,
+          9.2648e-05,
+          0.004469018
+        ]
+      },
+      "uniformization_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.002130733,
+        "wall_total_seconds": 0.002134313,
+        "cpu_median_seconds_per_call": 0.000293947,
+        "wall_median_seconds_per_call": 0.000294196,
+        "cpu_repeat_seconds": [
+          0.000351902,
+          0.000320426,
+          0.000293947,
+          0.000284752,
+          0.000280366,
+          0.000310281,
+          0.000289059
+        ],
+        "wall_repeat_seconds": [
+          0.000352132,
+          0.000321166,
+          0.000294196,
+          0.000284932,
+          0.000280576,
+          0.000311101,
+          0.00029021
+        ]
+      }
+    },
+    {
+      "dt": 0.75,
+      "max_absolute_error": 1.2823075934420558e-14,
+      "row_l1_error": 7.608266433859444e-14,
+      "row_sum_error": 7.438494264988549e-14,
+      "min_entry": 9.436446763499352e-08,
+      "series": {
+        "poisson_terms": 42,
+        "segments": 1,
+        "series_tail_bound": 7.510239386193328e-14,
+        "rate": 13.574999999999998,
+        "error_scope": "Series truncation only; floating-point error is separately compared"
+      },
+      "expm_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.000865624,
+        "wall_total_seconds": 0.000867365,
+        "cpu_median_seconds_per_call": 8.9623e-05,
+        "wall_median_seconds_per_call": 8.9863e-05,
+        "cpu_repeat_seconds": [
+          0.000187168,
+          8.9623e-05,
+          8.5317e-05,
+          0.000138275,
+          0.000217512,
+          7.4771e-05,
+          7.2958e-05
+        ],
+        "wall_repeat_seconds": [
+          0.000186727,
+          8.9863e-05,
+          8.5757e-05,
+          0.000138846,
+          0.000218003,
+          7.5081e-05,
+          7.3088e-05
+        ]
+      },
+      "uniformization_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.002065356,
+        "wall_total_seconds": 0.00207032,
+        "cpu_median_seconds_per_call": 0.000276861,
+        "wall_median_seconds_per_call": 0.000276801,
+        "cpu_repeat_seconds": [
+          0.000276861,
+          0.00025594,
+          0.00024268,
+          0.000332984,
+          0.000326254,
+          0.000265825,
+          0.000364812
+        ],
+        "wall_repeat_seconds": [
+          0.000276801,
+          0.00025619,
+          0.00024292,
+          0.000334496,
+          0.000327516,
+          0.000266094,
+          0.000366303
+        ]
+      }
+    },
+    {
+      "dt": 0.95,
+      "max_absolute_error": 8.93729534823251e-15,
+      "row_l1_error": 5.427819652070731e-14,
+      "row_sum_error": 5.4289905904170155e-14,
+      "min_entry": 7.340893706186594e-07,
+      "series": {
+        "poisson_terms": 48,
+        "segments": 1,
+        "series_tail_bound": 5.498067366017125e-14,
+        "rate": 13.574999999999998,
+        "error_scope": "Series truncation only; floating-point error is separately compared"
+      },
+      "expm_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.000998953,
+        "wall_total_seconds": 0.00100481,
+        "cpu_median_seconds_per_call": 0.000131245,
+        "wall_median_seconds_per_call": 0.000131995,
+        "cpu_repeat_seconds": [
+          0.000180708,
+          0.00012793,
+          0.000125306,
+          0.000168801,
+          0.000138816,
+          0.000131245,
+          0.000126147
+        ],
+        "wall_repeat_seconds": [
+          0.000181199,
+          0.000128641,
+          0.000126187,
+          0.000170183,
+          0.000139847,
+          0.000131995,
+          0.000126758
+        ]
+      },
+      "uniformization_cold": {
+        "repeats": 7,
+        "iterations_per_repeat": 1,
+        "calls_total": 7,
+        "cpu_total_seconds": 0.003211417,
+        "wall_total_seconds": 0.0032496590000000002,
+        "cpu_median_seconds_per_call": 0.000452381,
+        "wall_median_seconds_per_call": 0.00046555,
+        "cpu_repeat_seconds": [
+          0.000504469,
+          0.000452381,
+          0.000528615,
+          0.000450789,
+          0.000464309,
+          0.000447655,
+          0.000363199
+        ],
+        "wall_repeat_seconds": [
+          0.00050562,
+          0.00048513,
+          0.000529976,
+          0.00045142,
+          0.00046555,
+          0.000448294,
+          0.000363669
+        ]
+      }
+    }
+  ],
+  "cached_propagation": [
+    {
+      "dt": 0.25,
+      "batch": 1,
+      "belief_nbytes": 320,
+      "output_nbytes": 320,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.00695289,
+        "wall_total_seconds": 0.029473979,
+        "cpu_median_seconds_per_call": 2.00832e-06,
+        "wall_median_seconds_per_call": 2.0152899999999997e-06,
+        "cpu_repeat_seconds": [
+          0.00100416,
+          0.001038922,
+          0.001006835,
+          0.000957331,
+          0.001070088,
+          0.00093617,
+          0.000939384
+        ],
+        "wall_repeat_seconds": [
+          0.001004379,
+          0.001040613,
+          0.001007645,
+          0.023472329,
+          0.001071268,
+          0.000936549,
+          0.000941196
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.007359152,
+        "wall_total_seconds": 0.012866692,
+        "cpu_median_seconds_per_call": 2.0059980000000003e-06,
+        "wall_median_seconds_per_call": 2.007658e-06,
+        "cpu_repeat_seconds": [
+          0.001294802,
+          0.001005662,
+          0.001157989,
+          0.000960646,
+          0.001002999,
+          0.000996318,
+          0.000940736
+        ],
+        "wall_repeat_seconds": [
+          0.001295652,
+          0.001006733,
+          0.006660908,
+          0.000960925,
+          0.001003829,
+          0.000997639,
+          0.000941006
+        ]
+      }
+    },
+    {
+      "dt": 0.25,
+      "batch": 64,
+      "belief_nbytes": 20480,
+      "output_nbytes": 20480,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.021289529,
+        "wall_total_seconds": 0.021681905,
+        "cpu_median_seconds_per_call": 5.88882e-06,
+        "wall_median_seconds_per_call": 5.996272000000001e-06,
+        "cpu_repeat_seconds": [
+          0.002911912,
+          0.002907816,
+          0.00294441,
+          0.002784513,
+          0.003600835,
+          0.003150816,
+          0.002989227
+        ],
+        "wall_repeat_seconds": [
+          0.003287606,
+          0.002908774,
+          0.002945929,
+          0.00278504,
+          0.003602813,
+          0.003153607,
+          0.002998136
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.023436326,
+        "wall_total_seconds": 0.049341923,
+        "cpu_median_seconds_per_call": 6.663610000000001e-06,
+        "wall_median_seconds_per_call": 1.4722372e-05,
+        "cpu_repeat_seconds": [
+          0.003042215,
+          0.003756075,
+          0.003346918,
+          0.003365665,
+          0.003308121,
+          0.003331805,
+          0.003285527
+        ],
+        "wall_repeat_seconds": [
+          0.00890072,
+          0.007763343,
+          0.007346344,
+          0.007361186,
+          0.00730986,
+          0.007372534,
+          0.003287936
+        ]
+      }
+    },
+    {
+      "dt": 0.35,
+      "batch": 1,
+      "belief_nbytes": 320,
+      "output_nbytes": 320,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.009083805,
+        "wall_total_seconds": 0.021082144,
+        "cpu_median_seconds_per_call": 2.583736e-06,
+        "wall_median_seconds_per_call": 2.585696e-06,
+        "cpu_repeat_seconds": [
+          0.00134695,
+          0.001269444,
+          0.001290655,
+          0.001308383,
+          0.001271307,
+          0.001291868,
+          0.001305198
+        ],
+        "wall_repeat_seconds": [
+          0.005342734,
+          0.001270274,
+          0.001291245,
+          0.005308361,
+          0.001272777,
+          0.001292848,
+          0.005303905
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.009235458,
+        "wall_total_seconds": 0.017239817,
+        "cpu_median_seconds_per_call": 2.641462e-06,
+        "wall_median_seconds_per_call": 2.6434e-06,
+        "cpu_repeat_seconds": [
+          0.001310845,
+          0.001320731,
+          0.001334031,
+          0.001301331,
+          0.001330044,
+          0.001330084,
+          0.001308392
+        ],
+        "wall_repeat_seconds": [
+          0.001312076,
+          0.0013217,
+          0.005332418,
+          0.001302141,
+          0.001330934,
+          0.005331076,
+          0.001309472
+        ]
+      }
+    },
+    {
+      "dt": 0.35,
+      "batch": 64,
+      "belief_nbytes": 20480,
+      "output_nbytes": 20480,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.023419192,
+        "wall_total_seconds": 0.047428596,
+        "cpu_median_seconds_per_call": 6.687546e-06,
+        "wall_median_seconds_per_call": 1.469319e-05,
+        "cpu_repeat_seconds": [
+          0.003375761,
+          0.003331786,
+          0.003303694,
+          0.003349352,
+          0.003338765,
+          0.003376061,
+          0.003343773
+        ],
+        "wall_repeat_seconds": [
+          0.007374256,
+          0.007332844,
+          0.003304991,
+          0.007349639,
+          0.007340717,
+          0.007379554,
+          0.007346595
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.028011497,
+        "wall_total_seconds": 0.066170628,
+        "cpu_median_seconds_per_call": 6.77187e-06,
+        "wall_median_seconds_per_call": 1.4622806e-05,
+        "cpu_repeat_seconds": [
+          0.003473195,
+          0.003385935,
+          0.00367161,
+          0.003306789,
+          0.002891903,
+          0.007915538,
+          0.003366527
+        ],
+        "wall_repeat_seconds": [
+          0.019330396,
+          0.007476127,
+          0.00367509,
+          0.007311403,
+          0.00689165,
+          0.018118068,
+          0.003367894
+        ]
+      }
+    },
+    {
+      "dt": 0.5,
+      "batch": 1,
+      "belief_nbytes": 320,
+      "output_nbytes": 320,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.009111723,
+        "wall_total_seconds": 0.021108073,
+        "cpu_median_seconds_per_call": 2.6078899999999998e-06,
+        "wall_median_seconds_per_call": 2.608468e-06,
+        "cpu_repeat_seconds": [
+          0.00133422,
+          0.001301722,
+          0.001277546,
+          0.001311166,
+          0.001277076,
+          0.001303945,
+          0.001306048
+        ],
+        "wall_repeat_seconds": [
+          0.005328452,
+          0.001302952,
+          0.001278116,
+          0.005309103,
+          0.001278005,
+          0.001304234,
+          0.005307211
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.009227546,
+        "wall_total_seconds": 0.025109187,
+        "cpu_median_seconds_per_call": 2.617824e-06,
+        "wall_median_seconds_per_call": 2.620066e-06,
+        "cpu_repeat_seconds": [
+          0.001308813,
+          0.001308912,
+          0.001333339,
+          0.00130012,
+          0.001311276,
+          0.001368051,
+          0.001297035
+        ],
+        "wall_repeat_seconds": [
+          0.001310033,
+          0.001309943,
+          0.005327751,
+          0.001300839,
+          0.001312376,
+          0.01325052,
+          0.001297725
+        ]
+      }
+    },
+    {
+      "dt": 0.5,
+      "batch": 64,
+      "belief_nbytes": 20480,
+      "output_nbytes": 20480,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.023031074,
+        "wall_total_seconds": 0.045682697,
+        "cpu_median_seconds_per_call": 6.583834e-06,
+        "wall_median_seconds_per_call": 1.4678426e-05,
+        "cpu_repeat_seconds": [
+          0.003339497,
+          0.003300038,
+          0.003259858,
+          0.003278055,
+          0.003291917,
+          0.003266799,
+          0.00329491
+        ],
+        "wall_repeat_seconds": [
+          0.007339213,
+          0.00730244,
+          0.007747239,
+          0.003279003,
+          0.008720352,
+          0.00799763,
+          0.00329682
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.023111071,
+        "wall_total_seconds": 0.054554913000000003,
+        "cpu_median_seconds_per_call": 6.607186e-06,
+        "wall_median_seconds_per_call": 1.5997684e-05,
+        "cpu_repeat_seconds": [
+          0.003345485,
+          0.003290293,
+          0.003303593,
+          0.003307639,
+          0.003790406,
+          0.002834257,
+          0.003239398
+        ],
+        "wall_repeat_seconds": [
+          0.008573104,
+          0.007998842,
+          0.00330445,
+          0.008694584,
+          0.007995006,
+          0.002836276,
+          0.015152651
+        ]
+      }
+    },
+    {
+      "dt": 0.65,
+      "batch": 1,
+      "belief_nbytes": 320,
+      "output_nbytes": 320,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.009377316,
+        "wall_total_seconds": 0.022529131,
+        "cpu_median_seconds_per_call": 2.692436e-06,
+        "wall_median_seconds_per_call": 2.707014e-06,
+        "cpu_repeat_seconds": [
+          0.001358176,
+          0.001328281,
+          0.001346218,
+          0.001352658,
+          0.001322352,
+          0.001353338,
+          0.001316293
+        ],
+        "wall_repeat_seconds": [
+          0.001358064,
+          0.007873276,
+          0.001346637,
+          0.001353507,
+          0.001323323,
+          0.007957641,
+          0.001316683
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.009357858,
+        "wall_total_seconds": 0.014232398,
+        "cpu_median_seconds_per_call": 2.671666e-06,
+        "wall_median_seconds_per_call": 2.686444e-06,
+        "cpu_repeat_seconds": [
+          0.001357474,
+          0.00133401,
+          0.00134094,
+          0.001320449,
+          0.001335833,
+          0.001326389,
+          0.001342763
+        ],
+        "wall_repeat_seconds": [
+          0.001357784,
+          0.001334429,
+          0.00134214,
+          0.00504362,
+          0.001336272,
+          0.002474931,
+          0.001343222
+        ]
+      }
+    },
+    {
+      "dt": 0.65,
+      "batch": 64,
+      "belief_nbytes": 20480,
+      "output_nbytes": 20480,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.023304158,
+        "wall_total_seconds": 0.060071125,
+        "cpu_median_seconds_per_call": 6.600876e-06,
+        "wall_median_seconds_per_call": 1.6059256e-05,
+        "cpu_repeat_seconds": [
+          0.0034361,
+          0.0033216,
+          0.003296993,
+          0.00328823,
+          0.003289493,
+          0.003300438,
+          0.003371304
+        ],
+        "wall_repeat_seconds": [
+          0.008087664,
+          0.007990589,
+          0.008029628,
+          0.007966004,
+          0.003291081,
+          0.016584925,
+          0.008121234
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.021668701,
+        "wall_total_seconds": 0.04384369,
+        "cpu_median_seconds_per_call": 6.230126e-06,
+        "wall_median_seconds_per_call": 1.6012407999999998e-05,
+        "cpu_repeat_seconds": [
+          0.003305847,
+          0.003337564,
+          0.003298285,
+          0.002924801,
+          0.002784573,
+          0.002902568,
+          0.003115063
+        ],
+        "wall_repeat_seconds": [
+          0.003307535,
+          0.008548317,
+          0.008006204,
+          0.0029268,
+          0.009058704,
+          0.002904047,
+          0.009092083
+        ]
+      }
+    },
+    {
+      "dt": 0.75,
+      "batch": 1,
+      "belief_nbytes": 320,
+      "output_nbytes": 320,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.007397671,
+        "wall_total_seconds": 0.019395393,
+        "cpu_median_seconds_per_call": 2.112876e-06,
+        "wall_median_seconds_per_call": 2.1213859999999997e-06,
+        "cpu_repeat_seconds": [
+          0.001019934,
+          0.001176446,
+          0.000934317,
+          0.000999284,
+          0.001056438,
+          0.001059552,
+          0.0011517
+        ],
+        "wall_repeat_seconds": [
+          0.007448556,
+          0.001177116,
+          0.000935287,
+          0.001000163,
+          0.001057789,
+          0.001060693,
+          0.006715789
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.007158516,
+        "wall_total_seconds": 0.025691149,
+        "cpu_median_seconds_per_call": 1.972228e-06,
+        "wall_median_seconds_per_call": 2.1066040000000004e-06,
+        "cpu_repeat_seconds": [
+          0.001194062,
+          0.001088356,
+          0.00105111,
+          0.000974286,
+          0.00092949,
+          0.000986114,
+          0.000935098
+        ],
+        "wall_repeat_seconds": [
+          0.001194702,
+          0.001089526,
+          0.001053302,
+          0.000974785,
+          0.019457425,
+          0.000985982,
+          0.000935427
+        ]
+      }
+    },
+    {
+      "dt": 0.75,
+      "batch": 64,
+      "belief_nbytes": 20480,
+      "output_nbytes": 20480,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.02056292,
+        "wall_total_seconds": 0.042022817999999997,
+        "cpu_median_seconds_per_call": 5.866108e-06,
+        "wall_median_seconds_per_call": 1.4304512e-05,
+        "cpu_repeat_seconds": [
+          0.002866154,
+          0.003061003,
+          0.002997829,
+          0.002824663,
+          0.002921946,
+          0.002933054,
+          0.002958271
+        ],
+        "wall_repeat_seconds": [
+          0.002867122,
+          0.007152256,
+          0.007995737,
+          0.002826301,
+          0.00917054,
+          0.002934732,
+          0.00907613
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.025724482,
+        "wall_total_seconds": 0.059073133,
+        "cpu_median_seconds_per_call": 7.355838e-06,
+        "wall_median_seconds_per_call": 1.5996522e-05,
+        "cpu_repeat_seconds": [
+          0.003323223,
+          0.003677919,
+          0.003700272,
+          0.003644089,
+          0.00356432,
+          0.003839679,
+          0.00397498
+        ],
+        "wall_repeat_seconds": [
+          0.003325251,
+          0.008506965,
+          0.007998922,
+          0.007998261,
+          0.003568152,
+          0.007838634,
+          0.019836948
+        ]
+      }
+    },
+    {
+      "dt": 0.95,
+      "batch": 1,
+      "belief_nbytes": 320,
+      "output_nbytes": 320,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.010714182,
+        "wall_total_seconds": 0.016969917,
+        "cpu_median_seconds_per_call": 2.955086e-06,
+        "wall_median_seconds_per_call": 2.957506e-06,
+        "cpu_repeat_seconds": [
+          0.001336794,
+          0.001338456,
+          0.001317866,
+          0.001749176,
+          0.001757278,
+          0.001737069,
+          0.001477543
+        ],
+        "wall_repeat_seconds": [
+          0.001332006,
+          0.001339066,
+          0.001318395,
+          0.008002137,
+          0.00176013,
+          0.00173943,
+          0.001478753
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.010601995,
+        "wall_total_seconds": 0.022451266,
+        "cpu_median_seconds_per_call": 2.6505539999999997e-06,
+        "wall_median_seconds_per_call": 3.4380999999999997e-06,
+        "cpu_repeat_seconds": [
+          0.001325277,
+          0.001322623,
+          0.001302843,
+          0.00132077,
+          0.001770017,
+          0.001844448,
+          0.001716017
+        ],
+        "wall_repeat_seconds": [
+          0.006900343,
+          0.001322661,
+          0.001303874,
+          0.00132178,
+          0.00803768,
+          0.001845878,
+          0.00171905
+        ]
+      }
+    },
+    {
+      "dt": 0.95,
+      "batch": 64,
+      "belief_nbytes": 20480,
+      "output_nbytes": 20480,
+      "expm_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.021346759,
+        "wall_total_seconds": 0.030811838,
+        "cpu_median_seconds_per_call": 5.801472e-06,
+        "wall_median_seconds_per_call": 5.822356e-06,
+        "cpu_repeat_seconds": [
+          0.003377443,
+          0.003346677,
+          0.003436045,
+          0.002900736,
+          0.002761719,
+          0.002778784,
+          0.002745355
+        ],
+        "wall_repeat_seconds": [
+          0.008184968,
+          0.007988357,
+          0.003438674,
+          0.002911178,
+          0.002762927,
+          0.002779552,
+          0.002746182
+        ]
+      },
+      "uniformization_cached": {
+        "repeats": 7,
+        "iterations_per_repeat": 500,
+        "calls_total": 3500,
+        "cpu_total_seconds": 0.02046024,
+        "wall_total_seconds": 0.049214616,
+        "cpu_median_seconds_per_call": 5.778556e-06,
+        "wall_median_seconds_per_call": 1.403854e-05,
+        "cpu_repeat_seconds": [
+          0.002853136,
+          0.002797352,
+          0.003006492,
+          0.002918612,
+          0.002889278,
+          0.003170176,
+          0.002825194
+        ],
+        "wall_repeat_seconds": [
+          0.010716583,
+          0.00688466,
+          0.007617918,
+          0.0029203,
+          0.006887374,
+          0.007168511,
+          0.00701927
+        ]
+      }
+    }
+  ],
+  "storage": {
+    "generator_nbytes": 12800,
+    "four_address_state_nbytes": 1280,
+    "emissions_nbytes": 2880,
+    "six_duration_cache_nbytes": 76800,
+    "scope": "Principal float64 arrays only, excluding Python objects and library workspace"
+  },
+  "recovery": {
+    "mean": 0.35,
+    "erlang_identity": "f9bbedf121707d5d78515698c05c2bc5f915f8a8fac78df42e5664f4d842ddf7",
+    "memoryless_identity": "a7dedac8bff4e2554bd3d247170a7a7c62081c6035398c1f056eb0aca1e51317",
+    "active_row_max_difference": 0.0,
+    "restored_identity_matches": true,
+    "event_metrics": [
+      {
+        "dt": 0.5,
+        "erlang_first": 0.1149065619710195,
+        "memoryless_first": 0.1149065619710195,
+        "erlang_count": 0.11525653680095627,
+        "memoryless_count": 0.1155314674151102
+      },
+      {
+        "dt": 2.0,
+        "erlang_first": 0.41388725255978753,
+        "memoryless_first": 0.41388725255978753,
+        "erlang_count": 0.4965321166446698,
+        "memoryless_count": 0.49833939417413514
+      },
+      {
+        "dt": 10.0,
+        "erlang_first": 0.8360684394935208,
+        "memoryless_first": 0.8360684394935208,
+        "erlang_count": 1.9680239214362656,
+        "memoryless_count": 1.9690135114173564
+      }
+    ],
+    "history_sensitivity": {
+      "scope": "Development prediction sensitivity, not a confirmatory utility claim",
+      "episodes": 16,
+      "observations": 192,
+      "mean_observation_nll": {
+        "erlang": 0.754700012762795,
+        "memoryless": 0.7545508838190688
+      },
+      "mean_max_content_difference": 0.00048302762030405646,
+      "max_content_difference": 0.01670554096148691,
+      "world_fingerprints": [
+        "41ee61b130237b1bb6226e9414bf7f33fd76e33ec1382911ca7a121320322800",
+        "43db43709cae0b89b53bfc4e8dc12f4c02db282164326fe2654dce81fb68af6d",
+        "64b2cfd6d0c18c763fa9a4d4ccfbc5f26692dd97d8168a98c2c0a07effa6f289",
+        "a7cda52ec626384920a08a7dc0f6fb6f057f5462cdf90b75c65c1f17f9bdcf7e",
+        "5f17cbca8e417bb85076204a754863c86fa65a7274c7bfdbf840a224ee5e5178",
+        "31838e8c4c465c9548725d26829f03d8101e58bdb226a12103718bd8d20cef57",
+        "c49e3ebf2321c815503f5a5cad4776a2114fcd3cb18fd9eb93b6bcf90614f6f9",
+        "55e8709c5b79cd9ba97ffbebe0716d24b97b9399cd475f74868f11ee0dcc78e8",
+        "b93929f51818563146a00dd5daf15b4e1b36372482e2e30c484f71d7369fbcc2",
+        "57266272107a221ca10a9add68f0fdd401e51bc61c201c64f315ae1ab985e077",
+        "c506384cfa2816a5de28b7810753110ed144153dae7df1ec530695db837f41ce",
+        "8643ea4603a4688b7235f074ea5c761049531be80adbb612b34a9f03c335e366",
+        "aca84d4a43a22133df14d204b0821ec76642a8dccdb7450490beb7f378c15365",
+        "36eefec46315ea90f990beee665f435b611d6f28266c828e69ce7e78bb8945c5",
+        "2da7d5eac020c26b07360f593932c22e37309d15b8f30f697e74ee18518f839f",
+        "9705c895b0938372b0305e448cafe267b1aa3377d693e4013746e2926370ff07"
+      ]
+    }
+  },
+  "wrong_negative_controls": {
+    "scope": "Wrong substitutes for the declared Q; excluded from main efficacy arms",
+    "rows": [
+      {
+        "dt": 0.5,
+        "killed_only_mass_deficit": 0.80068247838445,
+        "reset_at_window_end_max_error": 0.6835030108482328,
+        "reset_at_window_end_semigroup_error": 0.7319408428434295,
+        "first_hit": 0.1149065619710195,
+        "repeated_count": 0.11525653680095627
+      },
+      {
+        "dt": 2.0,
+        "killed_only_mass_deficit": 0.8986240559315568,
+        "reset_at_window_end_max_error": 0.8619816569934095,
+        "reset_at_window_end_semigroup_error": 0.6105829201163662,
+        "first_hit": 0.41388725255978753,
+        "repeated_count": 0.4965321166446698
+      },
+      {
+        "dt": 10.0,
+        "killed_only_mass_deficit": 0.9725020608057691,
+        "reset_at_window_end_max_error": 0.9499626326969047,
+        "reset_at_window_end_semigroup_error": 0.26895829292537,
+        "first_hit": 0.8360684394935208,
+        "repeated_count": 1.9680239214362656
+      }
+    ]
+  },
+  "limitations": [
+    "Financial valuation and CTMC state propagation are different tasks.",
+    "Law construction currently includes inherited R12 financial-value derivatives; timings are implementation-specific.",
+    "Uniformization compares the identical finite Q, not continuum accuracy.",
+    "Memoryless changes the recovery-time distribution; equal mean does not equal conditional residual lifetime.",
+    "No energy, GPU, native Rust, network or deployment throughput is measured."
+  ]
+}
