@@ -1,0 +1,382 @@
+{
+  "admitted_parameterization": {
+    "emission_gauge_rule": "Use five logits per row with the last fixed to zero, or center each six-logit row. Anchor bit names by labeled training outcomes.",
+    "fixed_maturity": 1.3,
+    "free_physical_parameters": [
+      "sigma",
+      "liquidity"
+    ],
+    "meaning": "Maturity is specified by the experiment, not estimated from raw flow."
+  },
+  "analytic_null_direction_physical_units": [
+    0.0,
+    -0.044507533811148296,
+    -0.9990090487248098
+  ],
+  "boundary": 65.01984023391907,
+  "boundary_derivative": [
+    -36.582164672304835,
+    191.03703066704117,
+    -8.51102110881566
+  ],
+  "checks": {
+    "analytic_flow_null_verified": true,
+    "equivalent_flows_have_different_task_fees": true,
+    "fixed_maturity_gauge_removed_joint_rank_is_twelve": true,
+    "fixed_maturity_local_rank_is_two": true,
+    "forward_joint_observable_derivatives_verified": true,
+    "forward_observable_derivatives_verified": true,
+    "raw_laws_normalized": true,
+    "three_parameter_flow_rank_is_two": true
+  },
+  "cost_warning": "Equal flow does not fix state reward/READ fees. Learn them from actual training outcomes or specify task prices externally; evaluator-only costs cannot enter actor history.",
+  "designs": [
+    [
+      {
+        "action": "READ",
+        "dt": 0.15
+      }
+    ],
+    [
+      {
+        "action": "READ",
+        "dt": 0.45
+      }
+    ],
+    [
+      {
+        "action": "READ",
+        "dt": 1.05
+      }
+    ],
+    [
+      {
+        "action": "READ",
+        "dt": 0.15
+      },
+      {
+        "action": "READ",
+        "dt": 0.45
+      }
+    ],
+    [
+      {
+        "action": "READ",
+        "dt": 0.15
+      },
+      {
+        "action": "READ",
+        "dt": 0.45
+      },
+      {
+        "action": "READ",
+        "dt": 1.05
+      }
+    ],
+    [
+      {
+        "action": "RESET",
+        "dt": 0.15
+      },
+      {
+        "action": "READ",
+        "dt": 0.45
+      },
+      {
+        "action": "READ",
+        "dt": 1.05
+      }
+    ]
+  ],
+  "emission_gauge": {
+    "bit_label_swap_raw_law_max_abs_error": 1.6653345369377348e-16,
+    "interpretation": "Two row offsets are unidentifiable softmax gauges. Unlabeled raw symbols also admit the bit-label permutation. Labeled training outcomes can anchor the bit semantics.",
+    "softmax_shift_max_abs_error": 8.326672684688674e-17,
+    "two_row_shift_jacobian_residual_max": 3.469446951953614e-17
+  },
+  "equal_boundary_profile": [
+    {
+      "boundary_abs_error": 1.1368683772161603e-13,
+      "generator_max_abs_error": 8.903988657493755e-14,
+      "population_nll_change_sum_across_designs": 1.7057297743028314e-15,
+      "prior_max_abs_error": 8.881784197001252e-15,
+      "raw_law_max_abs_error": 1.429412144204889e-15,
+      "read_fee_max_abs_difference": 0.0009459387226873964,
+      "reward_max_abs_difference": 0.00164351718025783,
+      "status": "equivalent_flow",
+      "theta": [
+        0.3,
+        0.0044070763316846,
+        1.0
+      ]
+    },
+    {
+      "boundary_abs_error": 8.526512829121202e-14,
+      "generator_max_abs_error": 6.394884621840902e-14,
+      "population_nll_change_sum_across_designs": 7.374898444591176e-16,
+      "prior_max_abs_error": 6.38378239159465e-15,
+      "raw_law_max_abs_error": 1.0269562977782698e-15,
+      "read_fee_max_abs_difference": 0.00045760419630239135,
+      "reward_max_abs_difference": 0.0007555794433792389,
+      "status": "equivalent_flow",
+      "theta": [
+        0.3,
+        0.012822134773061461,
+        1.15
+      ]
+    },
+    {
+      "boundary_abs_error": 4.263256414560601e-14,
+      "generator_max_abs_error": 3.108624468950438e-14,
+      "population_nll_change_sum_across_designs": -5.447932370566913e-16,
+      "prior_max_abs_error": 3.0531133177191805e-15,
+      "raw_law_max_abs_error": 4.996003610813204e-16,
+      "read_fee_max_abs_difference": 1.3877787807814457e-17,
+      "reward_max_abs_difference": 6.245004513516506e-17,
+      "status": "equivalent_flow",
+      "theta": [
+        0.3,
+        0.019999999999999764,
+        1.3
+      ]
+    },
+    {
+      "boundary_abs_error": 2.842170943040401e-14,
+      "generator_max_abs_error": 2.5091040356528538e-14,
+      "population_nll_change_sum_across_designs": -4.055880438020942e-17,
+      "prior_max_abs_error": 2.4980018054066022e-15,
+      "raw_law_max_abs_error": 4.0245584642661925e-16,
+      "read_fee_max_abs_difference": 0.0004307423781143224,
+      "reward_max_abs_difference": 0.0006520556139684164,
+      "status": "equivalent_flow",
+      "theta": [
+        0.3,
+        0.026277117995841343,
+        1.45
+      ]
+    },
+    {
+      "boundary_abs_error": 0.0,
+      "generator_max_abs_error": 0.0,
+      "population_nll_change_sum_across_designs": 0.0,
+      "prior_max_abs_error": 0.0,
+      "raw_law_max_abs_error": 0.0,
+      "read_fee_max_abs_difference": 0.0009867700069988647,
+      "reward_max_abs_difference": 0.0013954524877204388,
+      "status": "equivalent_flow",
+      "theta": [
+        0.3,
+        0.033621953577080275,
+        1.65
+      ]
+    },
+    {
+      "boundary_abs_error": 0.0,
+      "generator_max_abs_error": 0.0,
+      "population_nll_change_sum_across_designs": 0.0,
+      "prior_max_abs_error": 0.0,
+      "raw_law_max_abs_error": 0.0,
+      "read_fee_max_abs_difference": 0.00139022225823323,
+      "reward_max_abs_difference": 0.0018775642342236942,
+      "status": "equivalent_flow",
+      "theta": [
+        0.3,
+        0.03855375205614554,
+        1.8
+      ]
+    }
+  ],
+  "fixed_maturity_fisher_design": {
+    "interpretation": "Equal-probability randomization over the six designs. Squared weighted singular values are per-trial Fisher eigenvalues in scaled coordinates, conditional on known emissions.",
+    "weighted_jacobian_spectrum": {
+      "nonzero_condition_number": 3.5227835171290964,
+      "rank": 2,
+      "rank_relative_tolerance": 1e-08,
+      "right_smallest_vector_scaled_coordinates": [
+        -0.6669813180217923,
+        0.7450744401802498
+      ],
+      "singular_values_scaled": [
+        0.4327030730260415,
+        0.12282987896419881
+      ]
+    }
+  },
+  "fixed_maturity_spectrum": {
+    "nonzero_condition_number": 5.758772806791831,
+    "rank": 2,
+    "rank_relative_tolerance": 1e-08,
+    "right_smallest_vector_scaled_coordinates": [
+      -0.6184581652507822,
+      0.7858177255793076
+    ],
+    "singular_values_scaled": [
+      0.19507876988409026,
+      0.033875059223384636
+    ]
+  },
+  "forward_vs_central_jacobian_max_abs_error": 1.5870771363779568e-10,
+  "full_physical_spectrum": {
+    "nonzero_condition_number": 6.305075768609969,
+    "rank": 2,
+    "rank_relative_tolerance": 1e-08,
+    "right_smallest_vector_scaled_coordinates": [
+      0.0,
+      0.8692899197424291,
+      0.49430257478006456
+    ],
+    "singular_values_scaled": [
+      0.2903312302468454,
+      0.04604722304722635,
+      9.262585552723962e-17
+    ]
+  },
+  "generator_prior_emission_null_residual_max": 1.1102230246251565e-16,
+  "joint_observation_spectra": {
+    "fixed_maturity_plus_ten_logit_coordinates": {
+      "nonzero_condition_number": 21.10835126922662,
+      "rank": 12,
+      "rank_relative_tolerance": 1e-08,
+      "right_smallest_vector_scaled_coordinates": [
+        -0.0008776588504017771,
+        -0.0003384171720140628,
+        -0.3533771545046287,
+        -0.4507998377877158,
+        -0.3631383822756097,
+        -0.5381012410832157,
+        -0.3620204004817901,
+        0.13763235410659172,
+        0.1402146479878491,
+        0.17760025907272978,
+        0.15993168666835172,
+        0.15394544027329177
+      ],
+      "singular_values_scaled": [
+        0.27245427193715094,
+        0.2653841064622794,
+        0.21870790824614264,
+        0.1945796465317912,
+        0.16437821368381858,
+        0.08883393848908719,
+        0.0414460977354487,
+        0.03386875552449738,
+        0.031129584024597767,
+        0.02669865138023721,
+        0.025046740499312242,
+        0.012907416048848673
+      ]
+    },
+    "forward_vs_central_joint_jacobian_max_abs_error": 1.5870771363779568e-10,
+    "joint_and_physical_raw_law_max_abs_difference": 0.0,
+    "physical_plus_twelve_logits": {
+      "nonzero_condition_number": 11.585745349902403,
+      "rank": 12,
+      "rank_relative_tolerance": 1e-08,
+      "right_smallest_vector_scaled_coordinates": [
+        -5.688641030819489e-16,
+        -0.4667316123101545,
+        -0.2653966558872777,
+        0.3440249413566963,
+        0.3440249413566958,
+        0.3440249413566962,
+        0.3440249413566964,
+        0.3440249413566964,
+        0.34402494135669626,
+        -0.016366915110183462,
+        -0.01636691511018363,
+        -0.016366915110183355,
+        -0.01636691511018368,
+        -0.016366915110184028,
+        -0.016366915110183577
+      ],
+      "singular_values_scaled": [
+        0.29284761627954514,
+        0.273524645269011,
+        0.26711354449842495,
+        0.21913354962458712,
+        0.21822470602336738,
+        0.14294408261100247,
+        0.048426255201341015,
+        0.045965976880073395,
+        0.031193834970651375,
+        0.031138870768675515,
+        0.025735242750389433,
+        0.02527654522304964,
+        7.940665593408149e-17,
+        6.180138628931902e-17,
+        3.652569668027618e-17
+      ]
+    },
+    "reduced_columns_in_fifteen_parameter_order": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "reduced_coordinate_scales": [
+      0.25,
+      0.038,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "scope": "Local raw-law derivative rank at the stated parameters and six observation designs; the discrete bit-label symmetry remains. This is not a global recovery or finite-data precision theorem."
+  },
+  "observation_probability_sums": [
+    1.0000000000000002,
+    1.0000000000000009,
+    0.9999999999999987,
+    1.0000000000000009,
+    0.9999999999999999,
+    0.9999999999999994
+  ],
+  "observations_per_design": [
+    7,
+    7,
+    7,
+    49,
+    343,
+    49
+  ],
+  "parameter_names": [
+    "sigma",
+    "liquidity",
+    "maturity"
+  ],
+  "physical_scales": [
+    0.25,
+    0.038,
+    1.5
+  ],
+  "raw_law_null_residual_max": 3.2006013856117733e-17,
+  "schema": "hcsn-r14-flow-identifiability-v2",
+  "scope": "Local finite-model raw-symbol identifiability at a declared observation design and units. Conditional physical and joint derivative ranks are reported separately. Neither is a global recovery theorem or a continuum result.",
+  "source_parent": "b0802dc314251f5332bd026cb2984a0b5c75f768",
+  "source_sha256": {
+    "tools/hcsn/calibrated_operator_r11_20261031/numerics/kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "tools/hcsn/task_aligned_r14_20261101/identifiability.py": "6ef8b1ca3bbf8a25e7fd7e4cfd8371a5fb3befadfa63ed400985282f21040505",
+    "tools/hcsn/task_aligned_r14_20261101/test_identifiability.py": "c97c63499dd24dfe1b36d36f85d36330326dcd3c80c869667a37beeaea8d49c8",
+    "tools/hcsn/unified_cell_r12_20261031/PROTOCOL.json": "e14f397784e0c3b80edbbcf85e68b8d86f39d15004e375ee92a1f4a22b4c3621",
+    "tools/hcsn/unified_cell_r12_20261031/cell.py": "c76e6d128ecefe871b14ee3855e44420cfdfd4553e4afb588142db9a60931345"
+  },
+  "theta": [
+    0.3,
+    0.02,
+    1.3
+  ]
+}
