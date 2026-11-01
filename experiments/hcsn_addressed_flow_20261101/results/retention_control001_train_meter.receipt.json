@@ -1,0 +1,66 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "/workspace/scratch/52a69008c60c/.venv/bin/python",
+    "-m",
+    "experiments.hcsn_addressed_flow_20261101.retention_control",
+    "--mode",
+    "train",
+    "--run",
+    "experiments/hcsn_addressed_flow_20261101/results/retention001",
+    "--out",
+    "experiments/hcsn_addressed_flow_20261101/results/retention_control001",
+    "--source-commit",
+    "0ba19482533b0d714eebe4fa58b4544ca03aac6f",
+    "--candidate-sha256",
+    "468459cd0353f7a84dd108edd5c7b416dc2beda0e972cdca87224d9e135c59a4"
+  ],
+  "cwd": "/workspace/scratch/ad699f1b2b79/hepta-csn-next",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-01T07:56:54.847260+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_addressed_flow_20261101/results/retention_control001_train_meter.stdout.log",
+  "stderr_path": "experiments/hcsn_addressed_flow_20261101/results/retention_control001_train_meter.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-01T07:57:08.487451+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 13.640013976000773,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 13.420883,
+  "system_cpu_seconds": 0.146067,
+  "total_cpu_seconds": 13.56695,
+  "peak_rss_bytes": 246251520,
+  "peak_rss_native_units": 240480,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/retention_control001_train_meter.stdout.log",
+      "is_file": true,
+      "bytes": 147,
+      "sha256": "e9f6756e5e19dba2d0bc49ed5b1756354e05ced9e755bc02a88d4baaf80de4f8"
+    },
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/retention_control001_train_meter.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_addressed_flow_20261101/results/retention_control001/POLICY_FREEZE.json",
+      "is_file": true,
+      "bytes": 12143,
+      "sha256": "7da628a4a0c46e2656369352f8cb5b2945c0f534c0f82ba4ea80a49f2face88e"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0007871690000000008,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}
