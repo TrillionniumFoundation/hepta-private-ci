@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.ci.baseline_test_repair.v1",
+  "created_at_utc": "2026-11-01T02:47:48.483989+00:00",
+  "base_head": "eeb17ab1f4127d365025e9b1b53f9cc44eed01a5",
+  "source_scope": {
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "58bccfbc880169cdaf83aff4f9e9c7b6ddecc6a071d753d77cebfbfecde1c94a",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "ca42ef4edd06738b1536af967e49b19ef9ae3119ab97a35c0041ff91725c1f52",
+    "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs": "0517be2a3931991b1495dc1275522db1c22cdf0a0d1fd4df635bd760fb8dd27f",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "29b28b084d6c682b8e8c59892c4962daff73fff874d29245411fac12200c86e1",
+    "codex-rs/hepta-fleet/src/authority_port.rs": "63898efc01f0b1ab01af67ca0ca41fa305206907daae675d8e045d5241b01f6a",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "138b248b536c8c201053e5e7b2591b92e2713a368a8a376f918e0e7075023d68",
+    "codex-rs/hepta-memory/src/production_writer.rs": "d58d9f05ef6802b9f37e00ed30910c4f8ee54338429acc9bef5a4c8ffbf88eed"
+  },
+  "changes": [
+    {
+      "group": "fixture_error_and_sqlite_contract",
+      "files": [
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+        "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+        "codex-rs/hepta-fleet/src/authority_port.rs",
+        "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs"
+      ],
+      "behavior": "Test helpers propagate Result to tests. SQLite reference databases use SqliteConfig.open_durable_evidence_pool and a retained TempDir. Existing migration, corruption, authorization, final-use and replay assertions remain."
+    },
+    {
+      "group": "signed_plasticity_fixture",
+      "files": [
+        "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs"
+      ],
+      "behavior": "Replace unavailable legacy raw append with LedgerWriter, separately durable LedgerWitnessStore, root-signed activated trust, candidate completeness, and signed ProductionDecisionV2. Child process still reconstructs the durable descriptor."
+    }
+  ],
+  "boundaries": {
+    "production_runtime_modified": false,
+    "r13_frozen_runtime_modified": false,
+    "legacy_feature_enabled": false,
+    "lint_or_scope_gate_weakened": false,
+    "cargo_lock_modified": false
+  },
+  "validation_at_receipt": {
+    "just_fmt": {
+      "status": "passed",
+      "exit_code": 0
+    },
+    "git_diff_check": {
+      "status": "passed",
+      "exit_code": 0
+    },
+    "first_fleet_attempt": {
+      "status": "blocked_missing_sparse_input",
+      "exit_code": 101,
+      "input": "docs/modules/MODULES.json",
+      "resolution": "Materialized tracked input from current HEAD; retry started.",
+      "local_log": "/tmp/hepta-ci-fleet-test.log"
+    },
+    "fixture_tests": {
+      "status": "in_progress_not_a_pass",
+      "packages": [
+        "codex-hepta-fleet",
+        "codex-hepta-automation",
+        "codex-hepta-memory"
+      ],
+      "test_scope": [
+        "authority_port",
+        "migration_convergence",
+        "schema_oracle",
+        "final_use_dispatch_tests"
+      ],
+      "local_log": "/tmp/hepta-ci-fixture-tests.log"
+    },
+    "agentd_tests": {
+      "status": "in_progress_not_a_pass",
+      "package": "codex-hepta-agentd",
+      "test_scope": [
+        "automation_effect_host",
+        "plasticity_process_e2e",
+        "kernel_evidence_product"
+      ],
+      "local_log": "/tmp/hepta-ci-agentd-tests.log"
+    },
+    "clippy": {
+      "status": "pending"
+    }
+  },
+  "remote_evidence": {
+    "current_source_errors": {
+      "run_id": 41265424224,
+      "jobs": [
+        124727579198,
+        124727579298,
+        124727579886
+      ],
+      "head": "90d1c11c5e654b1bf595c2564f1160df7d8e07a9"
+    },
+    "baseline_same_missing_api": {
+      "run_id": 41261536832,
+      "job_id": 124715984192,
+      "head": "7d19d1f68b5c03f61c4ba92c42abf0cf4774d7c1"
+    },
+    "windows_aggregate": {
+      "job_id": 124729565246,
+      "reason": "Upstream Windows shards aggregate result cancelled; this job contains no Rust compiler diagnostic."
+    }
+  }
+}
