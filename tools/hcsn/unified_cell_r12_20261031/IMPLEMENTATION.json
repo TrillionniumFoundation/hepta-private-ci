@@ -1,0 +1,17 @@
+{
+  "stage": "before_confirmation",
+  "training_precision": "All joint-model and recurrent training is float64 on CPU, including the complete inherited HX Jacobian. Pure FP32 remains a separate failed-admission experiment.",
+  "cell_parameters": 15,
+  "gru_parameters": 5844,
+  "continuous_diagonal_ssm_parameters": 3444,
+  "ordinary_width": 32,
+  "optimizer": "Adam; distribution learning rate 0.04, ordinary cores 0.004; global gradient norm clipped at 5.0; validation posterior cross entropy selects checkpoint every 20 updates and once at the end.",
+  "reset_distribution": "Discretized Gaussian on active log-distance cells, centered at log(90/full_HX_boundary), fixed physical standard deviation 0.1, normalized over the truncated domain. Grid refinement keeps this physical width fixed.",
+  "time_contract": "Sequence fitting and confirmation use varying time intervals within each history. Each short decision episode reveals one interval, fixed throughout that episode, so the shared finite-horizon planner uses the correct future time process.",
+  "initial_decision_state": "Every core starts with the identical fitted-model prior supplied to the shared controller. Ordinary recurrent hidden states start at zero and update only from actual elapsed time, availability mask and acquired token.",
+  "episode_pairing": "Initial latent draw, transition uniforms and potential sensor uniforms are paired across arms. The raw sensor token is materialized only by the actual READ call. ANSWER terminates; WAIT/READ advance with the same true Q; recovery and content reset are included in Q.",
+  "continuation_reference": "The controller is a deterministic finite-horizon Bayes expectation, independently checked against alpha-vector enumeration. It is a model-based calibrated controller, not a claim that sampled DQN converges.",
+  "cpu_accounting": "Report measured process CPU for causal encoding, state advances, Bayes/controller work, actual reads and scoring; fit CPU plus data preparation is amortized over 1000 episodes. Precomputation is charged. Native parity and native cost are separate because production execution is not integrated.",
+  "shared_calibration_accounting": "Ordinary value cores need their own encoder fit and the common HX-model calibration fit. The distribution and generic HMM cores reuse that single fit. Report actual unique training cost AND a conservative equal-shared-charge sensitivity that charges calibration plus encoder fit to every arm, even where this double-counts reused work. Main cost acceptance uses the conservative sensitivity; actual totals are also retained. Reference true Bayes receives privileged parameters and has no empirical calibration claim.",
+  "additional_references": "Identical fitted generic HMM filtering, and privileged true-model Bayes. The former is algebraically the same finite-state inference operator as the distribution cell and must be reported even if it removes a novelty claim."
+}
