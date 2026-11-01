@@ -1,0 +1,13 @@
+{
+  "disabled_fault_hook": {
+    "fixed": "Only requested != none may trigger a pause",
+    "records": "development_mailbox",
+    "result": "Old helper treated none/none as a fault and paused; manually released, smoke completed and two process receipts retained"
+  },
+  "unix_socket_attempt": {
+    "cpu_seconds": null,
+    "logs": "development_smoke/provider.stderr",
+    "qualification": "No socket/network transport qualification; local durable mailbox is the tested IPC",
+    "result": "EPERM from Rust UnixListener.bind and independent Python AF_UNIX bind"
+  }
+}

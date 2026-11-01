@@ -1,0 +1,41 @@
+{
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "episodes_per_fit_domain": 1,
+  "execution_count": 192,
+  "fits": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "fixed_pattern": "read_refresh",
+  "measurement": "cProfile enabled only during unchanged executor; wait4 outer child receipt includes all imports/preparation/artifact writes. Full checkpoint fsync+restore. No source or model mutation.",
+  "models": [
+    "hx",
+    "free",
+    "hmm_same_matrix"
+  ],
+  "namespace": 180801,
+  "owner_theta": [
+    0.3,
+    0.018
+  ],
+  "policies": [
+    "value",
+    "fixed"
+  ],
+  "representations": [
+    "full",
+    "anchored"
+  ],
+  "schema": "hcsn-r18-planner-profile-development-v1",
+  "scope": "Read-only development profiling of baseline, no retraining/efficacy confirmation",
+  "thread_count": 1
+}

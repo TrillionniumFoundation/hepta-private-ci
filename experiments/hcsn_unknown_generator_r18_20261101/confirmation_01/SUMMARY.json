@@ -1,0 +1,209 @@
+{
+  "limits": [
+    "New generators are unseen continuous parameter draws from the same declared training population",
+    "Generator bootstrap intervals are approximate empirical evidence, not exact coverage guarantees",
+    "All addresses and complete symbolic alias bridges are supplied; no learned semantic or real AV binding",
+    "Both models are ordinary finite references; no analytic-core D-B or network adoption result"
+  ],
+  "models": {
+    "markov_mixture": {
+      "attempts": 1024,
+      "calibration": {
+        "calibration_gate_passed": true,
+        "threshold": 0.95
+      },
+      "invalid": 0,
+      "quality": {
+        "accepted": 907,
+        "accepted_error": 0.005512679162072767,
+        "actual_reads": 212,
+        "after_read_brier": 0.05010359468164281,
+        "after_read_log_loss": 0.10342741367676406,
+        "before_read_brier": 0.08236886716002022,
+        "before_read_log_loss": 0.16853093454921936,
+        "bounded_uncertainty_gate_passed": true,
+        "coverage": 0.8857421875,
+        "errors": 5,
+        "fractional_accepted": 148,
+        "fractional_error": 0.033783783783783786,
+        "fractional_errors": 5,
+        "mean_actual_read_net_effect": 0.08755859375,
+        "positive_support_failures": 0,
+        "reliability_bins": [
+          {
+            "count": 15,
+            "high": 0.5,
+            "low": 0.0,
+            "mean_confidence": 0.429397105179079,
+            "observed_accuracy": 0.5333333333333333
+          },
+          {
+            "count": 14,
+            "high": 0.65,
+            "low": 0.5,
+            "mean_confidence": 0.5823284980335283,
+            "observed_accuracy": 0.6428571428571429
+          },
+          {
+            "count": 16,
+            "high": 0.75,
+            "low": 0.65,
+            "mean_confidence": 0.7192394089117669,
+            "observed_accuracy": 0.4375
+          },
+          {
+            "count": 33,
+            "high": 0.85,
+            "low": 0.75,
+            "mean_confidence": 0.795469076243004,
+            "observed_accuracy": 0.8787878787878788
+          },
+          {
+            "count": 32,
+            "high": 0.95,
+            "low": 0.85,
+            "mean_confidence": 0.892457702516716,
+            "observed_accuracy": 0.90625
+          },
+          {
+            "count": 914,
+            "high": 1.0000001,
+            "low": 0.95,
+            "mean_confidence": 0.9960499356649039,
+            "observed_accuracy": 0.9945295404814004
+          }
+        ],
+        "selective_payoff": 0.84048828125,
+        "upper95_accepted_error": 0.00989010989010989,
+        "upper95_fractional_error": 0.05970149253731343
+      }
+    },
+    "pooled_iid": {
+      "attempts": 1024,
+      "calibration": {
+        "calibration_gate_passed": false,
+        "threshold": 0.999999999999
+      },
+      "invalid": 0,
+      "quality": {
+        "accepted": 814,
+        "accepted_error": 0.0,
+        "actual_reads": 301,
+        "after_read_brier": 0.07562385388128552,
+        "after_read_log_loss": 0.15074197457965643,
+        "before_read_brier": 0.1249981139188961,
+        "before_read_log_loss": 0.2570321441374738,
+        "bounded_uncertainty_gate_passed": false,
+        "coverage": 0.794921875,
+        "errors": 0,
+        "fractional_accepted": 0,
+        "fractional_error": null,
+        "fractional_errors": 0,
+        "mean_actual_read_net_effect": 0.13732421875,
+        "positive_support_failures": 0,
+        "reliability_bins": [
+          {
+            "count": 72,
+            "high": 0.5,
+            "low": 0.0,
+            "mean_confidence": 0.30379609544468544,
+            "observed_accuracy": 0.3055555555555556
+          },
+          {
+            "count": 5,
+            "high": 0.65,
+            "low": 0.5,
+            "mean_confidence": 0.6359929829750872,
+            "observed_accuracy": 1.0
+          },
+          {
+            "count": 4,
+            "high": 0.75,
+            "low": 0.65,
+            "mean_confidence": 0.6926518937770896,
+            "observed_accuracy": 0.75
+          },
+          {
+            "count": 88,
+            "high": 0.85,
+            "low": 0.75,
+            "mean_confidence": 0.7974672093292638,
+            "observed_accuracy": 0.8863636363636364
+          },
+          {
+            "count": 13,
+            "high": 0.95,
+            "low": 0.85,
+            "mean_confidence": 0.8902469999797928,
+            "observed_accuracy": 0.9230769230769231
+          },
+          {
+            "count": 842,
+            "high": 1.0000001,
+            "low": 0.95,
+            "mean_confidence": 1.0,
+            "observed_accuracy": 1.0
+          }
+        ],
+        "selective_payoff": 0.7379101562499999,
+        "upper95_accepted_error": 0.0,
+        "upper95_fractional_error": 1.0
+      }
+    }
+  },
+  "paired_ordinary_model_comparison": {
+    "before_read_brier_ci95": [
+      0.032333443549290956,
+      0.05413452994097342
+    ],
+    "before_read_brier_improvement": 0.0426292467588759,
+    "gate_passed": true,
+    "independent_units": 256,
+    "scope": "Ordinary shared-information generator models; no analytic HCSN core or production adoption",
+    "selective_payoff_ci95": [
+      0.0783544921875,
+      0.12777343750000003
+    ],
+    "selective_payoff_improvement": 0.10257812499999999
+  },
+  "panels": {
+    "markov_mixture:rotor": {
+      "accepted_errors": 0,
+      "answered": 78,
+      "attempts": 128,
+      "interpretation": "Misspecified family; not included in calibration/primary gate",
+      "invalid": 0,
+      "refused": 50,
+      "whole_population_quality": 0.5890625
+    },
+    "markov_mixture:vocabulary": {
+      "accepted_errors": 0,
+      "answered": 0,
+      "attempts": 32,
+      "interpretation": "Misspecified family; not included in calibration/primary gate",
+      "invalid": 32,
+      "refused": 32,
+      "whole_population_quality": null
+    },
+    "pooled_iid:rotor": {
+      "accepted_errors": 0,
+      "answered": 109,
+      "attempts": 128,
+      "interpretation": "Misspecified family; not included in calibration/primary gate",
+      "invalid": 0,
+      "refused": 19,
+      "whole_population_quality": 0.81171875
+    },
+    "pooled_iid:vocabulary": {
+      "accepted_errors": 0,
+      "answered": 0,
+      "attempts": 32,
+      "interpretation": "Misspecified family; not included in calibration/primary gate",
+      "invalid": 32,
+      "refused": 32,
+      "whole_population_quality": null
+    }
+  },
+  "production_activation": false,
+  "worlds": 1184
+}

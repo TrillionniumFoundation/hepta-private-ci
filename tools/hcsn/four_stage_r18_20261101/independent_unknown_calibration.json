@@ -1,0 +1,93 @@
+{
+  "all_checks_passed": true,
+  "counts": {
+    "markov_mixture": {
+      "0.65": {
+        "accepted": 1968,
+        "errors": 55,
+        "fractional": 523,
+        "fractional_errors": 55,
+        "invalid": 0
+      },
+      "0.75": {
+        "accepted": 1950,
+        "errors": 44,
+        "fractional": 500,
+        "fractional_errors": 44,
+        "invalid": 0
+      },
+      "0.85": {
+        "accepted": 1899,
+        "errors": 30,
+        "fractional": 426,
+        "fractional_errors": 30,
+        "invalid": 0
+      },
+      "0.95": {
+        "accepted": 1809,
+        "errors": 11,
+        "fractional": 283,
+        "fractional_errors": 11,
+        "invalid": 0
+      }
+    },
+    "pooled_iid": {
+      "0.65": {
+        "accepted": 1858,
+        "errors": 35,
+        "fractional": 350,
+        "fractional_errors": 35,
+        "invalid": 0
+      },
+      "0.75": {
+        "accepted": 1854,
+        "errors": 33,
+        "fractional": 341,
+        "fractional_errors": 33,
+        "invalid": 0
+      },
+      "0.85": {
+        "accepted": 1692,
+        "errors": 4,
+        "fractional": 124,
+        "fractional_errors": 4,
+        "invalid": 0
+      },
+      "0.95": {
+        "accepted": 1655,
+        "errors": 0,
+        "fractional": 23,
+        "fractional_errors": 0,
+        "invalid": 0
+      }
+    }
+  },
+  "family_tests": 16,
+  "generators": 2048,
+  "independent_worlds_per_generator": 1,
+  "limits": [
+    "Conditional on frozen models/OOD cutoffs and stated IID generator population",
+    "Independent draws from the same continuous population do not represent arbitrary unknown generator families",
+    "Clopper-Pearson accepted-error bounds do not themselves establish semantic or multimodal learning"
+  ],
+  "one_sided_delta": 0.003125,
+  "probability_decisions_checked": 16384,
+  "risk_limit": 0.1,
+  "schema": "hcsn-r18-independent-risk-calibration-audit-v1",
+  "scope": "Saved raw calibration decisions/fees/probabilities and exact simultaneous binomial bound recomputation; no inference/owner source imported, no confirmation worlds opened",
+  "selected": {
+    "markov_mixture": {
+      "calibration_gate_passed": true,
+      "threshold": 0.95
+    },
+    "pooled_iid": {
+      "calibration_gate_passed": false,
+      "threshold": 0.999999999999
+    }
+  },
+  "source_sha256": {
+    "ARCHIVES.json": "57c06f13c20ab0ddae744bba16292f172d4bfb6286f5eb2e63a46b72df7ab839",
+    "CALIBRATION.json": "90096d89a36d8f4b7a7e0b08d4990f6a7fd304b5dddbe3696211801d0d650a73",
+    "protocol.json": "afa493fba5dc4683fb53ced530657a83006485cfac82cbd3598f6a0827321d5d"
+  }
+}

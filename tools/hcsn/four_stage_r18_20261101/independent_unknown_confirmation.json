@@ -1,0 +1,112 @@
+{
+  "all_checks_passed": true,
+  "before_read_brier_ci95": [
+    0.032333443549290956,
+    0.05413452994097342
+  ],
+  "before_read_brier_improvement": 0.0426292467588759,
+  "bootstrap_replicates": 4096,
+  "limits": [
+    "Conditional risk-calibration population is same-family new parameter draws, not arbitrary unseen families",
+    "Rotor misspecification exhibits Markov deterioration and remains a negative result",
+    "Full raw prefix and explicit alias map are available to ordinary models; dt metadata does not test content time evolution",
+    "Does not establish analytic-core gain, GPU/energy economics or production model ownership"
+  ],
+  "main_independent_generators": 256,
+  "main_worlds": 1024,
+  "main_worlds_per_generator": 4,
+  "model_probability_records_checked": 2304,
+  "models": {
+    "markov_mixture": {
+      "accepted": 907,
+      "actual_reads": 212,
+      "errors": 5,
+      "fractional_accepted": 148,
+      "fractional_errors": 5,
+      "gate": true,
+      "upper95_fractional_error": 0.05970149253731343
+    },
+    "pooled_iid": {
+      "accepted": 814,
+      "actual_reads": 301,
+      "errors": 0,
+      "fractional_accepted": 0,
+      "fractional_errors": 0,
+      "gate": false,
+      "upper95_fractional_error": 1.0
+    }
+  },
+  "ordinary_model_comparison_gate": true,
+  "panels": {
+    "markov_mixture:rotor": {
+      "accepted_errors": 0,
+      "answered": 78,
+      "attempts": 128,
+      "interpretation": "Misspecified family; not included in calibration/primary gate",
+      "invalid": 0,
+      "refused": 50,
+      "whole_population_quality": 0.5890625
+    },
+    "markov_mixture:vocabulary": {
+      "accepted_errors": 0,
+      "answered": 0,
+      "attempts": 32,
+      "interpretation": "Misspecified family; not included in calibration/primary gate",
+      "invalid": 32,
+      "refused": 32,
+      "whole_population_quality": null
+    },
+    "pooled_iid:rotor": {
+      "accepted_errors": 0,
+      "answered": 109,
+      "attempts": 128,
+      "interpretation": "Misspecified family; not included in calibration/primary gate",
+      "invalid": 0,
+      "refused": 19,
+      "whole_population_quality": 0.81171875
+    },
+    "pooled_iid:vocabulary": {
+      "accepted_errors": 0,
+      "answered": 0,
+      "attempts": 32,
+      "interpretation": "Misspecified family; not included in calibration/primary gate",
+      "invalid": 32,
+      "refused": 32,
+      "whole_population_quality": null
+    }
+  },
+  "raw_archives_sha256": {
+    "confirmation_01/worlds_000.json.gz": "88a3e4afb744f5b21e2ddb53135cc67eadbc776f060a8b752b715dfedf8548e3",
+    "confirmation_01/worlds_001.json.gz": "3b7d5656e3ca0584d28bf8fab172be91cfca7ea31e7a959223fd010a50684456",
+    "confirmation_01/worlds_002.json.gz": "421a3b9f6de18bfc9b86d43d6323267ab2d906c4f22e14422ee04d9fb51643ce",
+    "confirmation_01/worlds_003.json.gz": "e1127f8c758b911c0b565397aada5e5e12f6d1289c6f97de76f184f014de38cd",
+    "confirmation_01/worlds_004.json.gz": "b3a7d8bdc239990137973411a238f5042748659957907b93af3a2c178b92f409",
+    "confirmation_01/worlds_005.json.gz": "6a3c7d245d1080854b4b97f37405a28748b1d7ba52eed2a0ce5d191facbaab83",
+    "confirmation_01/worlds_006.json.gz": "7384d9993929692eb440b107ca01b22a4c8496aa14e4ab11e62434a351c2b553",
+    "confirmation_01/worlds_007.json.gz": "c8ce73223819e5781e27b7fdf50db6bb928911b3ab7f9d8edab73a71792f90d1",
+    "confirmation_01/worlds_008.json.gz": "3df62f1d3978ce9c645962fa63be7723f16eaa78368c502467ab6c5a32dac766",
+    "confirmation_01/worlds_009.json.gz": "88e0342aebc4ea88448f0995c8d18a0871f4842c1f51433219cb98bc46ad4274",
+    "confirmation_01/worlds_010.json.gz": "aafd14f96e1fa0afe35288c6210f1d7684e6fed9a79fd1ae3c0eb8aa33acc762",
+    "confirmation_01/worlds_011.json.gz": "bafc43a9d2444a67e300d4c0dd26bdfb7e5962a5fa63af7e3bb40b7cc4ee4b78",
+    "confirmation_01/worlds_012.json.gz": "5f381a62b5ab5ac0baa19815873c19ec90230d459e80eae4884cf3907dbdd3b1",
+    "confirmation_01/worlds_013.json.gz": "7301c9057f7cdf330a5b50a492cae923e3448045318d4fccfca48a599a2b4c8f",
+    "confirmation_01/worlds_014.json.gz": "b3c065a8216ded61feac1df942742bfa0c8f9d09188aa6ba0855b74932e5296d",
+    "confirmation_01/worlds_015.json.gz": "5389ebe0247d53f461a97ba423d9410b64dcc601a321cb31e08e7d29db422909",
+    "confirmation_01/worlds_016.json.gz": "2a45ea59204f337c525b00ca01764c506e1c7212cba6701f9875a638872e2ab5",
+    "confirmation_01/worlds_017.json.gz": "d06facc1e250044e5e9d6d54cf59340ee4ce458150ee5f500171372f82c13972",
+    "confirmation_01/worlds_018.json.gz": "c1dc206401d8d60c0bac47f8b7cee852dd1abaa357915b687abe5f062a0fac40"
+  },
+  "schema": "hcsn-r18-independent-unknown-confirmation-audit-v1",
+  "scope": "Saved probabilities/action fees and generator-cluster resampling independently recomputed with no inference/owner/statistics project imports",
+  "selective_payoff_ci95": [
+    0.0783544921875,
+    0.12777343750000003
+  ],
+  "selective_payoff_improvement": 0.10257812499999999,
+  "source_hashes": {
+    "POSTCALIBRATION_FREEZE.json": "5d0df7a76d015a5b7c0b10a0a562d3e1f21fcd3a509aae882a05e1fba6a8fb77",
+    "SUMMARY.json": "290e88ae3b2a4de6b4cdff36251490f296e1b01625da8ce2a294480a86951f0f",
+    "protocol.json": "afa493fba5dc4683fb53ced530657a83006485cfac82cbd3598f6a0827321d5d"
+  },
+  "worlds": 1184
+}

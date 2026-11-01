@@ -1,0 +1,54 @@
+{
+  "ack_records": 36,
+  "actual_crate_baseline": "eb164efd5ed5b483483b02ae572ef6ef37c2e00d",
+  "actual_crate_files_git_blob_verified": 57,
+  "all_review_checks_passed": true,
+  "binary_sha256": "f72fa49fef888be53cb15118c76bf079e8feb780f9cd83d8280b5664c2c3a953",
+  "cost_scope": "Complete check interpreter and waited Rust descendants; compile and developer/auditor costs separate",
+  "external_native_provider_receipt_digests_verified": 6,
+  "input_sha256": {
+    "PROVIDER_RECEIPTS.json": "97f1f1a80f94df1f27e0f409422a730c96d73f6f9abd09d67b1eaa5b818c34c2",
+    "RESULTS_V2.json": "f15f97f19671df73e2ba464425585f04c8aa685860962d94b42c9e2b0a5e88bc",
+    "RESULTS_V2.process.json": "3ea9107a6964493b1b2db384f97873a7f3b71bc693fb498b0594bd1ed5447fe7",
+    "SOURCE_FREEZE.json": "f8d249607e5e13b590f4c5012d790c247aaff2b1e5a26c69b603fbde10477b35",
+    "SOURCE_IDENTITY.json": "c3b827c944dec2edb839b7acb6d3ac2f4f4c51d857696f93932d1eb8145a61a0"
+  },
+  "limits": [
+    "Actual pinned crates compiled in isolated small workspace; not complete production workspace CI or daemon integration",
+    "Six real local provider receipts are replayed through APIs; not authenticated live remote-provider integration",
+    "Adapter encodes receipt-token features into existing sparseQ24 mechanism; no financial CTMC port/activation",
+    "Temporary journal byte equality relied on assertions in frozen runner; saved checkpoint/replay outputs independently checked here",
+    "No calibrated model admission, GPU/energy adoption, physical power-loss or hostile-storage/authentication claim"
+  ],
+  "measured_check_process_family_cpu_seconds": 0.184375,
+  "negative_rejections": [
+    "acknowledged_suffix_rollback",
+    "conflicting_replay",
+    "oversized_provider_evidence",
+    "truncated_journal",
+    "truncated_witness",
+    "unacknowledged_gap_1",
+    "unacknowledged_gap_2",
+    "unacknowledged_gap_4",
+    "wrong_generation",
+    "wrong_objective",
+    "wrong_predecessor",
+    "wrong_scope"
+  ],
+  "provider_receipt_source_case": "tools/hcsn/native_owner_r18_20261101/results/run01/151101_iid_full_fixed_wait_read/owner_prepared/provider.state",
+  "research_source_files_verified": 7,
+  "saved_main_process_records": 40,
+  "schema": "hcsn-r18-production-bridge-independent-review-v1",
+  "scope": "Static source and saved result-record review over actual SparseJournal/FileAnchorWitnessStore APIs, without repeating full already-passed runtime checks",
+  "sigkill_append_boundaries": 4,
+  "source_commit": "3ce16e80211d6ae3db1daa736babb89cefda10e2",
+  "source_review_findings": [
+    "Full receipt bytes bind input_digest; unchanged production commit binds exact tick digest and expected predecessor on retries",
+    "Acknowledged next-sequence precheck rejects lost-acknowledgement gaps at1/2/4",
+    "Separate witness lock/CAS and anchored recovery reject loss of acknowledged journal suffix",
+    "Evidence is read through1025-byte limit before1024-byte acceptance check",
+    "After-append fault is after durable journal commit and before witness acknowledgement",
+    "Receipts retain DENY_ALL and requires_calibration=true"
+  ],
+  "verified_binary_path": "/workspace/scratch/4464023fd803/bridge-reproduction-build/target/debug/hcsn-production-bridge-r18"
+}

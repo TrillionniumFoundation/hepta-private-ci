@@ -1,0 +1,47 @@
+{
+  "candidate_order": [
+    "baseline",
+    "batched",
+    "cached"
+  ],
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "failed_prior": "attempt_01 retains first batchedBLAS candidate:53/2304 zero-cost action differences; actual192executioncases matched. V2 batches validation only and preserves each original arithmetic frame shape.",
+  "fits": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "float32_helper_fix": "IndependentFP64boundaryauditpassed348cases; directhelper nowalsoinheritsnp.asarray(dtype=float) beforevalidation, removingFP32directcallcastdifference. ActualforesthadalwayscastFP64, so registered arithmetic unchanged.",
+  "intervals": [
+    0.25,
+    0.95
+  ],
+  "models": [
+    "hx",
+    "free",
+    "hmm_same_matrix"
+  ],
+  "namespace": 180811,
+  "prices": [
+    0.0,
+    0.025
+  ],
+  "prior_v2": "attempt_02 preserves exact bit-identical2304valuefixtures/192actualexecutioncases. V3 avoids terminal-infinity table allocation and copies for single validation frames; matrixoperandshapesunchanged.",
+  "prior_v3_formal": "confirmation_01 retained frozenV3exact1536cases/4608attempts. Five of six valuecostgroups<=.90,freeanchored.9094fails unchanged allsixgate. V4 replacesgeneric scalarreference allclose with its identical explicit finitepredicate; no tolerance change.",
+  "representations": [
+    "full",
+    "anchored"
+  ],
+  "revision": "4b",
+  "schema": "hcsn-r18-development-v1",
+  "scope": "Deterministic predeclared development includes exactzero-costties/prior/basis/randombeliefs and actual value/fixedREAD_REFRESH; failures retained. Source may iterate before separate fresh formalengineeringfreeze.",
+  "seed": 180811
+}
