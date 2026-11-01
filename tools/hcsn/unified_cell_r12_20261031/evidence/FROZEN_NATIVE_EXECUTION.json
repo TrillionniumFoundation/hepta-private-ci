@@ -1,0 +1,41 @@
+{
+  "schema": "hcsn-r12-final-frozen-native-execution-v1",
+  "frozen_source_identity": "44d891bbffdf65396710fcb5b490473ae59656adede1146e9b840996d0a3a5cb",
+  "frozen_library_sha256": "0dd9e0758bb9929b654a22f5528af0c0755c8ca062a1feeeb9b28d7e8027b904",
+  "same_source_and_library_as_confirmation": true,
+  "executions": {
+    "audit_frozen": {
+      "sha256": "31e5547953b1f97ca56e4ec6258bb63636f0e02c297efd3b4ca8da249e5a0f56",
+      "summary": {
+        "checks": 67,
+        "passed": 67,
+        "max_propagation_error": 3.186340080674199e-14,
+        "max_mass_error": 8.693046282814976e-14,
+        "max_frechet_error": 1.904205959579741e-12,
+        "recovery_max_error": 4.3298697960381105e-15,
+        "production_qualified": false,
+        "native_fp32_qualified": false
+      }
+    },
+    "contract_frozen": {
+      "sha256": "e274ed4ad760a2c64918f8fc9bfc97c6f15132115452be9ca70d87bf205406d1",
+      "summary": {
+        "checks": 68,
+        "passed": 68,
+        "max_probability_error": 1.7041923427996153e-14,
+        "max_mass_error": 6.894484982922222e-14,
+        "event_counts": [
+          1993,
+          51,
+          50,
+          50,
+          8
+        ],
+        "same_Q_fixed_for_entire_path": true,
+        "event_trace_equals_expected_occupancy": false,
+        "production_qualified": false
+      }
+    }
+  },
+  "scope": "Actual current frozen CLI and library were reexecuted, including native cross-process event and belief recovery. Historical runs remain separate."
+}
