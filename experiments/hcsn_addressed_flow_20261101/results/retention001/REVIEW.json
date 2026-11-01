@@ -1,0 +1,295 @@
+{
+  "control_conclusions": {
+    "confirmation_cpu_seconds": 16.153280091000003,
+    "controller_arithmetic_cpu_ms_total_over_18_batches": {
+      "feature_extraction_cpu_seconds": 14.393644999999955,
+      "lightweight_controller_cpu_seconds": 0.0716659999961955,
+      "value_controller_cpu_seconds": 1.1059820000007825
+    },
+    "effect_units": "utility = mean four-query correctness minus quoted READ price; fractions, not Joules",
+    "interpretation": [
+      "Both actual continuations execute; READ reacquires a removed FINAL raw write after the original query. Policies use first-query features only and are frozen before confirmation.",
+      "Value-minus-lightweight within Flow (D-C) includes zero for all3 tasks; no positive Flow/value synergy established. Selective interaction is negative at descriptive95%, without a15-comparison family claim.",
+      "MQAR diagonal B-A is positive but tiny (0.00002604 utility) at descriptive95%; it is not a general adoption result.",
+      "Offline evaluation computes both continuations; measured controller arithmetic excludes those model paths. Symbolic price and CPU are separate and cannot be called energy."
+    ],
+    "mapping": {
+      "A": "diagonal+lightweight",
+      "B": "diagonal+value",
+      "C": "Flow+lightweight",
+      "D": "Flow+value"
+    },
+    "selected_effects": [
+      {
+        "effect": "B-A",
+        "interval95": [
+          6.510416666666672e-06,
+          4.882812500000004e-05
+        ],
+        "mean": 2.604166666666669e-05,
+        "task": "mqar"
+      },
+      {
+        "effect": "D-C",
+        "interval95": [
+          -0.0004134114583333333,
+          7.16145833333334e-05
+        ],
+        "mean": -0.00010416666666666662,
+        "task": "mqar"
+      },
+      {
+        "effect": "(D-C)-(B-A)",
+        "interval95": [
+          -0.0004330240885416665,
+          4.231770833333337e-05
+        ],
+        "mean": -0.0001302083333333333,
+        "task": "mqar"
+      },
+      {
+        "effect": "D-C",
+        "interval95": [
+          -0.0007813313802083418,
+          0.0007161458333333331
+        ],
+        "mean": 6.510416666668407e-06,
+        "task": "selective"
+      },
+      {
+        "effect": "(D-C)-(B-A)",
+        "interval95": [
+          -0.0007975260416666668,
+          -5.859374999999991e-05
+        ],
+        "mean": -0.00039388020833333327,
+        "task": "selective"
+      },
+      {
+        "effect": "D-C",
+        "interval95": [
+          -0.0004199218749999998,
+          0.0002180989583333336
+        ],
+        "mean": -5.859374999999976e-05,
+        "task": "binding"
+      },
+      {
+        "effect": "(D-C)-(B-A)",
+        "interval95": [
+          -0.0002246093749999999,
+          0.0004003906250000001
+        ],
+        "mean": 8.463541666666674e-05,
+        "task": "binding"
+      }
+    ]
+  },
+  "dynamic_conclusions": {
+    "clock_effects_fraction": [
+      {
+        "arm": "flow",
+        "condition": "unit_clock",
+        "interval95": [
+          -0.0064697265625,
+          -0.00146484375
+        ],
+        "mean": -0.0035400390625
+      },
+      {
+        "arm": "flow",
+        "condition": "reverse_clock",
+        "interval95": [
+          -0.007405598958333333,
+          -0.00146484375
+        ],
+        "mean": -0.003987630208333333
+      },
+      {
+        "arm": "transformer",
+        "condition": "unit_clock",
+        "interval95": [
+          -0.027587890625,
+          -0.01379292805989584
+        ],
+        "mean": -0.021036783854166668
+      },
+      {
+        "arm": "transformer",
+        "condition": "reverse_clock",
+        "interval95": [
+          -0.033365885416666664,
+          -0.023152669270833332
+        ],
+        "mean": -0.028116861979166668
+      }
+    ],
+    "interpretation": [
+      "Flow uses supplied clock: unit and reverse clock reduce accuracy with descriptive paired95% intervals below0.",
+      "Under missing jump observation Flow first post-jump accuracy is64.453%, later93%-level queries show recovery to92.817%; Transformer remains85.645% first and93.576% later. These two summaries do not establish a recovery-time distribution or analytical-core superiority.",
+      "All five cores preserve resampled predictions with maximum recorded logit differences below1e-4; consistency is not unique to Flow.",
+      "Flow base88.867% and missing86.617% trail Transformer90.507% and90.470%, with greater measured CPU sequence latency. Cross-core accuracy comparisons here are descriptive, not newly computed superiority intervals."
+    ],
+    "metrics": [
+      {
+        "arm": "flow",
+        "base": {
+          "accuracy": 0.888671875,
+          "jump_first": 0.810546875,
+          "jump_later": 0.932834201388889
+        },
+        "base_sequence_latency_ms_median_over_seeds": {
+          "1": 4.496115998335881,
+          "24": 8.01376299932599
+        },
+        "maximum_resampling_logit_error": 3.814697265625e-06,
+        "missing": {
+          "accuracy": 0.8661702473958334,
+          "jump_first": 0.64453125,
+          "jump_later": 0.9281684027777778
+        },
+        "training_cpu_seconds_median": 17.286973201999984
+      },
+      {
+        "arm": "diagonal",
+        "base": {
+          "accuracy": 0.8824055989583334,
+          "jump_first": 0.8056640625,
+          "jump_later": 0.9280598958333334
+        },
+        "base_sequence_latency_ms_median_over_seeds": {
+          "1": 1.41350600097212,
+          "24": 1.966316001926316
+        },
+        "maximum_resampling_logit_error": 1.9073486328125e-06,
+        "missing": {
+          "accuracy": 0.8495279947916666,
+          "jump_first": 0.5546875,
+          "jump_later": 0.9240451388888888
+        },
+        "training_cpu_seconds_median": 5.774321946999976
+      },
+      {
+        "arm": "gru",
+        "base": {
+          "accuracy": 0.9010823567708334,
+          "jump_first": 0.8141276041666666,
+          "jump_later": 0.9419487847222222
+        },
+        "base_sequence_latency_ms_median_over_seeds": {
+          "1": 1.1772859979828354,
+          "24": 1.8386860028840601
+        },
+        "maximum_resampling_logit_error": 1.9073486328125e-06,
+        "missing": {
+          "accuracy": 0.8550618489583334,
+          "jump_first": 0.4521484375,
+          "jump_later": 0.9398871527777778
+        },
+        "training_cpu_seconds_median": 6.584914311999995
+      },
+      {
+        "arm": "snn",
+        "base": {
+          "accuracy": 0.8960774739583334,
+          "jump_first": 0.8330078125,
+          "jump_later": 0.9332682291666666
+        },
+        "base_sequence_latency_ms_median_over_seeds": {
+          "1": 1.4992430005804636,
+          "24": 3.0036539974389598
+        },
+        "maximum_resampling_logit_error": 9.5367431640625e-07,
+        "missing": {
+          "accuracy": 0.8645426432291666,
+          "jump_first": 0.587890625,
+          "jump_later": 0.930881076388889
+        },
+        "training_cpu_seconds_median": 5.704288471000012
+      },
+      {
+        "arm": "transformer",
+        "base": {
+          "accuracy": 0.9050699869791666,
+          "jump_first": 0.8623046875,
+          "jump_later": 0.9347873263888888
+        },
+        "base_sequence_latency_ms_median_over_seeds": {
+          "1": 0.4649300026358105,
+          "24": 1.2484409999160562
+        },
+        "maximum_resampling_logit_error": 2.205371856689453e-06,
+        "missing": {
+          "accuracy": 0.9047037760416666,
+          "jump_first": 0.8564453125,
+          "jump_later": 0.9357638888888888
+        },
+        "training_cpu_seconds_median": 3.5461572570000044
+      }
+    ]
+  },
+  "existing_main_evidence": {
+    "analysis_file": "results/campaign001_analysis/SUMMARY.json",
+    "analysis_sha256": "afa3000ed62784f82ebe904967bc32a14ac38a84baef2b68b53ef77f49b4552c",
+    "control_summary_sha256": "9218e039fa306a0b34c8872c61931555da46d4744683f5e3f6c914d0dec6dd09",
+    "source_commit": "63b348005c468e29e89f9f309d525d87661ee06b",
+    "verified_artifacts_recorded_by_main_analysis": 479
+  },
+  "findings": [
+    {
+      "detail": "All 14 current source hashes and 14 saved snapshots match protocol. New confirmation seed 73117 maps to actual seed 420073117; old main confirmation was 61101. Repository search found no prior trial record using new confirmation seed. This is a new synthetic draw after a version-one-informed design, not an independent new task distribution or proof of global historical seed absence.",
+      "id": "source_and_stream_binding",
+      "severity": "verified"
+    },
+    {
+      "detail": "TypedEligibility receives only four observed event-kind fields, allowing WRITE content and BRIDGE relation updates. No y, target_available, dependency or answer enters model.forward. Raw x/dt/observed still drive encoding and physical policy. All 14 shared state tensors match bitwise across Flow and diagonal for seeds 17,29,43; core-specific physical/control tensors intentionally differ.",
+      "id": "information_and_initialization",
+      "severity": "verified"
+    },
+    {
+      "detail": "Evaluate loops all 18 task/core/seed fits and all 10 conditions. Its quality gate requires all4>=0.95 in each of 81 nonmissing records per core (3 tasks x3 seeds x9 conditions). It is a point-score gate, not a 95% lower confidence bound. Missing is separately reported with availability masks.",
+      "id": "complete_quality_gate",
+      "severity": "verified"
+    },
+    {
+      "detail": "Protocol declares resampling<=1e-4 and evaluator records full-time maximum errors, but retention_gates only includes all4. Preserve frozen source. independent_retention_review.py independently checks completeness, weights/checkpoint and regenerated input hashes/raw metrics, then reports quality and subdivision gates separately. Query archives permit recomputing query errors; full-time errors remain original-evaluator measurements.",
+      "id": "subdivision_gate_omitted_from_aggregate",
+      "severity": "external_closure_required"
+    },
+    {
+      "detail": "CLI checks current sources before train/evaluate. Evaluation checks exact externally supplied all-candidate digest, protocol/training source identity, all18 distinct fits, checkpoint SHA and paired training stream hashes. It marks changed source false and returns failure. SHA/commit fields bind bytes; remote publication must be verified by root, not inferred from a 40-character string.",
+      "id": "freeze_validation",
+      "severity": "verified_with_scope"
+    },
+    {
+      "detail": "Primary all-four Flow-minus-diagonal base effects use 98.333% three-task family intervals; other effects use descriptive95% paired hierarchical bootstrap with2000 replicates and only3 training seeds. Zero-width all-success intervals are not population certainty. Train phase parent+childrenCPU and nested fitCPU must not be summed twice. Sequence latency includes conversion/predict; energy and GPU are unmeasured, and equal steps/data are not equal compute.",
+      "id": "intervals_and_cost",
+      "severity": "qualification"
+    }
+  ],
+  "identities": {
+    "frozen_sources_and_snapshots_verified": 14,
+    "independent_reviewer_sha256": "68cfbb12eb7ac21649c0b567a5f0188f4dccf58ca294e77d7beb0a75c6137d63",
+    "protocol_sha256": "e3f11bee3ea5136bcd2f3d629f13dd96a38068f62f94def7d800c7acfcc739ba",
+    "retention_study_sha256": "22f8214b318c859d3a13f37b6b021e17303b6521dd42876014bead7409a6087a",
+    "training_source": {
+      "protocol_sha256": "e3f11bee3ea5136bcd2f3d629f13dd96a38068f62f94def7d800c7acfcc739ba",
+      "source_commit": "6809dd449cecaad4f192b5bd176a11f91223769c"
+    },
+    "typed_retention_sha256": "680d156cbd1290794d747d282763559a277ffc4a47b3e7347e1024db0ef23cf4"
+  },
+  "post_confirmation_audit": {
+    "no_frozen_source_or_protocol_edit": true,
+    "outputs": [
+      "quality_gates_by_core",
+      "resampling_gates_by_core",
+      "combined_gate_by_core"
+    ],
+    "script": "experiments/hcsn_addressed_flow_20261101/independent_retention_review.py",
+    "status": "Prepared and AST syntax checked only; execute after completed confirmation"
+  },
+  "reviewer": "operator_dynamics",
+  "schema": "hcsn.retention.independent_static_review.v1",
+  "scope": "Read-only scientific source/protocol review; no new retention confirmation data generated or viewed; no training or broad retest",
+  "status": "Ready with separate post-confirmation acceptance audit; scientific sources unchanged"
+}
