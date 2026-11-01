@@ -1,0 +1,32 @@
+{
+  "schema": "digital-confirmation-launch-v1",
+  "utc": "2026-11-01 18:15:49 UTC",
+  "model_publication_commit": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+  "seal_publication_commit": "68c3a60def1219d4619e1e1e3f8902a11bb68957",
+  "seal_sha256": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+  "source_commit": "d3d71246a49664a050e04ef4a44a782350990865",
+  "workers": 3,
+  "fits": [
+    501,
+    503,
+    509,
+    521,
+    523,
+    541,
+    547,
+    557,
+    563,
+    569,
+    571,
+    577,
+    587,
+    593,
+    599,
+    601
+  ],
+  "expected_episodes": 153600,
+  "expected_fitted_models": 384,
+  "confirmation_root": "/workspace/scratch/1273ec953099/digital-runs/confirmation",
+  "frozen_mechanism_probes_completed_before_task_generation": true,
+  "resource_note": "Three concurrent fits retain the entire frozen design while leaving memory for the two split raw-episode buffers; no model, outcome, threshold, update budget or world count changes."
+}

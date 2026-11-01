@@ -1,0 +1,503 @@
+{
+  "schema": "digital-model-provenance-review-v1",
+  "audit_started_utc": "2026-11-01T18:19:59.872279+00:00",
+  "fatal_issues": [],
+  "sources": {
+    "source_commit": "d3d71246a49664a050e04ef4a44a782350990865",
+    "source_freeze_sha256": "24a1ac52db82e0f40d26370daf85e8dfc56bb94ed5940607493db236550327d5",
+    "protocol_sha256": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3",
+    "frozen_hashes_checked": 40,
+    "historical_source_remote_blob_pairs_checked": 18,
+    "source_sha256": {
+      "tools/hcsn/digital_mechanisms_20261101/analysis_checks.py": "f48b89c339d7bb9e9061c30c5987badfe7b3d5076632dba0c7fe5d190255727e",
+      "tools/hcsn/digital_mechanisms_20261101/analyze.py": "be83b8c5bec3b698d1c5e35ee164a4220b9bd807dd198d479d0d3b2393f29c01",
+      "tools/hcsn/digital_mechanisms_20261101/exact_policy.py": "0c59774c4724b77f8adfbc13e1f109574bd1ba2817a45161ac87c6c6b6a41738",
+      "tools/hcsn/digital_mechanisms_20261101/execution.py": "6435bc3a5c2bd3c40009ddd53fbf56026a99c44a4e4a9a757db019b11e416df7",
+      "tools/hcsn/digital_mechanisms_20261101/forecast_comparison.py": "4f7038651d50c6f63db93e71f0f176821ecdc875267f2de664edc7f66bca1761",
+      "tools/hcsn/digital_mechanisms_20261101/freeze.py": "cb2329262f63e3370f886d4d52746a40a7b79bb3dc322aa84ef1dae8c5b09844",
+      "tools/hcsn/digital_mechanisms_20261101/launch.py": "d66633ffdc4372cc8546c7f3a1ae243e4abb9f7577461319b0f532e6704dca1b",
+      "tools/hcsn/digital_mechanisms_20261101/model_checks.py": "b997c877fa91c3c6361a37e54d4d413b4eb68af64b29ad56b4af7a8c41f4f540",
+      "tools/hcsn/digital_mechanisms_20261101/models.py": "a1ba992b5756e53317964629aeb063b60732d632670ad8da2193700cb33ef495",
+      "tools/hcsn/digital_mechanisms_20261101/native_confirmation.py": "c4a0b7ac78d34df76c44ec10345fde3a379ecacd6f4c7354960b41b19f60fc96",
+      "tools/hcsn/digital_mechanisms_20261101/policy_checks.py": "2a1e5eb8c1a087bc7d2f709fea500cdf0d4e18d3e7111bd49ac4fb18d0990766",
+      "tools/hcsn/digital_mechanisms_20261101/protocol.json": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3",
+      "tools/hcsn/digital_mechanisms_20261101/renewal.py": "9a4412daf954dc07d466a3cd07a96c4ea1bddd6d66a6e4be3d50b717a313012f",
+      "tools/hcsn/digital_mechanisms_20261101/renewal_checks.py": "2cb086d533c07681e4d6815fb3e1fd4ce9df975a94583d0afaaf1b128e70de7a",
+      "tools/hcsn/digital_mechanisms_20261101/renewal_native.rs": "64df3f47465ba0d66451830e8cc845339b8dd67fedd64727b14fab5ca988f2fc",
+      "tools/hcsn/digital_mechanisms_20261101/run_study.py": "eae06e0e86aa9d31bc2f31d1c2c0034955fda0cecd311064bd57dae0d667af5b",
+      "tools/hcsn/digital_mechanisms_20261101/training.py": "7bdf1274dd3f2207e0c79c82a6e92a5f122cbc1acaac7a77ef78d310c9600f46",
+      "tools/hcsn/digital_read_before_20261031/bank.py": "002bdece767352a66ba598148c9d26055c1e3a03792b3c11583ccf98928a284b",
+      "tools/hcsn/digital_read_before_20261031/bank_tests.py": "60f49d0ae4653dc0b9c28e023b1e7848a6ea431efd9995c52110db77c7dc6000",
+      "tools/hcsn/digital_read_before_20261031/benchmark_training.py": "8b1ce397fc19685027c2d40fb3d73b20142bf75e4e97ec2e680244790243aed6",
+      "tools/hcsn/digital_read_before_20261031/build_native.py": "eea16735b64d45ba07181ee4099d80668db912a41c20613836e27d570844d1a4",
+      "tools/hcsn/digital_read_before_20261031/data.py": "5cb133bab4848b5bb5f698ef7c3301d2f42508ec352f20ac71b8c80d9a1df95b",
+      "tools/hcsn/digital_read_before_20261031/deploy.py": "73c379488827982e5bfa2da4e0b44f81d501a2217bad1395604160be2ba47477",
+      "tools/hcsn/digital_read_before_20261031/experiment.py": "f13733b6fa7c6784912e767d08e64234995933839fb3378e883c2bab3262d3c9",
+      "tools/hcsn/digital_read_before_20261031/final_audit.py": "e098fd324b322436f60faf6276b10d69a1c5336063410811558676e8f76bb83a",
+      "tools/hcsn/digital_read_before_20261031/freeze_artifacts.py": "a25c32e87796162048c93005c6fcac722abfcde780cff9defc0f2623c82e6032",
+      "tools/hcsn/digital_read_before_20261031/independent_audit.py": "eb4dc1d08f3868ff2239b5352242f6b3f58d7ca01e51031e396b64d70fd1a27f",
+      "tools/hcsn/digital_read_before_20261031/metrics.py": "eedbe2a1ecb42ddf247cb9fb8ae5eb6a5f7fb4769dc8fdb4cb367cd21fa93325",
+      "tools/hcsn/digital_read_before_20261031/model.py": "2080945409e174f0d2318b632f2cc1e776f9db5c3624f751dfe0d18cb0f81aeb",
+      "tools/hcsn/digital_read_before_20261031/pack_confirmation.py": "4968115454ea6220e3ff7f2d97a05cf254f6cea21e574832070d3cd7acfeabf9",
+      "tools/hcsn/digital_read_before_20261031/restore_training.py": "e62b1fb9ea12425a2b32ae735ed7fcd4b055c1f33649eeea5b87d947e06436e2",
+      "tools/hcsn/digital_read_before_20261031/run_training.py": "c54a2e7f4b289e940a45c98042935f60e90e7ac967c8d39617ae333f72abd44a",
+      "tools/hcsn/digital_read_before_20261031/summarize_research.py": "e9630982e4f0f9184630e8725149d36650cfe3219b52e221f67049d0cb06f325",
+      "tools/hcsn/digital_read_before_20261031/task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+      "tools/hcsn/digital_read_before_20261031/train.py": "eb8a5fcf0489f78cc7b7f53d97726ac8c7dcfe8bcafc56a312989cf99e117553",
+      "tools/hcsn/next/full_kernel/baseline_table.npz": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764",
+      "tools/hcsn/task_value_factorial_20261030/UPSTREAM_FILES.json": "be6aa0751da3e9a63b4c70d0c8bc4c42d8f2595548009013eb4b92b5e44fc98e",
+      "tools/hcsn/task_value_factorial_20261030/task.py": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc",
+      "tools/hcsn/third/memory/checkpoints/memory_full_mass_seed29.npz": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+      "tools/hcsn/third/memory/reference.py": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e"
+    },
+    "scope": "Current bytes and the historical remote source readback receipt were independently matched; this audit freshly fetched source commit metadata, not all source blobs."
+  },
+  "remote_publication": {
+    "model_publication_commit": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+    "seal_publication_commit": "68c3a60def1219d4619e1e1e3f8902a11bb68957",
+    "fresh_archive_object_metadata_matches": 138,
+    "fresh_small_document_readbacks": [
+      {
+        "path": "tools/hcsn/digital_mechanisms_20261101/MODEL_FREEZE.json",
+        "ref": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+        "git_blob_sha": "b59fbf13a41e6175b16ef5fcd153c2c08a6ad6f3",
+        "content_chars": 93983,
+        "encoding": "utf-8",
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7dfa6bb3d155440f9697b92b705c95252e9858a2/tools/hcsn/digital_mechanisms_20261101/MODEL_FREEZE.json"
+      },
+      {
+        "path": "tools/hcsn/digital_mechanisms_20261101/MODEL_PUBLICATION_INDEX.json",
+        "ref": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+        "git_blob_sha": "a651c5e3b3dbafa4d01425292206cff84ccddb55",
+        "content_chars": 1452,
+        "encoding": "utf-8",
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7dfa6bb3d155440f9697b92b705c95252e9858a2/tools/hcsn/digital_mechanisms_20261101/MODEL_PUBLICATION_INDEX.json"
+      },
+      {
+        "path": "tools/hcsn/digital_mechanisms_20261101/evidence/MODEL_REMOTE_VERIFICATION.json",
+        "ref": "68c3a60def1219d4619e1e1e3f8902a11bb68957",
+        "git_blob_sha": "a83a008c930441334c0589f5bb1526e31b886be3",
+        "content_chars": 31943,
+        "encoding": "utf-8",
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/68c3a60def1219d4619e1e1e3f8902a11bb68957/tools/hcsn/digital_mechanisms_20261101/evidence/MODEL_REMOTE_VERIFICATION.json"
+      },
+      {
+        "path": "tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json",
+        "ref": "68c3a60def1219d4619e1e1e3f8902a11bb68957",
+        "git_blob_sha": "11a1f958a1f816aa6155186a05e6bf10fed6f30c",
+        "content_chars": 100622,
+        "encoding": "utf-8",
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/68c3a60def1219d4619e1e1e3f8902a11bb68957/tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json"
+      }
+    ],
+    "parent_remote_receipt_sha256": "22068b00a0297d0da7205fd80c93009fd18e722ee7719f191758951bd5a5a5af",
+    "parent_remote_receipt_objects_matched": 140,
+    "seal_sha256": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+    "seal_diff_from_unsealed": [
+      "verified_remote_commit"
+    ],
+    "large_archive_blobs_redownloaded": false,
+    "scope": "Fresh read-only GitHub directory metadata bound all138 archive objects; four small JSON documents were read back. Local Git blob framing/hash and byte length match these remote identities."
+  },
+  "formal_training": {
+    "fits": [
+      501,
+      503,
+      509,
+      521,
+      523,
+      541,
+      547,
+      557,
+      563,
+      569,
+      571,
+      577,
+      587,
+      593,
+      599,
+      601
+    ],
+    "candidate_ids": [
+      "clocked_bank__free_off",
+      "clocked_bank__impulse_on",
+      "clocked_bank__structured_off",
+      "clocked_bank__structured_on",
+      "evidence_accumulator__free_off",
+      "evidence_accumulator__structured_on",
+      "evidence_accumulator__structured_on__cpu",
+      "first_passage_bank__free_off",
+      "first_passage_bank__impulse_on",
+      "first_passage_bank__impulse_on__cpu",
+      "first_passage_bank__structured_off",
+      "first_passage_bank__structured_on",
+      "first_passage_bank__structured_on__cpu",
+      "ordinary_bank__free_off",
+      "ordinary_bank__impulse_on",
+      "ordinary_bank__structured_off",
+      "ordinary_bank__structured_on",
+      "ordinary_bank__structured_on__cpu",
+      "ordinary_base__free_off",
+      "ordinary_base__structured_off",
+      "ordinary_base__structured_on",
+      "raw_history__free_off",
+      "raw_history__structured_off",
+      "raw_history__structured_on"
+    ],
+    "models": 384,
+    "training_receipts": 384,
+    "sealed_artifacts_checked_original": 832,
+    "sealed_artifacts_checked_restored": 832,
+    "whole_process_cpu_seconds_sum": 8263.862734,
+    "fits_detail": [
+      {
+        "fit": 501,
+        "actual_started_utc": "2026-11-01T17:30:28.673931+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 548.753004
+      },
+      {
+        "fit": 503,
+        "actual_started_utc": "2026-11-01T17:30:28.533489+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 534.145234
+      },
+      {
+        "fit": 509,
+        "actual_started_utc": "2026-11-01T17:30:28.569588+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 589.0070770000001
+      },
+      {
+        "fit": 521,
+        "actual_started_utc": "2026-11-01T17:30:30.352152+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 529.570987
+      },
+      {
+        "fit": 523,
+        "actual_started_utc": "2026-11-01T17:30:28.776304+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 517.739236
+      },
+      {
+        "fit": 541,
+        "actual_started_utc": "2026-11-01T17:30:28.068138+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 525.9603079999999
+      },
+      {
+        "fit": 547,
+        "actual_started_utc": "2026-11-01T17:30:28.358560+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 559.169721
+      },
+      {
+        "fit": 557,
+        "actual_started_utc": "2026-11-01T17:30:28.009123+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 552.547873
+      },
+      {
+        "fit": 563,
+        "actual_started_utc": "2026-11-01T17:49:55.173493+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 499.13385500000004
+      },
+      {
+        "fit": 569,
+        "actual_started_utc": "2026-11-01T17:50:38.542394+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 468.72164999999995
+      },
+      {
+        "fit": 571,
+        "actual_started_utc": "2026-11-01T17:50:44.575778+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 454.078885
+      },
+      {
+        "fit": 577,
+        "actual_started_utc": "2026-11-01T17:51:04.743585+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 487.172817
+      },
+      {
+        "fit": 587,
+        "actual_started_utc": "2026-11-01T17:51:12.251831+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 491.10185
+      },
+      {
+        "fit": 593,
+        "actual_started_utc": "2026-11-01T17:51:43.838053+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 535.18367
+      },
+      {
+        "fit": 599,
+        "actual_started_utc": "2026-11-01T17:53:20.002075+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 492.550704
+      },
+      {
+        "fit": 601,
+        "actual_started_utc": "2026-11-01T17:54:07.581154+00:00",
+        "models": 24,
+        "training_receipts": 24,
+        "sealed_artifacts": 52,
+        "source_and_protocol_exact": true,
+        "process_returncode": 0,
+        "whole_process_cpu_seconds": 479.025863
+      }
+    ],
+    "model_or_training_outcomes_inspected": false
+  },
+  "archive_union": {
+    "archives": [
+      {
+        "manifest": "tools/hcsn/digital_mechanisms_20261101/archives/formal_first8/formal_first8.manifest.json",
+        "manifest_sha256": "df5f3db55cd11febfae3dc25686142d0d0f732257d8d8ced52b49e20dd41fcea",
+        "archive_sha256": "b9a8adc332260669c5c34e6c56329bbe65de5bf90b2794720f4cdcad4f42c302",
+        "compressed_bytes": 18203165,
+        "parts": 54,
+        "pages": 14,
+        "files": 6733,
+        "fits": [
+          501,
+          503,
+          509,
+          521,
+          523,
+          541,
+          547,
+          557
+        ]
+      },
+      {
+        "manifest": "tools/hcsn/digital_mechanisms_20261101/archives/formal_second8/formal_second8.manifest.json",
+        "manifest_sha256": "e093483af820576a4b5c1cd2a3b2764ccd5ab98efe644e0a0650865d2b68b436",
+        "archive_sha256": "fad2050ab0cb10192498f462e14b9dd09d4978c3fdd5abbf4d5a76b0a17a8f0c",
+        "compressed_bytes": 17970057,
+        "parts": 54,
+        "pages": 14,
+        "files": 6719,
+        "fits": [
+          563,
+          569,
+          571,
+          577,
+          587,
+          593,
+          599,
+          601
+        ]
+      }
+    ],
+    "disjoint_member_paths": true,
+    "disjoint_complete_fit_partition": true,
+    "registered_fit_coverage": [
+      501,
+      503,
+      509,
+      521,
+      523,
+      541,
+      547,
+      557,
+      563,
+      569,
+      571,
+      577,
+      587,
+      593,
+      599,
+      601
+    ],
+    "original_member_hashes_checked": 13452,
+    "restored_union_member_hashes_checked": 13452,
+    "selected_original_and_restored_file_sets_exact": true,
+    "scope": "Read-only independent checks of every local part/page/archive identity and every original/restored member. Existing restores were inspected; archives were not decompressed or restored again during this audit."
+  },
+  "chronology": {
+    "basis": "Explicit receipt UTC and freshly fetched Git committer timestamps; filesystem mtimes are not used. No independent trusted timestamp service is asserted.",
+    "remote_commits": [
+      {
+        "sha": "d3d71246a49664a050e04ef4a44a782350990865",
+        "committer_utc": "2026-11-01T17:29:48Z",
+        "author_utc": "2026-11-01T17:29:48Z",
+        "tree_sha": "6fd1acd027fdbd3fc027dbe6af7978095b702544",
+        "parents": [
+          "5fe58202ec5d1e0928360f4e44a7b0823cf4fe9f"
+        ],
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/d3d71246a49664a050e04ef4a44a782350990865"
+      },
+      {
+        "sha": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+        "committer_utc": "2026-11-01T18:13:37Z",
+        "author_utc": "2026-11-01T18:13:37Z",
+        "tree_sha": "c9cfb44908b765e5b39b03b1821fb62969e71204",
+        "parents": [
+          "80fb1f9454a8c0f11681fce280d3d124ffcdad44"
+        ],
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/7dfa6bb3d155440f9697b92b705c95252e9858a2"
+      },
+      {
+        "sha": "68c3a60def1219d4619e1e1e3f8902a11bb68957",
+        "committer_utc": "2026-11-01T18:14:06Z",
+        "author_utc": "2026-11-01T18:14:06Z",
+        "tree_sha": "c3c27452085ee911ea9f9abedd3f11b28fad5e4e",
+        "parents": [
+          "7dfa6bb3d155440f9697b92b705c95252e9858a2"
+        ],
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/68c3a60def1219d4619e1e1e3f8902a11bb68957"
+      }
+    ],
+    "source_freeze_created_utc": "2026-11-01T17:29:31.358812+00:00",
+    "earliest_actual_train_started_utc": "2026-11-01T17:30:28.009123+00:00",
+    "latest_actual_train_started_utc": "2026-11-01T17:54:07.581154+00:00",
+    "model_freeze_created_utc": "2026-11-01T18:09:00.879670+00:00",
+    "publication_index_created_utc": "2026-11-01T18:11:36.758261+00:00",
+    "confirmation_launch_utc": "2026-11-01 18:15:49 UTC",
+    "confirmation_launch_sha256": "f1459990fa09073d18f226dd7c1ecc405fb0d98304f2c58458a364d702c4284f",
+    "confirmation_started_observed": [
+      {
+        "fit": 501,
+        "actual_started_utc": "2026-11-01T18:15:52.873072+00:00",
+        "started_sha256": "d9c8ebed6d000192378d5ded78f29cef1a4698b47cd03f99e805403bcc26af3e",
+        "sealed_model_sha256": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "published_model_commit": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+        "confirmation_preexisting": false
+      },
+      {
+        "fit": 503,
+        "actual_started_utc": "2026-11-01T18:15:52.895895+00:00",
+        "started_sha256": "452e21a8a37ccdcd5245d0a3e5e7095e6ae75b56a105f378d674198ae7711f52",
+        "sealed_model_sha256": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "published_model_commit": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+        "confirmation_preexisting": false
+      },
+      {
+        "fit": 509,
+        "actual_started_utc": "2026-11-01T18:15:52.850381+00:00",
+        "started_sha256": "3bf05f3cb94a64a6e6b1e33a79c4558c9529183c9e63f7fd8f0de303abee1a09",
+        "sealed_model_sha256": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "published_model_commit": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+        "confirmation_preexisting": false
+      },
+      {
+        "fit": 521,
+        "actual_started_utc": "2026-11-01T18:18:10.788186+00:00",
+        "started_sha256": "798d79e1a51cb524fac6ebe7daa062c9d137a264d0b455453ed9c7019faed6b6",
+        "sealed_model_sha256": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "published_model_commit": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+        "confirmation_preexisting": false
+      },
+      {
+        "fit": 523,
+        "actual_started_utc": "2026-11-01T18:18:15.197816+00:00",
+        "started_sha256": "fb39db555afa0bcd5107eb98cae0845af20f5c886628c1507bdf1bc9fead4cd3",
+        "sealed_model_sha256": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "published_model_commit": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+        "confirmation_preexisting": false
+      },
+      {
+        "fit": 541,
+        "actual_started_utc": "2026-11-01T18:18:15.245699+00:00",
+        "started_sha256": "6b70a540538b304624a70f465c78b7d2d06f73dd073a74b592ba52246c53a242",
+        "sealed_model_sha256": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "published_model_commit": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+        "confirmation_preexisting": false
+      }
+    ],
+    "remaining_confirmation_fits_not_yet_audited": [
+      547,
+      557,
+      563,
+      569,
+      571,
+      577,
+      587,
+      593,
+      599,
+      601
+    ],
+    "all_observed_order_constraints_satisfied": true
+  },
+  "cost_scope": {
+    "full_training_process_cpu_seconds": 8263.862734,
+    "cpu_scope": "OS wait4 includes imports, setup, all fitted candidates, serialization and process shutdown. Nested candidate costs are not added again.",
+    "bayes_fixed_reference": "Frozen execution.py calls oracle.q(state) in the runtime=None branch before fixed/value selection. Bayes/fixed timing therefore includes Q work unused by fixed_action; it is an unoptimized reference execution, not an optimized fixed-controller cost baseline.",
+    "saving_or_amortized_cost_superiority_claim": false
+  },
+  "review_conclusion": "No fatal provenance inconsistency found in the observed artifacts and available confirmation STARTED records.",
+  "scope_limits": [
+    "No task confirmation outcome, raw episode, quality summary, model loss, or selected model score was inspected.",
+    "No scientific modules were imported, training repeated, source/protocol edited, or archive payload downloaded from the remote repository.",
+    "This review establishes identity, complete fit/archive coverage and observed chronology; it does not establish efficacy, equal effective capacity, amortized cost superiority, or completed confirmation.",
+    "Confirmation STARTED coverage is a point-in-time snapshot; final raw-result audit remains required."
+  ],
+  "audit_completed_utc": "2026-11-01T18:20:07.304970+00:00",
+  "audit_process_cpu_seconds": 4.105307472000001,
+  "audit_wall_seconds": 7.432684273997438
+}
