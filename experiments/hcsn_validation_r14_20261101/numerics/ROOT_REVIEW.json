@@ -1,0 +1,42 @@
+{
+  "schema": "hcsn.r14.root_numerical_review.v1",
+  "reviewer": "root",
+  "scope": "Read-only mathematical/source review and retained-result consistency; no new numerical execution.",
+  "checks": [
+    "Marked count layers include self-reset transitions and overflowing layers still regenerate; reward coordinate continues counting beyond count_cap.",
+    "Zero-time boundary atom increments count before placement at positive reset; positive interior atom uses stated linear grid interpolation.",
+    "Finite generator meters upper cemetery loss instead of renormalizing it away.",
+    "Gradient system differentiates the same generator and initial law; reset injection derivative and time derivative have the correct separate roles.",
+    "Independent killed-density and renewal integrals do not use finite generator event counts.",
+    "Finite-model tangent agreement and convergence toward continuous gradients are reported separately."
+  ],
+  "nonblocking_limits": [
+    "Fixed coefficients, fixed boundary and zero refractory only; no full-domain proof or continuous finite-error certificate.",
+    "No neural content, value or production integration is inferred from this separate numerical result."
+  ],
+  "result_summary": {
+    "body_wall_seconds": 20.350768838001386,
+    "checks": 72,
+    "energy_joules": null,
+    "expected_negative_equivalence_failures": 2,
+    "not_established": [
+      "positive, random or state-dependent refractory delay",
+      "moving, random or learned boundary",
+      "uniform continuum or floating-point error certificate",
+      "ordinary spatial/reset derivatives at interpolation knots or the initial boundary atom",
+      "replacement of a neural training or value-control execution path",
+      "neural D-B advantage, GPU efficiency or measured energy"
+    ],
+    "ordinary_checks": 70,
+    "ordinary_failures": 0,
+    "raw_states_sha256": "0d711270938c3619b38757ac7e204b893dcd73def7be295f979f9ae39a8e3f82",
+    "success": true,
+    "unexpected_negative_passes": 0
+  },
+  "source_hashes": {
+    "zero_delay.py": "b0fd53235b4b38fa8e16c4eae922b0529f8fd9c8a8cf91a6e1130de0ec78f332",
+    "continuous_reference.py": "bbcc40a15860772c49cf3b9cb8d7c0dabdbc326ad4de11838ab5c79ebef2a53d",
+    "audit.py": "353e89eef8d4122c441ad06153a47c2bfd45710921dce6fb2fcc0642fb27acdf",
+    "PROTOCOL.json": "705a1ced7302e50677ccfa43b3050e12c6a56385585a1cd2e649e00413c43389"
+  }
+}
