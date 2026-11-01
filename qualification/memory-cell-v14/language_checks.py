@@ -3,15 +3,25 @@
 import argparse
 import json
 import unittest
+from collections import UserDict
 from pathlib import Path
 
 import numpy as np
 
 from language_data import SEEDS, digest, execute, generate, parse_key
-from language_models import Baseline
+from language_models import Baseline, batch_inputs
 
 
 class LanguageContracts(unittest.TestCase):
+    def test_tokenizer_mapping_batches_and_plain_features(self):
+        inputs = UserDict(input_ids=np.arange(12).reshape(4, 3), attention_mask=np.ones((4, 3)))
+        self.assertNotIsInstance(inputs, dict)
+        index = np.array([3, 1])
+        actual = batch_inputs(inputs, index)
+        for key in inputs:
+            np.testing.assert_array_equal(actual[key], inputs[key][index])
+        np.testing.assert_array_equal(batch_inputs(inputs["input_ids"], slice(1, 3)), inputs["input_ids"][1:3])
+
     def test_generation_and_template_separation(self):
         data = generate(101, "facts")
         self.assertNotIn(101, SEEDS)

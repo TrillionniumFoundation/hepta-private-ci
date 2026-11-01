@@ -5,6 +5,7 @@ import math
 import re
 import time
 from collections import Counter
+from collections.abc import Mapping
 
 import numpy as np
 
@@ -157,6 +158,11 @@ def make_network(backbone, kind, seed):
     return network
 
 
+def batch_inputs(inputs, index):
+    """Accept tokenizer BatchEncoding and other mappings, as well as tensors."""
+    return {key: value[index] for key, value in inputs.items()} if isinstance(inputs, Mapping) else inputs[index]
+
+
 def train_network(network, optimizer, inputs, labels, steps, seed, batch_size=32):
     import torch
     generator = torch.Generator().manual_seed(seed)
@@ -165,7 +171,7 @@ def train_network(network, optimizer, inputs, labels, steps, seed, batch_size=32
     start = time.perf_counter()
     for step in range(steps):
         index = torch.randint(len(labels), (min(batch_size, len(labels)),), generator=generator)
-        batch = {key: value[index] for key, value in inputs.items()} if isinstance(inputs, dict) else inputs[index]
+        batch = batch_inputs(inputs, index)
         loss = torch.nn.functional.cross_entropy(network(batch), labels[index])
         if not torch.isfinite(loss):
             raise FloatingPointError("Non-finite training loss")
@@ -181,11 +187,11 @@ def train_network(network, optimizer, inputs, labels, steps, seed, batch_size=32
 def predict_network(network, inputs, batch_size=64):
     import torch
     network.eval()
-    n = len(next(iter(inputs.values()))) if isinstance(inputs, dict) else len(inputs)
+    n = len(next(iter(inputs.values()))) if isinstance(inputs, Mapping) else len(inputs)
     outputs = []
     with torch.inference_mode():
         for start in range(0, n, batch_size):
-            batch = {key: value[start:start + batch_size] for key, value in inputs.items()} if isinstance(inputs, dict) else inputs[start:start + batch_size]
+            batch = batch_inputs(inputs, slice(start, start + batch_size))
             outputs.append(network(batch).softmax(-1).cpu().numpy())
     probabilities = np.concatenate(outputs)
     return np.argmax(probabilities, axis=1), probabilities
