@@ -322,7 +322,9 @@ def main():
                                                  args.temporal_root, args.mouth_root, args.cohort_path)
         verify_unchanged(preflight["inputs_sha256"])
         result.update(passed=True, inputs_sha256=preflight["inputs_sha256"],
-                      next_action="Caller may invoke frozen av_frontend.confirm exactly once")
+                      next_action=("Caller may invoke frozen av_frontend.confirm exactly once"
+                                   if args.mode == "confirm" else
+                                   "Metadata verified only; prepare frozen media/features, then require a successful confirm-mode guard receipt before evaluation"))
     except Exception as error:
         result["error"] = f"{type(error).__name__}: {error}"
     result.update(cpu_seconds=time.process_time() - start_cpu, wall_seconds=time.perf_counter() - start_wall)
