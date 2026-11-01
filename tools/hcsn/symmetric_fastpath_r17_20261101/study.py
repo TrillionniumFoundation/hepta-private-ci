@@ -26,6 +26,7 @@ from .fastpath import SymmetricLaw, UnsupportedSymmetry, decomposition
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 BASE = HERE.parent / "addressed_decision_r15_20261101"
+OUT = HERE / "results_v2"
 
 
 def digest(path):
@@ -82,7 +83,7 @@ def audit(protocol):
                 if (row["dense_error"] > protocol["operator_atol"] or row["ode_error"] > protocol["operator_atol"]
                         or row["minimum"] < 0 or row["mass_error"] > protocol["operator_atol"]):
                     failures.append(dict(fit=seed, model=name, dt=float(dt), reason="operator threshold"))
-            path = HERE / "results" / f"operator_{seed}_{name}.json.gz"
+            path = OUT / f"operator_{seed}_{name}.json.gz"
             save(path, dict(identity=dense.identity, operator_identity=dense.operator_identity, rows=rows))
             records.append(dict(fit=seed, model=name, eligible=fast.fastpath_status,
                 identical_payload=fast.export()==dense.export(), cpu_seconds=time.process_time()-start,
@@ -107,7 +108,7 @@ def audit(protocol):
             controls[label+"_rejected"] = False
     passed = not failures and all(controls.values()) and all(
         x["identical_payload"] and (x["eligible"]["eligible"] or (x["model"] == "free" and x["max_dense_error"] == 0.)) for x in records)
-    save(HERE / "results/OPERATOR_SUMMARY.json", dict(records=records, failures=failures,
+    save(OUT / "OPERATOR_SUMMARY.json", dict(records=records, failures=failures,
         controls=controls, passed=passed))
     if not passed:
         raise RuntimeError("Operator or rejection gate failed; inspect retained records")
@@ -162,7 +163,7 @@ def campaign(protocol):
                                 dense_cpu=results["dense"]["cpu_seconds"],fast_cpu=results["fast"]["cpu_seconds"])
                             pairs.append(pair)
                             rows.append(dict(pair=pair,results=results,checkpoint_snapshots=snapshots))
-        raw_path = HERE / "results" / f"execution_{fit}.json.gz"
+        raw_path = OUT / f"execution_{fit}.json.gz"
         save(raw_path,dict(fit=fit,preparation_cpu_seconds=prep,rows=rows))
         raw_paths.append(str(raw_path.relative_to(HERE)))
     grouped = {}
@@ -176,20 +177,24 @@ def campaign(protocol):
             grouped[model+"_"+representation] = dict(pairs=len(selected),dense_cpu_seconds=dense,
                 fast_cpu_seconds=fast,ratio=fast/dense,preparation_dense_cpu=dense_prep,preparation_fast_cpu=fast_prep,
                 with_allocated_preparation_ratio=(fast+fast_prep)/(dense+dense_prep),behavior_mismatches=sum(not p["behavior_equal"] for p in selected))
-    save(HERE / "results/EXECUTION_SUMMARY.json",dict(pairs=pairs,groups=grouped,failures=failures,
-        raw_paths=raw_paths,preparation_cpu_seconds=preparations,all_behavior_equal=all(p["behavior_equal"] for p in pairs),
-        checkpoint_state_gate=all(p["valid"] and p["checkpoint_state_error"]<=protocol["state_atol"] for p in pairs),
+    behavior_passed = all(p["behavior_equal"] for p in pairs)
+    state_passed = all(p["valid"] and p["checkpoint_state_error"]<=protocol["state_atol"] for p in pairs)
+    save(OUT / "EXECUTION_SUMMARY.json",dict(pairs=pairs,groups=grouped,failures=failures,
+        raw_paths=raw_paths,preparation_cpu_seconds=preparations,all_behavior_equal=behavior_passed,
+        checkpoint_state_gate=state_passed,
         scope="Includes execute planning, state IO and checkpoint restore; preparation in each raw archive; excludes training/GPU/joules"))
+    if failures or not behavior_passed or not state_passed:
+        raise RuntimeError("Execution behavior or checkpoint gate failed; records retained")
 
 
 def supervise():
     import resource
     results = []
     for phase in ("audit", "campaign"):
-        log = HERE / "results" / f"{phase}.stdout.log"
+        log = OUT / f"{phase}.stdout.log"
         log.parent.mkdir(parents=True, exist_ok=True)
         wall = time.perf_counter()
-        with log.open("xb") as out, (HERE/"results"/f"{phase}.stderr.log").open("xb") as err:
+        with log.open("xb") as out, (OUT/f"{phase}.stderr.log").open("xb") as err:
             child = subprocess.Popen([sys.executable,"-m","tools.hcsn.symmetric_fastpath_r17_20261101.study",phase],
                 stdout=out,stderr=err,cwd=ROOT)
             _, status, usage = os.wait4(child.pid,0)
@@ -197,15 +202,17 @@ def supervise():
         receipt = dict(phase=phase,exit_code=child.returncode,total_cpu_seconds=usage.ru_utime+usage.ru_stime,
             wall_seconds=time.perf_counter()-wall,max_rss_linux_kib=usage.ru_maxrss,
             includes="fresh process imports, all attempted work, output serialization/writing and exit")
-        save(HERE/"results"/f"{phase}.PROCESS_RECEIPT.json",receipt)
+        save(OUT/f"{phase}.PROCESS_RECEIPT.json",receipt)
         results.append(receipt)
         if child.returncode:
             break
-    save(HERE/"results/PROCESS_SUMMARY.json",dict(processes=results,
+    save(OUT/"PROCESS_SUMMARY.json",dict(processes=results,
         nonoverlapping_cpu_seconds=sum(x["total_cpu_seconds"] for x in results),
         environment=dict(python=platform.python_version(),numpy=np.__version__,scipy=scipy.__version__,
                          platform=platform.platform(),thread_variables={name:os.environ.get(name) for name in
                          ("OPENBLAS_NUM_THREADS","OMP_NUM_THREADS","MKL_NUM_THREADS")})))
+    if any(x["exit_code"] for x in results):
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
