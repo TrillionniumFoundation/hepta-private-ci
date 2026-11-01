@@ -1,0 +1,115 @@
+[
+  {
+    "child_cpu_seconds": 0.981035,
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-I",
+      "-S",
+      "-B",
+      "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/publication/transport.py",
+      "wrap",
+      "--index",
+      "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/archives/inputs/INDEX.json"
+    ],
+    "exit_code": 0,
+    "max_rss_kib": 15120,
+    "name": "wrap_inputs",
+    "result": {
+      "compact_index_sha256": "ae6459f2ffb37c4d42f9d7fcfb0ce09e14f96528b7376173198f00c35d67036e",
+      "compressed_sha256": "2e18712d5b5af6ca8e3887401ed1a1f13619ace00ad89a34a99362bc1fe87104",
+      "containers": 75,
+      "cpu_body_seconds": 0.941943992,
+      "largest_container": 479968,
+      "original_chunks_retained": true,
+      "original_index_sha256": "9253d818341e8962836413f0bfd60c75a66326dcc90dd4943e3de2edd865ac35",
+      "outer_bytes": 35944730,
+      "wall_body_seconds": 0.941962341999897
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "c42804c9b2069ffbc0858642c48cd9e360710bed843f3f5fcab5294eb4b35d1c",
+    "wall_seconds": 0.9815747319998991
+  },
+  {
+    "child_cpu_seconds": 0.998732,
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-I",
+      "-S",
+      "-B",
+      "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/publication/transport.py",
+      "wrap",
+      "--index",
+      "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/archives/results/INDEX.json"
+    ],
+    "exit_code": 0,
+    "max_rss_kib": 13548,
+    "name": "wrap_results",
+    "result": {
+      "compact_index_sha256": "1891b4cc920033ee0f6f2a69689fc56f9fbb47ef19574d23e42fb7dc1f1aad80",
+      "compressed_sha256": "50d462e035f71ae02eed1bca96f0cceccfb278207f3e14117ea2f6409c16dc83",
+      "containers": 71,
+      "cpu_body_seconds": 0.964273138,
+      "largest_container": 479968,
+      "original_chunks_retained": true,
+      "original_index_sha256": "8b296c946324c571808c3618abde474b88102abe55d1528e2262205dcc6c7dd8",
+      "outer_bytes": 33622990,
+      "wall_body_seconds": 0.9646449060001032
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "820056e7d7d70d2b6e862c11068fddf38ea44297673c9a4584b320bc0bee3d72",
+    "wall_seconds": 0.9994824289997268
+  },
+  {
+    "child_cpu_seconds": 0.8144279999999999,
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-I",
+      "-S",
+      "-B",
+      "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/publication/transport.py",
+      "restore",
+      "--index",
+      "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/archives/inputs/CONTAINERS.json",
+      "--destination",
+      "/workspace/scratch/8382c90a89f9/publication-restored-01"
+    ],
+    "exit_code": 0,
+    "max_rss_kib": 19192,
+    "name": "restore_inputs",
+    "result": {
+      "compressed_sha256": "2e18712d5b5af6ca8e3887401ed1a1f13619ace00ad89a34a99362bc1fe87104",
+      "containers": 75,
+      "cpu_body_seconds": 0.7764252159999999,
+      "destination": "/workspace/scratch/8382c90a89f9/publication-restored-01",
+      "frozen_restore_sha256": "a8a971b8d77f025422418491f1f14a1b2be5f384a600eca999c5d7c767c67cb9",
+      "original_chunks": 69,
+      "verified_bytes": 41569249,
+      "verified_files": 1934,
+      "wall_body_seconds": 0.7770970749998014
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "780f894601cdd9a69807c9d9652b2bff89fb41d79fd1a2302213a3ad701ebefe",
+    "wall_seconds": 0.8155453249992206
+  },
+  {
+    "child_cpu_seconds": 0.45300699999999994,
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-I",
+      "-S",
+      "-B",
+      "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/publication/transport.py",
+      "restore",
+      "--index",
+      "/workspace/scratch/8382c90a89f9/hepta-validation/experiments/hcsn_validation_r13_20261031/archives/results/CONTAINERS.json",
+      "--destination",
+      "/workspace/scratch/8382c90a89f9/publication-restored-01"
+    ],
+    "exit_code": 0,
+    "max_rss_kib": 14536,
+    "name": "restore_results",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "5c038d6e3408b959e575e9c0638554fa239ddb6a2b026cb739dc14df274ad90d",
+    "wall_seconds": 0.4539118770007917
+  }
+]

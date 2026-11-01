@@ -135,7 +135,7 @@ R12 的首达、存活后继、再生计数、部分移动边界和梯度审计�
 
 ![全部模型的 IID 质量与 warm CPU 成本](cost/results/historical_002/quality_cpu.png)
 
-来源：[独立内容与成本报告](cost/results/historical_002/REPORT_ZH.md)、[逐种子全部域](cost/results/historical_002/per_seed_quality_cost.csv)、[均值与描述性 Pareto](cost/results/historical_002/aggregate_iid.json)。
+来源：[独立内容与成本报告](cost/results/historical_002/REPORT_ZH.md)、[逐种子全部域（原始固定提交）](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/14570fdb78c8a787b95a67b0c9cf4ffc76d531b1/experiments/hcsn_validation_r13_20261031/cost/results/historical_002/per_seed_quality_cost.csv)、[均值与描述性 Pareto](cost/results/historical_002/aggregate_iid.json)。完整 CSV 也由 results 归档恢复到原路径。
 
 ## 5. 费用完整入账，但未测项目不填零
 
@@ -175,6 +175,8 @@ R12 内容实验完整流程总账如下。共同 donor 训练计一次；不能
 正式执行前，从统一固定提交逐文件读取了 29 个 R13 源码／协议／来源文件，验证 UTF-8 字节、SHA256 与 Git blob；value 的 10 个科学源和 107 个继承输入由 `SOURCE_FREEZE.json` 固定。R12 父提交也读取并核验了 66 个所需文件，记录两项后来本地差异，未将这些差异伪装为父提交内容。
 
 inputs 归档包含 1,934 个明确的既有源码／原始记录文件，展开后 41,569,249 字节；压缩 35,939,155 字节。每个归档分片和每个恢复文件都有 SHA256。results 归档保留本轮正式／开发输出、失败尝试、实际轨迹、独立审阅和复现原始日志，正文与主要表格亦直接可读。
+
+发布包装后补说明：首次仓库检查指出 512 KiB 分片超过其 500 KiB 上限，且少数没有标准文件头的二进制分片被拼写工具误当文本。后续发布使用更小的独立 gzip 外容器，通过标准库入口重建上面的原始压缩流，再调用冻结恢复程序。原压缩流 SHA、全部科学成员和原失败记录保持不变；两份超限的冗余直接副本改由原归档恢复。诊断在 [CI_BLOB_DIAGNOSIS.json](review/CI_BLOB_DIAGNOSIS.json) 和 [CI_CODESPELL_DIAGNOSIS.json](review/CI_CODESPELL_DIAGNOSIS.json)。全仓库拼写日志另外 3,321 条来自基线中未改动的既有文件，不能宣称仓库 CI 已全部通过。原 [REPORT_REVIEW.json](review/REPORT_REVIEW.json) 绑定首次发布的科学正文；本次追加只改变包装说明、复现入口和 CSV 网页链接，科学表格不变。
 
 最小重建树从 inputs 归档恢复，再追加 29 个已读回 R13 源、2 个所需 R12 源、2 份 publication receipt，总计 1,967 个初始运行文件。所有实验模块实际导入路径均在这个重建树内，未借用原仓库导入路径。7/7 value tests 通过，`verify(publication=True)` 通过；单次数值复现仍为 68 条普通通过、12 条保留负例，六个完整末态的 SHA256 与正式结果一致。它是依赖完整性与确定性检查，不是新增科学样本，也没有再次运行 24 个 value 配置。
 

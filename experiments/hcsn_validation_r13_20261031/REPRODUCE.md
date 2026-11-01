@@ -79,17 +79,26 @@ PY
 归档路径是仓库相对路径，所以两次恢复的目标都必须是仓库根目录 `.`：
 
 ```bash
-python -B experiments/hcsn_validation_r13_20261031/evidence.py restore \
-  --index experiments/hcsn_validation_r13_20261031/archives/inputs/INDEX.json \
+python -B -m experiments.hcsn_validation_r13_20261031.publication.transport restore \
+  --index experiments/hcsn_validation_r13_20261031/archives/inputs/CONTAINERS.json \
   --destination .
-python -B experiments/hcsn_validation_r13_20261031/evidence.py restore \
-  --index experiments/hcsn_validation_r13_20261031/archives/results/INDEX.json \
+python -B -m experiments.hcsn_validation_r13_20261031.publication.transport restore \
+  --index experiments/hcsn_validation_r13_20261031/archives/results/CONTAINERS.json \
   --destination .
 ```
 
-`INDEX.json` 邻接的所有 `evidence.tar.gz.partNNNN` 都必须保留原文件名。
-恢复工具按清单验证每个分片、拼接归档和每个成员的大小与 SHA256，并拒绝符号链接、
+`CONTAINERS.json` 邻接的所有 `stream.partNNNN.gz` 和 `legacy-index.json.gz` 必须保留原文件名。
+这些是真正的独立 gzip 容器，文件大小符合仓库 512000 字节限制，标准文件头也使拼写工具
+正确识别二进制。新入口只依赖标准库：校验并解开外层容器，在临时目录重组成原压缩流，
+再按原 INDEX 恢复原始内层分片，调用冻结的 `evidence.py:restore()`。
+原压缩流、原内层分片、全部成员字节和科学源码保持不变。INDEX 仅采用紧凑 JSON，旧 INDEX
+原始字节也保存在独立 gzip 文件中。旧发布与旧 readback 记录仍可按其固定提交检查。
+
+恢复工具按清单验证容器、分片、拼接归档和每个成员的大小与 SHA256，并拒绝符号链接、
 不安全路径、缺失成员，以及覆盖不同内容。同字节的已有文件可以再次校验。
+超过仓库文件大小上限的 `LOCAL_INPUT_MANIFEST.json` 和
+`cost/results/historical_002/per_seed_quality_cost.csv` 已完整包含在归档内；恢复后在原路径出现。
+最新 Git head 不再重复存储这两份超限副本，不截断或改写其中内容。
 
 输入归档含 **1,934 个文件、41,569,249 个未压缩成员字节**。结果归档的准确成员数和大小
 以其 `INDEX.json` 及实际恢复回执为准。两者都完成后，应能读取下面的真实记录：
@@ -266,5 +275,5 @@ CPU、wall、峰值进程 RSS、任务查询 tariff 和物理能耗是不同量�
 `formal_01` SHA256 一致，八个数值执行源码／协议身份一致。该检查证明所执行路径的依赖完整性，
 没有验证未运行的其他工程工作流，也没有把固定 renewal 内容门变成完整传播模型。
 
-本页命令按发布的 `evidence.py`、`numerics/launch.py`、`value/run.py` 与 `cost/audit.py`
+本页命令按发布的 `publication/transport.py`、冻结的 `evidence.py`、`numerics/launch.py`、`value/run.py` 与 `cost/audit.py`
 真实 CLI 核对；编写本页时未再次启动训练、24 案例确认或成本重算。
