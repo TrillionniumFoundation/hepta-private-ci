@@ -1,0 +1,57 @@
+{
+  "source_sha256": "ebc88a06d66ff8d1e9df86d290b05ffff915bade9db7546b99f3beb39e360128",
+  "flow_sha256": "f3e394b169abcfaa4a2e46d79d4639b68e0a9dc48ff6f40d1dca5457cc0829ca",
+  "histories": [
+    [
+      [
+        0.17,
+        "read",
+        0
+      ],
+      [
+        0.03,
+        null,
+        null
+      ],
+      [
+        0.83,
+        "refresh",
+        2
+      ]
+    ],
+    [
+      [
+        0.17,
+        "reset",
+        null
+      ],
+      [
+        0.03,
+        "read",
+        4
+      ],
+      [
+        0.83,
+        "refresh",
+        2
+      ]
+    ]
+  ],
+  "configurations": [
+    [
+      0.3,
+      0.018
+    ],
+    [
+      0.22,
+      0.008
+    ],
+    [
+      0.38,
+      0.032
+    ]
+  ],
+  "epsilon": 5e-06,
+  "max_scaled_error": 2e-06,
+  "scope": "Deterministic forward-chain derivative check, not training or scientific confirmation"
+}

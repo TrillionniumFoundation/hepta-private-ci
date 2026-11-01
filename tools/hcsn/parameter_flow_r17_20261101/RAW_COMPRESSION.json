@@ -1,0 +1,21 @@
+{
+  "schema": "hcsn-r17-deterministic-raw-compression-v1",
+  "created_utc": "2026-11-01T18:37:44.159085+00:00",
+  "raw": {
+    "path": "RESULTS_V3.json",
+    "size_bytes": 512968,
+    "sha256": "78923869a93226028813e41bcae1cd7b23d690a6e48f714fc2d0fbdaefc4a320"
+  },
+  "compressed": {
+    "path": "RESULTS_V3.json.gz",
+    "size_bytes": 36742,
+    "sha256": "9aa068492196281aed0bd7dd4b2fbf3d0c33702e66a670de07a504aa1405b0a7"
+  },
+  "gzip": {
+    "mtime": 0,
+    "filename": "",
+    "compression_level": 9
+  },
+  "roundtrip_matches": true,
+  "publication": "Remote tree delivers RESULTS_V3.json.gz and omits oversized raw RESULTS_V3.json; local raw is unchanged. Decompress to reconstruct exact recorded bytes."
+}

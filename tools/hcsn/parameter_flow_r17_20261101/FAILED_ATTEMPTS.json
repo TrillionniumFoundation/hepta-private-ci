@@ -1,0 +1,16 @@
+{
+  "V1": {
+    "outcome": "Failed after zero-likelihood observation produced NaN, JSON refused serialization",
+    "source": "SOURCE_FREEZE_V1.json",
+    "raw_partial": "FAILED_V1_PARTIAL.json",
+    "cpu_seconds": null
+  },
+  "V2": {
+    "outcome": "Python verification with all-time atol3e-24 ran >3min with no completed result. A SIGTERM attempted using a PID from another execution surface returned No such process and did not terminate it. The owned tool session was later interrupted with Ctrl-C, exit130.",
+    "source": "SOURCE_FREEZE_V2.json",
+    "signal": "Tool session Ctrl-C, exit130",
+    "cpu_seconds": null
+  },
+  "cost_scope": "Unrecorded V1/V2 exact CPU is unknown and never zero; final outer-process receipt does not include these development attempts.",
+  "metadata_correction": "V3 executed freeze included a preliminary failure ledger that incorrectly presumed the SIGTERM succeeded. That exact ledger is preserved under executed_sources/FAILED_ATTEMPTS_V3.json. This corrected ledger changes no numerical source or output."
+}

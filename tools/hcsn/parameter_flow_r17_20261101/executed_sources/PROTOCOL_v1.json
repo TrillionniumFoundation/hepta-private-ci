@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-r17-finite-gradient-development-protocol-v1",
+  "purpose": "Deterministic engineering verification; no independent scientific confirmation and no training",
+  "inherited_source": "0fd894118c47f38c2acf2532b8242fd16df76c47",
+  "coordinates": "9 financial natural coordinates + log reset asset + log recovery mean + logit effective same content + 32 categorical emission logits + 4 initial content logits = 48",
+  "configurations": [[0.30,0.018],[0.22,0.008],[0.38,0.032]],
+  "durations": [0,0.00001,0.17,2.7,8],
+  "observations": [["read",0],["read",4],["refresh",2]],
+  "finite_difference_steps": [0.00001,0.000005],
+  "finite_difference_rule": "Centered derivative of actual full output. Both steps retained. Gate uses predeclared smaller step. Reset-segment crossings fail.",
+  "ode_reference": "DOP853 row-state tangent ODE rtol3e-12 atol3e-14; receives generator and analytic generator tangents, does not call exponential/Frechet",
+  "tolerances": {
+    "parameter_fd": 0.000002,
+    "parameter_fd_step_change": 0.000002,
+    "ode_value": 0.000000002,
+    "ode_gradient": 0.00000002,
+    "time_gradient": 0.000002,
+    "mass": 0.000000000002,
+    "mass_tangent": 0.00000000002,
+    "hit_survival": 0.000000000002,
+    "hit_survival_tangent": 0.00000000002,
+    "inherited_parity": 0.00000000000002
+  },
+  "scope": "Finite 40-state regenerative extension; financial formula and all 9 parameter derivatives inherited from unchanged Dual FullHX. Frechet/ODE agreement is not a separate financial derivation. Fixed log-distance coordinates; changes of model require replay, not silent belief relabeling.",
+  "kinks": "Reset interpolation knots rejected; READ/STOP argmax policy, hard actions and free-boundary topology are not differentiated.",
+  "production_activation": false
+}

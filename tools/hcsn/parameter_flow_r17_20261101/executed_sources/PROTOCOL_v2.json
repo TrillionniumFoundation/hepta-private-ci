@@ -1,0 +1,64 @@
+{
+  "schema": "hcsn-r17-finite-gradient-development-protocol-v2",
+  "purpose": "Deterministic engineering verification; no independent scientific confirmation and no training",
+  "inherited_source": "0fd894118c47f38c2acf2532b8242fd16df76c47",
+  "coordinates": "9 financial natural coordinates + log reset asset + log recovery mean + logit effective same content + 32 categorical emission logits + 4 initial content logits = 48",
+  "configurations": [
+    [
+      0.3,
+      0.018
+    ],
+    [
+      0.22,
+      0.008
+    ],
+    [
+      0.38,
+      0.032
+    ]
+  ],
+  "durations": [
+    0,
+    1e-05,
+    0.17,
+    2.7,
+    8
+  ],
+  "observations": [
+    [
+      "read",
+      0
+    ],
+    [
+      "read",
+      4
+    ],
+    [
+      "refresh",
+      2
+    ]
+  ],
+  "finite_difference_steps": [
+    1e-05,
+    5e-06
+  ],
+  "finite_difference_rule": "Centered derivative of actual full output. Both steps retained. Gate uses predeclared smaller step. Reset-segment crossings fail.",
+  "ode_reference": "Independent DOP853 endpoint solve per duration, rtol3e-12 atol3e-24, max_step=t/8 for t<1e-4. This resolves rare-event conditional posteriors without dense interpolation across long spans.",
+  "tolerances": {
+    "parameter_fd": 2e-06,
+    "parameter_fd_step_change": 2e-06,
+    "ode_value": 2e-09,
+    "ode_gradient": 2e-08,
+    "time_gradient": 2e-06,
+    "mass": 2e-12,
+    "mass_tangent": 2e-11,
+    "hit_survival": 2e-12,
+    "hit_survival_tangent": 2e-11,
+    "inherited_parity": 2e-14
+  },
+  "scope": "Finite 40-state regenerative extension; financial formula and all 9 parameter derivatives inherited from unchanged Dual FullHX. Frechet/ODE agreement is not a separate financial derivation. Fixed log-distance coordinates; changes of model require replay, not silent belief relabeling.",
+  "kinks": "Reset interpolation knots rejected; READ/STOP argmax policy, hard actions and free-boundary topology are not differentiated.",
+  "production_activation": false,
+  "impossible_observations": "At time zero READ erasure4 has zero likelihood from active initial distribution; all3 configs must reject, no arbitrary conditional posterior.",
+  "review_correction": "V1 ran these impossible observations into NaN and failed JSON output; raw partial and exact source retained. No scientific outcome or tolerance changed."
+}

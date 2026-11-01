@@ -1,0 +1,1278 @@
+{
+  "schema": "hcsn-r17-multi-prefix-gradient-v1",
+  "source_freeze": {
+    "source_sha256": "ebc88a06d66ff8d1e9df86d290b05ffff915bade9db7546b99f3beb39e360128",
+    "flow_sha256": "f3e394b169abcfaa4a2e46d79d4639b68e0a9dc48ff6f40d1dca5457cc0829ca",
+    "histories": [
+      [
+        [
+          0.17,
+          "read",
+          0
+        ],
+        [
+          0.03,
+          null,
+          null
+        ],
+        [
+          0.83,
+          "refresh",
+          2
+        ]
+      ],
+      [
+        [
+          0.17,
+          "reset",
+          null
+        ],
+        [
+          0.03,
+          "read",
+          4
+        ],
+        [
+          0.83,
+          "refresh",
+          2
+        ]
+      ]
+    ],
+    "configurations": [
+      [
+        0.3,
+        0.018
+      ],
+      [
+        0.22,
+        0.008
+      ],
+      [
+        0.38,
+        0.032
+      ]
+    ],
+    "epsilon": 5e-06,
+    "max_scaled_error": 2e-06,
+    "scope": "Deterministic forward-chain derivative check, not training or scientific confirmation"
+  },
+  "rows": [
+    {
+      "sigma": 0.3,
+      "liquidity": 0.018,
+      "history": 0,
+      "log_likelihood": -3.6090768525422536,
+      "probability_mass": 1.0,
+      "max_tangent_mass": 5.551115123125783e-16,
+      "errors": [
+        {
+          "name": "r",
+          "scaled_error": 9.775926474258707e-10
+        },
+        {
+          "name": "delta",
+          "scaled_error": 2.1910868458911764e-10
+        },
+        {
+          "name": "sigma",
+          "scaled_error": 2.0832359082840688e-10
+        },
+        {
+          "name": "alpha",
+          "scaled_error": 3.681427606147522e-11
+        },
+        {
+          "name": "tax",
+          "scaled_error": 1.585894199828998e-11
+        },
+        {
+          "name": "liquidity",
+          "scaled_error": 2.1424697649250413e-10
+        },
+        {
+          "name": "maturity",
+          "scaled_error": 7.231652834908386e-11
+        },
+        {
+          "name": "coupon",
+          "scaled_error": 2.2042443086977428e-11
+        },
+        {
+          "name": "principal",
+          "scaled_error": 1.5794365578914664e-12
+        },
+        {
+          "name": "log_reset_asset",
+          "scaled_error": 6.982138174103383e-10
+        },
+        {
+          "name": "log_recovery_mean",
+          "scaled_error": 1.1120173330016283e-10
+        },
+        {
+          "name": "logit_same_content",
+          "scaled_error": 5.1172706771640844e-11
+        },
+        {
+          "name": "read_logit_0_0",
+          "scaled_error": 5.317467086281059e-11
+        },
+        {
+          "name": "read_logit_0_1",
+          "scaled_error": 1.6944689844110994e-11
+        },
+        {
+          "name": "read_logit_0_2",
+          "scaled_error": 1.6944689844110994e-11
+        },
+        {
+          "name": "read_logit_0_3",
+          "scaled_error": 1.6944689844110994e-11
+        },
+        {
+          "name": "read_logit_1_0",
+          "scaled_error": 5.4650342353798244e-12
+        },
+        {
+          "name": "read_logit_1_1",
+          "scaled_error": 1.1208184155186564e-11
+        },
+        {
+          "name": "read_logit_1_2",
+          "scaled_error": 7.944546934174064e-12
+        },
+        {
+          "name": "read_logit_1_3",
+          "scaled_error": 7.944546934174064e-12
+        },
+        {
+          "name": "read_logit_2_0",
+          "scaled_error": 2.5890109926095333e-12
+        },
+        {
+          "name": "read_logit_2_1",
+          "scaled_error": 1.9724835608097456e-11
+        },
+        {
+          "name": "read_logit_2_2",
+          "scaled_error": 4.143734900228075e-11
+        },
+        {
+          "name": "read_logit_2_3",
+          "scaled_error": 1.5775265388220932e-11
+        },
+        {
+          "name": "read_logit_3_0",
+          "scaled_error": 5.4650342353798244e-12
+        },
+        {
+          "name": "read_logit_3_1",
+          "scaled_error": 7.944550398448777e-12
+        },
+        {
+          "name": "read_logit_3_2",
+          "scaled_error": 7.944550398448777e-12
+        },
+        {
+          "name": "read_logit_3_3",
+          "scaled_error": 1.1208191022311086e-11
+        },
+        {
+          "name": "refresh_logit_0_0",
+          "scaled_error": 1.2517358356972804e-11
+        },
+        {
+          "name": "refresh_logit_0_1",
+          "scaled_error": 1.2178133722867904e-11
+        },
+        {
+          "name": "refresh_logit_0_2",
+          "scaled_error": 1.0003936505298223e-11
+        },
+        {
+          "name": "refresh_logit_0_3",
+          "scaled_error": 1.2178133722867904e-11
+        },
+        {
+          "name": "refresh_logit_1_0",
+          "scaled_error": 9.212250695439532e-12
+        },
+        {
+          "name": "refresh_logit_1_1",
+          "scaled_error": 6.687807058699823e-12
+        },
+        {
+          "name": "refresh_logit_1_2",
+          "scaled_error": 5.579065595577425e-12
+        },
+        {
+          "name": "refresh_logit_1_3",
+          "scaled_error": 9.212250695439532e-12
+        },
+        {
+          "name": "refresh_logit_2_0",
+          "scaled_error": 1.267843589618472e-11
+        },
+        {
+          "name": "refresh_logit_2_1",
+          "scaled_error": 1.267843589618472e-11
+        },
+        {
+          "name": "refresh_logit_2_2",
+          "scaled_error": 1.970463249646866e-11
+        },
+        {
+          "name": "refresh_logit_2_3",
+          "scaled_error": 1.267843589618472e-11
+        },
+        {
+          "name": "refresh_logit_3_0",
+          "scaled_error": 9.212250736093264e-12
+        },
+        {
+          "name": "refresh_logit_3_1",
+          "scaled_error": 9.212250736093264e-12
+        },
+        {
+          "name": "refresh_logit_3_2",
+          "scaled_error": 5.579067314191249e-12
+        },
+        {
+          "name": "refresh_logit_3_3",
+          "scaled_error": 6.687803620827202e-12
+        },
+        {
+          "name": "initial_logit_0",
+          "scaled_error": 1.1538986959629019e-11
+        },
+        {
+          "name": "initial_logit_1",
+          "scaled_error": 1.600078467060057e-11
+        },
+        {
+          "name": "initial_logit_2",
+          "scaled_error": 3.2645468469663884e-11
+        },
+        {
+          "name": "initial_logit_3",
+          "scaled_error": 1.6000762197272757e-11
+        }
+      ]
+    },
+    {
+      "sigma": 0.3,
+      "liquidity": 0.018,
+      "history": 1,
+      "log_likelihood": -1.3994987292844243,
+      "probability_mass": 0.9999999999999998,
+      "max_tangent_mass": 6.661338147750939e-16,
+      "errors": [
+        {
+          "name": "r",
+          "scaled_error": 4.992295532043417e-10
+        },
+        {
+          "name": "delta",
+          "scaled_error": 2.679612823359385e-10
+        },
+        {
+          "name": "sigma",
+          "scaled_error": 1.200188326664173e-10
+        },
+        {
+          "name": "alpha",
+          "scaled_error": 3.240331000246482e-11
+        },
+        {
+          "name": "tax",
+          "scaled_error": 1.0157834485306384e-11
+        },
+        {
+          "name": "liquidity",
+          "scaled_error": 4.113296164854812e-10
+        },
+        {
+          "name": "maturity",
+          "scaled_error": 4.374279307158134e-11
+        },
+        {
+          "name": "coupon",
+          "scaled_error": 1.3383788102229223e-11
+        },
+        {
+          "name": "principal",
+          "scaled_error": 2.7256261504348617e-12
+        },
+        {
+          "name": "log_reset_asset",
+          "scaled_error": 8.412178103232108e-11
+        },
+        {
+          "name": "log_recovery_mean",
+          "scaled_error": 1.583666654269107e-10
+        },
+        {
+          "name": "logit_same_content",
+          "scaled_error": 1.8542607707312756e-11
+        },
+        {
+          "name": "read_logit_0_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_0_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_0_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_0_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "refresh_logit_0_0",
+          "scaled_error": 1.8801088345461372e-11
+        },
+        {
+          "name": "refresh_logit_0_1",
+          "scaled_error": 3.5367693101669242e-12
+        },
+        {
+          "name": "refresh_logit_0_2",
+          "scaled_error": 2.9877008960144e-12
+        },
+        {
+          "name": "refresh_logit_0_3",
+          "scaled_error": 3.5367693101669242e-12
+        },
+        {
+          "name": "refresh_logit_1_0",
+          "scaled_error": 3.5367692559622363e-12
+        },
+        {
+          "name": "refresh_logit_1_1",
+          "scaled_error": 1.880108147322813e-11
+        },
+        {
+          "name": "refresh_logit_1_2",
+          "scaled_error": 2.9876940251421313e-12
+        },
+        {
+          "name": "refresh_logit_1_3",
+          "scaled_error": 3.5367692559622363e-12
+        },
+        {
+          "name": "refresh_logit_2_0",
+          "scaled_error": 4.018005789854311e-12
+        },
+        {
+          "name": "refresh_logit_2_1",
+          "scaled_error": 4.018005789854311e-12
+        },
+        {
+          "name": "refresh_logit_2_2",
+          "scaled_error": 3.3763247842775244e-11
+        },
+        {
+          "name": "refresh_logit_2_3",
+          "scaled_error": 4.018005789854311e-12
+        },
+        {
+          "name": "refresh_logit_3_0",
+          "scaled_error": 1.2843860077041484e-12
+        },
+        {
+          "name": "refresh_logit_3_1",
+          "scaled_error": 1.2843860077041484e-12
+        },
+        {
+          "name": "refresh_logit_3_2",
+          "scaled_error": 1.7866758589134293e-12
+        },
+        {
+          "name": "refresh_logit_3_3",
+          "scaled_error": 3.1900683359198498e-12
+        },
+        {
+          "name": "initial_logit_0",
+          "scaled_error": 1.465248825597392e-11
+        },
+        {
+          "name": "initial_logit_1",
+          "scaled_error": 1.465248825597392e-11
+        },
+        {
+          "name": "initial_logit_2",
+          "scaled_error": 5.215540517770884e-12
+        },
+        {
+          "name": "initial_logit_3",
+          "scaled_error": 3.315340888608568e-11
+        }
+      ]
+    },
+    {
+      "sigma": 0.22,
+      "liquidity": 0.008,
+      "history": 0,
+      "log_likelihood": -3.62018873071977,
+      "probability_mass": 1.0,
+      "max_tangent_mass": 1.1796119636642288e-16,
+      "errors": [
+        {
+          "name": "r",
+          "scaled_error": 2.550325297665065e-09
+        },
+        {
+          "name": "delta",
+          "scaled_error": 5.080436963365367e-10
+        },
+        {
+          "name": "sigma",
+          "scaled_error": 9.135752343605362e-10
+        },
+        {
+          "name": "alpha",
+          "scaled_error": 2.512126766070312e-11
+        },
+        {
+          "name": "tax",
+          "scaled_error": 7.12380071377135e-11
+        },
+        {
+          "name": "liquidity",
+          "scaled_error": 2.9946697682178422e-09
+        },
+        {
+          "name": "maturity",
+          "scaled_error": 4.289052078772134e-11
+        },
+        {
+          "name": "coupon",
+          "scaled_error": 2.398038024169621e-12
+        },
+        {
+          "name": "principal",
+          "scaled_error": 9.52666589216741e-13
+        },
+        {
+          "name": "log_reset_asset",
+          "scaled_error": 1.5363580630709315e-10
+        },
+        {
+          "name": "log_recovery_mean",
+          "scaled_error": 6.047005095328091e-11
+        },
+        {
+          "name": "logit_same_content",
+          "scaled_error": 7.05379578933252e-11
+        },
+        {
+          "name": "read_logit_0_0",
+          "scaled_error": 1.2517354319961182e-11
+        },
+        {
+          "name": "read_logit_0_1",
+          "scaled_error": 2.9348115467064804e-11
+        },
+        {
+          "name": "read_logit_0_2",
+          "scaled_error": 2.9348115467064804e-11
+        },
+        {
+          "name": "read_logit_0_3",
+          "scaled_error": 2.9348115467064804e-11
+        },
+        {
+          "name": "read_logit_1_0",
+          "scaled_error": 7.648279164878175e-12
+        },
+        {
+          "name": "read_logit_1_1",
+          "scaled_error": 1.892434308480615e-11
+        },
+        {
+          "name": "read_logit_1_2",
+          "scaled_error": 1.3085282257046832e-12
+        },
+        {
+          "name": "read_logit_1_3",
+          "scaled_error": 1.3085282257046832e-12
+        },
+        {
+          "name": "read_logit_2_0",
+          "scaled_error": 8.626487203790457e-12
+        },
+        {
+          "name": "read_logit_2_1",
+          "scaled_error": 3.556475398620376e-12
+        },
+        {
+          "name": "read_logit_2_2",
+          "scaled_error": 9.20354117739075e-12
+        },
+        {
+          "name": "read_logit_2_3",
+          "scaled_error": 3.556475398620376e-12
+        },
+        {
+          "name": "read_logit_3_0",
+          "scaled_error": 2.673913266560505e-11
+        },
+        {
+          "name": "read_logit_3_1",
+          "scaled_error": 1.2829649708644001e-12
+        },
+        {
+          "name": "read_logit_3_2",
+          "scaled_error": 1.2829649708644001e-12
+        },
+        {
+          "name": "read_logit_3_3",
+          "scaled_error": 2.513329565049603e-11
+        },
+        {
+          "name": "refresh_logit_0_0",
+          "scaled_error": 3.638315539300452e-11
+        },
+        {
+          "name": "refresh_logit_0_1",
+          "scaled_error": 2.743750630264384e-13
+        },
+        {
+          "name": "refresh_logit_0_2",
+          "scaled_error": 5.330639799201556e-12
+        },
+        {
+          "name": "refresh_logit_0_3",
+          "scaled_error": 2.743750630264384e-13
+        },
+        {
+          "name": "refresh_logit_1_0",
+          "scaled_error": 1.2997394737541042e-12
+        },
+        {
+          "name": "refresh_logit_1_1",
+          "scaled_error": 2.6944705372598287e-11
+        },
+        {
+          "name": "refresh_logit_1_2",
+          "scaled_error": 3.2930060033471747e-12
+        },
+        {
+          "name": "refresh_logit_1_3",
+          "scaled_error": 1.2997394737541042e-12
+        },
+        {
+          "name": "refresh_logit_2_0",
+          "scaled_error": 1.027322300159217e-11
+        },
+        {
+          "name": "refresh_logit_2_1",
+          "scaled_error": 1.027322300159217e-11
+        },
+        {
+          "name": "refresh_logit_2_2",
+          "scaled_error": 7.049408154152551e-12
+        },
+        {
+          "name": "refresh_logit_2_3",
+          "scaled_error": 1.027322300159217e-11
+        },
+        {
+          "name": "refresh_logit_3_0",
+          "scaled_error": 1.2997395686128339e-12
+        },
+        {
+          "name": "refresh_logit_3_1",
+          "scaled_error": 1.2997395686128339e-12
+        },
+        {
+          "name": "refresh_logit_3_2",
+          "scaled_error": 6.260917117565918e-12
+        },
+        {
+          "name": "refresh_logit_3_3",
+          "scaled_error": 2.6944696777733978e-11
+        },
+        {
+          "name": "initial_logit_0",
+          "scaled_error": 3.695989266531966e-11
+        },
+        {
+          "name": "initial_logit_1",
+          "scaled_error": 1.654489387430856e-11
+        },
+        {
+          "name": "initial_logit_2",
+          "scaled_error": 2.9735744333759097e-11
+        },
+        {
+          "name": "initial_logit_3",
+          "scaled_error": 1.9309053983789715e-11
+        }
+      ]
+    },
+    {
+      "sigma": 0.22,
+      "liquidity": 0.008,
+      "history": 1,
+      "log_likelihood": -1.3994989066536585,
+      "probability_mass": 0.9999999999999999,
+      "max_tangent_mass": 5.551115123125783e-16,
+      "errors": [
+        {
+          "name": "r",
+          "scaled_error": 9.159007126258519e-10
+        },
+        {
+          "name": "delta",
+          "scaled_error": 5.319774735027383e-10
+        },
+        {
+          "name": "sigma",
+          "scaled_error": 1.0655837790421125e-09
+        },
+        {
+          "name": "alpha",
+          "scaled_error": 2.642344346234715e-11
+        },
+        {
+          "name": "tax",
+          "scaled_error": 2.2630171867278476e-11
+        },
+        {
+          "name": "liquidity",
+          "scaled_error": 3.8118557337892327e-10
+        },
+        {
+          "name": "maturity",
+          "scaled_error": 7.621067963310794e-11
+        },
+        {
+          "name": "coupon",
+          "scaled_error": 5.34804412597554e-12
+        },
+        {
+          "name": "principal",
+          "scaled_error": 8.948710940453218e-13
+        },
+        {
+          "name": "log_reset_asset",
+          "scaled_error": 1.3785695853716447e-11
+        },
+        {
+          "name": "log_recovery_mean",
+          "scaled_error": 1.0758716427368703e-10
+        },
+        {
+          "name": "logit_same_content",
+          "scaled_error": 6.846498124928768e-11
+        },
+        {
+          "name": "read_logit_0_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_0_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_0_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_0_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "refresh_logit_0_0",
+          "scaled_error": 3.1900614636866086e-12
+        },
+        {
+          "name": "refresh_logit_0_1",
+          "scaled_error": 1.2843859399482882e-12
+        },
+        {
+          "name": "refresh_logit_0_2",
+          "scaled_error": 1.7866741411953622e-12
+        },
+        {
+          "name": "refresh_logit_0_3",
+          "scaled_error": 1.2843859399482882e-12
+        },
+        {
+          "name": "refresh_logit_1_0",
+          "scaled_error": 1.2843859806018043e-12
+        },
+        {
+          "name": "refresh_logit_1_1",
+          "scaled_error": 3.190064899803229e-12
+        },
+        {
+          "name": "refresh_logit_1_2",
+          "scaled_error": 1.7866758589134293e-12
+        },
+        {
+          "name": "refresh_logit_1_3",
+          "scaled_error": 1.2843859806018043e-12
+        },
+        {
+          "name": "refresh_logit_2_0",
+          "scaled_error": 4.018004071796001e-12
+        },
+        {
+          "name": "refresh_logit_2_1",
+          "scaled_error": 4.018004071796001e-12
+        },
+        {
+          "name": "refresh_logit_2_2",
+          "scaled_error": 1.2186665884245048e-11
+        },
+        {
+          "name": "refresh_logit_2_3",
+          "scaled_error": 4.018004071796001e-12
+        },
+        {
+          "name": "refresh_logit_3_0",
+          "scaled_error": 1.2843860619088366e-12
+        },
+        {
+          "name": "refresh_logit_3_1",
+          "scaled_error": 1.2843860619088366e-12
+        },
+        {
+          "name": "refresh_logit_3_2",
+          "scaled_error": 1.7866810120676305e-12
+        },
+        {
+          "name": "refresh_logit_3_3",
+          "scaled_error": 5.016487013913867e-12
+        },
+        {
+          "name": "initial_logit_0",
+          "scaled_error": 1.468231945735712e-11
+        },
+        {
+          "name": "initial_logit_1",
+          "scaled_error": 3.8003920333948566e-12
+        },
+        {
+          "name": "initial_logit_2",
+          "scaled_error": 8.538609744029899e-12
+        },
+        {
+          "name": "initial_logit_3",
+          "scaled_error": 6.00322183007116e-12
+        }
+      ]
+    },
+    {
+      "sigma": 0.38,
+      "liquidity": 0.032,
+      "history": 0,
+      "log_likelihood": -3.6063341871230574,
+      "probability_mass": 1.0,
+      "max_tangent_mass": 1.6653345369377348e-16,
+      "errors": [
+        {
+          "name": "r",
+          "scaled_error": 3.317074557859105e-10
+        },
+        {
+          "name": "delta",
+          "scaled_error": 1.4604861151775236e-10
+        },
+        {
+          "name": "sigma",
+          "scaled_error": 1.1276681472657155e-10
+        },
+        {
+          "name": "alpha",
+          "scaled_error": 1.6214880006351574e-10
+        },
+        {
+          "name": "tax",
+          "scaled_error": 6.865143172016505e-11
+        },
+        {
+          "name": "liquidity",
+          "scaled_error": 1.7574398520288044e-10
+        },
+        {
+          "name": "maturity",
+          "scaled_error": 2.966938000573366e-11
+        },
+        {
+          "name": "coupon",
+          "scaled_error": 8.327821319206967e-12
+        },
+        {
+          "name": "principal",
+          "scaled_error": 2.577143527186294e-12
+        },
+        {
+          "name": "log_reset_asset",
+          "scaled_error": 6.517051244414008e-10
+        },
+        {
+          "name": "log_recovery_mean",
+          "scaled_error": 1.2671092055966483e-10
+        },
+        {
+          "name": "logit_same_content",
+          "scaled_error": 3.851291851466946e-11
+        },
+        {
+          "name": "read_logit_0_0",
+          "scaled_error": 1.8567285767087376e-11
+        },
+        {
+          "name": "read_logit_0_1",
+          "scaled_error": 2.1936188098891514e-11
+        },
+        {
+          "name": "read_logit_0_2",
+          "scaled_error": 2.1936188098891514e-11
+        },
+        {
+          "name": "read_logit_0_3",
+          "scaled_error": 2.1936188098891514e-11
+        },
+        {
+          "name": "read_logit_1_0",
+          "scaled_error": 9.121548042818935e-12
+        },
+        {
+          "name": "read_logit_1_1",
+          "scaled_error": 2.096233357994471e-11
+        },
+        {
+          "name": "read_logit_1_2",
+          "scaled_error": 3.1670073411077498e-12
+        },
+        {
+          "name": "read_logit_1_3",
+          "scaled_error": 3.1670073411077498e-12
+        },
+        {
+          "name": "read_logit_2_0",
+          "scaled_error": 1.066067631720306e-12
+        },
+        {
+          "name": "read_logit_2_1",
+          "scaled_error": 2.154251371721313e-12
+        },
+        {
+          "name": "read_logit_2_2",
+          "scaled_error": 2.5227455325025934e-11
+        },
+        {
+          "name": "read_logit_2_3",
+          "scaled_error": 3.773670989964168e-11
+        },
+        {
+          "name": "read_logit_3_0",
+          "scaled_error": 9.86216674078909e-12
+        },
+        {
+          "name": "read_logit_3_1",
+          "scaled_error": 2.2419433226228586e-11
+        },
+        {
+          "name": "read_logit_3_2",
+          "scaled_error": 2.2419433226228586e-11
+        },
+        {
+          "name": "read_logit_3_3",
+          "scaled_error": 2.2902356016218837e-11
+        },
+        {
+          "name": "refresh_logit_0_0",
+          "scaled_error": 9.963987990922307e-12
+        },
+        {
+          "name": "refresh_logit_0_1",
+          "scaled_error": 7.259768973781548e-12
+        },
+        {
+          "name": "refresh_logit_0_2",
+          "scaled_error": 1.4331697577435372e-11
+        },
+        {
+          "name": "refresh_logit_0_3",
+          "scaled_error": 7.259768973781548e-12
+        },
+        {
+          "name": "refresh_logit_1_0",
+          "scaled_error": 6.396122127926101e-13
+        },
+        {
+          "name": "refresh_logit_1_1",
+          "scaled_error": 3.222929829897019e-11
+        },
+        {
+          "name": "refresh_logit_1_2",
+          "scaled_error": 5.417105174966474e-12
+        },
+        {
+          "name": "refresh_logit_1_3",
+          "scaled_error": 6.396122127926101e-13
+        },
+        {
+          "name": "refresh_logit_2_0",
+          "scaled_error": 4.150432699798579e-12
+        },
+        {
+          "name": "refresh_logit_2_1",
+          "scaled_error": 4.150432699798579e-12
+        },
+        {
+          "name": "refresh_logit_2_2",
+          "scaled_error": 8.524312776357327e-12
+        },
+        {
+          "name": "refresh_logit_2_3",
+          "scaled_error": 4.150432699798579e-12
+        },
+        {
+          "name": "refresh_logit_3_0",
+          "scaled_error": 1.0281972318387883e-11
+        },
+        {
+          "name": "refresh_logit_3_1",
+          "scaled_error": 1.0281972318387883e-11
+        },
+        {
+          "name": "refresh_logit_3_2",
+          "scaled_error": 5.4171120493040375e-12
+        },
+        {
+          "name": "refresh_logit_3_3",
+          "scaled_error": 1.1774741279664492e-11
+        },
+        {
+          "name": "initial_logit_0",
+          "scaled_error": 2.9505348851055055e-11
+        },
+        {
+          "name": "initial_logit_1",
+          "scaled_error": 3.552064568244014e-11
+        },
+        {
+          "name": "initial_logit_2",
+          "scaled_error": 2.008434519697666e-11
+        },
+        {
+          "name": "initial_logit_3",
+          "scaled_error": 5.834245703868427e-12
+        }
+      ]
+    },
+    {
+      "sigma": 0.38,
+      "liquidity": 0.032,
+      "history": 1,
+      "log_likelihood": -1.3994987057363997,
+      "probability_mass": 1.0,
+      "max_tangent_mass": 1.3877787807814457e-16,
+      "errors": [
+        {
+          "name": "r",
+          "scaled_error": 2.583230685762896e-10
+        },
+        {
+          "name": "delta",
+          "scaled_error": 3.514884269843292e-11
+        },
+        {
+          "name": "sigma",
+          "scaled_error": 3.167502058887598e-10
+        },
+        {
+          "name": "alpha",
+          "scaled_error": 1.8490134758146019e-10
+        },
+        {
+          "name": "tax",
+          "scaled_error": 6.703339695134652e-11
+        },
+        {
+          "name": "liquidity",
+          "scaled_error": 1.6010231472291956e-10
+        },
+        {
+          "name": "maturity",
+          "scaled_error": 1.1466365733832945e-10
+        },
+        {
+          "name": "coupon",
+          "scaled_error": 2.12398563866321e-12
+        },
+        {
+          "name": "principal",
+          "scaled_error": 3.165410217923272e-12
+        },
+        {
+          "name": "log_reset_asset",
+          "scaled_error": 2.028298086200475e-10
+        },
+        {
+          "name": "log_recovery_mean",
+          "scaled_error": 1.2511353520966174e-11
+        },
+        {
+          "name": "logit_same_content",
+          "scaled_error": 7.987578381673742e-11
+        },
+        {
+          "name": "read_logit_0_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_0_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_0_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_0_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_1_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_2_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_0",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_1",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_2",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "read_logit_3_3",
+          "scaled_error": 0.0
+        },
+        {
+          "name": "refresh_logit_0_0",
+          "scaled_error": 3.190078644269712e-12
+        },
+        {
+          "name": "refresh_logit_0_1",
+          "scaled_error": 1.2843861161135247e-12
+        },
+        {
+          "name": "refresh_logit_0_2",
+          "scaled_error": 6.561061202386004e-12
+        },
+        {
+          "name": "refresh_logit_0_3",
+          "scaled_error": 1.2843861161135247e-12
+        },
+        {
+          "name": "refresh_logit_1_0",
+          "scaled_error": 1.2843861296646968e-12
+        },
+        {
+          "name": "refresh_logit_1_1",
+          "scaled_error": 3.190078644269712e-12
+        },
+        {
+          "name": "refresh_logit_1_2",
+          "scaled_error": 6.561061202386004e-12
+        },
+        {
+          "name": "refresh_logit_1_3",
+          "scaled_error": 1.2843861296646968e-12
+        },
+        {
+          "name": "refresh_logit_2_0",
+          "scaled_error": 7.57313230976777e-13
+        },
+        {
+          "name": "refresh_logit_2_1",
+          "scaled_error": 7.57313230976777e-13
+        },
+        {
+          "name": "refresh_logit_2_2",
+          "scaled_error": 3.376325121411618e-11
+        },
+        {
+          "name": "refresh_logit_2_3",
+          "scaled_error": 7.57313230976777e-13
+        },
+        {
+          "name": "refresh_logit_3_0",
+          "scaled_error": 1.2843861703182128e-12
+        },
+        {
+          "name": "refresh_logit_3_1",
+          "scaled_error": 1.2843861703182128e-12
+        },
+        {
+          "name": "refresh_logit_3_2",
+          "scaled_error": 1.7866930360941004e-12
+        },
+        {
+          "name": "refresh_logit_3_3",
+          "scaled_error": 1.8801062574586716e-11
+        },
+        {
+          "name": "initial_logit_0",
+          "scaled_error": 2.0911378217430937e-11
+        },
+        {
+          "name": "initial_logit_1",
+          "scaled_error": 3.943091230893363e-11
+        },
+        {
+          "name": "initial_logit_2",
+          "scaled_error": 8.517206110635678e-12
+        },
+        {
+          "name": "initial_logit_3",
+          "scaled_error": 2.0911378217430937e-11
+        }
+      ]
+    }
+  ],
+  "parameter_case_count": 288,
+  "maximum_scaled_error": 2.9946697682178422e-09,
+  "gate": true,
+  "cpu_seconds": 1.267363529
+}

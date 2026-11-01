@@ -1,0 +1,45 @@
+{
+  "protocol": {
+    "schema": "hcsn-r17-perpetual-put-boundary-v1",
+    "cases": [
+      {
+        "strike": 100.0,
+        "discount": 0.05,
+        "drift": 0.03,
+        "volatility": 0.3
+      },
+      {
+        "strike": 100.0,
+        "discount": 0.08,
+        "drift": 0.01,
+        "volatility": 0.22
+      },
+      {
+        "strike": 100.0,
+        "discount": 0.04,
+        "drift": 0.04,
+        "volatility": 0.4
+      }
+    ],
+    "intervals": [
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "log_asset_domain": [
+      -7.0,
+      9.0
+    ],
+    "max_policy_iterations": 10000,
+    "policy_tolerance": 1e-11,
+    "gates": {
+      "finest_boundary_relative_error": 0.005,
+      "finest_value_relative_error": 0.0001,
+      "finest_smooth_pasting_error": 0.02,
+      "lcp_residual": 1e-07
+    },
+    "scope": "Deterministic numerical development: GBM perpetual American put only; no scientific holdout, finite-horizon HX, regeneration, neural training, or production admission."
+  },
+  "source_sha256": "1a435259a2e6c67115425edc2915affd82a2c48ba6325fe1a098fe346d58c07e"
+}
