@@ -77,7 +77,8 @@ pub struct MemoryInventoryReadoutV1 {
 
 impl MemoryInventoryReadoutV1 {
     pub fn validate(&self) -> Result<(), HnmfContractError> {
-        if self.schema != "hepta.memory.inventory-readout.v1" {
+        let current_source_fallback = self.schema == "hepta.memory.inventory-readout.v14";
+        if self.schema != "hepta.memory.inventory-readout.v1" && !current_source_fallback {
             return Err(HnmfContractError::Invalid("inventory readout schema"));
         }
         // The common envelope enforces bounded/unique dependencies and excludes
@@ -113,14 +114,19 @@ impl MemoryInventoryReadoutV1 {
                     MemoryInventoryKindV1::Procedure
                 };
                 validate_memory_inventory_value_v1(kind, &self.value)?;
-                if self.prediction_kind != MemoryPredictionKindV1::ModelPrediction {
+                if self.prediction_kind != MemoryPredictionKindV1::ModelPrediction
+                    && !(current_source_fallback
+                        && self.prediction_kind == MemoryPredictionKindV1::SourceEvidence)
+                {
                     return Err(HnmfContractError::Invalid("inventory prediction label"));
                 }
             }
             Some(MemoryOperationV1::Apply) => {
                 let execution: MemoryInventoryExecutionV1 = serde_json::from_value(self.value.clone())
                     .map_err(|_| HnmfContractError::Invalid("inventory execution shape"))?;
-                if self.prediction_kind != MemoryPredictionKindV1::Mixed
+                if (self.prediction_kind != MemoryPredictionKindV1::Mixed
+                    && !(current_source_fallback
+                        && self.prediction_kind == MemoryPredictionKindV1::SourceEvidence))
                     || execution.status != MemoryInventoryExecutionStatusV1::Completed
                     || execution.trace.is_empty() || execution.trace.len() > 4
                     || execution.trace.last().is_none_or(|step| {
@@ -165,3 +171,8 @@ pub fn decode_memory_inventory_readout_v1(bytes: &[u8]) -> Result<MemoryInventor
     readout.validate()?;
     Ok(readout)
 }
+
+#[cfg(test)]
+#[path = "memory_inventory_v14_tests.rs"]
+mod v14_tests;
+

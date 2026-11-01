@@ -30,6 +30,12 @@ use crate::LoadedMemoryInventoryBundleV1;
 pub(crate) trait InventoryParameters {
     fn generation(&self) -> ContractGenerationV1;
     fn bundle_digest(&self) -> ContractDigestV1;
+    fn readout_schema(&self) -> &'static str {
+        "hepta.memory.inventory-readout.v1"
+    }
+    fn current_source_fallback(&self, _kind: MemoryCellKindV1, _key: &str) -> bool {
+        false
+    }
     fn predict(
         &self,
         kind: MemoryCellKindV1,
@@ -93,7 +99,6 @@ pub(crate) fn execute(
             .ok_or_else(|| unavailable("owner event value is invalid"))
     };
     let current_at = owner.observed_at_unix_seconds() as u64;
-    let mut prediction_kind = MemoryPredictionKindV1::SourceEvidence;
     let value = match operation {
         MemoryOperationV1::Current => Value::from(event(current_at, &mut sources)?),
         MemoryOperationV1::History => Value::from(event(request.at, &mut sources)?),
@@ -103,7 +108,6 @@ pub(crate) fn execute(
                 .ok_or_else(|| unavailable("inventory event difference overflow"))?,
         ),
         MemoryOperationV1::Semantic | MemoryOperationV1::Procedure => {
-            prediction_kind = MemoryPredictionKindV1::ModelPrediction;
             let (kind, key) = if operation == MemoryOperationV1::Semantic {
                 (MemoryCellKindV1::Semantic, &request.entity_key)
             } else {
@@ -134,7 +138,6 @@ pub(crate) fn execute(
                 }
                 None => return Err(unavailable("owner hold value is invalid")),
             }
-            prediction_kind = MemoryPredictionKindV1::Mixed;
             let event = event(current_at, &mut sources)?;
             let MemoryInventoryValueV1::Semantic(policy) = predict(
                 bundle,
@@ -196,8 +199,15 @@ pub(crate) fn execute(
             "inventory read did not consume its exact typed dependencies",
         ));
     }
+    let prediction_kind = if models.is_empty() {
+        MemoryPredictionKindV1::SourceEvidence
+    } else if matches!(operation, MemoryOperationV1::Semantic | MemoryOperationV1::Procedure) {
+        MemoryPredictionKindV1::ModelPrediction
+    } else {
+        MemoryPredictionKindV1::Mixed
+    };
     let readout = MemoryInventoryReadoutV1 {
-        schema: "hepta.memory.inventory-readout.v1".to_string(),
+        schema: bundle.readout_schema().to_string(),
         query_id: request.query_id.clone(),
         operation: Some(operation),
         status: MemoryReadStatusV1::Ok,
@@ -225,13 +235,6 @@ fn predict(
     sources: &mut BTreeSet<ContractDigestV1>,
     models: &mut BTreeSet<ContractDigestV1>,
 ) -> Result<MemoryInventoryValueV1, ReadFailure> {
-    let predicted = bundle
-        .predict(kind, key.as_str())
-        .map_err(|_| unavailable("native parameter inference failed"))?;
-    let value = predicted.value.ok_or((
-        MemoryReadStatusV1::Abstain,
-        "native parameter model declined the key or confidence",
-    ))?;
     let inventory_kind = match kind {
         MemoryCellKindV1::Semantic => MemoryInventoryKindV1::Semantic,
         MemoryCellKindV1::Procedure => MemoryInventoryKindV1::Procedure,
@@ -240,6 +243,25 @@ fn predict(
     let source = owner.current(key, inventory_kind).ok_or((
         MemoryReadStatusV1::Abstain,
         "predicted inventory support is missing or withdrawn",
+    ))?;
+    if bundle.current_source_fallback(kind, key.as_str()) {
+        let value = match kind {
+            MemoryCellKindV1::Semantic => serde_json::from_value(source.record.value.clone())
+                .map(MemoryInventoryValueV1::Semantic),
+            MemoryCellKindV1::Procedure => serde_json::from_value(source.record.value.clone())
+                .map(MemoryInventoryValueV1::Procedure),
+            MemoryCellKindV1::Event => return Err(unavailable("event prediction is forbidden")),
+        }
+        .map_err(|_| unavailable("current owner fallback has an invalid typed value"))?;
+        sources.insert(source.source_id);
+        return Ok(value);
+    }
+    let predicted = bundle
+        .predict(kind, key.as_str())
+        .map_err(|_| unavailable("native parameter inference failed"))?;
+    let value = predicted.value.ok_or((
+        MemoryReadStatusV1::Abstain,
+        "native parameter model declined the key or confidence",
     ))?;
     if predicted.kind != kind
         || predicted.source_ids != vec![source.source_id.to_string()]
@@ -273,3 +295,4 @@ fn inner_value(value: MemoryInventoryValueV1) -> Result<Value, ReadFailure> {
     }
     .map_err(|_| unavailable("native inventory value could not be encoded"))
 }
+

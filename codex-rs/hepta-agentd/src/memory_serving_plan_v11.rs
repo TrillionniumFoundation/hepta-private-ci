@@ -348,6 +348,9 @@ impl InventoryParameters for MemoryServingPlanV11 {
 }
 
 #[cfg(test)]
+#[path = "memory_isolated_service_v14_tests.rs"]
+mod isolated_tests;
+#[cfg(test)]
 #[path = "memory_mlp_v12_training_test_support.rs"]
 mod learned_test_support;
 #[cfg(test)]
