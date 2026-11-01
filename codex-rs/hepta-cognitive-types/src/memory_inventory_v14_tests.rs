@@ -60,7 +60,7 @@ fn inventory_v14_exact_fallback_roundtrips_without_relaxing_v1() {
 
 #[test]
 fn inventory_v14_preserves_empty_failure_and_typed_value_constraints() {
-    let mut candidate = readout(MemoryOperationV1::Semantic, json!({"reserve":11,"pack":0,"limit":14}));
+    let mut candidate = readout(MemoryOperationV1::Semantic, json!({"reserve":11,"pack":16,"limit":14}));
     assert!(candidate.validate().is_err(), "invalid policy cannot enter through fallback");
     candidate.status = MemoryReadStatusV1::Abstain;
     candidate.reason = Some("current source withdrawn".to_string());

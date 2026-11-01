@@ -1,6 +1,8 @@
 //! Two distinct owner processes with real Agentd sockets and cold same-host TCP
 //! transfer. This does not claim separate physical hosts or native Adam replay.
 
+use std::io::Write;
+use std::os::unix::fs::{DirBuilderExt, OpenOptionsExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 
 use codex_hepta_cognitive_types::{MemoryInventoryKindV1, MemoryInventoryRequestV1,
@@ -23,9 +25,9 @@ fn query(scope: &ContractIdV1, operation: &str) -> MemoryInventoryRequestV1 {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-struct FilePin { name: String, bytes: u64, sha256: String }
+struct FilePin { name: String, bytes: u64, sha256: String, mode: u32 }
 
-fn files(root: &Path, prefix: &str) -> Vec<(String, Vec<u8>)> {
+fn files(root: &Path, prefix: &str) -> Vec<(String, Vec<u8>, u32)> {
     let mut result = Vec::new();
     for entry in std::fs::read_dir(root).expect("cold directory") {
         let entry = entry.expect("directory entry");
@@ -33,7 +35,8 @@ fn files(root: &Path, prefix: &str) -> Vec<(String, Vec<u8>)> {
         let kind = entry.file_type().expect("file type");
         assert!(!kind.is_symlink(), "migration fixture only transports regular files");
         if kind.is_dir() { result.extend(files(&entry.path(), &format!("{name}/"))); }
-        else { assert!(kind.is_file()); result.push((name, std::fs::read(entry.path()).expect("cold file bytes"))); }
+        else { assert!(kind.is_file()); result.push((name, std::fs::read(entry.path()).expect("cold file bytes"),
+            entry.metadata().expect("cold file metadata").permissions().mode() & 0o7777)); }
     }
     result.sort_by(|a, b| a.0.cmp(&b.0));
     result
@@ -45,9 +48,10 @@ async fn transfer(source: &Path, cognitive: &Path, destination: &Path, target_co
     for suffix in ["-wal", "-shm", "-journal"] {
         assert!(!PathBuf::from(format!("{}{suffix}", database.display())).exists(), "source must be fully quiesced");
     }
-    data.push(("cognitive/database".to_string(), std::fs::read(database).expect("closed real SQLite file")));
-    let pins: Vec<_> = data.iter().map(|(name, bytes)| FilePin {
-        name:name.clone(), bytes:bytes.len() as u64, sha256:Digest32::of_bytes(bytes).to_string() }).collect();
+    data.push(("cognitive/database".to_string(), std::fs::read(&database).expect("closed real SQLite file"),
+        std::fs::metadata(&database).expect("cold SQLite metadata").permissions().mode() & 0o7777));
+    let pins: Vec<_> = data.iter().map(|(name, bytes, mode)| FilePin {
+        name:name.clone(), bytes:bytes.len() as u64, sha256:Digest32::of_bytes(bytes).to_string(), mode:*mode }).collect();
     assert!(pins.len() <= 256 && pins.iter().map(|p| p.bytes).sum::<u64>() <= 32 * 1024 * 1024);
     let manifest = serde_json::to_vec(&pins).expect("transfer inventory");
     let listener = TcpListener::bind("127.0.0.1:0").await.expect("real TCP receiver");
@@ -69,8 +73,15 @@ async fn transfer(source: &Path, cognitive: &Path, destination: &Path, target_co
             assert_eq!(Digest32::of_bytes(&bytes).to_string(), pin.sha256);
             let path = if pin.name == "cognitive/database" { cognitive.join(codex_hepta_cognitive_store::DURABLE_DATABASE_BASENAME) }
                 else { assert!(pin.name.starts_with("artifacts/") && !pin.name.split('/').any(|part| part == "..")); target.join(pin.name) };
-            std::fs::create_dir_all(path.parent().expect("target directory")).expect("target directories");
-            std::fs::write(path, bytes).expect("received cold bytes");
+            let parent = path.parent().expect("target directory");
+            std::fs::DirBuilder::new().recursive(true).mode(0o700).create(parent).expect("private target directories");
+            std::fs::set_permissions(parent, std::fs::Permissions::from_mode(0o700)).expect("private target parent");
+            let mut file = std::fs::OpenOptions::new().write(true).create_new(true).mode(pin.mode)
+                .open(&path).expect("distinct new target inode");
+            file.write_all(&bytes).expect("received cold bytes");
+            file.set_permissions(std::fs::Permissions::from_mode(pin.mode)).expect("preserve exact source file mode");
+            file.sync_all().expect("durable target file");
+            std::fs::File::open(parent).and_then(|directory| directory.sync_all()).expect("durable target directory");
         }
         let mut extra = [0_u8; 1];
         assert_eq!(stream.read(&mut extra).await.expect("transfer EOF"), 0);
@@ -78,11 +89,11 @@ async fn transfer(source: &Path, cognitive: &Path, destination: &Path, target_co
     let mut stream = TcpStream::connect(address).await.expect("actual TCP sender");
     stream.write_u64(manifest.len() as u64).await.expect("inventory length");
     stream.write_all(&manifest).await.expect("inventory transfer");
-    for (_, bytes) in &data { stream.write_all(bytes).await.expect("raw file transfer"); }
+    for (_, bytes, _) in &data { stream.write_all(bytes).await.expect("raw file transfer"); }
     stream.shutdown().await.expect("sender EOF");
     receiving.await.expect("receiver completed");
     json!({"transport":"same_host_loopback_TCP","receiver":"parent_test_transport_task",
-        "files":pins,"wire_bytes":8 + manifest.len() as u64 + data.iter().map(|(_,b)|b.len() as u64).sum::<u64>()})
+        "files":pins,"wire_bytes":8 + manifest.len() as u64 + data.iter().map(|(_,b,_)|b.len() as u64).sum::<u64>()})
 }
 
 #[tokio::test]
