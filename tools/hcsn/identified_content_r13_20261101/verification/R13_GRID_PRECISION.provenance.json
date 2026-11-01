@@ -1,0 +1,39 @@
+{
+  "timestamp_utc": "2026-11-01T02:19:20.279277+00:00",
+  "timing": "Additional source check while the existing 448-point run was in progress; not retroactively presented as a pre-run attestation",
+  "upstream": {
+    "kernel.py": {
+      "actual_sha256": "1a7fb9480bca8fd127241b2488834bc682626f817469f8a69e07097f74adf4b6",
+      "frozen_sha256": "1a7fb9480bca8fd127241b2488834bc682626f817469f8a69e07097f74adf4b6",
+      "matches": true
+    },
+    "reference.py": {
+      "actual_sha256": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+      "frozen_sha256": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+      "matches": true
+    }
+  },
+  "reference_and_norm_source_sha256": {
+    "tools/hcsn/unified_cell_r12_20261031/numerics/experiment.py": "7b8498c674777d5e7fd1bffa3eb2e4301de11c29fd77e64b9c3a9890f469ccae",
+    "tools/hcsn/identified_content_r13_20261101/precision/development.py": "bd873957f03873bf52c4da01072d35d5e329ac190586fe54a88f412b706b8529",
+    "tools/hcsn/identified_content_r13_20261101/precision/fresh.py": "9fb76b384ec064a72057b6fbb84b194ad80a63ba4527e2936626f855254f7b92"
+  },
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "mpmath": "1.3.0",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+  },
+  "derivative_contract": "Jacobian approximates derivatives of the continuous HX formula at the represented input; it is not the classical derivative of the complete FP32 quantizer composition",
+  "reference_steps": {
+    "quantized": [
+      "1e-18",
+      "5e-19"
+    ],
+    "original": [
+      "1e-18"
+    ]
+  },
+  "review": "Independent static review by holder_paper found correct 5-vector/5x10 Jacobian alignment and correctly separated quantized/original input comparisons"
+}

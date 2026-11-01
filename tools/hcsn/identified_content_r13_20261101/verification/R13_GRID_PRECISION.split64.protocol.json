@@ -1,0 +1,17 @@
+{
+  "status": "Post-observation adapter verification; not an independent task confirmation",
+  "source_sha256": "4b088c24004006676217c46c68fdc07c3db6f280cedac9fec432f0027ba21a9a",
+  "ds_freeze_sha256": "5e5a970ba23e32df1c5ab2da591320c44c2dc1c6ce521194753f0cc0c8d57a00",
+  "archived_reference_sha256": "9dfb1b3826ae123a5f4306a33d8a3a29c3d20fd979805c2fc34f12670ab7ce4f",
+  "input": "Original FP64 values explicitly encoded as FP32 hi plus FP32 lo using FP64 subtraction",
+  "computation": "Unchanged frozen DS MODEL, Dual and math primitives; no FP64 core fallback",
+  "output": "FP32 values and 5x10 continuous sensitivities at the encoded point",
+  "storage": "Two FP32 components per scalar: 64 bit payload, not single-FP32 input/storage",
+  "gates": {
+    "value": 8e-07,
+    "jacobian": 2e-05
+  },
+  "sequence": "First all eight original-input failures; if all pass, evaluate all other archived grid points without changing adapter",
+  "reference": "Archived independent 80-digit R11 literal values/Jacobians at original FP64 inputs; main original Jacobian step 1e-18; eight diagnostic failures additionally half-step checked",
+  "exclusions": "No whole-SNN FP32, speed, new confirmation, continuous-box accuracy, or policy-quality claim"
+}
