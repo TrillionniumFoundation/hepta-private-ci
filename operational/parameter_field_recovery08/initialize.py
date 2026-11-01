@@ -73,6 +73,7 @@ def committed_closure(commit, contract):
         "bootstrap.py",
         "postseal/review.py",
         "capacity_amendment.py",
+        "capacity_backpressure.py",
         "prepare_inputs.py",
     )
     for name in needed:

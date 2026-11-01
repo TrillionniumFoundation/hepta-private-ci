@@ -1,0 +1,270 @@
+{
+  "actual_initialization_summary": {
+    "pipeline_config": {
+      "bytes": 40210,
+      "path": "/work/execution08/ops/registrations/initial/PIPELINE_CONFIG.json",
+      "sha256": "a506f09baa0039a5a6c5a2d3c786bf76ea31f5f9b7ccf24ce134016540d8f842"
+    },
+    "workers_started": 0
+  },
+  "actual_provider_job": {
+    "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/124710575591",
+    "completed_at": "2026-11-01T01:10:45Z",
+    "conclusion": "failure",
+    "created_at": "2026-11-01T01:08:41Z",
+    "head_branch": "research/parameter-field-recovery08-20261101",
+    "head_sha": "cd57bbc1acd4a7b63cd6c3dcfa83ad1874b7eefe",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41259588460/job/124710575591",
+    "id": 124710575591,
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "name": "registered-study",
+    "node_id": "CR_kwDOTrgxoM8AAAAdCVRd5w",
+    "run_attempt": 2,
+    "run_id": 41259588460,
+    "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41259588460",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions",
+    "runner_id": 1000309866,
+    "runner_name": "GitHub Actions 1000309866",
+    "started_at": "2026-11-01T01:08:44Z",
+    "status": "completed",
+    "steps": [
+      {
+        "completed_at": "2026-11-01T01:08:45Z",
+        "conclusion": "success",
+        "name": "Set up job",
+        "number": 1,
+        "started_at": "2026-11-01T01:08:44Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:08:48Z",
+        "conclusion": "success",
+        "name": "Initialize containers",
+        "number": 2,
+        "started_at": "2026-11-01T01:08:45Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:08:57Z",
+        "conclusion": "success",
+        "name": "Install public container prerequisites",
+        "number": 3,
+        "started_at": "2026-11-01T01:08:48Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:09:03Z",
+        "conclusion": "success",
+        "name": "Checkout the exact registered source",
+        "number": 4,
+        "started_at": "2026-11-01T01:08:57Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:09:04Z",
+        "conclusion": "success",
+        "name": "Preserve a clean canonical source checkout",
+        "number": 5,
+        "started_at": "2026-11-01T01:09:03Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:09:04Z",
+        "conclusion": "success",
+        "name": "Select Node24 for the integrity-pinned transport SDK",
+        "number": 6,
+        "started_at": "2026-11-01T01:09:04Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:09:22Z",
+        "conclusion": "success",
+        "name": "Restore the exact public scientific runtime",
+        "number": 7,
+        "started_at": "2026-11-01T01:09:04Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:09:44Z",
+        "conclusion": "success",
+        "name": "Require actual original runtime and finite cgroup before input preparation",
+        "number": 8,
+        "started_at": "2026-11-01T01:09:22Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:09:46Z",
+        "conclusion": "success",
+        "name": "Install the external pinned SDK without modifying source",
+        "number": 9,
+        "started_at": "2026-11-01T01:09:44Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:09:51Z",
+        "conclusion": "success",
+        "name": "Retrieve original inputs and seal current provenance for the original loader",
+        "number": 10,
+        "started_at": "2026-11-01T01:09:46Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:09:52Z",
+        "conclusion": "success",
+        "name": "Check source closure and direct-script boundaries before initialization",
+        "number": 11,
+        "started_at": "2026-11-01T01:09:51Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:10:35Z",
+        "conclusion": "failure",
+        "name": "Run fresh original science with measured initialization and semantic admission",
+        "number": 12,
+        "started_at": "2026-11-01T01:09:52Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:10:36Z",
+        "conclusion": "success",
+        "name": "Preserve complete or partial scientific RAW and CAS",
+        "number": 13,
+        "started_at": "2026-11-01T01:10:35Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:10:37Z",
+        "conclusion": "success",
+        "name": "Preserve operational closure, review, preparation and failure evidence",
+        "number": 14,
+        "started_at": "2026-11-01T01:10:36Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:10:37Z",
+        "conclusion": "skipped",
+        "name": "Post Select Node24 for the integrity-pinned transport SDK",
+        "number": 26,
+        "started_at": "2026-11-01T01:10:37Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:10:37Z",
+        "conclusion": "success",
+        "name": "Post Checkout the exact registered source",
+        "number": 27,
+        "started_at": "2026-11-01T01:10:37Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:10:44Z",
+        "conclusion": "success",
+        "name": "Stop containers",
+        "number": 28,
+        "started_at": "2026-11-01T01:10:37Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-01T01:10:44Z",
+        "conclusion": "success",
+        "name": "Complete job",
+        "number": 29,
+        "started_at": "2026-11-01T01:10:44Z",
+        "status": "completed"
+      }
+    ],
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/124710575591",
+    "workflow_name": "Fresh 14-job study with original science and explicit delivery"
+  },
+  "added_to_current_episode_cpu": false,
+  "artifact": {
+    "bytes": 121514,
+    "id": 13064582882,
+    "name": "execution08-operational-evidence-cd57bbc1acd4a7b63cd6c3dcfa83ad1874b7eefe-2",
+    "sha256": "4b832870a4084c719ae53b6d8ede696b9e19b64bd6ff2a7b6eddf7f1c5c9c856"
+  },
+  "cost_scope": "Closed failed pipeline child includes initialization, semantic preflight and failed supervisor. Nested measured scopes are not added again; earlier environment/input setup and later provider upload CPU remain unknown.",
+  "failure": {
+    "all_original_and_partial_evidence_preserved": true,
+    "automatic_scientific_retry": false,
+    "complete": false,
+    "completed_jobs": [],
+    "durable_stages": [],
+    "error_type": "ValueError",
+    "execution_episode": "execution08_capacity_20261101",
+    "message": "Registered resource limits changed",
+    "outer_wait4_required_for_full_cost": true,
+    "pipeline_config": {
+      "bytes": 40210,
+      "path": "/work/execution08/ops/registrations/initial/PIPELINE_CONFIG.json",
+      "sha256": "a506f09baa0039a5a6c5a2d3c786bf76ea31f5f9b7ccf24ce134016540d8f842"
+    },
+    "schema": "hepta.execution08.failure.1",
+    "unknown_upload_outcome_must_not_be_retried_automatically": true
+  },
+  "original_attempt": 2,
+  "original_head_sha": "cd57bbc1acd4a7b63cd6c3dcfa83ad1874b7eefe",
+  "original_run_id": 41259588460,
+  "outer_wait4": {
+    "cpu_seconds": 3.526028,
+    "exit_code": 2,
+    "identity": {
+      "parent_pid": 2962,
+      "pgid": 2951,
+      "pid": 3009,
+      "sid": 2951,
+      "start_ticks": 9088
+    },
+    "peak_rss_bytes": 250347520,
+    "pid": 3009,
+    "scientific_completion_claim": false,
+    "scope": "Direct worker and descendants it waited for; nested inside outer controller wait4.",
+    "system_cpu_seconds": 1.158402,
+    "user_cpu_seconds": 2.367626,
+    "wait_status": 512,
+    "waited_unix": 1793495435.981022,
+    "wall_seconds": 42.854144665999996
+  },
+  "owned_literal_files": [
+    {
+      "bytes": 37928,
+      "path": "operational/parameter_field_recovery08/records/execution08_preworker_failure/PLAN.json",
+      "sha256": "bb50bd02513a7479617146bbc4986d6e7d849a1cf0882f48ff7deefbd9da4e05"
+    },
+    {
+      "bytes": 685,
+      "path": "operational/parameter_field_recovery08/records/execution08_preworker_failure/children/001.INTENT.json",
+      "sha256": "b5391500cccede40270cdb9205bd0cbb293472879ba7c1e28317b66f388339a2"
+    },
+    {
+      "bytes": 522,
+      "path": "operational/parameter_field_recovery08/records/execution08_preworker_failure/children/001.START.json",
+      "sha256": "4021f88a66dd21f7d148b89a5433f75c1cca9e505173f0d13813b75761de0e41"
+    },
+    {
+      "bytes": 514,
+      "path": "operational/parameter_field_recovery08/records/execution08_preworker_failure/children/001.WAIT4.json",
+      "sha256": "4fba2c963a78bd8ce34fc710f26c7078275ca7539fee537e5b4301c54d02fdec"
+    },
+    {
+      "bytes": 3257,
+      "path": "operational/parameter_field_recovery08/records/execution08_preworker_failure/children/CLOSURE.json",
+      "sha256": "5b0ec27c5a2accc1cbdfe1c7f2ca0f3a44e4eb7e1f74bbb4873b907d493f6d05"
+    },
+    {
+      "bytes": 1147,
+      "path": "operational/parameter_field_recovery08/records/execution08_preworker_failure/children/INTENT.json",
+      "sha256": "42d5053b305a9865899d33c83d6d168e4929732dd6bcf166fa685ff5c9b2b091"
+    }
+  ],
+  "scheduled_training_gradient_microsteps": 0,
+  "schema": "hepta.execution08.preworker-failure.1",
+  "scientific_completion_claim": false,
+  "scientific_values_decoded": false,
+  "scientific_workers_started": 0,
+  "whole_archive_downloaded_and_sha256_verified": true,
+  "whole_history_cpu_or_wall_total_known": false
+}

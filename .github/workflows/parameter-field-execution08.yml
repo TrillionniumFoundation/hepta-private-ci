@@ -83,7 +83,7 @@ jobs:
       - name: Check source closure and direct-script boundaries before initialization
         working-directory: /work/source
         run: |
-          /opt/runtime/venv/bin/python -B -m unittest operational.parameter_field_recovery08.test_artifact_transport operational.parameter_field_recovery08.test_supervisor operational.parameter_field_recovery08.test_semantic_preflight operational.parameter_field_recovery08.test_registration operational.parameter_field_recovery08.test_postseal operational.parameter_field_recovery08.test_bootstrap operational.parameter_field_recovery08.test_capacity_amendment -v
+          /opt/runtime/venv/bin/python -B -m unittest operational.parameter_field_recovery08.test_artifact_transport operational.parameter_field_recovery08.test_supervisor operational.parameter_field_recovery08.test_semantic_preflight operational.parameter_field_recovery08.test_registration operational.parameter_field_recovery08.test_postseal operational.parameter_field_recovery08.test_bootstrap operational.parameter_field_recovery08.test_capacity_amendment operational.parameter_field_recovery08.test_capacity_backpressure -v
           date --utc --iso-8601=ns > /work/preparation/READY_AT.txt
       - name: Run fresh original science with measured initialization and semantic admission
         uses: ./.github/actions/parameter-field-science08

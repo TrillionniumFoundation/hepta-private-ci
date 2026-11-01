@@ -1,0 +1,101 @@
+{
+  "accounting_complete_for_attempted_direct_workers": true,
+  "all_returned_direct_children_reaped": true,
+  "attempt_count": 1,
+  "attempts": [
+    {
+      "argv": [
+        "/opt/runtime/venv/bin/python",
+        "-B",
+        "/work/source/operational/parameter_field_recovery08/bootstrap.py",
+        "--source-commit",
+        "cd57bbc1acd4a7b63cd6c3dcfa83ad1874b7eefe",
+        "--child"
+      ],
+      "construction_entered": true,
+      "construction_wait4_unavailable": false,
+      "cwd": "/work/execution08/pipeline_measurement/empty_cwd",
+      "executable": "/opt/runtime/venv/bin/python",
+      "number": 1,
+      "pid": 3009,
+      "returned_child": true,
+      "started_monotonic": 90.886929361
+    }
+  ],
+  "binding": {
+    "component_schema_is_implementation_version_not_execution_episode": true,
+    "execution_episode": "execution08_capacity_20261101",
+    "lifecycle_plan": {
+      "bytes": 37928,
+      "path": "/work/execution08/pipeline_measurement/PLAN.json",
+      "sha256": "bb50bd02513a7479617146bbc4986d6e7d849a1cf0882f48ff7deefbd9da4e05"
+    },
+    "program": {
+      "bytes": 10913,
+      "path": "/work/source/operational/parameter_field_recovery08/bootstrap.py",
+      "sha256": "9b11e495d9b00043b848acaaee1742285de590a464688239299d6830d8437b80"
+    },
+    "source_commit": "cd57bbc1acd4a7b63cd6c3dcfa83ad1874b7eefe"
+  },
+  "children": [
+    {
+      "attempt": 1,
+      "identity": {
+        "parent_pid": 2962,
+        "pgid": 2951,
+        "pid": 3009,
+        "sid": 2951,
+        "start_ticks": 9088
+      },
+      "pid": 3009,
+      "signals": [],
+      "wait4": {
+        "cpu_seconds": 3.526028,
+        "exit_code": 2,
+        "identity": {
+          "parent_pid": 2962,
+          "pgid": 2951,
+          "pid": 3009,
+          "sid": 2951,
+          "start_ticks": 9088
+        },
+        "peak_rss_bytes": 250347520,
+        "pid": 3009,
+        "scientific_completion_claim": false,
+        "scope": "Direct worker and descendants it waited for; nested inside outer controller wait4.",
+        "system_cpu_seconds": 1.158402,
+        "user_cpu_seconds": 2.367626,
+        "wait_status": 512,
+        "waited_unix": 1793495435.981022,
+        "wall_seconds": 42.854144665999996
+      },
+      "wait4_receipt": {
+        "bytes": 514,
+        "path": "/work/execution08/pipeline_measurement/children/001.WAIT4.json",
+        "sha256": "4fba2c963a78bd8ce34fc710f26c7078275ca7539fee537e5b4301c54d02fdec"
+      },
+      "wait4_unavailable": null
+    }
+  ],
+  "cleanup_errors": [],
+  "construction_wait4_unavailable": false,
+  "controller_identity": {
+    "parent_pid": 2951,
+    "pgid": 2951,
+    "pid": 2962,
+    "sid": 2951,
+    "start_ticks": 9015
+  },
+  "cost_scope": "Each direct-worker wait4 once; already nested in outer controller wait4. Own CPU excludes final summary serialization/write.",
+  "direct_workers_cpu_seconds": 3.526028,
+  "original_exception": null,
+  "own_cpu_seconds_until_summary": 0.05593933099999998,
+  "pending_signal": null,
+  "receipt_errors": [],
+  "reconstruction": "CONTEXT_RECONSTRUCTION",
+  "return_value": 2,
+  "returned_children": 1,
+  "schema": "hepta.execution06.owned-children.closure.1",
+  "scientific_completion_claim": false,
+  "wall_seconds_until_summary": 42.855545081
+}

@@ -213,6 +213,7 @@ def source_check(config):
                 "analysis_worker",
                 "artifact_transport",
                 "capacity_amendment",
+                "capacity_backpressure",
             )
         }
         <= set(frozen["source_files"]),
@@ -302,9 +303,9 @@ def adapter(config, guard, label):
         health_check=guard.health,
         max_wait_seconds=300,
     )
-    from . import capacity_amendment
+    from . import capacity_amendment, capacity_backpressure
 
-    with capacity_amendment.installed(config), module.installed(policy):
+    with capacity_amendment.installed(config), capacity_backpressure.installed(config, policy):
         yield
 
 

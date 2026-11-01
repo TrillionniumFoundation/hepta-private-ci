@@ -62,7 +62,19 @@ def prior_costs(spec):
            and prior["outer_wait4"]["exit_code"] == 2
            and prior["outer_wait4"]["cpu_seconds"] > 0,
            "Preserved execution07 failure cost differs")
+    preparation_failures = []
+    for recorded in value.get("execution08_preworker_failures", []):
+        failed = c.bound({**recorded, "path": str(c.SOURCE / recorded["path"])})
+        c.need(failed["scientific_values_decoded"] is False
+               and failed["scientific_workers_started"] == 0
+               and failed["scheduled_training_gradient_microsteps"] == 0
+               and failed["outer_wait4"]["exit_code"] == 2
+               and failed["outer_wait4"]["cpu_seconds"] > 0,
+               "Preserved preworker failure changed")
+        preparation_failures.append({"evidence": recorded, "outer_wait4": failed["outer_wait4"],
+                                     "cost_scope": failed["cost_scope"], "added_to_current_episode_cpu": False})
     return {
+        "execution08_preworker_failures": preparation_failures,
         "engineering_receipts": [],
         "failed_attempts": [],
         "previous_episode_cost_rows": deepcopy(value["rows"]),
