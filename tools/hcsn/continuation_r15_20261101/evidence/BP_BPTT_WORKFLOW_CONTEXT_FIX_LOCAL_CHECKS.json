@@ -1,0 +1,29 @@
+{
+  "schema": "hcsn.workflow-context-correction-local-checks.v1",
+  "actionlint": [
+    {
+      "role": "before",
+      "workflow_sha256": "37acf5263850f81eb2a14f3f6d0a847fa2261cfe79ec51f5b1161e0320fdd9e4",
+      "exit_code": 1,
+      "stdout_stderr": "hcsn-r16-bp-ci/candidate/.github/workflows/hcsn-financial-autograd-r16.yml:34:24: context \"runner\" is not allowed here. available contexts are \"github\", \"inputs\", \"matrix\", \"needs\", \"secrets\", \"strategy\", \"vars\". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]\n   |\n34 |       HCSN_PYTHON: ${{ runner.temp }}/hcsn-financial-autograd-r16-python/bin/python\n   |                        ^~~~~~~~~~~\nhcsn-r16-bp-ci/candidate/.github/workflows/hcsn-financial-autograd-r16.yml:35:25: context \"runner\" is not allowed here. available contexts are \"github\", \"inputs\", \"matrix\", \"needs\", \"secrets\", \"strategy\", \"vars\". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]\n   |\n35 |       HCSN_RESULTS: ${{ runner.temp }}/hcsn-financial-autograd-r16-results\n   |                         ^~~~~~~~~~~\n",
+      "log_sha256": "37362bf114f6498df7efb4164615b33a2620fdaec9684c95db9de0868d7dc222"
+    },
+    {
+      "role": "after",
+      "workflow_sha256": "f412f538369121a101d8f183bb1136795c9de365a5c6f8a221f77f69bf53af97",
+      "exit_code": 0,
+      "stdout_stderr": "",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "environment_propagation": {
+    "actual_initializer_exit": 0,
+    "subsequent_shell_exit": 0,
+    "runner_temp_contains_spaces": true,
+    "assignments": {
+      "HCSN_PYTHON": "/tmp/hcsn-context-real-path-noj6_ze7/runner temporary path with spaces/hcsn-financial-autograd-r16-python/bin/python",
+      "HCSN_RESULTS": "/tmp/hcsn-context-real-path-noj6_ze7/runner temporary path with spaces/hcsn-financial-autograd-r16-results"
+    },
+    "scope": "Actual initializer Bash plus a separate shell supplied the GITHUB_ENV file assignments; this is not a GitHub runner simulation or remote execution."
+  }
+}
