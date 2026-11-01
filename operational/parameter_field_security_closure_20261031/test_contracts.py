@@ -111,6 +111,15 @@ class SourceContracts(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     semantic.check_tests(path, ["actual_regression"])
 
+    def test_cross_package_features_are_not_forwarded_to_unrelated_tests(self):
+        self.assertEqual(semantic.test_feature_args("compat", "anymap2"), [])
+        self.assertEqual(semantic.test_feature_args("compat", "i18n-config"), [])
+        self.assertEqual(semantic.test_feature_args("compat", "secret-service"),
+                         ["--features", "secret-service/rt-async-io-crypto-rust"])
+        self.assertEqual(semantic.test_feature_args("zip", "zip"), [])
+        self.assertEqual(semantic.test_feature_args("zip", "oxiarc-bzip2"),
+                         ["--features", "oxiarc-bzip2/bzip2-oracle"])
+
     def test_matrix_negative_control_accepts_only_original_panic(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "junit.xml"

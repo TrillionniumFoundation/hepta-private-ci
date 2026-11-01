@@ -28,6 +28,12 @@ GROUPS = {
 }
 
 
+def test_feature_args(group, package):
+    selected = [feature for feature in GROUPS[group]["features"]
+                if feature.split("/", 1)[0] == package]
+    return ["--features", ",".join(selected)] if selected else []
+
+
 def restore_candidate(root, resolved, plan):
     """Read exactly the same-run resolver artifact; never trust archive paths."""
     receipt = json.loads((resolved / "RESOLUTION.json").read_text())
@@ -194,15 +200,14 @@ def run(root, resolved, output, group):
             raise ValueError("actual semantic command failed: " + label)
         return result
 
-    features = GROUPS[group]["features"]
-    feature_args = ["--features", ",".join(features)] if features else []
     junit = work / "target/nextest/ci/junit.xml"
 
     def tests(label, arguments, required=(), minimum=1, negative=False):
         if junit.exists():
             raise ValueError("unexpected stale JUnit receipt")
+        package = arguments[arguments.index("-p") + 1]
         result = invoke(label, ["just", "test", "--profile", "ci", "--locked", *arguments,
-                                *feature_args], check=not negative)
+                                *test_feature_args(group, package)], check=not negative)
         retained = evidence / (label + ".junit.xml")
         if not junit.is_file():
             raise ValueError("nextest did not produce actual JUnit evidence")
@@ -229,7 +234,17 @@ def run(root, resolved, output, group):
         for tool in ("cargo", "rustc"):
             if not (evidence / (tool + "_version.stdout.log")).read_text().startswith(tool + " 1.95.0 "):
                 raise ValueError("semantic Rust toolchain differs from product resolver")
-        invoke("isolated_metadata_resolve", ["cargo", "metadata", "--format-version", "1", *feature_args], 1200)
+        invoke("rustc_verbose", ["rustc", "-vV"], 60)
+        hosts = [line.removeprefix("host: ") for line in (evidence / "rustc_verbose.stdout.log").read_text().splitlines()
+                 if line.startswith("host: ")]
+        if len(hosts) != 1 or not hosts[0].endswith("-unknown-linux-gnu"):
+            raise ValueError("actual Rust host identity was not established")
+        # nextest 0.9.103 resolves all workspace features with this actual host
+        # filter before compiling the requested test package. Prepare that exact
+        # dev graph, retaining every resolver step; product Cargo.lock is separate.
+        metadata_args = ["cargo", "metadata", "--all-features", "--filter-platform", hosts[0], "--format-version", "1"]
+        receipt["nextest_metadata_contract"] = metadata_args
+        invoke("isolated_metadata_resolve", metadata_args, 1200)
         isolated = tomllib.loads((work / "Cargo.lock").read_text())
         for name, version in plan["lock_pins"].items():
             selected = [item for item in isolated["package"] if item["name"] == name
@@ -239,8 +254,21 @@ def run(root, resolved, output, group):
             if selected and selected[0]["version"] != version:
                 invoke("isolated_pin_" + name, ["cargo", "update", "-p", name + "@" + selected[0]["version"],
                                                 "--precise", version], 1200)
-        invoke("isolated_metadata_locked", ["cargo", "metadata", "--locked", "--format-version", "1", *feature_args], 1200)
+        for attempt in range(1, 4):
+            before = (work / "Cargo.lock").read_bytes()
+            invoke("isolated_metadata_stabilize_" + str(attempt), metadata_args, 1200)
+            if (work / "Cargo.lock").read_bytes() == before:
+                break
+        else:
+            raise ValueError("actual isolated dev resolver failed to reach a stable lock")
+        invoke("isolated_metadata_locked", [*metadata_args, "--locked"], 1200)
         lock_raw = (work / "Cargo.lock").read_bytes()
+        locked_packages = tomllib.loads(lock_raw.decode())["package"]
+        for name, version in plan["lock_pins"].items():
+            selected = [item for item in locked_packages if item["name"] == name
+                        and (name != "toml" or item["version"].startswith("1."))]
+            if selected and (len(selected) != 1 or selected[0]["version"] != version):
+                raise ValueError("isolated real resolver changed a declared security pin: " + name)
         (evidence / "Cargo.lock").write_bytes(lock_raw)
         receipt["isolated_cargo_lock"] = prepare.identity(lock_raw)
         old = resolve.package_map(tomllib.loads((root / "codex-rs/Cargo.lock").read_text()))
