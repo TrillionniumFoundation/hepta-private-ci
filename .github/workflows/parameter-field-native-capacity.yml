@@ -1,0 +1,78 @@
+name: Parameter field outcome-free native capacity
+run-name: Measure actual original runtime and finite capacity before native study
+
+on:
+  push:
+    branches:
+      - research/parameter-field-native-capacity-20261031
+    paths:
+      - operational/parameter_field_native_capacity_20261031/**
+      - .github/workflows/parameter-field-native-capacity.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: parameter-field-native-capacity
+  cancel-in-progress: false
+
+jobs:
+  capacity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container:
+      image: ubuntu:24.04@sha256:78d4744ead1f5b19b04d0df558ab182a5300903900755e515b2ca4d10eb2044d
+      options: --memory=8g --memory-swap=8g
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Install public capacity prerequisites
+        run: |
+          mkdir -p /work/capacity_setup
+          date --utc --iso-8601=ns > /work/capacity_setup/STARTED_AT.txt
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates curl git python3
+      - name: Checkout the exact capacity source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Preserve the clean canonical source
+        run: |
+          mkdir /work/source
+          cp -a "$GITHUB_WORKSPACE/." /work/source/
+          git config --global --add safe.directory /work/source
+          test "$(git -C /work/source rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Restore the exact public original runtime
+        working-directory: /work/source
+        run: |
+          mkdir /opt/runtime
+          curl --fail --location --output /opt/runtime/python.tar.gz 'https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14%2B20260825-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz'
+          echo '7ce4a71285d913955a76053cc7605ea96da8ecada54dba9cf395245961816421  /opt/runtime/python.tar.gz' | sha256sum --check --strict
+          tar -xzf /opt/runtime/python.tar.gz -C /opt/runtime
+          echo 'fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7  /opt/runtime/python/bin/python3.12' | sha256sum --check --strict
+          echo '7e177a680eabb11fcb7d3867f7a1b9c4b93a9bd5b18129ce1af51ec07977b024  /opt/runtime/python/lib/libpython3.12.so.1.0' | sha256sum --check --strict
+          /opt/runtime/python/bin/python3.12 -m venv /opt/runtime/venv
+          /opt/runtime/venv/bin/python -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: -r tools/parameter_field_executor/packages.txt
+          /opt/runtime/venv/bin/python -m pip install --disable-pip-version-check --no-cache-dir --no-deps --require-hashes -r tools/parameter_field_executor/torch-wheel.txt
+          date --utc --iso-8601=ns > /work/capacity_setup/READY_AT.txt
+      - name: Own the actual outcome-free original capability probe
+        working-directory: /work/source
+        run: |
+          /opt/runtime/venv/bin/python -B operational/parameter_field_native_capacity_20261031/measure.py --source-commit "$GITHUB_SHA"
+      - name: Preserve every capacity observation and actual measurement
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: native-capacity-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            /work/native_capacity
+            /work/capacity_setup
+          if-no-files-found: error
+          compression-level: 6
+          retention-days: 90
