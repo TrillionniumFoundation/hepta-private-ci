@@ -1,0 +1,129 @@
+{
+  "schema": "hcsn-v8-balanced-historical-binding.v1",
+  "sources": {
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/frontend/__init__.py": "b1ba835e26e080f34adfabab53734560ce38f083e9e361430c0623487f3db700",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/frontend/causality_check.py": "9a3d157238bd4c18b41222b389d0308ce6385464b90de5f26da813f5f35afa5d",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py": "1b5efffde74c64f2e1f0f7ca1ed4e7b4d10f0de80cc23a9294c483d7cc7177c5",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/frontend/recover_local.py": "16bcec9b33606213c646ec102573382ab60bcd9fb2d2aebce0f0c110bcbd3c21",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/frontend/replay.py": "4a813a54eaa0d115c62e3f9538e9db549edb5eb3c1f4a882cc80dc5d0c862518",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/frontend/test_legacy_v3.py": "6aa76ad6b1e16f564435b3b264082662ff4f062413aa6982208c018e2e850361",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/scheduler/balanced_binding_replay.py": "e10d2b549b46f58ab54e59ed7e12ac84089cdec016a19e8782b2930f769dc2cf",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/scheduler/execution.py": "f38d0ea01ba71d7c128da9ddd86597e41b83b79cbba428eaade0f33e4177243b",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/scheduler/historical_probe.py": "75dc935d4ff5ba68d5d3736880ab68b34dde5653df4ff2df337f1a54ace1080c",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/scheduler/historical_service.py": "82af46b00edabd63a19cbe6e169b4a321502b600e5212753d67060ebfacb0eb9",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/scheduler/live_probe.py": "6a101119d24547ee037fdcada01ab3719facee454aa2aede4c2b17db59ca44a1",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/scheduler/planning.py": "3b616986599fb242d715c5a8b92fb73a68be01858723c6c6cc3111cda773ed61",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/scheduler/service.py": "82610a5ea4145d80726a5b0e15b8521016121bdb65f0bfaa78af188937ffeeb2",
+    "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/scheduler/test_scheduler.py": "2b272a9daed62ba7400bdfa54de737f5e85f23d059dcbacf15fd75dde1f628a1"
+  },
+  "scope": "Additive historical development replay; no new confirmation",
+  "reason": "Earlier actor/label subset did not retain balanced video marginals; preserve that result and use the complete historical set here",
+  "selection": "All original historical binding test objects in original order",
+  "objects": 24,
+  "ids": [
+    "audio:1040_DFA_ANG_XX|video:1040_DFA_ANG_XX",
+    "audio:1040_DFA_DIS_XX|video:1040_DFA_DIS_XX",
+    "audio:1040_DFA_FEA_XX|video:1040_DFA_FEA_XX",
+    "audio:1040_DFA_HAP_XX|video:1040_DFA_HAP_XX",
+    "audio:1040_DFA_NEU_XX|video:1040_DFA_NEU_XX",
+    "audio:1040_DFA_SAD_XX|video:1040_DFA_SAD_XX",
+    "audio:1023_DFA_ANG_XX|video:1023_DFA_ANG_XX",
+    "audio:1023_DFA_DIS_XX|video:1023_DFA_DIS_XX",
+    "audio:1023_DFA_FEA_XX|video:1023_DFA_FEA_XX",
+    "audio:1023_DFA_HAP_XX|video:1023_DFA_HAP_XX",
+    "audio:1023_DFA_NEU_XX|video:1023_DFA_NEU_XX",
+    "audio:1023_DFA_SAD_XX|video:1023_DFA_SAD_XX",
+    "audio:1040_DFA_ANG_XX|video:1040_DFA_FEA_XX",
+    "audio:1040_DFA_DIS_XX|video:1040_DFA_HAP_XX",
+    "audio:1040_DFA_FEA_XX|video:1040_DFA_SAD_XX",
+    "audio:1040_DFA_HAP_XX|video:1040_DFA_NEU_XX",
+    "audio:1040_DFA_NEU_XX|video:1040_DFA_ANG_XX",
+    "audio:1040_DFA_SAD_XX|video:1040_DFA_DIS_XX",
+    "audio:1023_DFA_ANG_XX|video:1023_DFA_NEU_XX",
+    "audio:1023_DFA_DIS_XX|video:1023_DFA_ANG_XX",
+    "audio:1023_DFA_FEA_XX|video:1023_DFA_SAD_XX",
+    "audio:1023_DFA_HAP_XX|video:1023_DFA_DIS_XX",
+    "audio:1023_DFA_NEU_XX|video:1023_DFA_HAP_XX",
+    "audio:1023_DFA_SAD_XX|video:1023_DFA_FEA_XX"
+  ],
+  "actors": [
+    "1023",
+    "1040"
+  ],
+  "prior_adapter_sha256": "eedb7999140887ad3ab3bcfdd5bde0b75575e0625787887d6b30f3788faa09ee",
+  "input_array_sha256": "3ad2aca8b2ae5aeabefa6279083e96191ae31d9de081cc84e81136a306351d32",
+  "calibration_role": "historical validation already used for original head selection; development only",
+  "models_retrained": false,
+  "new_fit_count": 0,
+  "methods": [
+    "audio_only_common_head",
+    "common_full",
+    "cache_value"
+  ],
+  "marginal_source_counts": {
+    "0": {
+      "audio_source_ids": {
+        "1040_DFA_ANG_XX": 1,
+        "1040_DFA_DIS_XX": 1,
+        "1040_DFA_FEA_XX": 1,
+        "1040_DFA_HAP_XX": 1,
+        "1040_DFA_NEU_XX": 1,
+        "1040_DFA_SAD_XX": 1,
+        "1023_DFA_ANG_XX": 1,
+        "1023_DFA_DIS_XX": 1,
+        "1023_DFA_FEA_XX": 1,
+        "1023_DFA_HAP_XX": 1,
+        "1023_DFA_NEU_XX": 1,
+        "1023_DFA_SAD_XX": 1
+      },
+      "video_source_ids": {
+        "1040_DFA_FEA_XX": 1,
+        "1040_DFA_HAP_XX": 1,
+        "1040_DFA_SAD_XX": 1,
+        "1040_DFA_NEU_XX": 1,
+        "1040_DFA_ANG_XX": 1,
+        "1040_DFA_DIS_XX": 1,
+        "1023_DFA_NEU_XX": 1,
+        "1023_DFA_ANG_XX": 1,
+        "1023_DFA_SAD_XX": 1,
+        "1023_DFA_DIS_XX": 1,
+        "1023_DFA_HAP_XX": 1,
+        "1023_DFA_FEA_XX": 1
+      }
+    },
+    "1": {
+      "audio_source_ids": {
+        "1040_DFA_ANG_XX": 1,
+        "1040_DFA_DIS_XX": 1,
+        "1040_DFA_FEA_XX": 1,
+        "1040_DFA_HAP_XX": 1,
+        "1040_DFA_NEU_XX": 1,
+        "1040_DFA_SAD_XX": 1,
+        "1023_DFA_ANG_XX": 1,
+        "1023_DFA_DIS_XX": 1,
+        "1023_DFA_FEA_XX": 1,
+        "1023_DFA_HAP_XX": 1,
+        "1023_DFA_NEU_XX": 1,
+        "1023_DFA_SAD_XX": 1
+      },
+      "video_source_ids": {
+        "1040_DFA_ANG_XX": 1,
+        "1040_DFA_DIS_XX": 1,
+        "1040_DFA_FEA_XX": 1,
+        "1040_DFA_HAP_XX": 1,
+        "1040_DFA_NEU_XX": 1,
+        "1040_DFA_SAD_XX": 1,
+        "1023_DFA_ANG_XX": 1,
+        "1023_DFA_DIS_XX": 1,
+        "1023_DFA_FEA_XX": 1,
+        "1023_DFA_HAP_XX": 1,
+        "1023_DFA_NEU_XX": 1,
+        "1023_DFA_SAD_XX": 1
+      }
+    }
+  },
+  "same_source_marginals_across_labels": true,
+  "logical_service_seconds": 0.001,
+  "fresh_confirmation": false,
+  "strong_audio_reference_available": false
+}
