@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-r16-codespell-publication-review-v1",
+  "diagnosed_head": "5b19623dbba5153513282e526464949cb26c304e",
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41333126857/job/124927232775",
+  "log_spelling_findings": 2761,
+  "r16_findings": 112,
+  "r16_text_source_or_report_findings": 0,
+  "r16_binary_error_files": [
+    "channel/raw_evidence/EVIDENCE.part-013.bin",
+    "channel/raw_evidence/EVIDENCE.part-014.bin",
+    "channel/raw_evidence/EVIDENCE.part-018.bin"
+  ],
+  "non_r16_findings": 2649,
+  "scope_fix": "Add five R16-specific archive fragment patterns to existing codespell binary skips. No scientific text, source, JSON index, or protocol is excluded. Frozen scientific bytes remain unchanged.",
+  "patterns": [
+    "./tools/hcsn/reachable_state_r16_20261101/content/raw_evidence/EVIDENCE.part-*.bin",
+    "./tools/hcsn/reachable_state_r16_20261101/control/raw_evidence/EVIDENCE.part-*.bin",
+    "./tools/hcsn/reachable_state_r16_20261101/channel/raw_evidence/EVIDENCE.part-*.bin",
+    "./tools/hcsn/reachable_state_r16_20261101/fast_raw_evidence/EVIDENCE.part-*.bin",
+    "./tools/hcsn/reachable_state_r16_20261101/numerics/results/*/EVIDENCE.tar.gz.part*"
+  ],
+  "matched_published_binary_files": 55,
+  "matched_text_files": 0,
+  "all_matched_hashes_unchanged": true,
+  "global_check_passed": false,
+  "global_status": "Original run failed; inherited findings are separately investigated and a new CI run is required."
+}
