@@ -1,0 +1,233 @@
+{
+  "schema": "hcsn-v7-content-preserving-control-protocol-draft.v1",
+  "status": "blocked_on_v6_assets",
+  "frozen": false,
+  "confirmation_started": false,
+  "scientific_results_generated": false,
+  "support_fixture_scope": {
+    "status": "Synthetic contract support only; not a fitted scientific candidate.",
+    "reported_actions_implemented": ["STOP", "next_one_second_READ"],
+    "not_yet_implemented": ["WAIT scheduling", "multistep planning", "mandatory first-audio adapter", "fitted v6 strong-head integration", "v7 independent confirmation"],
+    "confirmation_execution_enabled": false,
+    "scope_note": "The remaining interfaces and controls below are target protocol requirements, not claims that the current support fixture implements them."
+  },
+  "source_of_known_v6_conditions": "Inherited visible v6 report; exact files must be recovered and independently checked before adopting any implementation or running confirmation.",
+  "lineage": {
+    "reported_v6_delivery_commit": "febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+    "reported_v6_scientific_freeze_commit": "d3394e811fda72356688f075cc0c040d0a8988dd",
+    "reported_v5_base_commit": "e38d09836c87d970b8c869961d08c1d42499e220",
+    "reported_v6_bundle_sha256": "4d9bc1ee333a582e8cf0718f029337ed49f08f06525a7eccd169df00d99f687f",
+    "verified_v6_commit": null,
+    "restored_v6_root": null,
+    "restored_v6_bundle_sha256": null,
+    "parent_reported_earlier_remote_lineage_commit": "1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d",
+    "earlier_lineage_may_substitute_for_v6": false
+  },
+  "required_before_freeze": {
+    "restored_source_manifest_path": null,
+    "restored_source_manifest_sha256": null,
+    "v6_all_source_and_input_hashes_verified": null,
+    "v5_v6_source_recording_exclusion_manifest_path": null,
+    "v5_v6_source_recording_exclusion_manifest_sha256": null,
+    "v7_development_manifest_path": null,
+    "v7_development_manifest_sha256": null,
+    "v7_confirmation_manifest_path": null,
+    "v7_confirmation_manifest_sha256": null,
+    "v7_confirmation_recording_ids": null,
+    "v7_confirmation_actor_ids": null,
+    "v7_live_balanced_subset_ids": null,
+    "common_encoder_weight_sha256": null,
+    "strong_audio_weight_sha256": null,
+    "common_projection_alignment_weight_sha256": null,
+    "common_content_head_weight_sha256": null,
+    "common_current_correctness_calibrator_sha256": null,
+    "core_checkpoint_manifest_sha256": null,
+    "semantic_forecast_calibrator_manifest_sha256": null,
+    "ordinary_selection_manifest_sha256": null,
+    "cache_tensor_layout_and_bytes": null,
+    "training_budget_manifest_sha256": null,
+    "implementation_parity_manifest_sha256": null,
+    "repaired_memory_sampler_validation_manifest_sha256": null,
+    "independent_confirmation_absence_witness_sha256": null,
+    "final_protocol_commit": null,
+    "final_protocol_sha256": null
+  },
+  "readiness_rule": "No source, weights, confirmation acquisition or claim may be treated as admitted while any required_before_freeze value is null, any recovered identity differs, or frozen is false. These null values are deliberate blockers, not defaults to fill from unrelated HCSN research lines.",
+  "primary_scope": {
+    "phase": "Common strong content interface; cores first learn forecasts used for observation and waiting decisions.",
+    "tasks": ["five_class_emotion", "balanced_real_audio_video_statement_binding"],
+    "emotion_labels": ["HAP", "SAD", "ANG", "FEA", "DIS"],
+    "new_task_or_label_mapping_requires_new_version": true,
+    "core_content_learning_claim_allowed": false,
+    "physical_idle_first_passage_claim_allowed": false,
+    "production_replacement_claim_allowed": false,
+    "scope_note": "Using a common strong head can establish preservation through the interface and quality of the chosen observations. It cannot establish that the 32-scalar recurrent core learned or retained all semantic content by itself."
+  },
+  "shared_information_contract": {
+    "accepted_event": ["event_id", "modality", "source_recording_id", "source_window_end", "source_window_increment", "actual_request_time", "actual_completion_time", "actual_acceptance_time", "observed_encoder_features"],
+    "cache": {
+      "allocation": "Identical cache fields, tensor shapes, precision, eviction and alignment rules for every core and external baseline.",
+      "contents": "Only accepted causal encoder features and public metadata required by the strong common content head.",
+      "future_features_forbidden": true,
+      "labels_and_source_identity_shortcuts_forbidden": true,
+      "duplicate_event_id_behavior": "The cache rejects a duplicate event_id explicitly. An owning scheduler may idempotently ignore retransmission without a second content or core update; that scheduling layer is not implemented in the current support fixture.",
+      "capacity_statement": "Total memory is common cache plus 32-scalar core plus encoder/controller/runtime state. This phase is an increased shared memory budget, not a 32-scalar total-memory claim."
+    },
+    "time": {
+      "core_model_time": "Newly accepted modality window increment, preserving the v6 input-local semantics unless a separately versioned model is introduced.",
+      "wall_clock": "Actual source release, service completion, communication, controller, prediction serialization and flush.",
+      "wait_behavior": "WAIT advances real scheduling time but does not propagate the input-local content state.",
+      "late_observation_behavior": "Drain and charge work; never expose the late feature before the declared output or retrospectively improve that output."
+    },
+    "equality_checks": ["Same accepted-event bytes yield the same common cache and strong-head result across core families.", "Every field visible to a core or controller is declared and charged.", "Reported source-recording IDs are provenance metadata only and are excluded from learned prediction inputs."]
+  },
+  "module_interfaces": {
+    "common_cache_update": "update(cache, accepted_event) -> causal_cache_snapshot",
+    "common_content_head": "predict(causal_cache_snapshot) -> calibrated_class_distribution",
+    "current_correctness_calibration": "calibrate_now(public_snapshot, common_head_distribution) -> expected_probability_of_correct_prediction",
+    "core_step": "step(previous_32_scalar_state, same_visible_snapshot, source_window_increment) -> next_32_scalar_state",
+    "matched_semantic_readout": "forecast(core_state, same_visible_snapshot, proposed_legal_path, public_remaining_deadline) -> expected_terminal_correctness_under_declared_acceptance_and_timeout_rules",
+    "common_service_model": "cost(public_service_context, proposed_legal_path) -> deadline_miss_probability, expected_requested_observations, expected_actual_elapsed_time",
+    "common_controller": "choose(current_correctness, matched_semantic_forecasts, common_service_forecasts, common_legal_actions) -> next_action_or_STOP",
+    "terminal_prediction": "The identical strong common content head reads only the cache available at actual output time.",
+    "same_controller_boundary": "Controller objective, service model, enumeration, legal actions, horizon, STOP tie rule and code are identical. Family-trained semantic forecast readouts belong to the core interface, use identical architecture and training/selection budgets, and their parameters and costs are included. This is not a claim that all fitted forecast weights are identical.",
+    "gain_attribution_boundary": "A positive D-B result concerns recurrent core plus its matched semantic readout under the common controller. A claim about the analytic propagation operator alone additionally requires fixed-action and signal-replacement evidence."
+  },
+  "controller_objective": {
+    "deadline_seconds": 4.0,
+    "deadline_loss": 1.0,
+    "observation_fee": 0.02,
+    "latency_weight": 0.005,
+    "realized_utility": "I(correct_at_actual_output) - I(actual_elapsed_seconds > 4.0) - 0.02 * requested_observations - 0.005 * actual_elapsed_seconds",
+    "continuation_advantage": "expected_terminal_correctness - calibrated_current_correctness - expected_deadline_loss - expected_observation_fee - expected_latency_fee",
+    "correctness_target": "Actual zero/one correctness of the common head after the proposed paired rollout, with the same causal acceptance and late-work rule. Never use probability of the true class as a substitute target.",
+    "no_double_subtraction": "Semantic readout predicts correctness only. Deadline, observation and latency penalties are supplied once by the shared controller.",
+    "current_confidence_rule": "Do not subtract raw max softmax as if it were current empirical correctness.",
+    "first_observation": "Retain the common mandatory first audio observation and charge it in all four primary arms. Optional initial STOP belongs to a separately declared supporting comparison.",
+    "legal_actions": "Same adjacent-prefix observation paths, waiting rules and STOP for every arm; any new combined or parallel observation action must be available to all arms and frozen before confirmation."
+  },
+  "factorial_and_external_baselines": {
+    "A": "Validation-selected persistent GRU or input-conditioned diagonal SSM; fixed common lightweight observation schedule.",
+    "B": "The same selected ordinary core and matched semantic readout; common value controller.",
+    "C": "Analytic core and matched semantic readout; exactly the same lightweight schedule as A.",
+    "D": "The same analytic core and matched semantic readout; exactly the same value controller as B.",
+    "report_contrasts": ["B-A", "D-C", "C-A", "D-B", "(D-C)-(B-A)"],
+    "primary_core_contrast": "D-B",
+    "external_baselines": [
+      {"name": "strong_audio", "purpose": "Preserve a strong audio reference on the exact same confirmation objects; do not weaken it when fusion improves."},
+      {"name": "common_head_full", "purpose": "All legally available content through the common strong head; report both eventual correctness and actual deadline outcomes."},
+      {"name": "cache_only_value", "purpose": "Same shared head, cache, service model and controller with a strong direct forecast from the public cache; no recurrent core. Charge actual forecast parameters, training and execution."},
+      {"name": "validation_selected_fixed_schedule", "purpose": "Strong simple schedule selected only in development, including one observation and fixed multistep paths."},
+      {"name": "full_information_goal_oracle_diagnostic", "purpose": "Development-only ceiling for reachable goal choice; inaccessible future labels/features are never passed to deployable arms."}
+    ],
+    "ordinary_search": "Retain direct GRU and SSM outcomes, even when one is selected. Select the ordinary comparator before confirmation using the same validation objective and opportunities.",
+    "training_match": {"core_state_scalars": 32, "av_inference_dtype": "float64", "epochs_per_family": 80, "batch_size": 64, "learning_rate": 0.003, "same_sample_order_per_seed": true, "same_optimizer_steps_and_selection_opportunities": true, "fit_seed_ids": null, "readout_budget_manifest": null},
+    "matching_limit": "Match information, nominal state budget, common cache and training opportunity. Publish actual parameter counts, effective state degrees of freedom, architectural priors and complete cost; do not add unused parameters to claim equality."
+  },
+  "quality_gates_carried_from_v6": {
+    "raw_frontend_emotion_point_minimum": 0.5,
+    "raw_frontend_emotion_actor_lower_strictly_above": 0.2,
+    "raw_frontend_binding_point_minimum": 0.75,
+    "raw_frontend_binding_actor_lower_strictly_above": 0.5,
+    "memory_exact_each_fit_cell_minimum": 0.99,
+    "emotion_noninferiority_margin_to_strong_audio": 0.05,
+    "binding_noninferiority_margin_to_strong_common_binding": 0.05,
+    "D_vs_B_accuracy_noninferiority_margin": 0.02,
+    "actual_timely_D_vs_B_noninferiority_margin": 0.02,
+    "adaptive_emotion_point_minimum": 0.5,
+    "adaptive_binding_point_minimum": 0.75,
+    "interpretation": "Necessary conditions for an incremental or economic claim; a point on a noninferiority boundary is not a passed interval test. The new shared-head phase does not retroactively pass v6 core-content gates.",
+    "reference_identity_rule": "Recompute each strong reference on the exact new confirmation cohort. Do not compare new-cohort candidates to the historical v6 percentage as if the observations were paired."
+  },
+  "development_only_diagnostics": [
+    "Measure common-head agreement and quality before and after the cache interface, by modality prefix and acquisition order.",
+    "Separate loss due to raw features, temporal alignment, common projection, recurrent state, readout and action choice; do not change all layers in one attribution experiment.",
+    "Measure calibration of current correctness and paired future correctness in comparable probability units, including stop, one-step and multistep goals.",
+    "Audit ranking of realized paired continuation advantage, false continuation and premature STOP, in addition to NLL/Brier calibration.",
+    "Check core-state forecast increment conditional on the public cache against cache_only_value. If there is no held-out incremental signal, keep the result and do not force core superiority.",
+    "Use a no-new-information observation as a negative control: with positive cost it should not create positive value merely through confidence or repeated state updates.",
+    "For distribution and reset diagnostics, quantify probability mass on multiple events, variance differences and downstream task sensitivity. State-hash changes alone are not evidence of usefulness.",
+    "Use paired, reachable histories from the declared generative model or actual data. Arbitrarily chosen equal-mean distributions that the model cannot reach are not mechanism witnesses."
+  ],
+  "calibration_and_leakage": {
+    "frozen_common_encoder": true,
+    "fit_selection_calibration_roles": "Assign development fit, model-selection and correctness-calibration roles before fitting. Record actor and recording overlap explicitly. Keep final confirmation inaccessible to every role.",
+    "preferred_simple_route": "Fit content/core/forecast parameters on development fit data, choose once on development selection data, then fit the declared semantic calibrators using separate out-of-fit development observations. Freeze all components afterward without retraining them on the calibration objects.",
+    "if_cross_fitting_is_used": "Fold separation must include every label-fitted projection, temporal alignment, content head, core and readout relevant to the target. Record any retained global component honestly. Do not feed arbitrarily permuted latent coordinates from independently fitted cores into a shared calibrator; use a semantically identified output interface or a fixed model with separate calibration data.",
+    "v6_confirmation_reuse": "The previously exposed v6 confirmation may be explicitly reclassified as development material. It can never be called unseen v7 confirmation.",
+    "test_information_forbidden": ["future encoder features", "confirmation labels", "confirmation-derived service or risk calibration", "confirmation-based model, temperature or action-threshold selection", "choosing the real-execution subset after seeing confirmation results"]
+  },
+  "fresh_confirmation": {
+    "source_recording_nonoverlap_required": true,
+    "exclude_all_previous_confirmation_and_development_recording_ids": true,
+    "new_crop_prefix_or_pair_from_used_recording_is_fresh_object": false,
+    "synthetic_seed_can_substitute_for_real_AV_confirmation": false,
+    "actor_reuse": "Record actor identities and historical use. Reused actors permit only a new-recording claim, not new-actor replication. Grouped uncertainty must preserve that dependence.",
+    "binding_pairs": "Balanced AA/AB/BA/BB within declared actor, emotion and repetition strata; single-modality margins cannot identify the binding label.",
+    "live_subset": "Select before confirmation using a saved deterministic rule. Cross actors with emotions; do not repeat v6's one-emotion-per-actor subset. Every retained actor should cover multiple emotions and every emotion multiple actors, preferably a balanced actor-by-emotion grid.",
+    "sample_size": "Freeze actual object and fit counts after development-based precision/power planning. Repeated pairs and fits do not create new actors; more bootstrap draws cannot repair too few independent actors.",
+    "unavailable_data_rule": "Remain blocked or publish a development-only result. Do not weaken independence or silently reuse the old confirmation to obtain a passing gate."
+  },
+  "mechanism_scope": {
+    "external_service_risk": {
+      "intervention": "Change only the common deadline-risk penalty coefficient from one to zero; retain correctness predictions, legal actions and actual service semantics.",
+      "supports": "Use and value of the shared service-risk term in observation control.",
+      "does_not_support": "An analytic-core-specific internal first-passage risk advantage."
+    },
+    "event_count_distribution": {
+      "intervention": "Retain weights, input, event-count mean, readout and service model; replace the count law with the mean-preserving adjacent-two-point law.",
+      "paired_runs": ["Own closed-loop actions", "Original D actions fixed"],
+      "supports": "Contribution of reachable event-count distribution shape under the registered model.",
+      "does_not_support": "All distributed content states outperform matched single-point states."
+    },
+    "multiple_transitions": {
+      "intervention": "Retain P(N=0), collapse N>=1 mass to one content transition, and keep software recovery unchanged.",
+      "paired_runs": ["Own closed-loop actions", "Original D actions fixed"],
+      "supports": "Contribution of more than one local content transition, including its changed event count.",
+      "does_not_support": "An isolated refractory-time effect, isolated physical reset-map effect, or worker-restoration benefit."
+    },
+    "additional_unidentified_mechanisms": {
+      "internal_analytic_risk": "Requires a declared task-relevant internal event, an actually consumed risk channel, same-information calibrated ordinary risk heads and a reachable intervention. Remains unclaimed until those assets and targets exist.",
+      "full_distribution_vs_point": "Requires reachable equal-mean/different-distribution histories, a precisely defined point-state comparator and disclosure of information and state-budget differences. Moments and distribution shapes must not be provided only to the analytic candidate.",
+      "reset_map_vs_refractory_time": "Specify the reset map and refractory parameter separately. A reset-map change with clamped event times estimates a controlled direct effect, not a self-consistent closed-loop total effect; report a complete counterfactual separately."
+    },
+    "necessity_vs_use": "A frozen-model ablation shows dependence in that model. A separately retrained matched comparator is needed before claiming the channel is necessary. Keep these estimands distinct."
+  },
+  "economics_and_execution": {
+    "primary_amortization_episodes": 20,
+    "sensitivity_amortization_episodes": 10000,
+    "primary_condition": "Normal execution; fully measured complete batches, explicitly separate from injected-failure conditions.",
+    "include": ["common measured feature preparation", "temporal alignment and content-head fitting", "core and semantic-forecast training", "calibration and selection", "propagation", "control enumeration or boundary calculation", "shared cache maintenance and memory", "encoding actually requested", "IPC and deserialization", "initialization and shutdown", "serialized output flush", "measurement coordination"],
+    "record_separately": ["all-family search", "failed development", "independent audits", "raw media acquisition", "post-output QA sensitivity", "evidence packaging"],
+    "unavailable_pretraining_cost": "Record as unavailable and common where appropriate; never silently count it as measured zero.",
+    "recovery": "Measure registered fault conditions completely, including untriggered early-stop paths. Report state preservation, actual recovery latency and timely task quality separately. Do not add entire normal and restart batches together. A deployment expected-recovery-cost claim requires a predefined failure process or an explicitly labeled sensitivity, not an invented failure rate.",
+    "implementations": "Use matched NumPy64 and Torch64 candidates; preserve old float32 incompatibility records. Verify prediction parity under identical inputs, model time and fixed action history before comparing timing. Actual service timing may legitimately change adaptive paths.",
+    "latency": "Monotonic source/request-to-serialized-flush clock with the exact declared warm/cold boundary.",
+    "throughput": "Completed episodes divided by the actual common scheduling envelope; report workload and concurrency. Never substitute summed worker wall time for elapsed parallel time.",
+    "memory": "Validate PID namespace/proc-view identity and known child coverage before using simultaneous family measurements. Report family sample coverage and single-process high-water separately. If coverage fails, family peak is unavailable.",
+    "energy": "Only report directly observed device energy under a declared sampling scope; otherwise null.",
+    "nested_cost_rule": "Charge each enclosing complete process once. Nested component timings explain the total and are not added again."
+  },
+  "statistics": {
+    "bootstrap_draws": 10000,
+    "resampling": "Cross training fits with whole actor blocks; preserve paired objects and shared recordings within blocks.",
+    "primary_interval_quantiles": [0.0125, 0.9875],
+    "mechanism_interval_quantiles": [0.025, 0.975],
+    "primary_benefit_family": "Two tasks times actual-utility superiority or complete-CPU-cost superiority, with nominal one-sided alpha 0.0125 per benefit test and necessary quality gates.",
+    "no_simultaneous_claim_for_all_endpoints": true,
+    "bootstrap_seed": null,
+    "cost_ratio": "Arithmetic ratio of paired condition means with its corresponding resampling interval; do not attach a geometric-ratio interval to this statistic.",
+    "selection_rule": "All core, ordinary-family, head, calibrator, action and cost choices occur before confirmation. Exact seeds, actor IDs, counts and output paths must be completed and frozen."
+  },
+  "failure_and_claim_rules": [
+    "If v6 assets cannot be recovered, deliver support tools and this blocked draft; do not state v6 was rerun or v7 confirmed.",
+    "If a complete common cache makes all core signals redundant, conclude that the common content/control design is sufficient on this task. Keep the no-core result; do not manufacture an analytic requirement.",
+    "If current/future correctness are not calibrated on the same outcome and execution semantics, repair on development data before any primary confirmation.",
+    "If frontend or adaptive content guards fail, retain all comparisons as diagnostics and reject the quality-guarded core/economic claim.",
+    "If a distribution/reset intervention has negligible reachable support or negligible task sensitivity, report that limitation instead of interpreting a near-zero effect as a universal negative theorem.",
+    "If only B-A and D-C improve, claim value-control benefit. D-B and the interaction remain separate questions.",
+    "If D-B is positive only on a small subset, label the subset result; do not override failed full-cohort quality gates.",
+    "If the analytic model loses to the strongest deployable same-information comparator, retain that result. A useful negative result can close a claim honestly without closing it positively.",
+    "Any architecture, threshold, task label or data change after confirmation requires a new version and new independent confirmation; it never retroactively passes v6."
+  ]
+}
