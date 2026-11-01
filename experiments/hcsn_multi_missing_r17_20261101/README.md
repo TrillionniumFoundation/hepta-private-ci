@@ -56,3 +56,16 @@ Outputs are create-only. Run the campaign in a fresh independent copy if its
 process receipt already exists. Complete child CPU includes Python startup,
 imports, every model attempt, actual acquisition and output; development and
 independent audit costs are recorded separately and must not be treated as zero.
+
+The published raw is deterministically compressed as
+`verification_01/RAW.json.gz`; `RAW_COMPRESSION.json` binds the original bytes.
+The frozen worker still creates `RAW.json` when replayed. The independent
+post-run auditor accepts either exact raw or gzip:
+
+```sh
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m experiments.hcsn_multi_missing_r17_20261101.audit_raw /tmp/new-independent-missing-audit.json
+```
+
+Read `REPORT_ZH.md` for results and the important limitation that all 891 accepted
+finite-set answers were already probability-one events. `BLOCKERS.json` keeps
+unknown generators, uncertain answers, real binding and core gains open.
