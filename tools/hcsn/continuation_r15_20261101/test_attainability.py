@@ -90,7 +90,10 @@ class AttainabilityTests(unittest.TestCase):
         result = exact_episode(world, actor, planner, schedule)
         np.testing.assert_allclose([result[k] for k in ("utility", "reward", "fee")],
                                    brute_latent_script(world, schedule), rtol=0, atol=1e-13)
-        self.assertEqual((result["first_action"], result["reads"], result["resets"]), ("RESET", 1., 1.))
+        self.assertEqual(result["first_action"], "RESET")
+        # These are floating expectations after matrix products, not integer counts.
+        np.testing.assert_allclose([result["reads"], result["resets"]], [1., 1.],
+                                   rtol=0, atol=16 * np.finfo(np.float64).eps)
         self.assertAlmostEqual(result["elapsed"], sum(schedule), places=13)
         self.assertIsNone(actor.current)
         self.assertEqual(actor.history, [])

@@ -1,0 +1,90 @@
+{
+  "algorithm_changed": false,
+  "archive": {
+    "bytes": 39550,
+    "file": "EXPECTATION_ROUNDOFF_AUDIT.zip",
+    "sha256": "5f334696f298fa3984c782205d55b13dd3ac6e1a8023abc62875301a169c16a6"
+  },
+  "assertion_boundary_controls": {
+    "observed_one_ulp_original_fails": true,
+    "observed_one_ulp_patched_passes": true,
+    "reads_plus_1e_minus_12_rejected": true,
+    "resets_plus_1e_minus_12_rejected": true,
+    "wrong_first_action_rejected": true
+  },
+  "change": "Keep categorical first_action exact; compare two floating expectation counts with rtol=0 and atol=16*float64 eps.",
+  "count_atol": 3.552713678800501e-15,
+  "initial_probe": "One-ULP matrix perturbations did not reproduce the remote failure locally; that failed probe expectation and its original code are retained. Later controls test the assertion domain only.",
+  "members": {
+    "E225_FINITE_FAILURE.log.gz": {
+      "bytes": 8200,
+      "sha256": "9f8c382159f5ca5ad7821de7dd717b8a7a708b4fd3940cacdca9a044a3ea0213"
+    },
+    "INITIAL_PROBE_FAILURE.json": {
+      "bytes": 3414,
+      "sha256": "f3a150400faf5151de644bc99102719b61fa1b1e6291f58be835c9ae193d5005"
+    },
+    "REPRODUCE.txt": {
+      "bytes": 811,
+      "sha256": "2b6a37886930911b8fb12851e821c59153215c31d4f9b0555484d3fbf4a8eff7"
+    },
+    "ROUND_OFF_REGRESSION.json": {
+      "bytes": 11725,
+      "sha256": "5ff5ea6dcc6d9a020fac288407d23dae1684e66acda81e8ff582b3aab3204c6d"
+    },
+    "expectation_roundoff.patch": {
+      "bytes": 973,
+      "sha256": "03922bb74c1842be24183a375460a9b49236b327f64495639a65ec5f20694c8f"
+    },
+    "original/attainability.py": {
+      "bytes": 15074,
+      "sha256": "c8d16fd0ffbf585d545563c2a2928bd6caacda96d2013edf5d87ffd51cceaa70"
+    },
+    "original/test_attainability.py": {
+      "bytes": 7645,
+      "sha256": "6b7ef9cc3c5101ec985a153fe311a11b1e9256d797d1a0f99eeaa32edcd44ac6"
+    },
+    "replay/tools/hcsn/continuation_r15_20261101/attainability.py": {
+      "bytes": 15074,
+      "sha256": "c8d16fd0ffbf585d545563c2a2928bd6caacda96d2013edf5d87ffd51cceaa70"
+    },
+    "replay/tools/hcsn/continuation_r15_20261101/test_attainability.py": {
+      "bytes": 7844,
+      "sha256": "540c6958252387d1df7a8e4614c67cf90fa5146e63d6c6c493812afea302444a"
+    },
+    "replay/tools/hcsn/task_aligned_r14_20261101/qpi.py": {
+      "bytes": 11974,
+      "sha256": "f0f00f5250c72b24e5213e3b66c15f4b0fa38a2864ef9083a13e8d7aa90aa73c"
+    },
+    "replay/tools/hcsn/unified_cell_r12_20261031/task_value.py": {
+      "bytes": 9787,
+      "sha256": "551f2853b7a785b759d516a18c00c896ed97dba2106c7689d9a2bbe5e2e6ca3c"
+    },
+    "verify_roundoff.py": {
+      "bytes": 4714,
+      "sha256": "6694716bc663586527487108e36a554ae75af05e0dafc30b6503a072f12a4e78"
+    },
+    "verify_roundoff_initial.py": {
+      "bytes": 4850,
+      "sha256": "03ccbde0c19bb9b195503ebf0033c93f1315c3113525b94edad2018493068f68"
+    }
+  },
+  "original_local_tests": {
+    "passed": true,
+    "tests": 6
+  },
+  "original_remote_failure": "Float expectation reads=1.0000000000000002 was compared by tuple equality to 1.0.",
+  "original_remote_job": 124930433301,
+  "original_test_sha256": "6b7ef9cc3c5101ec985a153fe311a11b1e9256d797d1a0f99eeaa32edcd44ac6",
+  "patched_local_tests": {
+    "passed": true,
+    "tests": 6
+  },
+  "patched_test_sha256": "540c6958252387d1df7a8e4614c67cf90fa5146e63d6c6c493812afea302444a",
+  "quality_gate_changed": false,
+  "raw_ci_log_bytes": 39480,
+  "raw_ci_log_sha256": "6cb14be247fca06b5ebdaf9fd07bdeb97d57bbbd93629dfb33590ead0cc8ba19",
+  "remote_fix_verified": false,
+  "schema": "hcsn.expectation-roundoff-review.v1",
+  "source_head": "e2252649e6bfc390c60e041a76e50dd94332bbdb"
+}
