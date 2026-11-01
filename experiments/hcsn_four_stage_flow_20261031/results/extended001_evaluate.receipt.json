@@ -1,0 +1,57 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_four_stage_flow_20261031.extended_eval",
+    "--run",
+    "experiments/hcsn_four_stage_flow_20261031/results/campaign002",
+    "--candidate-freeze",
+    "experiments/hcsn_four_stage_flow_20261031/results/campaign002/CHECKPOINT_FREEZE__dynamics_mqar_selective_binding_avt.json",
+    "--frozen-commit",
+    "8044dbfc3c41356eaf3f8ac69c7537e2091eda80",
+    "--out",
+    "experiments/hcsn_four_stage_flow_20261031/results/extended001"
+  ],
+  "cwd": "/workspace/scratch/b25b6786d3b7/hepta-csn-four-stage",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-01T04:54:49.818495+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_four_stage_flow_20261031/results/extended001_evaluate.stdout.log",
+  "stderr_path": "experiments/hcsn_four_stage_flow_20261031/results/extended001_evaluate.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-01T04:55:57.451144+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 67.63233658600075,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 56.246049,
+  "system_cpu_seconds": 0.503576,
+  "total_cpu_seconds": 56.749625,
+  "peak_rss_bytes": 266829824,
+  "peak_rss_native_units": 260576,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/results/extended001_evaluate.stdout.log",
+      "is_file": true,
+      "bytes": 2901,
+      "sha256": "9d6a3ed90bf2e190aa20120a1f42b3b83f36c7fa095541ec560c377e0b996827"
+    },
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/results/extended001_evaluate.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0009126259999999997,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

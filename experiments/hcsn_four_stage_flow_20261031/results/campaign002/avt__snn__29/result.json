@@ -1,0 +1,113 @@
+{
+  "arm": "snn",
+  "candidate_freeze_sha256": "d9b9bd020e3a7166ba5bdbef64645d85319543b7959b65b4c7c5d684b28e7ac8",
+  "checkpoint_sha256": "375750cdc6099707190553b4ff0c2a300cb5506f66b12c644b268cd58047709f",
+  "data_identities": {
+    "test": {
+      "candidate_freeze_sha256": "d9b9bd020e3a7166ba5bdbef64645d85319543b7959b65b4c7c5d684b28e7ac8",
+      "npz_sha256": "71c2cf2932e9aa1ea5800fabb3372d9ddde30cace2b007bd5d84a958876794f4",
+      "plan_sha256": "630e0708f8f797c8e68ad1361e273277d072ad318cec3eaf4d9d251285d38e51",
+      "receipt_sha256": "90216cccc4243613e93ca3c57d299bd760619358ad5002e4bcab538883c016cb"
+    },
+    "train": {
+      "candidate_freeze_sha256": null,
+      "npz_sha256": "5eee881d5196e6837272cb12a8972ac46c2da914a629885f0614e88b2da6bb55",
+      "plan_sha256": "630e0708f8f797c8e68ad1361e273277d072ad318cec3eaf4d9d251285d38e51",
+      "receipt_sha256": "8bcca2add7326bf677f3fe6b62de3c12b28805c3c369d780228880f6dc54635d"
+    },
+    "validation": {
+      "candidate_freeze_sha256": null,
+      "npz_sha256": "9f84185c439562578ee3c319ac4e00e96e7bae9fb2bb52d7a07447f5d84d14eb",
+      "plan_sha256": "630e0708f8f797c8e68ad1361e273277d072ad318cec3eaf4d9d251285d38e51",
+      "receipt_sha256": "2f442f053ea4bfd1267f0256697ece7c06d13679cd662bc1283c27a2893f2b18"
+    }
+  },
+  "evaluation": {
+    "cpu_seconds": 0.03171849800000359,
+    "scope": "Checkpoint verification/loading, model construction, evaluation, artifacts and timing repeats",
+    "wall_seconds": 0.031742876999487635
+  },
+  "evaluations": {
+    "dev__base": {
+      "accuracy": 0.5,
+      "all_queries_correct": 0.75,
+      "cross_entropy": 0.6938239336013794,
+      "episodes": 288,
+      "query_count": 288
+    },
+    "test__base": {
+      "accuracy": 0.5,
+      "all_queries_correct": 0.75,
+      "cross_entropy": 0.693988561630249,
+      "episodes": 384,
+      "query_count": 384
+    },
+    "test__no_audio": {
+      "accuracy": 0.5,
+      "all_queries_correct": 0.75,
+      "cross_entropy": 0.6938071250915527,
+      "episodes": 384,
+      "query_count": 384
+    },
+    "test__no_text": {
+      "accuracy": 0.5,
+      "all_queries_correct": 0.75,
+      "cross_entropy": 0.6940142512321472,
+      "episodes": 384,
+      "query_count": 384
+    },
+    "test__no_video": {
+      "accuracy": 0.5,
+      "all_queries_correct": 0.75,
+      "cross_entropy": 0.6939547061920166,
+      "episodes": 384,
+      "query_count": 384
+    }
+  },
+  "final_training_loss": 0.6797524094581604,
+  "frozen_commit": "8044dbfc3c41356eaf3f8ac69c7537e2091eda80",
+  "inference": {
+    "batch_size": 24,
+    "dedicated_hardware": false,
+    "device": "cpu",
+    "energy_joules": null,
+    "episodes_per_second": 71771.19388074198,
+    "median_seconds": 0.0003343959979247302,
+    "scope": "Prepared-feature complete-sequence forward; raw media preparation is separate",
+    "sequence_length": 2,
+    "wall_seconds": [
+      0.00033082099980674684,
+      0.0004971470007149037,
+      0.0003343959979247302,
+      0.00032540300162509084,
+      0.00036393000118550844,
+      0.0003242409984522965,
+      0.0003186629983247258,
+      0.00035908199788536876,
+      0.00046687199937878177
+    ]
+  },
+  "peak_rss_scope": "Cumulative maximum of this evaluation process, not an isolated per-fit peak",
+  "predictions_sha256": "1e55ea94e6d69e060ed8e9c4eccb0ee17f994f43c76428080ebfc193f7ad484d",
+  "process_peak_rss_kib": 255244,
+  "protocol_sha256": "26e401d211a3c72f80b68d292b54980ef18601bafbb519ee4ffd3dd2f27babdc",
+  "seed": 29,
+  "shape": {
+    "compiled": false,
+    "content_precision": "float32",
+    "matrix_precision": null,
+    "parameters": 19738,
+    "persistent_state_scalars": 128,
+    "state_note": "Transformer value is conceptual K/V; this reference recomputes prefixes"
+  },
+  "status": "completed",
+  "task": "avt",
+  "total_fit_cpu_seconds": 1.355364306000041,
+  "total_fit_wall_seconds": 1.3627454239976942,
+  "training": {
+    "cpu_seconds": 1.3236458080000375,
+    "examples": 14400,
+    "scope": "Model/optimizer construction, training, loss logging and final artifact serialization",
+    "wall_seconds": 1.3310025469982065
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+  "logical_cpus_visible": 9,
+  "cgroup_cpu_max": "800000 100000",
+  "cgroup_memory_max": "8589934592",
+  "nvidia_smi_available": false,
+  "rapl_energy_files": [],
+  "cost_scope": "Shared CPU container; no isolated host power attribution. No joule measurement.",
+  "format_command": {
+    "command": "just fmt",
+    "exit_code": 127,
+    "reason": "just unavailable; this is Python-only research and no Rust source was modified."
+  },
+  "training_source_commit": "8044dbfc3c41356eaf3f8ac69c7537e2091eda80"
+}

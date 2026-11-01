@@ -1,0 +1,83 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python",
+    "-m",
+    "experiments.hcsn_four_stage_flow_20261031.av_data",
+    "--media-root",
+    "/workspace/scratch/52a69008c60c/crema-media",
+    "--cohort-path",
+    "/workspace/scratch/52a69008c60c/hepta-hcsn/experiments/hcsn_content_economics_v4/configs/av/COHORT.json",
+    "--out",
+    "experiments/hcsn_four_stage_flow_20261031/results/avt_data",
+    "--splits",
+    "train",
+    "validation"
+  ],
+  "cwd": "/workspace/scratch/b25b6786d3b7/hepta-csn-four-stage",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-01T04:41:21.932472+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_four_stage_flow_20261031/results/avt_prepare_trainval.stdout.log",
+  "stderr_path": "experiments/hcsn_four_stage_flow_20261031/results/avt_prepare_trainval.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-01T04:42:47.920171+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 85.98752209399936,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 63.304755,
+  "system_cpu_seconds": 23.041763,
+  "total_cpu_seconds": 86.346518,
+  "peak_rss_bytes": 99266560,
+  "peak_rss_native_units": 96940,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/results/avt_prepare_trainval.stdout.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/results/avt_prepare_trainval.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/av_data.py",
+      "is_file": true,
+      "bytes": 20448,
+      "sha256": "465f1d2bf296dc5df4b25cd5cdc781551740a16766bb631b937a80fb3ef7767f"
+    },
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/results/avt_data/PLAN.json",
+      "is_file": true,
+      "bytes": 126814,
+      "sha256": "630e0708f8f797c8e68ad1361e273277d072ad318cec3eaf4d9d251285d38e51"
+    },
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/results/avt_data/train.npz",
+      "is_file": true,
+      "bytes": 300325,
+      "sha256": "5eee881d5196e6837272cb12a8972ac46c2da914a629885f0614e88b2da6bb55"
+    },
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/results/avt_data/validation.npz",
+      "is_file": true,
+      "bytes": 76849,
+      "sha256": "9f84185c439562578ee3c319ac4e00e96e7bae9fb2bb52d7a07447f5d84d14eb"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0014142990000000008,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

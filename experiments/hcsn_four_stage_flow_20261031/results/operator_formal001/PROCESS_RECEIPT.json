@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn.marked.operator.full-process-receipt.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_four_stage_flow_20261031.operator_audit",
+    "--out",
+    "experiments/hcsn_four_stage_flow_20261031/results/operator_formal001",
+    "--stage",
+    "formal",
+    "--frozen-commit",
+    "1349bb1bfec5c9fe5f165e1efcf2be4b479c945e"
+  ],
+  "frozen_commit": "1349bb1bfec5c9fe5f165e1efcf2be4b479c945e",
+  "exit_code": 0,
+  "wall_seconds": 3.2904866290009522,
+  "child_user_cpu_seconds": 2.870733,
+  "child_system_cpu_seconds": 0.25193699999999997,
+  "child_total_cpu_seconds": 3.12267,
+  "child_peak_rss_bytes": 274718720,
+  "wrapper_cpu_seconds": 0.0013570000000000006,
+  "child_scope": "os.wait4 on scientific child including interpreter startup, imports, audit and evidence writes; no grandchildren",
+  "wrapper_scope": "wrapper CPU after standard-library imports through log saving; final receipt write excluded",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "threads": 1
+}

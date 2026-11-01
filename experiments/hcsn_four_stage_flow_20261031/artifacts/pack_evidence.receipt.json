@@ -1,0 +1,73 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python",
+    "experiments/hcsn_four_stage_flow_20261031/artifacts/build_evidence.py"
+  ],
+  "cwd": "/workspace/scratch/b25b6786d3b7/hepta-csn-four-stage",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-01T05:02:58.036429+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_four_stage_flow_20261031/artifacts/pack_evidence.stdout.log",
+  "stderr_path": "experiments/hcsn_four_stage_flow_20261031/artifacts/pack_evidence.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-01T05:03:02.194467+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 4.157837643997482,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 3.807588,
+  "system_cpu_seconds": 0.298788,
+  "total_cpu_seconds": 4.106376,
+  "peak_rss_bytes": 27979776,
+  "peak_rss_native_units": 27324,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/artifacts/pack_evidence.stdout.log",
+      "is_file": true,
+      "bytes": 373,
+      "sha256": "c5dfb3117d559696235b862ddddd0b8f7cbb1868c8a07ab5bee7399eec65edd8"
+    },
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/artifacts/pack_evidence.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/artifacts/build_evidence.py",
+      "is_file": true,
+      "bytes": 8312,
+      "sha256": "07fbe8bd0bb23fa3ccd24a7300584f327f987709ded41f57cff1697de7d38bbe"
+    },
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/artifacts/EVIDENCE_MANIFEST.json",
+      "is_file": true,
+      "bytes": 248665,
+      "sha256": "701972cbab3c17eac30c69148ff5537cb880e2449770f4cfb2ecb55f1ef2a355"
+    },
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/artifacts/PARTS.json",
+      "is_file": true,
+      "bytes": 11320,
+      "sha256": "264db0a53d9b6f7315edf0e3ed0167a9a52b15e41706e5d325b5f778cfb347e1"
+    },
+    {
+      "path": "experiments/hcsn_four_stage_flow_20261031/artifacts/full_evidence.tar.gz",
+      "is_file": true,
+      "bytes": 111476686,
+      "sha256": "13e411eac843a44e6a168fa6e7f0e7e6a54a53fe10ea45633aa9efd6ef1bd1bd"
+    }
+  ],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.087462296,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

@@ -1,0 +1,75 @@
+{
+  "arm": "snn",
+  "base_float32_vs_float64": {
+    "accuracy_difference": 0.0,
+    "alternative_accuracy": 0.898681640625,
+    "argmax_changes_all_original_positions": 0,
+    "argmax_changes_scored_queries": 0,
+    "base_accuracy": 0.898681640625,
+    "max_logit_difference": 1.3129291609459415e-06,
+    "max_query_logit_difference": 1.3129291609459415e-06
+  },
+  "checkpoint_sha256": "2b716ee15e416200ee9e307b0544eec9454e747811d6bcdf0e06743ef759662d",
+  "clock_scope": "Diagnostic body after imports",
+  "conclusion": "For this frozen case, hard thresholds amplify FP32 split-step roundoff; FP64 restores the resampling relation.",
+  "cpu_seconds": 0.2919157940000001,
+  "energy_joules": null,
+  "episodes": 512,
+  "formal_result_reproduction": {
+    "base_max_difference": 0.0,
+    "refined_max_difference": 0.0
+  },
+  "frozen_commit": "8044dbfc3c41356eaf3f8ac69c7537e2091eda80",
+  "interpretation": "Post-hoc numerical diagnosis only. The formal FP32 failure remains unchanged; FP64 is not a replacement result or a selected model.",
+  "original_formal_resampling": {
+    "accuracy": 0.898681640625,
+    "all_queries_correct": 0.45703125,
+    "cross_entropy": 0.25020354986190796,
+    "episodes": 512,
+    "observed_logit_max_difference": 0.6272234916687012,
+    "query_count": 4096
+  },
+  "post_hoc": true,
+  "precisions": {
+    "float32": {
+      "accuracy_difference": 0.0,
+      "alternative_accuracy": 0.898681640625,
+      "argmax_changes_all_original_positions": 0,
+      "argmax_changes_scored_queries": 0,
+      "base_accuracy": 0.898681640625,
+      "first_spike_divergence": {
+        "base_spike": false,
+        "base_threshold_margin": -1.7881393432617188e-07,
+        "episode": 226,
+        "original_token": 9,
+        "prior_spikes_identical": true,
+        "refined_spike": true,
+        "refined_threshold_margin": 2.384185791015625e-07,
+        "unit": 43
+      },
+      "max_logit_difference": 0.6272234916687012,
+      "max_query_logit_difference": 0.6272234916687012,
+      "spike_disagreements_at_original_observations": 33
+    },
+    "float64": {
+      "accuracy_difference": 0.0,
+      "alternative_accuracy": 0.898681640625,
+      "argmax_changes_all_original_positions": 0,
+      "argmax_changes_scored_queries": 0,
+      "base_accuracy": 0.898681640625,
+      "first_spike_divergence": null,
+      "max_logit_difference": 2.6645352591003757e-15,
+      "max_query_logit_difference": 1.7763568394002505e-15,
+      "spike_disagreements_at_original_observations": 0
+    }
+  },
+  "predict_batch_size": 64,
+  "protocol_sha256": "26e401d211a3c72f80b68d292b54980ef18601bafbb519ee4ffd3dd2f27babdc",
+  "roundoff_amplification_supported": true,
+  "schema": "hcsn-four-stage.posthoc-snn-resampling.v1",
+  "script_sha256": "91ae0956d2a2e89d4b639f43519d3f8ab1c2a9d5c1d8370fba6a0c2c12064cd1",
+  "seed": 43,
+  "task": "dynamics",
+  "unchanged_checkpoint": true,
+  "wall_seconds": 0.297234017001756
+}
