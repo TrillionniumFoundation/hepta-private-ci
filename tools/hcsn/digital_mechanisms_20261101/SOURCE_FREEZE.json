@@ -1,0 +1,224 @@
+{
+  "schema": "digital-mechanism-source-freeze-v1",
+  "created_utc": "2026-11-01T17:29:31.358812+00:00",
+  "baseline_commit": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
+  "protocol": {
+    "schema": "digital-four-mechanism-study-v1",
+    "baseline_commit": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
+    "analytic_reference_commit": "74cf5f30a4e87a2666c57b3f8fba38f8d09fdfd3",
+    "fits": [
+      501,
+      503,
+      509,
+      521,
+      523,
+      541,
+      547,
+      557,
+      563,
+      569,
+      571,
+      577,
+      587,
+      593,
+      599,
+      601
+    ],
+    "families": [
+      "ordinary_base",
+      "ordinary_bank",
+      "clocked_bank",
+      "first_passage_bank",
+      "raw_history",
+      "evidence_accumulator"
+    ],
+    "controllers": [
+      "fixed",
+      "value"
+    ],
+    "reference_family": "bayes",
+    "deadline": 6,
+    "read_budget": 3,
+    "packet_length": 32,
+    "calibration_count": 64,
+    "train_worlds": 64,
+    "validation_worlds": 32,
+    "iid_worlds": 96,
+    "ood_worlds": 96,
+    "data_seed_base": 610000000000,
+    "confirmation_seed_base": 710000000000,
+    "train_domain": {
+      "durations": [
+        0.5,
+        1.0
+      ],
+      "reliabilities": [
+        0.65,
+        0.85
+      ],
+      "prices": [
+        0.03,
+        0.12
+      ],
+      "delays": [
+        1,
+        2
+      ],
+      "latency_price": 0.025,
+      "repair_price": 0.03,
+      "failure_probability": 0.08
+    },
+    "ood_domain": {
+      "durations": [
+        0.25,
+        1.5
+      ],
+      "reliabilities": [
+        0.55,
+        0.95
+      ],
+      "prices": [
+        0.01,
+        0.18
+      ],
+      "delays": [
+        1,
+        2
+      ],
+      "latency_price": 0.04,
+      "repair_price": 0.05,
+      "failure_probability": 0.16
+    },
+    "behavior_action_weights": [
+      0.025,
+      0.2,
+      0.6,
+      0.5,
+      0.025,
+      0.025
+    ],
+    "hidden_width": 32,
+    "optimizer": "AdamW",
+    "updates": 240,
+    "batch_states": 128,
+    "learning_rate": 0.012,
+    "weight_decay": 0.0001,
+    "belief_loss_weight": 0.25,
+    "raw_regularizer": 0.0001,
+    "gradient_clip": 5.0,
+    "dtype": "float64",
+    "cpu_threads": 1,
+    "selection_rule": "TRAIN/validation development only. Final optimizer update selected for every arm and fit. One halfway actual greedy occupancy snapshot for all on variants. No confirmation tuning or seed removal.",
+    "training_objective": "Matched masked Q MSE plus belief BCE. Fixed behavior rows use exact conditional cell mass; realized policy-visit rows use one-hot detached observed cell index. Not autonomous policy gradient.",
+    "primary_contrasts": [
+      {
+        "name": "terminal_structure",
+        "positive": "five-family structured_off/value mean",
+        "negative": "five-family free_off/value mean"
+      },
+      {
+        "name": "occupancy_supervision",
+        "positive": "first_passage_bank__structured_on/value",
+        "negative": "first_passage_bank__structured_off/value"
+      },
+      {
+        "name": "impulse_mechanism",
+        "positive": "first_passage_bank__impulse_on/value",
+        "negative": "first_passage_bank__structured_on/value"
+      },
+      {
+        "name": "analytic_increment",
+        "positive": "first_passage_bank__structured_on/value",
+        "negative": "ordinary_bank__structured_on/value"
+      }
+    ],
+    "statistics": {
+      "unit": "independent fit means, common within-fit worlds",
+      "primary_splits": [
+        "iid",
+        "ood"
+      ],
+      "familywise_alpha": 0.05,
+      "primary_intervals": 8,
+      "practical_utility_margin": 0.02,
+      "method": "paired Student t on independent fits; Bonferroni8 two-sided intervals; all8 reported",
+      "planning": "3 independent DEV validation fit differences; choose maximum required N over four primary contrasts with sd upper multiplier1.25, normal power80 percent at true effect.08 versus benefit threshold.02; minimum8 maximum16 fits. If resource cap binds, no planned-power claim.",
+      "failure_rule": "retain every attempted fit and failed execution; any missing formal arm blocks its inference; repairs versioned and affected formal group rerun",
+      "secondary": "family-specific terminal effects, controller value-fixed, 2x2 simple effects/interaction, diagnostics and cost panels descriptive",
+      "cost_gate": "full process training and complete CPU budget include collection; actual data preparation, setup, discarded development, final inference, oracle diagnostics, storage retained. No Joules or production claim."
+    },
+    "freeze_rule": "Publish complete sources/protocol before formal fits; publish every formal model and source/data hashes before creating new IID/OOD worlds; verified remote commit required by confirm entry point.",
+    "limits": [
+      "Efficacy uses inherited finite interval law; standalone continuous-time finite CTMC is separately verified and not silently substituted.",
+      "Ordinary has64 inactive refractory input weights and3 inactive physical coordinates; structured head removes99 learned parameters. Structural counts do not prove capacity equivalence.",
+      "Raw-history and accumulator retain completed evidence in different forms; all share36 public causal features.",
+      "Single halfway supervised occupancy collection can become stale after further training; final visited-state diagnostics assess remaining mismatch.",
+      "Equal CPU supplemental panel has4 key candidates; equal-update panel has20 candidates. Fixed/value policies reuse the same fitted checkpoint.",
+      "Synthetic marked-bit content with real file access and frozen FullHX; neither language quality nor production adoption is established.",
+      "Diagnostic Bellman oracles are shared across learned-policy evaluations for the same public world; they are never inputs to learned policies. Bayes reference policies retain separate owned oracles and their full inference cost."
+    ],
+    "development_fits": [
+      101,
+      103,
+      107
+    ],
+    "batch_seed_base": 833000,
+    "occupancy_seed_base": 840000000,
+    "execution_seed_base": 850000000,
+    "training_cpu_seconds": 16.0,
+    "selected_fit_planning": "evidence/fit_planning.json"
+  },
+  "source_sha256": {
+    "tools/hcsn/digital_mechanisms_20261101/analysis_checks.py": "f48b89c339d7bb9e9061c30c5987badfe7b3d5076632dba0c7fe5d190255727e",
+    "tools/hcsn/digital_mechanisms_20261101/analyze.py": "be83b8c5bec3b698d1c5e35ee164a4220b9bd807dd198d479d0d3b2393f29c01",
+    "tools/hcsn/digital_mechanisms_20261101/exact_policy.py": "0c59774c4724b77f8adfbc13e1f109574bd1ba2817a45161ac87c6c6b6a41738",
+    "tools/hcsn/digital_mechanisms_20261101/execution.py": "6435bc3a5c2bd3c40009ddd53fbf56026a99c44a4e4a9a757db019b11e416df7",
+    "tools/hcsn/digital_mechanisms_20261101/forecast_comparison.py": "4f7038651d50c6f63db93e71f0f176821ecdc875267f2de664edc7f66bca1761",
+    "tools/hcsn/digital_mechanisms_20261101/freeze.py": "cb2329262f63e3370f886d4d52746a40a7b79bb3dc322aa84ef1dae8c5b09844",
+    "tools/hcsn/digital_mechanisms_20261101/launch.py": "d66633ffdc4372cc8546c7f3a1ae243e4abb9f7577461319b0f532e6704dca1b",
+    "tools/hcsn/digital_mechanisms_20261101/model_checks.py": "b997c877fa91c3c6361a37e54d4d413b4eb68af64b29ad56b4af7a8c41f4f540",
+    "tools/hcsn/digital_mechanisms_20261101/models.py": "a1ba992b5756e53317964629aeb063b60732d632670ad8da2193700cb33ef495",
+    "tools/hcsn/digital_mechanisms_20261101/native_confirmation.py": "c4a0b7ac78d34df76c44ec10345fde3a379ecacd6f4c7354960b41b19f60fc96",
+    "tools/hcsn/digital_mechanisms_20261101/policy_checks.py": "2a1e5eb8c1a087bc7d2f709fea500cdf0d4e18d3e7111bd49ac4fb18d0990766",
+    "tools/hcsn/digital_mechanisms_20261101/protocol.json": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3",
+    "tools/hcsn/digital_mechanisms_20261101/renewal.py": "9a4412daf954dc07d466a3cd07a96c4ea1bddd6d66a6e4be3d50b717a313012f",
+    "tools/hcsn/digital_mechanisms_20261101/renewal_checks.py": "2cb086d533c07681e4d6815fb3e1fd4ce9df975a94583d0afaaf1b128e70de7a",
+    "tools/hcsn/digital_mechanisms_20261101/renewal_native.rs": "64df3f47465ba0d66451830e8cc845339b8dd67fedd64727b14fab5ca988f2fc",
+    "tools/hcsn/digital_mechanisms_20261101/run_study.py": "eae06e0e86aa9d31bc2f31d1c2c0034955fda0cecd311064bd57dae0d667af5b",
+    "tools/hcsn/digital_mechanisms_20261101/training.py": "7bdf1274dd3f2207e0c79c82a6e92a5f122cbc1acaac7a77ef78d310c9600f46",
+    "tools/hcsn/digital_read_before_20261031/bank.py": "002bdece767352a66ba598148c9d26055c1e3a03792b3c11583ccf98928a284b",
+    "tools/hcsn/digital_read_before_20261031/bank_tests.py": "60f49d0ae4653dc0b9c28e023b1e7848a6ea431efd9995c52110db77c7dc6000",
+    "tools/hcsn/digital_read_before_20261031/benchmark_training.py": "8b1ce397fc19685027c2d40fb3d73b20142bf75e4e97ec2e680244790243aed6",
+    "tools/hcsn/digital_read_before_20261031/build_native.py": "eea16735b64d45ba07181ee4099d80668db912a41c20613836e27d570844d1a4",
+    "tools/hcsn/digital_read_before_20261031/data.py": "5cb133bab4848b5bb5f698ef7c3301d2f42508ec352f20ac71b8c80d9a1df95b",
+    "tools/hcsn/digital_read_before_20261031/deploy.py": "73c379488827982e5bfa2da4e0b44f81d501a2217bad1395604160be2ba47477",
+    "tools/hcsn/digital_read_before_20261031/experiment.py": "f13733b6fa7c6784912e767d08e64234995933839fb3378e883c2bab3262d3c9",
+    "tools/hcsn/digital_read_before_20261031/final_audit.py": "e098fd324b322436f60faf6276b10d69a1c5336063410811558676e8f76bb83a",
+    "tools/hcsn/digital_read_before_20261031/freeze_artifacts.py": "a25c32e87796162048c93005c6fcac722abfcde780cff9defc0f2623c82e6032",
+    "tools/hcsn/digital_read_before_20261031/independent_audit.py": "eb4dc1d08f3868ff2239b5352242f6b3f58d7ca01e51031e396b64d70fd1a27f",
+    "tools/hcsn/digital_read_before_20261031/metrics.py": "eedbe2a1ecb42ddf247cb9fb8ae5eb6a5f7fb4769dc8fdb4cb367cd21fa93325",
+    "tools/hcsn/digital_read_before_20261031/model.py": "2080945409e174f0d2318b632f2cc1e776f9db5c3624f751dfe0d18cb0f81aeb",
+    "tools/hcsn/digital_read_before_20261031/pack_confirmation.py": "4968115454ea6220e3ff7f2d97a05cf254f6cea21e574832070d3cd7acfeabf9",
+    "tools/hcsn/digital_read_before_20261031/restore_training.py": "e62b1fb9ea12425a2b32ae735ed7fcd4b055c1f33649eeea5b87d947e06436e2",
+    "tools/hcsn/digital_read_before_20261031/run_training.py": "c54a2e7f4b289e940a45c98042935f60e90e7ac967c8d39617ae333f72abd44a",
+    "tools/hcsn/digital_read_before_20261031/summarize_research.py": "e9630982e4f0f9184630e8725149d36650cfe3219b52e221f67049d0cb06f325",
+    "tools/hcsn/digital_read_before_20261031/task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+    "tools/hcsn/digital_read_before_20261031/train.py": "eb8a5fcf0489f78cc7b7f53d97726ac8c7dcfe8bcafc56a312989cf99e117553",
+    "tools/hcsn/next/full_kernel/baseline_table.npz": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764",
+    "tools/hcsn/task_value_factorial_20261030/UPSTREAM_FILES.json": "be6aa0751da3e9a63b4c70d0c8bc4c42d8f2595548009013eb4b92b5e44fc98e",
+    "tools/hcsn/task_value_factorial_20261030/task.py": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc",
+    "tools/hcsn/third/memory/checkpoints/memory_full_mass_seed29.npz": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+    "tools/hcsn/third/memory/reference.py": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e"
+  },
+  "protocol_sha256": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3",
+  "fit_planning_sha256": "b0b04def82d19a4a69f84feed2ff3f14b081b91e8532fe7c6bfdb468f476a8a6",
+  "versions": {
+    "python": "3.12.14",
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "formal_models_trained": false,
+  "confirmation_generated": false,
+  "production_activation": false
+}

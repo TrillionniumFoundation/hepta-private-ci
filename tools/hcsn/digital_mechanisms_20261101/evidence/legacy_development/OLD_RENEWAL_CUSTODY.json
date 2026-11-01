@@ -1,0 +1,60 @@
+{
+  "custody_scope": "The historical numerical/replay summary and its source are preserved; do not claim a complete original old-run raw artifact archive. The new frozen-model native run separately retains every raw execution file and binary.",
+  "final_json_and_repository_evidence_exact_bytes_equal": true,
+  "final_json_and_repository_evidence_same_content": true,
+  "no_previous_test_rerun": true,
+  "not_retained_as_original_files": [
+    "Old compiled executable bytes (temporary directory intentionally removed on successful verification).",
+    "Old per-process raw stdout/stderr files and intermediate prefix checkpoint files; the old harness did not durably save these.",
+    "Individual Monte Carlo path state/count arrays; only aggregate observations were emitted."
+  ],
+  "original_temporary_execution_directories_remaining": [],
+  "retained_in_final_json": [
+    "Numerical error summaries, independent Monte Carlo aggregate counts/probabilities, source hashes, compiler/binary hashes, timing.",
+    "All 12 whole-path event traces (22 events) and full final checkpoint strings.",
+    "One changed-context event trace and final checkpoint; four rejection error messages."
+  ],
+  "retained_preformat_source": {
+    "renewal.py": {
+      "path": "/workspace/scratch/1273ec953099/digital-runs/development_source_v1/renewal.py",
+      "sha256": "9a4412daf954dc07d466a3cd07a96c4ea1bddd6d66a6e4be3d50b717a313012f"
+    },
+    "renewal_checks.py": {
+      "path": "/workspace/scratch/1273ec953099/digital-runs/development_source_v1/renewal_checks.py",
+      "sha256": "2cb086d533c07681e4d6815fb3e1fd4ce9df975a94583d0afaaf1b128e70de7a"
+    },
+    "renewal_native.rs": {
+      "path": "/workspace/scratch/1273ec953099/digital-runs/development_source_v1/renewal_native.rs",
+      "sha256": "d37e25193c318a34f6e79a025b0661c23147a9af840bfcc3bfaa7cfc33cb80ef"
+    }
+  },
+  "retained_results": [
+    {
+      "bytes": 3661,
+      "final_checkpoint_strings_retained": 0,
+      "full_event_rows_retained": 0,
+      "native_replay_receipt_count": 0,
+      "native_source_sha256": "de713a54c8fab5f0356eefec00557276b0a109525c1755cbc3c323b7317d635d",
+      "path": "/tmp/digital_renewal_checks_first.json",
+      "sha256": "a703f1f2b66de5938f17b4bc4e032e1b68176fd25c71a0f13c2440d1a5831487"
+    },
+    {
+      "bytes": 12441,
+      "final_checkpoint_strings_retained": 12,
+      "full_event_rows_retained": 22,
+      "native_replay_receipt_count": 12,
+      "native_source_sha256": "d37e25193c318a34f6e79a025b0661c23147a9af840bfcc3bfaa7cfc33cb80ef",
+      "path": "/tmp/digital_renewal_checks_final.json",
+      "sha256": "e511c1974d89ebd80e4eedb280b7642e68b9652ac66f803900a319fda8bcaeb3"
+    },
+    {
+      "bytes": 12441,
+      "final_checkpoint_strings_retained": 12,
+      "full_event_rows_retained": 22,
+      "native_replay_receipt_count": 12,
+      "native_source_sha256": "d37e25193c318a34f6e79a025b0661c23147a9af840bfcc3bfaa7cfc33cb80ef",
+      "path": "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/evidence/renewal_checks.json",
+      "sha256": "e511c1974d89ebd80e4eedb280b7642e68b9652ac66f803900a319fda8bcaeb3"
+    }
+  ]
+}

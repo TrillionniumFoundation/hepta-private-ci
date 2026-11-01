@@ -1,0 +1,17 @@
+{
+  "cgroup": {
+    "cpu.max": "800000 100000\n",
+    "memory.current": "8588398592\n",
+    "memory.events": "low 0\nhigh 0\nmax 4778580\noom 25\noom_kill 6\noom_group_kill 0\n",
+    "memory.max": "8589934592\n",
+    "memory.swap.current": "0\n"
+  },
+  "confirmation_worker_reason": "Reduce concurrent raw-episode and diagnostic-cache memory while keeping all frozen fits, models and task worlds unchanged.",
+  "confirmation_workers_planned": 4,
+  "cpu_affinity_count": 9,
+  "machine": "x86_64",
+  "python": "3.12.14",
+  "schema": "digital-runtime-observation-v1",
+  "scope": "Shared container observation during formal training; cumulative cgroup counters include other work and are not attributed to this study. Study worker costs come from wait4 receipts. This observation does not estimate energy or deployment throughput.",
+  "utc": "2026-11-01T17:45:29.942415+00:00"
+}

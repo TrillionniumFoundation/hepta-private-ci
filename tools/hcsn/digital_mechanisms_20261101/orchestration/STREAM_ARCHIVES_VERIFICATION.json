@@ -1,0 +1,167 @@
+{
+  "utc": "2026-11-01T18:04:55.016538+00:00",
+  "helper_sha256": "99da8b7a82f13036369d3efae42c66328cc57f80b1124698021a2b578b8af65f",
+  "sources": [
+    {
+      "path": "/workspace/scratch/1273ec953099/digital-runs/development_v2/fit_101/data",
+      "files": 784,
+      "staging": "read-only hardlinks; original bytes unmodified"
+    },
+    {
+      "path": "/workspace/scratch/1273ec953099/digital-runs/development_v2/fit_103/data",
+      "files": 786,
+      "staging": "read-only hardlinks; original bytes unmodified"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "stream_pack_actual_development_data",
+      "wall_seconds": 0.23886330000095768,
+      "process_cpu_seconds": 0.216940332
+    },
+    {
+      "operation": "stream_restore_stream_archive",
+      "wall_seconds": 0.6715118409993011,
+      "process_cpu_seconds": 0.29491610199999996
+    },
+    {
+      "operation": "frozen_restore_stream_archive",
+      "wall_seconds": 0.18058671000108006,
+      "process_cpu_seconds": 0.1274187659999999
+    },
+    {
+      "operation": "frozen_pack_actual_data",
+      "wall_seconds": 0.37371429599807016,
+      "process_cpu_seconds": 0.32705200199999984
+    },
+    {
+      "operation": "stream_restore_frozen_archive",
+      "wall_seconds": 0.35009665400139056,
+      "process_cpu_seconds": 0.2936916649999999
+    },
+    {
+      "operation": "stream_pack_actual_wait4",
+      "wall_seconds": 0.002287832998263184,
+      "process_cpu_seconds": 0.0016337630000000658
+    },
+    {
+      "operation": "stream_restore_actual_wait4",
+      "wall_seconds": 0.005687551998562412,
+      "process_cpu_seconds": 0.002400165999999704
+    },
+    {
+      "operation": "reject_volume_corruption",
+      "wall_seconds": 0.014107654002145864,
+      "process_cpu_seconds": 0.009759036000000165
+    },
+    {
+      "operation": "reject_archive_byte_count",
+      "wall_seconds": 0.020468885002628667,
+      "process_cpu_seconds": 0.012038795999999685
+    },
+    {
+      "operation": "reject_duplicate_index",
+      "wall_seconds": 0.002392348000284983,
+      "process_cpu_seconds": 0.001311572000000094
+    },
+    {
+      "operation": "reject_truncated_gzip_trailer",
+      "wall_seconds": 0.4787512750008318,
+      "process_cpu_seconds": 0.20768653000000015
+    },
+    {
+      "operation": "reject_hidden_second_archive",
+      "wall_seconds": 0.3536006090034789,
+      "process_cpu_seconds": 0.2715899070000001
+    },
+    {
+      "operation": "reject_missing_second_tar_zero_block",
+      "wall_seconds": 0.17116897499727202,
+      "process_cpu_seconds": 0.14830858400000002
+    },
+    {
+      "operation": "reject_invalid_tar_terminal_block",
+      "wall_seconds": 0.230376134000835,
+      "process_cpu_seconds": 0.20202929800000025
+    }
+  ],
+  "checks": {
+    "stream_roundtrip_original_bytes": 1570,
+    "exact_frozen_functions_extracted_by_ast": [
+      "run_study.digest",
+      "run_study.read_json",
+      "run_study.write_json",
+      "freeze.pack_directory",
+      "freeze.restore_archive"
+    ],
+    "frozen_reads_stream_original_bytes": 1570,
+    "stream_reads_frozen_original_bytes": 1570,
+    "wait4_roundtrip_original_bytes": 5,
+    "volume_corruption": {
+      "rejected": true,
+      "error_type": "ValueError",
+      "error": "archive volume/page byte count or hash mismatch",
+      "partial_destination_retained": false
+    },
+    "archive_byte_count": {
+      "rejected": true,
+      "error_type": "ValueError",
+      "error": "compressed archive byte count or hash mismatch",
+      "partial_destination_retained": false
+    },
+    "duplicate_index": {
+      "rejected": true,
+      "error_type": "IntegrityError",
+      "error": "UNIQUE constraint failed: files.path",
+      "partial_destination_retained": false
+    },
+    "truncated_gzip_trailer": {
+      "rejected": true,
+      "error_type": "EOFError",
+      "error": "Compressed file ended before the end-of-stream marker was reached",
+      "partial_destination_retained": true
+    },
+    "hidden_second_archive": {
+      "rejected": true,
+      "error_type": "ValueError",
+      "error": "nonzero content after tar end marker",
+      "partial_destination_retained": true
+    },
+    "missing_second_tar_zero_block": {
+      "rejected": true,
+      "error_type": "ValueError",
+      "error": "incomplete tar end padding or missing members",
+      "partial_destination_retained": true
+    },
+    "invalid_tar_terminal_block": {
+      "rejected": true,
+      "error_type": "ValueError",
+      "error": "missing tar end marker or unexpected read-ahead",
+      "partial_destination_retained": true
+    },
+    "development_fit_refused_before_pack": {
+      "rejected": true,
+      "error": "selected formal fit lacks successful FINISHED and wait4 receipts"
+    },
+    "existing_restore_destination_rejected": true,
+    "part_size_max": 450001,
+    "parts": 2,
+    "pages": 4,
+    "no_torch_or_scientific_module_imported": true
+  },
+  "earlier_probe_harness_error": "Initial harness incorrectly assumed equal file counts for two existing development fits (1568 total versus observed1570); archive packing itself succeeded; prior artifacts retained in integration/.",
+  "positive_selected_formal_or_confirmation_fit_roundtrip": "deferred until root publishes helper; no formal artifact archived by this probe",
+  "scope": "Existing development data and wait4 artifacts only; operational transport verification, no scientific efficacy tests or new task outcomes.",
+  "probe_process_wall_seconds": 6.10193355100273,
+  "probe_process_cpu_seconds": 4.195065318999999,
+  "probe_peak_rss_kib": 48440,
+  "final_static_verification": {
+    "inherited_just_fmt_exit_code": 0,
+    "frozen_source_files": 40,
+    "all_frozen_source_hashes_unchanged": true,
+    "source_freeze_sha256": "24a1ac52db82e0f40d26370daf85e8dfc56bb94ed5940607493db236550327d5",
+    "post_format_helper_sha256": "99da8b7a82f13036369d3efae42c66328cc57f80b1124698021a2b578b8af65f",
+    "post_format_tests_run": false,
+    "line_count": 299
+  }
+}

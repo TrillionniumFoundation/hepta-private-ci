@@ -1,0 +1,422 @@
+{
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "corruption_and_mismatch_rejections": [
+    "checkpoint model/schema mismatch",
+    "checkpoint checksum mismatch",
+    "invalid checkpoint state",
+    "invalid target time"
+  ],
+  "event_count_integral_error": 1.176836406102666e-14,
+  "first_hit_density_integral_error": 7.771561172376096e-16,
+  "forecast_partition_defect": 1.554312234475219e-14,
+  "frechet_gradient_error": 7.077028962854115e-10,
+  "maximum_mass_defect": 5.329070518200751e-15,
+  "maximum_semigroup_error": 1.609823385706477e-15,
+  "model": "continuous-time finite upwind CTMC; not exact Brownian",
+  "model_fnv64": "e8dd865ea3748415",
+  "monte_carlo": [
+    {
+      "descriptive_count_standard_errors": [
+        1.5031633782124596,
+        0.0027346557098443655
+      ],
+      "empirical_event_counts": [
+        0.0004166666666666667,
+        0.004666666666666667
+      ],
+      "expected_event_counts": [
+        0.0006967179338058683,
+        0.004668368111197213
+      ],
+      "first_hit": {
+        "lower": 0.0006966735560489333,
+        "survival": 0.9946349688950316,
+        "upper": 0.0046683575489200315
+      },
+      "horizon": 0.25,
+      "maximum_probability_error": 0.005231266545114188,
+      "samples": 12000
+    },
+    {
+      "descriptive_count_standard_errors": [
+        0.23181834921218222,
+        0.17708223943000062
+      ],
+      "empirical_event_counts": [
+        0.021083333333333332,
+        0.1425
+      ],
+      "expected_event_counts": [
+        0.021387364272545235,
+        0.1419345125740738
+      ],
+      "first_hit": {
+        "lower": 0.021162818895862905,
+        "survival": 0.8370267097705745,
+        "upper": 0.1418104713335629
+      },
+      "horizon": 0.75,
+      "maximum_probability_error": 0.0032804689453425767,
+      "samples": 12000
+    },
+    {
+      "descriptive_count_standard_errors": [
+        0.03300928566988401,
+        0.15551157177684424
+      ],
+      "empirical_event_counts": [
+        0.06708333333333333,
+        0.40975
+      ],
+      "expected_event_counts": [
+        0.06700794704823082,
+        0.41046128841379537
+      ],
+      "first_hit": {
+        "lower": 0.059998349051249046,
+        "survival": 0.5379571879657721,
+        "upper": 0.402044462982979
+      },
+      "horizon": 1.5,
+      "maximum_probability_error": 0.0035702145826075754,
+      "samples": 12000
+    },
+    {
+      "descriptive_count_standard_errors": [
+        0.9586465298250229,
+        1.2941802005367742
+      ],
+      "empirical_event_counts": [
+        0.355,
+        1.6314166666666667
+      ],
+      "expected_event_counts": [
+        0.3597423632669554,
+        1.6218397495576702
+      ],
+      "first_hit": {
+        "lower": 0.12567972882228823,
+        "survival": 0.03214978013565314,
+        "upper": 0.8421704910420585
+      },
+      "horizon": 6.0,
+      "maximum_probability_error": 0.003763062155621555,
+      "samples": 12000
+    }
+  ],
+  "monte_carlo_simultaneous_absolute_bound": 0.022296894215552022,
+  "monte_carlo_simultaneous_hoeffding_coverage": 0.999,
+  "native_binary_sha256": "82a6d91f6be1b20604ca07cf82fad9929758c59eb2ecf5a471e8edefb74d0625",
+  "native_context_change_cases": 1,
+  "native_context_receipt": {
+    "cut": 0.75,
+    "events": [
+      {
+        "side": 1,
+        "time": 2.674806466191692
+      }
+    ],
+    "final_checkpoint": "HCNC1 f1d67aa78f285e97 17 15 4018000000000000 3 4229603741786627718 4018307d43d2f8f8 4 0 1 70\ne5f6b6e3c9845e2b\n",
+    "initial_state": 16,
+    "python_agrees": true,
+    "seed": 18446744073709551615
+  },
+  "native_fresh_process_replay_cases": 12,
+  "native_replay_receipts": [
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 1.56536898817311
+        },
+        {
+          "side": 1,
+          "time": 2.893578781203795
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 12 14323201221699799923 401808fe46c0df66 11 0 2 109\n80388c0ea17cbdf7\n",
+      "final_checkpoint_sha256": "38b7c0ac8eb83113553ac99cda6a52d6de41649f4a6ac28086c0e9b50c77bce8",
+      "initial_state": 7,
+      "seed": 17,
+      "summary": {
+        "jumps": 109,
+        "lower_events": 0,
+        "state": 12,
+        "time": 6,
+        "upper_events": 2
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    },
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 2.260817271226478
+        },
+        {
+          "side": 1,
+          "time": 3.3294816679310038
+        },
+        {
+          "side": 1,
+          "time": 5.786484099328638
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 6 15648470042294532842 40180c4dafce45ef 5 0 3 92\n100632b3fb97d3db\n",
+      "final_checkpoint_sha256": "0048a676e12fcead2f681000064c37a8279d37673016abfa85cf8a500d0507cc",
+      "initial_state": 15,
+      "seed": 17,
+      "summary": {
+        "jumps": 92,
+        "lower_events": 0,
+        "state": 6,
+        "time": 6,
+        "upper_events": 3
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    },
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 2.448512346270298
+        },
+        {
+          "side": 1,
+          "time": 3.7077412819260243
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 10 10118079796119089683 40180a6cb92e1d03 11 0 2 117\nc09542a285512a0e\n",
+      "final_checkpoint_sha256": "c89ee7ea9780b4383d7d57ea68bd5f7e8b1b84a0210375e66771e4d03c7a17ca",
+      "initial_state": 16,
+      "seed": 17,
+      "summary": {
+        "jumps": 117,
+        "lower_events": 0,
+        "state": 10,
+        "time": 6,
+        "upper_events": 2
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    },
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 0.9495195424483028
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 6 1184922303442595777 40180ea16e0f356f 7 0 1 120\na674868877081602\n",
+      "final_checkpoint_sha256": "56cfddc0967e454fa88fc71f6fdba93d074323c5e9eab3484408f4abeec797a1",
+      "initial_state": 7,
+      "seed": 123,
+      "summary": {
+        "jumps": 120,
+        "lower_events": 0,
+        "state": 6,
+        "time": 6,
+        "upper_events": 1
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    },
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 1.8026719652580938
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 3 5105348682933059070 40180f5bdd6d657f 4 0 1 82\nf5547e1ef41248ab\n",
+      "final_checkpoint_sha256": "50482d6eef79fc6651485c2547c50771b25a141d29654d9896eefc8e397f7771",
+      "initial_state": 15,
+      "seed": 123,
+      "summary": {
+        "jumps": 82,
+        "lower_events": 0,
+        "state": 3,
+        "time": 6,
+        "upper_events": 1
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    },
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 3.1605220023615113
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 4 619470131464797670 40182e813a2d57a8 3 0 1 85\n9a97106a7439dcca\n",
+      "final_checkpoint_sha256": "7eea0742d6804ef1bf46fc1def174d8296b2a78052497c1fe54f843353578129",
+      "initial_state": 16,
+      "seed": 123,
+      "summary": {
+        "jumps": 85,
+        "lower_events": 0,
+        "state": 4,
+        "time": 6,
+        "upper_events": 1
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    },
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 0.92436327359806
+        },
+        {
+          "side": 1,
+          "time": 5.21032764750422
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 11 13362316445272403418 4018575d1fc3d04e 12 0 2 139\n2c031da291e065a0\n",
+      "final_checkpoint_sha256": "35e2262fd9a276ec2339bc53d685591046d8e4ca1c1e10dd955218d261c6b948",
+      "initial_state": 7,
+      "seed": 98765,
+      "summary": {
+        "jumps": 139,
+        "lower_events": 0,
+        "state": 11,
+        "time": 6,
+        "upper_events": 2
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    },
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 1.4030490953010468
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 13 15512608527301989529 401800c01739f306 12 0 1 111\nf3bd4fda2d4375bd\n",
+      "final_checkpoint_sha256": "59b5589cd8c33db681aae984373c0da599e57c58cda46a3383a7a46d03abd762",
+      "initial_state": 15,
+      "seed": 98765,
+      "summary": {
+        "jumps": 111,
+        "lower_events": 0,
+        "state": 13,
+        "time": 6,
+        "upper_events": 1
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    },
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 3.8669241445035216
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 4 11177960359053325834 401815237f2508d1 5 0 1 113\n4c3a1afc6f378073\n",
+      "final_checkpoint_sha256": "c6c3e58b93810d5d93a906743856bdc517f808adaf1bab1cf9cb9b886881bc2f",
+      "initial_state": 16,
+      "seed": 98765,
+      "summary": {
+        "jumps": 113,
+        "lower_events": 0,
+        "state": 4,
+        "time": 6,
+        "upper_events": 1
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    },
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 1.5109804139048102
+        },
+        {
+          "side": 1,
+          "time": 4.673645172281786
+        },
+        {
+          "side": -1,
+          "time": 5.782986398811391
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 5 6399291083585804538 401802d10e02090b 4 1 2 122\n05f7001dfe3c917a\n",
+      "final_checkpoint_sha256": "79c4b4d2e40cbb5dd7c42e6db02e9255ed885dd3d9ec8d6e4e7e443065611596",
+      "initial_state": 7,
+      "seed": 18446744073709551615,
+      "summary": {
+        "jumps": 122,
+        "lower_events": 1,
+        "state": 5,
+        "time": 6,
+        "upper_events": 2
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    },
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 0.639451072158394
+        },
+        {
+          "side": 1,
+          "time": 3.4792031202909453
+        },
+        {
+          "side": -1,
+          "time": 5.253618779093603
+        },
+        {
+          "side": 1,
+          "time": 5.961148653238091
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 16 8296331848840284511 40198101c8b51ee0 5 1 3 140\ncb36759bfd70c72c\n",
+      "final_checkpoint_sha256": "b0b575b6ba995c5e73d30c442d089e9184d456d828d7524cef32f557f59da926",
+      "initial_state": 15,
+      "seed": 18446744073709551615,
+      "summary": {
+        "jumps": 140,
+        "lower_events": 1,
+        "state": 16,
+        "time": 6,
+        "upper_events": 3
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    },
+    {
+      "events": [
+        {
+          "side": 1,
+          "time": 3.003848647229899
+        }
+      ],
+      "final_checkpoint": "HCNC1 e8dd865ea3748415 17 15 4018000000000000 8 10218303352962014818 4018112f517283d6 9 0 1 131\n2e0e4fca6d842eca\n",
+      "final_checkpoint_sha256": "483933c3c76988f3233c273ad474c92da4c03679050479b170819b75109311f7",
+      "initial_state": 16,
+      "seed": 18446744073709551615,
+      "summary": {
+        "jumps": 131,
+        "lower_events": 0,
+        "state": 8,
+        "time": 6,
+        "upper_events": 1
+      },
+      "whole_split_checkpoint_and_trace_identical": true
+    }
+  ],
+  "passed": true,
+  "production_activation": false,
+  "research_only": true,
+  "schema": "digital-renewal-verification-v1",
+  "source_sha256": {
+    "renewal.py": "9a4412daf954dc07d466a3cd07a96c4ea1bddd6d66a6e4be3d50b717a313012f",
+    "renewal_checks.py": "2cb086d533c07681e4d6815fb3e1fd4ce9df975a94583d0afaaf1b128e70de7a",
+    "renewal_native.rs": "d37e25193c318a34f6e79a025b0661c23147a9af840bfcc3bfaa7cfc33cb80ef"
+  },
+  "timing": {
+    "python_cpu_seconds": 0.203295667,
+    "subprocess_cpu_seconds": 0.506792,
+    "subprocess_scope": "Rust compilation, compiler-version call, and all native path/rejection executions",
+    "wall_seconds": 0.5831445499970869
+  }
+}

@@ -1,0 +1,519 @@
+{
+  "brier_definition": "sum across all six categories of (forecast probability - outcome indicator)^2",
+  "brownian_spatial_convergence": false,
+  "categories": [
+    "active_x<=-0.5B",
+    "active_-0.5B<x<=0",
+    "active_0<x<=0.5B",
+    "active_x>0.5B",
+    "lower_refractory",
+    "upper_refractory"
+  ],
+  "free_endpoint_definition": "unbounded Gaussian endpoint with mean mu*t and variance sigma^2*t; zero refractory probability",
+  "independent_paths_per_horizon": 12000,
+  "initial_state": 7,
+  "initial_voltage": 0.0,
+  "input_assumption": {
+    "drift": 0.355,
+    "duration": "held constant separately throughout each horizon",
+    "reliability": 0.85,
+    "symbol": 1
+  },
+  "learned_model_calibration": false,
+  "limitations": [
+    "CTMC/grid versus continuous Gaussian differs in both propagation and reset/refractory semantics.",
+    "Inclusive thresholds contain CTMC voltage atoms; Gaussian has no threshold atoms.",
+    "A matched generic CTMC/HMM has the same forecast and receives no special-name disadvantage.",
+    "No trained forecast model, real task adoption, complete execution economics, or energy measurement.",
+    "Native event implementation remains a standalone research executable without production ACK-owner integration."
+  ],
+  "monte_carlo_rng": "NumPy default_rng independent vectorized exponential/categorical sampler",
+  "numerical_contract_passed": true,
+  "paired_brier_family_alpha": 0.001,
+  "paired_brier_family_size": 5,
+  "physical": {
+    "boundary": 1.0,
+    "diffusion": 0.575,
+    "drift_bias": 0.04,
+    "gain": 0.45,
+    "recovery_rate": 1.125,
+    "reset_minus": 0.19,
+    "reset_plus": -0.24
+  },
+  "probability_family_alpha": 0.001,
+  "probability_family_size": 30,
+  "production_activation": false,
+  "reset_only_causal_attribution": false,
+  "rows": [
+    {
+      "brier": {
+        "expected_difference_under_declared_ctmc": 0.011108255376517228,
+        "expected_free_gaussian": 0.6010312861640489,
+        "expected_reset_aware": 0.5899230307875316,
+        "free_gaussian_mean": 0.6036082068862445,
+        "paired_free_minus_reset_mean": 0.011518998633046295,
+        "paired_simultaneous_hoeffding_half_width": 0.0056185276084787005,
+        "paired_standard_error": 0.0012437900238385922,
+        "reset_aware_mean": 0.5920892082531983
+      },
+      "category_probabilities": {
+        "empirical_ctmc": [
+          0.042333333333333334,
+          0.42775,
+          0.46925,
+          0.05416666666666667,
+          0.0006666666666666666,
+          0.005833333333333334
+        ],
+        "free_gaussian": [
+          0.020288521629729838,
+          0.35848800410796744,
+          0.5449273386142888,
+          0.07629613564801396,
+          0.0,
+          0.0
+        ],
+        "reset_aware_ctmc": [
+          0.03971423205282172,
+          0.4281710675834639,
+          0.4712067193926015,
+          0.05579689976308382,
+          0.0006637332812690383,
+          0.004447347926760426
+        ]
+      },
+      "empirical_category_standard_error": [
+        0.001838052008291709,
+        0.00451645083278895,
+        0.004555714703351532,
+        0.0020662493978399784,
+        0.00023562367987644729,
+        0.0006951801658296667
+      ],
+      "empirical_event_counts": [
+        0.0006666666666666666,
+        0.005833333333333334
+      ],
+      "empirical_first_event_probabilities": [
+        0.0006666666666666666,
+        0.005833333333333334
+      ],
+      "event_count_descriptive_standard_error": [
+        0.00023563349814343702,
+        0.0006952091334804361
+      ],
+      "expected_event_counts": [
+        0.0006967179338058683,
+        0.004668368111197213
+      ],
+      "first_event_probability": {
+        "lower": 0.0006966735560489333,
+        "survival": 0.9946349688950316,
+        "upper": 0.0046683575489200315
+      },
+      "free_gaussian_maximum_discrepancy_lower_bound": 0.05426657434215586,
+      "horizon": 0.25,
+      "independent_seed": 1861100,
+      "maximum_calibration_discrepancy": {
+        "free_gaussian": 0.07567733861428877,
+        "reset_aware_ctmc": 0.0026191012805116126
+      },
+      "refractory_occupancy": {
+        "empirical": [
+          0.0006666666666666666,
+          0.005833333333333334
+        ],
+        "free_gaussian": [
+          0.0,
+          0.0
+        ],
+        "predicted": [
+          0.0006637332812690383,
+          0.004447347926760426
+        ]
+      },
+      "reset_aware_maximum_discrepancy_upper_bound": 0.02402986555264453,
+      "samples": 12000
+    },
+    {
+      "brier": {
+        "expected_difference_under_declared_ctmc": 0.04463446257300997,
+        "expected_free_gaussian": 0.791072502655006,
+        "expected_reset_aware": 0.746438040081996,
+        "free_gaussian_mean": 0.7887169763344565,
+        "paired_free_minus_reset_mean": 0.042534511012238166,
+        "paired_simultaneous_hoeffding_half_width": 0.01110423940514225,
+        "paired_standard_error": 0.001461177227860634,
+        "reset_aware_mean": 0.7461824653222183
+      },
+      "category_probabilities": {
+        "empirical_ctmc": [
+          0.07775,
+          0.27391666666666664,
+          0.37175,
+          0.15025,
+          0.018,
+          0.10833333333333334
+        ],
+        "free_gaussian": [
+          0.06193096341541484,
+          0.23450580516879724,
+          0.3841752417211718,
+          0.3193879896946161,
+          0.0,
+          0.0
+        ],
+        "reset_aware_ctmc": [
+          0.07476305785524978,
+          0.2797663847298656,
+          0.36678914956803477,
+          0.14881370339222535,
+          0.017024530665593594,
+          0.11284317378903452
+        ]
+      },
+      "empirical_category_standard_error": [
+        0.0024444654749726643,
+        0.004071100653681681,
+        0.004411650650077965,
+        0.0032618366183792837,
+        0.0012136721138759016,
+        0.002837211398277985
+      ],
+      "empirical_event_counts": [
+        0.022416666666666668,
+        0.13916666666666666
+      ],
+      "empirical_first_event_probabilities": [
+        0.022333333333333334,
+        0.13916666666666666
+      ],
+      "event_count_descriptive_standard_error": [
+        0.0013514185773474692,
+        0.0031597638316682095
+      ],
+      "expected_event_counts": [
+        0.021387364272545235,
+        0.1419345125740738
+      ],
+      "first_event_probability": {
+        "lower": 0.021162818895862905,
+        "survival": 0.8370267097705745,
+        "upper": 0.1418104713335629
+      },
+      "free_gaussian_maximum_discrepancy_lower_bound": 0.1477272254224832,
+      "horizon": 0.75,
+      "independent_seed": 1861101,
+      "maximum_calibration_discrepancy": {
+        "free_gaussian": 0.16913798969461613,
+        "reset_aware_ctmc": 0.00584971806319895
+      },
+      "refractory_occupancy": {
+        "empirical": [
+          0.018,
+          0.10833333333333334
+        ],
+        "free_gaussian": [
+          0.0,
+          0.0
+        ],
+        "predicted": [
+          0.017024530665593594,
+          0.11284317378903452
+        ]
+      },
+      "reset_aware_maximum_discrepancy_upper_bound": 0.027260482335331866,
+      "samples": 12000
+    },
+    {
+      "brier": {
+        "expected_difference_under_declared_ctmc": 0.22208440661873338,
+        "expected_free_gaussian": 1.0038384026168652,
+        "expected_reset_aware": 0.7817539959981319,
+        "free_gaussian_mean": 1.0023677033662473,
+        "paired_free_minus_reset_mean": 0.2198134170265581,
+        "paired_simultaneous_hoeffding_half_width": 0.024486166813805523,
+        "paired_standard_error": 0.003273577910462308,
+        "reset_aware_mean": 0.7825542863396895
+      },
+      "category_probabilities": {
+        "empirical_ctmc": [
+          0.07575,
+          0.256,
+          0.2835,
+          0.1215,
+          0.041,
+          0.22225
+        ],
+        "free_gaussian": [
+          0.07130454945014493,
+          0.1534760330619498,
+          0.25681484160076623,
+          0.5184045758871391,
+          0.0,
+          0.0
+        ],
+        "reset_aware_ctmc": [
+          0.0766084495999442,
+          0.25401710218027684,
+          0.2830778425660121,
+          0.12075961802956076,
+          0.03821278257541692,
+          0.2273242050487944
+        ]
+      },
+      "empirical_category_standard_error": [
+        0.002415435390359262,
+        0.003983967871356395,
+        0.004114281529015729,
+        0.002982417224333309,
+        0.0018101335125711951,
+        0.003795336365198742
+      ],
+      "empirical_event_counts": [
+        0.06883333333333333,
+        0.4043333333333333
+      ],
+      "empirical_first_event_probabilities": [
+        0.06283333333333334,
+        0.3975
+      ],
+      "event_count_descriptive_standard_error": [
+        0.002314219231779693,
+        0.004547910744821915
+      ],
+      "expected_event_counts": [
+        0.06700794704823082,
+        0.41046128841379537
+      ],
+      "first_event_probability": {
+        "lower": 0.059998349051249046,
+        "survival": 0.5379571879657721,
+        "upper": 0.402044462982979
+      },
+      "free_gaussian_maximum_discrepancy_lower_bound": 0.37549381161500617,
+      "horizon": 1.5,
+      "independent_seed": 1861102,
+      "maximum_calibration_discrepancy": {
+        "free_gaussian": 0.39690457588713907,
+        "reset_aware_ctmc": 0.0050742050487943835
+      },
+      "refractory_occupancy": {
+        "empirical": [
+          0.041,
+          0.22225
+        ],
+        "free_gaussian": [
+          0.0,
+          0.0
+        ],
+        "predicted": [
+          0.03821278257541692,
+          0.2273242050487944
+        ]
+      },
+      "reset_aware_maximum_discrepancy_upper_bound": 0.0264849693209273,
+      "samples": 12000
+    },
+    {
+      "brier": {
+        "expected_difference_under_declared_ctmc": 0.48147342287189304,
+        "expected_free_gaussian": 1.2672369910191787,
+        "expected_reset_aware": 0.7857635681472857,
+        "free_gaussian_mean": 1.2716190234152256,
+        "paired_free_minus_reset_mean": 0.4833665480497863,
+        "paired_simultaneous_hoeffding_half_width": 0.033390372207837256,
+        "paired_standard_error": 0.00437607501973119,
+        "reset_aware_mean": 0.7882524753654392
+      },
+      "category_probabilities": {
+        "empirical_ctmc": [
+          0.08575,
+          0.26116666666666666,
+          0.254,
+          0.10041666666666667,
+          0.05683333333333333,
+          0.24183333333333334
+        ],
+        "free_gaussian": [
+          0.05804525213349068,
+          0.08441004224401136,
+          0.14279670320339288,
+          0.7147480024191051,
+          0.0,
+          0.0
+        ],
+        "reset_aware_ctmc": [
+          0.08105559180187702,
+          0.25994568627488523,
+          0.263303815943528,
+          0.10214876394264841,
+          0.05391100971365436,
+          0.2396351323234155
+        ]
+      },
+      "empirical_category_standard_error": [
+        0.002555988678574301,
+        0.004009973388200236,
+        0.003973705239865349,
+        0.0027436769689934684,
+        0.002113514165940136,
+        0.003908857166980121
+      ],
+      "empirical_event_counts": [
+        0.16508333333333333,
+        0.839
+      ],
+      "empirical_first_event_probabilities": [
+        0.10158333333333333,
+        0.6948333333333333
+      ],
+      "event_count_descriptive_standard_error": [
+        0.003484206024020649,
+        0.005532301156411028
+      ],
+      "expected_event_counts": [
+        0.16318246430018518,
+        0.8287187323207574
+      ],
+      "first_event_probability": {
+        "lower": 0.10250574269877004,
+        "survival": 0.21061091921477243,
+        "upper": 0.6868833380864575
+      },
+      "free_gaussian_maximum_discrepancy_lower_bound": 0.5929205714803054,
+      "horizon": 3.0,
+      "independent_seed": 1861103,
+      "maximum_calibration_discrepancy": {
+        "free_gaussian": 0.6143313357524384,
+        "reset_aware_ctmc": 0.009303815943527971
+      },
+      "refractory_occupancy": {
+        "empirical": [
+          0.05683333333333333,
+          0.24183333333333334
+        ],
+        "free_gaussian": [
+          0.0,
+          0.0
+        ],
+        "predicted": [
+          0.05391100971365436,
+          0.2396351323234155
+        ]
+      },
+      "reset_aware_maximum_discrepancy_upper_bound": 0.030714580215660887,
+      "samples": 12000
+    },
+    {
+      "brier": {
+        "expected_difference_under_declared_ctmc": 0.7529817674281807,
+        "expected_free_gaussian": 1.5401756019535449,
+        "expected_reset_aware": 0.7871938345253642,
+        "free_gaussian_mean": 1.5395676489156551,
+        "paired_free_minus_reset_mean": 0.7520260188262476,
+        "paired_simultaneous_hoeffding_half_width": 0.039543070022681044,
+        "paired_standard_error": 0.005486910719539218,
+        "reset_aware_mean": 0.7875416300894076
+      },
+      "category_probabilities": {
+        "empirical_ctmc": [
+          0.08125,
+          0.25225,
+          0.26625,
+          0.10308333333333333,
+          0.057416666666666664,
+          0.23975
+        ],
+        "free_gaussian": [
+          0.030930398375279538,
+          0.034299187303148335,
+          0.058346310725824274,
+          0.8764241035957478,
+          0.0,
+          0.0
+        ],
+        "reset_aware_ctmc": [
+          0.08054734584047249,
+          0.2588086171796046,
+          0.2645760886598443,
+          0.10261605746528828,
+          0.057988066923123784,
+          0.23546382393168203
+        ]
+      },
+      "empirical_category_standard_error": [
+        0.0024941337424043645,
+        0.003964634677369404,
+        0.0040348578816359814,
+        0.002775745541324922,
+        0.00212367592190906,
+        0.003897327476403969
+      ],
+      "empirical_event_counts": [
+        0.35725,
+        1.6230833333333334
+      ],
+      "empirical_first_event_probabilities": [
+        0.124,
+        0.8451666666666666
+      ],
+      "event_count_descriptive_standard_error": [
+        0.004950984327601181,
+        0.007417540283525826
+      ],
+      "expected_event_counts": [
+        0.3597423632669554,
+        1.6218397495576702
+      ],
+      "first_event_probability": {
+        "lower": 0.12567972882228823,
+        "survival": 0.03214978013565314,
+        "upper": 0.8421704910420585
+      },
+      "free_gaussian_maximum_discrepancy_lower_bound": 0.7519300059902816,
+      "horizon": 6.0,
+      "independent_seed": 1861104,
+      "maximum_calibration_discrepancy": {
+        "free_gaussian": 0.7733407702624145,
+        "reset_aware_ctmc": 0.006558617179604653
+      },
+      "refractory_occupancy": {
+        "empirical": [
+          0.057416666666666664,
+          0.23975
+        ],
+        "free_gaussian": [
+          0.0,
+          0.0
+        ],
+        "predicted": [
+          0.057988066923123784,
+          0.23546382393168203
+        ]
+      },
+      "reset_aware_maximum_discrepancy_upper_bound": 0.02796938145173757,
+      "samples": 12000
+    }
+  ],
+  "schema": "digital-reset-aware-forecast-comparison-v1",
+  "scope": "diagnostic semantic contrast on declared finite-CTMC paths",
+  "simultaneous_probability_error_bound": 0.021410764272132916,
+  "source_sha256": {
+    "forecast_comparison.py": "4f7038651d50c6f63db93e71f0f176821ecdc875267f2de664edc7f66bca1761",
+    "renewal.py": "9a4412daf954dc07d466a3cd07a96c4ea1bddd6d66a6e4be3d50b717a313012f",
+    "renewal_checks.py": "2cb086d533c07681e4d6815fb3e1fd4ce9df975a94583d0afaaf1b128e70de7a"
+  },
+  "task_efficacy_claim": false,
+  "thresholds": [
+    -0.5,
+    0.0,
+    0.5
+  ],
+  "timing": {
+    "python_cpu_seconds": 0.23909401200000002,
+    "wall_seconds": 0.5505908150007599
+  },
+  "total_familywise_failure_bound": 0.002,
+  "total_independent_paths": 60000
+}

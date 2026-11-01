@@ -1,0 +1,166 @@
+{
+  "schema": "digital-four-mechanism-study-v1",
+  "baseline_commit": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
+  "analytic_reference_commit": "74cf5f30a4e87a2666c57b3f8fba38f8d09fdfd3",
+  "fits": [
+    501,
+    503,
+    509,
+    521,
+    523,
+    541,
+    547,
+    557,
+    563,
+    569,
+    571,
+    577,
+    587,
+    593,
+    599,
+    601
+  ],
+  "families": [
+    "ordinary_base",
+    "ordinary_bank",
+    "clocked_bank",
+    "first_passage_bank",
+    "raw_history",
+    "evidence_accumulator"
+  ],
+  "controllers": [
+    "fixed",
+    "value"
+  ],
+  "reference_family": "bayes",
+  "deadline": 6,
+  "read_budget": 3,
+  "packet_length": 32,
+  "calibration_count": 64,
+  "train_worlds": 64,
+  "validation_worlds": 32,
+  "iid_worlds": 96,
+  "ood_worlds": 96,
+  "data_seed_base": 610000000000,
+  "confirmation_seed_base": 710000000000,
+  "train_domain": {
+    "durations": [
+      0.5,
+      1.0
+    ],
+    "reliabilities": [
+      0.65,
+      0.85
+    ],
+    "prices": [
+      0.03,
+      0.12
+    ],
+    "delays": [
+      1,
+      2
+    ],
+    "latency_price": 0.025,
+    "repair_price": 0.03,
+    "failure_probability": 0.08
+  },
+  "ood_domain": {
+    "durations": [
+      0.25,
+      1.5
+    ],
+    "reliabilities": [
+      0.55,
+      0.95
+    ],
+    "prices": [
+      0.01,
+      0.18
+    ],
+    "delays": [
+      1,
+      2
+    ],
+    "latency_price": 0.04,
+    "repair_price": 0.05,
+    "failure_probability": 0.16
+  },
+  "behavior_action_weights": [
+    0.025,
+    0.2,
+    0.6,
+    0.5,
+    0.025,
+    0.025
+  ],
+  "hidden_width": 32,
+  "optimizer": "AdamW",
+  "updates": 240,
+  "batch_states": 128,
+  "learning_rate": 0.012,
+  "weight_decay": 0.0001,
+  "belief_loss_weight": 0.25,
+  "raw_regularizer": 0.0001,
+  "gradient_clip": 5.0,
+  "dtype": "float64",
+  "cpu_threads": 1,
+  "selection_rule": "TRAIN/validation development only. Final optimizer update selected for every arm and fit. One halfway actual greedy occupancy snapshot for all on variants. No confirmation tuning or seed removal.",
+  "training_objective": "Matched masked Q MSE plus belief BCE. Fixed behavior rows use exact conditional cell mass; realized policy-visit rows use one-hot detached observed cell index. Not autonomous policy gradient.",
+  "primary_contrasts": [
+    {
+      "name": "terminal_structure",
+      "positive": "five-family structured_off/value mean",
+      "negative": "five-family free_off/value mean"
+    },
+    {
+      "name": "occupancy_supervision",
+      "positive": "first_passage_bank__structured_on/value",
+      "negative": "first_passage_bank__structured_off/value"
+    },
+    {
+      "name": "impulse_mechanism",
+      "positive": "first_passage_bank__impulse_on/value",
+      "negative": "first_passage_bank__structured_on/value"
+    },
+    {
+      "name": "analytic_increment",
+      "positive": "first_passage_bank__structured_on/value",
+      "negative": "ordinary_bank__structured_on/value"
+    }
+  ],
+  "statistics": {
+    "unit": "independent fit means, common within-fit worlds",
+    "primary_splits": [
+      "iid",
+      "ood"
+    ],
+    "familywise_alpha": 0.05,
+    "primary_intervals": 8,
+    "practical_utility_margin": 0.02,
+    "method": "paired Student t on independent fits; Bonferroni8 two-sided intervals; all8 reported",
+    "planning": "3 independent DEV validation fit differences; choose maximum required N over four primary contrasts with sd upper multiplier1.25, normal power80 percent at true effect.08 versus benefit threshold.02; minimum8 maximum16 fits. If resource cap binds, no planned-power claim.",
+    "failure_rule": "retain every attempted fit and failed execution; any missing formal arm blocks its inference; repairs versioned and affected formal group rerun",
+    "secondary": "family-specific terminal effects, controller value-fixed, 2x2 simple effects/interaction, diagnostics and cost panels descriptive",
+    "cost_gate": "full process training and complete CPU budget include collection; actual data preparation, setup, discarded development, final inference, oracle diagnostics, storage retained. No Joules or production claim."
+  },
+  "freeze_rule": "Publish complete sources/protocol before formal fits; publish every formal model and source/data hashes before creating new IID/OOD worlds; verified remote commit required by confirm entry point.",
+  "limits": [
+    "Efficacy uses inherited finite interval law; standalone continuous-time finite CTMC is separately verified and not silently substituted.",
+    "Ordinary has64 inactive refractory input weights and3 inactive physical coordinates; structured head removes99 learned parameters. Structural counts do not prove capacity equivalence.",
+    "Raw-history and accumulator retain completed evidence in different forms; all share36 public causal features.",
+    "Single halfway supervised occupancy collection can become stale after further training; final visited-state diagnostics assess remaining mismatch.",
+    "Equal CPU supplemental panel has4 key candidates; equal-update panel has20 candidates. Fixed/value policies reuse the same fitted checkpoint.",
+    "Synthetic marked-bit content with real file access and frozen FullHX; neither language quality nor production adoption is established.",
+    "Diagnostic Bellman oracles are shared across learned-policy evaluations for the same public world; they are never inputs to learned policies. Bayes reference policies retain separate owned oracles and their full inference cost."
+  ],
+  "development_fits": [
+    101,
+    103,
+    107
+  ],
+  "batch_seed_base": 833000,
+  "occupancy_seed_base": 840000000,
+  "execution_seed_base": 850000000,
+  "training_cpu_seconds": 16.0,
+  "selected_fit_planning": "evidence/fit_planning.json"
+}

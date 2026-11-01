@@ -1,0 +1,63 @@
+{
+  "accounting_scope": "complete child lifetime; local Linux probe establishes waited descendants included; do not add inner subprocess CPU",
+  "child_pid": 5,
+  "child_system_cpu_seconds": 3.766744,
+  "child_user_cpu_seconds": 26.947641,
+  "command": [
+    "python",
+    "-m",
+    "tools.hcsn.digital_mechanisms_20261101.analyze",
+    "confirmation",
+    "--protocol",
+    "tools/hcsn/digital_mechanisms_20261101/protocol.json",
+    "--confirmation",
+    "/workspace/scratch/1273ec953099/digital-runs/confirmation",
+    "--training",
+    "/workspace/scratch/1273ec953099/digital-runs/formal_training",
+    "--development",
+    "/workspace/scratch/1273ec953099/digital-runs/development_v2",
+    "--attempt-root",
+    "/workspace/scratch/1273ec953099/digital-runs/development",
+    "--output",
+    "tools/hcsn/digital_mechanisms_20261101/evidence/CONFIRMATION_ANALYSIS.json"
+  ],
+  "finished_at": "2026-11-01T18:31:50.381338+00:00",
+  "input_sha256_after": {
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/SOURCE_FREEZE.json": "24a1ac52db82e0f40d26370daf85e8dfc56bb94ed5940607493db236550327d5",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/analyze.py": "be83b8c5bec3b698d1c5e35ee164a4220b9bd807dd198d479d0d3b2393f29c01",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/protocol.json": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3"
+  },
+  "input_sha256_before": {
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/SOURCE_FREEZE.json": "24a1ac52db82e0f40d26370daf85e8dfc56bb94ed5940607493db236550327d5",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/analyze.py": "be83b8c5bec3b698d1c5e35ee164a4220b9bd807dd198d479d0d3b2393f29c01",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/protocol.json": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3"
+  },
+  "involuntary_context_switches": 1934,
+  "kernel_maxrss": 729612,
+  "kernel_maxrss_unit": "KiB on this recorded Linux host",
+  "major_faults": 0,
+  "minor_faults": 1947766,
+  "outer_wait4_cpu_seconds": 30.714385,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python_version": "3.12.14",
+  "raw_wait_status": 0,
+  "returncode": 0,
+  "schema": "digital-external-wait4-receipt-v1",
+  "started_at": "2026-11-01T18:31:19.264970+00:00",
+  "stderr": {
+    "bytes": 0,
+    "path": "/workspace/scratch/1273ec953099/digital-runs/analysis_outer/frozen_analysis.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 0,
+    "path": "/workspace/scratch/1273ec953099/digital-runs/analysis_outer/frozen_analysis.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "supervisor_python_cpu_seconds": 0.0008617380000000008,
+  "supervisor_sha256": "c8e6bc116eb661b09b5f0b8371c73f90cc3c00c02b48d11d79728b6a5bc4144f",
+  "voluntary_context_switches": 495,
+  "wall_seconds": 31.116374240998994
+}

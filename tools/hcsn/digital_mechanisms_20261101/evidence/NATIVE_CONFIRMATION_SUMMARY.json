@@ -1,0 +1,60 @@
+{
+  "actual_case_subprocess_cpu_seconds": 0.5300940000000002,
+  "binary_sha256": "cb0e8efd6fb0f3c01ef4df69a1d1023ad60e147425e1e603b253cec314493d18",
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "cut_states": {
+    "active": 87,
+    "lower_refractory": 25,
+    "upper_refractory": 16
+  },
+  "do_not_add_outer_and_nested_cpu": true,
+  "event_count_distribution": {
+    "0": 36,
+    "1": 32,
+    "2": 21,
+    "3": 20,
+    "4": 10,
+    "5": 3,
+    "6": 5,
+    "7": 1
+  },
+  "event_sides": {
+    "-1": 94,
+    "1": 132
+  },
+  "fit_count": 16,
+  "inner_cost": {
+    "actual_subprocess_cpu_seconds": 1.182805,
+    "experiment_python_cpu_seconds": 0.4994976819999999,
+    "module_import_cpu_seconds": 1.33240859,
+    "subprocess_scope": "compiler version, compilation, and every native attempt; failures included",
+    "wall_seconds": 2.0025665590001154
+  },
+  "model_freeze_sha256": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+  "multiple_event_cases": 60,
+  "multiple_events_before_cut_cases": 6,
+  "native_case_processes": 384,
+  "native_source_sha256": "64df3f47465ba0d66451830e8cc845339b8dd67fedd64727b14fab5ca988f2fc",
+  "outer_peak_rss_kib": 252696,
+  "outer_receipt_sha256": "bc5e56bb811543230056122ab8f957d27b5585b5be1b9ec5dd5d3857a4ad0260",
+  "outer_total_includes_waited_children": true,
+  "outer_wait4_cpu_seconds": 3.593226,
+  "outer_wall_seconds": 3.9251496709985076,
+  "passed": true,
+  "pending_time_strictly_after_cut_count": 128,
+  "pending_transitions": {
+    "active_transition": 85,
+    "boundary_event": 2,
+    "recovery_release": 41
+  },
+  "prior_native_suite_rerun": false,
+  "production_owner_integrated": false,
+  "raw_result_sha256": "63773f474d5359d75de1ddfdfcff0eec0535bc4b12a484164484d3961de19456",
+  "signed_event_total": 226,
+  "source_hashes_match_seal_before_and_after": true,
+  "task_confirmation_accessed": false,
+  "total_internal_jumps": 6702,
+  "trajectory_cases": 128,
+  "unique_case_pids": 384,
+  "verified_model_commit": "7dfa6bb3d155440f9697b92b705c95252e9858a2"
+}

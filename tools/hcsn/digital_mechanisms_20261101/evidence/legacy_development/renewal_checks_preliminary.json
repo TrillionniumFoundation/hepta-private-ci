@@ -1,0 +1,124 @@
+{
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "corruption_and_mismatch_rejections": [
+    "checkpoint model/schema mismatch",
+    "checkpoint checksum mismatch",
+    "invalid checkpoint state",
+    "invalid target time"
+  ],
+  "event_count_integral_error": 1.176836406102666e-14,
+  "first_hit_density_integral_error": 7.771561172376096e-16,
+  "forecast_partition_defect": 1.554312234475219e-14,
+  "frechet_gradient_error": 7.077028962854115e-10,
+  "maximum_mass_defect": 5.329070518200751e-15,
+  "maximum_semigroup_error": 1.609823385706477e-15,
+  "model": "continuous-time finite upwind CTMC; not exact Brownian",
+  "monte_carlo": [
+    {
+      "descriptive_count_standard_errors": [
+        1.5031633782124596,
+        0.0027346557098443655
+      ],
+      "empirical_event_counts": [
+        0.0004166666666666667,
+        0.004666666666666667
+      ],
+      "expected_event_counts": [
+        0.0006967179338058683,
+        0.004668368111197213
+      ],
+      "first_hit": {
+        "lower": 0.0006966735560489333,
+        "survival": 0.9946349688950316,
+        "upper": 0.0046683575489200315
+      },
+      "horizon": 0.25,
+      "maximum_probability_error": 0.005231266545114188,
+      "samples": 12000
+    },
+    {
+      "descriptive_count_standard_errors": [
+        0.23181834921218222,
+        0.17708223943000062
+      ],
+      "empirical_event_counts": [
+        0.021083333333333332,
+        0.1425
+      ],
+      "expected_event_counts": [
+        0.021387364272545235,
+        0.1419345125740738
+      ],
+      "first_hit": {
+        "lower": 0.021162818895862905,
+        "survival": 0.8370267097705745,
+        "upper": 0.1418104713335629
+      },
+      "horizon": 0.75,
+      "maximum_probability_error": 0.0032804689453425767,
+      "samples": 12000
+    },
+    {
+      "descriptive_count_standard_errors": [
+        0.03300928566988401,
+        0.15551157177684424
+      ],
+      "empirical_event_counts": [
+        0.06708333333333333,
+        0.40975
+      ],
+      "expected_event_counts": [
+        0.06700794704823082,
+        0.41046128841379537
+      ],
+      "first_hit": {
+        "lower": 0.059998349051249046,
+        "survival": 0.5379571879657721,
+        "upper": 0.402044462982979
+      },
+      "horizon": 1.5,
+      "maximum_probability_error": 0.0035702145826075754,
+      "samples": 12000
+    },
+    {
+      "descriptive_count_standard_errors": [
+        0.9586465298250229,
+        1.2941802005367742
+      ],
+      "empirical_event_counts": [
+        0.355,
+        1.6314166666666667
+      ],
+      "expected_event_counts": [
+        0.3597423632669554,
+        1.6218397495576702
+      ],
+      "first_hit": {
+        "lower": 0.12567972882228823,
+        "survival": 0.03214978013565314,
+        "upper": 0.8421704910420585
+      },
+      "horizon": 6.0,
+      "maximum_probability_error": 0.003763062155621555,
+      "samples": 12000
+    }
+  ],
+  "monte_carlo_simultaneous_absolute_bound": 0.022296894215552022,
+  "monte_carlo_simultaneous_hoeffding_coverage": 0.999,
+  "native_context_change_cases": 1,
+  "native_fresh_process_replay_cases": 12,
+  "passed": true,
+  "production_activation": false,
+  "research_only": true,
+  "schema": "digital-renewal-verification-v1",
+  "source_sha256": {
+    "renewal.py": "78b0cfc7a6fbf9c44e3f695a5d83150c76587322181c88dee4efbf4a5d15c556",
+    "renewal_checks.py": "8fafa96cdfe0072b816e1decc99c73ab432808b13eaf6f8b3be0629b83a9df97",
+    "renewal_native.rs": "de713a54c8fab5f0356eefec00557276b0a109525c1755cbc3c323b7317d635d"
+  },
+  "timing": {
+    "native_cpu_included": false,
+    "python_cpu_seconds": 31.501290780999998,
+    "wall_seconds": 9.249715431000368
+  }
+}

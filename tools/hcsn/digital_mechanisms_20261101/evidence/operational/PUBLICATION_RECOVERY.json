@@ -1,0 +1,39 @@
+{
+  "schema": "digital-publication-recovery-v1",
+  "scope": "Post-experiment transport only. No science run, registered fit or outcome was retried or changed.",
+  "events": [
+    {
+      "stage": "first-eight blob upload",
+      "result": "At 160 successful blobs, 32 reads failed before upload because sandbox startup returned ENOSPC. All prior blob identities retained; successful reads resumed after verified duplicate-copy reclamation.",
+      "cleanup_receipt": "operational/DUPLICATE_RESTORE_CLEANUP.json"
+    },
+    {
+      "stage": "first-eight root tree creation",
+      "result": "Two 372-entry create_tree requests returned ReadTimeout. Read-back showed branch unchanged at cb3766a26ffa5eb01ed03134d223f0a2124ab634. Eight flat per-fit subtrees followed by an eight-entry root patch succeeded. No force update.",
+      "result_commit": "eb23029a0fc973fab4d8fa1f9cbfae50025d6a2e"
+    },
+    {
+      "stage": "final ledger blob read",
+      "result": "A 16027-byte draft metadata entry for BLOCKERS.json differed from its finalized 16111-byte file. The uploader rejected the stale entry and retained 31 other successful blobs. Refreshed the finalized ledger hash bdabb490aedd5d081da599f64bc149c20ee3026e10d20c8a24705418deff9da4, then completed all 141 evidence blobs. This was a final documentation edit, not a scientific-source change.",
+      "result_commit": "00dc7cf38ceee3daa15fb05693ce4f39d9f3ea26"
+    }
+  ],
+  "confirmation_outer_files": [
+    {
+      "path": "evidence/confirmation_outer/PROCESS.json",
+      "bytes": 3536,
+      "sha256": "dfc6fc0f18c1780831b6a2f3cf23be57a5d39144f46c74af5241efa63bc2b2a6"
+    },
+    {
+      "path": "evidence/confirmation_outer/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/confirmation_outer/stdout.log",
+      "bytes": 14819,
+      "sha256": "fd01e154e2472baaba9b83cfaf660d24751c1f6ed7aa3c8c5ff70289d604388c"
+    }
+  ],
+  "confirmation_outer_cost_scope": "Complete launcher lifetime including registered workers; do not add this to worker totals."
+}

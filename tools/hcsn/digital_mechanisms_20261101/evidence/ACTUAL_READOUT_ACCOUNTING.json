@@ -1,0 +1,285 @@
+{
+  "complete_audit_worker_cpu_seconds": 20.304004,
+  "created_utc": "2026-11-01T18:32:29.419663+00:00",
+  "development_replay_receipt_sha256": "8b18aa2bd164ce2bbe6450967537242b8adbdc731bef1a3b657c06addea08c15",
+  "eligible_transition_pairs": 6202,
+  "fits": 16,
+  "formatter_receipt": {
+    "finished_utc": "2026-11-01T18:25:26.580520+00:00",
+    "no_source_changes": true,
+    "returncode": 0,
+    "source_sha256_after": {
+      "tools/hcsn/digital_mechanisms_20261101/analysis_checks.py": "f48b89c339d7bb9e9061c30c5987badfe7b3d5076632dba0c7fe5d190255727e",
+      "tools/hcsn/digital_mechanisms_20261101/analyze.py": "be83b8c5bec3b698d1c5e35ee164a4220b9bd807dd198d479d0d3b2393f29c01",
+      "tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py": "824049bd452a73454351274c604001f025d63a8b01cca9c6ccf88f949470f601",
+      "tools/hcsn/digital_mechanisms_20261101/exact_policy.py": "0c59774c4724b77f8adfbc13e1f109574bd1ba2817a45161ac87c6c6b6a41738",
+      "tools/hcsn/digital_mechanisms_20261101/execution.py": "6435bc3a5c2bd3c40009ddd53fbf56026a99c44a4e4a9a757db019b11e416df7",
+      "tools/hcsn/digital_mechanisms_20261101/forecast_comparison.py": "4f7038651d50c6f63db93e71f0f176821ecdc875267f2de664edc7f66bca1761",
+      "tools/hcsn/digital_mechanisms_20261101/freeze.py": "cb2329262f63e3370f886d4d52746a40a7b79bb3dc322aa84ef1dae8c5b09844",
+      "tools/hcsn/digital_mechanisms_20261101/launch.py": "d66633ffdc4372cc8546c7f3a1ae243e4abb9f7577461319b0f532e6704dca1b",
+      "tools/hcsn/digital_mechanisms_20261101/model_checks.py": "b997c877fa91c3c6361a37e54d4d413b4eb68af64b29ad56b4af7a8c41f4f540",
+      "tools/hcsn/digital_mechanisms_20261101/models.py": "a1ba992b5756e53317964629aeb063b60732d632670ad8da2193700cb33ef495",
+      "tools/hcsn/digital_mechanisms_20261101/native_confirmation.py": "c4a0b7ac78d34df76c44ec10345fde3a379ecacd6f4c7354960b41b19f60fc96",
+      "tools/hcsn/digital_mechanisms_20261101/policy_checks.py": "2a1e5eb8c1a087bc7d2f709fea500cdf0d4e18d3e7111bd49ac4fb18d0990766",
+      "tools/hcsn/digital_mechanisms_20261101/protocol.json": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3",
+      "tools/hcsn/digital_mechanisms_20261101/renewal.py": "9a4412daf954dc07d466a3cd07a96c4ea1bddd6d66a6e4be3d50b717a313012f",
+      "tools/hcsn/digital_mechanisms_20261101/renewal_checks.py": "2cb086d533c07681e4d6815fb3e1fd4ce9df975a94583d0afaaf1b128e70de7a",
+      "tools/hcsn/digital_mechanisms_20261101/renewal_native.rs": "64df3f47465ba0d66451830e8cc845339b8dd67fedd64727b14fab5ca988f2fc",
+      "tools/hcsn/digital_mechanisms_20261101/run_study.py": "eae06e0e86aa9d31bc2f31d1c2c0034955fda0cecd311064bd57dae0d667af5b",
+      "tools/hcsn/digital_mechanisms_20261101/training.py": "7bdf1274dd3f2207e0c79c82a6e92a5f122cbc1acaac7a77ef78d310c9600f46",
+      "tools/hcsn/digital_read_before_20261031/bank.py": "002bdece767352a66ba598148c9d26055c1e3a03792b3c11583ccf98928a284b",
+      "tools/hcsn/digital_read_before_20261031/bank_tests.py": "60f49d0ae4653dc0b9c28e023b1e7848a6ea431efd9995c52110db77c7dc6000",
+      "tools/hcsn/digital_read_before_20261031/benchmark_training.py": "8b1ce397fc19685027c2d40fb3d73b20142bf75e4e97ec2e680244790243aed6",
+      "tools/hcsn/digital_read_before_20261031/build_native.py": "eea16735b64d45ba07181ee4099d80668db912a41c20613836e27d570844d1a4",
+      "tools/hcsn/digital_read_before_20261031/data.py": "5cb133bab4848b5bb5f698ef7c3301d2f42508ec352f20ac71b8c80d9a1df95b",
+      "tools/hcsn/digital_read_before_20261031/deploy.py": "73c379488827982e5bfa2da4e0b44f81d501a2217bad1395604160be2ba47477",
+      "tools/hcsn/digital_read_before_20261031/experiment.py": "f13733b6fa7c6784912e767d08e64234995933839fb3378e883c2bab3262d3c9",
+      "tools/hcsn/digital_read_before_20261031/final_audit.py": "e098fd324b322436f60faf6276b10d69a1c5336063410811558676e8f76bb83a",
+      "tools/hcsn/digital_read_before_20261031/freeze_artifacts.py": "a25c32e87796162048c93005c6fcac722abfcde780cff9defc0f2623c82e6032",
+      "tools/hcsn/digital_read_before_20261031/independent_audit.py": "eb4dc1d08f3868ff2239b5352242f6b3f58d7ca01e51031e396b64d70fd1a27f",
+      "tools/hcsn/digital_read_before_20261031/metrics.py": "eedbe2a1ecb42ddf247cb9fb8ae5eb6a5f7fb4769dc8fdb4cb367cd21fa93325",
+      "tools/hcsn/digital_read_before_20261031/model.py": "2080945409e174f0d2318b632f2cc1e776f9db5c3624f751dfe0d18cb0f81aeb",
+      "tools/hcsn/digital_read_before_20261031/pack_confirmation.py": "4968115454ea6220e3ff7f2d97a05cf254f6cea21e574832070d3cd7acfeabf9",
+      "tools/hcsn/digital_read_before_20261031/restore_training.py": "e62b1fb9ea12425a2b32ae735ed7fcd4b055c1f33649eeea5b87d947e06436e2",
+      "tools/hcsn/digital_read_before_20261031/run_training.py": "c54a2e7f4b289e940a45c98042935f60e90e7ac967c8d39617ae333f72abd44a",
+      "tools/hcsn/digital_read_before_20261031/summarize_research.py": "e9630982e4f0f9184630e8725149d36650cfe3219b52e221f67049d0cb06f325",
+      "tools/hcsn/digital_read_before_20261031/task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+      "tools/hcsn/digital_read_before_20261031/train.py": "eb8a5fcf0489f78cc7b7f53d97726ac8c7dcfe8bcafc56a312989cf99e117553",
+      "tools/hcsn/next/full_kernel/baseline_table.npz": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764",
+      "tools/hcsn/task_value_factorial_20261030/UPSTREAM_FILES.json": "be6aa0751da3e9a63b4c70d0c8bc4c42d8f2595548009013eb4b92b5e44fc98e",
+      "tools/hcsn/task_value_factorial_20261030/task.py": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc",
+      "tools/hcsn/third/memory/checkpoints/memory_full_mass_seed29.npz": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+      "tools/hcsn/third/memory/reference.py": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e"
+    },
+    "source_sha256_before": {
+      "tools/hcsn/digital_mechanisms_20261101/analysis_checks.py": "f48b89c339d7bb9e9061c30c5987badfe7b3d5076632dba0c7fe5d190255727e",
+      "tools/hcsn/digital_mechanisms_20261101/analyze.py": "be83b8c5bec3b698d1c5e35ee164a4220b9bd807dd198d479d0d3b2393f29c01",
+      "tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py": "824049bd452a73454351274c604001f025d63a8b01cca9c6ccf88f949470f601",
+      "tools/hcsn/digital_mechanisms_20261101/exact_policy.py": "0c59774c4724b77f8adfbc13e1f109574bd1ba2817a45161ac87c6c6b6a41738",
+      "tools/hcsn/digital_mechanisms_20261101/execution.py": "6435bc3a5c2bd3c40009ddd53fbf56026a99c44a4e4a9a757db019b11e416df7",
+      "tools/hcsn/digital_mechanisms_20261101/forecast_comparison.py": "4f7038651d50c6f63db93e71f0f176821ecdc875267f2de664edc7f66bca1761",
+      "tools/hcsn/digital_mechanisms_20261101/freeze.py": "cb2329262f63e3370f886d4d52746a40a7b79bb3dc322aa84ef1dae8c5b09844",
+      "tools/hcsn/digital_mechanisms_20261101/launch.py": "d66633ffdc4372cc8546c7f3a1ae243e4abb9f7577461319b0f532e6704dca1b",
+      "tools/hcsn/digital_mechanisms_20261101/model_checks.py": "b997c877fa91c3c6361a37e54d4d413b4eb68af64b29ad56b4af7a8c41f4f540",
+      "tools/hcsn/digital_mechanisms_20261101/models.py": "a1ba992b5756e53317964629aeb063b60732d632670ad8da2193700cb33ef495",
+      "tools/hcsn/digital_mechanisms_20261101/native_confirmation.py": "c4a0b7ac78d34df76c44ec10345fde3a379ecacd6f4c7354960b41b19f60fc96",
+      "tools/hcsn/digital_mechanisms_20261101/policy_checks.py": "2a1e5eb8c1a087bc7d2f709fea500cdf0d4e18d3e7111bd49ac4fb18d0990766",
+      "tools/hcsn/digital_mechanisms_20261101/protocol.json": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3",
+      "tools/hcsn/digital_mechanisms_20261101/renewal.py": "9a4412daf954dc07d466a3cd07a96c4ea1bddd6d66a6e4be3d50b717a313012f",
+      "tools/hcsn/digital_mechanisms_20261101/renewal_checks.py": "2cb086d533c07681e4d6815fb3e1fd4ce9df975a94583d0afaaf1b128e70de7a",
+      "tools/hcsn/digital_mechanisms_20261101/renewal_native.rs": "64df3f47465ba0d66451830e8cc845339b8dd67fedd64727b14fab5ca988f2fc",
+      "tools/hcsn/digital_mechanisms_20261101/run_study.py": "eae06e0e86aa9d31bc2f31d1c2c0034955fda0cecd311064bd57dae0d667af5b",
+      "tools/hcsn/digital_mechanisms_20261101/training.py": "7bdf1274dd3f2207e0c79c82a6e92a5f122cbc1acaac7a77ef78d310c9600f46",
+      "tools/hcsn/digital_read_before_20261031/bank.py": "002bdece767352a66ba598148c9d26055c1e3a03792b3c11583ccf98928a284b",
+      "tools/hcsn/digital_read_before_20261031/bank_tests.py": "60f49d0ae4653dc0b9c28e023b1e7848a6ea431efd9995c52110db77c7dc6000",
+      "tools/hcsn/digital_read_before_20261031/benchmark_training.py": "8b1ce397fc19685027c2d40fb3d73b20142bf75e4e97ec2e680244790243aed6",
+      "tools/hcsn/digital_read_before_20261031/build_native.py": "eea16735b64d45ba07181ee4099d80668db912a41c20613836e27d570844d1a4",
+      "tools/hcsn/digital_read_before_20261031/data.py": "5cb133bab4848b5bb5f698ef7c3301d2f42508ec352f20ac71b8c80d9a1df95b",
+      "tools/hcsn/digital_read_before_20261031/deploy.py": "73c379488827982e5bfa2da4e0b44f81d501a2217bad1395604160be2ba47477",
+      "tools/hcsn/digital_read_before_20261031/experiment.py": "f13733b6fa7c6784912e767d08e64234995933839fb3378e883c2bab3262d3c9",
+      "tools/hcsn/digital_read_before_20261031/final_audit.py": "e098fd324b322436f60faf6276b10d69a1c5336063410811558676e8f76bb83a",
+      "tools/hcsn/digital_read_before_20261031/freeze_artifacts.py": "a25c32e87796162048c93005c6fcac722abfcde780cff9defc0f2623c82e6032",
+      "tools/hcsn/digital_read_before_20261031/independent_audit.py": "eb4dc1d08f3868ff2239b5352242f6b3f58d7ca01e51031e396b64d70fd1a27f",
+      "tools/hcsn/digital_read_before_20261031/metrics.py": "eedbe2a1ecb42ddf247cb9fb8ae5eb6a5f7fb4769dc8fdb4cb367cd21fa93325",
+      "tools/hcsn/digital_read_before_20261031/model.py": "2080945409e174f0d2318b632f2cc1e776f9db5c3624f751dfe0d18cb0f81aeb",
+      "tools/hcsn/digital_read_before_20261031/pack_confirmation.py": "4968115454ea6220e3ff7f2d97a05cf254f6cea21e574832070d3cd7acfeabf9",
+      "tools/hcsn/digital_read_before_20261031/restore_training.py": "e62b1fb9ea12425a2b32ae735ed7fcd4b055c1f33649eeea5b87d947e06436e2",
+      "tools/hcsn/digital_read_before_20261031/run_training.py": "c54a2e7f4b289e940a45c98042935f60e90e7ac967c8d39617ae333f72abd44a",
+      "tools/hcsn/digital_read_before_20261031/summarize_research.py": "e9630982e4f0f9184630e8725149d36650cfe3219b52e221f67049d0cb06f325",
+      "tools/hcsn/digital_read_before_20261031/task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+      "tools/hcsn/digital_read_before_20261031/train.py": "eb8a5fcf0489f78cc7b7f53d97726ac8c7dcfe8bcafc56a312989cf99e117553",
+      "tools/hcsn/next/full_kernel/baseline_table.npz": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764",
+      "tools/hcsn/task_value_factorial_20261030/UPSTREAM_FILES.json": "be6aa0751da3e9a63b4c70d0c8bc4c42d8f2595548009013eb4b92b5e44fc98e",
+      "tools/hcsn/task_value_factorial_20261030/task.py": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc",
+      "tools/hcsn/third/memory/checkpoints/memory_full_mass_seed29.npz": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+      "tools/hcsn/third/memory/reference.py": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e"
+    },
+    "started_utc": "2026-11-01T18:25:26.228945+00:00",
+    "wall_seconds": 0.3515769600016938
+  },
+  "join_counts": {
+    "completion_or_failure": 2964,
+    "excluded_pairs": 2964,
+    "recorded_transitions": 9166,
+    "teacher_belief_changed": 2601
+  },
+  "maximum_worker_rss_kib": 24192,
+  "raw_executions_streamed": 153600,
+  "report_files": {
+    "tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py": {
+      "bytes": 21209,
+      "sha256": "824049bd452a73454351274c604001f025d63a8b01cca9c6ccf88f949470f601"
+    },
+    "tools/hcsn/digital_mechanisms_20261101/evidence/ACTUAL_READOUT_REVIEW.json": {
+      "bytes": 223382,
+      "sha256": "423f82916203900cb6434fdd6e991c893b2f64d088f68f754e13e784c5b54d1f"
+    },
+    "tools/hcsn/digital_mechanisms_20261101/evidence/ACTUAL_READOUT_REVIEW.md": {
+      "bytes": 9328,
+      "sha256": "e225bd847cc27ebc08b8def4885ed8ed7b3afa40db361d74ca6f0ec2a6a8fe94"
+    }
+  },
+  "schema": "digital-actual-readout-accounting-v1",
+  "scope": "Incremental collect_001, collect_002 and finalize complete child lifetimes, including imports, input hashing, streaming, computation, writing and shutdown. Per-fit analysis CPU is nested, not additive. Development replay and formatter are separate validation/preparation; transport is separately accounted.",
+  "selected_candidate_executions": 18432,
+  "sum_worker_wall_seconds": 21.601444689003984,
+  "supervisor_operational_cpu_seconds": 0.0028975380000000016,
+  "whole_process_receipts": {
+    "collect_001.json": {
+      "accounting_scope": "complete child lifetime; local Linux probe establishes waited descendants included; do not add inner subprocess CPU",
+      "child_pid": 5,
+      "child_system_cpu_seconds": 0.390876,
+      "child_user_cpu_seconds": 14.36979,
+      "command": [
+        "python",
+        "tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py",
+        "collect",
+        "--confirmation",
+        "/workspace/scratch/1273ec953099/digital-runs/confirmation",
+        "--output",
+        "/workspace/scratch/1273ec953099/digital-runs/actual_readout_audit",
+        "--model-seal",
+        "tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json"
+      ],
+      "finished_at": "2026-11-01T18:25:52.516572+00:00",
+      "input_sha256_after": {
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py": "824049bd452a73454351274c604001f025d63a8b01cca9c6ccf88f949470f601"
+      },
+      "input_sha256_before": {
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py": "824049bd452a73454351274c604001f025d63a8b01cca9c6ccf88f949470f601"
+      },
+      "involuntary_context_switches": 1155,
+      "kernel_maxrss": 23936,
+      "kernel_maxrss_unit": "KiB on this recorded Linux host",
+      "major_faults": 0,
+      "minor_faults": 29223,
+      "outer_wait4_cpu_seconds": 14.760666,
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "python_version": "3.12.14",
+      "raw_wait_status": 0,
+      "returncode": 0,
+      "schema": "digital-external-wait4-receipt-v1",
+      "started_at": "2026-11-01T18:25:36.729244+00:00",
+      "stderr": {
+        "bytes": 0,
+        "path": "/workspace/scratch/1273ec953099/digital-runs/actual_readout_audit/process_receipts/collect_001.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 956,
+        "path": "/workspace/scratch/1273ec953099/digital-runs/actual_readout_audit/process_receipts/collect_001.stdout",
+        "sha256": "d29d4b2c9c23036a1d3771186fe9c2013700673084a1e7675284bf9b5c270609"
+      },
+      "supervisor_python_cpu_seconds": 0.0007627210000000009,
+      "supervisor_sha256": "c8e6bc116eb661b09b5f0b8371c73f90cc3c00c02b48d11d79728b6a5bc4144f",
+      "voluntary_context_switches": 9,
+      "wall_seconds": 15.787336378998589
+    },
+    "collect_002.json": {
+      "accounting_scope": "complete child lifetime; local Linux probe establishes waited descendants included; do not add inner subprocess CPU",
+      "child_pid": 5,
+      "child_system_cpu_seconds": 0.145802,
+      "child_user_cpu_seconds": 3.642842,
+      "command": [
+        "python",
+        "tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py",
+        "collect",
+        "--confirmation",
+        "/workspace/scratch/1273ec953099/digital-runs/confirmation",
+        "--output",
+        "/workspace/scratch/1273ec953099/digital-runs/actual_readout_audit",
+        "--model-seal",
+        "tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json"
+      ],
+      "finished_at": "2026-11-01T18:29:12.893331+00:00",
+      "input_sha256_after": {
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py": "824049bd452a73454351274c604001f025d63a8b01cca9c6ccf88f949470f601"
+      },
+      "input_sha256_before": {
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py": "824049bd452a73454351274c604001f025d63a8b01cca9c6ccf88f949470f601"
+      },
+      "involuntary_context_switches": 419,
+      "kernel_maxrss": 23536,
+      "kernel_maxrss_unit": "KiB on this recorded Linux host",
+      "major_faults": 0,
+      "minor_faults": 23416,
+      "outer_wait4_cpu_seconds": 3.7886439999999997,
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "python_version": "3.12.14",
+      "raw_wait_status": 0,
+      "returncode": 0,
+      "schema": "digital-external-wait4-receipt-v1",
+      "started_at": "2026-11-01T18:29:08.918809+00:00",
+      "stderr": {
+        "bytes": 0,
+        "path": "/workspace/scratch/1273ec953099/digital-runs/actual_readout_audit/process_receipts/collect_002.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 407,
+        "path": "/workspace/scratch/1273ec953099/digital-runs/actual_readout_audit/process_receipts/collect_002.stdout",
+        "sha256": "60d0c4e415b79f2fdb1cdd4443e215ddae1eb6b4dedad2aa27451dc7427043a0"
+      },
+      "supervisor_python_cpu_seconds": 0.0011253889999999975,
+      "supervisor_sha256": "c8e6bc116eb661b09b5f0b8371c73f90cc3c00c02b48d11d79728b6a5bc4144f",
+      "voluntary_context_switches": 95,
+      "wall_seconds": 3.97452356100257
+    },
+    "finalize.json": {
+      "accounting_scope": "complete child lifetime; local Linux probe establishes waited descendants included; do not add inner subprocess CPU",
+      "child_pid": 7,
+      "child_system_cpu_seconds": 0.155128,
+      "child_user_cpu_seconds": 1.5995659999999998,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py",
+        "finalize",
+        "--confirmation",
+        "/workspace/scratch/1273ec953099/digital-runs/confirmation",
+        "--output",
+        "/workspace/scratch/1273ec953099/digital-runs/actual_readout_audit",
+        "--model-seal",
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json"
+      ],
+      "finished_at": "2026-11-01T18:31:44.016786+00:00",
+      "input_sha256_after": {
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py": "824049bd452a73454351274c604001f025d63a8b01cca9c6ccf88f949470f601"
+      },
+      "input_sha256_before": {
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/SEALED_MODEL_FREEZE.json": "379898eaf4b7b73ec35c5fa36d123c1663b1ee48c080151e56b89d0d39977da7",
+        "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/audit/actual_readout.py": "824049bd452a73454351274c604001f025d63a8b01cca9c6ccf88f949470f601"
+      },
+      "involuntary_context_switches": 66,
+      "kernel_maxrss": 24192,
+      "kernel_maxrss_unit": "KiB on this recorded Linux host",
+      "major_faults": 0,
+      "minor_faults": 22523,
+      "outer_wait4_cpu_seconds": 1.7546939999999998,
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "python_version": "3.12.14",
+      "raw_wait_status": 0,
+      "returncode": 0,
+      "schema": "digital-external-wait4-receipt-v1",
+      "started_at": "2026-11-01T18:31:42.177212+00:00",
+      "stderr": {
+        "bytes": 0,
+        "path": "/workspace/scratch/1273ec953099/digital-runs/actual_readout_audit/process_receipts/finalize.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 288,
+        "path": "/workspace/scratch/1273ec953099/digital-runs/actual_readout_audit/process_receipts/finalize.stdout",
+        "sha256": "20dd2978a45647214e9fc5aa4106f436daac5148447e5ee7262339210d7cc68d"
+      },
+      "supervisor_python_cpu_seconds": 0.0010094280000000032,
+      "supervisor_sha256": "c8e6bc116eb661b09b5f0b8371c73f90cc3c00c02b48d11d79728b6a5bc4144f",
+      "voluntary_context_switches": 136,
+      "wall_seconds": 1.8395847490028245
+    }
+  }
+}

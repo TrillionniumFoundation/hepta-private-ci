@@ -1,0 +1,407 @@
+{
+  "expected_distinct_confirmation_worlds": 3072,
+  "expected_formal_models": 384,
+  "expected_policy_executions_including_bayes": 153600,
+  "fatal_issues": [],
+  "formal_fit_count": 16,
+  "formal_fit_ids": [
+    501,
+    503,
+    509,
+    521,
+    523,
+    541,
+    547,
+    557,
+    563,
+    569,
+    571,
+    577,
+    587,
+    593,
+    599,
+    601
+  ],
+  "formal_training_starts_observed": [
+    {
+      "fit": 501,
+      "matches_frozen_contract": true,
+      "sha256": "9b8dadac1bdc6ee52cd39e4944b6711b7ff998980297769728e0c6070b49f7b4",
+      "utc": "2026-11-01T17:30:28.673931+00:00"
+    },
+    {
+      "fit": 503,
+      "matches_frozen_contract": true,
+      "sha256": "414a4ef150f86caad077bbf72c8c69815ab7d2e96f1e10c48c327a7a04a7ae60",
+      "utc": "2026-11-01T17:30:28.533489+00:00"
+    },
+    {
+      "fit": 509,
+      "matches_frozen_contract": true,
+      "sha256": "dfcc104fdcf0388d0081ee919ac209a0f5246d2e79359813fdfe5329f97d34ad",
+      "utc": "2026-11-01T17:30:28.569588+00:00"
+    },
+    {
+      "fit": 521,
+      "matches_frozen_contract": true,
+      "sha256": "9397963a5e0caed178f1c131dc40424ac7a28806db6c2aa4adacc8ae913c1c2f",
+      "utc": "2026-11-01T17:30:30.352152+00:00"
+    },
+    {
+      "fit": 523,
+      "matches_frozen_contract": true,
+      "sha256": "2d60319fcb41f2ba763df15a51d2fb73f8cc620101d37c80cbed69e850af2e3b",
+      "utc": "2026-11-01T17:30:28.776304+00:00"
+    },
+    {
+      "fit": 541,
+      "matches_frozen_contract": true,
+      "sha256": "03e4392c4ca2cbd11d1d9d7684ca34b635c802d66473d323dfbba861e04eaa05",
+      "utc": "2026-11-01T17:30:28.068138+00:00"
+    },
+    {
+      "fit": 547,
+      "matches_frozen_contract": true,
+      "sha256": "b1bd4dae932326a6b712903957efc546f4254af4ab08b16eaff42d5a5ce86d9b",
+      "utc": "2026-11-01T17:30:28.358560+00:00"
+    },
+    {
+      "fit": 557,
+      "matches_frozen_contract": true,
+      "sha256": "ac4095d5e66d45fb3d61d33d8597fd94578e55b8c35b151b654de44de9dc3e97",
+      "utc": "2026-11-01T17:30:28.009123+00:00"
+    }
+  ],
+  "four_experiment_review": [
+    {
+      "experiment": "Structured terminal values and policy-state supervision",
+      "finding": "Five inherited families receive shared constrained terminal structure; three continuation outputs plus belief remain learned. Chosen states are supervised at recorded latent indices. Autonomous short-horizon witness includes action probability in joint path mass. No teacher posterior enters learned policy features."
+    },
+    {
+      "experiment": "Evidence memory versus sustained drive",
+      "finding": "Causal pre-interval driver and exactly one successful completion impulse are separate. Accumulator sees only completed observations and public time. Model families share content access/charges. Current stored history and retained public last observation prevent interpreting this as elimination of all evidence memory."
+    },
+    {
+      "experiment": "Reset-aware prediction and continuous event semantics",
+      "finding": "Standalone CTMC uses one generator for forecasts and event/renewal sampling. Pending jump time, destination, RNG and recovery state persist in native checkpoint. Its semantics are explicitly distinct from the inherited finite interval efficacy model and may not inherit that model's quality outcome."
+    },
+    {
+      "experiment": "Fresh freeze and quality/full cost confirmation",
+      "finding": "New namespace, fit list, full model publication prerequisite, source/protocol/data/model/receipt checks precede cohort generation. Analysis uses independent fit means, all eight prespecified adjusted intervals, raw-world pairing and external process cost. Failure/drop/budget mismatches are rejected."
+    }
+  ],
+  "inference_limits": [
+    "Structural active counts explicitly do not establish equal rank, effective capacity or parameter identifiability.",
+    "On-policy collection is one halfway snapshot and is not a current-policy occupancy gradient or a proof of final support coverage.",
+    "Planning requested 328 fits under its heuristic normal calculation; selected16 binds resource cap and does not establish80percent power.",
+    "CPU panel has a common nominal16second learning budget; actual overshoot, updates and complete process costs must be reported, not silently relabeled as exact equal actual CPU.",
+    "Historical content pretraining is a shared frozen input; new-study marginal costs do not measure retraining an entire general model.",
+    "Frozen efficacy, complete model seal, raw confirmation outcomes and fitted native execution remain unobserved by this review. No scientific benefit or production admission is granted."
+  ],
+  "previous_findings_resolved": [
+    "Actual STARTED fit/stage/protocol/source checked and hash bound",
+    "Training process fit/stage/returncode bound",
+    "All fit/model/receipt key sets checked before confirmation cohort generation",
+    "Per-controller Runtime eliminates fixed-to-value lazy-table warm inheritance"
+  ],
+  "publication_identity_basis": "Local Git blob and SHA256 identities independently match the existing remote-readback receipt; remote retrieval was performed by the parent before this review",
+  "publication_receipt_matches": [
+    {
+      "git_blob_sha": "b06fe4cfc1d3234c9a3b088395d263aede982403",
+      "path": "tools/hcsn/digital_mechanisms_20261101/protocol.json",
+      "sha256": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3"
+    },
+    {
+      "git_blob_sha": "63465cbd9a680b7f99531b52492cce53eae1a03f",
+      "path": "tools/hcsn/digital_mechanisms_20261101/launch.py",
+      "sha256": "d66633ffdc4372cc8546c7f3a1ae243e4abb9f7577461319b0f532e6704dca1b"
+    },
+    {
+      "git_blob_sha": "953728a60f90edf60b58a23994b9ceea2cde23fb",
+      "path": "tools/hcsn/digital_mechanisms_20261101/policy_checks.py",
+      "sha256": "2a1e5eb8c1a087bc7d2f709fea500cdf0d4e18d3e7111bd49ac4fb18d0990766"
+    },
+    {
+      "git_blob_sha": "6221679f122038eebb8e6d794f84521b3e9e29e3",
+      "path": "tools/hcsn/digital_mechanisms_20261101/run_study.py",
+      "sha256": "eae06e0e86aa9d31bc2f31d1c2c0034955fda0cecd311064bd57dae0d667af5b"
+    },
+    {
+      "git_blob_sha": "12f67c8b1aff5463c7ab55f0ff1f7b4d9a270d51",
+      "path": "tools/hcsn/digital_mechanisms_20261101/analysis_checks.py",
+      "sha256": "f48b89c339d7bb9e9061c30c5987badfe7b3d5076632dba0c7fe5d190255727e"
+    },
+    {
+      "git_blob_sha": "fa6ece489ce1e02d3f2411991c58f195586dae2f",
+      "path": "tools/hcsn/digital_mechanisms_20261101/renewal_native.rs",
+      "sha256": "64df3f47465ba0d66451830e8cc845339b8dd67fedd64727b14fab5ca988f2fc"
+    },
+    {
+      "git_blob_sha": "f2c7ba1ceba3a017bc0620de5d630d1a2f2fd4bc",
+      "path": "tools/hcsn/digital_mechanisms_20261101/analyze.py",
+      "sha256": "be83b8c5bec3b698d1c5e35ee164a4220b9bd807dd198d479d0d3b2393f29c01"
+    },
+    {
+      "git_blob_sha": "331ccd8e21599cceb4ec962608f680fb839fdfcc",
+      "path": "tools/hcsn/digital_mechanisms_20261101/models.py",
+      "sha256": "a1ba992b5756e53317964629aeb063b60732d632670ad8da2193700cb33ef495"
+    },
+    {
+      "git_blob_sha": "ff74a54c5aaf9159cf533d65dd44d43246585c67",
+      "path": "tools/hcsn/digital_mechanisms_20261101/SOURCE_FREEZE.json",
+      "sha256": "24a1ac52db82e0f40d26370daf85e8dfc56bb94ed5940607493db236550327d5"
+    },
+    {
+      "git_blob_sha": "b8867dd3234f39df56b5c8ce8dfeeb74e31e5ee1",
+      "path": "tools/hcsn/digital_mechanisms_20261101/execution.py",
+      "sha256": "6435bc3a5c2bd3c40009ddd53fbf56026a99c44a4e4a9a757db019b11e416df7"
+    },
+    {
+      "git_blob_sha": "8ab640575d11619c18a67bb01c3429743647814c",
+      "path": "tools/hcsn/digital_mechanisms_20261101/native_confirmation.py",
+      "sha256": "c4a0b7ac78d34df76c44ec10345fde3a379ecacd6f4c7354960b41b19f60fc96"
+    },
+    {
+      "git_blob_sha": "47b6851dee15444b06dcea70ad2bf07fb586f79b",
+      "path": "tools/hcsn/digital_mechanisms_20261101/renewal_checks.py",
+      "sha256": "2cb086d533c07681e4d6815fb3e1fd4ce9df975a94583d0afaaf1b128e70de7a"
+    },
+    {
+      "git_blob_sha": "292c332d3bd1f68b813d42431559272481ca712d",
+      "path": "tools/hcsn/digital_mechanisms_20261101/exact_policy.py",
+      "sha256": "0c59774c4724b77f8adfbc13e1f109574bd1ba2817a45161ac87c6c6b6a41738"
+    },
+    {
+      "git_blob_sha": "bec2739004055bbb5afbedada93e55957bf719fe",
+      "path": "tools/hcsn/digital_mechanisms_20261101/freeze.py",
+      "sha256": "cb2329262f63e3370f886d4d52746a40a7b79bb3dc322aa84ef1dae8c5b09844"
+    },
+    {
+      "git_blob_sha": "e8a0e52ac29fcbfb6c620f33cd948a4f4c52bdd1",
+      "path": "tools/hcsn/digital_mechanisms_20261101/training.py",
+      "sha256": "7bdf1274dd3f2207e0c79c82a6e92a5f122cbc1acaac7a77ef78d310c9600f46"
+    },
+    {
+      "git_blob_sha": "59410a2909b6a75e8b86caf1d54803b78452fe20",
+      "path": "tools/hcsn/digital_mechanisms_20261101/renewal.py",
+      "sha256": "9a4412daf954dc07d466a3cd07a96c4ea1bddd6d66a6e4be3d50b717a313012f"
+    },
+    {
+      "git_blob_sha": "ce08a2838086ea0e45d6450af1c67eff0f0b44ad",
+      "path": "tools/hcsn/digital_mechanisms_20261101/model_checks.py",
+      "sha256": "b997c877fa91c3c6361a37e54d4d413b4eb68af64b29ad56b4af7a8c41f4f540"
+    },
+    {
+      "git_blob_sha": "21e7173101385e683f64a55aa77e0eef5d4dacaa",
+      "path": "tools/hcsn/digital_mechanisms_20261101/forecast_comparison.py",
+      "sha256": "4f7038651d50c6f63db93e71f0f176821ecdc875267f2de664edc7f66bca1761"
+    }
+  ],
+  "reviewed_commit": "d3d71246a49664a050e04ef4a44a782350990865",
+  "reviewed_utc": "2026-11-01T17:35:46.775068+00:00",
+  "schema": "digital-mechanism-independent-frozen-review-v1",
+  "scope": "Read-only static scientific/provenance review plus byte-identity checks; no regression-suite rerun, no confirmation generated or opened",
+  "source_hashes": [
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/analysis_checks.py",
+      "sha256": "f48b89c339d7bb9e9061c30c5987badfe7b3d5076632dba0c7fe5d190255727e"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/analyze.py",
+      "sha256": "be83b8c5bec3b698d1c5e35ee164a4220b9bd807dd198d479d0d3b2393f29c01"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/exact_policy.py",
+      "sha256": "0c59774c4724b77f8adfbc13e1f109574bd1ba2817a45161ac87c6c6b6a41738"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/execution.py",
+      "sha256": "6435bc3a5c2bd3c40009ddd53fbf56026a99c44a4e4a9a757db019b11e416df7"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/forecast_comparison.py",
+      "sha256": "4f7038651d50c6f63db93e71f0f176821ecdc875267f2de664edc7f66bca1761"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/freeze.py",
+      "sha256": "cb2329262f63e3370f886d4d52746a40a7b79bb3dc322aa84ef1dae8c5b09844"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/launch.py",
+      "sha256": "d66633ffdc4372cc8546c7f3a1ae243e4abb9f7577461319b0f532e6704dca1b"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/model_checks.py",
+      "sha256": "b997c877fa91c3c6361a37e54d4d413b4eb68af64b29ad56b4af7a8c41f4f540"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/models.py",
+      "sha256": "a1ba992b5756e53317964629aeb063b60732d632670ad8da2193700cb33ef495"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/native_confirmation.py",
+      "sha256": "c4a0b7ac78d34df76c44ec10345fde3a379ecacd6f4c7354960b41b19f60fc96"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/policy_checks.py",
+      "sha256": "2a1e5eb8c1a087bc7d2f709fea500cdf0d4e18d3e7111bd49ac4fb18d0990766"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/protocol.json",
+      "sha256": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/renewal.py",
+      "sha256": "9a4412daf954dc07d466a3cd07a96c4ea1bddd6d66a6e4be3d50b717a313012f"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/renewal_checks.py",
+      "sha256": "2cb086d533c07681e4d6815fb3e1fd4ce9df975a94583d0afaaf1b128e70de7a"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/renewal_native.rs",
+      "sha256": "64df3f47465ba0d66451830e8cc845339b8dd67fedd64727b14fab5ca988f2fc"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/run_study.py",
+      "sha256": "eae06e0e86aa9d31bc2f31d1c2c0034955fda0cecd311064bd57dae0d667af5b"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_mechanisms_20261101/training.py",
+      "sha256": "7bdf1274dd3f2207e0c79c82a6e92a5f122cbc1acaac7a77ef78d310c9600f46"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/bank.py",
+      "sha256": "002bdece767352a66ba598148c9d26055c1e3a03792b3c11583ccf98928a284b"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/bank_tests.py",
+      "sha256": "60f49d0ae4653dc0b9c28e023b1e7848a6ea431efd9995c52110db77c7dc6000"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/benchmark_training.py",
+      "sha256": "8b1ce397fc19685027c2d40fb3d73b20142bf75e4e97ec2e680244790243aed6"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/build_native.py",
+      "sha256": "eea16735b64d45ba07181ee4099d80668db912a41c20613836e27d570844d1a4"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/data.py",
+      "sha256": "5cb133bab4848b5bb5f698ef7c3301d2f42508ec352f20ac71b8c80d9a1df95b"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/deploy.py",
+      "sha256": "73c379488827982e5bfa2da4e0b44f81d501a2217bad1395604160be2ba47477"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/experiment.py",
+      "sha256": "f13733b6fa7c6784912e767d08e64234995933839fb3378e883c2bab3262d3c9"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/final_audit.py",
+      "sha256": "e098fd324b322436f60faf6276b10d69a1c5336063410811558676e8f76bb83a"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/freeze_artifacts.py",
+      "sha256": "a25c32e87796162048c93005c6fcac722abfcde780cff9defc0f2623c82e6032"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/independent_audit.py",
+      "sha256": "eb4dc1d08f3868ff2239b5352242f6b3f58d7ca01e51031e396b64d70fd1a27f"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/metrics.py",
+      "sha256": "eedbe2a1ecb42ddf247cb9fb8ae5eb6a5f7fb4769dc8fdb4cb367cd21fa93325"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/model.py",
+      "sha256": "2080945409e174f0d2318b632f2cc1e776f9db5c3624f751dfe0d18cb0f81aeb"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/pack_confirmation.py",
+      "sha256": "4968115454ea6220e3ff7f2d97a05cf254f6cea21e574832070d3cd7acfeabf9"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/restore_training.py",
+      "sha256": "e62b1fb9ea12425a2b32ae735ed7fcd4b055c1f33649eeea5b87d947e06436e2"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/run_training.py",
+      "sha256": "c54a2e7f4b289e940a45c98042935f60e90e7ac967c8d39617ae333f72abd44a"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/summarize_research.py",
+      "sha256": "e9630982e4f0f9184630e8725149d36650cfe3219b52e221f67049d0cb06f325"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/task.py",
+      "sha256": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/digital_read_before_20261031/train.py",
+      "sha256": "eb8a5fcf0489f78cc7b7f53d97726ac8c7dcfe8bcafc56a312989cf99e117553"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/next/full_kernel/baseline_table.npz",
+      "sha256": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/task_value_factorial_20261030/UPSTREAM_FILES.json",
+      "sha256": "be6aa0751da3e9a63b4c70d0c8bc4c42d8f2595548009013eb4b92b5e44fc98e"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/task_value_factorial_20261030/task.py",
+      "sha256": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/third/memory/checkpoints/memory_full_mass_seed29.npz",
+      "sha256": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb"
+    },
+    {
+      "matches_source_freeze": true,
+      "path": "tools/hcsn/third/memory/reference.py",
+      "sha256": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e"
+    }
+  ],
+  "static_review_passed": true
+}

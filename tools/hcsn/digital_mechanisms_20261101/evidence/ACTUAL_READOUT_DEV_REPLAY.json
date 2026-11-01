@@ -1,0 +1,52 @@
+{
+  "actual": {
+    "impulse_on/event": {
+      "after_mse": 0.011659303926260568,
+      "before_mse": 0.013592411015573938,
+      "paired_change": -0.0019331070893133717,
+      "pairs": 36,
+      "sum_after_squared_error": 0.4197349413453804,
+      "sum_before_squared_error": 0.4893267965606618,
+      "sum_paired_change": -0.06959185521528138
+    },
+    "impulse_on/recovery": {
+      "after_mse": 0.042533885479205696,
+      "before_mse": 0.028327565980537085,
+      "paired_change": 0.014206319498668614,
+      "pairs": 16,
+      "sum_after_squared_error": 0.6805421676672911,
+      "sum_before_squared_error": 0.45324105568859335,
+      "sum_paired_change": 0.22730111197869782
+    },
+    "structured_on/event": {
+      "after_mse": 0.012132139711374184,
+      "before_mse": 0.004982424986502797,
+      "paired_change": 0.007149714724871387,
+      "pairs": 30,
+      "sum_after_squared_error": 0.3639641913412255,
+      "sum_before_squared_error": 0.14947274959508391,
+      "sum_paired_change": 0.2144914417461416
+    },
+    "structured_on/recovery": {
+      "after_mse": 0.02647336622929026,
+      "before_mse": 0.034533424749046235,
+      "paired_change": -0.008060058519755976,
+      "pairs": 16,
+      "sum_after_squared_error": 0.42357385966864414,
+      "sum_before_squared_error": 0.5525347959847398,
+      "sum_paired_change": -0.12896093631609562
+    }
+  },
+  "cpu_seconds": 0.5352777790000001,
+  "inputs_sha256": {
+    "/workspace/scratch/1273ec953099/digital-runs/development_v2/fit_101/validation_episodes.json.gz": "e62cf550bbfb6f851b1be2ca0e4ae354902d537659f687ef75071682a05d4037",
+    "/workspace/scratch/1273ec953099/digital-runs/development_v2/fit_103/validation_episodes.json.gz": "be5b1732cd9914e2192147ffbaf4de1150794c51b6ab0551360cba646e70f07d",
+    "/workspace/scratch/1273ec953099/digital-runs/development_v2/fit_107/validation_episodes.json.gz": "6584cf56c0582db9b4bbfd7e73afe7866cbb8c2b09d589a7cdf0e29188c887ba"
+  },
+  "passed": true,
+  "raw_episodes_streamed": 4800,
+  "scope": "One DEV replay against previously reported independent join counts and MSE; performed before required formatter, no formal outcomes used in this check.",
+  "selected_episodes": 576,
+  "source_sha256": "824049bd452a73454351274c604001f025d63a8b01cca9c6ccf88f949470f601",
+  "torch_imported": false
+}

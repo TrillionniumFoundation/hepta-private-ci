@@ -1,0 +1,989 @@
+{
+  "schema": "digital-mechanisms-retention-and-runner-review-v1",
+  "source_sha256": {
+    "tools/hcsn/digital_mechanisms_20261101/models.py": "a1ba992b5756e53317964629aeb063b60732d632670ad8da2193700cb33ef495",
+    "tools/hcsn/digital_mechanisms_20261101/model_checks.py": "b997c877fa91c3c6361a37e54d4d413b4eb68af64b29ad56b4af7a8c41f4f540",
+    "tools/hcsn/digital_mechanisms_20261101/execution.py": "c8d604228be101a452a8aef9753d6f3d7844b83126773ec76504c6637e79911b",
+    "tools/hcsn/digital_mechanisms_20261101/training.py": "7bdf1274dd3f2207e0c79c82a6e92a5f122cbc1acaac7a77ef78d310c9600f46",
+    "tools/hcsn/digital_mechanisms_20261101/run_study.py": "94cfae89eaea6abf0bc07f7aec557d2f8731a1a5e32d3bbfdcc7a5d161004382",
+    "tools/hcsn/digital_mechanisms_20261101/launch.py": "d66633ffdc4372cc8546c7f3a1ae243e4abb9f7577461319b0f532e6704dca1b"
+  },
+  "created_unix": 1793553052.7445893,
+  "python": "3.12.14",
+  "torch": "2.15.0+cpu",
+  "numpy": "2.3.5",
+  "previous_model_suite": {
+    "tests": 11,
+    "passed": 11,
+    "skipped": 0,
+    "runtime_seconds": 0.141,
+    "rerun_in_this_audit": false,
+    "scope": "previous observed unittest run; source remains unmodified"
+  },
+  "runner_numerics": {
+    "models": 33,
+    "prediction_rows": 2790,
+    "max_abs_output_error": 8.881784197001252e-16,
+    "argmax_mismatches": 0,
+    "transition_samples_checked": 1377,
+    "realized_onehot_loss_error": 0.0,
+    "onehot_rows_ignore_prefix": true
+  },
+  "development_attempts": [
+    {
+      "scope": "ad hoc review script",
+      "outcome": "syntax error before imports/execution",
+      "fix": "else0 token changed to else 0"
+    }
+  ],
+  "retention_probes": [
+    {
+      "family": "ordinary_bank",
+      "drive": "sustained",
+      "horizon": 0.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5,
+        "optimal_brier": 0.25
+      },
+      "active_only": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5,
+        "optimal_brier": 0.25
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5,
+        "optimal_brier": 0.25
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "ordinary_bank",
+      "drive": "sustained",
+      "horizon": 0.25,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5714879090701115,
+        "optimal_brier": 0.24207292370306777
+      },
+      "active_only": {
+        "selected_probability": 0.9999999999999999,
+        "optimal_accuracy": 0.5714879090701116,
+        "optimal_brier": 0.24207292370306782
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5714879090701115,
+        "optimal_brier": 0.24207292370306777
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "ordinary_bank",
+      "drive": "sustained",
+      "horizon": 0.75,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6227636890077222,
+        "optimal_brier": 0.22862929242127578
+      },
+      "active_only": {
+        "selected_probability": 0.9999999999999998,
+        "optimal_accuracy": 0.6227636890077224,
+        "optimal_brier": 0.22862929242127586
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6227636890077222,
+        "optimal_brier": 0.22862929242127578
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "ordinary_bank",
+      "drive": "sustained",
+      "horizon": 1.5,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6684527407461798,
+        "optimal_brier": 0.2128463761642403
+      },
+      "active_only": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6684527407461798,
+        "optimal_brier": 0.2128463761642403
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6684527407461798,
+        "optimal_brier": 0.2128463761642403
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "ordinary_bank",
+      "drive": "sustained",
+      "horizon": 3.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.72262104399864,
+        "optimal_brier": 0.19072841507945595
+      },
+      "active_only": {
+        "selected_probability": 1.0000000000000002,
+        "optimal_accuracy": 0.7226210439986398,
+        "optimal_brier": 0.1907284150794559
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.72262104399864,
+        "optimal_brier": 0.19072841507945595
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "ordinary_bank",
+      "drive": "impulse",
+      "horizon": 0.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.8500000000000001,
+        "optimal_brier": 0.1275
+      },
+      "active_only": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.85,
+        "optimal_brier": 0.1275
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.8500000000000001,
+        "optimal_brier": 0.1275
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "ordinary_bank",
+      "drive": "impulse",
+      "horizon": 0.25,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.7364206196316143,
+        "optimal_brier": 0.18260666229397543
+      },
+      "active_only": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.7364206196316143,
+        "optimal_brier": 0.1826066622939754
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.7364206196316143,
+        "optimal_brier": 0.18260666229397543
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "ordinary_bank",
+      "drive": "impulse",
+      "horizon": 0.75,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6541608742788843,
+        "optimal_brier": 0.21782953525893434
+      },
+      "active_only": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6541608742788844,
+        "optimal_brier": 0.21782953525893436
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6541608742788843,
+        "optimal_brier": 0.21782953525893434
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "ordinary_bank",
+      "drive": "impulse",
+      "horizon": 1.5,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6113747473113527,
+        "optimal_brier": 0.23297055590777394
+      },
+      "active_only": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6113747473113528,
+        "optimal_brier": 0.2329705559077739
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6113747473113527,
+        "optimal_brier": 0.23297055590777394
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "ordinary_bank",
+      "drive": "impulse",
+      "horizon": 3.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5731092141280923,
+        "optimal_brier": 0.24283534096569295
+      },
+      "active_only": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5731092141280925,
+        "optimal_brier": 0.24283534096569295
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5731092141280923,
+        "optimal_brier": 0.24283534096569295
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "clocked_bank",
+      "drive": "sustained",
+      "horizon": 0.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5,
+        "optimal_brier": 0.25
+      },
+      "active_only": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5,
+        "optimal_brier": 0.25
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5,
+        "optimal_brier": 0.25
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "clocked_bank",
+      "drive": "sustained",
+      "horizon": 0.25,
+      "full_cell": {
+        "selected_probability": 0.9999999999999999,
+        "optimal_accuracy": 0.5714879090701116,
+        "optimal_brier": 0.2420725041615213
+      },
+      "active_only": {
+        "selected_probability": 0.9990771027538707,
+        "optimal_accuracy": 0.5713113801185614,
+        "optimal_brier": 0.24212887629450547
+      },
+      "event_sign_only": {
+        "selected_probability": 0.0009228972461291561,
+        "optimal_accuracy": 0.762588309690792,
+        "optimal_brier": 0.18104717600707956
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5712551561197774,
+        "optimal_brier": 0.2421360409005615
+      },
+      "forced_reset": {
+        "selected_probability": 0.000922897246129156,
+        "optimal_accuracy": 0.5195235063490944,
+        "optimal_brier": 0.2494255024994349
+      },
+      "equal_reset": {
+        "selected_probability": 0.000922897246129156,
+        "optimal_accuracy": 0.5103901897914878,
+        "optimal_brier": 0.2498920439560969
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "clocked_bank",
+      "drive": "sustained",
+      "horizon": 0.75,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6226481040527243,
+        "optimal_brier": 0.2286201598162381
+      },
+      "active_only": {
+        "selected_probability": 0.9269438696323675,
+        "optimal_accuracy": 0.6105199817946715,
+        "optimal_brier": 0.2329620784914842
+      },
+      "event_sign_only": {
+        "selected_probability": 0.0730561303676325,
+        "optimal_accuracy": 0.7765309954771888,
+        "optimal_brier": 0.17352943877464197
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6032045152256174,
+        "optimal_brier": 0.2341989239721708
+      },
+      "forced_reset": {
+        "selected_probability": 0.07305613036763252,
+        "optimal_accuracy": 0.5204648770283071,
+        "optimal_brier": 0.24937466936933106
+      },
+      "equal_reset": {
+        "selected_probability": 0.07305613036763252,
+        "optimal_accuracy": 0.510385105607809,
+        "optimal_brier": 0.24989214958151462
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "clocked_bank",
+      "drive": "sustained",
+      "horizon": 1.5,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6557369366750561,
+        "optimal_brier": 0.21630541798319236
+      },
+      "active_only": {
+        "selected_probability": 0.7766525717470497,
+        "optimal_accuracy": 0.6183243009663574,
+        "optimal_brier": 0.23011172146396186
+      },
+      "event_sign_only": {
+        "selected_probability": 0.22334742825295034,
+        "optimal_accuracy": 0.7858329935953471,
+        "optimal_brier": 0.16829635341265262
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5939878409419574,
+        "optimal_brier": 0.23453414177885598
+      },
+      "forced_reset": {
+        "selected_probability": 0.22334742825295037,
+        "optimal_accuracy": 0.5209184268655646,
+        "optimal_brier": 0.24935916461385974
+      },
+      "equal_reset": {
+        "selected_probability": 0.22334742825295037,
+        "optimal_accuracy": 0.5093619537624402,
+        "optimal_brier": 0.24991235382174992
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "clocked_bank",
+      "drive": "sustained",
+      "horizon": 3.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6624221899701125,
+        "optimal_brier": 0.20917334838282106
+      },
+      "active_only": {
+        "selected_probability": 0.66487365808679,
+        "optimal_accuracy": 0.5936617906575736,
+        "optimal_brier": 0.23361265001144715
+      },
+      "event_sign_only": {
+        "selected_probability": 0.3351263419132099,
+        "optimal_accuracy": 0.798839333312058,
+        "optimal_brier": 0.16068701399876015
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5648452669209739,
+        "optimal_brier": 0.23908474314687211
+      },
+      "forced_reset": {
+        "selected_probability": 0.33512634191320995,
+        "optimal_accuracy": 0.5215086855218889,
+        "optimal_brier": 0.24933597172642483
+      },
+      "equal_reset": {
+        "selected_probability": 0.33512634191321,
+        "optimal_accuracy": 0.5076747459744002,
+        "optimal_brier": 0.2499410982742284
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "clocked_bank",
+      "drive": "impulse",
+      "horizon": 0.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.8500000000000001,
+        "optimal_brier": 0.1275
+      },
+      "active_only": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.85,
+        "optimal_brier": 0.1275
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.8500000000000001,
+        "optimal_brier": 0.1275
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "clocked_bank",
+      "drive": "impulse",
+      "horizon": 0.25,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.7364206196316143,
+        "optimal_brier": 0.18260665729760578
+      },
+      "active_only": {
+        "selected_probability": 0.9903367581353456,
+        "optimal_accuracy": 0.7353164594617699,
+        "optimal_brier": 0.18314149801866822
+      },
+      "event_sign_only": {
+        "selected_probability": 0.009663241864654282,
+        "optimal_accuracy": 0.8495804078664114,
+        "optimal_brier": 0.12779353834286009
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.7331469423110721,
+        "optimal_brier": 0.1837864399158151
+      },
+      "forced_reset": {
+        "selected_probability": 0.009663241864654282,
+        "optimal_accuracy": 0.5254732216483781,
+        "optimal_brier": 0.24905529789146744
+      },
+      "equal_reset": {
+        "selected_probability": 0.00966324186465428,
+        "optimal_accuracy": 0.5108041083186957,
+        "optimal_brier": 0.24988327124343793
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "clocked_bank",
+      "drive": "impulse",
+      "horizon": 0.75,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6526380172931967,
+        "optimal_brier": 0.21820592094485286
+      },
+      "active_only": {
+        "selected_probability": 0.9092119762588469,
+        "optimal_accuracy": 0.6371525963779376,
+        "optimal_brier": 0.22448649704735532
+      },
+      "event_sign_only": {
+        "selected_probability": 0.0907880237411533,
+        "optimal_accuracy": 0.8077193768534044,
+        "optimal_brier": 0.1553080322708875
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6256749075377164,
+        "optimal_brier": 0.22679236553933957
+      },
+      "forced_reset": {
+        "selected_probability": 0.09078802374115329,
+        "optimal_accuracy": 0.5226315316818717,
+        "optimal_brier": 0.24924377616935073
+      },
+      "equal_reset": {
+        "selected_probability": 0.09078802374115331,
+        "optimal_accuracy": 0.5107296567956668,
+        "optimal_brier": 0.2498848744650471
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "clocked_bank",
+      "drive": "impulse",
+      "horizon": 1.5,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5949017735314264,
+        "optimal_brier": 0.23601348673164346
+      },
+      "active_only": {
+        "selected_probability": 0.8222472935574198,
+        "optimal_accuracy": 0.5692389508729276,
+        "optimal_brier": 0.24285564775618573
+      },
+      "event_sign_only": {
+        "selected_probability": 0.17775270644258018,
+        "optimal_accuracy": 0.7136126888153577,
+        "optimal_brier": 0.20436306352792566
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5581474122993271,
+        "optimal_brier": 0.24411725883676755
+      },
+      "forced_reset": {
+        "selected_probability": 0.17775270644258018,
+        "optimal_accuracy": 0.5156063117185798,
+        "optimal_brier": 0.2496443300913161
+      },
+      "equal_reset": {
+        "selected_probability": 0.17775270644258018,
+        "optimal_accuracy": 0.5068402465404933,
+        "optimal_brier": 0.2499532110272653
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "clocked_bank",
+      "drive": "impulse",
+      "horizon": 3.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5385204506692596,
+        "optimal_brier": 0.24727528203941285
+      },
+      "active_only": {
+        "selected_probability": 0.7610443361692163,
+        "optimal_accuracy": 0.52101047494374,
+        "optimal_brier": 0.24921511411331607
+      },
+      "event_sign_only": {
+        "selected_probability": 0.2389556638307837,
+        "optimal_accuracy": 0.5942875651152428,
+        "optimal_brier": 0.24109715598332215
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5164312089358022,
+        "optimal_brier": 0.2494018520326049
+      },
+      "forced_reset": {
+        "selected_probability": 0.2389556638307838,
+        "optimal_accuracy": 0.5066879271452251,
+        "optimal_brier": 0.2499363740330377
+      },
+      "equal_reset": {
+        "selected_probability": 0.2389556638307837,
+        "optimal_accuracy": 0.5018468111304373,
+        "optimal_brier": 0.24999658928864854
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "first_passage_bank",
+      "drive": "sustained",
+      "horizon": 0.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5,
+        "optimal_brier": 0.25
+      },
+      "active_only": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5,
+        "optimal_brier": 0.25
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5,
+        "optimal_brier": 0.25
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "first_passage_bank",
+      "drive": "sustained",
+      "horizon": 0.25,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5714879090703077,
+        "optimal_brier": 0.2420728016430045
+      },
+      "active_only": {
+        "selected_probability": 0.9982402413824346,
+        "optimal_accuracy": 0.5711702969303708,
+        "optimal_brier": 0.24217047119753607
+      },
+      "event_sign_only": {
+        "selected_probability": 0.0017597586175655724,
+        "optimal_accuracy": 0.7516564935976693,
+        "optimal_brier": 0.1866687941171029
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5710612829951813,
+        "optimal_brier": 0.24218409961704043
+      },
+      "forced_reset": {
+        "selected_probability": 0.0017597586175655726,
+        "optimal_accuracy": 0.518584856949441,
+        "optimal_brier": 0.24948625896536203
+      },
+      "equal_reset": {
+        "selected_probability": 0.0017597586175655722,
+        "optimal_accuracy": 0.5092220648823733,
+        "optimal_brier": 0.24991495351930526
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "first_passage_bank",
+      "drive": "sustained",
+      "horizon": 0.75,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6225473230131875,
+        "optimal_brier": 0.22882691516806064
+      },
+      "active_only": {
+        "selected_probability": 0.870541380417578,
+        "optimal_accuracy": 0.6035083723163754,
+        "optimal_brier": 0.23501561706265783
+      },
+      "event_sign_only": {
+        "selected_probability": 0.12945861958242189,
+        "optimal_accuracy": 0.7505742900453266,
+        "optimal_brier": 0.1872111378046581
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5910989777451899,
+        "optimal_brier": 0.2369478937911102
+      },
+      "forced_reset": {
+        "selected_probability": 0.12945861958242189,
+        "optimal_accuracy": 0.5182431143456915,
+        "optimal_brier": 0.24951614430782756
+      },
+      "equal_reset": {
+        "selected_probability": 0.12945861958242186,
+        "optimal_accuracy": 0.5076523017726535,
+        "optimal_brier": 0.2499414422775803
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "first_passage_bank",
+      "drive": "sustained",
+      "horizon": 1.5,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6475732989738667,
+        "optimal_brier": 0.2194301455071002
+      },
+      "active_only": {
+        "selected_probability": 0.664200016887138,
+        "optimal_accuracy": 0.5955417760996684,
+        "optimal_brier": 0.23569938839144955
+      },
+      "event_sign_only": {
+        "selected_probability": 0.33579998311286197,
+        "optimal_accuracy": 0.750489737656625,
+        "optimal_brier": 0.18725018141551808
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5653485780985825,
+        "optimal_brier": 0.24049089899827644
+      },
+      "forced_reset": {
+        "selected_probability": 0.3357999831128621,
+        "optimal_accuracy": 0.5178909366230233,
+        "optimal_brier": 0.24954300139914673
+      },
+      "equal_reset": {
+        "selected_probability": 0.33579998311286197,
+        "optimal_accuracy": 0.5056275428671494,
+        "optimal_brier": 0.24996833076127845
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "first_passage_bank",
+      "drive": "sustained",
+      "horizon": 3.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6361389484432849,
+        "optimal_brier": 0.21889149831919896
+      },
+      "active_only": {
+        "selected_probability": 0.5756576274206531,
+        "optimal_accuracy": 0.5522040397012087,
+        "optimal_brier": 0.2420465235370713
+      },
+      "event_sign_only": {
+        "selected_probability": 0.42434237257934704,
+        "optimal_accuracy": 0.7500040101163277,
+        "optimal_brier": 0.18747967677810753
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5314577976440087,
+        "optimal_brier": 0.24541686106792643
+      },
+      "forced_reset": {
+        "selected_probability": 0.424342372579347,
+        "optimal_accuracy": 0.5174621817486912,
+        "optimal_brier": 0.24956508664284593
+      },
+      "equal_reset": {
+        "selected_probability": 0.4243423725793471,
+        "optimal_accuracy": 0.5033137016209105,
+        "optimal_brier": 0.24998901938156756
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "first_passage_bank",
+      "drive": "impulse",
+      "horizon": 0.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.8500000000000001,
+        "optimal_brier": 0.1275
+      },
+      "active_only": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.85,
+        "optimal_brier": 0.1275
+      },
+      "event_sign_only": null,
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.8500000000000001,
+        "optimal_brier": 0.1275
+      },
+      "forced_reset": null,
+      "equal_reset": null,
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "first_passage_bank",
+      "drive": "impulse",
+      "horizon": 0.25,
+      "full_cell": {
+        "selected_probability": 1.0000000000000002,
+        "optimal_accuracy": 0.7364206288218149,
+        "optimal_brier": 0.18260649013437044
+      },
+      "active_only": {
+        "selected_probability": 0.9806756272171867,
+        "optimal_accuracy": 0.7341907968090899,
+        "optimal_brier": 0.18368658837669669
+      },
+      "event_sign_only": {
+        "selected_probability": 0.01932437278281343,
+        "optimal_accuracy": 0.8495804158040271,
+        "optimal_brier": 0.12779353277973093
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.7298463163574207,
+        "optimal_brier": 0.18496635608554057
+      },
+      "forced_reset": {
+        "selected_probability": 0.01932437278281343,
+        "optimal_accuracy": 0.5252281848476017,
+        "optimal_brier": 0.2490838024241668
+      },
+      "equal_reset": {
+        "selected_probability": 0.019324372782813428,
+        "optimal_accuracy": 0.5093720924455893,
+        "optimal_brier": 0.24991216388319135
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "first_passage_bank",
+      "drive": "impulse",
+      "horizon": 0.75,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.6513426146625186,
+        "optimal_brier": 0.21792693485699152
+      },
+      "active_only": {
+        "selected_probability": 0.826089717527617,
+        "optimal_accuracy": 0.6188067738286976,
+        "optimal_brier": 0.23087344801929988
+      },
+      "event_sign_only": {
+        "selected_probability": 0.17391028247238305,
+        "optimal_accuracy": 0.8058908287291757,
+        "optimal_brier": 0.15642981548501142
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5995223264762667,
+        "optimal_brier": 0.23418884485053332
+      },
+      "forced_reset": {
+        "selected_probability": 0.17391028247238308,
+        "optimal_accuracy": 0.5220270931801957,
+        "optimal_brier": 0.24930307760644793
+      },
+      "equal_reset": {
+        "selected_probability": 0.17391028247238302,
+        "optimal_accuracy": 0.5079194411288995,
+        "optimal_brier": 0.2499372824522059
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "first_passage_bank",
+      "drive": "impulse",
+      "horizon": 1.5,
+      "full_cell": {
+        "selected_probability": 0.9999999999999999,
+        "optimal_accuracy": 0.5832967074924438,
+        "optimal_brier": 0.23727998504250677
+      },
+      "active_only": {
+        "selected_probability": 0.7063654654004503,
+        "optimal_accuracy": 0.5370477149083709,
+        "optimal_brier": 0.24773049667787575
+      },
+      "event_sign_only": {
+        "selected_probability": 0.2936345345995497,
+        "optimal_accuracy": 0.6945530051057442,
+        "optimal_brier": 0.21214029728385309
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5272288871427799,
+        "optimal_brier": 0.2483930771531334
+      },
+      "forced_reset": {
+        "selected_probability": 0.2936345345995498,
+        "optimal_accuracy": 0.5137653178408076,
+        "optimal_brier": 0.24973035968499538
+      },
+      "equal_reset": {
+        "selected_probability": 0.2936345345995498,
+        "optimal_accuracy": 0.5036087742913156,
+        "optimal_brier": 0.24998697674811426
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    },
+    {
+      "family": "first_passage_bank",
+      "drive": "impulse",
+      "horizon": 3.0,
+      "full_cell": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5264405576265989,
+        "optimal_brier": 0.2486181847488347
+      },
+      "active_only": {
+        "selected_probability": 0.6306932898227486,
+        "optimal_accuracy": 0.5065940162804812,
+        "optimal_brier": 0.2499474971567389
+      },
+      "event_sign_only": {
+        "selected_probability": 0.36930671017725125,
+        "optimal_accuracy": 0.5603340128719116,
+        "optimal_brier": 0.24634801636943846
+      },
+      "event_sign_removed": {
+        "selected_probability": 1.0,
+        "optimal_accuracy": 0.5043571002163195,
+        "optimal_brier": 0.2499667803331878
+      },
+      "forced_reset": {
+        "selected_probability": 0.3693067101772512,
+        "optimal_accuracy": 0.5039854673581224,
+        "optimal_brier": 0.24997497965846843
+      },
+      "equal_reset": {
+        "selected_probability": 0.3693067101772513,
+        "optimal_accuracy": 0.5005369477179089,
+        "optimal_brier": 0.24999971168714824
+      },
+      "public_observation_optimal_accuracy": 0.85,
+      "scope": "Cell-only one-observation information; finite-grid projection; no task benefit claim"
+    }
+  ],
+  "dependency_sha256": {
+    "tools/hcsn/digital_read_before_20261031/model.py": "2080945409e174f0d2318b632f2cc1e776f9db5c3624f751dfe0d18cb0f81aeb",
+    "tools/hcsn/digital_read_before_20261031/bank.py": "002bdece767352a66ba598148c9d26055c1e3a03792b3c11583ccf98928a284b",
+    "tools/hcsn/digital_read_before_20261031/task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+    "tools/hcsn/task_value_factorial_20261030/task.py": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc"
+  }
+}

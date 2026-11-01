@@ -1,0 +1,52 @@
+{
+  "accounting_scope": "complete child lifetime; local Linux probe establishes waited descendants included; do not add inner subprocess CPU",
+  "child_pid": 13,
+  "child_system_cpu_seconds": 0.014407,
+  "child_user_cpu_seconds": 0.121892,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/orchestration/stream_archives.py",
+    "pack",
+    "--source",
+    "/workspace/scratch/1273ec953099/digital-runs/transport",
+    "--destination",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/archives/transport",
+    "--basename",
+    "transport"
+  ],
+  "finished_at": "2026-11-01T18:31:25.816397+00:00",
+  "input_sha256_after": {
+    "/workspace/scratch/1273ec953099/digital-runs/finalize_transport.py": "47d2743b7e9c70295eebd1038164ec964c5dfb201f747aa1f300cb8d3f5ec3ff",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/orchestration/stream_archives.py": "99da8b7a82f13036369d3efae42c66328cc57f80b1124698021a2b578b8af65f"
+  },
+  "input_sha256_before": {
+    "/workspace/scratch/1273ec953099/digital-runs/finalize_transport.py": "47d2743b7e9c70295eebd1038164ec964c5dfb201f747aa1f300cb8d3f5ec3ff",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/orchestration/stream_archives.py": "99da8b7a82f13036369d3efae42c66328cc57f80b1124698021a2b578b8af65f"
+  },
+  "involuntary_context_switches": 8,
+  "kernel_maxrss": 14396,
+  "kernel_maxrss_unit": "KiB on this recorded Linux host",
+  "major_faults": 0,
+  "minor_faults": 4487,
+  "outer_wait4_cpu_seconds": 0.136299,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python_version": "3.12.14",
+  "raw_wait_status": 0,
+  "returncode": 0,
+  "schema": "digital-external-wait4-receipt-v1",
+  "started_at": "2026-11-01T18:31:25.679142+00:00",
+  "stderr": {
+    "bytes": 0,
+    "path": "/workspace/scratch/1273ec953099/digital-runs/final_transport_outer/transport_pack.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 374,
+    "path": "/workspace/scratch/1273ec953099/digital-runs/final_transport_outer/transport_pack.stdout",
+    "sha256": "769fbabc1cd7f041f8343c3ce02c62c7a43c67ff35085f89560b3a5489b667c4"
+  },
+  "supervisor_python_cpu_seconds": 0.0009183609999999995,
+  "supervisor_sha256": "c8e6bc116eb661b09b5f0b8371c73f90cc3c00c02b48d11d79728b6a5bc4144f",
+  "voluntary_context_switches": 1,
+  "wall_seconds": 0.13726710099945194
+}

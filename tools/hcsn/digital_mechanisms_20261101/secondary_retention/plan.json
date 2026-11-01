@@ -1,0 +1,31 @@
+{
+  "schema": "digital-trained-retention-secondary-v1",
+  "main_source_commit": "d3d71246a49664a050e04ef4a44a782350990865",
+  "main_protocol_sha256": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3",
+  "fits": [501, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601],
+  "candidates": [
+    "ordinary_bank__structured_on",
+    "ordinary_bank__impulse_on",
+    "clocked_bank__structured_on",
+    "clocked_bank__impulse_on",
+    "first_passage_bank__structured_on",
+    "first_passage_bank__impulse_on"
+  ],
+  "class_prior": [0.5, 0.5],
+  "one_completed_observation_reliability": 0.85,
+  "horizons": [0.0, 0.25, 0.75, 1.5, 3.0],
+  "intervals": [0.25, 0.5, 0.75, 1.5],
+  "initialization": "Inherited center-cell initial mass; the observation is already completed at time zero. Impulse models apply one completion injection then neutral drift; sustained models retain the observed driver throughout each interval.",
+  "future_input": "No additional READ or observation. Propagate the two observed-sign-conditioned laws separately; form class mixtures only afterwards.",
+  "process": "The fitted main-study finite interval law, including its one-event-per-interval and end-of-interval recovery approximation. This is not the separate CTMC or exact continuous Brownian renewal.",
+  "metrics": ["selected_probability", "optimal_class_accuracy", "optimal_class_brier"],
+  "state_views": ["full_cell", "active_only", "current_refractory_sign", "event_sign_erased", "forced_signed_reset", "forced_equal_reset"],
+  "fresh_event_population": "For each nonzero interval, retain joint source-active-bin by newly emitted event-sign mass under each observed driver. Compare selected source alone, source plus remembered driver, joint source/event sign, event sign alone, signed forced reset and equal forced reset on exactly the same event-selected population.",
+  "invariants": "Finite nonnegative mass; unit transition rows and observation masses; common selected-population masses; Bayes information cannot improve under deterministic coarsening or class-independent reset kernels. Source-alone to event-sign data processing is required only for impulse models, whose interval law is independent of remembered observation.",
+  "numerical_tolerance": 2e-9,
+  "formal_efficacy_or_multiplicity_family": false,
+  "interpretation": "Prospectively declared secondary fitted-dynamics probe. It diagnoses available class-belief information in a controlled one-observation experiment. It does not test whole-policy maximal information, trained arbitrary-history recovery, causal task utility, neural-head accuracy, independent task generalization or production adoption.",
+  "reporting": "Retain all 16 fits and six candidates, all horizons and zero-event cases. Report per-fit values and paired descriptive differences; no selection, retuning, significance gate or new efficacy claim.",
+  "execution_gate": "Publish and remotely verify probe.py, plan.json and README.md before execution. Require verified published all-model seal; verify every main source, every 24-by-16 model and every sealed TRAIN-data hash before and after execution. Never open confirmation files.",
+  "cost": "A supervisor captures the complete worker user+system CPU, wall time, peak RSS and exit status including imports, hash verification, probing and serialization; supervisor CPU is reported separately. Failed attempts and partial per-fit outputs remain available."
+}
