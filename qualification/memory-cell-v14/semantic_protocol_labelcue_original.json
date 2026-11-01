@@ -1,0 +1,63 @@
+{
+  "schema": "hepta.semantic.protocol.v1",
+  "status": "preregistered_before_model_holdout_evaluation",
+  "purpose": "Test language understanding for repeated reuse of registered skills, where exact-address KV alone is insufficient, while retaining strong lexical and pretrained implementations.",
+  "task_scope": "Instruction-to-skill selection and explicitly decomposed composition; no claim of algorithm synthesis, learned planning, arbitrary new fact memory, or open-domain generality.",
+  "information": "All selectors receive the identical raw request text and V13 train/calibration examples. Payloads go to the identical shared executor. No selector receives skill labels, expected outputs, project-to-label maps, or holdout metadata.",
+  "sources": {
+    "training": "../memory-cell-v13/evidence/inputs/train_rows.json",
+    "calibration": "../memory-cell-v13/evidence/inputs/calibration_rows.json",
+    "training_rows": 120,
+    "calibration_rows": 48,
+    "new_holdout": "semantic_holdout.json",
+    "new_authored_queries": 96,
+    "new_compositions": 12,
+    "manifest": "semantic_manifest.json",
+    "previous_v13_or_routing_holdout_used_for_selection": false,
+    "new_project_names": "Aurora context names unseen in train/calibration; these are semantic distractors, not new arbitrary factual bindings."
+  },
+  "models": {
+    "bert": {"repository": "google/bert_uncased_L-2_H-128_A-2", "revision": "30b0a37ccaaa32f332884b96992754e246e48c5f", "safetensors_sha256": "7fb69ad9f6866d8983183c930e33828f326470bf6ad8bbb2ad4ed957a92e9414", "pooling": "CLS", "max_tokens": 96},
+    "minilm": {"repository": "sentence-transformers/all-MiniLM-L6-v2", "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41", "onnx_sha256": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452", "onnx_bytes": 90405214, "pooling": "attention-masked mean and L2", "max_tokens": 256},
+    "random_model_fallback": false,
+    "different_pretrained_encoders_allowed_as_strong_baselines": true
+  },
+  "arms": ["exact_kv", "bm25", "kv_bm25", "lexical_ridge", "bert_nearest", "bert_centroid", "bert_ridge", "bert_fast_weights", "minilm_nearest", "minilm_centroid", "minilm_ridge", "bert_linear", "bert_mlp", "bert_lora"],
+  "target_arms": ["bert_lora", "bert_mlp", "bert_fast_weights"],
+  "seeds": [17, 29, 43],
+  "statistical_units": "The same 96 authored requests are used for all seeds; optimizer seeds are not 288 independent language examples. Queries and their skill groups must remain paired in inference.",
+  "training_and_selection": {
+    "backbone_frozen": true,
+    "lora_targets": "BERT attention query/value",
+    "lora_rank": 4,
+    "lora_alpha": 8,
+    "linear_reader": "128-to-12, same initialization for LoRA and frozen linear control",
+    "mlp_hidden": 32,
+    "optimizer": "AdamW",
+    "learning_rate": 0.002,
+    "weight_decay": 0.001,
+    "gradient_clip": 1.0,
+    "batch_size": 32,
+    "neural_cumulative_candidate_steps": [80, 160, 320],
+    "ridge_candidates": [0.01, 0.1, 1.0, 10.0],
+    "fastweight_candidate_passes": [2, 6, 12],
+    "fastweight_learning_rate": 0.4,
+    "lexical_features": "TFIDF word unigrams/bigrams plus char_wb 2-5 grams",
+    "selection": "V13 calibration executed task success, then label accuracy, then earliest candidate; never new holdout outcomes.",
+    "all_attempt_costs_included": true,
+    "cpu_threads": 2
+  },
+  "acceptance": {
+    "quality": "A target improves held-out actual execution success over every prespecified implementation baseline, consistently across the three fixed seeds. Costs and label accuracy are separately reported.",
+    "net_utility": "At 1000 reads/one-hour storage window, actual execution success minus 0.01 reward per total wall-second/query minus 0.001 reward per GiB-hour/query exceeds every prespecified baseline.",
+    "read_horizon_sensitivity": [1, 10, 100, 10000],
+    "statistical_review": "Root aggregation must account for shared requests across seeds and paired skill/query groups; single-seed candidate flags do not establish stable gain.",
+    "energy_dollars_and_unimplemented_distributed_transport": "Explicit unknowns outside the local service claim; not additional quality gates."
+  },
+  "cost_scope": {
+    "included": ["actual model acquisition/load", "actual per-arm train/calibration encoding", "all calibration candidate training", "every candidate checkpoint", "selection", "restore", "source bytes", "base bytes", "sequential query encoding/reading/shared execution", "physical experiment wall time", "RSS", "known previous failed and unsuccessful exploration"],
+    "prior_cost_ledger": "semantic_prior_costs.json; optional override accepts cost-only entries, never prior holdout predictions",
+    "unknown_prior_costs": "Remain null and visible; never treated as measured zero. Quality evidence remains assessable, while complete research-amortized cost claims require these values."
+  },
+  "runtime": {"additional_dependency": "onnxruntime==1.23.2", "other_dependencies": "requirements-language.txt", "command": "python qualification/memory-cell-v14/semantic_run.py --seed 17 --output /tmp/semantic-v14-17", "final_execution_requires_prior_commit": true}
+}
