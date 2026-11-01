@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "experiments.hcsn_v8_execution_20261101.frontend.causality_check",
+    "--before",
+    "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/source_snapshot/legacy_v3.py",
+    "--output",
+    "experiments/hcsn_v8_execution_20261101/frontend/validation/CAUSAL_HARDENING.json"
+  ],
+  "out": "/workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/frontend/validation/metered_causality003",
+  "timeout": 60.0,
+  "sample_interval": 0.5
+}

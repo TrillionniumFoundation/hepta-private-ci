@@ -1,0 +1,12 @@
+{
+  "schema": "hcsn-v8-formatting-status.v1",
+  "instruction": "AGENTS.md requires just fmt in codex-rs after source changes and no tests after formatting.",
+  "attempted_command": "just fmt",
+  "attempted_cwd": "/workspace/scratch/71893ec7be58/hepta-av-v8/codex-rs",
+  "executed": false,
+  "status": "unavailable_in_exact_partial_reconstruction",
+  "error": "Failed to create unified exec process: exec-server rejected request (-32603): No such file or directory (os error 2)",
+  "reason": "The local sparse source reconstruction does not contain codex-rs. The inherited remote codex-rs tree is unchanged.",
+  "tests_after_attempt": false,
+  "full_repository_CI_claimed": false
+}
