@@ -1,0 +1,76 @@
+{
+  "schema": "hcsn.recurrent-independent-prevalidation-review.v1",
+  "decision": "No blocking source or mathematical-wiring issue found; eligible for the fixed functional evaluation after the parent persists its protocol checkpoint.",
+  "protocol_sha256": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+  "inputs_sha256": "3a116df6012930de71c44747838d7ab077e4e6bc41c30f493cce523846658793",
+  "reviewed_source_identities": {
+    "recurrent.py": {
+      "sha256": "bd8f9fcc4fc10f36088d9bd98e55a598d79e0c653aacbe5caaced2406b0c614d",
+      "matches": true
+    },
+    "recurrent_common.py": {
+      "sha256": "ade8f72b9dc1160778705eaeb6dac7c2302ebabe299de182d66aba4b23796ce9",
+      "matches": true
+    },
+    "audit_recurrent.py": {
+      "sha256": "b437b2233ede3a4829f931df290763eb73c084266e4fe820f31f1f566b0704fb",
+      "matches": true
+    },
+    "train_recurrent.py": {
+      "sha256": "41bd77e742719e774e2fd050ec923ea721e715c793706e10f91ca5448120cb7c",
+      "matches": true
+    },
+    "freeze_recurrent.py": {
+      "sha256": "5b2062397a552efa3a34ed40c6b020900c478780a56ab5e80e0abc9893a9125c",
+      "matches": true
+    },
+    "README.md": {
+      "sha256": "39eed2fd43c970ea5967f5e8fea1b992c0b4d6406695911a02adb7a31ae6ab9e",
+      "matches": true
+    },
+    "requirements.txt": {
+      "sha256": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23",
+      "matches": true
+    }
+  },
+  "new_recurrent_evaluations": 0,
+  "financial_oracle_calls": 0,
+  "mathematical_review": {
+    "signed_readout": "For finite signed x, call the unchanged log-distance financial core at max(x,0), then expose only Q=E/b,R,x. Explicit Q=0,R=1 at x<=0 ensures zero local theta/state gradients there; x retains derivative1. Joint C1 is conditional on positive regular b, the joint smooth-pasting equity extension and bounded joint first-passage gradients.",
+    "asset_vs_log_chain": "This interface treats x as an independent state; no extra -db/b term belongs in dx/dtheta. Boundary sensitivities are already in the fixed-x financial Jacobian, and Q includes dE/b-E db/b^2.",
+    "euler_state_matrix": "A=[[1-dt*(leak+k_equity*Q_x+k_risk*R_x),dt],[dt*k_risk*R_x/tau,1-dt/tau]].",
+    "euler_theta_matrix": "G rows are -dt*(k_equity*Q_theta+k_risk*R_theta) and dt*k_risk*R_theta/tau. The manual reverse uses step_theta=lambda_next*G, drive=dt*lambda_next_x, lambda_current=lambda_next*A in the correct order.",
+    "negative_region": "A reduces to [[1-dt*leak,dt],[0,1-dt/tau]], G=0. The all-negative reference uses A^16. Earlier positive phases can still leave historical theta sensitivity in the state.",
+    "scope": "This is a new deterministic feedback model with fixed-step Euler integration; no inherited financial probability calibration, exact temporal solution, C2 force, cycle or superiority proof."
+  },
+  "source_review": {
+    "raw_financial_domain_unchanged": true,
+    "finite_check_before_clamp_including_negative_infinity": true,
+    "normal_state_graph_has_no_detach": true,
+    "detach_only_explicit_negative_control_and_receipt_conversion": true,
+    "updates_use_both_old_states": true,
+    "terminal_only_loss_for_temporal_credit": true,
+    "per_step_theta_clone_nodes_and_shared_theta_checked": true,
+    "negative_control_cuts_early_state_theta_and_drive_paths": true,
+    "no_trainable_readout_head": true,
+    "source_training_parameter_count": 9,
+    "saved_training_content": "Each of12 iterations saves terminal loss, full17-state trajectory,16 readouts/drifts, before/after raw/effective theta and all9 gradients; final trajectory and all inputs/targets are included."
+  },
+  "static_cardinality": {
+    "signed_fixtures": 5,
+    "contract_checks_from_source": 13,
+    "temporal_comparisons_from_source": 8,
+    "training_samples": 8,
+    "temporal_steps": 16,
+    "training_updates": 12,
+    "matches_frozen_counts": true
+  },
+  "reporting_notes": [
+    "The auditor declares required_* counts but does not explicitly assert them in run; the frozen source/input counts currently match, and the independent result review should recompute them.",
+    "The field detached_forward_bitwise_equal uses np.array_equal, which compares exact numerical values but treats signed zeros as equal. Report it as exact numerical forward equality unless raw storage bytes are separately checked.",
+    "Gradient comparison reference composes continuous-formula Jacobians at represented states in FP64; FP32 contraction/rounding differences are judged by the already frozen tolerances, not claimed byte identity.",
+    "The initial input manifest includes two zero states. A positive first drive exceeding k_risk can move a zero state positive; sampled crossings remain forced discrete trajectory observations, not autonomous spikes or periodic orbits."
+  ],
+  "frozen_sources_modified": false,
+  "runtime_pass_claimed": false
+}

@@ -1,0 +1,86 @@
+{
+  "schema": "hcsn.independent-recurrent-result-review.v1",
+  "passed": true,
+  "source_review": "Joint C1 signed neural observable, old-state Euler updates, complete theta chain and normal undetached temporal graph reviewed separately in PREVALIDATION_REVIEW.",
+  "input_sha256": {
+    "RECURRENT_PROTOCOL.json": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+    "RECURRENT_INPUTS.json": "3a116df6012930de71c44747838d7ab077e4e6bc41c30f493cce523846658793",
+    "RECURRENT_AUDIT_V1.json.gz": "66339845b1a461540370916913e0b5a4db0fba274d17b4c2a6a3b4e506cc717d",
+    "RECURRENT_TRAINING_V1.json.gz": "b07378052e70e0ad97978f74398b2db0fda02bb3eae9041c51f70f9caac4a35e",
+    "RESULT_CHECK_V1.json": "483707d8ef3f737a17a0ff9feb1db25b33bec1a4cd6fb858b7076b9cbac3be79",
+    "AUDIT_EXECUTION_V1.json": "b260f32b65c8cfba06643f1b1330cad2f2d1ac6ba0653cf5012e748747636652",
+    "TRAINING_EXECUTION_V1.json": "34184cd9ecdce40e7c3ffddb3f29c339c8393b5b6a0cac142c9eb30a2d6236a5",
+    "check_recurrent_results.py": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+    "recurrent.py": "bd8f9fcc4fc10f36088d9bd98e55a598d79e0c653aacbe5caaced2406b0c614d",
+    "recurrent_common.py": "ade8f72b9dc1160778705eaeb6dac7c2302ebabe299de182d66aba4b23796ce9",
+    "audit_recurrent.py": "b437b2233ede3a4829f931df290763eb73c084266e4fe820f31f1f566b0704fb",
+    "train_recurrent.py": "41bd77e742719e774e2fd050ec923ea721e715c793706e10f91ca5448120cb7c",
+    "freeze_recurrent.py": "5b2062397a552efa3a34ed40c6b020900c478780a56ab5e80e0abc9893a9125c",
+    "README.md": "39eed2fd43c970ea5967f5e8fea1b992c0b4d6406695911a02adb7a31ae6ab9e",
+    "requirements.txt": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+  },
+  "review_script_sha256": "225f6a9eda54150999e6a7a501db7a1397230c3fb7ed0b96ce827ec2361c1995",
+  "counts": {
+    "signed_fixtures": 5,
+    "contracts": 13,
+    "temporal_comparisons": 8,
+    "steps": 16,
+    "batch": 8,
+    "training_updates": 12,
+    "changed_raw_theta_entries": 9,
+    "changed_effective_theta_entries": 9,
+    "full_recorded_trajectories_checked": 16
+  },
+  "temporal_gradient_max_absolute_errors": {
+    "step_theta": 1.4739448865837073e-13,
+    "shared_theta": 7.749751276771083e-13,
+    "initial_x": 5.530006227244533e-10,
+    "initial_adaptation": 5.1186712854423e-10,
+    "drive": 6.895413135876022e-11,
+    "middle_x": 9.38539818778894e-10,
+    "middle_adaptation": 2.3969419504776823e-10,
+    "shared_equals_sum_of_step_contributions": 2.4158453015843406e-13
+  },
+  "early_theta_contribution_l2": 6.071797607160254e-07,
+  "initial_x_gradient_l2": 0.009881562217505267,
+  "initial_and_final_sampled_phase_changes": [
+    13,
+    13
+  ],
+  "sampled_change_types": [
+    "-1->1",
+    "0->-1",
+    "0->1",
+    "1->-1"
+  ],
+  "all_negative_theta_gradients_exactly_zero": true,
+  "all_negative_A_power_16_max_error": 8.0346011621657e-08,
+  "detach_early_theta_drive_initial_gradients_exactly_zero": true,
+  "detach_forward_equality": "Exact numerical equality via NumPy array_equal; this comparison does not distinguish positive and negative zero.",
+  "loss": {
+    "initial": 0.0004702643782366067,
+    "final": 0.0004702617588918656,
+    "absolute_decrease": 2.6193447411060333e-09,
+    "percentage_decrease": 0.0005569940787197256,
+    "interpretation": "Nearly unchanged training loss; no optimization-effectiveness or generalization claim."
+  },
+  "maximum_terminal_loss_recomposition_error": 4.3876510497781185e-11,
+  "boundary_diagnostic": {
+    "initial": 67.44151430180042,
+    "final": 67.56989524842066,
+    "interpretation": "Independent x is held fixed; V=b(theta)*exp(x) changes with b. A changed b alone is not proof of threshold movement against fixed asset input."
+  },
+  "original_execution_returncodes": {
+    "audit": 0,
+    "training": 0
+  },
+  "review_financial_kernel_calls": 0,
+  "review_pytorch_calls": 0,
+  "chronology": "Local protocol/source freeze and functions.store preceded first recurrent audit. Parent remote checkpoint a629f9b was published after first audit; this is not remote preregistration before opening.",
+  "scope": [
+    "Deterministic finite-step functional integration proof only; full local Jacobian and BPTT records retained.",
+    "Record arithmetic and source identities independently reviewed; Adam algorithm was not independently replayed.",
+    "Not a new financial holdout, quality-gate closure, analytic temporal solution, stability proof, spike proof, multimodal result, energy or performance advantage.",
+    "V1 remains unchanged. A future fixed-z asset model changes initial-state/drive/leak semantics and is a separate candidate, not an equivalent coordinate rewrite."
+  ]
+}

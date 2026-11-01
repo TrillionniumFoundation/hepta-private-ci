@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "/tmp/hcsn-recurrent-next-v1/train_recurrent.py",
+    "--adapter-root",
+    "/tmp/hcsn-autograd-adapter-v3",
+    "--financial-root",
+    "/tmp/hcsn-compiled-recovery",
+    "--protocol-sha256",
+    "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+    "--output",
+    "/tmp/hcsn-recurrent-next-v1/RECURRENT_TRAINING_V1.json.gz"
+  ],
+  "controller_launch_utc": "2026-11-01T17:44:34.964623+00:00",
+  "protocol_sha256": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+  "PYTHONPATH": "/tmp/hcsn-torch-runtime"
+}
