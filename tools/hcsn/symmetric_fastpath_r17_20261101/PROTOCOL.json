@@ -15,6 +15,7 @@
     30.0,
     100.0
   ],
+  "eligibility_gate": "All HX and same-matrix HMM laws must take the fast path. Free laws may be rejected by bit-exact symmetry and must then reproduce dense transitions exactly; fallback is counted and timed, not silently approximated. No tolerance relaxation.",
   "exact_behavior_gate": "All actions, answers, targets, tokens, fees, utility, operation counts, and public query records must agree exactly. Only timing fields and numeric checkpoint hash bytes are separately compared. No tolerant action ties or answer relabeling.",
   "fits": [
     151101,
@@ -35,6 +36,7 @@
   "namespace": 170721,
   "numerical_contract": "Exact permutation symmetry required; Metzler triangular lift; no subtraction expA-expB, no clipping or probability floors. Unsupported matrix uses explicit dense fallback, audited with conservative asymmetric fixture. Both laws retain original Q, arrays, model/operator identities.",
   "operator_atol": 3e-11,
+  "prior_attempt": "attempt_01 preserves original frozen source and all24 operator audits. No operator error/rejection failure; first guard incorrectly required every free matrix to be eligible despite the stated fallback contract. Campaign was not run.",
   "production_activation": false,
   "reference": "Dense scipy expm and independent full1600-state DOP853 ODE at all frozen durations; raw matrices retained.",
   "representations": [

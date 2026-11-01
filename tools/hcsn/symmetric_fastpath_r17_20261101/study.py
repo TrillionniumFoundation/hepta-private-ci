@@ -106,7 +106,7 @@ def audit(protocol):
         else:
             controls[label+"_rejected"] = False
     passed = not failures and all(controls.values()) and all(
-        x["eligible"]["eligible"] and x["identical_payload"] for x in records)
+        x["identical_payload"] and (x["eligible"]["eligible"] or (x["model"] == "free" and x["max_dense_error"] == 0.)) for x in records)
     save(HERE / "results/OPERATOR_SUMMARY.json", dict(records=records, failures=failures,
         controls=controls, passed=passed))
     if not passed:
