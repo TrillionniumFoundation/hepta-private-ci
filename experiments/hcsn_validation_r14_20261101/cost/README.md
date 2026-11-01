@@ -51,6 +51,11 @@ The reuse count is total sample requests, not batches. Amortization rows are
 emitted only when the request count is at least one full batch and exactly
 divisible by the batch size. Batch-32 costs are never assigned to workloads
 of only one or ten requests; partial-tail batch costs are unmeasured.
+Historical training CPU plus newly measured warm inference CPU is a
+cross-period accounting scenario. Training was not rerun. The original
+training receipts do not pin an independently verifiable identical CPU/host
+configuration, so matching software versions does not turn this combination
+into a same-hardware, from-scratch end-to-end benchmark.
 
 The five development workers cost 8.032816 CPU seconds (4.365532 in
 development_01 and 3.667284 in development_02). They remain separate from the
@@ -91,3 +96,32 @@ correction explicit and freeze a new output attempt. `summarize` requires all
 720 workers, verifies every retained input hash, and reports paired seed rows,
 all-domain quality/cost means, descriptive Pareto sets, training amortization,
 and the disjoint external process ledger.
+
+## Independent verification and evidence parts
+
+After the complete matrix and summaries exist, run the independent arithmetic
+audit (it does not import the model or measurement implementation):
+
+```bash
+python -m experiments.hcsn_validation_r14_20261101.cost.audit \
+  --output experiments/hcsn_validation_r14_20261101/cost/results/formal_02
+```
+
+The delivery helper preserves the cost subtree in gzip-framed parts below the
+repository's 500 KiB blob limit, and really restores all members to a fresh
+temporary directory before reporting success. The archive does not duplicate
+the inherited R12 source/checkpoint/data dependencies outside this subtree.
+Existing `archives` directories are excluded to prevent recursive packages or
+archiving the package process's still-open receipt log.
+
+```bash
+python -m experiments.hcsn_validation_r14_20261101.cost.package_results \
+  --output experiments/hcsn_validation_r14_20261101/cost/archives/publication_01
+python -m experiments.hcsn_validation_r14_20261101.cost.package_results \
+  --restore-index experiments/hcsn_validation_r14_20261101/cost/archives/publication_01/INDEX.json \
+  --output /tmp/hcsn-cost-restored
+```
+
+The restore destination must not already exist. All part, archive, and member
+SHA256 hashes are checked before the restore is accepted; raw original files
+remain available in the working tree.

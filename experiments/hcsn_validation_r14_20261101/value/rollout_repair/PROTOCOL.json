@@ -1,0 +1,88 @@
+{
+  "schema": "hcsn.r14.actor-rollout-repair.v1",
+  "seeds": [
+    121101,
+    121103,
+    121107,
+    121109,
+    121113,
+    121117,
+    121119,
+    121123
+  ],
+  "episodes_per_seed_domain": 128,
+  "domains": {
+    "iid": [
+      0.15,
+      0.45,
+      1.05
+    ],
+    "ood": [
+      0.05,
+      0.75,
+      2.1
+    ]
+  },
+  "horizon": 3,
+  "read_budget": 2,
+  "tape_seed_offsets": {
+    "iid": 140310000,
+    "ood": 140410000
+  },
+  "arms": {
+    "A": [
+      "ordinary",
+      "fixed_read"
+    ],
+    "B": [
+      "ordinary",
+      "value"
+    ],
+    "C": [
+      "hx_distribution",
+      "fixed_read"
+    ],
+    "D": [
+      "hx_distribution",
+      "value"
+    ],
+    "B_prime": [
+      "ordinary",
+      "actor_rollout_base_tail"
+    ],
+    "D_prime": [
+      "hx_distribution",
+      "actor_rollout_base_tail"
+    ]
+  },
+  "policy": "Force each first action under actor.current as fitted-world belief; future scoring calls the original value policy with the actual recurrent hidden state. Recompute this rule at each actual prefix. No true world, teacher posterior or unread input enters selector.",
+  "scope": "Same frozen finite20-state CTMC and 3-step synthetic task; all existing checkpoint bytes and ordinary validation selection retained. No new fitting or hyperparameter selection.",
+  "statistical_unit": "eight inherited paired fit seeds; conditional new tapes are not new fits",
+  "reported_effects": [
+    "B-A",
+    "D-C",
+    "C-A",
+    "D-B",
+    "interaction",
+    "B_prime-A",
+    "D_prime-C",
+    "C-A",
+    "D_prime-B_prime",
+    "interaction_prime",
+    "B_prime-B",
+    "D_prime-D"
+  ],
+  "primary": "real executed utility, query/time/reset costs and fresh serial worker resource receipts on new paired tapes",
+  "secondary": {
+    "clock_schedules": "all Cartesian products of the three registered intervals of length3 in each domain, uniform1/27",
+    "policies": "all original and repaired policies; every future branch invokes the actual selector again",
+    "evaluation_world": "true finite model, evaluator only",
+    "report": "exact finite-profile expected utility per fit, every factorial/direct repair contrast, mass accounting; separate from sampled primary and not a continuum certificate"
+  },
+  "cost": "96 fresh single-thread serial rollout workers plus16 separate complete-clock workers; whole process startup/imports/source verification/setup/inference/owner/output/exit measured using wait4. Nested actor/setup timings never added twice. Diagnostic CPU separately identified. Device energy absent is null.",
+  "inference": "descriptive paired-fit t intervals for all contrasts; no adaptive candidate tuning, no new superiority p-value or production-acceptance declaration. Retain negative or null findings.",
+  "source_freeze": "local SHA freeze after behavior tests and before new tape execution; previous value audit SOURCE_FREEZE unchanged",
+  "ordering": "each seed/domain shuffles fixed six-arm list with seed+14000+is_ood before serial fresh processes",
+  "tie_rule": "STOP0/STOP1/WAIT/READ/RESET order with1e-12 utility threshold inherited; HX score discrepancies and action ties recorded",
+  "repaired_qpi_warning": "controller scores evaluate the base policy tail, not the receding repair. Full-clock evaluator evaluates the true actual repaired policy separately."
+}
