@@ -1,0 +1,53 @@
+{
+  "schema": "hcsn-v7-memory-observer-handoff.v2",
+  "observed_at_utc": "2026-11-01T17:14:55.214989+00:00",
+  "status": "required_known_live_inventory_and_registered_set_verified; full_family_unavailable_on_current_runtime",
+  "revision": "003",
+  "scientific_candidate_executed": false,
+  "v6_sources_modified": false,
+  "full_family_blocker_closed": false,
+  "final_probe": "PROBE_REPORT_003.json",
+  "final_tests": "validation/tests003/RECEIPT.json",
+  "tests_passed": 19,
+  "final_registered_process_count": 3,
+  "registered_rss_range_bytes": [
+    88035328,
+    88055808
+  ],
+  "registered_sample_span_ms": [
+    0.860182,
+    1.035692,
+    1.055481
+  ],
+  "required_live_members_in_both_enumerations": true,
+  "controlled_probe_requires_exact_identity_set": true,
+  "handshake_timeout_seconds": 10.0,
+  "handshake_line_max_bytes": 131072,
+  "exit_wait_timeout_seconds": 10.0,
+  "cleanup_scope": "Only its own unreaped direct Popen child PID is signalled. Descendant probe attempts cleanup of its own direct child; no process-group kill or global scan.",
+  "full_family_available": false,
+  "full_family_rss_bytes": null,
+  "why_unavailable": "Cannot read required owned-process metadata: /proc/172032/task/172032/children: [Errno 2] No such file or directory: '/proc/172032/task/172032/children'",
+  "complete_validation_worker_cpu_seconds": 0.8985479999999999,
+  "complete_validation_worker_wall_sum_seconds": 1.409139947998483,
+  "wrapper_measured_interval_cpu_seconds": 0.0030377080000000035,
+  "source_sha256": {
+    "probe_memory.py": "6987027bef56410fdf62104256074090776859fee9e2c038acf5ae9e898855e5",
+    "process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba",
+    "run_validation.py": "b7e0e1d3f9688c8c649987af35c83734ed4bd92ed40a89729758daa3605a35fd",
+    "test_process_memory.py": "7d97c74526f3652624ae74a0bf0479c61d77c1dafbf51a8b68fce6667cd87a15"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "linux"
+  },
+  "accounting_note": "Six fresh workers (three tests, three probes) are charged once each. Nested process CPU is not added. Initial shell inspection, source writing, report generation and packaging are outside these totals.",
+  "prior_sources_retained": [
+    "validation/source001/",
+    "validation/source002/"
+  ],
+  "prior_metadata_retained": "validation/metadata002/",
+  "sampling_limit": "Two matching inventories, even with required known live members, cannot exclude unregistered or short-lived descendants between enumeration/read instants; this is not a continuous physical-memory peak.",
+  "cleanup_limits": "No guarantee of complete descendant cleanup under arbitrary faults: an ancestor can exhaust its per-layer grace and SIGKILL a child before that child finishes grandchild cleanup; a process stuck in the kernel may remain unreaped. Normal probe and bounded direct-child cleanup are the tested cases.",
+  "failed_probe_accounting": "If a probe fails before producing its JSON, the outer worker receipt/log records the observed failure. Failed memory and complete descendant cost must remain unavailable when descendant reaping is incomplete; a wait4 receipt must not be promoted to all-descendant complete cost in that case."
+}

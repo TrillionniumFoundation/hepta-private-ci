@@ -1,0 +1,24 @@
+test_access_denied_is_unavailable (test_process_memory.ObserverTests.test_access_denied_is_unavailable) ... ok
+test_cleanup_only_reaps_its_own_blocked_child (test_process_memory.ObserverTests.test_cleanup_only_reaps_its_own_blocked_child) ... ok
+test_controlled_probe_rejects_additional_process (test_process_memory.ObserverTests.test_controlled_probe_rejects_additional_process) ... ok
+test_duplicate_members_do_not_double_count (test_process_memory.ObserverTests.test_duplicate_members_do_not_double_count) ... ok
+test_inventory_bound_fails_closed (test_process_memory.ObserverTests.test_inventory_bound_fails_closed) ... ok
+test_missing_children_does_not_promote_registered_set (test_process_memory.ObserverTests.test_missing_children_does_not_promote_registered_set) ... ok
+test_missing_namespace_mapping_fails_closed (test_process_memory.ObserverTests.test_missing_namespace_mapping_fails_closed) ... ok
+test_missing_required_grandchild_is_unavailable (test_process_memory.ObserverTests.test_missing_required_grandchild_is_unavailable) ... ok
+test_missing_statm_fails_closed (test_process_memory.ObserverTests.test_missing_statm_fails_closed) ... ok
+test_namespace_mapping_and_all_descendants (test_process_memory.ObserverTests.test_namespace_mapping_and_all_descendants) ... ok
+test_partial_handshake_times_out_without_newline (test_process_memory.ObserverTests.test_partial_handshake_times_out_without_newline) ... ok
+test_proc_stat_parenthesis (test_process_memory.ObserverTests.test_proc_stat_parenthesis) ... ok
+test_required_live_identity_mismatch_is_rejected (test_process_memory.ObserverTests.test_required_live_identity_mismatch_is_rejected) ... ok
+test_reused_pid_is_unavailable_not_zero (test_process_memory.ObserverTests.test_reused_pid_is_unavailable_not_zero) ... ok
+test_second_enumeration_must_retain_required_grandchild (test_process_memory.ObserverTests.test_second_enumeration_must_retain_required_grandchild) ... ok
+test_stable_empty_children_cannot_omit_required_live_child (test_process_memory.ObserverTests.test_stable_empty_children_cannot_omit_required_live_child) ... ok
+test_thread_children_are_combined_without_duplicates (test_process_memory.ObserverTests.test_thread_children_are_combined_without_duplicates) ... ok
+test_wrong_spawn_pid_or_parent_rejected (test_process_memory.ObserverTests.test_wrong_spawn_pid_or_parent_rejected) ... ok
+test_zombie_is_not_a_live_zero_rss_member (test_process_memory.ObserverTests.test_zombie_is_not_a_live_zero_rss_member) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.189s
+
+OK

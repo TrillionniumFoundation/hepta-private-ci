@@ -1,0 +1,116 @@
+{
+  "schema": "hcsn-v7-review-stages.v1",
+  "base_commit": "1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d",
+  "destination": "experiments/hcsn_v7_support_20261101/",
+  "scope": "New support directory only; no restored v6 or scientific candidate claim",
+  "first_independently_reviewable_stage": 0,
+  "stages": [
+    {
+      "index": 0,
+      "purpose": "Bind Linux RSS to owned process identity and required live inventory",
+      "paths": [
+        "memory_observer/process_memory.py",
+        "memory_observer/test_process_memory.py"
+      ],
+      "lines": 455,
+      "evidence_copy_stage": false
+    },
+    {
+      "index": 1,
+      "purpose": "Add bounded controlled memory probe and disclose coverage limits",
+      "paths": [
+        "memory_observer/REPORT_ZH.md",
+        "memory_observer/probe_memory.py",
+        "memory_observer/run_validation.py"
+      ],
+      "lines": 352,
+      "evidence_copy_stage": false
+    },
+    {
+      "index": 2,
+      "purpose": "Add causal common-content and same-target action-value contracts",
+      "paths": [
+        "content_interface/README.md",
+        "content_interface/content_interface.py",
+        "content_interface/test_content_interface.py"
+      ],
+      "lines": 758,
+      "evidence_copy_stage": false
+    },
+    {
+      "index": 3,
+      "purpose": "Record blocked v7 protocol and independent memory reviews",
+      "paths": [
+        "protocol/MEMORY_OBSERVER_REVIEW.md",
+        "protocol/MEMORY_OBSERVER_REVIEW_FOLLOWUP.md",
+        "protocol/PROTOCOL_DRAFT.json",
+        "protocol/README.md"
+      ],
+      "lines": 438,
+      "evidence_copy_stage": false
+    },
+    {
+      "index": 4,
+      "purpose": "Add read-only baseline recovery checks and support validation entry point",
+      "paths": [
+        "README.md",
+        "restore_check.py",
+        "run_checks.py",
+        "test_restore_check.py"
+      ],
+      "lines": 370,
+      "evidence_copy_stage": false
+    },
+    {
+      "index": 5,
+      "purpose": "Retain exact validation evidence, historical snapshots and delivery manifest",
+      "paths": [
+        "BASELINE_RECOVERY.json",
+        "BASELINE_RECOVERY_FINAL.json",
+        "FORMATTING_STATUS.json",
+        "REMOTE_BASELINE_READS.json",
+        "content_interface/CONTRACT_TESTS.json",
+        "content_interface/CONTRACT_TESTS.log",
+        "content_interface/MANIFEST.json",
+        "memory_observer/DELIVERY_003.json",
+        "memory_observer/HANDOFF.json",
+        "memory_observer/INITIAL_INSPECTION.json",
+        "memory_observer/MANIFEST.json",
+        "memory_observer/MANIFEST_003.json",
+        "memory_observer/PROBE_REPORT.json",
+        "memory_observer/PROBE_REPORT_002.json",
+        "memory_observer/PROBE_REPORT_003.json",
+        "memory_observer/validation/metadata002/HANDOFF.json",
+        "memory_observer/validation/metadata002/MANIFEST.json",
+        "memory_observer/validation/metadata002/REPORT_ZH.md",
+        "memory_observer/validation/probe001/RECEIPT.json",
+        "memory_observer/validation/probe001/worker.log",
+        "memory_observer/validation/probe002/RECEIPT.json",
+        "memory_observer/validation/probe002/worker.log",
+        "memory_observer/validation/probe003/RECEIPT.json",
+        "memory_observer/validation/probe003/worker.log",
+        "memory_observer/validation/source001/probe_memory.py",
+        "memory_observer/validation/source001/process_memory.py",
+        "memory_observer/validation/source001/run_validation.py",
+        "memory_observer/validation/source001/test_process_memory.py",
+        "memory_observer/validation/source002/probe_memory.py",
+        "memory_observer/validation/source002/process_memory.py",
+        "memory_observer/validation/source002/run_validation.py",
+        "memory_observer/validation/source002/test_process_memory.py",
+        "memory_observer/validation/tests001/RECEIPT.json",
+        "memory_observer/validation/tests001/worker.log",
+        "memory_observer/validation/tests002/RECEIPT.json",
+        "memory_observer/validation/tests002/worker.log",
+        "memory_observer/validation/tests003/RECEIPT.json",
+        "memory_observer/validation/tests003/worker.log",
+        "validation/assembled001/RECEIPT.json",
+        "validation/assembled001/baseline_recovery.log",
+        "validation/assembled001/content_interface.log",
+        "validation/assembled001/memory_observer.log"
+      ],
+      "lines": 3210,
+      "evidence_copy_stage": true
+    }
+  ],
+  "size_note": "Implementation is separated by coherent boundary. The final stage is mechanical retention of observed JSON/log evidence and historical source copies; it does not add a second active implementation."
+}

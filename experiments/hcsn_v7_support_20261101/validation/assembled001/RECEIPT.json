@@ -1,0 +1,86 @@
+{
+  "schema": "hcsn-v7-support-contract-validation.v1",
+  "started_at_utc": "2026-11-01T17:16:40.533847+00:00",
+  "ended_at_utc": "2026-11-01T17:16:41.973304+00:00",
+  "status": "pass",
+  "complete_worker_cpu_seconds": 0.517153,
+  "sequential_envelope_wall_seconds": 1.4394426239996392,
+  "wrapper_measured_interval_cpu_seconds": 0.0038007500000000055,
+  "receipts": [
+    {
+      "name": "content_interface",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_content_interface"
+      ],
+      "cwd": "/tmp/hcsn-v7-support/content_interface",
+      "started_at_utc": "2026-11-01T17:16:40.533890+00:00",
+      "ended_at_utc": "2026-11-01T17:16:40.736964+00:00",
+      "exit_code": 0,
+      "waited_namespace_pid": 3,
+      "complete_worker_cpu_seconds": 0.088985,
+      "wall_seconds": 0.20309695600008126,
+      "largest_single_process_highwater_bytes": 13893632,
+      "family_peak_rss_bytes": null,
+      "source_sha256": {
+        "content_interface.py": "2dd6f4cc0204f5d77a7a5ab993d0710088d47848e2977bc44351519fc6d50c92",
+        "test_content_interface.py": "93a8127b25f4b644109b7852ca1b710d6719eba097dc4d04ff03cb3abba24ce3"
+      }
+    },
+    {
+      "name": "memory_observer",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_process_memory"
+      ],
+      "cwd": "/tmp/hcsn-v7-support/memory_observer",
+      "started_at_utc": "2026-11-01T17:16:40.737561+00:00",
+      "ended_at_utc": "2026-11-01T17:16:41.205028+00:00",
+      "exit_code": 0,
+      "waited_namespace_pid": 4,
+      "complete_worker_cpu_seconds": 0.18761,
+      "wall_seconds": 0.46749010200073826,
+      "largest_single_process_highwater_bytes": 19902464,
+      "family_peak_rss_bytes": null,
+      "source_sha256": {
+        "probe_memory.py": "6987027bef56410fdf62104256074090776859fee9e2c038acf5ae9e898855e5",
+        "process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba",
+        "run_validation.py": "b7e0e1d3f9688c8c649987af35c83734ed4bd92ed40a89729758daa3605a35fd",
+        "test_process_memory.py": "7d97c74526f3652624ae74a0bf0479c61d77c1dafbf51a8b68fce6667cd87a15"
+      }
+    },
+    {
+      "name": "baseline_recovery",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_restore_check"
+      ],
+      "cwd": "/tmp/hcsn-v7-support",
+      "started_at_utc": "2026-11-01T17:16:41.205783+00:00",
+      "ended_at_utc": "2026-11-01T17:16:41.973029+00:00",
+      "exit_code": 0,
+      "waited_namespace_pid": 6,
+      "complete_worker_cpu_seconds": 0.240558,
+      "wall_seconds": 0.7672670169995399,
+      "largest_single_process_highwater_bytes": 20389888,
+      "family_peak_rss_bytes": null,
+      "source_sha256": {
+        "restore_check.py": "42de546a82a0e314cd8c7b348ebe4cc763817ec1769dc8b4756a29d7b6acde18",
+        "run_checks.py": "284e3c0caa043966823d2170a6e3c4f67be38622cac248ad4f8fda9c32f6c7cb",
+        "test_restore_check.py": "dcb461647bb71b344b261da3053b99ba972662734a5d94488232bbcc7d222793"
+      }
+    }
+  ],
+  "trained_model_calls": 0,
+  "real_av_confirmations": 0,
+  "accounting": "Each complete waited worker is charged once. Nested Git-fixture and test stages are not added again. Wrapper interval excludes interpreter startup and final receipt serialization. Highwater is not family RSS. These are support-test costs, not candidate economics."
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "hcsn-v7-final-formatting-status.v1",
+  "instruction_source": "AGENTS.md at verified v3 commit 1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d",
+  "required_command": "just fmt",
+  "required_workdir": "/workspace/scratch/52a69008c60c/hepta-hcsn/codex-rs",
+  "status": "unavailable_not_passed",
+  "result": {
+    "tool_error": "exec_command failed: CreateProcess { message: \"Rejected(\\\"Failed to create unified exec process: exec-server rejected request (-32603): No such file or directory (os error 2)\\\")\" }"
+  },
+  "reason": "The original checkout and its codex-rs directory are unavailable in this executor; no successful formatter run is claimed.",
+  "rust_files_changed": false,
+  "tests_were_run_before_this_attempt": true,
+  "tests_after_formatting_attempt": false
+}

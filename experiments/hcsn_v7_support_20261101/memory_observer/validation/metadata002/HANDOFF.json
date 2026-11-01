@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn-v7-memory-observer-handoff.v1",
+  "observed_at_utc": "2026-11-01T17:07:14.728139+00:00",
+  "status": "identity_mapping_and_registered_set_verified; full_family_unavailable_on_current_runtime",
+  "scientific_candidate_executed": false,
+  "v6_sources_modified": false,
+  "full_family_blocker_closed": false,
+  "final_probe": "PROBE_REPORT_002.json",
+  "final_tests": "validation/tests002/RECEIPT.json",
+  "tests_passed": 12,
+  "final_registered_process_count": 3,
+  "registered_rss_range_bytes": [
+    87158784,
+    87179264
+  ],
+  "registered_sample_span_ms": [
+    0.688289,
+    1.069304,
+    1.015895
+  ],
+  "full_family_available": false,
+  "full_family_rss_bytes": null,
+  "why_unavailable": "Cannot read required owned-process metadata: /proc/140262/task/140262/children: [Errno 2] No such file or directory: '/proc/140262/task/140262/children'",
+  "complete_validation_worker_cpu_seconds": 0.54092,
+  "complete_validation_worker_wall_sum_seconds": 0.8971297739990405,
+  "wrapper_measured_interval_cpu_seconds": 0.002111604999999999,
+  "source_sha256": {
+    "probe_memory.py": "f77dc684a0a96c425505710778f31fc40dc1726dbdcdddc0d2a1a5484b548b71",
+    "process_memory.py": "31e49364622f3753d1013ab1583eb8f8dd8d79da2e77b3d52981deeccc32b4fb",
+    "run_validation.py": "b7e0e1d3f9688c8c649987af35c83734ed4bd92ed40a89729758daa3605a35fd",
+    "test_process_memory.py": "d9f1e8d97bd4744cf84ee71b1ac31016c6386df4902b04ae81a1de54c4dae042"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "linux"
+  },
+  "accounting_note": "Four fresh workers (two tests, two probes) are charged once each. Nested process CPU is not added. Initial shell inspection, source writing, report generation and packaging are outside these totals.",
+  "initial_version_retained": "validation/source001/"
+}

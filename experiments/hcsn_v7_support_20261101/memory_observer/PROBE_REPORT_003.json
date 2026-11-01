@@ -1,0 +1,348 @@
+{
+  "schema": "hcsn-v7-owned-memory-observer-probe.v1",
+  "allocations": {
+    "parent": {
+      "requested_bytes": 8388608,
+      "resident_before_bytes": 12476416,
+      "resident_after_bytes": 20869120,
+      "resident_delta_bytes": 8392704,
+      "touched_pages": 2048,
+      "touch_checksum": 253828
+    },
+    "child": {
+      "requested_bytes": 16777216,
+      "resident_before_bytes": 12492800,
+      "resident_after_bytes": 29282304,
+      "resident_delta_bytes": 16789504,
+      "touched_pages": 4096,
+      "touch_checksum": 509256
+    },
+    "grandchild": {
+      "requested_bytes": 25165824,
+      "resident_before_bytes": 12492800,
+      "resident_after_bytes": 37666816,
+      "resident_delta_bytes": 25174016,
+      "touched_pages": 6144,
+      "touch_checksum": 766284
+    }
+  },
+  "owned_root": {
+    "proc_pid": 172032,
+    "namespace_pids": [
+      172032,
+      6
+    ],
+    "start_ticks": 2760707,
+    "parent_proc_pid": 172020
+  },
+  "child_pid_seen_by_parent": 7,
+  "child_handshake": {
+    "role": "child",
+    "identity": {
+      "proc_pid": 172033,
+      "namespace_pids": [
+        172033,
+        7
+      ],
+      "start_ticks": 2760712,
+      "parent_proc_pid": 172032
+    },
+    "allocation": {
+      "requested_bytes": 16777216,
+      "resident_before_bytes": 12492800,
+      "resident_after_bytes": 29282304,
+      "resident_delta_bytes": 16789504,
+      "touched_pages": 4096,
+      "touch_checksum": 509256
+    },
+    "child_pid_seen_by_parent": 8,
+    "child_handshake": {
+      "role": "grandchild",
+      "identity": {
+        "proc_pid": 172034,
+        "namespace_pids": [
+          172034,
+          8
+        ],
+        "start_ticks": 2760716,
+        "parent_proc_pid": 172033
+      },
+      "allocation": {
+        "requested_bytes": 25165824,
+        "resident_before_bytes": 12492800,
+        "resident_after_bytes": 37666816,
+        "resident_delta_bytes": 25174016,
+        "touched_pages": 6144,
+        "touch_checksum": 766284
+      },
+      "child_pid_seen_by_parent": null,
+      "child_handshake": null
+    }
+  },
+  "registered_process_set_samples": [
+    {
+      "available": true,
+      "rss_sum_bytes": 88035328,
+      "members": [
+        {
+          "identity": {
+            "proc_pid": 172032,
+            "namespace_pids": [
+              172032,
+              6
+            ],
+            "start_ticks": 2760707,
+            "parent_proc_pid": 172020
+          },
+          "rss_bytes": 20951040
+        },
+        {
+          "identity": {
+            "proc_pid": 172033,
+            "namespace_pids": [
+              172033,
+              7
+            ],
+            "start_ticks": 2760712,
+            "parent_proc_pid": 172032
+          },
+          "rss_bytes": 29368320
+        },
+        {
+          "identity": {
+            "proc_pid": 172034,
+            "namespace_pids": [
+              172034,
+              8
+            ],
+            "start_ticks": 2760716,
+            "parent_proc_pid": 172033
+          },
+          "rss_bytes": 37715968
+        }
+      ],
+      "scope": "registered_owned_process_set",
+      "sample_begin_monotonic_ns": 27607230187643,
+      "sample_end_monotonic_ns": 27607231047825,
+      "physical_unique_memory": false,
+      "atomic_snapshot": false,
+      "full_descendant_coverage": false
+    },
+    {
+      "available": true,
+      "rss_sum_bytes": 88051712,
+      "members": [
+        {
+          "identity": {
+            "proc_pid": 172032,
+            "namespace_pids": [
+              172032,
+              6
+            ],
+            "start_ticks": 2760707,
+            "parent_proc_pid": 172020
+          },
+          "rss_bytes": 20967424
+        },
+        {
+          "identity": {
+            "proc_pid": 172033,
+            "namespace_pids": [
+              172033,
+              7
+            ],
+            "start_ticks": 2760712,
+            "parent_proc_pid": 172032
+          },
+          "rss_bytes": 29368320
+        },
+        {
+          "identity": {
+            "proc_pid": 172034,
+            "namespace_pids": [
+              172034,
+              8
+            ],
+            "start_ticks": 2760716,
+            "parent_proc_pid": 172033
+          },
+          "rss_bytes": 37715968
+        }
+      ],
+      "scope": "registered_owned_process_set",
+      "sample_begin_monotonic_ns": 27607251905010,
+      "sample_end_monotonic_ns": 27607252940702,
+      "physical_unique_memory": false,
+      "atomic_snapshot": false,
+      "full_descendant_coverage": false
+    },
+    {
+      "available": true,
+      "rss_sum_bytes": 88055808,
+      "members": [
+        {
+          "identity": {
+            "proc_pid": 172032,
+            "namespace_pids": [
+              172032,
+              6
+            ],
+            "start_ticks": 2760707,
+            "parent_proc_pid": 172020
+          },
+          "rss_bytes": 20971520
+        },
+        {
+          "identity": {
+            "proc_pid": 172033,
+            "namespace_pids": [
+              172033,
+              7
+            ],
+            "start_ticks": 2760712,
+            "parent_proc_pid": 172032
+          },
+          "rss_bytes": 29368320
+        },
+        {
+          "identity": {
+            "proc_pid": 172034,
+            "namespace_pids": [
+              172034,
+              8
+            ],
+            "start_ticks": 2760716,
+            "parent_proc_pid": 172033
+          },
+          "rss_bytes": 37715968
+        }
+      ],
+      "scope": "registered_owned_process_set",
+      "sample_begin_monotonic_ns": 27607273729615,
+      "sample_end_monotonic_ns": 27607274785096,
+      "physical_unique_memory": false,
+      "atomic_snapshot": false,
+      "full_descendant_coverage": false
+    }
+  ],
+  "strict_process_family_samples": [
+    {
+      "available": false,
+      "rss_sum_bytes": null,
+      "members": null,
+      "scope": "enumerated_owned_process_family",
+      "full_descendant_coverage": false,
+      "reason": "Cannot read required owned-process metadata: /proc/172032/task/172032/children: [Errno 2] No such file or directory: '/proc/172032/task/172032/children'",
+      "inventory_begin_monotonic_ns": 27607231052973,
+      "inventory_end_monotonic_ns": 27607231748061,
+      "controlled_inventory_exact_match": null
+    },
+    {
+      "available": false,
+      "rss_sum_bytes": null,
+      "members": null,
+      "scope": "enumerated_owned_process_family",
+      "full_descendant_coverage": false,
+      "reason": "Cannot read required owned-process metadata: /proc/172032/task/172032/children: [Errno 2] No such file or directory: '/proc/172032/task/172032/children'",
+      "inventory_begin_monotonic_ns": 27607252946430,
+      "inventory_end_monotonic_ns": 27607253579316,
+      "controlled_inventory_exact_match": null
+    },
+    {
+      "available": false,
+      "rss_sum_bytes": null,
+      "members": null,
+      "scope": "enumerated_owned_process_family",
+      "full_descendant_coverage": false,
+      "reason": "Cannot read required owned-process metadata: /proc/172032/task/172032/children: [Errno 2] No such file or directory: '/proc/172032/task/172032/children'",
+      "inventory_begin_monotonic_ns": 27607274789192,
+      "inventory_end_monotonic_ns": 27607275456599,
+      "controlled_inventory_exact_match": null
+    }
+  ],
+  "registered_set_measurement_passed": true,
+  "known_allocations_observed": true,
+  "expected_controlled_identities": [
+    {
+      "proc_pid": 172032,
+      "namespace_pids": [
+        172032,
+        6
+      ],
+      "start_ticks": 2760707,
+      "parent_proc_pid": 172020
+    },
+    {
+      "proc_pid": 172033,
+      "namespace_pids": [
+        172033,
+        7
+      ],
+      "start_ticks": 2760712,
+      "parent_proc_pid": 172032
+    },
+    {
+      "proc_pid": 172034,
+      "namespace_pids": [
+        172034,
+        8
+      ],
+      "start_ticks": 2760716,
+      "parent_proc_pid": 172033
+    }
+  ],
+  "full_family_measurement_available": false,
+  "child_final": {
+    "role": "child",
+    "self_usage": {
+      "user_cpu_seconds": 0.02465,
+      "system_cpu_seconds": 0.016071,
+      "largest_single_process_highwater_bytes": 29229056
+    },
+    "retained_bytes": 16777216,
+    "child_final": {
+      "role": "grandchild",
+      "self_usage": {
+        "user_cpu_seconds": 0.034588,
+        "system_cpu_seconds": 0.027301,
+        "largest_single_process_highwater_bytes": 37617664
+      },
+      "retained_bytes": 25165824,
+      "child_final": null,
+      "child_wait": null
+    },
+    "child_wait": {
+      "pid_seen_by_parent": 8,
+      "exit_code": 0,
+      "wait4": {
+        "user_cpu_seconds": 0.046189,
+        "system_cpu_seconds": 0.027301,
+        "largest_single_process_highwater_bytes": 37617664
+      }
+    }
+  },
+  "child_wait4": {
+    "pid_seen_by_parent": 7,
+    "exit_code": 0,
+    "wait4": {
+      "user_cpu_seconds": 0.07749099999999999,
+      "system_cpu_seconds": 0.046696999999999995,
+      "largest_single_process_highwater_bytes": 37617664
+    }
+  },
+  "parent_self_usage": {
+    "user_cpu_seconds": 0.038536,
+    "system_cpu_seconds": 0.017117,
+    "largest_single_process_highwater_bytes": 20971520
+  },
+  "retained_parent_bytes": 8388608,
+  "parent_own_probe_cpu_seconds": 0.012244912000000004,
+  "probe_body_wall_seconds": 0.20727657899988117,
+  "accounting": "Nested component CPU is diagnostic, not additive to the enclosing complete worker wait4 receipt.",
+  "limitations": [
+    "RSS sum double-counts shared pages; it is not PSS or physical unique memory.",
+    "Per-process reads are sequential; sample spans are retained and short peaks may be missed.",
+    "Registered-set success proves only the controlled declared inventory; it does not prove general descendant coverage.",
+    "wait4 high-water for a waited subtree is a largest-single-process high-water, not simultaneous family RSS."
+  ]
+}

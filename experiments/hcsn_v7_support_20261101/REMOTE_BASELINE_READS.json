@@ -1,0 +1,76 @@
+{
+  "schema": "hcsn-v7-baseline-remote-read-receipt.v1",
+  "assembled_at_utc": "2026-11-01 17:10:45 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "records": [
+    {
+      "name": "v6_commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+      "method": "GET",
+      "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/commits#get-a-commit-object\",\"status\":\"404\"}",
+      "error_code": "NOT_FOUND",
+      "commit_sha": null,
+      "tree_sha": null,
+      "pr": null
+    },
+    {
+      "name": "v5_commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e38d09836c87d970b8c869961d08c1d42499e220",
+      "method": "GET",
+      "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/commits#get-a-commit-object\",\"status\":\"404\"}",
+      "error_code": "NOT_FOUND",
+      "commit_sha": null,
+      "tree_sha": null,
+      "pr": null
+    },
+    {
+      "name": "v3_commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d",
+      "method": "GET",
+      "error": null,
+      "error_code": null,
+      "commit_sha": "1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d",
+      "tree_sha": "8976d5f21b804be5557e67844b3ab6d53640b6c8",
+      "pr": null
+    },
+    {
+      "name": "v6_branch",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/research/hcsn-integrated-execution-v6-20261101",
+      "method": "GET",
+      "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/refs#get-a-reference\",\"status\":\"404\"}",
+      "error_code": "NOT_FOUND",
+      "commit_sha": null,
+      "tree_sha": null,
+      "pr": null
+    },
+    {
+      "name": "original_v3_pr",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4525",
+      "method": "GET",
+      "error": null,
+      "error_code": null,
+      "commit_sha": null,
+      "tree_sha": null,
+      "pr": {
+        "number": 4525,
+        "state": "open",
+        "draft": true,
+        "head_ref": "research/hcsn-causal-execution-v3-20261031",
+        "head_sha": "1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d",
+        "base_ref": "research/hcsn-mechanism-content-v2-20261031",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4525"
+      }
+    }
+  ],
+  "interpretation": "The listed v5/v6 objects were not available through this authorized GitHub connection. The readable v3 commit is an earlier support base, not a restored v6 baseline. No scientific confirmation has run.",
+  "library_recovery": {
+    "exact_bundle_or_manifest_matches_located": 0,
+    "queried_names": [
+      "hcsn-v6-confirmation-20261101.bundle",
+      "hcsn-v6-delivery-20261101.json",
+      "hcsn-v5-confirmation-20261101.bundle",
+      "hcsn_integrated_execution_v6"
+    ],
+    "scope": "Prior exact-name and content searches in this turn did not locate the missing baseline; this is not a claim of global absence."
+  }
+}

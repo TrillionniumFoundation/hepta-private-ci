@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-v7-baseline-recovery-check.v1",
+  "expected_identity_source": "Previously delivered v6 identities in the conversation; verified only when matching bytes are present",
+  "expected_v6_commit": "febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+  "expected_v5_commit": "e38d09836c87d970b8c869961d08c1d42499e220",
+  "v3_prerequisite": "1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d",
+  "repository": "/workspace/scratch/52a69008c60c/hepta-hcsn",
+  "bundles": {},
+  "source_and_input_inventory": {},
+  "problems": [
+    "v6 repository directory is unavailable"
+  ],
+  "new_confirmation_executed": false,
+  "confirmation_authorized_by_this_check": false,
+  "ready_for_v7_development": false,
+  "status": "blocked_on_v6_assets",
+  "scope": "Verifies baseline identities only; does not prove new cohort independence, model quality, or scientific acceptance"
+}

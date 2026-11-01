@@ -1,0 +1,14 @@
+{
+  "schema": "hcsn-v7-memory-observer-initial-inspection.v1",
+  "initial_read_attempt_exit_code": 1,
+  "initial_failure": "FileNotFoundError for /proc/self/task/<canonical outer TID>/children",
+  "followup_read_only_inspection": {
+    "namespace_pid": 3,
+    "proc_self_pid": 124304,
+    "namespace_pid_chain": [124304, 3],
+    "enumerated_self_task_ids": [124304],
+    "children_file_result": "ENOENT",
+    "direct_canonical_self_metadata": "A later self-only inspection verified /proc/<canonical>/stat, status and statm are readable and consistent."
+  },
+  "cost_scope": "Initial shell metadata inspection was not wrapped in a complete-worker cost receipt; it is excluded from the later validation totals rather than assigned zero."
+}
