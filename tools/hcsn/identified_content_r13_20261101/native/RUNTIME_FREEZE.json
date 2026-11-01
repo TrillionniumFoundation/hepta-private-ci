@@ -1,0 +1,36 @@
+{
+  "schema": "hcsn-r13-native-runtime-freeze-v1",
+  "source_identity": "fbd72c05616d81f48043abbb4da2da290501c1bd7545d1df799c7e3fb44d298f",
+  "source_sha256": {
+    "checkpoint.rs": "ac74e0f6fa01ccc19bb2c0f14459970c208fcbfbdd3fef08313029335f72492d",
+    "core.rs": "d10b8694cfb96c2613c2583bc22351cce78a585aa1f61dd014752acba8e5d71c",
+    "events.rs": "79e515daac6a9baebe595b8dbabccbb28573404204944191a2ed62100a7f85d0",
+    "events_main.rs": "434e962ab5a0897663fc1ee585961f52931b957b931aaac88bf3f640088957bc",
+    "lib.rs": "f590b178dbada36b011ec3954ddb221b3d759482187bc7a2053086a688a8b924",
+    "prepared.rs": "c3b9af7832404bafc8777281b9a05e5f4a30f34b423c19631c5e02dd0a8a1979",
+    "sha256.rs": "372ed9940f1a6b04c3100a5c906bdfabf2c691cf3eabe2c415811211611b5ff2",
+    "adapter.py": "71ace100220c1b072b7e48c3f097c008d0a6243c66a7bf01fd7949de9452b4e7",
+    "runtime_adapter.py": "480bf7468a6e7b031e29ec655da363f1732d59522ee79a3b3670e15fd3b2e706",
+    "build.py": "a608952d547706235e70ca0cac80de708e85f6b2284de83eef84d1cf54e9b645"
+  },
+  "binaries": {
+    "libhcsn_prepared.so": "19299f8802da6932f9a0e08025f265c38b855be8e9417b17f2c558115ef50ad2",
+    "hcsn-events-r13": "9bf0be69618c1e022cef1b3f6026d656109e58e7d6a2cd838d4f66d131e3a08d"
+  },
+  "validation": {
+    "prepared_frozen/RESULTS.json": {
+      "sha256": "5e920913d34aad218649e1c57d17e90c37f2b4aca04513c2cc54807253bcd5a2",
+      "all_passed": true
+    },
+    "migration_frozen/RESULTS.json": {
+      "sha256": "e933584329cf4560d8ae3f7008d0c53f64d3843a8c8cf9fcff84b20485a631ed",
+      "all_passed": true
+    },
+    "runtime_adapter_frozen/RESULTS.json": {
+      "sha256": "3448910c2a5778b9b5767bafe180d0f9edcf35f98273075598a69fce0a058952",
+      "all_passed": true
+    }
+  },
+  "future_changes": "Only new audit/report files are permitted after this point; runtime source and binaries remain fixed.",
+  "production_activation": false
+}
