@@ -1,0 +1,55 @@
+{
+  "all_publication_parts_below_500kib": true,
+  "archive_scope": "inputs_01 paths are repository-relative. publication_01 paths are cost-relative; all archives are excluded to avoid recursion. New content results are outside both cost archives. Restore instructions are in cost/README.md.",
+  "cpu_ledger": {
+    "five_development_workers": 8.032816,
+    "formal_720_workers": 1098.278577,
+    "historical_inherited_training_workers": 361.400232,
+    "historical_inherited_training_workers_count": 102,
+    "package_restore_and_portability": 6.85513,
+    "summary_figures_independent_audit": 5.220214
+  },
+  "device_joules": null,
+  "ledger_scope": "Disjoint complete subprocess receipts. Formal, development and publication are distinct. Historical training was not rerun and is a separate cross-period ledger; parent overhead, installation and unmetered lightweight preparation are not quantified. Do not add inner nested timers to these totals.",
+  "packages": {
+    "inputs_01": {
+      "actual_restore_verified": true,
+      "compressed_archive_bytes": 5001628,
+      "compressed_archive_sha256": "499d9825709390a31b39f1580dba66e62787a8fd2bd1a657a0d7088f0e75cf2f",
+      "index_path": "experiments/hcsn_validation_r14_20261101/cost/archives/inputs_01/INDEX.json",
+      "index_sha256": "cef077f254c77beebf2b6181a9d55718337b04e7ed26170c5ab8bb17465c97b8",
+      "maximum_part_bytes": 399974,
+      "member_count": 1446,
+      "part_count": 13,
+      "uncompressed_member_bytes": 8673507
+    },
+    "publication_01": {
+      "actual_restore_verified": true,
+      "compressed_archive_bytes": 3274255,
+      "compressed_archive_sha256": "c248dfab44990f3d4889f866a025c3f38bedb01ddb3d9d7a8bb77677d3952ff2",
+      "index_path": "experiments/hcsn_validation_r14_20261101/cost/archives/publication_01/INDEX.json",
+      "index_sha256": "74e6c0e819687cf4831dc83a1f8e325964ca39178a86e0932ce24d935d15184e",
+      "maximum_part_bytes": 400143,
+      "member_count": 2994,
+      "part_count": 9,
+      "uncompressed_member_bytes": 12456756
+    }
+  },
+  "raw_originals_retained": true,
+  "reconstruction_check": {
+    "batch_size": 32,
+    "imported_sources_inside_restored_tree": true,
+    "joint_fit_models_loaded": 48,
+    "maximum_iid_logit_difference": 0.0,
+    "passed": true,
+    "protocol_sha256": "233bb4022b10c48352dd380472e5b48dc1cf178a68ba9ef7e1d0a1e1d010c95a",
+    "restored_replay_inputs_verified": 1023,
+    "runtime_pins_verified": true,
+    "scope": "Archive portability check; no new fit, confirmation sample, or cost benchmark.",
+    "selected_checkpoints_verified": 102,
+    "selected_fit_models_loaded": 96,
+    "task_family_iid_batches_replayed": 16,
+    "verifier_sha256": "960eda5bc9721dcdd3b76ae1837d2c61387baaa8a3b46b3b1764ad502875ed16"
+  },
+  "schema": "hcsn-r14.cost-publication.v1"
+}

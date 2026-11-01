@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_validation_r14_20261101.cost.study",
+    "summarize",
+    "--output",
+    "/workspace/scratch/a9c697f48433/hepta-validation/experiments/hcsn_validation_r14_20261101/cost/results/formal_02"
+  ],
+  "cpu_seconds": 0.607855,
+  "device_energy_joules": null,
+  "energy_sensor_available": false,
+  "input_blocks": 23104,
+  "involuntary_context_switches": 355,
+  "log_sha256": "f7f22f35c59d3060002c729961b3361a83cd3e29bcb86e936cff82006bb0a9aa",
+  "output_blocks": 3488,
+  "peak_rss_bytes": 24567808,
+  "returncode": 0,
+  "scope": "Linux wait4 fresh process and waited descendants; imports/loading/evaluation/output included",
+  "timing_environment": "Single thread, shared host; other tenants cannot be excluded",
+  "voluntary_context_switches": 1948,
+  "wall_seconds": 0.8256928049995622
+}

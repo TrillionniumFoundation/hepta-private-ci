@@ -1,0 +1,18 @@
+{
+  "inspected": [
+    "quality_cost_iid.png",
+    "stress_cpu_ratios.png"
+  ],
+  "image_sha256": {
+    "quality_cost_iid.png": "633c8d44bbb9cc8c53a0a67206c9c974f70f538e3cda2f9489656d6da58878ab",
+    "stress_cpu_ratios.png": "c0395e88299eae92f7c88f71b35f9704820540d982175475333c7dbedfaebf20"
+  },
+  "checks": [
+    "All four panels and all eight legend labels visible",
+    "Axis labels and domain names readable without clipping",
+    "Ratio intervals labeled observed seed ranges, not confidence intervals",
+    "Quality panels use different explicit y-axis ranges; no pooled effect inferred"
+  ],
+  "passed": true,
+  "reviewer": "content_cost_audit image inspection"
+}

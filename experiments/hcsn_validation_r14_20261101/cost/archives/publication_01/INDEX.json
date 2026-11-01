@@ -1,0 +1,84 @@
+{
+  "actual_restore_verified": true,
+  "compressed_archive_bytes": 3274255,
+  "compressed_archive_sha256": "c248dfab44990f3d4889f866a025c3f38bedb01ddb3d9d7a8bb77677d3952ff2",
+  "files_exceeding_500kib": [
+    {
+      "bytes": 1042303,
+      "path": "results/formal_02/training_amortization.csv"
+    }
+  ],
+  "member_count": 2994,
+  "members_manifest": "MEMBERS.json.gz",
+  "members_manifest_sha256": "5501c45aba3085f5ed7b34ec90b781fbf4bd7f0aaa505bd8747bcf72920d536e",
+  "parts": [
+    {
+      "bytes": 398845,
+      "name": "cost-evidence.part0000.gz",
+      "segment_bytes": 400000,
+      "segment_sha256": "e4c05608ff4f527550debdeb881b29ac4c0d8048bd099097fca722f75daabaff",
+      "sha256": "21411d312ca911c29a4486291ab9efafedd851b45acc68175e2d2736fb85b6b4"
+    },
+    {
+      "bytes": 400143,
+      "name": "cost-evidence.part0001.gz",
+      "segment_bytes": 400000,
+      "segment_sha256": "6bbe23ed4b068a3b70a82804ec441b89a43702d5cf8408cea01ac126958101fa",
+      "sha256": "fc6305aa0512773157398ce3171e6c9946e206f1c3dd34357a5a5e61cade16c5"
+    },
+    {
+      "bytes": 396423,
+      "name": "cost-evidence.part0002.gz",
+      "segment_bytes": 400000,
+      "segment_sha256": "5a09814b1f044f8231b185e9c376ecdcdc40143664ae07e531a0cfc381857e7c",
+      "sha256": "e9c1abc1632466ad21502527c73ebf71c54d08ec33af764636a70da55d8916c3"
+    },
+    {
+      "bytes": 399821,
+      "name": "cost-evidence.part0003.gz",
+      "segment_bytes": 400000,
+      "segment_sha256": "fad285faff70fccd6cfa83eef40056b573216b3db3cb6256725e0fcdc7ef9f76",
+      "sha256": "a7a48db9d801b872197dde6b09eb8bcf088538d005ad0229a0ec88bdcea632c4"
+    },
+    {
+      "bytes": 399840,
+      "name": "cost-evidence.part0004.gz",
+      "segment_bytes": 400000,
+      "segment_sha256": "b465889e3bef572a90016239377c0c52f3dbe48484e1a403f48214bf98cb5562",
+      "sha256": "8bd4becd5f8b20fc4e905de0de968684e818af6f2af29219e03adce3dfed9169"
+    },
+    {
+      "bytes": 400133,
+      "name": "cost-evidence.part0005.gz",
+      "segment_bytes": 400000,
+      "segment_sha256": "e063a8748d446fb3170d4dfde5ac70b7d426f13949f866be6d66d7c6136b5423",
+      "sha256": "d5bf76398ed02895c7c80120240aec460bc57f988124dffb31df82df332d4059"
+    },
+    {
+      "bytes": 399759,
+      "name": "cost-evidence.part0006.gz",
+      "segment_bytes": 400000,
+      "segment_sha256": "69fa7d16fed274442e667e2a6e1f652cb4f41305b61eb5a0c0ee235956655c18",
+      "sha256": "0fd3f1a474115f6a49c99250274c314beec693145c7d152c35efe5b8ebc66c77"
+    },
+    {
+      "bytes": 399964,
+      "name": "cost-evidence.part0007.gz",
+      "segment_bytes": 400000,
+      "segment_sha256": "5542702f02d337873c33efbc37454b4fe98c029a4ec9d64e180938fa07fccb06",
+      "sha256": "f3ac8d78ec80f752924d71dfa4ef3d29e9b02f46d99d5389abceebbee633b30e"
+    },
+    {
+      "bytes": 74286,
+      "name": "cost-evidence.part0008.gz",
+      "segment_bytes": 74255,
+      "segment_sha256": "b4fa5678dd79dc0674f51938dfc686614a1c6945ab918a1e4e319d963a2c6a6c",
+      "sha256": "d6156289f2f22c71f0842232bb17bc1b5502cdee573fc1a317036246c78722f3"
+    }
+  ],
+  "schema": "hcsn-r14.cost-evidence-package.v1",
+  "scope": "This cost subtree only; inherited R12 dependencies are separately preserved by inputs_01. Raw originals are not removed.",
+  "selection_manifest_sha256": null,
+  "source_sha256": "9375140b86d39afe09e1f81e4ccac136ebb316a7fcef8f469be16cde80ba1c8e",
+  "uncompressed_member_bytes": 12456756
+}

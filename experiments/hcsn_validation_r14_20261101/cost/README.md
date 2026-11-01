@@ -107,21 +107,48 @@ python -m experiments.hcsn_validation_r14_20261101.cost.audit \
   --output experiments/hcsn_validation_r14_20261101/cost/results/formal_02
 ```
 
-The delivery helper preserves the cost subtree in gzip-framed parts below the
+The delivery helper preserves evidence in gzip-framed parts below the
 repository's 500 KiB blob limit, and really restores all members to a fresh
-temporary directory before reporting success. The archive does not duplicate
-the inherited R12 source/checkpoint/data dependencies outside this subtree.
+temporary directory before reporting success. Two complementary archives are
+provided: `archives/inputs_01` stores the inherited files at repository-relative
+paths, and `archives/publication_01` stores this cost subtree. The input archive
+contains all 96 selected fit checkpoints, all six selected donor checkpoints,
+the historical source and manifests, data identities, prediction files, job
+summaries, and original training process receipts/logs. Its 48 joint fit
+checkpoints can also be reused by the new content experiment without another
+copy. The exact 1,446-file selection is `INHERITED_INPUT_FILES.json`.
 Existing `archives` directories are excluded to prevent recursive packages or
 archiving the package process's still-open receipt log.
 
 ```bash
 python -m experiments.hcsn_validation_r14_20261101.cost.package_results \
-  --output experiments/hcsn_validation_r14_20261101/cost/archives/publication_01
+  --source . \
+  --file-list experiments/hcsn_validation_r14_20261101/cost/INHERITED_INPUT_FILES.json \
+  --output experiments/hcsn_validation_r14_20261101/cost/archives/inputs_01
 python -m experiments.hcsn_validation_r14_20261101.cost.package_results \
-  --restore-index experiments/hcsn_validation_r14_20261101/cost/archives/publication_01/INDEX.json \
+  --output experiments/hcsn_validation_r14_20261101/cost/archives/publication_01
+```
+
+To reconstruct a standalone tree, run these commands from the checkout
+containing the helper and downloaded parts. Choose a destination that does not
+exist, and install the pinned CPU dependencies described above first.
+
+```bash
+python experiments/hcsn_validation_r14_20261101/cost/package_results.py \
+  --restore-index experiments/hcsn_validation_r14_20261101/cost/archives/inputs_01/INDEX.json \
   --output /tmp/hcsn-cost-restored
+python experiments/hcsn_validation_r14_20261101/cost/package_results.py \
+  --restore-index experiments/hcsn_validation_r14_20261101/cost/archives/publication_01/INDEX.json \
+  --output /tmp/hcsn-cost-restored/experiments/hcsn_validation_r14_20261101/cost
+cd /tmp/hcsn-cost-restored
+python -m experiments.hcsn_validation_r14_20261101.cost.verify_reconstruction \
+  --output /tmp/hcsn-cost-reconstruction-verification.json
 ```
 
 The restore destination must not already exist. All part, archive, and member
 SHA256 hashes are checked before the restore is accepted; raw original files
-remain available in the working tree.
+remain available in the working tree. The reconstruction check resolves all
+historical source, inputs, and 102 checkpoint identities inside the restored
+tree, loads every one of the 96 fit models, and replays an IID batch for every
+task/family pair. This checks archival portability and does not constitute a
+new scientific replication or an additional benchmark.
