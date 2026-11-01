@@ -1,0 +1,39 @@
+{
+  "cleanup_interception": {
+    "api": "shutil.rmtree",
+    "behavior": "Record cleanup requests and retain the requested fresh temporary directory; no source deletion or publication logic changed.",
+    "normal_fresh_temporary_cleanup_was_authorized": true,
+    "observed_requests": [
+      {
+        "action": "retained_without_deletion",
+        "path": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/.hcsn-restore-_f_mjboi"
+      }
+    ],
+    "retained_restore_members_share_inodes": true,
+    "retention_was_more_conservative_than_required": true,
+    "scope": "Only during the recorded pack and restore calls; original function restored in finally."
+  },
+  "description": "Original pack/restore implementation with a cleanup-retention wrapper; not a literal unchanged CLI invocation.",
+  "entrypoint": "Existing module imported by file path; original main() called with recorded sys.argv; stdout captured into receipts.",
+  "no_rerun_or_additional_testing": true,
+  "no_wrapper_modification_after_success": true,
+  "original_packer_path": "experiments/hcsn_distribution_content_r15_20261101/publication/pack_results.py",
+  "original_packer_sha256": "c2314d3157259037a0880b5bcd02508e81085d1378054327a722c18906ca3dcd",
+  "pre_existing_evidence_deleted": false,
+  "remote_writes_performed": false,
+  "schema": "hcsn.r15.partial-preservation.execution-scope.v1",
+  "unchanged_operations": [
+    "source inventory",
+    "compression",
+    "sharding",
+    "hash validation",
+    "manifest generation",
+    "archive assembly",
+    "verified member extraction",
+    "fresh destination hardlink publication"
+  ],
+  "verification_path": "experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/VERIFICATION.json",
+  "verification_sha256": "8fbf510acc19c9870b8ca45ff6f464f6de9ed8a806284bc0145c454f8e05b61e",
+  "wrapper_source_path": "experiments/hcsn_distribution_content_r15_20261101/publication/checkpoint_resumed_first5_verification_001/preserve.py",
+  "wrapper_source_sha256": "41e3f744e3c75c04390c3cc251b95fdab6b2929b3153d2947e10b917becd0aac"
+}
