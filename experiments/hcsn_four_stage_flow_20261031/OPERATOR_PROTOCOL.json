@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn.four_stage.marked_operator.protocol.v1",
+  "registered_before_development": true,
+  "seed": 861101,
+  "dtype": "float64",
+  "batch_shape_check": [2, 2],
+  "threads": 1,
+  "coordinate_convention": "row probability p, p'=pQ",
+  "upstream_commit": "1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d",
+  "upstream_kernel_sha256": "07195028877b4eb24f1bb1b53f1337019daf7bdabbdecbcd059f89079ba23de6",
+  "cases": [
+    {"name": "erlang2", "parameters": [0.23, 0.51, 0.91, -0.17, 0.41], "cells": 8, "lower": -2.0, "phases": 2, "duration": 0.73, "rho": 0.43, "cost": 0.4},
+    {"name": "negative_drift", "parameters": [-0.33, 0.61, 1.13, -0.24, 0.39], "cells": 17, "lower": -3.0, "phases": 5, "duration": 1.2, "rho": 0.43, "cost": 0.4},
+    {"name": "instant_self_reset", "parameters": [0.17, 0.71, 0.89, 0.70, 0.0], "cells": 13, "lower": -3.0, "phases": 0, "duration": 0.8, "rho": 0.43, "cost": 1.1},
+    {"name": "zero_event", "parameters": [0.0, 0.0, 0.91, -0.17, 0.41], "cells": 8, "lower": -2.0, "phases": 2, "duration": 2.0, "rho": 0.43, "cost": 0.4},
+    {"name": "zero_noise_upwind", "parameters": [0.3, 0.0, 0.91, -0.17, 0.41], "cells": 8, "lower": -2.0, "phases": 2, "duration": 1.3, "rho": 0.43, "cost": 0.4}
+  ],
+  "initial_laws": ["uniform_full_state", "last_active", "first_refractory_when_present"],
+  "semigroup_split": [0.37, 0.63],
+  "moving_boundary": {"old": 1.4, "new": 0.91, "duration": 0.73, "time_zero_included": true},
+  "same_mean_witness": {"point_index": 4, "mixture_indices": [2, 6], "weights": [0.5, 0.5], "min_first_event_gap": 0.0001},
+  "tilted": {"eta": [0.0, 0.25, 0.7, 1.0], "decay": 0.11, "uniformization_poisson_tail": 0.00000000000001, "moments": "same full-state law and signed state-dependent initial content", "count_derivative_at_eta_one": true, "self_reset_mark_included": true},
+  "derivatives": {"case": "erlang2", "parameter_order": ["mu", "sigma", "boundary", "reset", "tau", "duration", "rho", "cost"], "central_steps": [0.00001, 0.000005], "method": "independent physical generator secants, scipy expm_frechet, implicit resolvent derivative"},
+  "gates": {"matrix_atol": 0.00000000002, "value_atol": 0.00000000002, "gradient_atol": 0.0000002, "gradient_rtol": 0.000002, "step_stability_atol": 0.00000002, "probability_tolerance": 0.00000000002},
+  "limits": {"max_states": 128, "max_batch": 4096, "max_rate_time": 2048.0},
+  "not_established": ["continuous diffusion equality", "He-Xiong equity/default equality", "deterministic refractory equality", "global floating point error bound", "boundary optimality for this grid or task", "GPU efficiency", "network benefit", "higher derivatives at grid or coefficient knots"]
+}
