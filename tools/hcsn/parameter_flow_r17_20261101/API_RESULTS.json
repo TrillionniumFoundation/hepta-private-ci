@@ -1,0 +1,56 @@
+{
+  "schema": "hcsn-r17-gradient-boundary-contracts-v1",
+  "checks": [
+    {
+      "name": "impossible_erasure_with_gradient",
+      "rejected": true,
+      "exception": "Observed token has zero likelihood"
+    },
+    {
+      "name": "impossible_erasure_without_gradient",
+      "rejected": true,
+      "exception": "Observed token has zero likelihood"
+    },
+    {
+      "name": "underflow_survival_with_gradient",
+      "rejected": true,
+      "exception": "Conditional survival has no positive representable mass"
+    },
+    {
+      "name": "underflow_survival_without_gradient",
+      "rejected": true,
+      "exception": "Conditional survival has no positive representable mass"
+    },
+    {
+      "name": "negative_event_time",
+      "rejected": true,
+      "exception": "Duration must be finite and nonnegative"
+    },
+    {
+      "name": "nan_event_time",
+      "rejected": true,
+      "exception": "Duration must be finite and nonnegative"
+    },
+    {
+      "name": "infinite_event_time",
+      "rejected": true,
+      "exception": "Duration must be finite and nonnegative"
+    },
+    {
+      "name": "negative_operator_time",
+      "rejected": true,
+      "exception": "Duration must be finite and nonnegative"
+    },
+    {
+      "name": "infinite_operator_time",
+      "rejected": true,
+      "exception": "Duration must be finite and nonnegative"
+    },
+    {
+      "name": "reset_interpolation_knot",
+      "rejected": true,
+      "exception": "Reset interpolation knot has no unique derivative"
+    }
+  ],
+  "passed": 10
+}
