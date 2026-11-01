@@ -15,7 +15,6 @@ use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
-use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use super::*;

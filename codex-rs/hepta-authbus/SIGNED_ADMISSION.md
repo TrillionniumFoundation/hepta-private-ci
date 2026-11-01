@@ -135,14 +135,25 @@ so PQ operators must revoke, retire replay state and synchronize the checkpoint
 before moving that floor to a new epoch. Retiring a prior epoch after that move
 requires a future authenticated key-history design and currently fails closed.
 
-Agentd's existing text trust file uses `schema_version: 2` and a canonical
-1,974-byte SPKI encoded as hexadecimal in `public_key_hex`. Requests use
+Agentd's text trust file uses `schema_version: 2`, an explicit positive
+`policy_revision`, and a canonical 1,974-byte SPKI encoded as hexadecimal in
+`public_key_hex`. Requests use
 `auth_version: 2`. `sign_authbus_text_pq` signs this same wire using an
 independently supplied custody key. Agentd reloads its private owner file before
 each admission and dispatch stage, pins the current issuer, and synchronizes the
 external checkpoint. Replacing the file with a valid classical key does not
 downgrade an activated domain. A missing wire version retains the historical
 v1 meaning and is rejected by a PQ owner.
+
+The text owner pins a canonical commitment to the complete issuer and thread
+allowlist alongside its issuer floor in one transaction. The policy revision
+is monotonic across issuer names, and its commitment participates in the same
+external replay checkpoint. Earlier revisions and differing contents at an
+equal revision fail closed; a strictly newer policy can add or remove threads.
+The newly added policy table does not authorize bootstrapping a used PQ domain:
+without a previously pinned policy, that domain requires a separate authenticated
+migration. Missing revisions are not assigned a default. See Agentd's
+[owner-policy installation rules](../hepta-agentd/AUTHBUS_TEXT.md).
 
 PQ signatures occupy exactly 3,309 bytes (6,618 hexadecimal characters on the
 text control wire). Outbox payloads remain capped at 16 KiB, the existing

@@ -1,0 +1,538 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-01T09:33:31.238822+00:00",
+  "baseline": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "pr": 4368,
+    "commit": "a575cf03e2bc871a2f48021859c03ace806421c8",
+    "tree": "980cb998c894ee1366098c099de3bbdc0abeb51f"
+  },
+  "local_final_code_commit": "0c0f4a666a8a6d8c85f1ae8f67d11b72c5480a84",
+  "identity_note": "Local execution/stage identities are not remote publication identities. Verify the actual published tree against verified-source.json; later evidence-only commits do not alter runtime source bytes.",
+  "source_inventory": "verified-source.json",
+  "native_artifact_inventory": "native-artifacts.json",
+  "toolchain": "repository-pinned Rust 1.96.0 (ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96), x86_64-unknown-linux-gnu",
+  "common_build_environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "OPENSSL_INCLUDE_DIR": "/usr/include",
+    "OPENSSL_LIB_DIR": "/usr/lib/x86_64-linux-gnu",
+    "CARGO_HOME": "/workspace/scratch/be76671b3e90/hepta-pq/cargo-home",
+    "isolated_CARGO_TARGET_DIR": "/workspace/scratch/be76671b3e90/hepta-pq/target"
+  },
+  "runner_environment": {
+    "RUST_MIN_STACK": "8388608",
+    "NEXTEST_PROFILE": "local"
+  },
+  "successful_runs": [
+    {
+      "log": "logs/contracts-pq-baseline.log.gz",
+      "stage": "original-pq-baseline",
+      "command": null,
+      "command_note": "The exact early selection command is not retained as a separate receipt; the raw log identifies the eight original PQ FinalUse tests. Later full native library execution covers these tests.",
+      "nextest_run_id": "f9f80b37-bb91-4ccb-85d0-6a8682f53efa",
+      "exit_code": 0,
+      "passed": 8,
+      "skipped": 178,
+      "skip_explanation": "explicit selection; original eight tests later covered by contracts full library",
+      "raw_summary": "Summary [   0.347s] 8 tests run: 8 passed, 178 skipped"
+    },
+    {
+      "log": "logs/contracts-all-candidate-native.log.gz",
+      "stage": "continuity-candidate",
+      "command": "just test --locked -p codex-hepta-contracts --lib",
+      "command_note": null,
+      "nextest_run_id": "0a07909b-7f4a-4355-9716-2633b82a4d1c",
+      "exit_code": 0,
+      "passed": 187,
+      "skipped": 0,
+      "skip_explanation": "no skipped tests",
+      "raw_summary": "Summary [   1.292s] 187 tests run: 187 passed, 0 skipped"
+    },
+    {
+      "log": "logs/host-pq-native-isolated-target.log.gz",
+      "stage": "continuity-candidate",
+      "command": "just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(final_use_authorizer::pq)'",
+      "command_note": null,
+      "nextest_run_id": "9d30d573-b5e9-4eeb-af9c-09dddc4be4a6",
+      "exit_code": 0,
+      "passed": 5,
+      "skipped": 58,
+      "skip_explanation": "explicit selection; repeated within the final focused run",
+      "raw_summary": "Summary [   2.087s] 5 tests run: 5 passed, 58 skipped"
+    },
+    {
+      "log": "logs/evidence-policy-candidate-native.log.gz",
+      "stage": "policy-candidate-before-helper-and-classic-control",
+      "command": "just test --locked -p codex-hepta-evidence --lib",
+      "command_note": null,
+      "nextest_run_id": "4bfd1903-1d00-4832-9ebf-2fd84465f0d1",
+      "exit_code": 0,
+      "passed": 129,
+      "skipped": 1,
+      "skip_explanation": "one ignored subprocess fixture invoked by the passing parent test",
+      "raw_summary": "Summary [  29.329s] 129 tests run: 129 passed, 1 skipped"
+    },
+    {
+      "log": "logs/agentd-policy-candidate-native.log.gz",
+      "stage": "policy-candidate-before-helper-and-classic-control",
+      "command": "just test --locked -p codex-hepta-agentd --lib",
+      "command_note": null,
+      "nextest_run_id": "9d91f4e7-9ab1-446f-86ca-5214799b3103",
+      "exit_code": 0,
+      "passed": 232,
+      "skipped": 6,
+      "skip_explanation": "six pre-existing ignored qualification cases; not run",
+      "raw_summary": "Summary [  31.251s] 232 tests run: 232 passed, 6 skipped"
+    },
+    {
+      "log": "logs/helper-authbus-host-final-native.log.gz",
+      "stage": "final-code-0c0f4a666a8a6d8c85f1ae8f67d11b72c5480a84",
+      "command": "just test --locked -p codex-arg0 -p codex-hepta-agentd -p codex-hepta-infer-worker-host --lib -E 'package(codex-arg0) | test(authbus_dispatch::tests) | test(final_use_authorizer::pq)'",
+      "command_note": null,
+      "nextest_run_id": "bb5a10af-6089-4c75-a896-975e2f1cc13b",
+      "exit_code": 0,
+      "passed": 22,
+      "skipped": 286,
+      "skip_explanation": "explicit selection: arg0 7, AuthBus dispatch 10, PQ Unix FinalUse 5",
+      "raw_summary": "Summary [   3.929s] 22 tests run: 22 passed, 286 skipped"
+    },
+    {
+      "log": "logs/agentd-text-product-native.log.gz",
+      "stage": "final-code-0c0f4a666a8a6d8c85f1ae8f67d11b72c5480a84",
+      "command": "just test --locked -p codex-hepta-agentd --test authbus_text_product",
+      "command_note": null,
+      "nextest_run_id": "86da9261-92bc-43e0-a7c2-30f8af93fff0",
+      "exit_code": 0,
+      "passed": 3,
+      "skipped": 0,
+      "skip_explanation": "PQ, classical and missing-trust real process controls",
+      "raw_summary": "Summary [   7.949s] 3 tests run: 3 passed, 0 skipped"
+    }
+  ],
+  "counting_note": "Runs overlap and must not be added into a unique-control total. Original PQ 8 are within contracts 187; final 22 include 10 previously executed Agentd tests and the five prior Unix host tests. The full Evidence/Agentd library suites were not rerun after the later helper and valid-classic-control commits.",
+  "agentd_ignored_not_run": [
+    {
+      "test": "automation_effect_host_pon_chain_tests::real_chain_sealed_submit_reconcile_confirm_reorg",
+      "reason": "exact paired Chain release binary"
+    },
+    {
+      "test": "automation_effect_host_pon_task_chain_tests::real_chain_signed_task_acceptance_confirm_and_reorg",
+      "reason": "exact paired Chain and signed-task fixture binaries"
+    },
+    {
+      "test": "automation_effect_host_pon_growth_remote_chain_tests::real_growth_remote_chain_resident_task_lost_ack_confirm_reorg_restart",
+      "reason": "exact resident-capable Chain and growth task fixture binaries"
+    },
+    {
+      "test": "automation_effect_host_pon_growth_chain_tests::real_growth_chain_submit_lost_ack_confirm_reorg_cold_reopen",
+      "reason": "exact growth-capable Chain release binary"
+    },
+    {
+      "test": "automation_effect_host_pon_growth_chain_tests::real_growth_chain_signed_task_acceptance_confirm_reorg",
+      "reason": "exact growth Chain and signed-task fixture binaries"
+    },
+    {
+      "test": "cognitive_three_generation_tests::three_actual_fits_installations_future_instances_no_update_and_revocation",
+      "reason": "explicit retained three-generation learning study"
+    }
+  ],
+  "evidence_ignored_helper": {
+    "test": "authbus_outbox_tests::crash_delivery_child",
+    "reason": "subprocess crash fixture; explicitly invoked by its normal parent test"
+  },
+  "retained_failed_or_interrupted_runs": [
+    {
+      "log": "logs/agentd-policy-admission-baseline-red.log.gz",
+      "classification": "reproduced-production-permission-rollback",
+      "explanation": "After permission removal and reopen, restoring the old same-epoch owner file returned actual Queued admission twice. Exact baseline production source receipt retained."
+    },
+    {
+      "log": "logs/agentd-authbus-baseline-policy-red.log.gz",
+      "classification": "earlier-policy-rollback-control",
+      "explanation": "Eight controls passed and one recovery trust control failed under the original production owner."
+    },
+    {
+      "log": "logs/agentd-text-product-before-helper-fix.log.gz",
+      "classification": "reproduced-active-helper-bootstrap-defect",
+      "explanation": "All three product cases failed before thread creation because Agentd required HEPTA_FLEET_ROOT before sandbox helper dispatch. Final native product run passes all three."
+    },
+    {
+      "log": "logs/agentd-policy-candidate-reopen-fixture-lock.log.gz",
+      "classification": "intermediate-test-fixture-lifecycle",
+      "explanation": "231 passed, one failed: retained old AgentdState held its exclusive prompt-owner lock. Corrected fixture drops it before replacement; full library and final focused runs passed."
+    },
+    {
+      "log": "logs/agentd-authbus-baseline-missing-pretty-assertions.log.gz",
+      "classification": "baseline-test-build-dependency-error",
+      "explanation": "Test imports referred to undeclared pretty_assertions. Built-in assert_eq retains assertions without dependency changes."
+    },
+    {
+      "log": "logs/evidence-policy-candidate-missing-pretty-assertions.log.gz",
+      "classification": "test-build-dependency-error",
+      "explanation": "Same undeclared formatter import pattern; removed imports without weakening assertions."
+    },
+    {
+      "log": "logs/contracts-all-candidate.log.gz",
+      "classification": "restricted-sandbox-socket-error",
+      "explanation": "184 passed; three existing Unix socket tests failed EPERM. The same native library selection later passed all 187."
+    },
+    {
+      "log": "logs/host-pq-native.log.gz",
+      "classification": "environment-openssl-discovery",
+      "explanation": "System OpenSSL discovery was unavailable through pkg-config; explicit installed include/library paths enabled later compilation."
+    },
+    {
+      "log": "logs/host-pq-native-system-openssl.log.gz",
+      "classification": "environment-shared-target-removal",
+      "explanation": "Shared temporary target was removed during active compilation. Later retries use the isolated task target."
+    },
+    {
+      "log": "logs/host-pq-native-isolated-target-space-stop.log.gz",
+      "classification": "intentional-disk-space-interruption",
+      "explanation": "Own exec session Ctrl-C, exit 130, at 632 MiB free; only stopped task incremental cache cleared after process check."
+    },
+    {
+      "log": "logs/helper-authbus-host-space-stop.log.gz",
+      "classification": "intentional-disk-space-interruption",
+      "explanation": "Own exec session Ctrl-C, exit 130, at 428 MiB free; only stopped task incremental cache cleared after process check."
+    },
+    {
+      "log": "logs/scoped-clippy-fix-space-stop.log.gz",
+      "classification": "intentional-disk-space-interruption",
+      "explanation": "Own exec session Ctrl-C, exit 130, at zero available bytes; no Rust source changes. Successful retry disabled incremental cache generation."
+    }
+  ],
+  "clippy": {
+    "command": "just fix --locked -p codex-arg0 -p codex-hepta-contracts -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-infer-worker-host",
+    "recipe": "cargo clippy --fix --tests --allow-dirty",
+    "exit_code": 0,
+    "extra_environment": {
+      "CARGO_INCREMENTAL": "0"
+    },
+    "strict_deny_warnings": false,
+    "rust_source_changes": false,
+    "log": "logs/scoped-clippy-fix.log.gz",
+    "warning_inventory": "clippy-result.json",
+    "new_test_helper_warnings": 2,
+    "warning_note": "Only two located warnings fall on added diff lines, both test-only sign_grant unwrap_used. Existing project/vendor warnings remain. No newly added production-line warning was observed."
+  },
+  "format": {
+    "command": "just fmt --base a575cf03e2bc871a2f48021859c03ace806421c8",
+    "exit_code": 0,
+    "log": "logs/fmt-final.log.gz",
+    "runtime_source_changes": false
+  },
+  "qualified_scope": [
+    "conditional durable PQ FinalUse rejection/recovery continuity",
+    "actual Unix PQ authorizer continuity across reopen",
+    "TextIngress monotonic permission policy under retained external checkpoint",
+    "explicit classical downgrade rejection after PQ activation",
+    "real Agentd/AppServer text request after invalid signature, one HTTP request and persisted Completed turn"
+  ],
+  "unqualified_scope": [
+    "RunStart/ObjectiveStart V1 PQ migration",
+    "ordinary Cell-v2 PR4497 integration",
+    "the six ignored Agentd cases",
+    "paired Chain acceptance",
+    "independently deployed external witness custody",
+    "rollback of every external state component together",
+    "authenticated in-place migration of already-used PQ domains without a policy floor",
+    "WAN and production confidentiality",
+    "W1 quantum work and difficulty security",
+    "whole-chain post-quantum qualification"
+  ],
+  "files": [
+    {
+      "path": "logs/agentd-authbus-baseline-missing-pretty-assertions.log.gz",
+      "original_name": "agentd-authbus-baseline-missing-pretty-assertions.log",
+      "uncompressed_bytes": 28119,
+      "uncompressed_sha256": "e52dcb9f93a4b82963da01c850ba81235e2d1dd8721a05e86336b1134a696f09",
+      "gzip_bytes": 2935,
+      "gzip_sha256": "a14fd0e869052f71b68660a5326541ebff39e61fc7de677279611783ab3ef7b4"
+    },
+    {
+      "path": "logs/agentd-authbus-baseline-policy-red.log.gz",
+      "original_name": "agentd-authbus-baseline-policy-red.log",
+      "uncompressed_bytes": 29284,
+      "uncompressed_sha256": "55577e996e3fe10bc61639f3f5e90f8298e9aee4c814e266555f94c31434f9d6",
+      "gzip_bytes": 3323,
+      "gzip_sha256": "c063444261ddc00345ebcc377cad4ca7ea933e32c8e9e199cfac24d946854284"
+    },
+    {
+      "path": "logs/agentd-policy-admission-baseline-red.log.gz",
+      "original_name": "agentd-policy-admission-baseline-red.log",
+      "uncompressed_bytes": 28401,
+      "uncompressed_sha256": "4e5ee54ade4f053e10107a373adc442fde83d06e6fa9ca8c794d3c67ca57190e",
+      "gzip_bytes": 3091,
+      "gzip_sha256": "8960f5b4a73635e9066b45a6056628d84ea236af1a4b0ddda28f5a65fd2c4d1a"
+    },
+    {
+      "path": "logs/agentd-policy-candidate-native.log.gz",
+      "original_name": "agentd-policy-candidate-native.log",
+      "uncompressed_bytes": 60238,
+      "uncompressed_sha256": "5a99909100fefc2ccf3720756de4595b7e9b49936291cd4b9252623340eb43e4",
+      "gzip_bytes": 10038,
+      "gzip_sha256": "79eeb1170a4afecb2451dd22974ac53d20be05a8a89689d0c5ce3fd3bc2f313f"
+    },
+    {
+      "path": "logs/agentd-policy-candidate-reopen-fixture-lock.log.gz",
+      "original_name": "agentd-policy-candidate-reopen-fixture-lock.log",
+      "uncompressed_bytes": 63153,
+      "uncompressed_sha256": "7e845082d29269196d02aa7830f6f5f908374907a801e757178ddacb79992fe5",
+      "gzip_bytes": 10564,
+      "gzip_sha256": "1fe2beab1c43f08b3d1c96b92c09ee359349d8e511b0d37f16e1cb8c36e14d59"
+    },
+    {
+      "path": "logs/agentd-text-product-before-helper-fix.log.gz",
+      "original_name": "agentd-text-product-before-helper-fix.log",
+      "uncompressed_bytes": 31081,
+      "uncompressed_sha256": "1825348bd9936c6496013cbf743a7fb66e01c852bce7b44e85a373036c2df56d",
+      "gzip_bytes": 3091,
+      "gzip_sha256": "da6224f1fbb9a6b16823b24c4d8ca6bd5aac6e7d7281edacfcf02b953fe1a971"
+    },
+    {
+      "path": "logs/agentd-text-product-native.log.gz",
+      "original_name": "agentd-text-product-native.log",
+      "uncompressed_bytes": 26617,
+      "uncompressed_sha256": "2ca3f14ea20392c159441d6c21c87db5483d3511e982a29050cd150e8335655d",
+      "gzip_bytes": 2703,
+      "gzip_sha256": "bd9c10c0c53593527beec56c2e60f5198671c74319e07f3b5e7e6f77f76ecae9"
+    },
+    {
+      "path": "clippy-result.json",
+      "bytes": 43844,
+      "sha256": "6579252419184c5105b51e0c2e96ff5263e27013413f760b8a61477da9d0aef6"
+    },
+    {
+      "path": "logs/contracts-all-candidate-native.log.gz",
+      "original_name": "contracts-all-candidate-native.log",
+      "uncompressed_bytes": 27794,
+      "uncompressed_sha256": "c1a2a5f85157a94a41aa3eefebe7fa92163b55db9dc17ef169e104da4f71c68b",
+      "gzip_bytes": 5846,
+      "gzip_sha256": "5adebb095f205823d8bc92fe94a46fa2a4fb19d32241af8bc36f38762e250935"
+    },
+    {
+      "path": "logs/contracts-all-candidate.log.gz",
+      "original_name": "contracts-all-candidate.log",
+      "uncompressed_bytes": 34052,
+      "uncompressed_sha256": "c11bdbb48f29b07a0d0fdbdaeb7cff3203c6b0e924ab3aafc056d5e1ad06b1e7",
+      "gzip_bytes": 6413,
+      "gzip_sha256": "72bcf0d2031f1b5eb04a577bcc59255ad096481f12267bd390bb39355f9c15f7"
+    },
+    {
+      "path": "logs/contracts-pq-baseline.log.gz",
+      "original_name": "contracts-pq-baseline.log",
+      "uncompressed_bytes": 6472,
+      "uncompressed_sha256": "24d5d85e4cdb9b9207de3034510269e288259bac95a02ec3180b1222f21b9f93",
+      "gzip_bytes": 1805,
+      "gzip_sha256": "866ec2b83c2166760b5af3c4b7cc3e4a3e308a0785b2a202168aed00f8dd8e3f"
+    },
+    {
+      "path": "logs/evidence-policy-candidate-missing-pretty-assertions.log.gz",
+      "original_name": "evidence-policy-candidate-missing-pretty-assertions.log",
+      "uncompressed_bytes": 33157,
+      "uncompressed_sha256": "f308f941c7e31c2d0bd71998c9104a8789218bdea6af9ab21f880915544c8b0e",
+      "gzip_bytes": 4677,
+      "gzip_sha256": "5bd412dc448bbe421f97dc1cea8a28e413ea70a6b99ca51e7e499d2730f0e7a9"
+    },
+    {
+      "path": "logs/evidence-policy-candidate-native.log.gz",
+      "original_name": "evidence-policy-candidate-native.log",
+      "uncompressed_bytes": 39934,
+      "uncompressed_sha256": "daa9b7588c8b751a36a55089aedb3d73cfea866c33570e97e78eff21415092e0",
+      "gzip_bytes": 6204,
+      "gzip_sha256": "ddaca4fb6865d95a484ea1fa200c609826bcd8ca0155155fc52e51f770ee0199"
+    },
+    {
+      "path": "logs/fetch-locked.log.gz",
+      "original_name": "fetch-locked.log",
+      "uncompressed_bytes": 17479,
+      "uncompressed_sha256": "24495fcca03c8b6acd8887e30b8d7a2a241fa8a669a5a819941e4d490dfeb0b3",
+      "gzip_bytes": 4597,
+      "gzip_sha256": "fbd2b0558c36903120aa36e05ca7bb54b4fca20e8f77d94fccaf5244f90a936b"
+    },
+    {
+      "path": "logs/fmt-final.log.gz",
+      "original_name": "fmt-final.log",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    {
+      "path": "logs/fmt-helper-candidate.log.gz",
+      "original_name": "fmt-helper-candidate.log",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    {
+      "path": "logs/fmt-policy-candidate.log.gz",
+      "original_name": "fmt-policy-candidate.log",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    {
+      "path": "logs/fmt-policy-regression.log.gz",
+      "original_name": "fmt-policy-regression.log",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    {
+      "path": "logs/fmt-product.log.gz",
+      "original_name": "fmt-product.log",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    {
+      "path": "logs/fmt.log.gz",
+      "original_name": "fmt.log",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+    },
+    {
+      "path": "logs/helper-authbus-host-final-native.log.gz",
+      "original_name": "helper-authbus-host-final-native.log",
+      "uncompressed_bytes": 29009,
+      "uncompressed_sha256": "b93ed321248a905fb18f881aea838022efec67eaaf3e9b36d38d64cc2f6d41bb",
+      "gzip_bytes": 3492,
+      "gzip_sha256": "ca3820e983e5c0964d2781780d6c8beb09f45abc4158485ec69b1707cfa28237"
+    },
+    {
+      "path": "logs/helper-authbus-host-space-stop.log.gz",
+      "original_name": "helper-authbus-host-space-stop.log",
+      "uncompressed_bytes": 27694,
+      "uncompressed_sha256": "23a27da0ed8c968c90ff2de808360923b165a4aeb854a1c91c03dcbc5c972f47",
+      "gzip_bytes": 2804,
+      "gzip_sha256": "e0b07db1c0e92d33ec7cf32aa89c96d7822985c485ab01678ec48d96167a76fc"
+    },
+    {
+      "path": "logs/host-build-space-stop.txt.gz",
+      "original_name": "host-build-space-stop.txt",
+      "uncompressed_bytes": 1286,
+      "uncompressed_sha256": "edc3f6e9017c85f7886e922caed9ddb90567088089fe31ad1c413dffccb1f691",
+      "gzip_bytes": 640,
+      "gzip_sha256": "1d33eb51a14e23a3fe962edefcedd347f37e5e11aa0c90654cc237dbdbc64c78"
+    },
+    {
+      "path": "logs/host-pq-native-isolated-target-space-stop.log.gz",
+      "original_name": "host-pq-native-isolated-target-space-stop.log",
+      "uncompressed_bytes": 68860,
+      "uncompressed_sha256": "227eaf2ebbd6b67e8208a2de96b5cfd0ea54d39622fe34877ab08382f46672ab",
+      "gzip_bytes": 11444,
+      "gzip_sha256": "65932cec5bc442e150ba2ec999bdefdc524b3e26db6898e0038df31e07a30e6d"
+    },
+    {
+      "path": "logs/host-pq-native-isolated-target.log.gz",
+      "original_name": "host-pq-native-isolated-target.log",
+      "uncompressed_bytes": 29524,
+      "uncompressed_sha256": "ad30c15321c6410a678b880f245b8f2b94a60ef9bea21b053aead2a249530390",
+      "gzip_bytes": 3229,
+      "gzip_sha256": "2fbb34ef5333a1b4e25c8127f4b77ab7b40ead5d9188811919ee74fcb74e9de9"
+    },
+    {
+      "path": "logs/host-pq-native-system-openssl.log.gz",
+      "original_name": "host-pq-native-system-openssl.log",
+      "uncompressed_bytes": 16884,
+      "uncompressed_sha256": "2afacb23fdae4d837008145c49536873b91db1948b7d8da7f378eb1eb3002fee",
+      "gzip_bytes": 3354,
+      "gzip_sha256": "f8373900320dc7b502b960379c3870e2eae2673ca6cfa276c641c7e4cd05b511"
+    },
+    {
+      "path": "logs/host-pq-native.log.gz",
+      "original_name": "host-pq-native.log",
+      "uncompressed_bytes": 18790,
+      "uncompressed_sha256": "03faa142556baffc4b8d3227938bde6471a439e4e4efab4cf69d117277f68ced",
+      "gzip_bytes": 4021,
+      "gzip_sha256": "1b80592db0b1ab52ec7e4758bc7896b970ead53262c9bd9439094cda189a01e2"
+    },
+    {
+      "path": "native-artifacts.json",
+      "bytes": 10901,
+      "sha256": "1b248bfe7f756654bafe32db8e1a9a9c9bf13ea894bd8c170167190bc1a1d101"
+    },
+    {
+      "path": "policy-rollback-baseline-source.json",
+      "bytes": 1506,
+      "sha256": "e795ff88856a4516efe60c568d7706d1f197273cf3f693bb9f133bf4d9bebb94"
+    },
+    {
+      "path": "logs/scoped-clippy-fix-space-stop.log.gz",
+      "original_name": "scoped-clippy-fix-space-stop.log",
+      "uncompressed_bytes": 73177,
+      "uncompressed_sha256": "b4c3bdc1f3c3b3f3184025a192e4df3c3652df9cb82b6e845d974c8130a23a52",
+      "gzip_bytes": 11687,
+      "gzip_sha256": "85f18689c8e5b3b2fc8fca1e4269fc3bdab7d4e7258db3e5d32318a55fe87eaf"
+    },
+    {
+      "path": "logs/scoped-clippy-fix.log.gz",
+      "original_name": "scoped-clippy-fix.log",
+      "uncompressed_bytes": 91619,
+      "uncompressed_sha256": "76dd1192a312b31c029e03a79c8bb5dc1cc224fbcf6fdd555b5a9171fcaa3a57",
+      "gzip_bytes": 8548,
+      "gzip_sha256": "21a1a578c18c0c7f3944418cc5d66edd3232633e69de1ae1ee5c985fbfecee42"
+    },
+    {
+      "path": "source-receipt.json",
+      "bytes": 1597,
+      "sha256": "f9df9c39066d3b173eeafa832d7b5fbef510ef73667bf0638e425bb1c7a761b7"
+    },
+    {
+      "path": "verified-source.json",
+      "bytes": 22021,
+      "sha256": "769efeb83732296f59d245dba01838e32eef99c71687ce49ca896f0bcb016915"
+    },
+    {
+      "path": "fingerprints/codex-arg0-7ce6cc26d576a691-test-lib-codex_arg0.json",
+      "bytes": 1232,
+      "sha256": "c98c452b610809b90ce5ce19c495846a85a189e83ad29a368ebd7292c558afc9"
+    },
+    {
+      "path": "fingerprints/codex-hepta-agentd-069d0e65aab0afb6-test-lib-codex_hepta_agentd.json",
+      "bytes": 4825,
+      "sha256": "734928f4af7a3970497775e72ba6fb431783c19c67c1e03609042361c3cbd3bd"
+    },
+    {
+      "path": "fingerprints/codex-hepta-agentd-14ecdc2dd7d47e25-bin-codex-hepta-agentd.json",
+      "bytes": 4126,
+      "sha256": "f8d966258178fe4f74ea319d998b527a4dfadbfb8125ef44f630933a851ff230"
+    },
+    {
+      "path": "fingerprints/codex-hepta-agentd-19091fd30f644e6e-test-lib-codex_hepta_agentd.json",
+      "bytes": 4826,
+      "sha256": "0f201aab290d0c22c01200dc80e4471f861a5d42e4ed5ce7d09e3a08800c0652"
+    },
+    {
+      "path": "fingerprints/codex-hepta-agentd-70808de24d1d48ab-test-integration-test-authbus_text_product.json",
+      "bytes": 4911,
+      "sha256": "c14a8909239ac8364a528906eb7d855a6dad6c5a15b87ac5aaf83ecb0570bf1e"
+    },
+    {
+      "path": "fingerprints/codex-hepta-evidence-ddffb60ad0030fe0-test-lib-codex_hepta_evidence.json",
+      "bytes": 1148,
+      "sha256": "f970291ff3ea3d21863861b2f3ee68e0eea70ef2ec7ba99e086ff17b541bd71f"
+    },
+    {
+      "path": "fingerprints/codex-hepta-infer-worker-host-72a5ccad2632a5d8-test-lib-codex_hepta_infer_worker_host.json",
+      "bytes": 1723,
+      "sha256": "7e1af3f7618708121babb057c18fc6590746124175d282f079ae52f4089e5ff4"
+    },
+    {
+      "path": "fingerprints/codex-hepta-infer-worker-host-fc3492cd00dc1249-test-lib-codex_hepta_infer_worker_host.json",
+      "bytes": 1723,
+      "sha256": "d245b06dfdfcadf80a479b0724f5fd8a045ad5885fa574baab3eaba819c38df7"
+    }
+  ],
+  "build_environment_note": "The listed isolated target is used after the earlier shared-target interruption. Native candidate commands use the stated toolchain and build settings; the final Clippy retry additionally sets CARGO_INCREMENTAL=0. Early shared-target runs are retained with their distinct logs and phase labels."
+}

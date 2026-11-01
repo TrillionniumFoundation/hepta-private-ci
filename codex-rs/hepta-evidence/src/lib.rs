@@ -5,6 +5,7 @@ mod authbus_issuer_floor;
 mod authbus_outbox;
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
+mod authbus_owner_policy;
 mod authbus_recovery;
 mod authbus_store;
 mod canonical;

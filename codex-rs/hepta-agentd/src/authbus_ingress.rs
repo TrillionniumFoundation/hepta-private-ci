@@ -105,10 +105,17 @@ impl TextIngress {
             ));
         }
         self.sync_replay_checkpoint().await?;
-        self.evidence
-            .pin_authbus_issuer(&trust.issuer()?)
-            .await
-            .map_err(|error| invalid(&error.to_string()))?;
+        let issuer = trust.issuer()?;
+        match self.algorithm {
+            AuthBusAlgorithm::MlDsa65V2 => {
+                let (revision, digest) = trust.owner_policy()?;
+                self.evidence
+                    .pin_authbus_issuer_with_owner_policy(&issuer, revision, digest)
+                    .await
+            }
+            AuthBusAlgorithm::Ed25519V1 => self.evidence.pin_authbus_issuer(&issuer).await,
+        }
+        .map_err(|error| invalid(&error.to_string()))?;
         self.sync_replay_checkpoint().await?;
         Ok(trust)
     }

@@ -27,17 +27,19 @@ use codex_hepta_agentd::AuthBusTextBody;
 use codex_hepta_agentd::AuthBusTextIngress;
 use codex_hepta_agentd::AuthBusTextState;
 use codex_hepta_agentd::AuthBusTextStatus;
-use codex_hepta_agentd::authbus_text_claims;
+use codex_hepta_authbus::AuthBusAlgorithm;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses;
-use ed25519_dalek::Signer;
-use ed25519_dalek::SigningKey;
 use tokio::time::timeout;
 
 mod support;
+
+#[path = "support/authbus_signer.rs"]
+mod native_signer;
+use native_signer::NativeSigner;
 
 use support::fleet::FleetHarness;
 use support::fleet::connect_app_server_with_experimental;
@@ -50,6 +52,15 @@ const WAIT_TIMEOUT: Duration = Duration::from_secs(20);
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress()
 -> Result<()> {
+    run_signed_text_product(AuthBusAlgorithm::Ed25519V1).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn pq_signed_text_crosses_real_queue_after_rejection_without_downgrade() -> Result<()> {
+    run_signed_text_product(AuthBusAlgorithm::MlDsa65V2).await
+}
+
+async fn run_signed_text_product(algorithm: AuthBusAlgorithm) -> Result<()> {
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_ID, "signed-text-workspace")?;
     let model = responses::start_mock_server().await;
@@ -64,7 +75,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
     .await;
     // This independent test producer owns its signing key. The daemon receives
     // only an explicit owner-controlled public-key registration.
-    let key = SigningKey::from_bytes(&[91; 32]);
+    let key = NativeSigner::new(/*seed*/ 91, algorithm)?;
     let trust_file = agent.layout.home_root().join("authbus-trust.json");
     std::fs::set_permissions(
         agent.layout.home_root(),
@@ -76,6 +87,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         &key,
         &[],
         /*revoked*/ false,
+        /*policy_revision*/ 1,
     )?;
     let checkpoint_root = tempfile::tempdir()?;
     std::fs::set_permissions(
@@ -87,6 +99,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         .join("authbus-replay-checkpoint.json");
     let home = AbsolutePathBuf::from_absolute_path(agent.layout.home_root())?;
     let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home)).await?;
+    evidence.bind_authbus_profile(algorithm).await?;
     let frontier = evidence.authbus_replay_frontier_digest().await?;
     drop(evidence);
     write_checkpoint(&checkpoint_file, &agent.agent_id, 1, frontier)?;
@@ -113,8 +126,13 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         &key,
         std::slice::from_ref(&thread),
         /*revoked*/ false,
+        /*policy_revision*/ 2,
     )?;
     let request = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 1)?;
+    let mut refused_before_admission = request.clone();
+    refused_before_admission.signature_hex = "00".repeat(request.signature_hex.len() / 2);
+    assert_server_rejection(control.submit_authbus_text(refused_before_admission).await)?;
+    ensure!(physical_send_count(&model).await == 0);
     let admitted = control.submit_authbus_text(request.clone()).await?;
     let accepted = wait_queue_accepted(&control, &admitted.delivery_id).await?;
     ensure!(
@@ -164,6 +182,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         &key,
         std::slice::from_ref(&thread),
         /*revoked*/ true,
+        /*policy_revision*/ 3,
     )?;
     let revoked = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 4)?;
     assert_server_rejection(control.submit_authbus_text(revoked).await)?;
@@ -201,7 +220,7 @@ async fn real_agentd_without_explicit_trust_rejects_signed_text() -> Result<()> 
     .await?;
     let mut request_id = 1;
     let thread = start_thread(&client, &mut request_id, &agent.workspace).await?;
-    let key = SigningKey::from_bytes(&[92; 32]);
+    let key = NativeSigner::new(/*seed*/ 92, AuthBusAlgorithm::Ed25519V1)?;
     let request = signed_text(&agent.agent_id, &key, &thread, /*sequence*/ 1)?;
     assert_server_rejection(control.submit_authbus_text(request).await)?;
     client.shutdown().await?;
@@ -216,19 +235,23 @@ async fn real_agentd_without_explicit_trust_rejects_signed_text() -> Result<()> 
 fn write_trust(
     path: &Path,
     agent_id: &AgentId,
-    key: &SigningKey,
+    key: &NativeSigner,
     thread_ids: &[String],
     revoked: bool,
+    policy_revision: u64,
 ) -> Result<()> {
-    let registration = serde_json::json!({
-        "schema_version": 1,
+    let mut registration = serde_json::json!({
+        "schema_version": key.algorithm().schema_version(),
         "agent_id": agent_id.to_string(),
         "issuer_id": ISSUER_ID,
         "key_epoch": 1,
-        "public_key_hex": hex(key.verifying_key().as_bytes()),
+        "public_key_hex": key.public_key_hex(),
         "revoked": revoked,
         "thread_ids": thread_ids,
     });
+    if key.algorithm() == AuthBusAlgorithm::MlDsa65V2 {
+        registration["policy_revision"] = serde_json::json!(policy_revision);
+    }
     let mut temporary =
         tempfile::NamedTempFile::new_in(path.parent().context("trust parent missing")?)?;
     temporary
@@ -267,13 +290,13 @@ fn write_checkpoint(
 
 fn signed_text(
     agent_id: &AgentId,
-    key: &SigningKey,
+    key: &NativeSigner,
     thread_id: &str,
     sequence: u64,
 ) -> Result<AuthBusTextIngress> {
     let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
     let mut request = AuthBusTextIngress {
-        auth_version: 1,
+        auth_version: key.algorithm().schema_version(),
         issuer_id: ISSUER_ID.to_string(),
         key_epoch: 1,
         message_id: format!("message:native-authbus:{sequence}"),
@@ -286,9 +309,7 @@ fn signed_text(
             text: TEXT.to_string(),
         },
     };
-    request.signature_hex = hex(&key
-        .sign(&authbus_text_claims(agent_id, &request)?.signing_bytes())
-        .to_bytes());
+    key.sign(agent_id, &mut request)?;
     Ok(request)
 }
 

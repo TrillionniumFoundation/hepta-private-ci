@@ -1,0 +1,2237 @@
+{
+  "schema": "hepta-ci-readonly-triage-v1",
+  "snapshot_started_utc": "2026-11-01T10:20:55Z",
+  "snapshot_completed_utc": "2026-11-01T10:20:57Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4552,
+  "original_head": "7ff91a4368bc110c35da789b16916e046f79b42c",
+  "original_head_tree": "09483e0039f8f900a403e38f791ca62576f46f38",
+  "parent": "a575cf03e2bc871a2f48021859c03ace806421c8",
+  "blocking_actual_checkout": {
+    "commit": "ea28be81d529d832ef118339c176aa4ddbba16b5",
+    "tree": "09483e0039f8f900a403e38f791ca62576f46f38",
+    "same_tree_as_original_head": true,
+    "evidence": "metadata/current-merge-commit.json.gz"
+  },
+  "prior_comparison": {
+    "run_id": 41064643631,
+    "head": "a575cf03e2bc871a2f48021859c03ace806421c8",
+    "actual_checkout": "52b3408aaaef531e8f389402a87e83287c48bc1b",
+    "tree": "980cb998c894ee1366098c099de3bbdc0abeb51f",
+    "scope": "Prior PR merge CI, not an audit-triggered replay. Exact checkout/tree are retained; do not silently call it a naked parent-commit run.",
+    "job_counts": {
+      "success": 13,
+      "failure": 17,
+      "cancelled": 3,
+      "skipped": 4
+    },
+    "metadata": "metadata/prior-merge-commit.json.gz"
+  },
+  "counts": {
+    "success": 19,
+    "failure": 22,
+    "skipped": 6,
+    "in_progress": 3,
+    "cancelled": 0
+  },
+  "workflow_count": 5,
+  "job_count": 50,
+  "partition_of_current_failures": {
+    "direct_blocking_job_count": 14,
+    "direct_blocking_job_ids": [
+      124811350549,
+      124811350689,
+      124811350753,
+      124811350776,
+      124811350804,
+      124811350806,
+      124811350822,
+      124811350829,
+      124811350834,
+      124811350857,
+      124811350879,
+      124811350934,
+      124811350941,
+      124811405953
+    ],
+    "native_pair_job_count": 6,
+    "native_pair_job_ids": [
+      124810737056,
+      124810737135,
+      124810737157,
+      124810737175,
+      124810737207,
+      124810737209
+    ],
+    "fan_in_job_count": 2,
+    "fan_in_job_ids": [
+      124811730180,
+      124813523035
+    ]
+  },
+  "workflows": [
+    {
+      "name": "blocking-ci",
+      "run_id": 41293942805,
+      "job_count": 36,
+      "counts": {
+        "success": 13,
+        "failure": 16,
+        "in_progress": 3,
+        "skipped": 4
+      },
+      "raw_snapshot": "metadata/current-blocking-jobs.json.gz"
+    },
+    {
+      "name": "Hepta native PoN pair",
+      "run_id": 41293942778,
+      "job_count": 6,
+      "counts": {
+        "failure": 6
+      },
+      "raw_snapshot": "metadata/current-native-pair-jobs.json.gz"
+    },
+    {
+      "name": "Hepta Cell and original SmolLM owners",
+      "run_id": 41293942771,
+      "job_count": 2,
+      "counts": {
+        "success": 2
+      },
+      "raw_snapshot": "metadata/current-cell-jobs.json.gz"
+    },
+    {
+      "name": "Hepta architecture convergence",
+      "run_id": 41293942802,
+      "job_count": 3,
+      "counts": {
+        "success": 3
+      },
+      "raw_snapshot": "metadata/current-architecture-jobs.json.gz"
+    },
+    {
+      "name": "v8-canary",
+      "run_id": 41293942773,
+      "job_count": 3,
+      "counts": {
+        "success": 1,
+        "skipped": 2
+      },
+      "raw_snapshot": "metadata/current-v8-jobs.json.gz"
+    }
+  ],
+  "jobs": [
+    {
+      "id": 124810737214,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Select blocking CI scope",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124810737214",
+      "started_at": "2026-11-01T09:37:37Z",
+      "completed_at": "2026-11-01T09:40:31Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124810737505,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Blob size policy / Blob size policy",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124810737505",
+      "started_at": "2026-11-01T09:37:37Z",
+      "completed_at": "2026-11-01T09:40:07Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124810737563,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Codespell / Check for spelling errors",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124810737563",
+      "started_at": "2026-11-01T09:37:37Z",
+      "completed_at": "2026-11-01T09:38:11Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811350549,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350549",
+      "started_at": "2026-11-01T09:40:34Z",
+      "completed_at": "2026-11-01T09:41:58Z",
+      "failed_steps": [
+        {
+          "number": 6,
+          "name": "Run cargo-deny",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350549#step:6:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350603,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "sdk / sdks",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350603",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:49:11Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811350610,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350610",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:42:37Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811350614,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350614",
+      "started_at": "2026-11-01T09:40:34Z",
+      "completed_at": "2026-11-01T09:42:15Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811350632,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "rust-ci / Detect changed areas",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350632",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:40:47Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811350660,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "sdk / python-sdk",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350660",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:42:04Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811350666,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350666",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:43:04Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811350689,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "repo-checks / build-test",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350689",
+      "started_at": "2026-11-01T09:40:34Z",
+      "completed_at": "2026-11-01T09:41:08Z",
+      "failed_steps": [
+        {
+          "number": 6,
+          "name": "Verify Hepta privileged caller closed set",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350689#step:6:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350753,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350753",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:46:17Z",
+      "failed_steps": [
+        {
+          "number": 4,
+          "name": "bazel build --config=clippy lint targets",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350753#step:4:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350776,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350776",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:53:12Z",
+      "failed_steps": [
+        {
+          "number": 4,
+          "name": "bazel build verify-release-build targets",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350776#step:4:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350804,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350804",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:46:01Z",
+      "failed_steps": [
+        {
+          "number": 4,
+          "name": "bazel build verify-release-build targets",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350804#step:4:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350806,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350806",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:50:54Z",
+      "failed_steps": [
+        {
+          "number": 6,
+          "name": "bazel test shard",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350806#step:6:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350822,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350822",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:48:51Z",
+      "failed_steps": [
+        {
+          "number": 6,
+          "name": "bazel test shard",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350822#step:6:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350825,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350825",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:41:42Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811350829,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350829",
+      "started_at": "2026-11-01T09:40:36Z",
+      "completed_at": "2026-11-01T09:49:00Z",
+      "failed_steps": [
+        {
+          "number": 4,
+          "name": "bazel build verify-release-build targets",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350829#step:4:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350834,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350834",
+      "started_at": "2026-11-01T09:40:36Z",
+      "completed_at": "2026-11-01T09:46:10Z",
+      "failed_steps": [
+        {
+          "number": 4,
+          "name": "bazel build --config=clippy lint targets",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350834#step:4:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350838,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "status": "in_progress",
+      "conclusion": null,
+      "observed_state": "in_progress",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350838",
+      "started_at": "2026-11-01T09:40:36Z",
+      "completed_at": null,
+      "failed_steps": []
+    },
+    {
+      "id": 124811350857,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350857",
+      "started_at": "2026-11-01T09:40:36Z",
+      "completed_at": "2026-11-01T09:45:19Z",
+      "failed_steps": [
+        {
+          "number": 6,
+          "name": "bazel test //...",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350857#step:6:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350879,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350879",
+      "started_at": "2026-11-01T09:40:36Z",
+      "completed_at": "2026-11-01T09:53:20Z",
+      "failed_steps": [
+        {
+          "number": 4,
+          "name": "bazel build --config=clippy lint targets",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350879#step:4:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350924,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "in_progress",
+      "conclusion": null,
+      "observed_state": "in_progress",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350924",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": null,
+      "failed_steps": []
+    },
+    {
+      "id": 124811350925,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "status": "in_progress",
+      "conclusion": null,
+      "observed_state": "in_progress",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350925",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": null,
+      "failed_steps": []
+    },
+    {
+      "id": 124811350934,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350934",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:50:56Z",
+      "failed_steps": [
+        {
+          "number": 6,
+          "name": "bazel test shard",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350934#step:6:1"
+        }
+      ]
+    },
+    {
+      "id": 124811350941,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350941",
+      "started_at": "2026-11-01T09:40:35Z",
+      "completed_at": "2026-11-01T09:46:21Z",
+      "failed_steps": [
+        {
+          "number": 6,
+          "name": "bazel test shard",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350941#step:6:1"
+        }
+      ]
+    },
+    {
+      "id": 124811351583,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Lightweight prose and derived checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "observed_state": "skipped",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811351583",
+      "started_at": "2026-11-01T09:40:32Z",
+      "completed_at": "2026-11-01T09:40:31Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811351622,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Hepta scoped native checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "observed_state": "skipped",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811351622",
+      "started_at": "2026-11-01T09:40:32Z",
+      "completed_at": "2026-11-01T09:40:31Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811351805,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "observed_state": "skipped",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811351805",
+      "started_at": "2026-11-01T09:40:32Z",
+      "completed_at": "2026-11-01T09:40:31Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811405953,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "rust-ci / cargo shear",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811405953",
+      "started_at": "2026-11-01T09:40:49Z",
+      "completed_at": "2026-11-01T09:41:26Z",
+      "failed_steps": [
+        {
+          "number": 6,
+          "name": "cargo shear",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811405953#step:6:1"
+        }
+      ]
+    },
+    {
+      "id": 124811406013,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "rust-ci / Rust format",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811406013",
+      "started_at": "2026-11-01T09:40:49Z",
+      "completed_at": "2026-11-01T09:41:28Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811406045,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "rust-ci / Cargo manifest preflight",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811406045",
+      "started_at": "2026-11-01T09:40:50Z",
+      "completed_at": "2026-11-01T09:41:08Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811407101,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "rust-ci / Argument comment lint package",
+      "status": "completed",
+      "conclusion": "skipped",
+      "observed_state": "skipped",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811407101",
+      "started_at": "2026-11-01T09:40:47Z",
+      "completed_at": "2026-11-01T09:40:47Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811477572,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "rust-ci / Rust benchmark smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811477572",
+      "started_at": "2026-11-01T09:41:11Z",
+      "completed_at": "2026-11-01T09:42:21Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811730180,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "rust-ci / CI results (required)",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811730180",
+      "started_at": "2026-11-01T09:42:23Z",
+      "completed_at": "2026-11-01T09:42:26Z",
+      "failed_steps": [
+        {
+          "number": 2,
+          "name": "Summarize",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811730180#step:2:1"
+        }
+      ]
+    },
+    {
+      "id": 124813523035,
+      "workflow": "blocking-ci",
+      "workflow_run_id": 41293942805,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124813523035",
+      "started_at": "2026-11-01T09:50:59Z",
+      "completed_at": "2026-11-01T09:51:02Z",
+      "failed_steps": [
+        {
+          "number": 2,
+          "name": "Confirm Windows Bazel test shards passed",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124813523035#step:2:1"
+        }
+      ]
+    },
+    {
+      "id": 124810737056,
+      "workflow": "Hepta native PoN pair",
+      "workflow_run_id": 41293942778,
+      "name": "Native Windows ledger (base-merge)",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737056",
+      "started_at": "2026-11-01T09:37:37Z",
+      "completed_at": "2026-11-01T09:41:15Z",
+      "failed_steps": [
+        {
+          "number": 8,
+          "name": "Execute all seven evaluated ledger ownership regressions on native Windows",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737056#step:8:1"
+        },
+        {
+          "number": 9,
+          "name": "Require unchanged source and both completed Windows results",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737056#step:9:1"
+        }
+      ]
+    },
+    {
+      "id": 124810737135,
+      "workflow": "Hepta native PoN pair",
+      "workflow_run_id": 41293942778,
+      "name": "pair (ubuntu-24.04, base-merge)",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737135",
+      "started_at": "2026-11-01T09:37:37Z",
+      "completed_at": "2026-11-01T09:55:04Z",
+      "failed_steps": [
+        {
+          "number": 28,
+          "name": "Require paired native pressure and complete state convergence",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737135#step:28:1"
+        }
+      ]
+    },
+    {
+      "id": 124810737157,
+      "workflow": "Hepta native PoN pair",
+      "workflow_run_id": 41293942778,
+      "name": "Native Windows ledger (source-head)",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737157",
+      "started_at": "2026-11-01T09:37:37Z",
+      "completed_at": "2026-11-01T09:42:12Z",
+      "failed_steps": [
+        {
+          "number": 8,
+          "name": "Execute all seven evaluated ledger ownership regressions on native Windows",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737157#step:8:1"
+        },
+        {
+          "number": 9,
+          "name": "Require unchanged source and both completed Windows results",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737157#step:9:1"
+        }
+      ]
+    },
+    {
+      "id": 124810737175,
+      "workflow": "Hepta native PoN pair",
+      "workflow_run_id": 41293942778,
+      "name": "pair (ubuntu-24.04-arm, base-merge)",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737175",
+      "started_at": "2026-11-01T09:37:39Z",
+      "completed_at": "2026-11-01T09:54:14Z",
+      "failed_steps": [
+        {
+          "number": 28,
+          "name": "Require paired native pressure and complete state convergence",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737175#step:28:1"
+        }
+      ]
+    },
+    {
+      "id": 124810737207,
+      "workflow": "Hepta native PoN pair",
+      "workflow_run_id": 41293942778,
+      "name": "pair (ubuntu-24.04-arm, source-head)",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737207",
+      "started_at": "2026-11-01T09:37:39Z",
+      "completed_at": "2026-11-01T09:53:27Z",
+      "failed_steps": [
+        {
+          "number": 28,
+          "name": "Require paired native pressure and complete state convergence",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737207#step:28:1"
+        }
+      ]
+    },
+    {
+      "id": 124810737209,
+      "workflow": "Hepta native PoN pair",
+      "workflow_run_id": 41293942778,
+      "name": "pair (ubuntu-24.04, source-head)",
+      "status": "completed",
+      "conclusion": "failure",
+      "observed_state": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737209",
+      "started_at": "2026-11-01T09:37:37Z",
+      "completed_at": "2026-11-01T09:51:52Z",
+      "failed_steps": [
+        {
+          "number": 28,
+          "name": "Require paired native pressure and complete state convergence",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737209#step:28:1"
+        }
+      ]
+    },
+    {
+      "id": 124810736754,
+      "workflow": "Hepta Cell and original SmolLM owners",
+      "workflow_run_id": 41293942771,
+      "name": "cell-smollm (ubuntu-24.04, source-head)",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942771/job/124810736754",
+      "started_at": "2026-11-01T09:37:37Z",
+      "completed_at": "2026-11-01T10:05:54Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124810736879,
+      "workflow": "Hepta Cell and original SmolLM owners",
+      "workflow_run_id": 41293942771,
+      "name": "cell-smollm (ubuntu-24.04, base-merge)",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942771/job/124810736879",
+      "started_at": "2026-11-01T09:37:36Z",
+      "completed_at": "2026-11-01T10:04:53Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124810737024,
+      "workflow": "Hepta architecture convergence",
+      "workflow_run_id": 41293942802,
+      "name": "Architecture convergence (base-merge)",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942802/job/124810737024",
+      "started_at": "2026-11-01T09:37:39Z",
+      "completed_at": "2026-11-01T09:38:15Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124810737239,
+      "workflow": "Hepta architecture convergence",
+      "workflow_run_id": 41293942802,
+      "name": "Architecture convergence (source-head)",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942802/job/124810737239",
+      "started_at": "2026-11-01T09:37:39Z",
+      "completed_at": "2026-11-01T10:10:48Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124817839132,
+      "workflow": "Hepta architecture convergence",
+      "workflow_run_id": 41293942802,
+      "name": "Architecture required",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942802/job/124817839132",
+      "started_at": "2026-11-01T10:10:51Z",
+      "completed_at": "2026-11-01T10:10:53Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124810736985,
+      "workflow": "v8-canary",
+      "workflow_run_id": 41293942773,
+      "name": "metadata",
+      "status": "completed",
+      "conclusion": "success",
+      "observed_state": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942773/job/124810736985",
+      "started_at": "2026-11-01T09:37:37Z",
+      "completed_at": "2026-11-01T09:39:25Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811119049,
+      "workflow": "v8-canary",
+      "workflow_run_id": 41293942773,
+      "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+      "status": "completed",
+      "conclusion": "skipped",
+      "observed_state": "skipped",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942773/job/124811119049",
+      "started_at": "2026-11-01T09:39:25Z",
+      "completed_at": "2026-11-01T09:39:25Z",
+      "failed_steps": []
+    },
+    {
+      "id": 124811119103,
+      "workflow": "v8-canary",
+      "workflow_run_id": 41293942773,
+      "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+      "status": "completed",
+      "conclusion": "skipped",
+      "observed_state": "skipped",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942773/job/124811119103",
+      "started_at": "2026-11-01T09:39:26Z",
+      "completed_at": "2026-11-01T09:39:25Z",
+      "failed_steps": []
+    }
+  ],
+  "causes_overlap_note": "Cause groups can overlap within a job. Count the disjoint job partition, not the number of cause entries or repeated diagnostics.",
+  "causes": [
+    {
+      "id": "new_finaluse_helper_unwrap",
+      "title": "Definite PR-owned strict Clippy errors",
+      "affected_job_ids": [
+        124811350753
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350753#step:4:1"
+      ],
+      "observed_cause": "Two clippy::unwrap_used errors in newly added sign_grant: final_use_pq_recovery_tests.rs:9:20 and :10:34. CI passes --deny=clippy::unwrap_used; the earlier local scoped run treated these as warnings.",
+      "attribution": "Definite newly added PR code. Fixing these two sites alone cannot make the complete job pass because other fatal diagnostics remain.",
+      "root_excerpts": [
+        {
+          "job_id": 124811350753,
+          "log_path": "logs/current-job-124811350753.log.gz",
+          "first_matching_log_line_1_based": 1870,
+          "lines": [
+            {
+              "line": 1869,
+              "text": "2026-11-01T09:43:06.5478456Z error: used `unwrap()` on a `Result` value"
+            },
+            {
+              "line": 1870,
+              "text": "2026-11-01T09:43:06.5479106Z   --> hepta-contracts/src/final_use_pq_recovery_tests.rs:9:20"
+            },
+            {
+              "line": 1871,
+              "text": "2026-11-01T09:43:06.5479705Z    |"
+            },
+            {
+              "line": 1872,
+              "text": "2026-11-01T09:43:06.5480020Z  9 |           signature: key"
+            },
+            {
+              "line": 1873,
+              "text": "2026-11-01T09:43:06.5480430Z    |  ____________________^"
+            },
+            {
+              "line": 1874,
+              "text": "2026-11-01T09:43:06.5480951Z 10 | |             .sign_exact_message(&grant.signing_bytes().unwrap())"
+            },
+            {
+              "line": 1875,
+              "text": "2026-11-01T09:43:06.5481549Z 11 | |             .unwrap()"
+            },
+            {
+              "line": 1876,
+              "text": "2026-11-01T09:43:06.5481936Z    | |_____________________^"
+            },
+            {
+              "line": 1877,
+              "text": "2026-11-01T09:43:06.5482680Z    |"
+            },
+            {
+              "line": 1878,
+              "text": "2026-11-01T09:43:06.5483049Z    = note: if this value is an `Err`, it will panic"
+            },
+            {
+              "line": 1879,
+              "text": "2026-11-01T09:43:06.5484052Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#unwrap_used"
+            }
+          ]
+        },
+        {
+          "job_id": 124811350753,
+          "log_path": "logs/current-job-124811350753.log.gz",
+          "first_matching_log_line_1_based": 1882,
+          "lines": [
+            {
+              "line": 1881,
+              "text": "2026-11-01T09:43:06.5485271Z error: used `unwrap()` on a `Result` value"
+            },
+            {
+              "line": 1882,
+              "text": "2026-11-01T09:43:06.5485889Z   --> hepta-contracts/src/final_use_pq_recovery_tests.rs:10:34"
+            },
+            {
+              "line": 1883,
+              "text": "2026-11-01T09:43:06.5486717Z    |"
+            },
+            {
+              "line": 1884,
+              "text": "2026-11-01T09:43:06.5487181Z 10 |             .sign_exact_message(&grant.signing_bytes().unwrap())"
+            },
+            {
+              "line": 1885,
+              "text": "2026-11-01T09:43:06.5487809Z    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+            },
+            {
+              "line": 1886,
+              "text": "2026-11-01T09:43:06.5488299Z    |"
+            },
+            {
+              "line": 1887,
+              "text": "2026-11-01T09:43:06.5488668Z    = note: if this value is an `Err`, it will panic"
+            },
+            {
+              "line": 1888,
+              "text": "2026-11-01T09:43:06.5489657Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#unwrap_used"
+            }
+          ]
+        }
+      ],
+      "source_file": "sources/final_use_pq_recovery_tests.rs.txt",
+      "source_git_blob_sha1": "44c4b55042df52d241cad4af934ab21f1f360d4d",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7ff91a4368bc110c35da789b16916e046f79b42c/codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs"
+    },
+    {
+      "id": "other_linux_clippy",
+      "title": "Additional Linux Clippy errors",
+      "affected_job_ids": [
+        124811350753
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350753#step:4:1"
+      ],
+      "observed_cause": "The earliest fatal diagnostic is an unwrap in authority_trust_unix_tests.rs:18. The job also rejects holding tokio::sync::MutexGuard across await at authbus_ingress.rs:100, third-party expect/unwrap sites, and other test helpers.",
+      "attribution": "The same trust-update lock/await pattern is present in the parent source and the prior merge CI log. New policy awaits occur inside that pre-existing critical section. This establishes a pre-existing blocker, not proof that every PR change is harmless.",
+      "root_excerpts": [
+        {
+          "job_id": 124811350753,
+          "log_path": "logs/current-job-124811350753.log.gz",
+          "first_matching_log_line_1_based": 1605,
+          "lines": [
+            {
+              "line": 1605,
+              "text": "2026-11-01T09:43:06.4378142Z error: used `unwrap()` on a `Result` value"
+            },
+            {
+              "line": 1606,
+              "text": "2026-11-01T09:43:06.4378837Z   --> hepta-contracts/src/authority_trust_unix_tests.rs:18:14"
+            },
+            {
+              "line": 1607,
+              "text": "2026-11-01T09:43:06.4379891Z    |"
+            },
+            {
+              "line": 1608,
+              "text": "2026-11-01T09:43:06.4380331Z 18 |     let id = ml_dsa_65_key_id_from_spki(&spki).unwrap();"
+            },
+            {
+              "line": 1609,
+              "text": "2026-11-01T09:43:06.4380943Z    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+            },
+            {
+              "line": 1610,
+              "text": "2026-11-01T09:43:06.4381442Z    |"
+            },
+            {
+              "line": 1611,
+              "text": "2026-11-01T09:43:06.4381861Z    = note: if this value is an `Err`, it will panic"
+            }
+          ]
+        },
+        {
+          "job_id": 124811350753,
+          "log_path": "logs/current-job-124811350753.log.gz",
+          "first_matching_log_line_1_based": 8816,
+          "lines": [
+            {
+              "line": 8815,
+              "text": "2026-11-01T09:44:39.7520398Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+            },
+            {
+              "line": 8816,
+              "text": "2026-11-01T09:44:39.7520879Z    --> codex-rs/hepta-agentd/src/authbus_ingress.rs:100:13"
+            },
+            {
+              "line": 8817,
+              "text": "2026-11-01T09:44:39.7521204Z     |"
+            },
+            {
+              "line": 8818,
+              "text": "2026-11-01T09:44:39.7521641Z 100 |         let _guard = self.trust_update.lock().await;"
+            },
+            {
+              "line": 8819,
+              "text": "2026-11-01T09:44:39.7521961Z     |             ^^^^^^"
+            },
+            {
+              "line": 8820,
+              "text": "2026-11-01T09:44:39.7522177Z     |"
+            },
+            {
+              "line": 8821,
+              "text": "2026-11-01T09:44:39.7522698Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type"
+            },
+            {
+              "line": 8822,
+              "text": "2026-11-01T09:44:39.7523427Z     = note: requested on the command line with `-D clippy::await-holding-invalid-type`"
+            },
+            {
+              "line": 8823,
+              "text": "2026-11-01T09:44:39.7523764Z "
+            }
+          ]
+        }
+      ],
+      "prior_ci_comparison": {
+        "run_id": 41064643631,
+        "job_id": 124094124314,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41064643631/job/124094124314#step:4:1",
+        "excerpt": {
+          "job_id": 124094124314,
+          "log_path": "logs/prior-job-124094124314.log.gz",
+          "first_matching_log_line_1_based": 10099,
+          "lines": [
+            {
+              "line": 10098,
+              "text": "2026-10-30T13:44:01.2100702Z error: holding a disallowed type across an await point `tokio::sync::MutexGuard`"
+            },
+            {
+              "line": 10099,
+              "text": "2026-10-30T13:44:01.2101531Z    --> codex-rs/hepta-agentd/src/authbus_ingress.rs:100:13"
+            },
+            {
+              "line": 10100,
+              "text": "2026-10-30T13:44:01.2101853Z     |"
+            },
+            {
+              "line": 10101,
+              "text": "2026-10-30T13:44:01.2102106Z 100 |         let _guard = self.trust_update.lock().await;"
+            },
+            {
+              "line": 10102,
+              "text": "2026-10-30T13:44:01.2102407Z     |             ^^^^^^"
+            },
+            {
+              "line": 10103,
+              "text": "2026-10-30T13:44:01.2102618Z     |"
+            },
+            {
+              "line": 10104,
+              "text": "2026-10-30T13:44:01.2103149Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#await_holding_invalid_type"
+            },
+            {
+              "line": 10105,
+              "text": "2026-10-30T13:44:01.2103894Z     = note: requested on the command line with `-D clippy::await-holding-invalid-type`"
+            },
+            {
+              "line": 10106,
+              "text": "2026-10-30T13:44:01.2104233Z "
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "caller_closed_set",
+      "title": "Privileged caller inventory mismatch",
+      "affected_job_ids": [
+        124811350689
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350689#step:6:1"
+      ],
+      "observed_cause": "FAIL_HEPTA_CALLER_PROOF: learning_artifact_verified_current_view misses neural_cognitive_ranker.rs. The manifest expects candidate.with_current(...), while this caller uses RevalidatingCandidate::from_authenticated_current(...).",
+      "attribution": "The exact scanner, manifest and ranker blobs match across parent, head and prior CI merge. The same missing-caller diagnostic is retained from the prior run. Do not weaken or bypass the validator to clear the failure.",
+      "root_excerpts": [
+        {
+          "job_id": 124811350689,
+          "log_path": "logs/current-job-124811350689.log.gz",
+          "first_matching_log_line_1_based": 563,
+          "lines": [
+            {
+              "line": 563,
+              "text": "2026-11-01T09:41:06.3455141Z FAIL_HEPTA_CALLER_PROOF: learning_artifact_verified_current_view: caller set mismatch; missing=['codex-rs/hepta-agentd/src/neural_cognitive_ranker.rs'], unexpected=[]"
+            },
+            {
+              "line": 564,
+              "text": "2026-11-01T09:41:06.3654444Z ##[error]Process completed with exit code 1."
+            }
+          ]
+        }
+      ],
+      "prior_ci_comparison": {
+        "run_id": 41064643631,
+        "job_id": 124094124090,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41064643631/job/124094124090#step:6:1",
+        "excerpt": {
+          "job_id": 124094124090,
+          "log_path": "logs/prior-job-124094124090.log.gz",
+          "first_matching_log_line_1_based": 563,
+          "lines": [
+            {
+              "line": 563,
+              "text": "2026-10-30T13:40:32.0296586Z FAIL_HEPTA_CALLER_PROOF: learning_artifact_verified_current_view: caller set mismatch; missing=['codex-rs/hepta-agentd/src/neural_cognitive_ranker.rs'], unexpected=[]"
+            },
+            {
+              "line": 564,
+              "text": "2026-10-30T13:40:32.0522014Z ##[error]Process completed with exit code 1."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cargo_shear",
+      "title": "Unused dependency gate",
+      "affected_job_ids": [
+        124811405953
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811405953#step:6:1"
+      ],
+      "observed_cause": "cargo shear reports unused dependency bytes. The emitted annotation does not name its owning crate; six unlinked Agentd files are separate warnings.",
+      "attribution": "The same bytes diagnostic appears in the prior CI log. This audit does not identify the owning crate or claim that removing a dependency is an approved repair.",
+      "root_excerpts": [
+        {
+          "job_id": 124811405953,
+          "log_path": "logs/current-job-124811405953.log.gz",
+          "first_matching_log_line_1_based": 2270,
+          "lines": [
+            {
+              "line": 2270,
+              "text": "2026-11-01T09:41:24.5794885Z ##[error]unused dependency `bytes` (remove this dependency)"
+            },
+            {
+              "line": 2271,
+              "text": "2026-11-01T09:41:24.5796553Z ##[warning]6 unlinked files in `codex-hepta-agentd`"
+            },
+            {
+              "line": 2272,
+              "text": "2026-11-01T09:41:24.5797267Z src/objective_dispatch.rs"
+            }
+          ]
+        }
+      ],
+      "prior_ci_comparison": {
+        "run_id": 41064643631,
+        "job_id": 124094202952,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41064643631/job/124094202952#step:6:1",
+        "excerpt": {
+          "job_id": 124094202952,
+          "log_path": "logs/prior-job-124094202952.log.gz",
+          "first_matching_log_line_1_based": 2270,
+          "lines": [
+            {
+              "line": 2270,
+              "text": "2026-10-30T13:40:41.7720678Z ##[error]unused dependency `bytes` (remove this dependency)"
+            },
+            {
+              "line": 2271,
+              "text": "2026-10-30T13:40:41.7722144Z ##[warning]6 unlinked files in `codex-hepta-agentd`"
+            },
+            {
+              "line": 2272,
+              "text": "2026-10-30T13:40:41.7722688Z src/objective_dispatch.rs"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "h2_advisory",
+      "title": "Dependency security gate",
+      "affected_job_ids": [
+        124811350549
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350549#step:6:1"
+      ],
+      "observed_cause": "cargo-deny rejects h2 0.3.27 for RUSTSEC-2026-0258 (unbounded empty DATA frames); advisories FAILED, other categories report ok.",
+      "attribution": "The same advisory is present in the prior CI log. It remains a real unresolved security gate; pre-existence is not an exemption.",
+      "root_excerpts": [
+        {
+          "job_id": 124811350549,
+          "log_path": "logs/current-job-124811350549.log.gz",
+          "first_matching_log_line_1_based": 1551,
+          "lines": [
+            {
+              "line": 1551,
+              "text": "2026-11-01T09:41:44.7838220Z error[vulnerability]: h2 unbounded empty DATA frames"
+            },
+            {
+              "line": 1552,
+              "text": "2026-11-01T09:41:44.7840594Z     ┌─ /github/workspace/codex-rs/Cargo.lock:605:1"
+            },
+            {
+              "line": 1553,
+              "text": "2026-11-01T09:41:44.7841959Z     │"
+            },
+            {
+              "line": 1554,
+              "text": "2026-11-01T09:41:44.7843401Z 605 │ h2 0.3.27 registry+https://github.com/rust-lang/crates.io-index"
+            },
+            {
+              "line": 1555,
+              "text": "2026-11-01T09:41:44.7845161Z     │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ security vulnerability detected"
+            },
+            {
+              "line": 1556,
+              "text": "2026-11-01T09:41:44.7846113Z     │"
+            },
+            {
+              "line": 1557,
+              "text": "2026-11-01T09:41:44.7846443Z     ├ ID: RUSTSEC-2026-0258"
+            },
+            {
+              "line": 1558,
+              "text": "2026-11-01T09:41:44.7847003Z     ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0258"
+            },
+            {
+              "line": 1559,
+              "text": "2026-11-01T09:41:44.7847843Z     ├ The h2 crate, used internally by hyper, had a flaw that would accept and queue empty DATA frames without limit."
+            }
+          ]
+        }
+      ],
+      "prior_ci_comparison": {
+        "run_id": 41064643631,
+        "job_id": 124094123970,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41064643631/job/124094123970#step:6:1",
+        "excerpt": {
+          "job_id": 124094123970,
+          "log_path": "logs/prior-job-124094123970.log.gz",
+          "first_matching_log_line_1_based": 1550,
+          "lines": [
+            {
+              "line": 1550,
+              "text": "2026-10-30T13:40:56.5360477Z error[vulnerability]: h2 unbounded empty DATA frames"
+            },
+            {
+              "line": 1551,
+              "text": "2026-10-30T13:40:56.5361730Z     ┌─ /github/workspace/codex-rs/Cargo.lock:605:1"
+            },
+            {
+              "line": 1552,
+              "text": "2026-10-30T13:40:56.5362503Z     │"
+            },
+            {
+              "line": 1553,
+              "text": "2026-10-30T13:40:56.5363628Z 605 │ h2 0.3.27 registry+https://github.com/rust-lang/crates.io-index"
+            },
+            {
+              "line": 1554,
+              "text": "2026-10-30T13:40:56.5365346Z     │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ security vulnerability detected"
+            },
+            {
+              "line": 1555,
+              "text": "2026-10-30T13:40:56.5366358Z     │"
+            },
+            {
+              "line": 1556,
+              "text": "2026-10-30T13:40:56.5366901Z     ├ ID: RUSTSEC-2026-0258"
+            },
+            {
+              "line": 1557,
+              "text": "2026-10-30T13:40:56.5368235Z     ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0258"
+            },
+            {
+              "line": 1558,
+              "text": "2026-10-30T13:40:56.5369857Z     ├ The h2 crate, used internally by hyper, had a flaw that would accept and queue empty DATA frames without limit."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "qualification_api",
+      "title": "Release test-target API mismatch",
+      "affected_job_ids": [
+        124811350804,
+        124811350829
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350804#step:4:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350829#step:4:1"
+      ],
+      "observed_cause": "E0599: DurableLedger has no append_qualification method for the selected build of hepta-agentd/tests/plasticity_process_e2e.rs:116.",
+      "attribution": "The call-site file is byte-identical in parent and head, and the same error appears in the prior Linux release job. This audit has not repaired or fully traced the Bazel feature/dependency configuration.",
+      "root_excerpts": [
+        {
+          "job_id": 124811350804,
+          "log_path": "logs/current-job-124811350804.log.gz",
+          "first_matching_log_line_1_based": 7470,
+          "lines": [
+            {
+              "line": 7470,
+              "text": "2026-11-01T09:44:48.0140309Z error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope"
+            },
+            {
+              "line": 7471,
+              "text": "2026-11-01T09:44:48.0140843Z    --> hepta-agentd/tests/plasticity_process_e2e.rs:116:12"
+            },
+            {
+              "line": 7472,
+              "text": "2026-11-01T09:44:48.0141437Z     |"
+            },
+            {
+              "line": 7473,
+              "text": "2026-11-01T09:44:48.0141977Z 116 |     ledger.append_qualification("
+            },
+            {
+              "line": 7474,
+              "text": "2026-11-01T09:44:48.0142315Z     |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `DurableLedger`"
+            },
+            {
+              "line": 7475,
+              "text": "2026-11-01T09:44:48.0142554Z "
+            },
+            {
+              "line": 7476,
+              "text": "2026-11-01T09:44:48.0142662Z error: aborting due to 1 previous error"
+            }
+          ]
+        },
+        {
+          "job_id": 124811350829,
+          "log_path": "logs/current-job-124811350829.log.gz",
+          "first_matching_log_line_1_based": 7148,
+          "lines": [
+            {
+              "line": 7148,
+              "text": "2026-11-01T09:46:52.7202360Z error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope"
+            },
+            {
+              "line": 7149,
+              "text": "2026-11-01T09:46:52.7243510Z    --> hepta-agentd/tests/plasticity_process_e2e.rs:116:12"
+            },
+            {
+              "line": 7150,
+              "text": "2026-11-01T09:46:52.7248320Z     |"
+            },
+            {
+              "line": 7151,
+              "text": "2026-11-01T09:46:52.7259240Z 116 |     ledger.append_qualification("
+            },
+            {
+              "line": 7152,
+              "text": "2026-11-01T09:46:52.7265060Z     |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `DurableLedger`"
+            },
+            {
+              "line": 7153,
+              "text": "2026-11-01T09:46:52.7265500Z "
+            },
+            {
+              "line": 7154,
+              "text": "2026-11-01T09:46:52.7265750Z error: aborting due to 1 previous error"
+            }
+          ]
+        }
+      ],
+      "prior_ci_comparison": {
+        "run_id": 41064643631,
+        "job_id": 124094124333,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41064643631/job/124094124333#step:4:1",
+        "excerpt": {
+          "job_id": 124094124333,
+          "log_path": "logs/prior-job-124094124333.log.gz",
+          "first_matching_log_line_1_based": 7560,
+          "lines": [
+            {
+              "line": 7560,
+              "text": "2026-10-30T13:43:35.2469470Z error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope"
+            },
+            {
+              "line": 7561,
+              "text": "2026-10-30T13:43:35.2469952Z    --> hepta-agentd/tests/plasticity_process_e2e.rs:116:12"
+            },
+            {
+              "line": 7562,
+              "text": "2026-10-30T13:43:35.2470240Z     |"
+            },
+            {
+              "line": 7563,
+              "text": "2026-10-30T13:43:35.2470458Z 116 |     ledger.append_qualification("
+            },
+            {
+              "line": 7564,
+              "text": "2026-10-30T13:43:35.2470780Z     |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `DurableLedger`"
+            },
+            {
+              "line": 7565,
+              "text": "2026-10-30T13:43:35.2471000Z "
+            },
+            {
+              "line": 7566,
+              "text": "2026-10-30T13:43:35.2471110Z error: aborting due to 1 previous error"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "windows_link",
+      "title": "Windows crypto link failures",
+      "affected_job_ids": [
+        124811350776,
+        124811350879,
+        124811350806,
+        124811350822,
+        124811350941,
+        124811350934
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350776#step:4:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350879#step:4:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350806#step:6:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350822#step:6:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350941#step:6:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350934#step:6:1"
+      ],
+      "observed_cause": "Bazel MSVC-target links reject libcrypto objects with undefined __stack_chk_fail, ___chkstk_ms, __mingw_fprintf/__mingw_snprintf and other runtime symbols. The Windows Clippy job additionally has third-party expect/unwrap errors.",
+      "attribution": "The same class of libcrypto unresolved symbols is preserved in the prior Windows release job. An ABI/runtime configuration defect is plausible, but an exact configuration repair is not proven here. Some shards also ran and failed tests; the entire jobs must not be described as compilation-only.",
+      "root_excerpts": [
+        {
+          "job_id": 124811350776,
+          "log_path": "logs/current-job-124811350776.log.gz",
+          "first_matching_log_line_1_based": 2969,
+          "lines": [
+            {
+              "line": 2969,
+              "text": "2026-11-01T09:45:23.9595891Z           rust-lld: error: undefined symbol: __stack_chk_fail"
+            },
+            {
+              "line": 2970,
+              "text": "2026-11-01T09:45:23.9596575Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aes_nohw_setup_key_192)"
+            },
+            {
+              "line": 2971,
+              "text": "2026-11-01T09:45:23.9597563Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_ctr32_encrypt_blocks)"
+            },
+            {
+              "line": 2972,
+              "text": "2026-11-01T09:45:23.9598593Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_cbc_encrypt)"
+            },
+            {
+              "line": 2973,
+              "text": "2026-11-01T09:45:23.9599483Z           >>> referenced 221 more times"
+            },
+            {
+              "line": 2974,
+              "text": "2026-11-01T09:45:23.9599861Z           "
+            }
+          ]
+        },
+        {
+          "job_id": 124811350879,
+          "log_path": "logs/current-job-124811350879.log.gz",
+          "first_matching_log_line_1_based": 3433,
+          "lines": [
+            {
+              "line": 3433,
+              "text": "2026-11-01T09:46:20.8702211Z           rust-lld: error: undefined symbol: __stack_chk_fail"
+            },
+            {
+              "line": 3434,
+              "text": "2026-11-01T09:46:20.8734574Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aes_nohw_setup_key_192)"
+            },
+            {
+              "line": 3435,
+              "text": "2026-11-01T09:46:20.8849221Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_ctr32_encrypt_blocks)"
+            },
+            {
+              "line": 3436,
+              "text": "2026-11-01T09:46:20.8899611Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_cbc_encrypt)"
+            },
+            {
+              "line": 3437,
+              "text": "2026-11-01T09:46:20.8912528Z           >>> referenced 221 more times"
+            },
+            {
+              "line": 3438,
+              "text": "2026-11-01T09:46:20.8935395Z           "
+            }
+          ]
+        },
+        {
+          "job_id": 124811350806,
+          "log_path": "logs/current-job-124811350806.log.gz",
+          "first_matching_log_line_1_based": 3102,
+          "lines": [
+            {
+              "line": 3102,
+              "text": "2026-11-01T09:47:44.4755076Z           rust-lld: error: undefined symbol: __stack_chk_fail"
+            },
+            {
+              "line": 3103,
+              "text": "2026-11-01T09:47:44.4755802Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aes_nohw_setup_key_192)"
+            },
+            {
+              "line": 3104,
+              "text": "2026-11-01T09:47:44.4756836Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_ctr32_encrypt_blocks)"
+            },
+            {
+              "line": 3105,
+              "text": "2026-11-01T09:47:44.4758220Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_cbc_encrypt)"
+            },
+            {
+              "line": 3106,
+              "text": "2026-11-01T09:47:44.4758959Z           >>> referenced 221 more times"
+            },
+            {
+              "line": 3107,
+              "text": "2026-11-01T09:47:44.4759340Z           "
+            }
+          ]
+        },
+        {
+          "job_id": 124811350822,
+          "log_path": "logs/current-job-124811350822.log.gz",
+          "first_matching_log_line_1_based": 2910,
+          "lines": [
+            {
+              "line": 2910,
+              "text": "2026-11-01T09:45:54.6524782Z           rust-lld: error: undefined symbol: __stack_chk_fail"
+            },
+            {
+              "line": 2911,
+              "text": "2026-11-01T09:45:54.6525301Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aes_nohw_setup_key_192)"
+            },
+            {
+              "line": 2912,
+              "text": "2026-11-01T09:45:54.6525988Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_ctr32_encrypt_blocks)"
+            },
+            {
+              "line": 2913,
+              "text": "2026-11-01T09:45:54.6526741Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_cbc_encrypt)"
+            },
+            {
+              "line": 2914,
+              "text": "2026-11-01T09:45:54.6527253Z           >>> referenced 221 more times"
+            },
+            {
+              "line": 2915,
+              "text": "2026-11-01T09:45:54.6527526Z           "
+            }
+          ]
+        },
+        {
+          "job_id": 124811350941,
+          "log_path": "logs/current-job-124811350941.log.gz",
+          "first_matching_log_line_1_based": 2836,
+          "lines": [
+            {
+              "line": 2836,
+              "text": "2026-11-01T09:44:49.5908518Z           rust-lld: error: undefined symbol: __stack_chk_fail"
+            },
+            {
+              "line": 2837,
+              "text": "2026-11-01T09:44:49.5909032Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aes_nohw_setup_key_192)"
+            },
+            {
+              "line": 2838,
+              "text": "2026-11-01T09:44:49.5912844Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_ctr32_encrypt_blocks)"
+            },
+            {
+              "line": 2839,
+              "text": "2026-11-01T09:44:49.5914699Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_cbc_encrypt)"
+            },
+            {
+              "line": 2840,
+              "text": "2026-11-01T09:44:49.5915233Z           >>> referenced 221 more times"
+            },
+            {
+              "line": 2841,
+              "text": "2026-11-01T09:44:49.5915557Z           "
+            }
+          ]
+        },
+        {
+          "job_id": 124811350934,
+          "log_path": "logs/current-job-124811350934.log.gz",
+          "first_matching_log_line_1_based": 3077,
+          "lines": [
+            {
+              "line": 3077,
+              "text": "2026-11-01T09:46:21.2008882Z           rust-lld: error: undefined symbol: __stack_chk_fail"
+            },
+            {
+              "line": 3078,
+              "text": "2026-11-01T09:46:21.2139560Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aes_nohw_setup_key_192)"
+            },
+            {
+              "line": 3079,
+              "text": "2026-11-01T09:46:21.2178725Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_ctr32_encrypt_blocks)"
+            },
+            {
+              "line": 3080,
+              "text": "2026-11-01T09:46:21.2299590Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_cbc_encrypt)"
+            },
+            {
+              "line": 3081,
+              "text": "2026-11-01T09:46:21.2328906Z           >>> referenced 244 more times"
+            },
+            {
+              "line": 3082,
+              "text": "2026-11-01T09:46:21.2459291Z           "
+            }
+          ]
+        }
+      ],
+      "prior_ci_comparison": {
+        "run_id": 41064643631,
+        "job_id": 124094124342,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41064643631/job/124094124342#step:4:1",
+        "excerpt": {
+          "job_id": 124094124342,
+          "log_path": "logs/prior-job-124094124342.log.gz",
+          "first_matching_log_line_1_based": 3038,
+          "lines": [
+            {
+              "line": 3038,
+              "text": "2026-10-30T13:44:45.5032698Z           rust-lld: error: undefined symbol: __stack_chk_fail"
+            },
+            {
+              "line": 3039,
+              "text": "2026-10-30T13:44:45.5033145Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aes_nohw_setup_key_192)"
+            },
+            {
+              "line": 3040,
+              "text": "2026-10-30T13:44:45.5033731Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_ctr32_encrypt_blocks)"
+            },
+            {
+              "line": 3041,
+              "text": "2026-10-30T13:44:45.5034353Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_cbc_encrypt)"
+            },
+            {
+              "line": 3042,
+              "text": "2026-10-30T13:44:45.5034791Z           >>> referenced 221 more times"
+            },
+            {
+              "line": 3043,
+              "text": "2026-10-30T13:44:45.5035034Z           "
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "windows_keygen",
+      "title": "Additional Windows shard 4 process-start failures",
+      "affected_job_ids": [
+        124811350934
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350934#step:6:1"
+      ],
+      "observed_cause": "g5_trust_tests.rs:277 fails starting test key generation with Win32 code 3 / NotFound. Other ssh-keygen starts also report missing paths.",
+      "attribution": "Observed executable/path prerequisite failure. Its complete source attribution and repair were not established by this audit; unchanged files alone would not settle attribution.",
+      "root_excerpts": [
+        {
+          "job_id": 124811350934,
+          "log_path": "logs/current-job-124811350934.log.gz",
+          "first_matching_log_line_1_based": 2950,
+          "lines": [
+            {
+              "line": 2950,
+              "text": "2026-11-01T09:45:54.6248914Z thread 'g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance' (9072) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:"
+            },
+            {
+              "line": 2951,
+              "text": "2026-11-01T09:45:54.6249812Z start test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }"
+            },
+            {
+              "line": 2952,
+              "text": "2026-11-01T09:45:54.6250429Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ]
+        },
+        {
+          "job_id": 124811350934,
+          "log_path": "logs/current-job-124811350934.log.gz",
+          "first_matching_log_line_1_based": 2987,
+          "lines": [
+            {
+              "line": 2986,
+              "text": "2026-11-01T09:45:54.6267126Z thread 'trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy' (2220) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:134:14:"
+            },
+            {
+              "line": 2987,
+              "text": "2026-11-01T09:45:54.6268090Z start ssh-keygen: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }"
+            },
+            {
+              "line": 2988,
+              "text": "2026-11-01T09:45:54.6268470Z "
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mac_native_threads",
+      "title": "macOS ARM Bazel native-thread exhaustion",
+      "affected_job_ids": [
+        124811350834,
+        124811350857
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350834#step:4:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350857#step:6:1"
+      ],
+      "observed_cause": "Clippy encounters gRPC INTERNAL Panic with underlying java.lang.OutOfMemoryError: unable to create native thread, exiting 34. The test job crashes with the same native-thread error, exiting 33.",
+      "attribution": "Execution/resource failure is directly observed. The comparable prior macOS jobs were cancelled, so no same-cause baseline run is claimed. These outcomes are neither test passes nor proof of a source regression.",
+      "root_excerpts": [
+        {
+          "job_id": 124811350834,
+          "log_path": "logs/current-job-124811350834.log.gz",
+          "first_matching_log_line_1_based": 1122,
+          "lines": [
+            {
+              "line": 1122,
+              "text": "2026-11-01T09:43:47.4538480Z Caused by: java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached"
+            },
+            {
+              "line": 1123,
+              "text": "2026-11-01T09:43:47.4541180Z \tat java.base/java.lang.Thread.start0(Native Method)"
+            },
+            {
+              "line": 1124,
+              "text": "2026-11-01T09:43:47.4541590Z \tat java.base/java.lang.Thread.start(Unknown Source)"
+            },
+            {
+              "line": 1125,
+              "text": "2026-11-01T09:43:47.4544860Z \tat java.base/java.lang.System$1.start(Unknown Source)"
+            }
+          ]
+        },
+        {
+          "job_id": 124811350857,
+          "log_path": "logs/current-job-124811350857.log.gz",
+          "first_matching_log_line_1_based": 1222,
+          "lines": [
+            {
+              "line": 1221,
+              "text": "2026-11-01T09:44:52.4343940Z FATAL: bazel ran out of memory and crashed. Printing stack trace:"
+            },
+            {
+              "line": 1222,
+              "text": "2026-11-01T09:44:52.4392740Z java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached"
+            },
+            {
+              "line": 1223,
+              "text": "2026-11-01T09:44:52.4395320Z \tat java.base/java.lang.Thread.start0(Native Method)"
+            },
+            {
+              "line": 1224,
+              "text": "2026-11-01T09:44:52.4395910Z \tat java.base/java.lang.Thread.start(Unknown Source)"
+            },
+            {
+              "line": 1225,
+              "text": "2026-11-01T09:44:52.4396370Z \tat java.base/java.lang.System$1.start(Unknown Source)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "windows_ledger_lock",
+      "title": "Windows evaluated-ledger fixture ownership",
+      "affected_job_ids": [
+        124810737056,
+        124810737157,
+        124811350822
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737056#step:8:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737157#step:8:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811350822#step:6:1"
+      ],
+      "observed_cause": "The real pq_candidate_and_generator_proofs_cannot_bypass_verification_via_exact_replay test panics at evaluated_shadow_pq_tests.rs:304 with Win32 code 33, a locked file region. It occurs in both native-pair Windows configurations and in Bazel shard 2.",
+      "attribution": "Hepta ownership review identifies a fixture file-copy/read while its ledger owner is still alive. This original-head snapshot does not validate any later lifetime repair or close the independent Windows linking blocker.",
+      "root_excerpts": [
+        {
+          "job_id": 124810737056,
+          "log_path": "logs/current-job-124810737056.log.gz",
+          "first_matching_log_line_1_based": 8083,
+          "lines": [
+            {
+              "line": 8083,
+              "text": "2026-11-01T09:41:08.2765231Z thread 'evaluated_shadow::tests::support::pq_tests::pq_candidate_and_generator_proofs_cannot_bypass_verification_via_exact_replay' (1300) panicked at hepta-intelligence\\src\\evaluated_shadow_pq_tests.rs:304:40:"
+            },
+            {
+              "line": 8084,
+              "text": "2026-11-01T09:41:08.2766399Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 8085,
+              "text": "2026-11-01T09:41:08.2767044Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ]
+        },
+        {
+          "job_id": 124810737157,
+          "log_path": "logs/current-job-124810737157.log.gz",
+          "first_matching_log_line_1_based": 8083,
+          "lines": [
+            {
+              "line": 8083,
+              "text": "2026-11-01T09:42:03.6937866Z thread 'evaluated_shadow::tests::support::pq_tests::pq_candidate_and_generator_proofs_cannot_bypass_verification_via_exact_replay' (8336) panicked at hepta-intelligence\\src\\evaluated_shadow_pq_tests.rs:304:40:"
+            },
+            {
+              "line": 8084,
+              "text": "2026-11-01T09:42:03.6939020Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 8085,
+              "text": "2026-11-01T09:42:03.6939686Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ]
+        },
+        {
+          "job_id": 124811350822,
+          "log_path": "logs/current-job-124811350822.log.gz",
+          "first_matching_log_line_1_based": 6609,
+          "lines": [
+            {
+              "line": 6609,
+              "text": "2026-11-01T09:48:25.3832577Z thread 'evaluated_shadow::tests::support::pq_tests::pq_candidate_and_generator_proofs_cannot_bypass_verification_via_exact_replay' (6804) panicked at hepta-intelligence/src\\evaluated_shadow_pq_tests.rs:304:40:"
+            },
+            {
+              "line": 6610,
+              "text": "2026-11-01T09:48:25.3833510Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+            },
+            {
+              "line": 6611,
+              "text": "2026-11-01T09:48:25.3834103Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native_pressure",
+      "title": "Original native pressure/convergence gate",
+      "affected_job_ids": [
+        124810737135,
+        124810737175,
+        124810737207,
+        124810737209
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737135#step:28:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737175#step:28:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737207#step:28:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942778/job/124810737209#step:28:1"
+      ],
+      "observed_cause": "All four Linux/ARM jobs fail step 28, Require paired native pressure and complete state convergence. The retained ARM source-head artifact proves CONFIRMATION_TARGET under the original 4-second window: attack-free 1 confirmation at 2.389878787 s; pressured phase 0 confirmations, finite_business_target_met=false and full_native_state_equal=false.",
+      "attribution": "The detailed CONFIRMATION_TARGET diagnosis is established only for job 124810737207. The other three jobs have the controller-gate failure, but their detailed pressure artifacts were not inspected. Five named Rust tests passing does not satisfy the business confirmation target.",
+      "root_excerpts": [
+        {
+          "job_id": 124810737135,
+          "log_path": "logs/current-job-124810737135.log.gz",
+          "first_matching_log_line_1_based": 11285,
+          "lines": [
+            {
+              "line": 11285,
+              "text": "2026-11-01T09:54:57.6554092Z ##[error]Process completed with exit code 1."
+            }
+          ]
+        },
+        {
+          "job_id": 124810737175,
+          "log_path": "logs/current-job-124810737175.log.gz",
+          "first_matching_log_line_1_based": 11242,
+          "lines": [
+            {
+              "line": 11242,
+              "text": "2026-11-01T09:54:09.4486860Z ##[error]Process completed with exit code 1."
+            }
+          ]
+        },
+        {
+          "job_id": 124810737207,
+          "log_path": "logs/current-job-124810737207.log.gz",
+          "first_matching_log_line_1_based": 11238,
+          "lines": [
+            {
+              "line": 11238,
+              "text": "2026-11-01T09:53:23.3201808Z ##[error]Process completed with exit code 1."
+            }
+          ]
+        },
+        {
+          "job_id": 124810737209,
+          "log_path": "logs/current-job-124810737209.log.gz",
+          "first_matching_log_line_1_based": 11265,
+          "lines": [
+            {
+              "line": 11265,
+              "text": "2026-11-01T09:51:32.6048331Z ##[error]Process completed with exit code 1."
+            }
+          ]
+        }
+      ],
+      "verified_underlying_artifact_job_ids": [
+        124810737207
+      ],
+      "artifact": "artifacts/arm-source-head-evidence.zip",
+      "artifact_id": 13078229624,
+      "chain_commit": "131f673d9563e72aca7139f3239856957d118d49",
+      "chain_tree": "b8bdd87dca3cd6288c38f63848b24b1a2df6a09d",
+      "original_window_ns": 4000000000,
+      "all_five_named_tests_passed": true,
+      "native_manifest_passed": false,
+      "phase_observations": [
+        {
+          "mode": "attack-free-baseline",
+          "requested_window_ns": 4000000000,
+          "workers": 0,
+          "client_confirmed_transactions": 1,
+          "client_confirmation_latency_ns": 2389878787,
+          "client_confirmed_before_original_window_end": true,
+          "finite_business_target_met": true,
+          "full_native_state_equal": true,
+          "invariant_target_met": true,
+          "receiver_matches_valid_honest_prefix": true,
+          "overlap_demonstrated": true
+        },
+        {
+          "mode": "from-zero-pressure",
+          "requested_window_ns": 4000000000,
+          "workers": 16,
+          "client_confirmed_transactions": 0,
+          "client_confirmation_latency_ns": null,
+          "client_confirmed_before_original_window_end": false,
+          "finite_business_target_met": false,
+          "full_native_state_equal": false,
+          "invariant_target_met": true,
+          "receiver_matches_valid_honest_prefix": true,
+          "overlap_demonstrated": false
+        }
+      ]
+    },
+    {
+      "id": "fan_in",
+      "title": "Dependent summaries, not additional root failures",
+      "affected_job_ids": [
+        124811730180,
+        124813523035
+      ],
+      "step_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124811730180#step:2:1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41293942805/job/124813523035#step:2:1"
+      ],
+      "observed_cause": "Rust CI summary reports cargo_shear failed. Windows aggregate reports the test shards finished with failure.",
+      "attribution": "Fan-in outcomes repeat dependency failures and do not add two independent code defects.",
+      "root_excerpts": [
+        {
+          "job_id": 124811730180,
+          "log_path": "logs/current-job-124811730180.log.gz",
+          "first_matching_log_line_1_based": 67,
+          "lines": [
+            {
+              "line": 67,
+              "text": "2026-11-01T09:42:25.0531472Z cargo_shear failed"
+            },
+            {
+              "line": 68,
+              "text": "2026-11-01T09:42:25.0559267Z ##[error]Process completed with exit code 1."
+            }
+          ]
+        },
+        {
+          "job_id": 124813523035,
+          "log_path": "logs/current-job-124813523035.log.gz",
+          "first_matching_log_line_1_based": 39,
+          "lines": [
+            {
+              "line": 39,
+              "text": "2026-11-01T09:51:00.1032981Z Windows Bazel test shards finished with result: failure"
+            },
+            {
+              "line": 40,
+              "text": "2026-11-01T09:51:00.1046578Z ##[error]Process completed with exit code 1."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "source_blob_evidence": [
+    {
+      "repository_path": "CALLERS.toml",
+      "archive_path": "sources/CALLERS.toml.txt",
+      "git_blob_sha1": "6d73fad9153897e5217e7206d28859f79ac36956",
+      "observed_refs": [
+        {
+          "reference": "a575cf03e2bc871a2f48021859c03ace806421c8",
+          "git_blob_sha1": "6d73fad9153897e5217e7206d28859f79ac36956",
+          "identical_content_to_archived": true
+        },
+        {
+          "reference": "7ff91a4368bc110c35da789b16916e046f79b42c",
+          "git_blob_sha1": "6d73fad9153897e5217e7206d28859f79ac36956",
+          "identical_content_to_archived": true
+        },
+        {
+          "reference": "52b3408aaaef531e8f389402a87e83287c48bc1b",
+          "git_blob_sha1": "6d73fad9153897e5217e7206d28859f79ac36956",
+          "identical_content_to_archived": true
+        }
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7ff91a4368bc110c35da789b16916e046f79b42c/CALLERS.toml"
+    },
+    {
+      "repository_path": "scripts/verify_hepta_callers.py",
+      "archive_path": "sources/verify_hepta_callers.py.txt",
+      "git_blob_sha1": "b0c197d84659086f75b14329cf2e4f8e796eb516",
+      "observed_refs": [
+        {
+          "reference": "a575cf03e2bc871a2f48021859c03ace806421c8",
+          "git_blob_sha1": "b0c197d84659086f75b14329cf2e4f8e796eb516",
+          "identical_content_to_archived": true
+        },
+        {
+          "reference": "7ff91a4368bc110c35da789b16916e046f79b42c",
+          "git_blob_sha1": "b0c197d84659086f75b14329cf2e4f8e796eb516",
+          "identical_content_to_archived": true
+        },
+        {
+          "reference": "52b3408aaaef531e8f389402a87e83287c48bc1b",
+          "git_blob_sha1": "b0c197d84659086f75b14329cf2e4f8e796eb516",
+          "identical_content_to_archived": true
+        }
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7ff91a4368bc110c35da789b16916e046f79b42c/scripts/verify_hepta_callers.py"
+    },
+    {
+      "repository_path": "codex-rs/hepta-agentd/src/neural_cognitive_ranker.rs",
+      "archive_path": "sources/neural_cognitive_ranker.rs.txt",
+      "git_blob_sha1": "d51d0fb82778e12da46e0bdb824b1469410b3dd9",
+      "observed_refs": [
+        {
+          "reference": "a575cf03e2bc871a2f48021859c03ace806421c8",
+          "git_blob_sha1": "d51d0fb82778e12da46e0bdb824b1469410b3dd9",
+          "identical_content_to_archived": true
+        },
+        {
+          "reference": "7ff91a4368bc110c35da789b16916e046f79b42c",
+          "git_blob_sha1": "d51d0fb82778e12da46e0bdb824b1469410b3dd9",
+          "identical_content_to_archived": true
+        },
+        {
+          "reference": "52b3408aaaef531e8f389402a87e83287c48bc1b",
+          "git_blob_sha1": "d51d0fb82778e12da46e0bdb824b1469410b3dd9",
+          "identical_content_to_archived": true
+        }
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7ff91a4368bc110c35da789b16916e046f79b42c/codex-rs/hepta-agentd/src/neural_cognitive_ranker.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "archive_path": "sources/authbus_ingress.base.rs.txt",
+      "git_blob_sha1": "f385061d3130ae14f2fa8313cbc391136c758eef",
+      "observed_refs": [
+        {
+          "reference": "a575cf03e2bc871a2f48021859c03ace806421c8",
+          "git_blob_sha1": "f385061d3130ae14f2fa8313cbc391136c758eef",
+          "identical_content_to_archived": true
+        }
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a575cf03e2bc871a2f48021859c03ace806421c8/codex-rs/hepta-agentd/src/authbus_ingress.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "archive_path": "sources/authbus_ingress.head.rs.txt",
+      "git_blob_sha1": "3d041a2bd4e258979d3c2be0a000bdd59af7b969",
+      "observed_refs": [
+        {
+          "reference": "7ff91a4368bc110c35da789b16916e046f79b42c",
+          "git_blob_sha1": "3d041a2bd4e258979d3c2be0a000bdd59af7b969",
+          "identical_content_to_archived": true
+        }
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7ff91a4368bc110c35da789b16916e046f79b42c/codex-rs/hepta-agentd/src/authbus_ingress.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+      "archive_path": "sources/plasticity_process_e2e.rs.txt",
+      "git_blob_sha1": "6d481ef26a1df0b85d3157b517e7af4af3df25d8",
+      "observed_refs": [
+        {
+          "reference": "a575cf03e2bc871a2f48021859c03ace806421c8",
+          "git_blob_sha1": "6d481ef26a1df0b85d3157b517e7af4af3df25d8",
+          "identical_content_to_archived": true
+        },
+        {
+          "reference": "7ff91a4368bc110c35da789b16916e046f79b42c",
+          "git_blob_sha1": "6d481ef26a1df0b85d3157b517e7af4af3df25d8",
+          "identical_content_to_archived": true
+        }
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7ff91a4368bc110c35da789b16916e046f79b42c/codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "archive_path": "sources/final_use_pq_recovery_tests.rs.txt",
+      "git_blob_sha1": "44c4b55042df52d241cad4af934ab21f1f360d4d",
+      "observed_refs": [
+        {
+          "reference": "7ff91a4368bc110c35da789b16916e046f79b42c",
+          "git_blob_sha1": "44c4b55042df52d241cad4af934ab21f1f360d4d",
+          "identical_content_to_archived": true
+        }
+      ],
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7ff91a4368bc110c35da789b16916e046f79b42c/codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs"
+    }
+  ],
+  "retained_materials": "retained-materials.json",
+  "retained_log_count": 28,
+  "retained_current_failed_job_logs": 22,
+  "retained_prior_job_logs": 6,
+  "independent_peer_log_comparison": {
+    "matched_native_pair_full_log_count": 6,
+    "peer_manifest": "peer-observations/pair-job-logs-manifest.json"
+  },
+  "scope_and_limits": [
+    "Read-only GitHub inspection. No workflow reruns, cancellations, repository writes, dependency changes or CI edits were performed by this audit.",
+    "Local files are evidence preservation and derived analysis only. Source snapshots and partial follow-up patch text are not applied to a checkout.",
+    "The snapshot covers original head 7ff91 only. Later two-file fixes and local validation require their own exact-source receipts; this snapshot is not their CI result.",
+    "Full job logs preserve the exact connector-decoded text via UTF-8 plus lossless gzip; original GitHub log ZIP bytes were not fetched. The ARM artifact ZIP is separately retained byte-for-byte.",
+    "Source attribution separates a newly introduced diagnostic, prior observed failures, direct execution-resource errors and unresolved causation. Prior failures do not waive security, build, pressure or integration gates.",
+    "Three jobs were still in progress; this is a timestamped snapshot, not the completed workflow verdict.",
+    "No complete Chain/Hepta, WAN, confidentiality or whole-chain quantum-resistance qualification follows from these checks.",
+    "Readable root excerpts may remove ANSI color escapes for display. The complete gzip logs retain every original escape, byte order and line ending."
+  ]
+}

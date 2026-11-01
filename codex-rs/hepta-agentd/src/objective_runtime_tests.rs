@@ -270,6 +270,7 @@ fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
         codex_hepta_contracts::pq_auth::PqNativeSigningKey::public_spki_from_seed(&[89; 32].into());
     let pq_trust = serde_json::json!({
         "schema_version": 2,
+        "policy_revision": 3,
         "agent_id": identity.agent_id.as_str(),
         "issuer_id": "issuer.objective",
         "key_epoch": 2,

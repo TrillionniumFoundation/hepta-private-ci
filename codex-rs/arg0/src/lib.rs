@@ -57,7 +57,10 @@ impl Arg0PathEntryGuard {
     }
 }
 
-pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
+/// Dispatch helper re-execs before a product loads daemon-only configuration.
+/// A recognized helper never returns. Ordinary invocations return without
+/// reading configuration, preparing PATH aliases, or starting runtime threads.
+pub fn dispatch_helper_if_requested() {
     // Determine if we were invoked via the special alias.
     let mut args = std::env::args_os();
     let argv0 = args.next().unwrap_or_default();
@@ -153,6 +156,10 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
         };
         std::process::exit(exit_code);
     }
+}
+
+pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
+    dispatch_helper_if_requested();
 
     // This modifies the environment, which is not thread-safe, so do this
     // before creating any threads/the Tokio runtime.

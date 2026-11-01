@@ -1,0 +1,1410 @@
+{
+  "schema": "hepta-pq-ci-followup-v1",
+  "recorded_utc": "2026-11-01T10:24:41.181459+00:00",
+  "parent_published_commit": "7ff91a4368bc110c35da789b16916e046f79b42c",
+  "changed_runtime_sources": [],
+  "modified_test_sources": [
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "sha256": "009ab9fe5939b96f342128cd7c4f3fdd0e2711e7ec7ad6e0d28cddfeb7fa872b"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_pq_tests.rs",
+      "sha256": "5da5f1b07c7c0be8ea0ad31b02a92e04100b38543b4d25e4136030d0f5d46b6d"
+    }
+  ],
+  "toolchain": {
+    "rustc": "1.96.0 (ac68faa20 2026-05-25)",
+    "just": "1.51.0",
+    "nextest": "0.9.103",
+    "cargo_lock_sha256": "22fd571e112ffd78e6e8087b2e2c51448ffbd969846df638213d95983c6f4530",
+    "host": "x86_64-unknown-linux-gnu",
+    "hermetic_build_claimed": false
+  },
+  "new_linux_library_run": {
+    "passed": 269,
+    "failed": 0,
+    "skipped": 0,
+    "packages": {
+      "codex-hepta-contracts": 187,
+      "codex-hepta-intelligence": 82
+    },
+    "receipt": "validation/targeted-tests.json",
+    "log": "validation/targeted-tests.log.gz",
+    "junit_emitted": false,
+    "test_names": [
+      {
+        "package": "codex-hepta-contracts",
+        "test": "agent_id::tests::deserialize_revalidates_untrusted_wire_value"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b1::tests::b1_identity_wire_is_strict_and_authority_is_default_false"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b1::tests::b1_identity_rejects_same_uid_and_forwarded_unknown_claims"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "agent_id::tests::canonical_id_is_stable_across_display_parse_and_serde"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b1::tests::b1_profile_is_exact_default_deny_and_key_generation_forbidden"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "agent_id::tests::noncanonical_or_directory_unsafe_ids_are_rejected"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b1::tests::b1_profile_rejects_route_or_descriptor_tampering"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b1::tests::b1_identity_requires_full_peer_binding_and_derived_subject_digest"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b2::tests::b2_attenuation_clock_and_advertisement_bounds_fail_closed"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b2::tests::b2_quota_reservation_state_set_matches_registry_v13"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b2::tests::b2_contracts_validate_and_have_golden_digests"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b2::tests::b2_provider_status_cas_is_fail_closed"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b2::tests::b2_quota_reservation_cas_is_terminal_and_idempotent"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b1::tests::b1_registration_requires_unambiguous_algorithm_and_backend_binding"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b2::tests::b2_peer_and_resource_wire_round_trip_is_secret_free"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b2::tests::b2_subject_epochs_and_fences_reject_stale_values"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b3::tests::operation_key_and_id_are_deterministically_bound"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b3::tests::raw_secret_fields_and_unknown_fields_are_rejected"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b3::tests::mutation_binding_rejects_epoch_generation_fence_and_payload_tamper"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b2::tests::b2_wire_shapes_are_strict_and_authority_defaults_false"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b3::tests::refresh_success_requires_opaque_refs_and_advancing_revision"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b3::tests::callback_events_require_current_fence_and_reject_stale_without_mutation"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b3::tests::retry_budget_error_does_not_partially_mutate_record"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b3::tests::rotation_wire_shape_is_strict_and_terminal_rules_hold"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b3::tests::state_machine_is_fail_closed_after_response_loss"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b2::tests::b2_quota_reservation_transition_matrix_is_closed"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b3::tests::status_lookup_is_binding_checked_and_lookup_only"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus::b3::tests::indeterminate_and_quarantine_forbid_new_refs"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b4::tests::b4_authority_flags_and_resource_states_are_explicitly_non_production"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b4::tests::b4_atomic_hold_and_release_prevent_oversell"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b4::tests::b4_default_denies_unknown_quota_without_mutating_head"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b4::tests::b4_duplicate_and_stale_callbacks_are_side_effect_free"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b4::tests::b4_cooldown_deadline_and_unavailable_states_fail_closed"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b4::tests::b4_enqueue_counter_overflow_is_transactional"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b4::tests::b4_completion_and_release_overflow_are_transactional"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b4::tests::b4_grant_counter_overflow_is_transactional"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b4::tests::b4_safety_margin_is_counted_once_and_payload_conflict_is_non_mutating"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b4::tests::b4_edf_within_subject_and_jain_fairness_are_deterministic"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b5::tests::b5_dispatch_responses_and_lookup_uncertainty_are_explicit"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b5::tests::b5_lookup_terminal_ack_is_bound_and_terminal_replay_is_immutable"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b5::tests::b5_fsync_before_call_and_crash_recovery_are_lookup_only"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b5::tests::b5_outbox_dedupe_and_payload_conflict_are_side_effect_free"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b5::tests::b5_unknown_lookup_remains_indeterminate_and_blocks_new_attempt"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b5::tests::b5_recovery_snapshot_maps_unknown_intent_to_safe_stop"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::auth_request_fences_subject_generation"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b5::tests::b5_unknown_intent_and_stale_fence_stop_without_dispatch"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::auth_request_has_stable_versioned_golden_bytes"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::lease_cas_epoch_and_permit_binding_are_strict"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b5::tests::b5_reopen_rejects_corrupt_hash_or_missing_fsync_witness"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::revoke_binds_owner_revision_and_epoch"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::source_manifest_accepts_matching_observed_candidate_binding"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::source_manifest_rejects_authority_and_unknown_fields"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::source_manifest_fixture_is_pinned_and_fail_closed"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::source_manifest_rejects_malformed_expected_candidate_binding"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::source_manifest_requires_exact_observed_candidate_binding"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::usage_permit_rejects_subject_generation_mismatch"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::usage_receipt_binds_permit_and_preserves_indeterminate"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_tests::wire_round_trip_is_strict_and_secret_free"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::bounded_prune_reclaims_only_expired_unrevoked_leases"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::external_frontier_ahead_after_local_commit_failure_fences_reopen"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::epoch_rollover_is_durable_and_clears_bounded_history"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::external_frontier_detects_old_snapshot_and_missing_store_reset"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::lease_is_durable_verified_and_cas_revoked"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::epoch_rollover_is_the_only_revision_lineage_reset"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::production_frontier_cas_detects_restored_local_snapshot"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::stale_cas_and_binding_drift_fail_closed"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::revoke_retry_reuses_server_owned_timestamp"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::pruned_lease_id_preserves_monotonic_revision_lineage"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::token_is_invalidated_by_lease_replacement"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::verified_use_witness_binds_current_lease_and_store_revision"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::verified_use_releases_owner_lock_before_consumer_code"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "callers_manifest_tests::callers_manifest_entries_are_unique_and_well_formed"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "callers_manifest_tests::callers_manifest_records_the_live_product_chain"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "callers_manifest_tests::callers_manifest_schema_and_cutoff_are_frozen"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "callers_manifest_tests::g4_matrix_robrix_truth_matches_paired_exact_candidate_qualification"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "callers_manifest_tests::g3_intelligence_kg_truth_bounds_qualification_without_hiding_later_candidates"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "callers_manifest_tests::g5_crash_recovery_ratchet_binds_exact_head_and_stays_fail_closed"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "callers_manifest_tests::g5_bounded_expansion_binds_exact_combined_head_and_stays_evidence_only"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "callers_manifest_tests::g5_fleet_automation_truth_matches_bounded_candidate_and_stays_fail_closed"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "callers_manifest_tests::qualification_crates_are_excluded_from_product_callers"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "callers_manifest_tests::legacy_caller_zero_surfaces_are_explicitly_retired"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "canonical::tests::length_delimited_sha256_counts_utf8_bytes"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::store::tests::legacy_journal_keeps_trust_binding_and_exact_head_checks"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::dispatch_boundary_serializes_revocation_until_local_entry_returns"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::store::tests::legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::async_effect_entry_is_denied_if_revoked_after_claim_before_entry"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::async_effect_entry_rechecks_revocation_and_consumes_the_token"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::authority_rejects_shared_state_directory_and_symlinked_files"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::async_final_use_fence_survives_pending_and_releases_on_cancellation"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::capacity_snapshot_tracks_claims_revocations_and_epoch_rollover"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::epoch_change_fences_outstanding_claims_and_old_grants"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::changing_signed_data_or_substituting_a_key_does_not_authorize"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::expired_grant_is_denied_using_verifier_clock"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::external_final_use_frontier_detects_restored_claim_snapshot"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::external_final_use_frontier_ahead_after_local_failure_fences_reopen"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::injected_clock_is_the_only_final_use_time_source"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::killed_owner_releases_lock_but_keeps_claim"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::issuer_key_ring_supports_overlap_and_epoch_retirement"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::missing_or_truncated_claim_journal_fails_closed_on_restart"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::pq::capacity_tests::pq_oversized_initial_head_fails_before_state_initialization"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::pq::capacity_tests::pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::pq::pq_final_use_external_frontier_refuses_local_snapshot_rollback"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authbus_b5::tests::b5_fault_matrix_keeps_rpo_zero_for_one_thousand_crash_points"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::pq::pq_final_use_consumes_original_durable_nonce_and_reopen_cannot_replay"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::pq::pq_final_use_rejects_classic_wire_signatures_and_cross_profile_stores"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::pq::pq_final_use_signature_mutation_and_key_pin_fail_before_nonce_write"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::replay_state_survives_owner_restart_and_prevents_concurrent_owners"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::revocation_survives_restart_and_missing_state_is_not_reset"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::pq::pq_feed_confirmation_reauthenticates_without_advancing_or_unrevoking"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::synchronous_final_use_rejects_a_concurrent_revocation_commit"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::signed_claim_is_single_use_and_delivers_under_same_owner"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::unrelated_frontier_advance_after_claim_requires_a_fresh_claim"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::verified_use_witness_binds_the_actual_consumer_entry"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use_control::tests::independent_approval_binds_exact_grant_semantics"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use_control::tests::forged_revocation_feed_never_updates_authority"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use_control::tests::revocation_feed_freshness_fails_closed"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use_control::tests::revocation_ack_requires_receipt_for_the_exact_applied_update"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use_control::tests::approval_key_ring_enforces_epoch_windows_and_reports_selected_key"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "identity::tests::tool_identity_is_versioned_and_length_delimited"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "memory::tests::cross_thread_recall_stays_disabled_without_an_execution_witness"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "memory::tests::deserialization_rejects_invalid_limits_scores_and_request_binding"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "memory::tests::attachment_is_always_typed_as_quoted_untrusted_reference"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "memory::tests::inactive_and_expired_revisions_are_not_recalled"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "memory::tests::limits_reject_zero_unbounded_and_incoherent_values"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "memory::tests::memory_ids_and_legacy_nested_bindings_have_fixed_canonical_oracles"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "memory::tests::request_identity_is_stable_and_query_is_only_fingerprinted"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "memory::tests::ranking_is_integer_and_has_stable_tie_breaks"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider::tests::active_provider_wire_rejects_unknown_fields_but_keeps_legacy_optional_decode"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider::tests::host_ids_are_hashed_and_bound_without_persisting_plaintext"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider::tests::ephemeral_input_preserves_lineage_two_identity_and_binds_both_digests"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider::tests::orphaned_ephemeral_digest_cannot_alias_an_absent_binding"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider::tests::provider_wire_validation_fences_identity_and_terminal_bindings"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use_control::tests::convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider::tests::provider_ids_are_versioned_stable_and_length_delimited"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider::tests::request_binding_changes_for_websocket_incremental_semantics"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use_control::tests::signed_revocation_feed_is_authenticated_and_monotonic"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::coordinator_quarantines_malformed_dispatch_ack_before_returning_error"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::accepted_ack_does_not_prove_effect_completion"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::coordinator_quarantines_unknown_and_never_blind_retries"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::coordinator_rejects_malformed_ack_provenance_before_adapter_call"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::conflict_lookup_is_not_a_success"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::coordinator_restored_pending_is_quarantined_before_dispatch"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use_control::tests::convergence_report_requires_every_enrolled_node_ack"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::default_capability_is_unsupported"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::coordinator_unsupported_capability_stays_quarantined"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::coordinator_restored_pending_payload_path_is_quarantined_before_dispatch"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::journal_deserialization_rejects_malformed_ack_contents"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::coordinator_unsupported_capability_never_calls_lookup"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::journal_late_dispatch_ack_after_pending_quarantine_is_side_effect_free"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::journal_rejects_terminal_ack_replacement_and_unknown_lookup"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::journal_persists_intent_and_monotonic_ack_observations"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::journal_round_trip_is_serializable_without_plain_payloads"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::journal_rejects_late_dispatch_ack_after_quarantine"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::journal_unknown_lookup_persists_quarantine_until_reconciled"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::journal_unknown_lookup_cannot_turn_accepted_into_rejected"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::journal_with_ack_requires_exact_ack_source_provenance"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::malformed_in_memory_ack_provenance_fails_closed_before_state_or_record"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::journal_without_ack_sources_remains_compatible_when_empty"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::journal_status_acceptance_can_close_prior_quarantine"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::logical_effect_key_is_stable_across_local_attempts_and_payload_changes"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::matching_ack_binds_key_payload_and_operation"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::malformed_in_memory_journal_contents_fail_closed_before_state_or_append"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::operation_effect_key_is_stable_across_payload_changes"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::occurrence_key_is_stable_across_physical_retries_and_excludes_payload"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::payload_coordinator_rejects_mismatch_before_adapter_call"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::payload_coordinator_marks_explicit_not_dispatched_without_physical_attempt"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::payload_coordinator_quarantines_malformed_dispatch_ack_before_retry"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::reconciliation_lookup_can_consume_exact_durable_wire_without_dispatch"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::same_key_different_payload_is_rejected"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::status_observation_binds_exact_payload_and_requires_lookup_source"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::status_accepted_fences_late_dispatch_transition"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::status_observation_is_monotonic_and_rejects_late_dispatch_or_unknown"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::unknown_and_not_found_lookup_remain_quarantined"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "provider_effect::tests::unsupported_capability_fails_closed_even_with_matching_ack"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "qualification_receipt::tests::rejected_receipt_can_witness_a_non_mutating_callback"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "qualification_receipt::tests::qualification_receipt_is_digest_bound_and_fail_closed"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "verified_use_witness::tests::witness_round_trip_is_evidence_only_and_strict"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "verified_use_witness::tests::malformed_witness_fails_validation"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "canonical::tests::abstention_stops_before_context_and_evaluation"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "canonical::tests::canonical_selected_path_has_first_class_ndu_and_all_seven_owners"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "canonical::tests::key_rotation_and_wrong_owner_receipt_fail_closed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "canonical::tests::legal_candidate_set_rejects_replay_identity_with_duplicate_semantics"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "canonical::tests::owner_generation_change_between_call_and_publication_fails_closed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "capability_snapshot::tests::absent_optional_capability_composes_without_neural_or_model_artifact"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "capability_snapshot::tests::declaration_reordering_is_stable_but_replacement_changes_actual_plan"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "capability_snapshot::tests::optional_absence_keeps_existing_selection_and_hard_veto_semantics"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "capability_snapshot::tests::required_missing_and_fabricated_zero_artifact_reject"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "capability_snapshot::tests::snapshot_binds_core_freshness_and_bounded_unique_requirements"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "capability_snapshot::tests::optional_add_remove_is_explicit_and_does_not_weaken_requirements"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "capability_snapshot::tests::duplicate_unknown_and_wrong_owner_are_not_admitted"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::pq::recovery_tests::pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_nonces"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "final_use::tests::pq::pq_final_use_independent_approval_revocation_and_ack_use_original_owners"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "ndu_stochastic_admission::tests::current_artifact_and_independent_evidence_compose_to_deny_all_admission"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "ndu_stochastic_admission::tests::withdrawal_frontier_change_invalidates_previously_admitted_artifact"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "neuron_runtime::tests::named_product_caller_runs_through_runtime_without_extra_authority"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "objective_run::tests::compiler_conflict_is_durably_published_without_runtime_snapshot"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "objective_run::tests::authenticated_objective_is_durable_before_product_receipt_returns"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "objective_run::tests::exact_product_retry_is_idempotent_and_semantic_drift_conflicts"
+      },
+      {
+        "package": "codex-hepta-contracts",
+        "test": "authority_lease::tests::maximum_declared_state_shape_fits_restart_read_envelope"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::full_shadow_path_is_ordered_and_authority_free"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::invalid_budget_fails_before_any_port_call"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::ledger_failure_overrides_advisory_decision"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::mixed_snapshot_rejects_before_next_stage"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::non_intuition_stage_cannot_report_an_advisory_decision"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::optional_neuron_outage_uses_bounded_fallback"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::persisted_receipt_rejects_dispatch_without_required_stages"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::persisted_receipt_rejects_trace_mutation"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::raw_port_authority_widening_rejects_before_trusted_receipt"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::required_objective_failure_is_terminal_and_receipted"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::recomputed_digest_cannot_hide_a_missing_required_stage"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline_v2::tests::absent_core_is_rejected_even_when_manifest_omits_its_requirement"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::trace_digest_is_deterministic_for_equal_port_receipts"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline::tests::slow_path_skips_context_and_dispatch_but_records_decision"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline_v2::tests::abstention_does_not_dispatch_but_preserves_learning_stage"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline_v2::tests::existing_stage_engine_runs_without_neural_or_model_artifacts"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline_v2::tests::mixed_snapshot_receipt_still_fails_existing_engine_validation"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline_v2::tests::optional_add_remove_changes_routing_and_versioned_receipt"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "pipeline_v2::tests::self_consistent_wrong_owner_is_rejected_before_any_stage_call"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "plasticity_product::tests::admission_payload_binds_current_frontiers_and_generator"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "plasticity_product::tests::product_writer_refuses_unanchored_nonempty_bootstrap"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "plasticity_product_tests::anchor_commit_failure_poison_writer_after_durable_append"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "plasticity_product_tests::authenticated_product_path_generates_evaluates_appends_and_commits_anchor"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "plasticity_product_tests::durable_v2_evaluation_digest_binds_governed_admission_context"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "plasticity_product_tests::product_path_rejects_tampered_frontier_witness"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "plasticity_product_tests::no_admissible_update_is_independently_attested_and_durably_recorded"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "plasticity_product_tests::product_path_rejects_observer_evaluator_controller_collision"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "plasticity_product_tests::product_path_rejects_generator_evaluator_controller_collision"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "tests::duplicate_candidate_is_rejected"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "tests::hard_veto_is_never_overridden"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "tests::canonical_candidate_limit_is_enforced"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "tests::highest_eligible_candidate_is_selected_without_effect_authority"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "topology_canary_product::tests::payload_binds_every_caller_asserted_canary_fact"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "tests::no_eligible_candidate_abstains"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "tests::maximum_candidate_receipt_is_canonical_and_digest_complete"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "vertical_tests::candidate_outside_compiled_legal_actions_fails_closed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "vertical_tests::objective_soft_dimensions_must_bind_the_ndu_profile"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "vertical_tests::tampered_read_evidence_binding_fails_before_context_compilation"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "vertical_tests::omitted_cognitive_read_evidence_fails_closed"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "vertical_tests::selected_objective_profile_digest_cannot_be_replaced"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "vertical_tests::vertical_facade_selects_only_a_legal_objective_action_without_authority"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "vertical_tests::vertical_receipt_is_stable_under_canonical_input_reordering"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "topology_product::tests::authenticated_topology_path_verifies_three_roles_and_persists_governed_record"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "evaluated_shadow::tests::support::pq_tests::pq_candidate_and_generator_proofs_cannot_bypass_verification_via_exact_replay"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "evaluated_shadow::tests::support::pq_tests::pq_qualification_reaches_durable_shadow_and_exact_replay_in_its_own_history"
+      },
+      {
+        "package": "codex-hepta-intelligence",
+        "test": "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port"
+      }
+    ],
+    "artifacts": [
+      {
+        "filename": "codex_hepta_contracts-f85e57372ad2a9e6",
+        "bytes": 40140856,
+        "sha256": "178f44b584eeb44c72c385be4b5fb050d2638950da49a28132b8e1a4627d0ba6",
+        "binary_included_in_git": false
+      },
+      {
+        "filename": "codex_hepta_intelligence-d88c704d7157d8c5",
+        "bytes": 74258816,
+        "sha256": "7921fa0e7d58fe2d146985253d9496d85ab9626429ff2b523bf03babf8c7e5ba",
+        "binary_included_in_git": false
+      }
+    ],
+    "retained_runner_warnings": [
+      "Pinned nextest0.9.103 ignores profile.local.inherits; no JUnit file was emitted for this local profile.",
+      "The existing graph-free metadata wrapper emits notices for dependency package IDs outside its scoped metadata. Full raw output is retained; no selector or timeout was changed."
+    ]
+  },
+  "strict_clippy": {
+    "passed": false,
+    "exit_code": 101,
+    "diagnostics": [
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:18:14"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:20:9"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:41:21"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:42:30"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:62:9"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:64:24"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:65:9"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:66:9"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:86:25"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:89:25"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:99:25"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:100:57"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:103:35"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:126:13"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:133:5"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:133:22"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:134:5"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:134:5"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:141:17"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:141:41"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:150:21"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:150:43"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:151:21"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:151:21"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:152:21"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:153:21"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:153:21"
+      },
+      {
+        "diagnostic": "used `unwrap()` on an `Option` value",
+        "location": "hepta-contracts/src/authority_trust_unix_tests.rs:153:36"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/final_use_pq_tests.rs:27:25"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/final_use_pq_tests.rs:28:15"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/final_use_pq_tests.rs:49:21"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/final_use_pq_tests.rs:50:5"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/final_use_pq_tests.rs:58:9"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/final_use_pq_tests.rs:64:21"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/final_use_pq_tests.rs:90:20"
+      },
+      {
+        "diagnostic": "used `unwrap()` on a `Result` value",
+        "location": "hepta-contracts/src/final_use_pq_tests.rs:91:34"
+      },
+      {
+        "diagnostic": "this call to `clone` can be replaced with `std::slice::from_ref`",
+        "location": "hepta-contracts/src/final_use_control.rs:1005:53"
+      },
+      {
+        "diagnostic": "this call to `clone` can be replaced with `std::slice::from_ref`",
+        "location": "hepta-contracts/src/final_use_control.rs:1120:61"
+      }
+    ],
+    "new_helper_diagnostics": 0,
+    "source_comparisons": [
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+        "baseline_sha256": "896617d8e4fdec7c495bb4de063de39f848cfc1d2746ac22a7095fb86a2c45f9",
+        "current_sha256": "896617d8e4fdec7c495bb4de063de39f848cfc1d2746ac22a7095fb86a2c45f9",
+        "diff_from_exact_baseline": ""
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+        "baseline_sha256": "9d288b59dd04cde13c826dfc8c77a0e070235d6d84c448fe2ff73c012b5b242c",
+        "current_sha256": "12a4fc4dd834e2eed87a8500601056d401b5047b19daf1b959e32f7744c092f7",
+        "diff_from_exact_baseline": "diff --git a/codex-rs/hepta-contracts/src/final_use_pq_tests.rs b/codex-rs/hepta-contracts/src/final_use_pq_tests.rs\nindex fc11447..764804c 100644\n--- a/codex-rs/hepta-contracts/src/final_use_pq_tests.rs\n+++ b/codex-rs/hepta-contracts/src/final_use_pq_tests.rs\n@@ -18,6 +18,9 @@ use zeroize::Zeroizing;\n #[path = \"final_use_pq_capacity_tests.rs\"]\n mod capacity_tests;\n \n+#[path = \"final_use_pq_recovery_tests.rs\"]\n+mod recovery_tests;\n+\n fn key(seed: u8, id: &str) -> (PqNativeSigningKey, PqAuthorityTrustKey) {\n     let seed = Zeroizing::new([seed; 32]);\n     let spki = PqNativeSigningKey::public_spki_from_seed(&seed);\n"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+        "baseline_sha256": "2ac2a01aa251723c0ab0d24ffbdbd288f694eb12937a1f5b43516c325aead91a",
+        "current_sha256": "2ac2a01aa251723c0ab0d24ffbdbd288f694eb12937a1f5b43516c325aead91a",
+        "diff_from_exact_baseline": ""
+      }
+    ],
+    "log": "validation/strict-clippy.log.gz",
+    "scope": "Two selected packages with --tests and -D warnings; 38 emitted errors are not an exhaustive two-package inventory. Intelligence checking started, but completion of all selected Intelligence test targets is not established. No global lint qualification.",
+    "complete_two_package_lint_inventory": false
+  },
+  "format": {
+    "exit_code": 0,
+    "source_bytes_changed": false,
+    "receipt": "validation/final-format.json"
+  },
+  "preserved_validation_logs": [
+    {
+      "path": "validation/final-format.log.gz",
+      "original_receipt_log_name": "final-format.log",
+      "bytes": 20,
+      "sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation/strict-clippy.log.gz",
+      "original_receipt_log_name": "strict-clippy.log",
+      "bytes": 3156,
+      "sha256": "88a447bd88ea0935724dafddb727dab3d5aab345c34518bd5a7f193552efe0b3",
+      "uncompressed_bytes": 23156,
+      "uncompressed_sha256": "cf82ddabc969d7f622136fc0e75d7a6bc0d3a5f6c1e2332bf552bf683f8a34a2"
+    },
+    {
+      "path": "validation/targeted-tests.log.gz",
+      "original_receipt_log_name": "targeted-tests.log",
+      "bytes": 9096,
+      "sha256": "b84cbcc08a1b2c8aa9a9d4ed8e9900540f47c8e8e14c3d94e342ca6a7f34a084",
+      "uncompressed_bytes": 45208,
+      "uncompressed_sha256": "58ea4611045fc2f568500562f7c40ae31e9d8d1bba09677f1bbf25e23d3000a6"
+    },
+    {
+      "path": "validation/blob-policy-first-unavailable.log.gz",
+      "original_receipt_log_name": "blob-policy-first-unavailable.log",
+      "bytes": 555,
+      "sha256": "ca738f9ebdf44f046db754ddac8b11b6dfb0b3cc273038d8a89d64d1617dc821",
+      "uncompressed_bytes": 1387,
+      "uncompressed_sha256": "343d90eaeba57d0dbe0e30e1fc7e695ef3ff45c69ad355bd49a836d04556842f"
+    },
+    {
+      "path": "validation/blob-policy-before.log.gz",
+      "original_receipt_log_name": "blob-policy-before.log",
+      "bytes": 2920,
+      "sha256": "881ae70340316f9c6df8208443e1f2bc258cc0394c28398b1c87c9a03545dc31",
+      "uncompressed_bytes": 18699,
+      "uncompressed_sha256": "3126cce6c82a1b13f5bb8ac35cc212091c6643d2a97127b0d9c1a11f9c20d9ef"
+    },
+    {
+      "path": "validation/blob-policy-declared-assets.log.gz",
+      "original_receipt_log_name": "blob-policy-declared-assets.log",
+      "bytes": 2752,
+      "sha256": "2d253fbe0c5b8e972bb8fc5deee435d32aca0b9ec24ae9775fa1ec8d99f44caf",
+      "uncompressed_bytes": 18016,
+      "uncompressed_sha256": "09f0a9b845d3a0cf4989994243b43194da6b1e48b629bc67e0173f9a2555c68c"
+    }
+  ],
+  "old_live_ci_snapshot": "ci/triage.json",
+  "qualification": {
+    "windows_fix_executed_locally": false,
+    "complete_hosted_ci_passed": false,
+    "paired_native_pressure_passed": false,
+    "whole_chain_pq_qualified": false
+  },
+  "counting_note": "269 is one fresh run of two complete library targets. It overlaps earlier contracts tests and is not added to previous phase totals. Windows CI and all other original release/security/pressure gates retain independent outcomes.",
+  "repository_evidence_asset_policy": {
+    "max_bytes": 512000,
+    "max_bytes_changed": false,
+    "mechanism": "Existing exact-path allowlist for intentional checked-in assets, as documented by scripts/check_blob_size.py.",
+    "registered_assets": [
+      {
+        "path": "qualification/pq-service-recovery-20261101/followup/ci/artifacts/arm-source-head-evidence.zip",
+        "bytes": 5194393,
+        "sha256": "6fb34cbd21ed39888912c0ea0fe516e0002805c4d22d713c4669fb74444430a9"
+      },
+      {
+        "path": "qualification/pq-service-recovery-20261101/followup/ci/logs/current-job-124811350776.log.gz",
+        "bytes": 785659,
+        "sha256": "d33cb769b25d04ab5666160d50c6a16bfb7a8d3e01fadcebd1bf18aae26c27b2"
+      },
+      {
+        "path": "qualification/pq-service-recovery-20261101/followup/ci/logs/current-job-124811350879.log.gz",
+        "bytes": 990136,
+        "sha256": "de7f1a3b5f5cac87fdb8d61a9e4bc3f86d253f48e3d51f886724a62e813c3351"
+      },
+      {
+        "path": "qualification/pq-service-recovery-20261101/followup/ci/logs/prior-job-124094124342.log.gz",
+        "bytes": 755699,
+        "sha256": "1cf0be5907f290fa113fd2a12b82425d9f03e743b800749353e127adad9a6404"
+      }
+    ],
+    "allowlist_sha256": "a18a37ab69fc2aaff31682cdacc4062da8db90d3a6bf1f16336fc3d355616c8d",
+    "first_sandbox_attempt": "validation/blob-policy-first-unavailable.json",
+    "original_completed_failure": "validation/blob-policy-before.json",
+    "candidate_with_declared_assets_check": "validation/blob-policy-declared-assets.json",
+    "native_source_changed": false,
+    "runtime_or_security_budget_changed": false
+  }
+}

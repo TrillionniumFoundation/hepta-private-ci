@@ -7,7 +7,6 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
-use pretty_assertions::assert_eq;
 
 use super::*;
 use crate::AuthBusAdmissionError;

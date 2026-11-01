@@ -1,0 +1,486 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-01T09:32:34.895442+00:00",
+  "baseline_commit": "a575cf03e2bc871a2f48021859c03ace806421c8",
+  "baseline_tree": "980cb998c894ee1366098c099de3bbdc0abeb51f",
+  "local_final_code_commit": "0c0f4a666a8a6d8c85f1ae8f67d11b72c5480a84",
+  "local_final_code_tree": "6bc80c02bb2f8cba957a92612b4604becfcfc30f",
+  "local_branch": "codex/hepta-pq-policy-and-product-20261101",
+  "identity_note": "These are local execution/stage identities, not claims of remote publication. Final publication must verify these source bytes against its actual remote tree. Qualification documentation added later is excluded from this source inventory.",
+  "local_stages": [
+    {
+      "local_commit": "d699493e08c2bc0d771b3f8e8bf57cf927ed7836",
+      "title": "test(hepta): exercise PQ service continuity across rejection and reopen"
+    },
+    {
+      "local_commit": "78a816819fb2f8d0aa047a4c2f1d20f8841dfad3",
+      "title": "test(evidence): retain equality assertions without undeclared formatter imports"
+    },
+    {
+      "local_commit": "ede140a05fc0b5a617722badc37c5ea2ae80d76f",
+      "title": "fix(authbus): persist monotonic PQ text owner policies across recovery"
+    },
+    {
+      "local_commit": "530a9d624275e61ba11796f517d070dd3f40bd32",
+      "title": "fix(agentd): dispatch existing sandbox helpers before daemon bootstrap"
+    },
+    {
+      "local_commit": "0c0f4a666a8a6d8c85f1ae8f67d11b72c5480a84",
+      "title": "test(authbus): reject valid classical rollback and restore PQ dispatch"
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 427892,
+      "sha256": "22fd571e112ffd78e6e8087b2e2c51448ffbd969846df638213d95983c6f4530",
+      "git_blob_sha1": "69afb73141af6581c40d6de753ad6e94a1b0d7b1",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "22fd571e112ffd78e6e8087b2e2c51448ffbd969846df638213d95983c6f4530"
+    },
+    {
+      "path": "codex-rs/arg0/Cargo.toml",
+      "bytes": 857,
+      "sha256": "e4202ff52d3d76027ccf9e0bf34361fb34f52a368ea2b6633abb03bab6398f4a",
+      "git_blob_sha1": "bb45db45521a60e80088f9032431d28ff4e717ed",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "e4202ff52d3d76027ccf9e0bf34361fb34f52a368ea2b6633abb03bab6398f4a"
+    },
+    {
+      "path": "codex-rs/arg0/src/lib.rs",
+      "bytes": 26601,
+      "sha256": "9430d1e3f6c242af70d190f4b8bb089666d1e7ff58dc554b72311e87d58fe1be",
+      "git_blob_sha1": "fc225d06cb1fb617a12cc9a801378010235f7eec",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "28f501911b19dfbfdc7e89226a728e5f2e1d9bc28d894b01062e6352206a78b9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "bytes": 4394,
+      "sha256": "011528024bbcb547a2aa256904b6102a05f17af7c91ace5300d7559e4ab8d94b",
+      "git_blob_sha1": "5d13cd8f355bab3ecb95f8c068517de200dd143f",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "011528024bbcb547a2aa256904b6102a05f17af7c91ace5300d7559e4ab8d94b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch.rs",
+      "bytes": 12097,
+      "sha256": "82628047ea1a57a75d0bd192a1faf4b119f915e1cafe413a20da2a71246dece5",
+      "git_blob_sha1": "220700e70232c464f721b2dd3c55d05c618479fa",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "82628047ea1a57a75d0bd192a1faf4b119f915e1cafe413a20da2a71246dece5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "bytes": 17663,
+      "sha256": "4d5aa81c88af2c957b29664bd381d10e8e0c6e6df5818db215f10623cb188cd1",
+      "git_blob_sha1": "670bca1f31940892761443dd91d0ea0cbb6f6fe4",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "dfdeef1ff6ea4f48beb3d2edc0b360cfe69928d8fa53e2ffb5b91ee3ee1660ed"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "bytes": 12528,
+      "sha256": "f0b05f4ba9bb111707a51f4f21d8e35d7b7246c57e6ccc64f2f8cf7afa00c10a",
+      "git_blob_sha1": "3d041a2bd4e258979d3c2be0a000bdd59af7b969",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "c719d884982c8827d748b3d76f1b10212c5489a281b915c9e4add0de93f396b7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_lease_delay_tests.rs",
+      "bytes": 2364,
+      "sha256": "de863b0bbddacce54f764bfd1acbc5789dce94b8d9d39e701ada8d769da2eba4",
+      "git_blob_sha1": "2c342acfcb754a8be7128a1f3ea14f1dbfa19bf8",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "1e13871320f7a615ebc3746edf9756ddf0e8b0d2933d6ae4c5c8b59a66c6fd47"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+      "bytes": 6860,
+      "sha256": "c2d85ab055ad0019c9bcdec8ce0b2c66d21f9f7f54219ff65c4c38f1e2582293",
+      "git_blob_sha1": "27deff998fa54d540ac3262f78a314670e94b487",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": false,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_pq_dispatch_tests.rs",
+      "bytes": 9857,
+      "sha256": "680d7331e69dfeb6b01918cd386959496c248226abe0fbbd3e8aff87eaf6864a",
+      "git_blob_sha1": "7109c2b6442a26a19a28bea558cec422274339d9",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "a7293003f9501f45351cbc7d260c7cec2b8f8c9423a5fceaaed33413d4c2aeda"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_trust.rs",
+      "bytes": 8080,
+      "sha256": "31c6fc6bc730f503028694591dfcd11500816362f06e05bcc83ec22bf8ff8395",
+      "git_blob_sha1": "f68e4c9cae59f5de3c9d4865b3f093360ff752b4",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "578609ed3e8cbbbaf6a631dfe3064dc56eb40f4dfaf79122a736f102fdf8a5d6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 13562,
+      "sha256": "7a72ba89b46cd5d930adc14e2442e17e92d6abdece190728d4adafee09ed643f",
+      "git_blob_sha1": "64fd47063dd233177303161a1a076c711536e3d5",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "7a72ba89b46cd5d930adc14e2442e17e92d6abdece190728d4adafee09ed643f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "bytes": 11344,
+      "sha256": "da3cab94de827968c1fd6329f8cbdf5699fb09fd5f417ae95213c75c86a371a1",
+      "git_blob_sha1": "5162cdb700ce0c37d130920c29d743c76bbc42b5",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "090d9c5db08e598cf939cf4802384a1e5d76a3b62b1e5f4fce88b57fd381c5bb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "bytes": 23938,
+      "sha256": "c98afeba60fe5e2153a43f0bb79b6facb35d3eec7d3aaa1ca3bb7a2700f61cca",
+      "git_blob_sha1": "3888aed612d568852c14c00640a3278334804634",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "c98afeba60fe5e2153a43f0bb79b6facb35d3eec7d3aaa1ca3bb7a2700f61cca"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "bytes": 11072,
+      "sha256": "568e70042386db2e3f2bdf29ef2f518778658485643db4ec0434f726c054f0b2",
+      "git_blob_sha1": "4462a5d0ee4d8d8da96de5c2d04abc7f39efd5f3",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "60f78ca0801a4aa8340e3057bbefaa08668eb5f2415e0af484bc70205d23470f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "bytes": 33284,
+      "sha256": "ac086b2be8e8bb1d4bb7b932c2c91bb75b2ca954dc0d22b6c21e3eb69fe25ed4",
+      "git_blob_sha1": "7d6435ed4bee976f2beb1fa54079432c5d7e11e9",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "ac086b2be8e8bb1d4bb7b932c2c91bb75b2ca954dc0d22b6c21e3eb69fe25ed4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+      "bytes": 15548,
+      "sha256": "38a4791af499795e304108407c96795629886959489172064bdbba6164462d34",
+      "git_blob_sha1": "5ed7f4e57f9fbff3317b20c2d557b76a2465d40a",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "d48d815cd2ad30f431b900e90ace752dfd1eafac3bbd63c38921d2f52dd4fc2c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/authbus_signer.rs",
+      "bytes": 2136,
+      "sha256": "7581e77fb4dc4edfce7181dfbf5870156444d0906743266f8f33c7eb8d49bde9",
+      "git_blob_sha1": "cb614dbf07e3c4757dd039cf76d251a0e5c12a57",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": false,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-contracts/Cargo.toml",
+      "bytes": 975,
+      "sha256": "2d44d41f5ca73fb32ac651f242c44f1617ae657d119a822515acab9048425d47",
+      "git_blob_sha1": "2b04be51c222dbb1e1aa38cc7109d4c19be20514",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "2d44d41f5ca73fb32ac651f242c44f1617ae657d119a822515acab9048425d47"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "bytes": 39969,
+      "sha256": "817cf0e7fd61c94639cb75058a678ffd9ff6c6f4d4588c0c84d73eb2cd59cf47",
+      "git_blob_sha1": "3cfe760da440dc27513ed58da7c39be920ce57ae",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "817cf0e7fd61c94639cb75058a678ffd9ff6c6f4d4588c0c84d73eb2cd59cf47"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq.rs",
+      "bytes": 2758,
+      "sha256": "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b",
+      "git_blob_sha1": "c6694d4c450816cd2e846773f715fe7bf7050e21",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "bytes": 6144,
+      "sha256": "5df34681b73769f28e91e88ded71eb9da7ae9063a206c54fe8f3ef4c4a0154b7",
+      "git_blob_sha1": "44c4b55042df52d241cad4af934ab21f1f360d4d",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": false,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "bytes": 14034,
+      "sha256": "12a4fc4dd834e2eed87a8500601056d401b5047b19daf1b959e32f7744c092f7",
+      "git_blob_sha1": "764804ce84404590548c673dbf4dc16922caf4d7",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "9d288b59dd04cde13c826dfc8c77a0e070235d6d84c448fe2ff73c012b5b242c"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/BUILD.bazel",
+      "bytes": 175,
+      "sha256": "7ae3f5f2aac6d8b6b67fdb6987b00ce850d69e54cda717b3fa5abb93944d6a6b",
+      "git_blob_sha1": "0aa41a314a2ffb4e74545f3c18a8cb509728df68",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "7ae3f5f2aac6d8b6b67fdb6987b00ce850d69e54cda717b3fa5abb93944d6a6b"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/Cargo.toml",
+      "bytes": 786,
+      "sha256": "bf06b9f286e93bb5d61122d43ff3cb27314584e04a1d08c18c90663e2b1fa3e0",
+      "git_blob_sha1": "7d5a851797a8c8fdc9c14382418158f9c9789dad",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "bf06b9f286e93bb5d61122d43ff3cb27314584e04a1d08c18c90663e2b1fa3e0"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/migrations/0014_authbus_issuer_floor.sql",
+      "bytes": 888,
+      "sha256": "50b236b3278e582840195741863e0a5371d0f28df5a2a7650bbde150e851fecd",
+      "git_blob_sha1": "adae67dc717b78e21bf580367e4b17598c2bd6be",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "50b236b3278e582840195741863e0a5371d0f28df5a2a7650bbde150e851fecd"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/migrations/0015_authbus_owner_policy.sql",
+      "bytes": 796,
+      "sha256": "ec78721c3454fec7c8a640c15dd1b0ee9a3796d46a141cc2a774366d13a930a4",
+      "git_blob_sha1": "9dde81e1183a255e1c855ac6efb712fa4d65b355",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": false,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_crypto_profile.rs",
+      "bytes": 6587,
+      "sha256": "2b6062eaa7ae0674d96a66867d300ec6df611ca46377b691f0784224c7f07d3b",
+      "git_blob_sha1": "53a6a0c5a6a80556bb43a562832d04580eb6a934",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "623a47622b546f2be9fa2d910f470ccf7f46dc48a43d7e2b072e877a755d6e77"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_crypto_profile_tests.rs",
+      "bytes": 6709,
+      "sha256": "529a3d92c374aea006aa68e423b78a13b9e595d77857cfc82d2e8679e4cfdcc3",
+      "git_blob_sha1": "fb9121dd47d04e34876ccd9e7ed3cd7a3a178800",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "569a5f0bb04d2c6d99469e2d140be427b377fdd585fb6e8ec3cf5b6840d8db07"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_issuer_floor.rs",
+      "bytes": 7823,
+      "sha256": "b21eed85d22886a731f15f8bc03db02a20f45ebc9fa1d164020241df46171295",
+      "git_blob_sha1": "94ea67023b7ddb71edb9b9836772bd346a702d10",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "bb193568c7becfe1bd4ac5377ade0d15cb87b1fec808a246205e31954de9a601"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+      "bytes": 21191,
+      "sha256": "623b0eb35c304650c7ebc12e5971cce66b3135c56d47cfced6c033483a1fc2a9",
+      "git_blob_sha1": "5637c44360cd041d7bd86f34baca09af2e2f8020",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "623b0eb35c304650c7ebc12e5971cce66b3135c56d47cfced6c033483a1fc2a9"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_owner_policy.rs",
+      "bytes": 3574,
+      "sha256": "1ca6834499a2ea397beae1e33c4cb0026cc264d9da3fcc2b7e9fa0fc8061c340",
+      "git_blob_sha1": "44584018f7ec90d0dcd1a0e38bdd1b4cc3ec81e9",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": false,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_owner_policy_tests.rs",
+      "bytes": 6530,
+      "sha256": "5905eeec4a6f63bb04ef2b8a9b944bfe8e2755a71a86e69084d4e5d852fd0ab7",
+      "git_blob_sha1": "0f332715ca17acfa5387fdf736c325f5857f5b45",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": false,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": null
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_recovery.rs",
+      "bytes": 19255,
+      "sha256": "2cb58658874a7147e2e8482ff6d9b11b92b9a4320778b1948398e79de625fcd4",
+      "git_blob_sha1": "74fb4c3eb33870b2575afa68e51d9b39cc19573c",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "bc29e47ea5cd9db459e90ed82ad2c523822969f848003e378e98e752f06c84dc"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_recovery_tests.rs",
+      "bytes": 13072,
+      "sha256": "63686a9b67d1e1018b42de5b8044713c652dc46149bc104cfb7903848da8ada7",
+      "git_blob_sha1": "254b099d064dd3656b859c96c8ec7f123d201bbd",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "c1172b9d47d96b46bb765ac5cc96c156b717df5bd0eee31f0b0bcc66096e3345"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_retirement_pq_tests.rs",
+      "bytes": 4612,
+      "sha256": "b615727a40b3ff648b94d772ff60726a6bd726c4d755455b8a762f7c1a95f16f",
+      "git_blob_sha1": "e0938353639e14cbf2464ce03c19516a0d70f92f",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "790e68089947b6a1713d6238b99abcec79b5fc11a9309bf0e25eaf22b439c731"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_store.rs",
+      "bytes": 6409,
+      "sha256": "2fe4d32c491b988c546f8623326699140359dfc1df0bb3b511325a90d7b8fbe9",
+      "git_blob_sha1": "d25990d833d9d372cca1a4da0fa8c206f99adba3",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "9629d64e0fb5003ea13145b142c252181f2209e31cc2c6923ed78c87e881ce80"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/lib.rs",
+      "bytes": 5018,
+      "sha256": "2667409f86e5db740737cd3ef688980ed4f1f60f0c29c40e500d85ce74456a18",
+      "git_blob_sha1": "55972501f7ec928c6b3d561573b1f566c72d3262",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "57ee171546dce6f82831af9fc26e3a5d7d53b1eb477929707ed9a9be631b2992"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "bytes": 1298,
+      "sha256": "b4aa6695783171ecf60c5d7b342d714d82cdd4c287097e4042d603fd6f60a0ef",
+      "git_blob_sha1": "a651fcd4f3529315b4c097fbdc7af53e72b609ed",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "b4aa6695783171ecf60c5d7b342d714d82cdd4c287097e4042d603fd6f60a0ef"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "bytes": 11777,
+      "sha256": "557c78674f899976bc2f37ddfd161cae3c5d2fa30a348927935c2ec55175f635",
+      "git_blob_sha1": "6ba6f4da7e88974ce5b046437191d5f439a229c7",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "557c78674f899976bc2f37ddfd161cae3c5d2fa30a348927935c2ec55175f635"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+      "bytes": 9599,
+      "sha256": "53df36a2f917fc580b98c82388733e80a8009455319eff1aa1a46c7789b2b144",
+      "git_blob_sha1": "8e0d6af2b5446d97d830eb2ef24a0dcc146cf2bb",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "53df36a2f917fc580b98c82388733e80a8009455319eff1aa1a46c7789b2b144"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_tests.rs",
+      "bytes": 6916,
+      "sha256": "81c8544646aa62516c031ad6a37993e1e4bf678740ee12dfd3ca6d055698a6bf",
+      "git_blob_sha1": "75552406d57c714cd7bd03a5d7a443c05aeec52b",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": false,
+      "baseline_sha256": "9fd56098bbc5908d748d774ad93e573c10124216e0dbc45e7d0d5bf49fcd57df"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_cognitive_host.rs",
+      "bytes": 11125,
+      "sha256": "d094488c51ce4f1adecc380ac4dd853da685d209d8df31c385f5fada80a40563",
+      "git_blob_sha1": "20fe75e7b23e5ce031eb105b84626e6d40a12669",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "d094488c51ce4f1adecc380ac4dd853da685d209d8df31c385f5fada80a40563"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "bytes": 40800,
+      "sha256": "816d49130d78cb8370546ce194a2980b3e317bc7c2b9bd171dc0921fd7927ac7",
+      "git_blob_sha1": "e93f1208bddd3dba92a7eecf06873a3feff949e9",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "816d49130d78cb8370546ce194a2980b3e317bc7c2b9bd171dc0921fd7927ac7"
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "bytes": 78,
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+      "git_blob_sha1": "917d2492264a35bc9c0feaef41878d8825870866",
+      "matches_local_code_commit": true,
+      "exists_at_baseline": true,
+      "unchanged_from_baseline": true,
+      "baseline_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    }
+  ],
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "runtime_source_changed_by_final_fmt_or_clippy": false
+}

@@ -6,6 +6,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 use codex_app_server_protocol::QueuedSubmission;
@@ -34,11 +35,16 @@ use pq::FixtureSigner;
 #[path = "authbus_lease_delay_tests.rs"]
 mod lease_delay;
 
+#[path = "authbus_policy_rollback_tests.rs"]
+mod policy_rollback;
+
 struct Fixture {
     _temp: tempfile::TempDir,
     state: Arc<AgentdState>,
     registry: FleetRegistry,
     key: FixtureSigner,
+    key_epoch: u64,
+    policy_revision: AtomicU64,
     trust_file: PathBuf,
     checkpoint_file: PathBuf,
 }
@@ -133,6 +139,8 @@ impl Fixture {
             state,
             registry,
             key: FixtureSigner::new(55, algorithm),
+            key_epoch: 1,
+            policy_revision: AtomicU64::new(0),
             trust_file,
             checkpoint_file,
         };
@@ -156,8 +164,12 @@ impl Fixture {
             .iter()
             .map(|b| format!("{b:02x}"))
             .collect::<String>();
-        let json = serde_json::json!({"schema_version":self.key.algorithm().schema_version(),"agent_id":self.state.identity().agent_id.as_str(),
-            "issuer_id":"issuer:test","key_epoch":1,"public_key_hex":key,"revoked":revoked,"thread_ids":["thread:test"]});
+        let mut json = serde_json::json!({"schema_version":self.key.algorithm().schema_version(),"agent_id":self.state.identity().agent_id.as_str(),
+            "issuer_id":"issuer:test","key_epoch":self.key_epoch,"public_key_hex":key,"revoked":revoked,"thread_ids":["thread:test"]});
+        if self.key.algorithm() == AuthBusAlgorithm::MlDsa65V2 {
+            json["policy_revision"] =
+                serde_json::json!(self.policy_revision.fetch_add(1, Ordering::SeqCst) + 1);
+        }
         std::fs::write(&self.trust_file, serde_json::to_vec(&json).unwrap()).unwrap();
         std::fs::set_permissions(&self.trust_file, std::fs::Permissions::from_mode(0o600)).unwrap();
     }
@@ -166,7 +178,7 @@ impl Fixture {
         let mut request = AuthBusTextIngress {
             auth_version: self.key.algorithm().schema_version(),
             issuer_id: "issuer:test".into(),
-            key_epoch: 1,
+            key_epoch: self.key_epoch,
             message_id: format!("message:{sequence}"),
             sequence,
             expires_at_ms: now_ms().unwrap() + 300_000,

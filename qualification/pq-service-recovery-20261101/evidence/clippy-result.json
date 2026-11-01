@@ -1,0 +1,1236 @@
+{
+  "command": "just fix --locked -p codex-arg0 -p codex-hepta-contracts -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-infer-worker-host",
+  "recipe": "cargo clippy --fix --tests --allow-dirty",
+  "exit_code": 0,
+  "incremental_cache_disabled": true,
+  "strict_deny_warnings": false,
+  "rust_working_tree_changed": false,
+  "warning_records": [
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 196,
+      "column": 67,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 199,
+      "column": 52,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 200,
+      "column": 35,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 202,
+      "column": 42,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 208,
+      "column": 53,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 209,
+      "column": 35,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 211,
+      "column": 43,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 222,
+      "column": 52,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 223,
+      "column": 35,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 263,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 265,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 267,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 268,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 270,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 272,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 274,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 277,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 285,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 287,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 289,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 291,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 293,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 295,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 297,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 304,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 306,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 308,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 310,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 312,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 314,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 316,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 201,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 202,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 203,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 204,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 210,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 211,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 212,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 224,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead",
+      "file": "codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs",
+      "line": 225,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "very complex type used. Consider factoring parts into `type` definitions",
+      "file": "codex-rs/hepta-evidence/src/authbus_issuer_floor.rs",
+      "line": 172,
+      "column": 15,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "holding a disallowed type across an await point `tokio::sync::MutexGuard`",
+      "file": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "line": 100,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "unnecessary use of `get(&config.script).is_none()`",
+      "file": "codex-rs/hepta-infer-worker-host/src/smollm_neural_driver.rs",
+      "line": 116,
+      "column": 35,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 18,
+      "column": 14,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 20,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 41,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 42,
+      "column": 30,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 62,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 64,
+      "column": 24,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 65,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 66,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 86,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 89,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 99,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 100,
+      "column": 57,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 103,
+      "column": 35,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 126,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 133,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 133,
+      "column": 22,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 134,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 134,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 141,
+      "column": 17,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 141,
+      "column": 41,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 150,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 150,
+      "column": 43,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 151,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 151,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 152,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 153,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 153,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on an `Option` value",
+      "file": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "line": 153,
+      "column": 36,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "line": 9,
+      "column": 20,
+      "line_in_changed_hunk": true
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "line": 10,
+      "column": 34,
+      "line_in_changed_hunk": true
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "line": 27,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "line": 28,
+      "column": 15,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "line": 49,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "line": 50,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "line": 58,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "line": 64,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "line": 90,
+      "column": 20,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "line": 91,
+      "column": 34,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "this call to `clone` can be replaced with `std::slice::from_ref`",
+      "file": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "line": 1005,
+      "column": 53,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "this call to `clone` can be replaced with `std::slice::from_ref`",
+      "file": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "line": 1120,
+      "column": 61,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 22,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 28,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 28,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 36,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 39,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 100,
+      "column": 24,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 139,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 159,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 183,
+      "column": 20,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 187,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 190,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 192,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 193,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 195,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 232,
+      "column": 22,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 234,
+      "column": 28,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 235,
+      "column": 40,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 266,
+      "column": 17,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 278,
+      "column": 14,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 278,
+      "column": 57,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 280,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 281,
+      "column": 24,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_ledger.rs",
+      "line": 282,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_plan.rs",
+      "line": 34,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_plan.rs",
+      "line": 100,
+      "column": 28,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_plan.rs",
+      "line": 140,
+      "column": 31,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_plan.rs",
+      "line": 153,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_plan.rs",
+      "line": 162,
+      "column": 17,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/support/neural_holdout_plan.rs",
+      "line": 163,
+      "column": 17,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 32,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 39,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 41,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 46,
+      "column": 32,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 57,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 59,
+      "column": 24,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 60,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 61,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 65,
+      "column": 23,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 81,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 84,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 88,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 92,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 93,
+      "column": 57,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 100,
+      "column": 45,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 116,
+      "column": 41,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 117,
+      "column": 50,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 121,
+      "column": 29,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 123,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 126,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/src/cognitive_process_pq_trust_tests.rs",
+      "line": 147,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/neural_holdout.rs",
+      "line": 39,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/neural_artifact_native.rs",
+      "line": 44,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/neural_artifact_native.rs",
+      "line": 50,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "line": 87,
+      "column": 22,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "line": 88,
+      "column": 20,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "line": 90,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "line": 91,
+      "column": 18,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "line": 93,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "line": 95,
+      "column": 17,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "line": 101,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "line": 104,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 24,
+      "column": 14,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 26,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 47,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 48,
+      "column": 30,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 68,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 70,
+      "column": 24,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 71,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 72,
+      "column": 9,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 92,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 95,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 105,
+      "column": 25,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 106,
+      "column": 57,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 109,
+      "column": 35,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 132,
+      "column": 13,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 139,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 139,
+      "column": 22,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 140,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 140,
+      "column": 5,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 147,
+      "column": 17,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 147,
+      "column": 41,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 156,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 156,
+      "column": 43,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 157,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 157,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 158,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 159,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on a `Result` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 159,
+      "column": 21,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "used `unwrap()` on an `Option` value",
+      "file": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 159,
+      "column": 36,
+      "line_in_changed_hunk": false
+    },
+    {
+      "warning": "very complex type used. Consider factoring parts into `type` definitions",
+      "file": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+      "line": 37,
+      "column": 22,
+      "line_in_changed_hunk": false
+    }
+  ],
+  "warning_summaries": [
+    "warning: `sqlx-sqlite` (lib) generated 40 warnings",
+    "warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)",
+    "warning: `codex-hepta-evidence` (lib) generated 1 warning",
+    "warning: `codex-hepta-agentd` (lib) generated 1 warning",
+    "warning: `codex-hepta-infer-worker-host` (lib) generated 1 warning",
+    "warning: `codex-hepta-contracts` (lib test) generated 40 warnings",
+    "warning: `codex-hepta-agentd` (test \"neural_comparison_native\") generated 29 warnings",
+    "warning: `codex-hepta-agentd` (lib test) generated 22 warnings (1 duplicate)",
+    "warning: `codex-hepta-agentd` (test \"neural_holdout\") generated 30 warnings (29 duplicates)",
+    "warning: `codex-hepta-agentd` (test \"neural_artifact_native\") generated 2 warnings",
+    "warning: `codex-hepta-agentd` (test \"neural_cognitive_bootstrap\") generated 37 warnings (29 duplicates)",
+    "warning: `codex-hepta-infer-worker-host` (lib test) generated 30 warnings (1 duplicate)",
+    "warning: `codex-hepta-evidence` (lib test) generated 1 warning (1 duplicate)"
+  ]
+}

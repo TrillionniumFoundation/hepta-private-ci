@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "a575cf03e2bc871a2f48021859c03ace806421c8",
+    "--head",
+    "e4093f919da9324648617e8479ab4b9ce6e472cc",
+    "--max-bytes",
+    "512000",
+    "--allowlist",
+    "/workspace/scratch/be76671b3e90/recovery/hepta-followup-tests/original-blob-size-allowlist.txt"
+  ],
+  "observed_utc": "2026-11-01T10:36:50.578510+00:00",
+  "exit_code": 1,
+  "source_head": "e4093f919da9324648617e8479ab4b9ce6e472cc",
+  "allowlist_sha256": "bb867bc531c86f5341a031698e16b4e5a4a0d31f7d8f4cc5ff26e101d84f9d75",
+  "log": "blob-policy-before.log",
+  "log_sha256": "3126cce6c82a1b13f5bb8ac35cc212091c6643d2a97127b0d9c1a11f9c20d9ef",
+  "scope": "Exact published source and separately identified allowlist; the later metadata commit will receive its own committed-head check."
+}

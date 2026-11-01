@@ -1,0 +1,23 @@
+{
+  "reason": "Preserve original patch context whitespace and snapshot trailing newline while keeping the source whitespace gate meaningful. No original artifact bytes were edited.",
+  "prior_derived_inventory_sha256": "f717203a24c4b0840611a99f71d4bb342e8ed65833ca0d52b5f49a83475962b4",
+  "transforms": [
+    {
+      "original_path": "peer-observations/latest-ci-status.json",
+      "published_path": "peer-observations/latest-ci-status.json.gz",
+      "uncompressed_sha256": "aa5dc97d76941b019cdc483a6b1e473058cab0046737d7c4dfbb146bbac9e0a3",
+      "uncompressed_bytes": 36374,
+      "compressed_sha256": "22af7985ce45cb17e450f7a836370eb9768df022a890f96c2841bb7493e238d7",
+      "compressed_bytes": 4511
+    },
+    {
+      "original_path": "followup-received/followup-two-test-files.patch",
+      "published_path": "followup-received/followup-two-test-files.patch.gz",
+      "uncompressed_sha256": "4ff39ce3db6cd876137c1fda5a50961654b55f4f00fa24603a00adb96f390ebf",
+      "uncompressed_bytes": 6489,
+      "compressed_sha256": "cb6429e0c566c58613c7e0ce18e035f48c424da6e3d790d3a2c8ae72e2112bd0",
+      "compressed_bytes": 1739
+    }
+  ],
+  "all_59_material_hashes_reverified": true
+}
