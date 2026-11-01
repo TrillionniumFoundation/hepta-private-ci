@@ -937,7 +937,7 @@ mod tests {
             &intent.run_id,
             &intent.step_id,
         )
-        .context("provider key")?;
+        .map_err(|error| anyhow::anyhow!("provider key: {error:?}"))?;
         let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
         let ack = serde_json::json!({
             "effect_key": provider_key.as_str(),
@@ -969,6 +969,7 @@ mod tests {
         };
         let contract_digest = unsigned_provider_config
             .contract_sha256()
+            .map_err(anyhow::Error::msg)
             .context("contract digest")?;
         let statement = HttpProviderEffectContractAttestation::statement_for(
             "agentd-product-effect-contract",

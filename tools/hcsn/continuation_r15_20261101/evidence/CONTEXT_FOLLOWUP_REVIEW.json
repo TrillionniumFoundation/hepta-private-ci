@@ -1,0 +1,75 @@
+{
+  "review_kind": "Read-only signature and diff review; does not replace native compile/test gate",
+  "base_head": "91afb9b88d6ec3ce159c261a635e05ef32394158",
+  "old_review_correction": "Earlier broad Context-compatibility assurance was incomplete: ProviderEffectBindingError has Debug but no Display/Error and contract_sha256 returns String. Actual head6500d808 CI exposed both. This receipt supersedes that assurance for these two repaired calls only.",
+  "confirmed_signatures": [
+    {
+      "call": "ProviderEffectKey::for_operation",
+      "source": "codex-rs/hepta-contracts/src/provider_effect.rs:83-87,473-489",
+      "error": "ProviderEffectBindingError: Debug, Eq, PartialEq, Clone; no Error or Display implementation found",
+      "repair": "map_err to anyhow! formatted with Debug; no unsupported Context invocation remains"
+    },
+    {
+      "call": "HttpProviderEffectConfig::contract_sha256",
+      "source": "codex-rs/model-provider/src/provider_effect.rs:120",
+      "error": "String",
+      "repair": "map_err(anyhow::Error::msg) before context"
+    },
+    {
+      "call": "StableId::new and Generation::new",
+      "source": "codex-rs/hepta-types/src/identity.rs:58,228-239,400-428",
+      "error": "IdentityError with explicit Display and std::error::Error implementations; owned/copy variants",
+      "repair": "Context and ? are compatible"
+    },
+    {
+      "call": "OpenOptions::open",
+      "source": "Rust std::fs API",
+      "error": "std::io::Error",
+      "repair": "Context compatible"
+    }
+  ],
+  "closure_review": "trust_signers map explicitly returns anyhow::Result<serde_json::Value>, each JSON success is wrapped in Ok, and collect::<Result<Vec<_>>>()? occurs in the Result-returning async test. policy_manifest now returns Result and its three array entries propagate ?. All new id/generation/new_rw call sites inspected, success values preserved.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "base_git_blob": "0c97ad0b1340eadb6a1b5a46a4ceb33ec24eb9f7",
+      "candidate_sha256": "a75818c065f24d53025d7671abc8297041070b7532f51ec0908d64b84f80aec5",
+      "assert_macro_invocations": {
+        "before": 5,
+        "after": 5,
+        "same_invocation_lines": true
+      },
+      "string_literal_count_before": 178,
+      "string_literal_count_after": 178,
+      "only_intended_error_message_changed": true,
+      "production_prefix_exactly_preserved": true,
+      "complete_assert_macro_tokens_exactly_preserved": {
+        "count": 5,
+        "sha256": "0ddaa844c2de443bfaa4b70be326fa368f2beddcee0bd08001ddb4b1312cfe7a",
+        "same_bytes": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+      "base_git_blob": "8b7a329216db2cd56d3c104214414dc0ffc61c47",
+      "candidate_sha256": "0bf968f2a8e457cfd4078ff80aa60aa099bf58d0825e64e4c4fe28187cf5ee9d",
+      "assert_macro_invocations": {
+        "before": 3,
+        "after": 3,
+        "same_invocation_lines": true
+      },
+      "string_literal_count_before": 196,
+      "string_literal_count_after": 196,
+      "all_ordered_fixture_and_message_string_literals_identical": true,
+      "remaining_expect_count": 1,
+      "complete_assert_macro_tokens_exactly_preserved": {
+        "count": 3,
+        "sha256": "2817acf4ec191cee9bf709c6be5c185f1b2b714f7cae9bd0e2ef3f59b5889a31",
+        "same_bytes": true
+      },
+      "all_ordered_numeric_literal_tokens_identical": true,
+      "remaining_expect_scope": "Existing neuron.current_anchor()?.expect(\"neuron anchor\") stays inside the original tokio::test body, rather than an unannotated helper; no new expect was introduced. Current failing log named only the three helper sites being repaired."
+    }
+  ],
+  "actual_native_validation": "pending parent new-head GNU Clippy/release; no native build run by reviewer"
+}
