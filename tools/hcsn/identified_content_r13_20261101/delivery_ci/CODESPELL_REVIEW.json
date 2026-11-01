@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.r13.delivery.codespell-review.v1",
+  "timestamp_utc": "2026-11-01T02:40:54.996294+00:00",
+  "job": {
+    "id": 124727217584,
+    "merge_commit": "639f2bca1c0742e5e7e51118be57a1feeb0d9029",
+    "codespell_version": "2.4.3",
+    "api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/124727217584"
+  },
+  "original_findings": {
+    "total_annotations": 2637,
+    "total_paths": 235,
+    "binary_or_encoded_annotations": 2608,
+    "binary_or_encoded_paths": 219,
+    "text_annotations": 29,
+    "text_paths": 16,
+    "legitimate_first_passage_time_acronym_annotations": 22,
+    "historical_local_identifier_annotations": 4,
+    "verbatim_ci_quotation_annotations": 3,
+    "observed_natural_language_errors": 0,
+    "r13_annotations": 0
+  },
+  "remedy": {
+    "binary_skip_patterns": [
+      "./experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_1009.tar.gz.part[0-9][0-9][0-9]",
+      "./experiments/analytic_event_neuron/round4/evidence/confirmation/CALIBRATION_CONFIRMATION_2017.tar.gz.part[0-9][0-9][0-9]",
+      "./experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part[0-9][0-9][0-9][0-9]",
+      "./experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part[0-9][0-9][0-9][0-9]",
+      "./experiments/analytic_event_neuron/round5/evidence/envelopes/figures_001/archive.tar.xz.b64.part[0-9][0-9][0-9][0-9]",
+      "./experiments/analytic_event_neuron/round5/evidence/envelopes/selection_smoke_001/archive.tar.gz.b64.part[0-9][0-9][0-9][0-9]",
+      "./experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-[0-9][0-9][0-9][0-9][0-9].bin",
+      "./experiments/analytic_event_neuron/round6/evidence/registered_preparation_bundle_001/part-[0-9][0-9][0-9][0-9][0-9].bin",
+      "./experiments/analytic_event_neuron/round7/evidence_bundle/part-[0-9][0-9][0-9][0-9][0-9].bin",
+      "./tools/hcsn/identified_content_r13_20261101/*.tar.gz.vol[0-9][0-9][0-9]",
+      "./tools/hcsn/identified_content_r13_20261101/NATIVE_OPERATOR_[0-9][0-9].bin.gz",
+      "./tools/hcsn/identified_content_r13_20261101/NATIVE_EVENTS_[0-9][0-9].bin.gz"
+    ],
+    "scientific_acronym_allowance": "fpt",
+    "exact_line_exclusion_file": ".codespell-exclude-lines",
+    "exact_line_count": 6,
+    "exact_line_scope": "Four historical local-identifier code lines and two distinct verbatim CI quotations; no whole scientific-text directory is skipped",
+    "ordinary_gzip": "No general gzip exclusion was added; every inspected ordinary R13 gzip archive already met the checker binary-detection rule",
+    "scientific_source_bytes_changed": false
+  },
+  "local_validation": {
+    "old_text_source_intervals": {
+      "paths": 16,
+      "baseline_annotations": 29,
+      "proposed_annotations": 0,
+      "baseline_exit": 65,
+      "proposed_exit": 0
+    },
+    "binary_annotation_coverage": {
+      "paths": 219,
+      "annotations": 2608,
+      "missed": 0
+    },
+    "original_tree_pattern_scope": {
+      "matched_paths": 895,
+      "matched_source_or_document_paths": 0,
+      "head": "90d1c11c5e654b1bf595c2564f1160df7d8e07a9"
+    },
+    "deliberate_prose_error_guard": {
+      "detected": 2,
+      "exit": 65
+    },
+    "r13_delivery_files": {
+      "checked_files": 162,
+      "baseline_annotations": 2,
+      "baseline_exit": 65,
+      "proposed_annotations": 0,
+      "proposed_exit": 0
+    },
+    "limits": "The original-text replay uses all reported source intervals; this is not a full remote repository checkout. The actual R13 published and new delivery files were scanned separately. Final CI remains authoritative."
+  },
+  "proposal_sha256": {
+    "config": "bdc10350cd3aa81f0a0a4fc80361e4bc6f7280508a19548c585ccc79d8d5fddb",
+    "exact_lines": "16f64780770d9ae505c4062f816ee65136100878a181508bc408e0f700dfa3ab",
+    "patch": "938c27101c1019157a50441c6136eb2b21aa65a145bb2a3e54aa159cdff4246f"
+  },
+  "detailed_evidence": {
+    "path": "CODESPELL_VALIDATION.json.gz",
+    "bytes": 41462,
+    "sha256": "10dc8e67574cb269ffd3ad25fd0a56cd951f4c6718ba05bb04637cd2e19a8233",
+    "content": "Parsed original annotations, original source intervals, pinned-tool output, candidate settings and scope guard; compressed to preserve verbatim diagnostics without spelling them as prose"
+  }
+}

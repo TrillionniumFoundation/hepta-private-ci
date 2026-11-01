@@ -35,6 +35,8 @@ The actual native default benchmark improves greatly over R12's uncached per-row
 
 The raw data, all fits, per-example outcomes, development failures and operator evidence are stored in deterministic archives. Large archives and exact tested Linux binaries have small numbered parts. The manifests bind every member and part with SHA256.
 
+The repository limits each Git blob to 512,000 bytes. Nine archives were repartitioned into 480,000-byte volumes after the first remote check; their complete compressed payloads, member hashes and pre-confirmation history are unchanged. See [the delivery record](delivery_ci/REPARTITION.json). This packaging correction does not change the registered experiment or its failed gates.
+
 From this directory, with Python available:
 
 ```bash

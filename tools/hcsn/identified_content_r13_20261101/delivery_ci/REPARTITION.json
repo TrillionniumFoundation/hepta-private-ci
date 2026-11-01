@@ -1,0 +1,171 @@
+{
+  "policy_limit_bytes": 512000,
+  "part_bytes": 480000,
+  "archive_payloads_and_member_hashes_unchanged": true,
+  "prior_commits_preserved": true,
+  "changes": [
+    {
+      "archive": "TRAINING_01.tar.gz",
+      "sha256": "a1e1605e9b19688ff88546eccd54d13d1b9713db0aebc8c1a39985a7383b996f",
+      "bytes": 860050,
+      "previous_paths": [
+        "TRAINING_01.tar.gz"
+      ],
+      "replacement_paths": [
+        "TRAINING_01.tar.gz.vol001",
+        "TRAINING_01.tar.gz.vol002"
+      ]
+    },
+    {
+      "archive": "TRAINING_02.tar.gz",
+      "sha256": "b872e581228320c59ee9b3c7655672e20fc48aa79bf45010033cbbe51bc6be6e",
+      "bytes": 860940,
+      "previous_paths": [
+        "TRAINING_02.tar.gz"
+      ],
+      "replacement_paths": [
+        "TRAINING_02.tar.gz.vol001",
+        "TRAINING_02.tar.gz.vol002"
+      ]
+    },
+    {
+      "archive": "TRAINING_03.tar.gz",
+      "sha256": "37d5370c183633fa7ec7f41e24ea55ec6cecb40a00b49e78d5e04b06ad0998bc",
+      "bytes": 866549,
+      "previous_paths": [
+        "TRAINING_03.tar.gz"
+      ],
+      "replacement_paths": [
+        "TRAINING_03.tar.gz.vol001",
+        "TRAINING_03.tar.gz.vol002"
+      ]
+    },
+    {
+      "archive": "TRAINING_04.tar.gz",
+      "sha256": "607f93aa00b4ca2f4d32e3ba6f35bcaa816d4f1f8dc30806e6c513ca4776d5e2",
+      "bytes": 866871,
+      "previous_paths": [
+        "TRAINING_04.tar.gz"
+      ],
+      "replacement_paths": [
+        "TRAINING_04.tar.gz.vol001",
+        "TRAINING_04.tar.gz.vol002"
+      ]
+    },
+    {
+      "archive": "TASK_CONFIRMATION.tar.gz",
+      "sha256": "61ff695566104fef77ed17c172a71e0b7f980b480815b0c787bfe2c975cf06c2",
+      "bytes": 1636405,
+      "previous_paths": [
+        "TASK_CONFIRMATION.tar.gz.part01",
+        "TASK_CONFIRMATION.tar.gz.part02",
+        "TASK_CONFIRMATION.tar.gz.part03"
+      ],
+      "replacement_paths": [
+        "TASK_CONFIRMATION.tar.gz.vol001",
+        "TASK_CONFIRMATION.tar.gz.vol002",
+        "TASK_CONFIRMATION.tar.gz.vol003",
+        "TASK_CONFIRMATION.tar.gz.vol004"
+      ]
+    },
+    {
+      "archive": "TASK_OUTCOMES.tar.gz",
+      "sha256": "4f7376f9e3f61f5487d94960e75299c2b0fd11d6d05d927d7f58a37a977e47c7",
+      "bytes": 1629008,
+      "previous_paths": [
+        "TASK_OUTCOMES.tar.gz.part01",
+        "TASK_OUTCOMES.tar.gz.part02",
+        "TASK_OUTCOMES.tar.gz.part03"
+      ],
+      "replacement_paths": [
+        "TASK_OUTCOMES.tar.gz.vol001",
+        "TASK_OUTCOMES.tar.gz.vol002",
+        "TASK_OUTCOMES.tar.gz.vol003",
+        "TASK_OUTCOMES.tar.gz.vol004"
+      ]
+    },
+    {
+      "archive": "DEVELOPMENT_EVIDENCE.tar.gz",
+      "sha256": "742e2ac1475a9353067dc7c68688a2a2878ed92d86a57303878599a8263cb08a",
+      "bytes": 699533,
+      "previous_paths": [
+        "DEVELOPMENT_EVIDENCE.tar.gz"
+      ],
+      "replacement_paths": [
+        "DEVELOPMENT_EVIDENCE.tar.gz.vol001",
+        "DEVELOPMENT_EVIDENCE.tar.gz.vol002"
+      ]
+    },
+    {
+      "archive": "NATIVE_EVIDENCE.tar.gz",
+      "sha256": "036b4ab30c720409a24210b234a0edb5d39c6d2bb45d9bcc53f4cfb00ba79695",
+      "bytes": 1469516,
+      "previous_paths": [
+        "NATIVE_EVIDENCE.tar.gz.part01",
+        "NATIVE_EVIDENCE.tar.gz.part02",
+        "NATIVE_EVIDENCE.tar.gz.part03"
+      ],
+      "replacement_paths": [
+        "NATIVE_EVIDENCE.tar.gz.vol001",
+        "NATIVE_EVIDENCE.tar.gz.vol002",
+        "NATIVE_EVIDENCE.tar.gz.vol003",
+        "NATIVE_EVIDENCE.tar.gz.vol004"
+      ]
+    },
+    {
+      "archive": "VERIFICATION_AND_REVIEW.tar.gz",
+      "sha256": "318f581add762fcda08c889662927d80f60525768aba5c290fe85fad659b000d",
+      "bytes": 711166,
+      "previous_paths": [
+        "VERIFICATION_AND_REVIEW.tar.gz"
+      ],
+      "replacement_paths": [
+        "VERIFICATION_AND_REVIEW.tar.gz.vol001",
+        "VERIFICATION_AND_REVIEW.tar.gz.vol002"
+      ]
+    }
+  ],
+  "remove_from_git_head_only": [
+    "TRAINING_01.tar.gz",
+    "TRAINING_02.tar.gz",
+    "TRAINING_03.tar.gz",
+    "TRAINING_04.tar.gz",
+    "TASK_CONFIRMATION.tar.gz.part01",
+    "TASK_CONFIRMATION.tar.gz.part02",
+    "TASK_CONFIRMATION.tar.gz.part03",
+    "TASK_OUTCOMES.tar.gz.part01",
+    "TASK_OUTCOMES.tar.gz.part02",
+    "TASK_OUTCOMES.tar.gz.part03",
+    "DEVELOPMENT_EVIDENCE.tar.gz",
+    "NATIVE_EVIDENCE.tar.gz.part01",
+    "NATIVE_EVIDENCE.tar.gz.part02",
+    "NATIVE_EVIDENCE.tar.gz.part03",
+    "VERIFICATION_AND_REVIEW.tar.gz"
+  ],
+  "add_to_git": [
+    "TRAINING_01.tar.gz.vol001",
+    "TRAINING_01.tar.gz.vol002",
+    "TRAINING_02.tar.gz.vol001",
+    "TRAINING_02.tar.gz.vol002",
+    "TRAINING_03.tar.gz.vol001",
+    "TRAINING_03.tar.gz.vol002",
+    "TRAINING_04.tar.gz.vol001",
+    "TRAINING_04.tar.gz.vol002",
+    "TASK_CONFIRMATION.tar.gz.vol001",
+    "TASK_CONFIRMATION.tar.gz.vol002",
+    "TASK_CONFIRMATION.tar.gz.vol003",
+    "TASK_CONFIRMATION.tar.gz.vol004",
+    "TASK_OUTCOMES.tar.gz.vol001",
+    "TASK_OUTCOMES.tar.gz.vol002",
+    "TASK_OUTCOMES.tar.gz.vol003",
+    "TASK_OUTCOMES.tar.gz.vol004",
+    "DEVELOPMENT_EVIDENCE.tar.gz.vol001",
+    "DEVELOPMENT_EVIDENCE.tar.gz.vol002",
+    "NATIVE_EVIDENCE.tar.gz.vol001",
+    "NATIVE_EVIDENCE.tar.gz.vol002",
+    "NATIVE_EVIDENCE.tar.gz.vol003",
+    "NATIVE_EVIDENCE.tar.gz.vol004",
+    "VERIFICATION_AND_REVIEW.tar.gz.vol001",
+    "VERIFICATION_AND_REVIEW.tar.gz.vol002"
+  ]
+}
