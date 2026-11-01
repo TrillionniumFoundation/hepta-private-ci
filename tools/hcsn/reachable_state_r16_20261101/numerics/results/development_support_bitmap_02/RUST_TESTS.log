@@ -1,0 +1,15 @@
+
+running 10 tests
+test tests::budget_and_clock_failures_are_atomic_across_addresses ... ok
+test tests::observation_preserves_rare_support_but_refuses_uncertified_precision ... ok
+test tests::tiny_positive_support_is_kept_and_structural_zero_is_kept ... ok
+test tests::checkpoint_preserves_model_and_full_state_then_continues_identically ... ok
+test tests::checksum_model_dimension_and_semantically_invalid_state_are_rejected ... ok
+test tests::impossible_observation_and_bad_address_do_not_mutate ... ok
+test tests::impossible_or_overflowing_inputs_are_rejected ... ok
+test tests::sha256_matches_published_vectors_across_padding_boundary ... ok
+test tests::propagation_and_write_are_exact_on_integer_permutations ... ok
+test tests::nonuniform_rounding_is_normalized_and_radius_is_valid ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,85 @@
+{
+  "all_numerical_cost_production_blockers_closed": false,
+  "fixed_boundary_zero_drift_pde_passed": true,
+  "hybrid": [
+    {
+      "checkpoint_bytes": 26530,
+      "events": 549,
+      "fallbacks": 20,
+      "float_l1_max": 1.3872150748668104e-05,
+      "full_execution_cpu_seconds": 2.7616540000000005,
+      "high_precision_replayed_events": 549,
+      "maximum_interval_radius_units": 233,
+      "maximum_native_radius_units": 158447,
+      "passed": true,
+      "path": "tools/hcsn/reachable_state_r16_20261101/numerics/results/hybrid_qualification_163211/HYBRID_VALIDATION.json",
+      "resume_interval_cache_exact": true,
+      "resume_native_checkpoint_exact": true,
+      "resume_trace_exact": true,
+      "seed": 163211,
+      "source_commit": "44443bbdc2b6e6695bdca2ec728e923c7cdbea22"
+    },
+    {
+      "checkpoint_bytes": 26578,
+      "events": 549,
+      "fallbacks": 19,
+      "float_l1_max": 1.3546827413115669e-05,
+      "full_execution_cpu_seconds": 2.6801380000000004,
+      "high_precision_replayed_events": 549,
+      "maximum_interval_radius_units": 228,
+      "maximum_native_radius_units": 135904,
+      "passed": true,
+      "path": "tools/hcsn/reachable_state_r16_20261101/numerics/results/hybrid_qualification_163213/HYBRID_VALIDATION.json",
+      "resume_interval_cache_exact": true,
+      "resume_native_checkpoint_exact": true,
+      "resume_trace_exact": true,
+      "seed": 163213,
+      "source_commit": "44443bbdc2b6e6695bdca2ec728e923c7cdbea22"
+    }
+  ],
+  "hybrid_source_commit": "44443bbdc2b6e6695bdca2ec728e923c7cdbea22",
+  "interpretation": "True entries close only their stated finite numerical profile. Null entries are unmeasured, false pure-Q24 continuation is an observed failed contract. All seven scientific categories are not thereby closed.",
+  "limited_profile_closures": {
+    "fixed_boundary_diffusion_stencil_convergence": true,
+    "hybrid_fixture_all_549_events_with_original_one_percent_bound": true,
+    "hybrid_trusted_complete_tape_recovery": true,
+    "integer_q24_mass_support_error_arithmetic": true
+  },
+  "native_source_commit": "4c51e9a068a887fcf80573628e7692a1f84f9c18",
+  "open_or_failed": {
+    "authenticated_antirollback_recovery": null,
+    "complete_cost_net_benefit": null,
+    "continuous_full_hx_free_boundary_regeneration_pde": null,
+    "energy_and_network_measurement": null,
+    "history_bounded_long_run_deployment": null,
+    "native_value_planner_and_real_owner_integration": null,
+    "pure_q24_all_events_under_original_one_percent_bound": false
+  },
+  "pde_finest_probability_l1_max": 6.063371981335831e-05,
+  "production_activation": false,
+  "pure_q24": [
+    {
+      "arithmetic_and_replay_passed": true,
+      "checked_probability_counts": 88000,
+      "events": 549,
+      "float_l1_max": 1.7825061262875692e-05,
+      "path": "tools/hcsn/reachable_state_r16_20261101/numerics/results/qualification_163201/Q24_VALIDATION.json",
+      "seed": 163201,
+      "strict_one_percent_completed": 22,
+      "strict_one_percent_failure": "operation line 23: precision required: observation error budget",
+      "strict_one_percent_returncode": 2
+    },
+    {
+      "arithmetic_and_replay_passed": true,
+      "checked_probability_counts": 88000,
+      "events": 549,
+      "float_l1_max": 1.9103885652877665e-05,
+      "path": "tools/hcsn/reachable_state_r16_20261101/numerics/results/qualification_163203/Q24_VALIDATION.json",
+      "seed": 163203,
+      "strict_one_percent_completed": 33,
+      "strict_one_percent_failure": "operation line 34: precision required: observation error budget",
+      "strict_one_percent_returncode": 2
+    }
+  ],
+  "schema": "hcsn-r16-numerics-acceptance-v1"
+}

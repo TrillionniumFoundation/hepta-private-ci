@@ -1,0 +1,282 @@
+{
+  "arms": {
+    "iid": {
+      "ordinary_dual": {
+        "mean_fee": 0.014344889322916669,
+        "mean_reward": 0.9235026041666667,
+        "mean_utility": 0.90915771484375
+      },
+      "state_confidence": {
+        "mean_fee": 0.014289876302083336,
+        "mean_reward": 0.923828125,
+        "mean_utility": 0.9095382486979167
+      },
+      "stop_value": {
+        "mean_fee": 0.014253255208333336,
+        "mean_reward": 0.923828125,
+        "mean_utility": 0.9095748697916666
+      },
+      "value_risk": {
+        "mean_fee": 0.014458658854166669,
+        "mean_reward": 0.9241536458333334,
+        "mean_utility": 0.9096949869791666
+      }
+    },
+    "ood": {
+      "ordinary_dual": {
+        "mean_fee": 0.019744140625000003,
+        "mean_reward": 0.9189453125,
+        "mean_utility": 0.899201171875
+      },
+      "state_confidence": {
+        "mean_fee": 0.01983522135416667,
+        "mean_reward": 0.9189453125,
+        "mean_utility": 0.8991100911458333
+      },
+      "stop_value": {
+        "mean_fee": 0.019738997395833336,
+        "mean_reward": 0.9189453125,
+        "mean_utility": 0.8992063151041666
+      },
+      "value_risk": {
+        "mean_fee": 0.01992861328125,
+        "mean_reward": 0.9195963541666667,
+        "mean_utility": 0.8996677408854167
+      }
+    }
+  },
+  "current_costs": {
+    "iid": {
+      "ordinary_dual": {
+        "mean_cold_cpu_seconds": 0.059482317500000034,
+        "mean_feature_cpu_per_query": 4.059374153646011e-05,
+        "mean_online_cpu_seconds": 0.002772279730468755,
+        "reused_current_cpu": {
+          "1": 0.06225459723046879,
+          "100": 0.3367102905468755,
+          "1000": 2.831762047968755,
+          "10000": 27.78227962218755
+        }
+      },
+      "state_confidence": {
+        "mean_cold_cpu_seconds": 0.06043820549999995,
+        "mean_feature_cpu_per_query": 3.7163680664067356e-05,
+        "mean_online_cpu_seconds": 0.0027165096835937473,
+        "reused_current_cpu": {
+          "1": 0.0631547151835937,
+          "100": 0.3320891738593747,
+          "1000": 2.7769478890937473,
+          "10000": 27.22553504143747
+        }
+      },
+      "stop_value": {
+        "mean_cold_cpu_seconds": 0.05946568137499997,
+        "mean_feature_cpu_per_query": 5.081063606770829e-05,
+        "mean_online_cpu_seconds": 0.0028320503554687473,
+        "reused_current_cpu": {
+          "1": 0.062297731730468715,
+          "100": 0.3426707169218747,
+          "1000": 2.8915160368437474,
+          "10000": 28.379969236062472
+        }
+      },
+      "value_risk": {
+        "mean_cold_cpu_seconds": 0.06011454962499986,
+        "mean_feature_cpu_per_query": 0.00010106474967448256,
+        "mean_online_cpu_seconds": 0.0030849608652343775,
+        "reused_current_cpu": {
+          "1": 0.06319951049023424,
+          "100": 0.3686106361484376,
+          "1000": 3.1450754148593774,
+          "10000": 30.909723201968774
+        }
+      }
+    },
+    "ood": {
+      "ordinary_dual": {
+        "mean_cold_cpu_seconds": 0.049484157374999865,
+        "mean_feature_cpu_per_query": 3.9196056315098224e-05,
+        "mean_online_cpu_seconds": 0.0026890446015624936,
+        "reused_current_cpu": {
+          "1": 0.05217320197656236,
+          "100": 0.31838861753124925,
+          "1000": 2.7385287589374934,
+          "10000": 26.939930172999937
+        }
+      },
+      "state_confidence": {
+        "mean_cold_cpu_seconds": 0.05019172349999998,
+        "mean_feature_cpu_per_query": 3.4445175130210816e-05,
+        "mean_online_cpu_seconds": 0.0025856486328124937,
+        "reused_current_cpu": {
+          "1": 0.05277737213281247,
+          "100": 0.3087565867812494,
+          "1000": 2.6358403563124932,
+          "10000": 25.906678051624937
+        }
+      },
+      "stop_value": {
+        "mean_cold_cpu_seconds": 0.049386866624999914,
+        "mean_feature_cpu_per_query": 4.652033658853524e-05,
+        "mean_online_cpu_seconds": 0.002716155906250004,
+        "reused_current_cpu": {
+          "1": 0.05210302253124992,
+          "100": 0.3210024572500003,
+          "1000": 2.765542772875004,
+          "10000": 27.21094592912504
+        }
+      },
+      "value_risk": {
+        "mean_cold_cpu_seconds": 0.05002907874999993,
+        "mean_feature_cpu_per_query": 8.757516438802088e-05,
+        "mean_online_cpu_seconds": 0.0028869872246093833,
+        "reused_current_cpu": {
+          "1": 0.05291606597460931,
+          "100": 0.33872780121093826,
+          "1000": 2.9370163033593832,
+          "10000": 28.919901324843835
+        }
+      }
+    }
+  },
+  "gain_gate": false,
+  "historical_training": [
+    {
+      "nested_learned_controller_cpu_seconds": 0.28765233000000023,
+      "scope": "Nested old-host function timers; not additional current CPU and not complete process costs.",
+      "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+      "whole_training_function_cpu_seconds": 3.413979843
+    },
+    {
+      "nested_learned_controller_cpu_seconds": 0.2727500650000003,
+      "scope": "Nested old-host function timers; not additional current CPU and not complete process costs.",
+      "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+      "whole_training_function_cpu_seconds": 3.092734846
+    },
+    {
+      "nested_learned_controller_cpu_seconds": 0.23305955499999964,
+      "scope": "Nested old-host function timers; not additional current CPU and not complete process costs.",
+      "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+      "whole_training_function_cpu_seconds": 3.7797726560000005
+    },
+    {
+      "nested_learned_controller_cpu_seconds": 0.263033702,
+      "scope": "Nested old-host function timers; not additional current CPU and not complete process costs.",
+      "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+      "whole_training_function_cpu_seconds": 2.919632238
+    },
+    {
+      "nested_learned_controller_cpu_seconds": 0.22879776900000026,
+      "scope": "Nested old-host function timers; not additional current CPU and not complete process costs.",
+      "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+      "whole_training_function_cpu_seconds": 3.150427819
+    },
+    {
+      "nested_learned_controller_cpu_seconds": 0.236670465,
+      "scope": "Nested old-host function timers; not additional current CPU and not complete process costs.",
+      "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+      "whole_training_function_cpu_seconds": 3.041591277
+    },
+    {
+      "nested_learned_controller_cpu_seconds": 0.25214770100000017,
+      "scope": "Nested old-host function timers; not additional current CPU and not complete process costs.",
+      "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+      "whole_training_function_cpu_seconds": 3.327724364
+    },
+    {
+      "nested_learned_controller_cpu_seconds": 0.2469249040000001,
+      "scope": "Nested old-host function timers; not additional current CPU and not complete process costs.",
+      "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+      "whole_training_function_cpu_seconds": 2.989007567
+    }
+  ],
+  "independent_unit": "paired fit; n=8",
+  "measured_worker_cpu_seconds": 25.28436751,
+  "schema": "hcsn-r16-channel-statistics-v1",
+  "scope": "Frozen one-action policies; inherited fitting separately reported, current costs are not full life-cycle or energy costs.",
+  "source_commit": "df19a18ae4984bcc3a23e0bfe1f7f048ce905fa5",
+  "source_manifest_sha256": "b7909ba83e5b77a4e00f96b67a251a7f919de3038933cf47ac2d197335de85c7",
+  "tests": {
+    "iid:value_risk-minus-ordinary_dual": {
+      "exact_two_sided_sign_flip_p": 0.25,
+      "gain_gate": false,
+      "holm_p": 1.0,
+      "mean": 0.0005372721354166832,
+      "per_fit": [
+        0.0,
+        -0.0002968749999998632,
+        0.0017291666666666705,
+        0.0025013020833333233,
+        0.0007408854166666146,
+        -0.00037630208333327975,
+        0.0,
+        0.0
+      ],
+      "t95": [
+        -0.00034045814486872907,
+        0.0014150024157020954
+      ]
+    },
+    "iid:value_risk-minus-stop_value": {
+      "exact_two_sided_sign_flip_p": 1.0,
+      "gain_gate": false,
+      "holm_p": 1.0,
+      "mean": 0.00012011718750003231,
+      "per_fit": [
+        0.0,
+        -0.0002968749999998632,
+        0.0017291666666666705,
+        0.0,
+        0.0,
+        -0.00037630208333327975,
+        -9.505208333326909e-05,
+        0.0
+      ],
+      "t95": [
+        -0.000437431961655312,
+        0.0006776663366553766
+      ]
+    },
+    "ood:value_risk-minus-ordinary_dual": {
+      "exact_two_sided_sign_flip_p": 0.3984375,
+      "gain_gate": false,
+      "holm_p": 1.0,
+      "mean": 0.0004665690104166814,
+      "per_fit": [
+        3.906250000018652e-06,
+        -0.0017143229166667329,
+        -0.00019713541666666057,
+        -0.00020729166666666465,
+        0.002623697916666723,
+        0.0012601562500000885,
+        0.0020695312499999785,
+        -0.00010598958333329911
+      ],
+      "t95": [
+        -0.0007176516557608503,
+        0.0016507896765942131
+      ]
+    },
+    "ood:value_risk-minus-stop_value": {
+      "exact_two_sided_sign_flip_p": 0.3359375,
+      "gain_gate": false,
+      "holm_p": 1.0,
+      "mean": 0.00046142578125001055,
+      "per_fit": [
+        0.0004278645833333261,
+        -0.0018156250000000984,
+        -0.0004752604166666785,
+        0.0005057291666668018,
+        0.002623697916666723,
+        0.00036015624999996554,
+        0.002170833333333344,
+        -0.00010598958333329911
+      ],
+      "t95": [
+        -0.000720681158360596,
+        0.0016435327208606171
+      ]
+    }
+  },
+  "worlds": 1024
+}

@@ -1,0 +1,1001 @@
+{
+  "acceptance": true,
+  "cpu_seconds_including_raw_serialization": 17.760534545,
+  "critical_t": 2.6418596704980413,
+  "domain_gates": {
+    "iid": true,
+    "long_gap": true,
+    "noise_interference": true
+  },
+  "frozen_models_sha256": "b681230afcf21d526600bc6d864c27f610557110d3f40b244c96c27439d349fa",
+  "independent_unit": "fit; n=8",
+  "model_commit": "038b848df088654323dbbd190d96f79fdace662c",
+  "per_fit": {
+    "iid": {
+      "cosine": [
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06501324799999697,
+          "seed": 160101,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.05599232200000692,
+          "seed": 160103,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.047512062000008015,
+          "seed": 160107,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07886919199999731,
+          "seed": 160109,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06456782600000999,
+          "seed": 160113,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0633742179999981,
+          "seed": 160117,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.05323908400000654,
+          "seed": 160119,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07055423900002467,
+          "seed": 160123,
+          "utility": 0.9979166666666667
+        }
+      ],
+      "gated_delta": [
+        {
+          "accuracy": 0.8567708333333334,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07194563599999482,
+          "seed": 160101,
+          "utility": 0.8546875
+        },
+        {
+          "accuracy": 0.8671875,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06437734699999886,
+          "seed": 160103,
+          "utility": 0.8651041666666668
+        },
+        {
+          "accuracy": 0.8636067708333333,
+          "episodes": 128,
+          "online_cpu_seconds": 0.05460738300000223,
+          "seed": 160107,
+          "utility": 0.8615234375
+        },
+        {
+          "accuracy": 0.8828125,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08276202999999782,
+          "seed": 160109,
+          "utility": 0.8807291666666668
+        },
+        {
+          "accuracy": 0.8590494791666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07105241500000758,
+          "seed": 160113,
+          "utility": 0.8569661458333333
+        },
+        {
+          "accuracy": 0.8583984375,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07439321300000401,
+          "seed": 160117,
+          "utility": 0.8563151041666668
+        },
+        {
+          "accuracy": 0.869140625,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06117718099999969,
+          "seed": 160119,
+          "utility": 0.8670572916666667
+        },
+        {
+          "accuracy": 0.8776041666666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08008262999999616,
+          "seed": 160123,
+          "utility": 0.8755208333333335
+        }
+      ],
+      "oracle": [
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0030292639999962567,
+          "seed": 160101,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.002781742000002474,
+          "seed": 160103,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0023174890000010606,
+          "seed": 160107,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.003925959000000034,
+          "seed": 160109,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0035708989999996277,
+          "seed": 160113,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0035039370000014003,
+          "seed": 160117,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.002537377000018992,
+          "seed": 160119,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0038008499999939716,
+          "seed": 160123,
+          "utility": 0.9979166666666667
+        }
+      ],
+      "ridge": [
+        {
+          "accuracy": 0.9983723958333333,
+          "episodes": 128,
+          "online_cpu_seconds": 0.084419726999998,
+          "seed": 160101,
+          "utility": 0.9962890625
+        },
+        {
+          "accuracy": 0.9993489583333334,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07651242500000421,
+          "seed": 160103,
+          "utility": 0.997265625
+        },
+        {
+          "accuracy": 0.9993489583333333,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06254177599999977,
+          "seed": 160107,
+          "utility": 0.997265625
+        },
+        {
+          "accuracy": 0.9986979166666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.10001919300001028,
+          "seed": 160109,
+          "utility": 0.9966145833333333
+        },
+        {
+          "accuracy": 0.9993489583333334,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08419064100000995,
+          "seed": 160113,
+          "utility": 0.997265625
+        },
+        {
+          "accuracy": 0.998046875,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08216952299999924,
+          "seed": 160117,
+          "utility": 0.9959635416666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07382742899998718,
+          "seed": 160119,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 0.9996744791666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.09926254800001999,
+          "seed": 160123,
+          "utility": 0.9975911458333333
+        }
+      ],
+      "selected_ordinary": [
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06501324799999697,
+          "seed": 160101,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.05599232200000692,
+          "seed": 160103,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.047512062000008015,
+          "seed": 160107,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07886919199999731,
+          "seed": 160109,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06456782600000999,
+          "seed": 160113,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0633742179999981,
+          "seed": 160117,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.05323908400000654,
+          "seed": 160119,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07055423900002467,
+          "seed": 160123,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        }
+      ]
+    },
+    "long_gap": {
+      "cosine": [
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06447894699999646,
+          "seed": 160101,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.04710872899999963,
+          "seed": 160103,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.05331712800000332,
+          "seed": 160107,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0843399159999958,
+          "seed": 160109,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06848861799999817,
+          "seed": 160113,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06260627400001084,
+          "seed": 160117,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08682771199999273,
+          "seed": 160119,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08185661200000638,
+          "seed": 160123,
+          "utility": 0.9979166666666667
+        }
+      ],
+      "gated_delta": [
+        {
+          "accuracy": 0.876953125,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07050457900000229,
+          "seed": 160101,
+          "utility": 0.8748697916666667
+        },
+        {
+          "accuracy": 0.8645833333333333,
+          "episodes": 128,
+          "online_cpu_seconds": 0.05631789799999787,
+          "seed": 160103,
+          "utility": 0.8625
+        },
+        {
+          "accuracy": 0.8450520833333334,
+          "episodes": 128,
+          "online_cpu_seconds": 0.059981006000000114,
+          "seed": 160107,
+          "utility": 0.84296875
+        },
+        {
+          "accuracy": 0.8776041666666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.09329327100000029,
+          "seed": 160109,
+          "utility": 0.8755208333333334
+        },
+        {
+          "accuracy": 0.8623046875,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07324519700000565,
+          "seed": 160113,
+          "utility": 0.8602213541666668
+        },
+        {
+          "accuracy": 0.869140625,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06532239399999895,
+          "seed": 160117,
+          "utility": 0.8670572916666667
+        },
+        {
+          "accuracy": 0.84765625,
+          "episodes": 128,
+          "online_cpu_seconds": 0.09644250399999699,
+          "seed": 160119,
+          "utility": 0.8455729166666667
+        },
+        {
+          "accuracy": 0.8557942708333333,
+          "episodes": 128,
+          "online_cpu_seconds": 0.09087198900000004,
+          "seed": 160123,
+          "utility": 0.8537109375
+        }
+      ],
+      "oracle": [
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0033524160000002468,
+          "seed": 160101,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.002247344999996237,
+          "seed": 160103,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0024497029999999143,
+          "seed": 160107,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.004118171999996534,
+          "seed": 160109,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0033996770000044307,
+          "seed": 160113,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.003217101999993588,
+          "seed": 160117,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0047296840000061735,
+          "seed": 160119,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.004361672999976918,
+          "seed": 160123,
+          "utility": 0.9979166666666667
+        }
+      ],
+      "ridge": [
+        {
+          "accuracy": 0.9990234375,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08477388500000016,
+          "seed": 160101,
+          "utility": 0.9969401041666667
+        },
+        {
+          "accuracy": 0.9996744791666666,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06352368700000532,
+          "seed": 160103,
+          "utility": 0.9975911458333333
+        },
+        {
+          "accuracy": 0.9983723958333333,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07034925799999847,
+          "seed": 160107,
+          "utility": 0.9962890625
+        },
+        {
+          "accuracy": 0.9977213541666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.1088565119999938,
+          "seed": 160109,
+          "utility": 0.9956380208333333
+        },
+        {
+          "accuracy": 0.9996744791666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08358179799999732,
+          "seed": 160113,
+          "utility": 0.9975911458333333
+        },
+        {
+          "accuracy": 0.9983723958333334,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08018470099998964,
+          "seed": 160117,
+          "utility": 0.9962890625
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.11657094499998699,
+          "seed": 160119,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 0.9990234375,
+          "episodes": 128,
+          "online_cpu_seconds": 0.11392036899998814,
+          "seed": 160123,
+          "utility": 0.9969401041666667
+        }
+      ],
+      "selected_ordinary": [
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06447894699999646,
+          "seed": 160101,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.04710872899999963,
+          "seed": 160103,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.05331712800000332,
+          "seed": 160107,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0843399159999958,
+          "seed": 160109,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06848861799999817,
+          "seed": 160113,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06260627400001084,
+          "seed": 160117,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08682771199999273,
+          "seed": 160119,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08185661200000638,
+          "seed": 160123,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        }
+      ]
+    },
+    "noise_interference": {
+      "cosine": [
+        {
+          "accuracy": 0.9996744791666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06259708600000424,
+          "seed": 160101,
+          "utility": 0.9975911458333333
+        },
+        {
+          "accuracy": 0.9986979166666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07183065500000385,
+          "seed": 160103,
+          "utility": 0.9966145833333333
+        },
+        {
+          "accuracy": 0.9990234375,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08309651699999776,
+          "seed": 160107,
+          "utility": 0.9969401041666667
+        },
+        {
+          "accuracy": 0.9986979166666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07196786399999766,
+          "seed": 160109,
+          "utility": 0.9966145833333333
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06468500599998706,
+          "seed": 160113,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 0.9993489583333333,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07667413399999923,
+          "seed": 160117,
+          "utility": 0.997265625
+        },
+        {
+          "accuracy": 0.9996744791666666,
+          "episodes": 128,
+          "online_cpu_seconds": 0.09879961800000103,
+          "seed": 160119,
+          "utility": 0.9975911458333333
+        },
+        {
+          "accuracy": 0.9996744791666666,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08618308699999844,
+          "seed": 160123,
+          "utility": 0.9975911458333333
+        }
+      ],
+      "gated_delta": [
+        {
+          "accuracy": 0.8326822916666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08924251899999947,
+          "seed": 160101,
+          "utility": 0.8305989583333333
+        },
+        {
+          "accuracy": 0.8219401041666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.10805930799999697,
+          "seed": 160103,
+          "utility": 0.8198567708333334
+        },
+        {
+          "accuracy": 0.8186848958333334,
+          "episodes": 128,
+          "online_cpu_seconds": 0.1036495230000023,
+          "seed": 160107,
+          "utility": 0.8166015625
+        },
+        {
+          "accuracy": 0.83984375,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08580729000001597,
+          "seed": 160109,
+          "utility": 0.8377604166666668
+        },
+        {
+          "accuracy": 0.8251953125,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08993611600000584,
+          "seed": 160113,
+          "utility": 0.8231119791666666
+        },
+        {
+          "accuracy": 0.8216145833333334,
+          "episodes": 128,
+          "online_cpu_seconds": 0.10864443400000035,
+          "seed": 160117,
+          "utility": 0.81953125
+        },
+        {
+          "accuracy": 0.845703125,
+          "episodes": 128,
+          "online_cpu_seconds": 0.13849982399997884,
+          "seed": 160119,
+          "utility": 0.8436197916666668
+        },
+        {
+          "accuracy": 0.8528645833333333,
+          "episodes": 128,
+          "online_cpu_seconds": 0.11998726999998865,
+          "seed": 160123,
+          "utility": 0.85078125
+        }
+      ],
+      "oracle": [
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.004013704999998868,
+          "seed": 160101,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.004724728999995875,
+          "seed": 160103,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0052848389999891054,
+          "seed": 160107,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.004897022999990952,
+          "seed": 160109,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.004428659000014434,
+          "seed": 160113,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.00589330400000776,
+          "seed": 160117,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.007780603000000497,
+          "seed": 160119,
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.0069829339999891715,
+          "seed": 160123,
+          "utility": 0.9979166666666667
+        }
+      ],
+      "ridge": [
+        {
+          "accuracy": 0.9700520833333334,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07769371900000399,
+          "seed": 160101,
+          "utility": 0.96796875
+        },
+        {
+          "accuracy": 0.9674479166666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.09239381900000421,
+          "seed": 160103,
+          "utility": 0.9653645833333335
+        },
+        {
+          "accuracy": 0.9733072916666666,
+          "episodes": 128,
+          "online_cpu_seconds": 0.09479712300000998,
+          "seed": 160107,
+          "utility": 0.9712239583333334
+        },
+        {
+          "accuracy": 0.9677734375,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08036903000000706,
+          "seed": 160109,
+          "utility": 0.9656901041666668
+        },
+        {
+          "accuracy": 0.982421875,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08084454399999252,
+          "seed": 160113,
+          "utility": 0.9803385416666668
+        },
+        {
+          "accuracy": 0.9593098958333334,
+          "episodes": 128,
+          "online_cpu_seconds": 0.09392593399999605,
+          "seed": 160117,
+          "utility": 0.9572265625
+        },
+        {
+          "accuracy": 0.9820963541666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.12285057500000462,
+          "seed": 160119,
+          "utility": 0.9800130208333334
+        },
+        {
+          "accuracy": 0.9716796875,
+          "episodes": 128,
+          "online_cpu_seconds": 0.10663728400000849,
+          "seed": 160123,
+          "utility": 0.9695963541666668
+        }
+      ],
+      "selected_ordinary": [
+        {
+          "accuracy": 0.9996744791666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06259708600000424,
+          "seed": 160101,
+          "selected_family": "cosine",
+          "utility": 0.9975911458333333
+        },
+        {
+          "accuracy": 0.9986979166666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07183065500000385,
+          "seed": 160103,
+          "selected_family": "cosine",
+          "utility": 0.9966145833333333
+        },
+        {
+          "accuracy": 0.9990234375,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08309651699999776,
+          "seed": 160107,
+          "selected_family": "cosine",
+          "utility": 0.9969401041666667
+        },
+        {
+          "accuracy": 0.9986979166666667,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07196786399999766,
+          "seed": 160109,
+          "selected_family": "cosine",
+          "utility": 0.9966145833333333
+        },
+        {
+          "accuracy": 1.0,
+          "episodes": 128,
+          "online_cpu_seconds": 0.06468500599998706,
+          "seed": 160113,
+          "selected_family": "cosine",
+          "utility": 0.9979166666666667
+        },
+        {
+          "accuracy": 0.9993489583333333,
+          "episodes": 128,
+          "online_cpu_seconds": 0.07667413399999923,
+          "seed": 160117,
+          "selected_family": "cosine",
+          "utility": 0.997265625
+        },
+        {
+          "accuracy": 0.9996744791666666,
+          "episodes": 128,
+          "online_cpu_seconds": 0.09879961800000103,
+          "seed": 160119,
+          "selected_family": "cosine",
+          "utility": 0.9975911458333333
+        },
+        {
+          "accuracy": 0.9996744791666666,
+          "episodes": 128,
+          "online_cpu_seconds": 0.08618308699999844,
+          "seed": 160123,
+          "selected_family": "cosine",
+          "utility": 0.9975911458333333
+        }
+      ]
+    }
+  },
+  "schema": "hcsn-r16-content-confirmation-v1",
+  "scope": "Synthetic learned binding with strong ordinary retrieval; no HX comparison or general semantic-memory claim.",
+  "source_commit": "578a2cd37299cb5b299a8a1a4a7eca7c50a77b56",
+  "statistics": {
+    "iid": {
+      "cosine": {
+        "mean_accuracy": 1.0,
+        "mean_utility": 0.9979166666666667,
+        "simultaneous_accuracy_lower": 1.0
+      },
+      "gated_delta": {
+        "mean_accuracy": 0.8668212890625,
+        "mean_utility": 0.8647379557291668,
+        "simultaneous_accuracy_lower": 0.8580294618384936
+      },
+      "oracle": {
+        "mean_accuracy": 1.0,
+        "mean_utility": 0.9979166666666667,
+        "simultaneous_accuracy_lower": 1.0
+      },
+      "ridge": {
+        "mean_accuracy": 0.9991048177083333,
+        "mean_utility": 0.997021484375,
+        "simultaneous_accuracy_lower": 0.9984806439179541
+      },
+      "selected_ordinary": {
+        "mean_accuracy": 1.0,
+        "mean_utility": 0.9979166666666667,
+        "simultaneous_accuracy_lower": 1.0
+      }
+    },
+    "long_gap": {
+      "cosine": {
+        "mean_accuracy": 1.0,
+        "mean_utility": 0.9979166666666667,
+        "simultaneous_accuracy_lower": 1.0
+      },
+      "gated_delta": {
+        "mean_accuracy": 0.8623860677083333,
+        "mean_utility": 0.860302734375,
+        "simultaneous_accuracy_lower": 0.8509185431770383
+      },
+      "oracle": {
+        "mean_accuracy": 1.0,
+        "mean_utility": 0.9979166666666667,
+        "simultaneous_accuracy_lower": 1.0
+      },
+      "ridge": {
+        "mean_accuracy": 0.9989827473958333,
+        "mean_utility": 0.9968994140625,
+        "simultaneous_accuracy_lower": 0.9982480247886745
+      },
+      "selected_ordinary": {
+        "mean_accuracy": 1.0,
+        "mean_utility": 0.9979166666666667,
+        "simultaneous_accuracy_lower": 1.0
+      }
+    },
+    "noise_interference": {
+      "cosine": {
+        "mean_accuracy": 0.9993489583333333,
+        "mean_utility": 0.997265625,
+        "simultaneous_accuracy_lower": 0.9988892794944689
+      },
+      "gated_delta": {
+        "mean_accuracy": 0.8323160807291667,
+        "mean_utility": 0.8302327473958333,
+        "simultaneous_accuracy_lower": 0.820517416230064
+      },
+      "oracle": {
+        "mean_accuracy": 1.0,
+        "mean_utility": 0.9979166666666667,
+        "simultaneous_accuracy_lower": 1.0
+      },
+      "ridge": {
+        "mean_accuracy": 0.9717610677083333,
+        "mean_utility": 0.969677734375,
+        "simultaneous_accuracy_lower": 0.9645664146742682
+      },
+      "selected_ordinary": {
+        "mean_accuracy": 0.9993489583333333,
+        "mean_utility": 0.997265625,
+        "simultaneous_accuracy_lower": 0.9988892794944689
+      }
+    }
+  }
+}

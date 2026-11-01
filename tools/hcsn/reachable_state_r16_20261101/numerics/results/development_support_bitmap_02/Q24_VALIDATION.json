@@ -1,0 +1,161 @@
+{
+  "addresses": 4,
+  "causal_tape_seed": 161101703,
+  "certificate_violations": 0,
+  "checked_address_states": 2200,
+  "checked_probability_counts": 88000,
+  "child_cpu_seconds": 2.0181810000000002,
+  "content_argmax_disagreements": 0,
+  "continuous_model_convergence_claim": false,
+  "environment": {
+    "numpy": "2.3.5",
+    "rustc": "/tmp/trnm-original-budget-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc"
+  },
+  "events": 549,
+  "float_reference_l1_max": 1.652492035863518e-05,
+  "float_reference_l1_p99": 3.535513127168203e-06,
+  "gates": {
+    "certified_radius_valid": true,
+    "float_reference_l1_below_1e_minus_4": true,
+    "integer_reference_exact": true,
+    "malformed_checkpoint_rejection": true,
+    "mass_and_structural_support": true,
+    "restart_exact": true,
+    "strict_guard_refuses_without_reset": true
+  },
+  "invalid_checkpoints": {
+    "checksum": {
+      "reason": "checkpoint checksum mismatch",
+      "rejected": true
+    },
+    "model": {
+      "reason": "checkpoint model mismatch",
+      "rejected": true
+    },
+    "truncated": {
+      "reason": "checkpoint schema or length mismatch",
+      "rejected": true
+    }
+  },
+  "model_bytes_sha256": "7cb7800d35f392732afd66b673df424581f1ade43d4556cd2aa8c24e6d576595",
+  "passed": true,
+  "probability_scale": 16777216,
+  "process_restart_bitwise_equal": true,
+  "production_activation": false,
+  "python_cpu_seconds": 0.361569555,
+  "receipts": [
+    {
+      "child_cpu_seconds": 1.545333,
+      "name": "compile_native",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.8950844610008062
+    },
+    {
+      "child_cpu_seconds": 0.3996519999999999,
+      "name": "compile_tests",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.4603997230005916
+    },
+    {
+      "child_cpu_seconds": 0.0022269999999999235,
+      "name": "rust_tests",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "c3f1b9b38390b37e083a454a5b9ccebf609eb5ba26a4d778a56460a4dbed9442",
+      "wall_seconds": 0.006009593002090696
+    },
+    {
+      "child_cpu_seconds": 0.02028599999999997,
+      "name": "full_diagnostic_tape",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "04bd1edf3094b54bce56496b01cc4fd2319e2bd204b186c3e5a2297b0aef1def",
+      "wall_seconds": 0.02863267800057656
+    },
+    {
+      "child_cpu_seconds": 0.011944000000000232,
+      "name": "prefix_process",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "472791169cecefd706eb13ea331f40b0c259f02291e62c0c80f21aead6417a73",
+      "wall_seconds": 0.04081249999944703
+    },
+    {
+      "child_cpu_seconds": 0.018693999999999822,
+      "name": "resumed_process",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "dbc127e5cc4d20229448d91f03a4de406f4b041ec6ccbd2ac48129cd6fbeee46",
+      "wall_seconds": 0.040835333998984424
+    },
+    {
+      "child_cpu_seconds": 0.0042669999999999375,
+      "name": "strict_one_percent_guard",
+      "returncode": 2,
+      "stderr": "operation line 34: precision required: observation error budget\n",
+      "stdout_sha256": "1f7106afa3d142bd19fd2a703caf8f502780ea815824d49fbca95feffdc0ce34",
+      "wall_seconds": 0.010006307002186077
+    },
+    {
+      "child_cpu_seconds": 0.0037580000000000113,
+      "name": "restart_cannot_reset_error_budget",
+      "returncode": 2,
+      "stderr": "precision required: restored or initial error budget\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.004274194001482101
+    },
+    {
+      "child_cpu_seconds": 0.005126000000000047,
+      "name": "reject_checksum",
+      "returncode": 2,
+      "stderr": "checkpoint checksum mismatch\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.0053363660008471925
+    },
+    {
+      "child_cpu_seconds": 0.00397800000000012,
+      "name": "reject_truncated",
+      "returncode": 2,
+      "stderr": "checkpoint schema or length mismatch\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.004163941001024796
+    },
+    {
+      "child_cpu_seconds": 0.0029160000000000297,
+      "name": "reject_changed_model_bytes",
+      "returncode": 2,
+      "stderr": "checkpoint model mismatch\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.016767952001828235
+    }
+  ],
+  "restart_does_not_reset_error_budget": {
+    "reason": "precision required: restored or initial error budget",
+    "rejected": true
+  },
+  "schema": "hcsn-r16-native-q24-v1",
+  "scope": "Q24 replay/filter/write and four-address memory checkpoint for one R15 finite operator; no native planner, owner integration, network, energy or quality claim.",
+  "source_conversion_l1_max": 2.0336315786387144e-15,
+  "source_fixture_scale": 1208925819614629174706176,
+  "source_hashes": {
+    "q24_checkpoint.rs": "88700f0bbc5e5120f18a119c104943169c14716a87b3dcc08b4ac1ab835c13e9",
+    "q24_core.rs": "1adeed7483da206c3f932087ab3b0daccdaf62d1a79f9720bdf3c85d32231041",
+    "q24_main.rs": "3661d18c4ea95d632513b2db6cdcaad21c4012c94acf0778fc9a2b7d771de759",
+    "q24_sha256.rs": "bed6b0b941bbd747c4c4d687e1ca5e2a62a540cbb44b86644fdd56700da3b08f",
+    "q24_tests.rs": "951eb1a4aa88777c0082303b8ee1d0e6fde6285bf266ee5dbba2f2bfcf7be8ad"
+  },
+  "source_law_identity": "f9bbedf121707d5d78515698c05c2bc5f915f8a8fac78df42e5664f4d842ddf7",
+  "source_operator_identity": "c3ad72d9b902f2896b9324b5d0308ee88ca8901dd46a2cc586b2f2cc346b059e",
+  "strict_guard": {
+    "checkpoint_written": false,
+    "completed": 33,
+    "maximum_l1": 0.01,
+    "reason": "operation line 34: precision required: observation error budget",
+    "returncode": 2
+  },
+  "structurally_possible_zero_count_coordinates": 919
+}

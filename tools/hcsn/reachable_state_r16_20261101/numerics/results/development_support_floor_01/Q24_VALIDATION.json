@@ -1,0 +1,160 @@
+{
+  "addresses": 4,
+  "causal_tape_seed": 161101703,
+  "certificate_violations": 0,
+  "checked_address_states": 2200,
+  "checked_probability_counts": 88000,
+  "child_cpu_seconds": 1.9185999999999999,
+  "content_argmax_disagreements": 0,
+  "continuous_model_convergence_claim": false,
+  "environment": {
+    "numpy": "2.3.5",
+    "rustc": "/tmp/trnm-original-budget-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc"
+  },
+  "events": 549,
+  "float_reference_l1_max": 0.00014476539484950985,
+  "float_reference_l1_p99": 2.6184261265828964e-05,
+  "gates": {
+    "certified_radius_valid": true,
+    "float_reference_l1_below_1e_minus_4": false,
+    "integer_reference_exact": true,
+    "malformed_checkpoint_rejection": true,
+    "mass_and_support": true,
+    "restart_exact": true,
+    "strict_guard_refuses_without_reset": true
+  },
+  "invalid_checkpoints": {
+    "checksum": {
+      "reason": "checkpoint checksum mismatch",
+      "rejected": true
+    },
+    "model": {
+      "reason": "checkpoint model mismatch",
+      "rejected": true
+    },
+    "truncated": {
+      "reason": "checkpoint schema or length mismatch",
+      "rejected": true
+    }
+  },
+  "model_bytes_sha256": "7cb7800d35f392732afd66b673df424581f1ade43d4556cd2aa8c24e6d576595",
+  "passed": false,
+  "probability_scale": 16777216,
+  "process_restart_bitwise_equal": true,
+  "production_activation": false,
+  "python_cpu_seconds": 0.42260779200000004,
+  "receipts": [
+    {
+      "child_cpu_seconds": 1.4293520000000002,
+      "name": "compile_native",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 1.6198473190015648
+    },
+    {
+      "child_cpu_seconds": 0.4354889999999999,
+      "name": "compile_tests",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.4660549489999539
+    },
+    {
+      "child_cpu_seconds": 0.004215000000000052,
+      "name": "rust_tests",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "4a52e5a06299cf1c808a0166f071d0d0afc6ae064996e212caf8ab1acddaa10c",
+      "wall_seconds": 0.003883076999045443
+    },
+    {
+      "child_cpu_seconds": 0.012369000000000074,
+      "name": "full_diagnostic_tape",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "8b40056a16f30a6c63c72411257177847526b69a8fc36772fc4cf0571acab5ce",
+      "wall_seconds": 0.01813818400114542
+    },
+    {
+      "child_cpu_seconds": 0.008625999999999995,
+      "name": "prefix_process",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "27ab5d7aa07d919e79987074b128cee01eafc93dd3cd1a0e96d65849cae92535",
+      "wall_seconds": 0.01040789900071104
+    },
+    {
+      "child_cpu_seconds": 0.00865499999999983,
+      "name": "resumed_process",
+      "returncode": 0,
+      "stderr": "",
+      "stdout_sha256": "49ff56d053190142b8b4a9785f5d783cad8e667efbb3e56c824e1a6fbeec92cb",
+      "wall_seconds": 0.010350465003284626
+    },
+    {
+      "child_cpu_seconds": 0.004785999999999929,
+      "name": "strict_one_percent_guard",
+      "returncode": 2,
+      "stderr": "operation line 34: precision required: observation error budget\n",
+      "stdout_sha256": "84a004f9883c1af5139282968ae5f938d11f491b5295ff5789155c651c97c241",
+      "wall_seconds": 0.005063306998636108
+    },
+    {
+      "child_cpu_seconds": 0.003514000000000017,
+      "name": "restart_cannot_reset_error_budget",
+      "returncode": 2,
+      "stderr": "precision required: restored or initial error budget\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.0037027250000392087
+    },
+    {
+      "child_cpu_seconds": 0.003238999999999992,
+      "name": "reject_checksum",
+      "returncode": 2,
+      "stderr": "checkpoint checksum mismatch\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.00339207599972724
+    },
+    {
+      "child_cpu_seconds": 0.004887000000000086,
+      "name": "reject_truncated",
+      "returncode": 2,
+      "stderr": "checkpoint schema or length mismatch\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.005145889001141768
+    },
+    {
+      "child_cpu_seconds": 0.0034679999999998046,
+      "name": "reject_changed_model_bytes",
+      "returncode": 2,
+      "stderr": "checkpoint model mismatch\n",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.0036970959990867414
+    }
+  ],
+  "restart_does_not_reset_error_budget": {
+    "reason": "precision required: restored or initial error budget",
+    "rejected": true
+  },
+  "schema": "hcsn-r16-native-q24-v1",
+  "scope": "Q24 replay/filter/write and four-address memory checkpoint for one R15 finite operator; no native planner, owner integration, network, energy or quality claim.",
+  "source_conversion_l1_max": 2.0336315786387144e-15,
+  "source_fixture_scale": 1208925819614629174706176,
+  "source_hashes": {
+    "q24_checkpoint.rs": "c33282a52b37d2704b498f9c4e7336b5dbeaad356715929f63740ac7de9ad841",
+    "q24_core.rs": "6602badf683cf9f4d2b95f99f31daf248dc55b120e6c15bb541114e5100c4053",
+    "q24_main.rs": "b99aad787195be70eec718ece4a15f3e0bef98be5fc5e15ea3376eec38d19b77",
+    "q24_sha256.rs": "bed6b0b941bbd747c4c4d687e1ca5e2a62a540cbb44b86644fdd56700da3b08f",
+    "q24_tests.rs": "6374bd71b06b9a967cb0e788472fcd8a68f867fce1dfa5ce14ceed809f620d59"
+  },
+  "source_law_identity": "f9bbedf121707d5d78515698c05c2bc5f915f8a8fac78df42e5664f4d842ddf7",
+  "source_operator_identity": "c3ad72d9b902f2896b9324b5d0308ee88ca8901dd46a2cc586b2f2cc346b059e",
+  "strict_guard": {
+    "checkpoint_written": false,
+    "completed": 33,
+    "maximum_l1": 0.01,
+    "reason": "operation line 34: precision required: observation error budget",
+    "returncode": 2
+  }
+}
