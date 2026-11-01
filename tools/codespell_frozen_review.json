@@ -1,0 +1,2645 @@
+{
+  "schema": "codespell.frozen-context-review.v1",
+  "source_commit": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "observed_job": 124796330066,
+  "observed_merge_commit": "bc17c8c6b6970908b6992bf3b9023f6eedd36bc3",
+  "codespell_version": "2.4.3",
+  "action_commit": "8f01853be192eb0f849a5c7d721450e7a467c579",
+  "scope": "Exact reviewed immutable lines and identified nonlinguistic payloads; all other spelling checks retained",
+  "literal_file": ".codespell-reviewed-lines",
+  "literal_file_sha256": "2d5248027510daa82b94eb09ed7166ea4c04d12ad06102b4499d5ae1fc033618",
+  "existing_skip_set_sha256": "10b232984d46f14c604acd60c4ded94630ca2b12ef29a5a4362487d54e2801cd",
+  "non_skip_configuration_sha256": "acd990e429670ba2341f476ad5efe89e6bad28589c6810136d802a99189977b1",
+  "ignore_words_file_sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+  "text_findings": 41,
+  "unique_literal_lines": 31,
+  "text_files": [
+    {
+      "path": "experiments/analytic_event_neuron/round2/evidence/runtime_independent_review.py",
+      "bytes": 34198,
+      "sha256": "41641fdb121487887cf15d48c9b5109a0c7b4a963487ed95447833da2a68a172",
+      "git_blob": "8b4444b61f033854edddcb2de59ab08ef16d7af0",
+      "lines": [
+        {
+          "line": 238,
+          "sha256": "9b8e1d39ef1f7d8d7d90a3a88d8c2330032701edbf21e2105bca8e2cd1e3942c",
+          "findings": 1,
+          "reasons": ["data digest variable identifier"]
+        },
+        {
+          "line": 247,
+          "sha256": "d16b764e029efb7bbdbb82e134c63680d62f2ca9aa7713538870cd6e09f29eb2",
+          "findings": 1,
+          "reasons": ["data digest variable identifier"]
+        }
+      ]
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/recovery/bridge_scope.json",
+      "bytes": 15844,
+      "sha256": "81eb1a5170e67792bb9654c2d2712ddc7891eb16c4d419ebaf4c29c776c2b333",
+      "git_blob": "14c851cbd8ff144624a2467478559adea7684c92",
+      "lines": [
+        {
+          "line": 71,
+          "sha256": "83540bc62aa89e159f1ee38c688343969c2850172bd89cd4528d99c13edc095c",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        },
+        {
+          "line": 75,
+          "sha256": "ef448714e9eadac890539294fabc685ade37a1158cc08a85855e46749e1dffd3",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/CONTRACT.md",
+      "bytes": 18999,
+      "sha256": "3a86423302001fad84ba9f57c1eb2ee2f8e0daf7601c12e9613ac3c7bcd076d2",
+      "git_blob": "55ccc93ad0c039138d4891c171c4d04834f79f06",
+      "lines": [
+        {
+          "line": 249,
+          "sha256": "4b1d97b58972b962c273d7f47d6156c3a4b82a556aa7f630779ffc25217d2571",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/DEVIATIONS.json",
+      "bytes": 6744,
+      "sha256": "f4c98056a715fc8becb9219f49578ba546dd00a0b734c65695c49dba092c711b",
+      "git_blob": "905fcf5fdf101b3859ef2671a6fcdcddb1a0e67f",
+      "lines": [
+        {
+          "line": 53,
+          "sha256": "58709c4a23e9ea976d4826cfed216f78a9a8447f3ee9e7be8e19877349b396fc",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/DYNAMICS.md",
+      "bytes": 18344,
+      "sha256": "6ac43888204aee82e83c94486cd2a3fd69e3a4e71c71d8a26debc35e830e6db7",
+      "git_blob": "59df52db905b6563f9b065dfc42147d88f707552",
+      "lines": [
+        {
+          "line": 219,
+          "sha256": "2768692ee09a0c43ddcaa89c36a95239ef7d53a7e3c6b505cea1fc545ae18525",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        },
+        {
+          "line": 267,
+          "sha256": "d8237ff9f7df04bbbd41da024502b65c4a6849966538b0a22bf153d99f896065",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/PROTOCOL.json",
+      "bytes": 35734,
+      "sha256": "7aed40bbba6d0b9265a9cf9b42186c1fb5c07954a8a628cd394957c39d50dfb4",
+      "git_blob": "3285abdb8d9e14c76bf95faa9cb845306792193f",
+      "lines": [
+        {
+          "line": 251,
+          "sha256": "f393c01b39bc5a5032f36c93ab337243611f8af16d36fefa0f03446e6297a39d",
+          "findings": 2,
+          "reasons": ["first passage time acronym"]
+        },
+        {
+          "line": 326,
+          "sha256": "06349b124be32820c7d586c516103e31b1e0bec0b36ca526187ef0e3932b7b96",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        },
+        {
+          "line": 543,
+          "sha256": "827f5923124269c0ebf5f8e629a1d60689094adad1baf4858fd1b9464afb57af",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/evidence/checkpoint_resolution_summary.json",
+      "bytes": 60277,
+      "sha256": "34da18a0a023aa2d1882fdf7e9f02d58d8a4762a295d861adbae9e19895e2794",
+      "git_blob": "5ce8b89a1277287baf1676954a4709ce2266ebb5",
+      "lines": [
+        {
+          "line": 194,
+          "sha256": "d0e38250a842abd6e13ea6f9b043444867c19e92d3c97af3e05a351c15a32bd9",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/evidence/checkpoint_resolution_transfer.json",
+      "bytes": 806573,
+      "sha256": "62d3fa8ac9d264ff56dd4a9db8d5a73df9fc7660c500aabc247918fdde242d5f",
+      "git_blob": "4e8b7aad2ac256c9299e3c306d8deac3486641ac",
+      "lines": [
+        {
+          "line": 23567,
+          "sha256": "45a3d426d325aed80edf0f96c30b4c56f6109380cc1dea3ec05917b4cf160603",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/evidence/development_resolution_transfer_smoke.json",
+      "bytes": 24078,
+      "sha256": "89144cc53903d33148b16fd39a11c399f6bc8ad612d8ec3cb98f41da727c0823",
+      "git_blob": "a17ac2bd6d34d96bce61332e4d26841f9e38960c",
+      "lines": [
+        {
+          "line": 599,
+          "sha256": "45a3d426d325aed80edf0f96c30b4c56f6109380cc1dea3ec05917b4cf160603",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/evidence/temperature_correction_validation.json",
+      "bytes": 1795,
+      "sha256": "c01af873178d15dc6a69f82e4d933ffff88930e23bac8625e0eec57f7611884b",
+      "git_blob": "827fe3f475d8d971bd5b377c9319614404fe8519",
+      "lines": [
+        {
+          "line": 15,
+          "sha256": "bc7e08dcf6d10d5d359318e3ad4d53d9dfe84b5a700e7454df7f12f02600d6ee",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/resolution_transfer.py",
+      "bytes": 14657,
+      "sha256": "f1d5d09cf38f282ae388845d1bf86bc7feea79416c02593bdd773d9359d800b1",
+      "git_blob": "3fead97391a5772c132b85a4e2dea055c673d565",
+      "lines": [
+        {
+          "line": 244,
+          "sha256": "0f89c6dbc580963bff69c54d5c25571198f2543175b7cc8d26b5bc0f0bea0301",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/temperature.py",
+      "bytes": 2971,
+      "sha256": "0fb4fc5e5524496b6287d0baca6f20a868457f930744630bfdf275e7765aa9dd",
+      "git_blob": "22c8dbca2363a725aed5a9a9ff7770a52ae9cecf",
+      "lines": [
+        {
+          "line": 1,
+          "sha256": "7d4625be9f01e3d562a80c4118b478198b1cfb5f0366c1527358bfedf61c40ab",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "tools/hcsn/round8_20261031/CI_DIAGNOSIS.json",
+      "bytes": 5025,
+      "sha256": "93ff6aaaffa503255513e672ab9ed97f58769cd9329dfb5078a3416ff24bf4b7",
+      "git_blob": "c6f6d7a35e912db6e579a3af228db49cdbf1c161",
+      "lines": [
+        {
+          "line": 21,
+          "sha256": "5dd65517616e59f917732141104a274906c0f7cefa47ba8685be0f8ea9a4ce76",
+          "findings": 1,
+          "reasons": ["verbatim historical spelling diagnostic"]
+        },
+        {
+          "line": 26,
+          "sha256": "5dd65517616e59f917732141104a274906c0f7cefa47ba8685be0f8ea9a4ce76",
+          "findings": 1,
+          "reasons": ["verbatim historical spelling diagnostic"]
+        },
+        {
+          "line": 31,
+          "sha256": "53aceb4bc4cacdacd6ac3b27b8dcc1dbea6824ae10d2fe9c07f649199517ea6a",
+          "findings": 1,
+          "reasons": ["verbatim historical spelling diagnostic"]
+        }
+      ]
+    },
+    {
+      "path": "tools/hcsn/task_aligned_r14_20261101/evidence/model_gradient_audit.json",
+      "bytes": 27861,
+      "sha256": "b33ebb6257c8eec53aa916bdb1321a941aef50fffe6f26278665dc703dd64bc7",
+      "git_blob": "04b33f034a5256a1b88ab05a73085ca91187f03a",
+      "lines": [
+        {
+          "line": 233,
+          "sha256": "e37db7d78c04aab7d0f26562a931621af1abcf930ded0609f0aad05f50f32d4b",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        },
+        {
+          "line": 245,
+          "sha256": "e37db7d78c04aab7d0f26562a931621af1abcf930ded0609f0aad05f50f32d4b",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        },
+        {
+          "line": 407,
+          "sha256": "e37db7d78c04aab7d0f26562a931621af1abcf930ded0609f0aad05f50f32d4b",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        },
+        {
+          "line": 419,
+          "sha256": "e37db7d78c04aab7d0f26562a931621af1abcf930ded0609f0aad05f50f32d4b",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        },
+        {
+          "line": 1064,
+          "sha256": "e37db7d78c04aab7d0f26562a931621af1abcf930ded0609f0aad05f50f32d4b",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        },
+        {
+          "line": 1076,
+          "sha256": "e37db7d78c04aab7d0f26562a931621af1abcf930ded0609f0aad05f50f32d4b",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        }
+      ]
+    },
+    {
+      "path": "tools/hcsn/task_aligned_r14_20261101/models.py",
+      "bytes": 13829,
+      "sha256": "8193e0c9f026bb69ba9d9752e79f85a9ba4c3ebfaf6543c03cb5ec6a4df8700b",
+      "git_blob": "03c65801e0cedd95a4406dd90d615cad1ca682d5",
+      "lines": [
+        {
+          "line": 170,
+          "sha256": "3488a13f56489e2bcb06a6ace5477d8d091c9c1e5bafd1d1468f62c23214d5a6",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        },
+        {
+          "line": 184,
+          "sha256": "b6c4afd6fd2aebb57640b75f4bc4942b80a67335d68160acbd39bed30169b3b0",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        },
+        {
+          "line": 247,
+          "sha256": "2040e486d8c283a45b990e918f11007c817e591670ebe65a455dbeb821055508",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        }
+      ]
+    },
+    {
+      "path": "tools/hcsn/task_value_factorial_20261030/RESULTS.md",
+      "bytes": 20109,
+      "sha256": "0f78b78b9ef19e4a0ef87072583822c73c5137e0823b99d782460d1d8c982a89",
+      "git_blob": "0fc31044d93a21730211b5b8c930483eabc7e30a",
+      "lines": [
+        {
+          "line": 136,
+          "sha256": "290d9e8108f946b34804a4663861b8119145399d7a31c82c9e8a4649a0aa012e",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "tools/hcsn/task_value_factorial_20261030/propagation.py",
+      "bytes": 16010,
+      "sha256": "4f3d85bd2826cf16ba1143bfb2868d583cb114236e89fa6b8650ba19b1664c15",
+      "git_blob": "bd9610696d14610f4d5e7754c7a8667d36c71da8",
+      "lines": [
+        {
+          "line": 1,
+          "sha256": "a425cef6c0e048b89b675120f335b47c20a7c3821fd02a97e7d73d2f1bab7181",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        },
+        {
+          "line": 36,
+          "sha256": "aec9b444750169824a31b83669ccbda0eb629df504275171d88103333e14025f",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        },
+        {
+          "line": 54,
+          "sha256": "b0d654f64d6e5c84356fc3f193da88ff360d9fbc03c0daaaf54fc7093d373e85",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        },
+        {
+          "line": 60,
+          "sha256": "64937db7c56a0bbfbc98f95366cbe5b69ccb1bd07ce6e9f4b534493ed7c36035",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        },
+        {
+          "line": 69,
+          "sha256": "a8f95fedb124ac32f5daa893e040070db62e002179aa1ee214b544c5282d4772",
+          "findings": 1,
+          "reasons": ["first passage time acronym"]
+        }
+      ]
+    },
+    {
+      "path": "tools/hcsn/task_value_factorial_20261030/test_propagation.py",
+      "bytes": 4752,
+      "sha256": "65f3b16b2326567df2769374e67d601d0106199a525766d72c731cde1d61059c",
+      "git_blob": "f97af73e37a4878a33879d43ecfce59cbe9c923f",
+      "lines": [
+        {
+          "line": 74,
+          "sha256": "be2841e573be8d4026a2fbc1eaad7e2f1d8a65ee485997180383f3ea121c2e0e",
+          "findings": 1,
+          "reasons": ["uniformization expected event variable"]
+        },
+        {
+          "line": 76,
+          "sha256": "e9d3ea0317d637cfd42a15f3b0c2e1503777fb01ea5313309ead412856ce6dd6",
+          "findings": 1,
+          "reasons": ["uniformization expected event variable"]
+        }
+      ]
+    },
+    {
+      "path": "tools/hcsn/unified_cell_r12_20261031/recurrent.py",
+      "bytes": 5208,
+      "sha256": "75770e822ea5cf32a0a4019082e5304cf5c72212ab0244d5a84a7fcfb129170b",
+      "git_blob": "0076c9649f305579e15558048c0b33398f13412f",
+      "lines": [
+        {
+          "line": 29,
+          "sha256": "de3dedea0aa27d98bb8150ddeea288f3d00aa17cebe645033fd28c50f4419674",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        },
+        {
+          "line": 47,
+          "sha256": "b6c4afd6fd2aebb57640b75f4bc4942b80a67335d68160acbd39bed30169b3b0",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        },
+        {
+          "line": 95,
+          "sha256": "2040e486d8c283a45b990e918f11007c817e591670ebe65a455dbeb821055508",
+          "findings": 1,
+          "reasons": ["update vector bias parameter identifier"]
+        }
+      ]
+    }
+  ],
+  "payload_findings": 2608,
+  "payloads": [
+    {
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_1009.tar.gz.part001",
+      "bytes": 4658929,
+      "sha256": "33345953daf3ca44b88b83a51576132bc8ada1eafc1e6cb381fdac034451d7b2",
+      "git_blob": "10782e16bf9069a47b74266ccd4a418e763568ad",
+      "manifest": "experiments/analytic_event_neuron/round3/evidence/EVIDENCE_MANIFEST.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 14099
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round4/evidence/confirmation/CALIBRATION_CONFIRMATION_2017.tar.gz.part001",
+      "bytes": 6525847,
+      "sha256": "63e45aa38c7a0b494192d4630f82b58b0fb367629ab7d29c84a185ad0d7a68fb",
+      "git_blob": "32af5707d9470363e4f635b52b164c96dbf48024",
+      "kind": "binary",
+      "manifest": null,
+      "invalid_utf8": true,
+      "nul_bytes": 20522
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/figures_001/archive.tar.xz.b64.part0000",
+      "bytes": 262144,
+      "sha256": "aa4ad8af6db25c37eaab8ef3cafe54ca41496f002776418e3ce2e5c90c9eb7f4",
+      "git_blob": "fd5a830ca8590c697ecd41d4c9279d40db55408a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/figures_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "816fd1ff1ed56e168991a2147e6e671a4c9f32e1ccd112b3453acff55f5a68e7"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0000",
+      "bytes": 262144,
+      "sha256": "953f4852114225c48d6fe12fc445870bbc1cb4373164ad6d121c883805da4031",
+      "git_blob": "c5b76c86a57c2d3f06aef02932d526031c96b2a5",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "b2d2c7b919c2c47de7abb64880f052e622eef0cdb099f4ba20dc60579a209903"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0001",
+      "bytes": 262144,
+      "sha256": "1f2e9e18759db2a577f3674a7f553d890f04628dd2a41253442cb82f5bff2ac4",
+      "git_blob": "b530006aa56b1f15e96c063a68f32fcc948f0377",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "8cee4e216cf90d8002904564e4a53f4a047df2b4d14e3280c24d45a4b9e41671"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0002",
+      "bytes": 262144,
+      "sha256": "18cc97fb97cc52af2897dae7d733cd2f89ae6cc01a85d020f7db1183463627c2",
+      "git_blob": "7cfd8d16e93b420fceeae78be3039fa537ae0567",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "bae0fd92d59a05097a847184373a69bad8307d0b345bdc1903ad1424f9aea4f5"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0003",
+      "bytes": 262144,
+      "sha256": "3bb26fbc03f4d4c4aa0efb45e191ab7975a98656a79c835a30bec63c04df7b4e",
+      "git_blob": "bf059c00550470d328eb13f55b983154641b7879",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "97baa56b6266210ed43a47d4f0bc0dc8ae283c66e1fdcd9b3d0b7614f2aa466c"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0004",
+      "bytes": 262144,
+      "sha256": "eabe3f3a078746f4275f332aab28cb593f52991cfc5a99dd7871aa2bfc7a2770",
+      "git_blob": "092e6436ab2076aaefa1630e737e9586ad3e8e6a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "39178298b16854bd4630566cb4d59e63874159e609fd2527feb684afcec18aff"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0005",
+      "bytes": 262144,
+      "sha256": "ad777455a4e458f6a656150fdf9e4a146712640e5e986e30840c9977646dfd71",
+      "git_blob": "deadd2e270374213aae31c58148c5a550e237d1b",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "c6908bf0ae5eef8525051797c01d423a43807ac201e0eaf04e77eb4c15153cef"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0006",
+      "bytes": 262144,
+      "sha256": "68ebd0f1a3d9ec60c846f295d2695b26cb68a030cdd5f0cbc91be6d6a9b83c3a",
+      "git_blob": "fff949fb51e7545addc416cab2c40fdc1b717f1b",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "67c147cdf17e47fcb6d33c55c89b05819bdf9a0f4dde4b5e2afdb42d9372c868"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0007",
+      "bytes": 262144,
+      "sha256": "1b4e4334af184c388c137b3888b6e5acfdfc7bbda98dbe8ec2105254184412d3",
+      "git_blob": "b145bbb45ada2fe994826fc4bc86b6c658fa28f4",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "3e6fbcd33488bb3af37ea51a2813377ad9ff9f7df54c7681db145b409d25786f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0009",
+      "bytes": 262144,
+      "sha256": "67ec1a30b57a3abcaf81d361491dd278a04e3ff9b63802207d1d96c38c2d75b2",
+      "git_blob": "8ef0d22fb835a8a31f76db3c044a90c97c95909f",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "9e5c1e9322f79acb6b33fd940c4dee9a8eec5039d2b6c2a3fb9487949a4456dc"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0010",
+      "bytes": 262144,
+      "sha256": "65927aa28d894902a7e61d7dfca79ed83832c3bc87c839148635cc597445a86b",
+      "git_blob": "cb11c6cb90af6807ef78e13df5d3adf419949656",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "5481a6ed10a14e2cc77aea99bb33f751ee2d4862fe5c659a184fd6eb0f63746f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0011",
+      "bytes": 262144,
+      "sha256": "2f3d3418ba2eddfd7a45891b6343621ed66b103c7345eb4a4203358a1209ecd8",
+      "git_blob": "1d781b8c70cf3e97496ef8dd2d72ef657bf63bea",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "d0802146f04dfcdfedb27de5c32c60f52a66fbe91675b57bf780867356e459be"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0012",
+      "bytes": 262144,
+      "sha256": "f1762827ca28e20a7c47deae4ac27e1dc22a8d350c4460074c8fe283353ddc69",
+      "git_blob": "590527c0d75b0dc952e92131ac8342a9693f9e9f",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "76f54007c1ca9d9005913f5bb1cb05de4aaec4ea5cae6b37938ddfc46fb95c77"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0013",
+      "bytes": 262144,
+      "sha256": "2025a9769b0427791d84d51b51d8c1aeb061fb3dda4cf81e1fcbe4887a4ca313",
+      "git_blob": "8710dbf01563abd56a79e589c19268405bb3de00",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "264bd96c6a7e4c8bcc256e43000168648e162a13a56c0c89016308c15e0320ed"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0014",
+      "bytes": 262144,
+      "sha256": "262a55dbe4048065fc040b57c015d9af0219e13e172933e34530f573c6c1f0dc",
+      "git_blob": "983fcef4de0236cdb3ee1bcb0b02102bdec4a967",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "d114bcc10a1c3084600f59201a2b81195b3b79861407eca451dd7cca0d61fe52"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0015",
+      "bytes": 262144,
+      "sha256": "7d782eb9f6b606704b2f24d2de57a897104751207e51fc9cc5bef07c68eb02d2",
+      "git_blob": "a75fb81806e4adf75728f405e92f3762c88094c1",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "d84fba9a293039c171ad6756799c64a42229b3e36175a95f326255e5f1391314"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0016",
+      "bytes": 262144,
+      "sha256": "86ef5933520b800e1e9a8c1decf0d87051356ae873dd4128e17e10013da76fa0",
+      "git_blob": "adf4741871b64cd9e3653737e84c922474360cee",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "1fe8b5ce34f3e155f1cabcd93943b1e76de7888ac51b5c6f85c7783cf98249f2"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0017",
+      "bytes": 262144,
+      "sha256": "29b8bacabf78ebb97af96624ec263d7915a09ac25298d64bf248ceeab79e0b62",
+      "git_blob": "bcdda4e848a3c93ffb12e957172d65c640825125",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "7fef521ff74fea63d6ea0a8b3cd0bfe4260950658e30470dd8e1635e79aff3fd"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0018",
+      "bytes": 262144,
+      "sha256": "f576363d7ee5778c34119f001684cbbdc332c3d001cbbecf353628a98590f82f",
+      "git_blob": "937b19891098a2ffe95d27293917cf8347f4a4b0",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "28118492df19ec959f756e9a1e59d0fcb69bb09692b66298dcef19a1798ea067"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0019",
+      "bytes": 262144,
+      "sha256": "967f885079cb38c3144c7d5b4b6a9a7e6ffb6732b334400a719fe5d263078002",
+      "git_blob": "9aa115a1cc6afd2aa05018b590d71cba4d69bb0a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "9653eb9630b8b31bb8e3c1e2fb91e33cfb45126ef292db3ab0c4ca5c5cfaf545"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0020",
+      "bytes": 262144,
+      "sha256": "6856223663bb1944f05fe4c1ebc1a434bcb982819eef15160135155a5073d786",
+      "git_blob": "d88734d93106b65fbc26a61eb2cde6f5049edbc8",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "9b4479307178647c0a555a2815d3fd32212bb332a7e3d4a7a15a14eef29897e4"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0021",
+      "bytes": 262144,
+      "sha256": "a75f3493c88e205d5141fc0da0a4730478355f6247505aa29466f4dd19fa0c54",
+      "git_blob": "3ab20b012988b4add19a12ab91f3bd762cd26a93",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "8b9a7f8deff6bb605f8a11c8f57372e1230c28074e5038c41c0de37370654c9d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0022",
+      "bytes": 262144,
+      "sha256": "556bbb6b71d2b64dcc9b9a989e4b231c5ad3f7f72b965e960417dc8a9a512279",
+      "git_blob": "60f7b5ed418ffd8aaf8f97ab30e9183886e5bfce",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "71f64ffce6616eb1bf863b1ca0408c06743bf27ef4772be0a39da1046370a66d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0023",
+      "bytes": 262144,
+      "sha256": "a374c9434ab30fccf65156827869ae2258a2654ff31e39fccb7cd8e1887747f0",
+      "git_blob": "bde215f15e01300638d8ce0c214fb41491a58cfb",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "b077dc124d3ef64038ca8b880364e4e10d08e5d9094ea0b65c689a4d431280ff"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0024",
+      "bytes": 262144,
+      "sha256": "021b59ca29cfaf4214b98925ccf5df634065adc89aa79f38ccf55bac732c0bbf",
+      "git_blob": "2e6e7b23afecdac801e790c3418b3a8ffa2333d3",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "f6786ee5a85a8e2723c033297912b3ef0e1ee50bdeffa6881e64847c1038723f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0025",
+      "bytes": 262144,
+      "sha256": "7a2f35426d2f40962fc4724bab2fc2e643a7838c048e7e3fd34363ad8cfea86a",
+      "git_blob": "7255f1f1de338c04b383df5c8ffb335a8db084ed",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "932e521b82c1cf91602852f5c1f1ebd92796bca2c6e3c3a8954ab3763bb54991"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0026",
+      "bytes": 262144,
+      "sha256": "041fc3bc328f3adcca48bd55dae76e579b07dc958824cdce1dd65bf1a229117d",
+      "git_blob": "c4dcec0d8f0c5525164c60fa131c5cda219b0710",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "cbc7b68e9b748b603733ec1c36c4a1de5a5f1cf6530926fc22bd72976170caae"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0027",
+      "bytes": 262144,
+      "sha256": "4b38d8a78e083e5a57ee64ef4980b3c11da6f5ad5f36967e8ff49e11a0145fd8",
+      "git_blob": "1801bd44746a1087445ee4d710765b4041ae90f4",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "8d502e36a0aa4ca6a859b4667c6d5a818aad9e1a9d4a74d90d4157f7a427d02b"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0028",
+      "bytes": 262144,
+      "sha256": "2287c0fa55da3db9846295e7e60ee713f6ac5dfd6900c2b3c8eb1a930fa22db0",
+      "git_blob": "3fb015e8d217c234dc4fc83a52fba13c3ef5274e",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "2c9bae23e3d923f678c8f9dcf039ad18c38103c30612ded3ec3b9fb7f801bf89"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0029",
+      "bytes": 262144,
+      "sha256": "dba3093b23937d81f62d6ebc3e45bb0d542626ea02da1e01e3409c734a6c0a91",
+      "git_blob": "0514d8871aefdf4d0f2e377b8165e783df61adee",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "98f8237493029553d0dcd779df04bca04f198d8f9d9dc3fa888e069f906679c5"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0030",
+      "bytes": 262144,
+      "sha256": "acc366c59ec892214880687d046629b8d24628e12a5e6d71a3a8176ad66b5da5",
+      "git_blob": "b4e778edc3d4c05b4a964e92e922d17e205b1436",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "1da06a2b7298f7fed40ce4c08818b84779755c540dfc227738586e7acc7a4f2e"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0031",
+      "bytes": 262144,
+      "sha256": "e57efbedf1d9eba9df7ee94dd50f9cfb21bb658d948fde68665f56717349524a",
+      "git_blob": "5eec1aec09dd0ecf2f91f122ba403a421196bf72",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "fcf5131cb4f285f13d6739d1190e83659c0ad834e7aee1cdc2f1be797c7e9fa4"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0032",
+      "bytes": 262144,
+      "sha256": "a873484d8d2b60cd85f06bab28c573b1d857459fabc7fa8c2b1789ac028457c1",
+      "git_blob": "2e771401f109a56ad6d2e240cc90afbf488e5793",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "78110774cd396f2d23cfba66fc84908cce4eebdb91ef891b743de9ace771fe13"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0033",
+      "bytes": 262144,
+      "sha256": "c3a9a81d95eee7d9c5540f93aa1f0fbd16320c32cbc11d106261c4aa723e6f04",
+      "git_blob": "04c2964a4a985d1904479bd90e413aac11d7ae2b",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "e83da882419708951fe9d3d3e1c4104bfd78f78243b4fb68a271df3fa604c214"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0035",
+      "bytes": 262144,
+      "sha256": "4dba94141e7114ef56c15753736c1e34e486990f8d8251766ed9f86d730acad6",
+      "git_blob": "62bdb26abdf93cdc0ad2c21b82b077bcc1e6b6e7",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "2447f6218f0d4b3d11f5f34e5a9e1e3611d9c88792a9556f114d88be0b63bdad"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0036",
+      "bytes": 262144,
+      "sha256": "7784ee306dc15384553d5cd431276093e3c271d40836af8087e0f11c2f15e56f",
+      "git_blob": "fcd47cee790bda59e9349818cea7f870b2330c12",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "eb2b0f1784883f277dd67f613db297c07af28b4176aad7b8b34901ec4f4f584b"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0037",
+      "bytes": 262144,
+      "sha256": "f1ed9e5c0c7cd178e19c07da94557d25020cecbe411ef27a50502f16f399043b",
+      "git_blob": "bb164dac96fdd911221a15ef3a096ca308f29a28",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "4f365aaf0c09172c203b77ed81078d553d0f62e5742094c37a35f2e623f29bb1"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0038",
+      "bytes": 262144,
+      "sha256": "751c076cca14935e00ce6d8737b98cc02af12886f621fa8dca21b224f149ee68",
+      "git_blob": "f4d8cdff0afce2976d4c4cb9f9c48cd3efc4c669",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "85b393cfa72cbfd82348ba58090e370c7cd38204f1b957bea47e374a6e20ed58"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0040",
+      "bytes": 262144,
+      "sha256": "bd13ec3df586230bbb8371ffbf7db61533dc28b73d2363a9ebcf2197e7a8d174",
+      "git_blob": "0fd15f6f95301431391608c68db4ec7d56d95a0a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "d2ea4bf94b0d9e43e61047f4155a01b6d05f6e3ece12a64be2c28f7a4beef50f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0041",
+      "bytes": 262144,
+      "sha256": "8678d68012083a5ef97873e024c3f72b708201dde9297ac7f54447a9d5517b4a",
+      "git_blob": "09f341844e26313c1cf85055a2274e4be0871f7a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "f1c8bcb997ad87b26bb73b3c3da662929035feef0d9bfaa9cd27174d3ae49d60"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0042",
+      "bytes": 262144,
+      "sha256": "f3e5a14462252a4c97b8549fa7b3640299428d8d2a86455d10e17386e835907c",
+      "git_blob": "ad225ff27b89a72bb39f23502cd34c0b4cd74e91",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "0f63b49147688ef2d2ec3b0f42da5879c426fa698ee9d24b8c404ade44a5994f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0043",
+      "bytes": 262144,
+      "sha256": "92030941bcd93ed28a4e25c4d5f51a4fd948d0974f76aea853d842a2cad10f06",
+      "git_blob": "2cb95a7f2c7b2e3e3773a54959f2a9674d80ff68",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "b7e5393565440d54e6b630b4b4e4a52d775b1a5fcea89c02ad6fbd57dbdd0638"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0044",
+      "bytes": 262144,
+      "sha256": "263b5fc997406472654de7e627e63a1334d420057daf27ec9fb5691806628d1d",
+      "git_blob": "367314ec7635e9c9160ec1488cb3c42a6c5eb401",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "877174e2d63da7376e4aa28156186f175bd72584197c3c38116872e7b90f0e6c"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0045",
+      "bytes": 262144,
+      "sha256": "45c0c65b66fe01ab003ca9ade31e6dc4f2311805dd6f49bbce0df5439cd0e4cb",
+      "git_blob": "b266588d115b15fcdf514336ecc71e8595c34223",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "aec0527daf179878db9a9f67bc8d6f8ffce2ca35b0d526cdea59f3f634359082"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0046",
+      "bytes": 262144,
+      "sha256": "a383a81015d8aa1973846d2c0570145a65cce62326d549754e3b4d54e7cb39a6",
+      "git_blob": "3c9d8208871a9089f6918c20b4df3db3e737b8e3",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "1847ff430109d178f0e26d3c16b1b54572b39739ba9b2217b8206b57dbc04051"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0047",
+      "bytes": 262144,
+      "sha256": "415aca0761d7425e33950864cd3394bf329a9118e30d0c3a15ce11fe64a4e620",
+      "git_blob": "19ad7435974d2afd2d59c9e067ac5b0f0bb54952",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "8e03a90ef656c0474d8a24d3b4204545b25c8030cae905ab66a3eb59404a908a"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0048",
+      "bytes": 262144,
+      "sha256": "010b55bf680dce7ea2e34e9889547f99964388d6e4f15d248c6e3169419980bf",
+      "git_blob": "d9970cbf0d9c0ed7352af7b038cee6de83abb5f1",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "a53d3ccf6e48f2987be59a3918d2c1e9c62ea98afb46547d861dfd0ffb69a31f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0050",
+      "bytes": 262144,
+      "sha256": "8a497be0a9afb9ee4ad54016bb50b2069bf7c8b2bbcf0a5bfda33d72905f7137",
+      "git_blob": "1a4d3543f310cd5a32087fa288917f07f2cff935",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "f1f92c94bf7f495843ec3c7f61adc1ae1be1e49482b52dbf6e7f205e5776a9ff"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0051",
+      "bytes": 262144,
+      "sha256": "29cb1a597625d1673517df40377f160865bd5e340ed2d1fb724122e63dd216b1",
+      "git_blob": "5ca31c14e48f7c4af04ddd84f6d42c1b76996118",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "a2f47c72cefb8bc7ce8061a51f66b944ac7357a1091dc4eaad390ba60eb1988e"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0052",
+      "bytes": 262144,
+      "sha256": "39b006607408e70f8c758c72d0e218709bfcc2823b5f6b46d37d111920ee3dfd",
+      "git_blob": "8966790936abee7c497e45292dc498adfc1a7164",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "ee7e27e9d24a4bba2ce2f29df723c32ec290632e78d62a613828a1f3c9916e5b"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0053",
+      "bytes": 262144,
+      "sha256": "61c671429632df3ae149d161141409e3cd70f032f1827b080b33b1986c2aa9cc",
+      "git_blob": "1a3dae56153fc08c60d902262ce1626141afe503",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "364de82a7e53982781f50a16e2cc96c4f61be3ad220826e44c34874721a80be5"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0054",
+      "bytes": 262144,
+      "sha256": "f79e91b039bf537ed3d5c7f75d20691f132fbe0f38ee6f7ea609893d66b29f6a",
+      "git_blob": "e1bc481488ced0bae3793f31b09d9341ffdce8c1",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "0f7fe50a2b961d9d856a16298827cebda1827c6984ddbd9e7b43b2615dd992cb"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0055",
+      "bytes": 262144,
+      "sha256": "f486d00dfc9938d0e340bc80f5eca160a812892be0d94952eee03fa532a96b34",
+      "git_blob": "fe41871fa4fde1ad5685d710ab3cd5202cb61018",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "e09ea85d63e40a79940eb7fdcfd4599e8bfc1a1c12a84edb4d38faa670acdbb5"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0056",
+      "bytes": 262144,
+      "sha256": "abac65ca5d5e9d40d328c6dca8c9ace4af2adbd8fcd7dbe85b3d5102aa0a1730",
+      "git_blob": "136fff7b8982448f670ca630198a11703d6370da",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "d7d676b675a8f919f52628c4869f1cfec1948654fb5e13a997fcc8272d45a4f8"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0057",
+      "bytes": 262144,
+      "sha256": "e428fc6e3aa2ffd84da9e36a9418e3ba13aa49ff6f892f20fc411113bb72682d",
+      "git_blob": "0e0161d51a9add190bd5bc1f25c31b8f7cc45950",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "31020a5954b048d55ee49c9c401c1ae046775449a81c32c2c62a1974e3e13762"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0058",
+      "bytes": 262144,
+      "sha256": "253f5a3d0b6638b4027dfbf504b7838fcc5bb6e983f7ac706f6c4c6267f9edc4",
+      "git_blob": "13ad46c897cde57a1f26758a6b3c38e70e3aee7f",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "02fa62ed3e2be4c5d11e7613599ce09f95980ad48bc4c46c2f7454cef247f5a6"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0059",
+      "bytes": 262144,
+      "sha256": "6024bf72de97c76138f40d0b9fa57722a3d75fbfcbd72ef106fdd15a46e72e57",
+      "git_blob": "0b7cc9a333b3caa45bcf633fb6f8e3d71400f36c",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "9897ae3541be04dfb3d330fdd48ed7a952a59faeef33bb9b52530e6406d29846"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0060",
+      "bytes": 262144,
+      "sha256": "fc00170c6b3bbdca93d18626ba83ddafb9595bdda4a93a4db53ed1fa719929ce",
+      "git_blob": "672e6536b47b5090c2216219bed998cebfb8cad1",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "1e4acd7626874b994e6b74ab002d27c286281cea5cd8ffa0db4c0140980cf617"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0061",
+      "bytes": 262144,
+      "sha256": "aeb1d091c0a231bca42dd14b8edadcb11e74d36309ece7bb243ea95630a3d755",
+      "git_blob": "54c145c2a1a4fe62165b495f19219357058f2907",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "995e03ef795126203e171e2d9dc09e46206ffc02360a1af672f2d30fbb64361a"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0062",
+      "bytes": 262144,
+      "sha256": "3621c0e7378bdc425643061314dc6b6c594e6d0ff123c5caa2baef0d147ab44c",
+      "git_blob": "bc5de92e01b7b3dacabc650f43ec0b56fe9c37f2",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "38799cc597d6b43633b27c0027157a13acee2bd55614c7cfa0cce850b52cce16"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0064",
+      "bytes": 262144,
+      "sha256": "d97142f9bbcba4b0fc986efa53389b7efd7f30101bc2bb856b5352dae332c97a",
+      "git_blob": "30c078383667e68d5fdf4ee856025796dfcf3f0f",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "608a44d9aac401a62bcde30992bb5a777b955948223eda3f9daf77fd9741ed9e"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0065",
+      "bytes": 262144,
+      "sha256": "180bb8b9339a17a33e458b8102c87cc40101027e37d70089175815b324575536",
+      "git_blob": "0f0bedf4f5de07601ce0c41f427779c93829ecdd",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "e4031e5094bdf536301e8d7fd2e5e635c9cbd17070cdb6f57dd5b9e1345f13db"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0066",
+      "bytes": 262144,
+      "sha256": "f294ddaed51ded345266ea4186d98e1ae09da7c20225270fb92aba08c6164c09",
+      "git_blob": "2b092a9b958b03bc9615fe7124f441ab7456f6f8",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "3decd8c6856dc26c2618d4a730006c8974dac016f5511f6f1c39dfeb7129f263"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0067",
+      "bytes": 262144,
+      "sha256": "9c84accd898fa7545f63e19eaaffb404c7c9d2d8961a58092b7ba7f3ae5eb396",
+      "git_blob": "46a4db8f270e8b8d9795858ddd5b821a4180e5ef",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "b5ec2b77c62f6156d87bf829f8b8fb002dd9cf185415b29212da9009d57cdbe4"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0068",
+      "bytes": 262144,
+      "sha256": "0eda8a5c9e66b8400442e2542ec374f2d5b24b6516fd76f72b900a0bb033228b",
+      "git_blob": "d42bed87b50431ced72d3aedca5ef36db1d76424",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "e91eaa202008b9318050f4a1ff20dbae57769402fd1c22b557f6c8334b95d760"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0069",
+      "bytes": 262144,
+      "sha256": "8c0773ec5be3606e2837732f7deb4f5561956ba95bc3aad95da0756d216108db",
+      "git_blob": "54abdbcf237e2e5afad44fcb4f0d2c5adcf8a2ec",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "9398218ace4874cc4e4797448eeeeb13f43536640934c0dfc56ef65e92a47641"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0070",
+      "bytes": 262144,
+      "sha256": "e7d65def7714c5f5dc7ac34dd4f81c819cbbf4c632e7bb7355f72a7060e15c26",
+      "git_blob": "d15ebdc7c749c594d74bddc5796bf0fde03453c3",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "269f9d4f7a9e3bdbdd657d274583f7842b3a7da8844917409fbd04f050492061"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0071",
+      "bytes": 262144,
+      "sha256": "5f07d5f5c2469d4b0278270e614dcc6ddd61bcab718f2fcd918f9414c1451d95",
+      "git_blob": "58699f07307493535803a03714f2c2132b149169",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "b5860a9d439faacde397aa3c1c660e6d89b1f41a8f701d3ab8f70784f3b0b971"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0072",
+      "bytes": 262144,
+      "sha256": "a8d6a430020ac36e27b66141f501df0ec7031694299edd31d5a3e72e802f2dbd",
+      "git_blob": "0014d2cd547dc9cb962066ef954416063437cae6",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "1551faf62f9d79b569dd7065296c73661af9afbf52717dee0afe21c339c0b4d1"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0073",
+      "bytes": 262144,
+      "sha256": "fcce1b74fd6c7c535b82faff8b7ee0b2256d8ae4056a1e52966b195a2f6b4c1d",
+      "git_blob": "fdf1ac03f814bb3e8efb2c155feb0a568e954f0e",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "029db3859b5437e8fba8aaa39e04da8ba53f3df1be14c72036e4b95ba844420c"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0074",
+      "bytes": 262144,
+      "sha256": "da4c911af493ad3023752d5dcf30a6eebd792ea97d14213d9b62781e2ab4b6d8",
+      "git_blob": "ab55150dbef782c3ffe1bb0092fc37ea405a2bf1",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "c4dcb11293dbef6f87ac343320c86656ae5ced8dd2a0287b3684c3beb97d1168"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0075",
+      "bytes": 262144,
+      "sha256": "d202e13a6f813b29ec6739f6e662bf3a02c3f0c54c3b7f11999774ab20f597cb",
+      "git_blob": "0d5c8292a9a10376b65cc5654924192e97b015c1",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "261fd33ec4f9f2ce4d3fde1253eb1d860bd09165f83fbfe8f123007a3ef37f4c"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0076",
+      "bytes": 262144,
+      "sha256": "ec4fe41e2f03793444b54198cdfd0709ee68fda177792034e8f5b0246faa6c8f",
+      "git_blob": "c348e7fbc01039609c8d672fa02e385a0d1ab0de",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "b0aa1a74ff70a504edd3e62b4c9f52666dd76ec1318ec43e38341f6e3d87a304"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0077",
+      "bytes": 262144,
+      "sha256": "e534306e5bc4da21377d2aaae381d5e3458808d6e5d0b28a549e4cbeec011dee",
+      "git_blob": "5aad17b7f8a448a331a2e4bd0dd4ed871fc98ed1",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "e6757372a028923a57bdb771d86f2b01c023be053d5523fea25d19143cc09229"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0078",
+      "bytes": 262144,
+      "sha256": "dbf2221bc6846314b0a11a553c827fef202df106ae01d643735632d515f6c64e",
+      "git_blob": "c7571977aea8dd330e935b4ff56a561a6b349c74",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "fec9132b1566ee996b97336c6735c850d0a10e45678341f5a52e0b6e1d28e351"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0079",
+      "bytes": 262144,
+      "sha256": "557c21feb7cfddafaa981bedde0ab38f5d81131cd3d536bdbba13d7e01f29591",
+      "git_blob": "df3c2b0861405af4a4750615919f127e7f9a5d3d",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "fb98e65893eb1af17ca524037553e756ee1c309f0b36252ea28f8482f4e0be16"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0080",
+      "bytes": 262144,
+      "sha256": "7b71eddd410cc5f433b17e29226545b7f556ede34b763a7f2117198c256889b4",
+      "git_blob": "04de792b494473db3f3345ea8b20689797a60ec9",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "f4f9022bd397ad635524aef757b4a095389edca6eabf4999333c32a253fb29ff"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0081",
+      "bytes": 262144,
+      "sha256": "4da1805b15e0f034edea615868a94dc9a6566cd977a1512e272940329eba6b50",
+      "git_blob": "14be8d001846b9bb362de53f087bd439fe3f4a4f",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "398d7ad020f6da85ffa61d0b691dbd028e4f9bb40a19f77f7745bcd2a1f33312"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0082",
+      "bytes": 262144,
+      "sha256": "1101110c4d756638c4ba0bd074802c58a660f0099e65e2692c5d6e2d63743d91",
+      "git_blob": "c818e002fa10c93d83b4fcf576ebd6cb37dd0b1a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "000d6318174a8902a83b3cc67d1b0f86fb918b13ecf776a709d9c92c7e757835"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0083",
+      "bytes": 262144,
+      "sha256": "499f789962adb76926743f48d8c73faf1d33364031817b9ccf7d758a3be4d029",
+      "git_blob": "d673699c0ed62da594476003ae1f44e60ace0d49",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "2a862da3e40f4c052b382c5264dad9565895de4119547ac5b8e13b18c7993a90"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0084",
+      "bytes": 262144,
+      "sha256": "b3aa208604dc6150e53f9427af2122a37d85fc5b35bcc12a55ea69ed6ef9be2e",
+      "git_blob": "b895e18c7b48ee2acae2bbf68884838335ef79b2",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "e9156bd90d45a163137055fff8ab7369512569d6b2a1288292fcd84563b43aed"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0085",
+      "bytes": 262144,
+      "sha256": "bf7bc6490785af92309875e268774dc8afee6ed58e3f41065172f0f3f021800f",
+      "git_blob": "71f98e4be831bf6d6de2da5ca3bee1eba9a7ca16",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "f59d290f9a1314df58dc358525424808569c2cbc13377d52c59db4c0a7c2a8d0"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0086",
+      "bytes": 262144,
+      "sha256": "a1ad676dab6f2974bcc74518e0548b503045f511918f7c0514d925eac31a241e",
+      "git_blob": "8a2af0e7d01632a8105710a699b0b72f6cad2b3f",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "18701b208cb46d623d12a2e14020be23ead363de9ae80fa2f8c3324e5013d1e7"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0087",
+      "bytes": 262144,
+      "sha256": "9fbe7afce6cc55d59714ca2d462eaef7fed44f13c2b85687a8fe645e28947706",
+      "git_blob": "9896ada8c471881c161012434b16505f8c5ceea9",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "b111b48db83d255deba3d84e0f875a99ba9bc40ab6f9f52c4a9342a0813f9175"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0089",
+      "bytes": 262144,
+      "sha256": "2327c26ad66b8bb48409219cf6ce34b129e9e909db2e7979806aa0ae18b0f51c",
+      "git_blob": "919b1c6370057dd790c724ecbbbc90314c8b7308",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "7ab93d0a8958a5cede038b4b2dd6fad552ff496ca2007da0813c4a3f834c192f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0090",
+      "bytes": 262144,
+      "sha256": "449599e45e113fa973ed7a83a936e46dfe2764558c8193f6124e70293e0f8e3e",
+      "git_blob": "b28fe0964df29947cd49cd0b12daa76f636b1fa8",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "222107efa5a296752d4976f17ceadd3249483047b6cf6ef387b379ccf6ae4f36"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0091",
+      "bytes": 262144,
+      "sha256": "814ce133dbf7ce4614ece2c6216fd11cc24968f5ba0838ae714b003e01421acc",
+      "git_blob": "e5a5ab1e7e0c5531c04642e51832e01083ea7292",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "9af6c0375da3233f889831de4ba1b6016c5f3435db29a89ee54490f44ffa068d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0092",
+      "bytes": 262144,
+      "sha256": "df0f077cc4f2564a8b9aa094030c4e47208655fa65f5220627e0cf5f4caaa71d",
+      "git_blob": "5b72bf582074bf4ee408820f72e3d2cccc3755a1",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "1e4eea142dd9837c81607aef295d0fa978f17dfa48bbb8245e69015e2a82c344"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0093",
+      "bytes": 262144,
+      "sha256": "e8d4db271f6d1980f037b3392b58a536cf2890d289d360eccdd4852f331a1c12",
+      "git_blob": "a329035dd790411da502d290068aa410495f1ce4",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "9eb88c334c0c55c5f1a42d160cc03e2747d2e2c3933156cb715d4c8956ce09ae"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0094",
+      "bytes": 262144,
+      "sha256": "268888556522ef4410b122695178456160b2b9dcb2d33f7e7b2f05b91fd25f8f",
+      "git_blob": "1f68541394a0b7771564bd630bc879b61a59c0cb",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "1f8037598502a2e77ec89d3c5c157c46dc87ddb2997e8ea854041fe42b002c06"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0095",
+      "bytes": 262144,
+      "sha256": "59f5a61906c753447bf128a7572cfdbd1814fffb703d2f84983eaaac38fe6b1e",
+      "git_blob": "8234346597f34ef963b4ab3dcf93e724ae053fc7",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "318f55f0845bcf8eaa83c5ea6d180347e96bdc5a93242e9055d78d05dcea2e08"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0096",
+      "bytes": 262144,
+      "sha256": "d6c3e1f0ab11494acfa19d3921279dd2c2cb88369b268a2bbf2c6fb29daf854c",
+      "git_blob": "0d8b8dcba55d090d38280bf993ffaea2330083b1",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "2c263a1ef3e030c4e979c63f4b4de17178a4b76ce6dc6007cb310915d2a85390"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0097",
+      "bytes": 262144,
+      "sha256": "316512484a225f5bf1c008d477aaebed4c03cffda4696831bd27fda415437240",
+      "git_blob": "5fa904a9e149c3c9af9cf5d6be921efb0167692c",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "79d77aa7745fea526b4e753671cc5b1b87489e87d6d264fd3d0e685b1f4fd7c7"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0098",
+      "bytes": 262144,
+      "sha256": "2266aa5e1a0189cd38e998bff24fb200e92b1bb3140d819f0ba44a1df042e599",
+      "git_blob": "4bc2b69ce10d21ed62ccbdfa17ebf5fa85c648e9",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "3633eec8025363683c1481644f94b203a3b6c7239aefa3df50ca5aafdad5c44d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0099",
+      "bytes": 262144,
+      "sha256": "c5defce822ca65c5e01eeecc8e6559d9674bc505c49106412878062b016bb8e8",
+      "git_blob": "7e9b4cf23bc1e33e6dd85181c03e1617c34c6bf9",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "8c17c5b063671960deda4d83ee196a6371648e4e4f4b4d76ad6b67613a3ef70d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0100",
+      "bytes": 262144,
+      "sha256": "1534d20a262fcc764d79bec29dc72960a465ceb12cc99e765017602acf88f94d",
+      "git_blob": "a85004b834f8bbbca58dbabad6bc336c4104d2c5",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "f278f988c14c5db269f621311ec1f2dbd964f15a27cbf04f2490e7f5f97e8711"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0101",
+      "bytes": 262144,
+      "sha256": "33708ca32e6f281934a4eacc61429525581c8e2d20b50be16c6caf2d71c4fd20",
+      "git_blob": "c4817cfefc3e1e9ad49e531122fe02fce639f99a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "2c7e7ea551cf67c124a8e205b2d59b444dd21a6375294578f588089a58863a77"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0102",
+      "bytes": 262144,
+      "sha256": "ee9dde5001b078d25688ee4dfd232cf2c8015ac85a98dffc3f72297ca15ae693",
+      "git_blob": "4aba041aa6b9577393785ada7bb2ee043d69e28d",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "74f81ca834241719d2cbfc2cebdd9f6c9e86693e6028d7ae209528a1028a8b74"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0103",
+      "bytes": 262144,
+      "sha256": "9d711b9cf3f92fff643c9a744af482d59e247412344217bfeab8005e0dca09b8",
+      "git_blob": "aae2bc35f25c896ccf1c34a07ff9275df06dd976",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "835e28c113267d80ee5b7e2050f494537d4c3383764f908558ec64b86cbc0450"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0104",
+      "bytes": 262144,
+      "sha256": "0f570608de6dc4b5b013c8c89892fa76be68a2a3133d92b07f8c4f78e3d065f5",
+      "git_blob": "897a4f95c37cfa4f7f00bec87a3baaf0f9f79760",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "ee0d98b1eccb0b7e7bf0a2355a95efc02c355db27535dbcaab0cd02b3ea1622b"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0105",
+      "bytes": 262144,
+      "sha256": "58fbbe999590dd6525ca78b3dd2d69a9e3e552d6d4e181431283b1b7c68bd98e",
+      "git_blob": "c16fe3ba704bceb61169d4d9d4d3f4f26577ddbe",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "86c96584b4d9b15fdb83e675524daefcbfb05426893a20a546bea62592ec35e3"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0106",
+      "bytes": 262144,
+      "sha256": "47c14062caab04299031a8562e0bfdd50a67e469ecffc221847ff3a6a86d2186",
+      "git_blob": "01cc8e462798f83dc112864b44d5df46aefa9d62",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "d8bdf073246b9c79a92f4f815561586b3890d5dc7dc6049ebe14cc60ea607587"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0108",
+      "bytes": 262144,
+      "sha256": "384098ee0a6244dd5562449912a846ce70bbd0f31d25ef9772dee8866036e289",
+      "git_blob": "05cddbc71ff2f29099a88f12b12cb7018ae5cf06",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "649d061f1a5f960fc8718a7bef28d6c33dd48c268661c027b1d78cb4dd13ee9d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0109",
+      "bytes": 262144,
+      "sha256": "31cf6cfa39e18a8379db67869cdef87077aec1bab399381268f75189b282f906",
+      "git_blob": "f6cb379acca9fd518da8c0203b24beed979c4ddb",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "f0d90af8dcd506eb00d57eff6cb158d7823eecd34e122e43c381c2f9a4fbd359"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0110",
+      "bytes": 262144,
+      "sha256": "94f259d985633bc795c492532501b6880a731b2dae6c33281193c45c0bfff4a0",
+      "git_blob": "0f962b56756e36d469b689e1fdebffd955418d0f",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "21e044ba6b264baf9a96652d4f2be7780abeda1b047a800c43733597b30f2ee1"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0111",
+      "bytes": 262144,
+      "sha256": "32e2c8d5af6682dec3ce891e14aacc12814499e23fc7d1173e2c37b69f8c573e",
+      "git_blob": "a92ad80117330ec901185385cda805b999c3f768",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "eac47e4dcf963a11562e04f9913ab7da7ea14737530b25ef0ab4736bc2b86687"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0112",
+      "bytes": 262144,
+      "sha256": "6bf86322ed155cac199cc96a1ea7435974bdc4abd22c3d87a931b5c8eaebdcca",
+      "git_blob": "0bbee2f2e444669676f84ecb9d0147f1362b1a84",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "24ed48cd78df461badcdd5dc4e796f24c2cda10924c63ec03e3a4c495a40611c"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0113",
+      "bytes": 262144,
+      "sha256": "6e701a30c6cd172661e2a0cc2a32b6d05b49484028a634453fb284de8a5c2c6f",
+      "git_blob": "e19ab8ed473587f1fc03cdb856ae53fd1c64b0c8",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "6ebf7f17d576ff3514ec6a23bc427741bd741db68f617efd2314bff1fc258748"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0114",
+      "bytes": 262144,
+      "sha256": "d2b547edff463a27171d6a19c9ec4d1d98f33a720c265a0c4fa36234385e8c8c",
+      "git_blob": "7e1c9b018e23746653a8e7f0b5a4e6949d5a2045",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "eeab456bdce9a512b4580dc38c4299f1702ca47010f7ae96e815e991a5bce504"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0115",
+      "bytes": 262144,
+      "sha256": "382de849247d670de5a1e232a8097a8c88adcc74b6c0288bbf1fe2466c359948",
+      "git_blob": "153d021ecb77a334c20b816fc73682c58af6c0b2",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "2b95b4b45a017cae3a78bf27d43e01d76479095989620e81521183471e659c3f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0116",
+      "bytes": 262144,
+      "sha256": "707cbde47851d9c4e217be7b728509c429811cb2d8f51393f023fa56ebe359e9",
+      "git_blob": "f12815cfde82f995f4bfd3f29f3bfa7b8bc2f519",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "9802bd3cb9fecf9515f8a2a616602ae5eb5c2df36a53f5a05a7179f2b2581755"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0117",
+      "bytes": 262144,
+      "sha256": "19d34974bffb58c6816a921ec9e9ec29bb16d5f3e9025c1b64a393171744ddf8",
+      "git_blob": "079c4450642dd6b99d8cfbc52aba94f2930e7022",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "987aba845c8521a6685649e515060f4f6b29719cc861ec2e96e1dc2b624e69f6"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0118",
+      "bytes": 262144,
+      "sha256": "7d29c40da75db3a404857412eb86c4eeeec381b5d582231699558ec4b2d1b3a6",
+      "git_blob": "f243b62f53753e279327e83b54bffc9f6acf641f",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "0750518dd27fdd465440971917cb0364f351184e53d2bd44c94d8e83c024c8cb"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0119",
+      "bytes": 262144,
+      "sha256": "8f9fff12c400ebea44ded11bb064e0a70d2dc0b2001901e473d6472666537823",
+      "git_blob": "b3f1cceb9e43a456236f9144ab6635581f59ff81",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "7876deddf7a06df5ff51523b2783eb559c83bd944a057633ff8b5a4f0062e4cc"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0120",
+      "bytes": 262144,
+      "sha256": "1bc194ff31165bfdd17146b1323e4b3c57a0eb3cfd17a6a9e28e69e6f3aba3ba",
+      "git_blob": "2c8590830394333aef88c39d35b542f820abed0d",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "5cf5204c6b3eb273ce360295a91288fe1b902096dcf893fe64c7b12ce9e9e3eb"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0121",
+      "bytes": 262144,
+      "sha256": "98ebf41fbf438c47961d09f7fe067abe4cbd634c874a2ea0d01c340b3249d6c1",
+      "git_blob": "272a6f7024b044454d110feb3f2f6ba170062634",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "445bfd0a69cdce78ae667cb27b2a8caa9ca62c659eaa3caede91e73ebdb50796"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0123",
+      "bytes": 262144,
+      "sha256": "c94c20e63dfd86fa48b734616c403b49e888f2de41df1dc5d94a53408eea840f",
+      "git_blob": "39f867c87c22278320e00996e76c5ef176d0253c",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "a6be7d1db6ad46e6ac763e3cc7a9bdc6a743fc218c4e7cc23fba5ae2a1524205"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0124",
+      "bytes": 262144,
+      "sha256": "346ca0361338bce58e5094df30e78b06796b9a43c9bd468f998b797f9af6380e",
+      "git_blob": "1aa6e860ce8fd12e0f34c449704b8c47eb4d3081",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "20e11fb0e508c6067de690ae74b5a2d366ab58211c2df20863e33812f9fcf264"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0125",
+      "bytes": 262144,
+      "sha256": "6f7921caea36488e5d79059a8117198fdbff32daae62e327f21135385a94e259",
+      "git_blob": "ed810a2ff12c263b0ecf3d93ee01122b8b126ae5",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "163bd3b8b8915b733204ff3c25fa8a3b25b0e75b726d9c69674fc8d35815b2ca"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0126",
+      "bytes": 262144,
+      "sha256": "d1ffc9a6af7526e4f68a799a3c48776f02b8193f3619feac33231144d17d616a",
+      "git_blob": "948bbb47029c3df937f4bb7ae83cc22d41fbdfb9",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "3714535a39783a39f6c576ee3c7234f7b97c8d0a3fcbd9730a953c6e4867ceb1"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0127",
+      "bytes": 262144,
+      "sha256": "9a09a6099e8cf684529b57aee9f37c112fe20a1626f5f03d312e618485388c74",
+      "git_blob": "f7997fcf8d30913ef2617a22d5f0ae30636246fa",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "647063bfc3f57f64cf6aa542b46464e733d1d4a38bb01b0727fb77fdeb263b89"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0128",
+      "bytes": 262144,
+      "sha256": "a9f7d65df405b1717ba994f39511b103f2157343d7d8a4e2063b70d4a47f44e6",
+      "git_blob": "c43cb9a116090da2beda5807a04e62dd91836026",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "02c11f054da990056c163e5fc8671b68a2be9758e84e2dcd36cfe7e75097a67c"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0129",
+      "bytes": 262144,
+      "sha256": "d2ae61efd5750bef645c6221b8dc185fbb4b510160f8423dc8677ac5f9a91b05",
+      "git_blob": "3d4473e7af80e42bcabc297e3404f6714580a93e",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "56007ba4dba8ef29bd24758ff548af81d858fd7d4ecb0d8dae776ab618a5ddfc"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0130",
+      "bytes": 262144,
+      "sha256": "9b048eee30ed78e79c6612428102388cee4096293fddd4328e2736b97d58d9d7",
+      "git_blob": "e3510ff13ddc2a601d332676283908da7d59557a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "a5dfa3f6fd8ae60ab1b536b1e32d1c0bf47352dffbcf50104d99802b5af8d567"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0131",
+      "bytes": 262144,
+      "sha256": "4b60c047a160c675355c28392c84fa8b85b37d9aedef3e5d5d2492bdb991c0eb",
+      "git_blob": "250b0d9240ffc01345c8576544ee8c5983049418",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "97f66f2726f97669aff92ba6ce006774d04555fdd5079ed320b7b54d756e273c"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0132",
+      "bytes": 262144,
+      "sha256": "027476843a91a90d12e83d96f8d9884a3605f42ca76c4297d831cf6f3b046433",
+      "git_blob": "b1a57e366a0530dbd672f8bfe731013bd23d80ad",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "a17f89910529464b8d1d5f5f0d2d0dd21ae03a5bb297760810952f7adcaf8567"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0133",
+      "bytes": 262144,
+      "sha256": "c1abe812a4b4f3daafdca06f18e870370866ad9b0f3f89d175f9231edad08e5a",
+      "git_blob": "5a40006ad3d89171890c481b5581a5d16296143a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "48f829970e8e940d53d930f0462cdb311573dd778d3bd2d613fa133a75f623a0"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0134",
+      "bytes": 262144,
+      "sha256": "c9517220fae536678fe30cfe4461270380f397eba3421aa7dbe780741cd8b88f",
+      "git_blob": "ea36ba4d4c6d3dd88f8aeb1b55091b9db5e3f1c7",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "f79c928c26a86baa76e4f322c026e6726dd3f9d1df4d619203f0d4e992b64b6d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0135",
+      "bytes": 262144,
+      "sha256": "cbc00e68d1b2f6ed7a3fe4259783b07e49bd9e9088ecb10639732b724bbbf8b5",
+      "git_blob": "2e0c6e7d8263542a0d55edb2700ba9dc50d72932",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "0b8213ebe632d72e35934c1b66dcbdd4c56c32aa03b56aa92bfb00a3668f31c5"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0136",
+      "bytes": 262144,
+      "sha256": "d0c1e0708fe280f5a3c603de0cb412defbf7deb3474fff4823db7aa6dc4b60e8",
+      "git_blob": "b40e3f67da88d9d3c65b858a380dc3b08bcbf563",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "6b705cc9d649b4d0e4da0fd9a68d6a48797f71ea762ac7ee7baa6d5b44c4e725"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0137",
+      "bytes": 262144,
+      "sha256": "9abcd60761107daa9a8ba128f509a378ff2c130d27dc4b79207461d2f3b23891",
+      "git_blob": "3fb155453b9d5d64d2364ccb5a3e950657d10b9d",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "b622437d6a41beb0904d1f2cfbcb16aafb9e92ce611ae3e38660d3b588a13f21"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0138",
+      "bytes": 262144,
+      "sha256": "48ec43500c5c92f412be283b045e85cab55d936c0dbd46f69da1aa06676533d3",
+      "git_blob": "8d38df0b058636e52eeb4759f2c6e19f843edb20",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "c8c00fe85799c8ee5c67204a29382ca4e6cc13755f6f1eb60fde30943629a6ea"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0139",
+      "bytes": 262144,
+      "sha256": "02ad5b42e4e2a1e34c7f78fe02647a34526b21118cd1db2dc9eb27baf1c033d8",
+      "git_blob": "1915faadbceafa87d96b9a48cdf6f77ade1c04e3",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "83f5f9784356882183279f367ced0020e1ad6599b087ddbeea4523ad04c85dae"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0140",
+      "bytes": 262144,
+      "sha256": "f6f68c41a5cfe651f1e92ceff33733464c33a920445e0f358367495c73ecb45f",
+      "git_blob": "63897c24680894a8a2d275cfdb268b506b1a7a82",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "c7a3a91b831e5c7c66e7d1f8337d5a9e25409d8c2013671830cd31329b5c54a0"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0141",
+      "bytes": 262144,
+      "sha256": "8bd91eee62074b230337cc3e5e0dad9a199b12ded64a9bffd7d48bb05622f34a",
+      "git_blob": "a6a45a40f391ff0d1ae3f56029c347410638da26",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "06acf80739e274ea2ef724b01fd6e770080809be83e56b6f638fb0929dbf783d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0142",
+      "bytes": 262144,
+      "sha256": "f5e9eba42b2f36e84379c38b370b38dab09892dcc900e9ff7d0818b0a2419b9e",
+      "git_blob": "796850a75ba42b7af57e9deedd7029ed3cdf9e74",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "e9197347319d97c982eee102b500c28463cf33311608acff898da049935bf9d2"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0143",
+      "bytes": 262144,
+      "sha256": "24e66132ccd51bdb3181185bb332965d33d3456714f4c9f449d9f35f83af0d7f",
+      "git_blob": "421e7ae244b646c14744e8510c4b949c23f51b9e",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "61f86b4fc460a299d7b307472ee92396f782fe0269c55d8deb642135d6a1801e"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0144",
+      "bytes": 262144,
+      "sha256": "7e94acc7a60649fd92a04a67384afc5d22ca071f496d90336d41f1311a0119db",
+      "git_blob": "6a232c7cc150d42e54745b665950744a6a9378a9",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "c55079c8535293cceb07c15c09ff80b8e40c09b16452a24bd964f690ac94a4d1"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0145",
+      "bytes": 262144,
+      "sha256": "b8542a1643b207981cc9d5323191049518e0820934d7dd25b27b5b9b57ea5f5b",
+      "git_blob": "c25f8ac96d2a8bffcd4bf53ac0e30fa89ee07306",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "c79a82a6d74167ea9e6114680f892b9196b7f00e28e894222847484bd1a68c33"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0146",
+      "bytes": 262144,
+      "sha256": "08a40c80f293c7685b8874507d15feb53801ebaaecb986a14dc0aa69af6a6116",
+      "git_blob": "d78010c9fc46be0918930bfbbb928f09f39331f2",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "1828ea2faf81b633d33f449a04411df7c1192695c132c43c1f605240ca54b157"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0147",
+      "bytes": 262144,
+      "sha256": "2d9c7e8b49b44060e8be1b354e9bb5a0c5a4b5472b52707b7da9d5e8a4a5ca6a",
+      "git_blob": "8618808b38c4f9daf4d20fcd2642ea016289a920",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "ec6eef72a5c37bc84c0e455a0891cee155196d7b23e58f6d8db69673ab2dea8b"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0148",
+      "bytes": 262144,
+      "sha256": "28f8ec172a6790da89171156cfb42d7f2602799e9ebf22958018398e34b1b5eb",
+      "git_blob": "38f9279084fa0a0ecda47c6431e8f6d95a891911",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "ef91f9d8383204da5de6b3d270ad42660a9403493b268d14beb0536e9ea89e2d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0149",
+      "bytes": 262144,
+      "sha256": "87d87d2c46af5d930b63ab95b3a043918dde4a70e45cdfeef366dade28e22952",
+      "git_blob": "e5ced94ddef684d26cd9faa221af9cf099cad58e",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "574ce4c573d08a5cf82237f01fe163627db2ad1a7f9e23cd907488aaf48dcde6"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0150",
+      "bytes": 262144,
+      "sha256": "cfdbef9e2c401e13c39f3f3900adf599063bd4d10530cc37f3cff01de9bca02b",
+      "git_blob": "0da3e7a27ee6397146a481a70c1c2a853d80f7ab",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "7b6824c5ed0e0aa2ef8e269afe94bab37052aeea9777a5121b11d13515ebc3aa"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0151",
+      "bytes": 262144,
+      "sha256": "ab9c5ac9e5ea5c5fc9d1271a7264f6e10e3f509bcb862e889dedcee35ba77dbc",
+      "git_blob": "62c3cb13780e8d8592f0e0dd064358519cd8971f",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "3a42d818f7bb43692aefc03da6c6f078ef0551e83d59d86da8f1e5cef58537cc"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0152",
+      "bytes": 262144,
+      "sha256": "eacbe400db6913862be3a66ee8b16bff71df3af066f97697d377208e077c0d1e",
+      "git_blob": "937950539d55196efefbe639cc555c49f3ea67b6",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "7bfa242af91d37ab80672fa0ac6bd870d888ccfcf45d603727d6bea756cdb2d5"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0153",
+      "bytes": 262144,
+      "sha256": "e86955c8226765bf4a0575d3e547f3b575c803e251e738bf00b0dde362d0e1f2",
+      "git_blob": "8b3e28b20b26ebb4b932acbf9ad6575f97475b0a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "83abc43f4f63291b3a0de0b28940473435fbb48565bcfc8379435b6a052f19af"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0154",
+      "bytes": 262144,
+      "sha256": "e4f30d23d75d2ca57428a12593c39e823676f109b733bc913dfce3c953164e98",
+      "git_blob": "9d6decd99d8b5f9f151d8f53810798d903b04819",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "b1d87f1137017f25293d39b38b06071498570a7bf41a23c36f407abe086bc3ef"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0155",
+      "bytes": 262144,
+      "sha256": "f648ff0da7f72b895912948890148df48e73eaea7373bd5599ebcde675a6422f",
+      "git_blob": "3c9ef732ae5ab0dabf75e7d36c10d6bcfa62d686",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "2e74d52bf5e113b5363b860e1bd15eb52d0a8fa22ac37b7c4be1bb17ed8339be"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0156",
+      "bytes": 262144,
+      "sha256": "2536d113e521bd9fc6992b0d2fefd3dae138a3b31ae35c88134f7bd1dfdbd0ae",
+      "git_blob": "20fa951b95bb17222ec3bbe79fa552caa1898a2c",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "fd98eb5b8098ee57372ba4b8a64f1bd63a2702d417f5930ecaa4a4c6b015283f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0157",
+      "bytes": 262144,
+      "sha256": "8856639cb576963c793acfb6969c73a8eaa20d1b03e047095280b4ecaef33ff8",
+      "git_blob": "caa0f622d5aca704e95e9f85a62d2d582ecee0dd",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "631ff2600a26298071df41b0ec12173815dd70fc99a1210d8a4ae5cf20a6f6ac"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0158",
+      "bytes": 262144,
+      "sha256": "75a4da478e940b3e0b7de24dbf52a0afc27b6c47b769d477a325bd5143861c31",
+      "git_blob": "7b622bd9936fe271368f6a353a8bf6a3659a90ec",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "603928a5cfe9208b67dc4998c50c67248ce459981876115671c1268984238e5e"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0159",
+      "bytes": 262144,
+      "sha256": "43ebfc4b3a2fe85712ee55b52cfe332e20c2a0860f0e126dcdcd8c1f0d406063",
+      "git_blob": "c5d9a1122667b25ee15cb0d45add30ef017fde3b",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "d806b2f60d2867c51dab97a9d9f1378eec6f756ac38984292cde2650664e3eff"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0160",
+      "bytes": 262144,
+      "sha256": "b3e0bc93e3728012877bb3e0ccd0bd51a40a37169627aa3fbf3bd0ebd0420ba7",
+      "git_blob": "ea26324efab0039e48dd6d572acb57d68fcbe6f2",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "637542d7ae453fa03c07c1c5740af49e93ac1675d6a0ea776cf239f4ecfd1b2f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0161",
+      "bytes": 262144,
+      "sha256": "4aaf4894a328da97ce8f248a85b56d50842be5266dc0a4079f56a34ffd2a9ad5",
+      "git_blob": "8861efc777640c4d0aa545407e793d2cde8d4648",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "8459c4e14a21b35a62374135cabecdb77a5bd151384b8b4c34178356cdf2b1c6"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0162",
+      "bytes": 262144,
+      "sha256": "2adfa2b2d2799373c9be72ac992ad87cffab6b69f814e5fc1b4fa99b2569b10e",
+      "git_blob": "24ceaaa0ec7dfff0c507cbfd10ed6f724ae5554d",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "452a246f6a2bbb6e0aeaacc140f830fee0efefe66fd0eeb61abb52ec98549c7d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0164",
+      "bytes": 262144,
+      "sha256": "0f296b18c6a3904f6ccf78a6bd08f55821f3a1981e930ac1de8a550d3bdaab54",
+      "git_blob": "2abc5d878df4563e92306669df3d8b86e2559b7d",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "5db5bd7ce352a3ee22e230d759124b90b3e2ffefc4c77c321da7cceefd9ba07d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0165",
+      "bytes": 262144,
+      "sha256": "74de5676a992dc86ddda5307a5036c56fd50aabc7fcbe19a8d7f2a0f92574696",
+      "git_blob": "6a46c7933533a3c633c831dac8b377f3c2cae213",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "698c2630eb890cf9c8c6af0593b4e308d289399afbe8525de7dadfaa00300aed"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0166",
+      "bytes": 262144,
+      "sha256": "d0a910cb3386d04e6852d066ea16767f4c5a81181f0a7ff720983823a8e939da",
+      "git_blob": "2a175b84945afd521f491f59b3c833e74f246185",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "967a235aecd8630b6fbbf96e210c3c6c2a4270c4ba9d814aac57597bdba19fed"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0167",
+      "bytes": 262144,
+      "sha256": "17b6db0a46e7359b867c58040b053ee62a5d442fccdbb0eba3964f4b89bca518",
+      "git_blob": "97265965cc33d4e24d710b403e856218a77a576b",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "0043d6b357105887bd634cdffeee5fc16ea750a8fabeb734bc2a3eaea3066fde"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0168",
+      "bytes": 262144,
+      "sha256": "48015f72407e694e4f5a5c3f68e6f0b78b5c97e12b1a9f929fbcadb883ffbad8",
+      "git_blob": "d5c48fa78a68bafe23f0cbe4cbeefd28ddac106f",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "c08672a996efe326ffba4dac0bc044b28c6199e81a88410e1ee33ba8f74ab769"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0169",
+      "bytes": 262144,
+      "sha256": "6570029f798daed16748523abee0d9c1e0402cfe3e2550947305909625bd905b",
+      "git_blob": "2caa5418f763de53233181ea171ce8a8c7a30615",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "7ebebb49d8b1656d5e45114ec043c630e2521bc5b4104b7bad8dbe05fafbebe0"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0170",
+      "bytes": 262144,
+      "sha256": "d0c1c71de7c43003a379d8110a526492e86c2f5cede464c25776ab2e7160a7e6",
+      "git_blob": "42b3538a2e02f9effdc9a0656a7ce8fc3efc69ed",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "c262fa0dfc408d0e642adb49e30879b14b7ea7a911791919b39077a42aa830fd"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0171",
+      "bytes": 262144,
+      "sha256": "a0987f56686d857923ac3608d216f1a1759afc8b5a1b35c283980d3e6624bc53",
+      "git_blob": "1050dbfe7af86421e90777d25955c5ae95824b03",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "6d7f91702247a2f31630e28486512e6b2be937edfec16370b1dbe5975d2aa739"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0000",
+      "bytes": 262144,
+      "sha256": "fca244aef5623ea506c67cc277ee509fb1d7068a8780ae40de358d4987e926f7",
+      "git_blob": "0be74f0ae865a2960fb6b7f15b6e478c620f2bd0",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "4d8c9bc3dd7adba6fc817a734a09bf19b9c5ef4b7a7f9600954b07c228a1ed71"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0002",
+      "bytes": 262144,
+      "sha256": "db64d94b1fa091fb6186ad2d2f127290da71e7e5827f656335b21a28ea6c491d",
+      "git_blob": "c65ac7f85f9032cb165a2f7f44e3a47eac94476b",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "37e0473eacdcb011b7ab5fb6c2f1f9db35c2725f801b43e700a083b3281610c0"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0003",
+      "bytes": 262144,
+      "sha256": "39e69f37376606602fe207066eb0e5536aae357d38a934972f0af93bd87ff597",
+      "git_blob": "8de43239cb1fae2c1a337b64830fc5a7c23fbe4f",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "139b0825618f9eabd067b73c3436f54edd6497390131694fab29c9a4c92fb6d8"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0004",
+      "bytes": 262144,
+      "sha256": "c0d6000eea6013bebef00aed8422694fa3e79ddc4793d07ed52b5ba6d56c423c",
+      "git_blob": "2db4811b4831a61a48dabab14a5c2e9e0fca1fc0",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "9e3c28ef3a1f61692c38ae0aa2838281667b69e28e1d71e3e8dacc77a57461d0"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0005",
+      "bytes": 262144,
+      "sha256": "2fe8b7f81bad0739af55c0606bd469d58b761e8d6643199b5687c87b3e0a6d34",
+      "git_blob": "5384f75b0a190bfe837bda93bc7d3e8d46a1cf20",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "d20bf8f9db637327e3ddf2e8699894bd222e6bc68d94537e0c6d6d67f54a6f22"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0006",
+      "bytes": 262144,
+      "sha256": "fa88b56925ffdf6c0161ca58e7ed32cb8950d71db665fa5cbca1fbc66c267093",
+      "git_blob": "11169f82bcfea3eec34b91ada2a62fc011526d0d",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "32d27fa4e62a8cbcab5c960319b42827dc05bd0cdbf6eb826384332847222b7c"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0007",
+      "bytes": 262144,
+      "sha256": "bba88ee01d141a43b20a535d3ac186c390f0c23a5a9bc9ff62ed865bba31209a",
+      "git_blob": "eca99ca722ed6564c545a8743a41229e43248c6e",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "0d82ded69f62cbc99c9012daf183ba77c5695bb17d620dfe3cb22c42592cd16d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0008",
+      "bytes": 262144,
+      "sha256": "9c8a7080122397302969fe7022b37f8523331526419a76255b051807af3a46fd",
+      "git_blob": "4aaab343d818c822e295b6bd74dcb5c33ecf7d68",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "aaa561e51c8f6905db93a526a6b135e78941c8b18aa946d5736c6dafb92c4f41"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0009",
+      "bytes": 262144,
+      "sha256": "402c5c8cce0b9a26f4f4fdab1ceb21f85a3fda331364411cfec707f02cb810ad",
+      "git_blob": "566265c31aad8670c510805295023c0396ddff89",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "e3665d52328014aba1e1daf9975f33437969f3e52e8b85d3a8710bfc5edb6c5f"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0010",
+      "bytes": 262144,
+      "sha256": "0db127000fc4ea3382f2823748d1f5cf93112033eba34ab167ad8f56c91fa13d",
+      "git_blob": "66e59723c8d7ebc74261215183624455a988ba36",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "cb61c3b51e3eb3738c9027a87f2acf6e7fe2dcbc4476610f1f472604ec882f46"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0011",
+      "bytes": 262144,
+      "sha256": "acb6e28566869c6268672fcd8630199d8039ea8d15ef840f7fb10ff6fed59305",
+      "git_blob": "885d0940866e83ebccf427136539f59e1e60571c",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "65bcf69420043ef1deb636b0e94d43e71f7f548d1c0f5f8bbb78f2e3defe3974"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0012",
+      "bytes": 262144,
+      "sha256": "18860b8502e67658aa20d1d9a0a64b6dd0d89cf1b5cecfec0d9a9ba05b91375b",
+      "git_blob": "649b5055269610d9d09ebef7b2a614935c39613a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "4fb3b8a6065a54f02656492fe51186db9de1a9af099b20c89561358dbd92389d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0013",
+      "bytes": 262144,
+      "sha256": "0a5e771c99e48005756858384343461bb45e4481c06f8e33cced55a3cec52d29",
+      "git_blob": "c08eeacc0d52131c43f479d5263c21cda6ece44a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "0e264afde294929cdb693daa31f58b092337977461e49dbb3439069012f3289e"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0014",
+      "bytes": 262144,
+      "sha256": "8efbb27b7b2cb2fa57dd32597f148fcade55cf78f010b6395120be5545b1c84c",
+      "git_blob": "6f83313d735ca963f315ef9c0d924c415b9b9f5d",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "a1b714cceb4e3836bac5030d5518bbdb2d4566d90b49f30a3c7a87cadfb12233"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0015",
+      "bytes": 262144,
+      "sha256": "60ea957cf8c7322cf76fe042a97d6f7e2a1b2a113106154ead910424b84ab7d4",
+      "git_blob": "21bc02b39d3b835824714daee772ee35595ed741",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "0f3100171fd52844e6d7a208aec3f606ad678b65b43dd9cc05dd484b7f86b6c5"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0016",
+      "bytes": 262144,
+      "sha256": "f9c02a6f52ee69f4662b33e505aa62b8d39d334504167536d51644bf57893959",
+      "git_blob": "b6d507c2fbfe964ef9e01f38ec90d64565d6d7fa",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "a46c1aa4cc10aa73cbdc7116f974461d2689133fcb905183fdc8230b86bae52d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0017",
+      "bytes": 262144,
+      "sha256": "6d64d10fdb96e61902ab7aeae4a1feae8a3620e2a702a33b453b4d9de8c42b46",
+      "git_blob": "3b666d74e9f3a46f1cde263ee80cce3f39a5957a",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "68962e61ea8b3efffcc6801250b75895049f131b818fdf47d042f5affc498795"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0018",
+      "bytes": 262144,
+      "sha256": "90c1bf3a6f8514766e0ce9902a7b8b0639c879fed9411654134a0bc2b6503f21",
+      "git_blob": "40e803279c0d42342303c374f4f0a521ce24c6cf",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "3aa6bbe3b61eb005c76f7df54d9aff794b52cea2ff5cbcb212a43a2586f72500"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0019",
+      "bytes": 262144,
+      "sha256": "e66e520a6a22c7cdcbc7d7736d36c823bd8dfbe299db97e4a34f2480cd1ef430",
+      "git_blob": "e4d4d8593e21aa614ed910dd354ac3560139cabb",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "db989fd7e156e650a6339888da5c6d0c46ece8cadc2b6df1fede425b1b59bf6c"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0020",
+      "bytes": 262144,
+      "sha256": "d0bb3ff397aebb055633dc15a16782d50e96e8ed26f3e766362a016de6aa3983",
+      "git_blob": "88df43cc74356c52246caccfe7239d4fe3d14919",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "f7dd66ae1d25d20cbcb4d4b15a3aca689f239b5eb2a5e751854509d84f44373a"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0021",
+      "bytes": 262144,
+      "sha256": "e4573311050e68a692fd953f6173b29ba44063b591b884b0c83716a0d3cdccea",
+      "git_blob": "1eb8265410e04ae4139f15f0ab7d68cdbb2b2045",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "fedb25a43f46e3023de7617089b77b00c001fafd3f9ebfdb71d85f0f4ce6c287"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0022",
+      "bytes": 262144,
+      "sha256": "ba867c34d90742b5a3690fcbef068342b9353d62001a58a864eb3c20ca40c4fe",
+      "git_blob": "70137ead3e6017de4303cff329d372ae862adcc9",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "fd2ac88d9687ce0da31b3aa063f7381e21b2c5a5c5ff103355cd02bbdc3b2eb2"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0023",
+      "bytes": 262144,
+      "sha256": "b1e579e01bb4601ded63e6149ca0c02f9ed14b601225c089c8638ecb87001524",
+      "git_blob": "d056f693fa4926ebf5f90443be4b844964eee078",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "ff1e62396421a984f646be0da21aab6d7a0b10664ff713f71e8f7aefebf27034"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0024",
+      "bytes": 262144,
+      "sha256": "39dcbbc70d0f955960fcd8aba4a389e0315a271de86c9e8fdb231830f4a39580",
+      "git_blob": "fb832b18955def980fd95616a18424dccb3164c9",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "a2b6574c2358c599b744e6dba1e2f50f8a2c4258d0e14d2d596eeb6d9da8ceee"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0025",
+      "bytes": 262144,
+      "sha256": "8d728c938112c6c8794e969da6f969c905a081e42bd618282e3c4d6e66488683",
+      "git_blob": "3c011906d021563f4278f738994281efc346bec4",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "968e8fc0cd1523935ce14808bd1bf1e90b1600af1b70f629770f694f3858d349"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0026",
+      "bytes": 262144,
+      "sha256": "623e32c43a9ae121f469b7f61fa473f1dfee161bc8a8781fcdc899e582421be0",
+      "git_blob": "f6d1bc2c8b534eec14ca9d7f711fcf9cc341acf6",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "cd89a578f9daf314eda49283cbaaf90f3434b3ec6f91d17c6abb19bfde285314"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0027",
+      "bytes": 262144,
+      "sha256": "6701e1538001c50bc2d0b46d3fa28c8b5f8d7feeba45d620d4eb1e5a2116a69f",
+      "git_blob": "273718098544a76333be434b6af684e0c5cce5dc",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "1ddb0fdf8745a44b4c981d9898a6a35383457dec9060e08c930879048fd4d01c"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0028",
+      "bytes": 262144,
+      "sha256": "903bd8f9e8e5fbf139feea73412fcd28d4abb91ec446f9db81538bffa92c44b4",
+      "git_blob": "932cb9a8b49d45682b2ad45c86af34d4b7a51f14",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "b2dec8dea8369e5d465aefac01f61e6af3ac49719de862f28fbaf590e32c54b3"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0029",
+      "bytes": 262144,
+      "sha256": "177b24e3eb58d719c31bf1854ce3c70f615285b9450731006abb1d9d8b54632d",
+      "git_blob": "d0e58da9a6ece4e1b9188dca2c25ba6c864b4bdc",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "eaf7aab96a26f35f94c7fb0529784bc5fa49de4562e4aacf899de528d2417760"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0030",
+      "bytes": 262144,
+      "sha256": "ba935882098f91cbe9789e075ca2488722e7d188e8650323119f32920163b9e9",
+      "git_blob": "1193b47ec4216228c5b70270a0485fbbb482b3b4",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "3968ccc8e1dd6bc1d184460bda6dc88d8d87b80fbd7c64ca666b9928373c77e6"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0031",
+      "bytes": 262144,
+      "sha256": "c7c4db74a488ec457f6e503c16330bebca50c0058da0e10e7b6818928f311037",
+      "git_blob": "e7238472814bdcab8a8f0fe4a109413549ad654c",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "520a206cdfa435faa61251a4109985a0a7eab5dc31b0fdd91b2b6bc30836eb2b"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0032",
+      "bytes": 262144,
+      "sha256": "ad241a077488e48ace4afaee99a0ccdb2e5771b4a961183e5551144c5748bb39",
+      "git_blob": "017f7ec06d63990e6c435748864d750db2ba1119",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "4e099366533e2e5224bc03ccd9ac7a02e359012b572c0c272af3917188c3b513"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0033",
+      "bytes": 262144,
+      "sha256": "8078534ee0899e273ae8631a183fdffe00e41d9d975a37cc9dd6aa36e6d97301",
+      "git_blob": "04889393dbbe3c86a6a629c13247f2cc2d46ce2d",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "ef4a93603eeca48674715448e8e5ba809d94bee327926f38274623beaad09554"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0034",
+      "bytes": 262144,
+      "sha256": "7bd521bf135c8e2dad873ea8b9af480c06b7ef80b89add97be1474252066a4c3",
+      "git_blob": "2d9e9ae57f6397e95a102054b081e00a0cd0bf21",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 196608,
+      "decoded_sha256": "9f8b21a05960adb5a19a0049f7248a44fa8749c3c4f10054d12f05833409c098"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0035",
+      "bytes": 252044,
+      "sha256": "3d58119b714712b50b4fa00465747282fc2c6b158cf8b3e691773577a5cdda89",
+      "git_blob": "2cd98de445517c499e9770693bf5ac2722bcb281",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 189031,
+      "decoded_sha256": "88673336e518e31b97ebe638ff7d8dd8db1b8ff3b3c82f0aa7d5885dda860a91"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_smoke_001/archive.tar.gz.b64.part0000",
+      "bytes": 99772,
+      "sha256": "c79a685dd469da617ea76ac781902a18f2ba7d7853c3a4f95117752805494263",
+      "git_blob": "e69542d627a5dd02fb9fd1747449afd086e7e541",
+      "manifest": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_smoke_001/MANIFEST.json",
+      "kind": "base64",
+      "decoded_bytes": 74827,
+      "decoded_sha256": "1dcd8be6b18fee3b70f4457dc0447a71ca51372e242ca11fd5ede690bb342434"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00038.bin",
+      "bytes": 786432,
+      "sha256": "1abf064ae945279747cf2992615a682de27e85b8d4da6238829caf18f3992f8d",
+      "git_blob": "c477d35baaf02f95cd0fa5c29e6d5b56ecf8c474",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 2751
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00040.bin",
+      "bytes": 786432,
+      "sha256": "2338b75cda8cf0c5347ef65142c46e86fda40d954ad3ac8ae40597929689afe2",
+      "git_blob": "c49e6e0a32327a256782b88fb1bd1c7c4bba5cf4",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 2787
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00157.bin",
+      "bytes": 786432,
+      "sha256": "9b2487c64053690a56b700885b81e4226ec2e33996ee18df305884ec5033169f",
+      "git_blob": "a3d6f992b267c40ff659e333f31049397e725f50",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 2739
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00181.bin",
+      "bytes": 786432,
+      "sha256": "86b34383c16237147773224ef751989221326d96b0ad895667a984f76ee3d9a4",
+      "git_blob": "3cf4555206cc986f351f3f84cf73a86a3fe90f6e",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 2643
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00230.bin",
+      "bytes": 786432,
+      "sha256": "9861b92d0e841ac0e54fb6b9333660dcec4b17cf9c1b500633d2bf9f61476675",
+      "git_blob": "5bd9bf622cb8d30a8ee0c3e909db531b27b1437e",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 2794
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00233.bin",
+      "bytes": 786432,
+      "sha256": "e5264a74335a43a976cc91f5cafdc79197e49e4005664c47a0386f6cb01cbbae",
+      "git_blob": "69bdf92244cbc7ef066de9b362165b6921004da7",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 4221
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00255.bin",
+      "bytes": 786432,
+      "sha256": "17fd2fd665317e71cc41460cdbb7e23877a31d988e5d7a0ca645b2c0681fd320",
+      "git_blob": "62a6abc7f221b192b4342d9487c189d15c8d338c",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 2517
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00350.bin",
+      "bytes": 786432,
+      "sha256": "d1ba5715441ea29ca6064520cc44e6cf175f784b3e4bfcefae0a779e06ffd4e8",
+      "git_blob": "22cdc5e1cabab2bb732ec81e66b3879647a4860e",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 3252
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00366.bin",
+      "bytes": 786432,
+      "sha256": "0348bb161889559ac388a5f5530083df327b60b96014aedd2b363e30b6a09314",
+      "git_blob": "14e7239798f7cc50a2a61990175a7edfeec6b995",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 3148
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00375.bin",
+      "bytes": 786432,
+      "sha256": "7e23354683e36d703f5cc90d75a36c7c20dab54074201f2697de5ea18f8e5af8",
+      "git_blob": "3a48e771864673c34c95d58ab9fb4cd5c40415aa",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 3111
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00380.bin",
+      "bytes": 786432,
+      "sha256": "73c26a900d19be1a4cd629dd56cc1882929ca897331ff7baceeaa44650240563",
+      "git_blob": "632bb707dea8506c7cf5e1b9e06bee11ba998cc1",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 3078
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/part-00388.bin",
+      "bytes": 786432,
+      "sha256": "03dc7fa8c724877c898ad9e133b490548b40e92496bc2c17850ebeb137f91505",
+      "git_blob": "0213f24e83120baa08b1bf2e5415b7e7f838394e",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 3103
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/registered_preparation_bundle_001/part-00008.bin",
+      "bytes": 786432,
+      "sha256": "bdf483e7a83cc4991419489565c4ba5e0a508b5483a1c12c4243f9e55266fd12",
+      "git_blob": "46393c1e1d7e545ed97cc146e9557f289ab09a47",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/registered_preparation_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 3060
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/registered_preparation_bundle_001/part-00018.bin",
+      "bytes": 786432,
+      "sha256": "bec3713b4d5601066b783a7bd8c64936dde7c7781ec6bb223352010ebcaa717a",
+      "git_blob": "1c2d61388564317e2cce4c22c6b14b9488e49cdf",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/registered_preparation_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 3065
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/registered_preparation_bundle_001/part-00042.bin",
+      "bytes": 786432,
+      "sha256": "702a125cbc67e071d03d8d37613da1870baa6947202be067ed6cf4b40900c448",
+      "git_blob": "709d19865b5dda80ba75172cf64c1cd31af9f036",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/registered_preparation_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 3308
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/registered_preparation_bundle_001/part-00046.bin",
+      "bytes": 786432,
+      "sha256": "bd802922c138ab9b4c497e7d8ce01df59284b7e5cc8e2b83fa93a47c1e064539",
+      "git_blob": "1cf8f83c9ae7076e656b795922ea78e7b4a05ea0",
+      "manifest": "experiments/analytic_event_neuron/round6/evidence/registered_preparation_bundle_001/BUNDLE.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 3019
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/evidence_bundle/part-00140.bin",
+      "bytes": 524288,
+      "sha256": "835728bef8aadf0ae6004168d117cfa6cc23435b1a4d3c728b5683e8f8e08abd",
+      "git_blob": "bb02b37eb4bb31faae348e78255a1c727280e520",
+      "manifest": "experiments/analytic_event_neuron/round7/evidence_bundle/BUNDLE_MANIFEST.json",
+      "kind": "binary",
+      "invalid_utf8": true,
+      "nul_bytes": 2449
+    }
+  ],
+  "transport_manifests": [
+    {
+      "path": "experiments/analytic_event_neuron/round3/evidence/EVIDENCE_MANIFEST.json",
+      "sha256": "8e70650a3f2b91a15007d1c403b6ababbb3200028c3637afae9905d2ddd297e5",
+      "git_blob": "dbcc23a3704dcb3573f35866638ba47b77776ae6"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/figures_001/MANIFEST.json",
+      "sha256": "8ca26e6dc38963aadaebd18ac4a4c6f50b4a3ef0d88b26ff64d576ed39be6c3d",
+      "git_blob": "e369f5a717580d752c72066877d4f2127fcd4b89"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "sha256": "6d1523dbb4a4b90bf6283cbbe2615a482efd868c5c32708eaeec504cbde1da46",
+      "git_blob": "846c6fe1a524e5ab87277b05a6f917351bf7729d"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "sha256": "64a2e6e460d92f61d0dc420b97c2522addcbd9c72298f98ff2bdd4fa4bf8eb16",
+      "git_blob": "950b231ec43724fb161246b865f07252965e6ebf"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_smoke_001/MANIFEST.json",
+      "sha256": "a817ebbdd2def189ba405482af8ad1bbf04ee331e14db32cb64a0eebdeb9f014",
+      "git_blob": "228664a500f7ba18ca31034f59db0cc50bd227d2"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/final_bundle_001/BUNDLE.json",
+      "sha256": "539d5b59740faeb3e96f68428d7af093e48ec47156e14de2ab0b346e16426bfc",
+      "git_blob": "5f3a457991cec194aafedf6f4d35c3b7534c05a7"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round6/evidence/registered_preparation_bundle_001/BUNDLE.json",
+      "sha256": "8fc4b70225c9ec0afc5037754d90c1b1263199927d48802276704f797c9acb88",
+      "git_blob": "bd830e346c54aea2d108499e6874d010d293dc4c"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round7/evidence_bundle/BUNDLE_MANIFEST.json",
+      "sha256": "06d4dc519169127af1cb5b4679c4c9ae3d84df203d3c7dbcc8e9f11c9058b29f",
+      "git_blob": "d09f71cda91a53e686b2b4a69f2b0ff6017564f7"
+    }
+  ]
+}
