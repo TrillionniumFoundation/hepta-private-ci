@@ -50,6 +50,7 @@ def publish_list(complete):
             "results/formal_01/CANDIDATE_FREEZE.json", "results/formal_01/REPORT_ZH.md",
             "results/formal_01/RESULTS_COMPACT.json", "results/formal_01/receipts/train_TOTAL.json",
             "results/formal_01/receipts/evaluate_TOTAL.json",
+            "results/formal_01/core_effects.png", "results/formal_01/core_effects.svg",
         }
         if relative in archived and not directly_reviewable:
             continue

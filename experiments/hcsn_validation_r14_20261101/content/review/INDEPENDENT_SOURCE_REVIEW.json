@@ -13,6 +13,13 @@
     "sample_path_qpi": "STOP target is actual prefix correctness. READ pays one actual frame/time tariff and follows the current later decisions. Labels and future observations enter detached evaluator targets only. Terminal READ is excluded from critic loss.",
     "source_tests": "Six existing behavioral tests were reviewed, including causal prefix outputs, initial STOP with NaN future payload, always READ fees, sample Q-pi continuation, complete freezing/gradients and replay/actor agreement. The owner reported these passed; this reviewer did not rerun them."
   },
+  "execution_followup": {
+    "development_and_weight_audit": "results/formal_01/review/DEVELOPMENT_AND_WEIGHT_AUDIT.json",
+    "development_and_weight_audit_sha256": "83f8f750d1296c3097e05941f51779fa4eaf88f79545982e148864cc75ece351",
+    "formal_results_audit": "results/formal_01/review/INDEPENDENT_RESULTS_AUDIT_01.json",
+    "formal_results_audit_sha256": "f994e2cec53b638d2e85031733d5b4fb71231f9e60db88fd01ff3226fa0661bd",
+    "new_training_or_inference_by_reviewer": false
+  },
   "execution_requirements": [
     "Run behavior and pipeline development checks after fixes when the serialized cost measurement window ends.",
     "Freeze actual current source/runtime/input identities before formal training.",
@@ -55,9 +62,15 @@
       ],
       "reason": "Development execution exposed Long/Bool mean error. Verified by reversing the single .float() cast and recovering the exact previously reviewed study.py SHA; all other reviewed files unchanged.",
       "reviewed_at_utc": "2026-11-01T07:52:11.922464+00:00"
+    },
+    {
+      "previous_record_sha256": "ab15928525679ccd23665641c98f0ea549a57a38cd143bdc415c56570f465a5c",
+      "previous_source_entries": [],
+      "reason": "Independent formal outcome audit and retained-development tensor audit completed; reviewed source bytes unchanged.",
+      "reviewed_at_utc": "2026-11-01T08:06:09.921483+00:00"
     }
   ],
-  "reviewed_at_utc": "2026-11-01T07:52:11.922464+00:00",
+  "reviewed_at_utc": "2026-11-01T08:06:09.921483+00:00",
   "reviewed_findings": [
     {
       "id": "R14-CONTENT-01",
@@ -131,12 +144,13 @@
       },
       "id": "R14-CONTENT-06",
       "original_problem": "Development step-zero validation attempted Tensor.mean() on Long read_count and Bool initial_selected, which is unsupported; static source review did not catch this runtime dtype defect.",
-      "remaining_scope": "Owner will run a new development attempt; prior failed attempt must remain in evidence and cost ledger.",
+      "remaining_scope": "Original failed development attempt remains retained and charged. Independent audits execute no new training or inference.",
       "resolution": "validation now applies stats[k].float().mean() before Python float conversion for each metric. This defines intended metric averages without changing target construction, data or selection rule.",
+      "runtime_verification": "Development02 freeze and both two-update workers exit0; formal12train+12heldout exit0. Independent result audit24479 checks and development/weight audit106 checks passed without any failures.",
       "source_functions": [
         "study.validation"
       ],
-      "status": "resolved_in_source_runtime_recheck_pending",
+      "status": "resolved_in_source_and_runtime_verified",
       "title": "Validation means for integer and Boolean metrics"
     }
   ],
@@ -225,6 +239,6 @@
       "sha256": "ce49fe4e0f86662726edf825b3be09a1b5a9d3138b99c9aad06005c93d11a575"
     }
   ],
-  "status": "source_review_passed_with_declared_scientific_scope; experiment_execution_pending",
+  "status": "source_review_and_registered_execution_audits_passed_with_declared_scientific_scope",
   "unresolved_source_findings_in_review_scope": []
 }
