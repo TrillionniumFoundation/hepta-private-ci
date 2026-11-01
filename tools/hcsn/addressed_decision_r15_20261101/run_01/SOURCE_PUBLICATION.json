@@ -1,0 +1,66 @@
+{
+  "method": "GitHub directory GET blob identities compared with every local published source and exact imported dependency",
+  "remote_blob_shas": {
+    "tools/hcsn/addressed_decision_r15_20261101/CAMPAIGN_REVIEW.md": "fd4fe1006a8944e3c75590903dc5e0f5f792166e",
+    "tools/hcsn/addressed_decision_r15_20261101/DEPENDENCY_NORMALIZATION.json": "4c95213c74c4d81dbf913dbb1bb21e564d01eba7",
+    "tools/hcsn/addressed_decision_r15_20261101/DESIGN_REVIEW.md": "e0fed1b136096b4021f3deecb4a7ea35ef825187",
+    "tools/hcsn/addressed_decision_r15_20261101/MODEL_SPEC.md": "f37e36ab8abf08f9ac50886b01a4a5411df0914d",
+    "tools/hcsn/addressed_decision_r15_20261101/NUMERICS_SCOPE.md": "c70e9636aa96fbdc47df0df2d589bb289c23586a",
+    "tools/hcsn/addressed_decision_r15_20261101/PREFLIGHT.json": "85a10df86fa7474468f8450e3b6addbd94a007c6",
+    "tools/hcsn/addressed_decision_r15_20261101/PROTOCOL.json": "db8535d52743bb69473acecd561aeea1fa6cb79e",
+    "tools/hcsn/addressed_decision_r15_20261101/README.md": "86153871b5c3668877fb3a9a12372813da7f8281",
+    "tools/hcsn/addressed_decision_r15_20261101/SOURCE_MANIFEST.json": "9436dfc098df0168fe63eee6ce89d84cd0eef77a",
+    "tools/hcsn/addressed_decision_r15_20261101/SOURCE_REVIEW.md": "b1e13d63cc54e3d49b2081d6cf063b452d957b2b",
+    "tools/hcsn/addressed_decision_r15_20261101/__init__.py": "c509cbd6bed8c0304e330c088178b1a3c4049dc3",
+    "tools/hcsn/addressed_decision_r15_20261101/audit.py": "970ae857e8f5577eabb62753f2fbbf37e1dab155",
+    "tools/hcsn/addressed_decision_r15_20261101/calibration.py": "bfd3ca88496ad1a9d26320c257bc8a4176291536",
+    "tools/hcsn/addressed_decision_r15_20261101/campaign.py": "8139dbb55ddc8963f479408e4f94b6fd7d34f427",
+    "tools/hcsn/addressed_decision_r15_20261101/content_baseline.py": "6c2aab15ed7d52aab3dadec4fd887ede045b085b",
+    "tools/hcsn/addressed_decision_r15_20261101/decision_probe.py": "510bc045578131b8824f48a6b024366f2ada0fd9",
+    "tools/hcsn/addressed_decision_r15_20261101/execution.py": "0bbe6531ec91344cef4b081b4d380f04bd6072b6",
+    "tools/hcsn/addressed_decision_r15_20261101/law.py": "4160074567dd33e21ae859b8a45036c038b6d418",
+    "tools/hcsn/addressed_decision_r15_20261101/numerics_study.py": "d7453f03ab41ad9ca72c0a95874026585eb20ab2",
+    "tools/hcsn/addressed_decision_r15_20261101/planner.py": "5a4f7e1468073438677e0bbde1925724e8992b91",
+    "tools/hcsn/addressed_decision_r15_20261101/statistics.py": "c2596eec89603220c5c60fe9af272a65df748e87",
+    "tools/hcsn/addressed_decision_r15_20261101/supervisor.py": "d383d043165aa6f8b14e734167bb657533e58331",
+    "tools/hcsn/addressed_decision_r15_20261101/test_audit.py": "be3e89749122ef33946978b9c165bfacb61bf211",
+    "tools/hcsn/addressed_decision_r15_20261101/world.py": "4e7ef523a9fd9ebb3b5f3cd968a3f3d739903f24",
+    "tools/hcsn/calibrated_operator_r11_20261031/numerics/kernel.py": "95cace749982a6b48b738dfa5d369b6491589a87",
+    "tools/hcsn/unified_cell_r12_20261031/PROTOCOL.json": "c0d6318d52075bcf96c0c18a9db8b80efbecc024",
+    "tools/hcsn/unified_cell_r12_20261031/cell.py": "e34f2062e3a35e9bfe3e2a0eff6fe60ed1cb8287"
+  },
+  "remote_readback_verified": true,
+  "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+  "source_manifest_sha256": "6c06773eadb2ccf9edb4f992fcebd338e34854d5a7ba36c938a0014fa7e2dbf2",
+  "source_stages": [
+    {
+      "message": "law/world/planner",
+      "sha": "cb1d25f65be596bc647d2e80e6cf7f44af7ccd7e"
+    },
+    {
+      "message": "research(hcsn): specify observed calibration and paid addressed decisions",
+      "sha": "b7dad7d54edf1b2a76e1bf70e1251a2d2a2b258f"
+    },
+    {
+      "message": "research(hcsn): add numerical, content, and decision sensitivity controls",
+      "sha": "9bf4b695900556cc83bd3846d92d13382ba2f0dc"
+    },
+    {
+      "message": "research(hcsn): independently audit timing, state, and finite planning invariants",
+      "sha": "3da25e60e7eb64871f21bb13e4cd9bf3d3b8282e"
+    },
+    {
+      "message": "research(hcsn): gate formal runs on published source and model freezes",
+      "sha": "b9fafc9d7c761d596cbb2294478a8100bf22252e"
+    },
+    {
+      "message": "research(hcsn): freeze R15 fit-level inference and complete-cost acceptance",
+      "sha": "9898aa33819a84818e430cb740f6b617bb72ab26"
+    },
+    {
+      "message": "Verify exact imported dependency bytes",
+      "sha": "7d634a293500982db5beb37fa1d494a75b540a91"
+    }
+  ],
+  "verified_at": "2026-11-01T07:56:36.343990+00:00"
+}
