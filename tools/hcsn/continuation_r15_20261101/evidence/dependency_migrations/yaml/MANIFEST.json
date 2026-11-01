@@ -1,0 +1,198 @@
+{
+  "format": "deterministic tar, gzip, raw-byte parts in listed order",
+  "stage": "yaml",
+  "file_count": 33,
+  "files": [
+    {
+      "path": "BAZEL_LOCK_UPDATE.json",
+      "bytes": 434,
+      "sha256": "46b3f5ba9c1a2ce95e51ae560500018bcc05bada4b5fa4a0f4e365ac9fb46911"
+    },
+    {
+      "path": "FORMAT.json",
+      "bytes": 135,
+      "sha256": "8f3cf8d4e09efbc73966773018acb6a5123da59327c1d223df919d209a9db3d7"
+    },
+    {
+      "path": "MIGRATION_NOTES.json",
+      "bytes": 800,
+      "sha256": "c55f45720b1d26d318cfea85b90863423925d13e87e5110b74bc9a02f4ac10f7"
+    },
+    {
+      "path": "MODULE.bazel.lock.after",
+      "bytes": 1664247,
+      "sha256": "0f3564b380951c7dc0c9b20de3abf5f4dbc8b4bc884438572ffa2a694eaede8c"
+    },
+    {
+      "path": "MODULE.bazel.lock.before",
+      "bytes": 1664242,
+      "sha256": "943ab60a008674817ab6d45183d101bea9b62f071797f232b450138567523448"
+    },
+    {
+      "path": "PROBE.json",
+      "bytes": 1083,
+      "sha256": "e3db2a7ec199f3bfe40738f16f876519cd6761d399286922d1fe99c74b63ab06"
+    },
+    {
+      "path": "STAGE_RECEIPT.json",
+      "bytes": 4614,
+      "sha256": "693810290af09efc0cfb7c5a1748760e686a4de3db6b0ec0d02a5047a431f7c8"
+    },
+    {
+      "path": "STAGE_RECEIPT.json.gz",
+      "bytes": 1827,
+      "sha256": "951e770d9babe169a19b9ccad807a34e5daa2d57cc1f4b365102dd877b60a66d"
+    },
+    {
+      "path": "VALIDATION.json",
+      "bytes": 2062,
+      "sha256": "a68b4c3a82fba0fd2858b332dd55f2202aa6c8cf1c4242984e5075f193cdb49e"
+    },
+    {
+      "path": "bazel-lock-update.stderr",
+      "bytes": 1337,
+      "sha256": "c45ac9f7ca70877642790ad6a652831910466b8818a9700d9f6d42c41e0e2073"
+    },
+    {
+      "path": "bazel-lock-update.stdout",
+      "bytes": 18,
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+    },
+    {
+      "path": "cargo-deny.json",
+      "bytes": 395,
+      "sha256": "08750836b2afce2d5f02da6b52aab7876b0451934f2f35f1664d2e8a93674303"
+    },
+    {
+      "path": "cargo-deny.stderr",
+      "bytes": 46886,
+      "sha256": "bb0a87a950e1f52f66ea130870bad134ebd0d5125274a84f37c17d27f45ab632"
+    },
+    {
+      "path": "cargo-deny.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "format.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "format.stdout",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "path": "metadata.json",
+      "bytes": 280,
+      "sha256": "c207100195542a81a6ba5eb7857c47de675aa38276169441c7a128d1bae2dc7d"
+    },
+    {
+      "path": "metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "metadata.stdout",
+      "bytes": 8097096,
+      "sha256": "0035e3e31c27ef43b3578cf6207696530472e07fe9525608cb76868b02abbb3f"
+    },
+    {
+      "path": "parser_probe/.config/nextest.toml",
+      "bytes": 28,
+      "sha256": "e0cd5e8a4d5d3efbe06962006a1ff00f9bc2a917ec95098c24d116b5d22d16ed"
+    },
+    {
+      "path": "parser_probe/Cargo.lock",
+      "bytes": 4478,
+      "sha256": "a01b0e2939d67670b00f087d4c7d4a3db3cd66b2003a10a5ede74e245f3db513"
+    },
+    {
+      "path": "parser_probe/Cargo.toml",
+      "bytes": 322,
+      "sha256": "24d5d77add6426b137e5987947737e951a1e7f75f9a4196a5cb679151da1c377"
+    },
+    {
+      "path": "parser_probe/src/lib.rs",
+      "bytes": 12,
+      "sha256": "2954a19abc01dda14dc39e5776db9d52149dcda6975c3b196927357a6591cf5d"
+    },
+    {
+      "path": "parser_probe/src/parser.rs",
+      "bytes": 7250,
+      "sha256": "f3532df1cc16f4da423b8e5c813269940c90317bcd211b6659cad449fd877e89"
+    },
+    {
+      "path": "parser_probe/src/parser_tests.rs",
+      "bytes": 3847,
+      "sha256": "89bf58eb2bd97c47bcefcdc605914bc5b3b023e30a8504fa93e2040ae1913b57"
+    },
+    {
+      "path": "probe-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "probe-metadata.stdout",
+      "bytes": 81449,
+      "sha256": "32d243ebd4c074542ab6e30c998a483080879cbdc1d4023f943984a730a66523"
+    },
+    {
+      "path": "probe-test.stderr",
+      "bytes": 3498,
+      "sha256": "1bb8d91c197a608b686966a5dbb33502ef182d03dc450071b688e6d488c97dbb"
+    },
+    {
+      "path": "probe-test.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "update_serde_yaml.json",
+      "bytes": 234,
+      "sha256": "804a26e8a281f4ffedec8aed65ad53388564250a660b5f72ef67170f71c56ff6"
+    },
+    {
+      "path": "update_serde_yaml.stderr",
+      "bytes": 281,
+      "sha256": "56c3e6272a4961ecc4ef5af8520f3b68b035f3392fec68ba2ca89ae8151d2f5a"
+    },
+    {
+      "path": "update_serde_yaml.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "yaml.patch",
+      "bytes": 21102,
+      "sha256": "3959fe5015c030d761aa1fc6211e31303d40df1c000266aa2ee89347fe96d5eb"
+    }
+  ],
+  "tar_bytes": 11642880,
+  "tar_sha256": "1070ddc99e0c846a4231613a4f799789f1e9582d79246ab04ccfa87897006874",
+  "gzip_bytes": 1044880,
+  "gzip_sha256": "09729cd2aa618788a630fa6a10e590bea7dda6abe438c8289683dbed46546a15",
+  "parts": [
+    {
+      "path": "yaml_evidence.tar.gz.part001",
+      "bytes": 480000,
+      "sha256": "65372255e0731afc57558cea8fc928c3951dfba18f251e6c6b415136ae167d21"
+    },
+    {
+      "path": "yaml_evidence.tar.gz.part002",
+      "bytes": 480000,
+      "sha256": "8165e436589d8132a3fe4d5b7c5de9c574e7d39768a4c817829464e7991739d1"
+    },
+    {
+      "path": "yaml_evidence.tar.gz.part003",
+      "bytes": 84880,
+      "sha256": "65ca70ea04cd40c478f2a2966a3b7762c61bb7c21aafe603cda533501701cd02"
+    }
+  ],
+  "max_part_bytes": 480000,
+  "includes": "Raw Cargo metadata and deny outputs, all recorded failure/success receipts and logs, Bazel lock before/after, stage patch, native probe source/manifest/lock/config.",
+  "excludes": "Tool executables, build targets, Cargo/Bazel caches, credentials.",
+  "historical_source_reconstruction": null,
+  "latest_remote_log_reproduced": false
+}

@@ -1,0 +1,137 @@
+{
+  "schema": "hcsn.r15.followup-remote-validation.v1",
+  "source_head": "6500d80838d0baf5304a9de584b93d9e0df8c914",
+  "source_tree": "ee3f1d3138fce1a862644dfebd1b337c7aba1c70",
+  "merge_commit": "f2298c98d294fd0491d408a7e25f0dfacaefd347",
+  "merge_tree": "ee3f1d3138fce1a862644dfebd1b337c7aba1c70",
+  "remote_stage_trees_match_local": true,
+  "stages": [
+    {
+      "local": "c73acbdf38bdf070dd6b6a7add9ee639c09f9966",
+      "remote": "22fee181bb191a2a3396b2b70d7aafdbec4e3b76",
+      "tree": "48f01d6484813391db8f19d70341dc3e5d45806a",
+      "message": "fix(bazel): qualify only plasticity process test ledger dependency"
+    },
+    {
+      "local": "1f54e2de06335f04e9f9ae0e39cdc8945b5eaf15",
+      "remote": "1411e4084dcfc6d9f730b26a8f6accb6c6c3d534",
+      "tree": "cd9430f8774de396e060fd7d301472d2fb688d40",
+      "message": "fix(memory): retain approved SQLite setup and fallible test fixtures"
+    },
+    {
+      "local": "f326955d5e37a01079fe5eb520b179f91062b0e3",
+      "remote": "e46a8b112e9adf914089ed133d4e3f5ab8f71a78",
+      "tree": "4b5d1ba25a95b092b9b6aebb7d512bb2ddc48e5e",
+      "message": "fix(hepta): propagate native fixture setup errors without lint suppression"
+    },
+    {
+      "local": "0b0e1e410838ef4d713d8010bad237a2dda594ad",
+      "remote": "87373d883a00553e19576a3bb098d28fd5d155ec",
+      "tree": "8d25f58e13d4268a37e2dd431a8aa773814e00b0",
+      "message": "chore(spelling): record exact frozen payload and literal identities"
+    },
+    {
+      "local": "d8c4d673067d9e4b8d640a7ed0844a34c1132a73",
+      "remote": "b93fb1da0cf6b151b5fa821aa3cbf1f803a87d77",
+      "tree": "8e1a226a78da60c6843a6bab5733dfe7a65db9e8",
+      "message": "fix(spelling): validate exact frozen exceptions before pinned check"
+    },
+    {
+      "local": "669d92369836cf820214a536665b2f36d0e0f47c",
+      "remote": "b7c825187be1c3c304d5389b3661e872dfe4565b",
+      "tree": "320aa4eb2d8b9b25a3ab24a80a4d66db5474754e",
+      "message": "research(hcsn): reproduce current-source financial FP32 failures"
+    },
+    {
+      "local": "0042ff984542995a5dfbec09bd3dcf1e8e847863",
+      "remote": "16e16660d8e9d271468d5cc2749e9178de04822e",
+      "tree": "42350f8ea2b5216d2df08c8eb26e802bd00d758f",
+      "message": "fix(deps): update compatible TLS and zstd-sys locks without audit exclusions"
+    },
+    {
+      "local": "e9ce43473fc1cc684a862f7cc9740b535821d11f",
+      "remote": "3447a3bce4dce5c5b9daf9a332467b54673c48fb",
+      "tree": "1002343720bfbc6dcc2b028a93463ab57c88376d",
+      "message": "test(hcsn): retain actual native execution and source-head CI evidence"
+    },
+    {
+      "local": "855dbc2857deaf87475dc5b0f049bd95e6102b35",
+      "remote": "6500d80838d0baf5304a9de584b93d9e0df8c914",
+      "tree": "ee3f1d3138fce1a862644dfebd1b337c7aba1c70",
+      "message": "docs(hcsn): distinguish verified repairs from remaining scientific and native gates"
+    }
+  ],
+  "checks": [
+    {
+      "job": 124805899053,
+      "name": "Codespell / Check for spelling errors",
+      "conclusion": "success",
+      "run": 41292214166,
+      "checkout": "merge commit with identical tree",
+      "verified_identity_guard": {
+        "payload_files": 219,
+        "binary_payloads": 19,
+        "decoded_base64_payloads": 200,
+        "exact_literal_lines": 31,
+        "text_files": 19,
+        "reviewed_findings": 41,
+        "ordinary_text_checks_unchanged": true
+      }
+    },
+    {
+      "job": 124805598769,
+      "name": "finite-model-regressions",
+      "conclusion": "success",
+      "run": 41292214176,
+      "checkout": "exact source head",
+      "observed_test_counts": [
+        48,
+        22
+      ],
+      "source_cleanliness": "passed"
+    },
+    {
+      "job": 124805598059,
+      "name": "numerical-contract",
+      "conclusion": "success",
+      "run": 41292214050
+    },
+    {
+      "job": 124806687534,
+      "name": "Rust format",
+      "conclusion": "success",
+      "run": 41292214166
+    },
+    {
+      "job": 124806687474,
+      "name": "cargo shear",
+      "conclusion": "success",
+      "run": 41292214166
+    },
+    {
+      "job": 124806687414,
+      "name": "Cargo manifest preflight",
+      "conclusion": "success",
+      "run": 41292214166
+    },
+    {
+      "job": 124806429207,
+      "name": "cargo-deny",
+      "conclusion": "failure",
+      "run": 41292214166,
+      "decoded_log_available": false
+    }
+  ],
+  "scope": "Snapshot after the nine repair commits, before later ZIP/zstd and R16 additions. Native full builds remained in progress at this observation; this is not repository-wide success. Later candidate commits require separate actual-head results.",
+  "evidence_excerpt": {
+    "r14": [
+      "2026-11-01T09:14:25.3873280Z Ran 48 tests in 3.904s",
+      "2026-11-01T09:14:25.3873558Z OK",
+      "2026-11-01T09:14:26.0939574Z Ran 22 tests in 0.444s",
+      "2026-11-01T09:14:26.0939756Z OK"
+    ],
+    "spelling": [
+      "2026-11-01T09:16:38.6030620Z {\"binary_payloads\": 19, \"decoded_base64_payloads\": 200, \"exact_literal_lines\": 31, \"ordinary_text_checks_unchanged\": true, \"payload_files\": 219, \"reviewed_findings\": 41, \"text_files\": 19}"
+    ]
+  }
+}
