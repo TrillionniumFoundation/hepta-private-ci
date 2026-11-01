@@ -1,0 +1,230 @@
+{
+  "schema": "hcsn-sshsig-image-dependency-v1",
+  "status": "source_patch_ready_image_activation_blocked",
+  "head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "base": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "job_id": 124814581056,
+  "run_id": 41294998586,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41294998586/job/124814581056",
+  "failure_count": 10,
+  "failure_blocks": [
+    {
+      "test": "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance",
+      "line": 1445,
+      "text": "2026-11-01T09:59:24.1866232Z ---- g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance stdout ----\n2026-11-01T09:59:24.1961800Z \n2026-11-01T09:59:24.2039305Z thread 'g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance' (17) panicked at codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs:277:14:\n2026-11-01T09:59:24.2110923Z start test key generation: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n2026-11-01T09:59:24.2156181Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T09:59:24.2245764Z "
+    },
+    {
+      "test": "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority",
+      "line": 1451,
+      "text": "2026-11-01T09:59:24.2286649Z ---- g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority stdout ----\n2026-11-01T09:59:24.2335625Z \n2026-11-01T09:59:24.2400200Z thread 'g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority' (19) panicked at codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs:277:14:\n2026-11-01T09:59:24.2456275Z start test key generation: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n2026-11-01T09:59:24.2495785Z "
+    },
+    {
+      "test": "g5_trust::tests::exact_head_and_predecessor_binding_is_required",
+      "line": 1456,
+      "text": "2026-11-01T09:59:24.2506244Z ---- g5_trust::tests::exact_head_and_predecessor_binding_is_required stdout ----\n2026-11-01T09:59:24.2585531Z \n2026-11-01T09:59:24.2646736Z thread 'g5_trust::tests::exact_head_and_predecessor_binding_is_required' (16) panicked at codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs:277:14:\n2026-11-01T09:59:24.2648243Z start test key generation: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n2026-11-01T09:59:24.2648868Z "
+    },
+    {
+      "test": "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted",
+      "line": 1461,
+      "text": "2026-11-01T09:59:24.2649360Z ---- g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted stdout ----\n2026-11-01T09:59:24.2650020Z \n2026-11-01T09:59:24.2650982Z thread 'g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted' (22) panicked at codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs:277:14:\n2026-11-01T09:59:24.2652956Z start test key generation: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n2026-11-01T09:59:24.2653582Z "
+    },
+    {
+      "test": "g5_trust::tests::policy_and_revocation_files_must_be_canonical",
+      "line": 1466,
+      "text": "2026-11-01T09:59:24.2653956Z ---- g5_trust::tests::policy_and_revocation_files_must_be_canonical stdout ----\n2026-11-01T09:59:24.2654453Z \n2026-11-01T09:59:24.2655618Z thread 'g5_trust::tests::policy_and_revocation_files_must_be_canonical' (23) panicked at codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs:277:14:\n2026-11-01T09:59:24.2689634Z start test key generation: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n2026-11-01T09:59:24.2745603Z "
+    },
+    {
+      "test": "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge",
+      "line": 1471,
+      "text": "2026-11-01T09:59:24.2766430Z ---- g5_trust::tests::revocation_digest_change_invalidates_existing_challenge stdout ----\n2026-11-01T09:59:24.2836943Z \n2026-11-01T09:59:24.2869453Z thread 'g5_trust::tests::revocation_digest_change_invalidates_existing_challenge' (25) panicked at codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs:277:14:\n2026-11-01T09:59:24.2896356Z start test key generation: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n2026-11-01T09:59:24.2985674Z "
+    },
+    {
+      "test": "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance",
+      "line": 1476,
+      "text": "2026-11-01T09:59:24.3066456Z ---- g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance stdout ----\n2026-11-01T09:59:24.3095883Z \n2026-11-01T09:59:24.3156872Z thread 'g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance' (28) panicked at codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs:277:14:\n2026-11-01T09:59:24.3210803Z start test key generation: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n2026-11-01T09:59:24.3254128Z "
+    },
+    {
+      "test": "trust::tests::trust_policy_digest_is_external_and_fail_closed",
+      "line": 1481,
+      "text": "2026-11-01T09:59:24.3296061Z ---- trust::tests::trust_policy_digest_is_external_and_fail_closed stdout ----\n2026-11-01T09:59:24.3375509Z \n2026-11-01T09:59:24.3434874Z thread 'trust::tests::trust_policy_digest_is_external_and_fail_closed' (44) panicked at codex-rs/hepta-operator-acceptance/src/trust_tests.rs:134:14:\n2026-11-01T09:59:24.3476102Z start ssh-keygen: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n2026-11-01T09:59:24.3490912Z "
+    },
+    {
+      "test": "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy",
+      "line": 1486,
+      "text": "2026-11-01T09:59:24.3556157Z ---- trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy stdout ----\n2026-11-01T09:59:24.3585896Z \n2026-11-01T09:59:24.3616447Z thread 'trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy' (43) panicked at codex-rs/hepta-operator-acceptance/src/trust_tests.rs:134:14:\n2026-11-01T09:59:24.3675517Z start ssh-keygen: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n2026-11-01T09:59:24.3730066Z "
+    },
+    {
+      "test": "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers",
+      "line": 1491,
+      "text": "2026-11-01T09:59:24.3766546Z ---- trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers stdout ----\n2026-11-01T09:59:24.3795937Z \n2026-11-01T09:59:24.3866782Z thread 'trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers' (47) panicked at codex-rs/hepta-operator-acceptance/src/trust_tests.rs:134:14:\n2026-11-01T09:59:24.3926044Z start ssh-keygen: Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n2026-11-01T09:59:24.3955540Z \n2026-11-01T09:59:24.3974716Z "
+    }
+  ],
+  "source_identities": [
+    {
+      "path": "codex-rs/hepta-operator-acceptance/src/trust_tests.rs",
+      "head_git_blob": "09cdef8a43fa7513c732440013910a5e80e7b8a1",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-operator-acceptance/src/trust_tests.rs",
+      "base_git_blob": "09cdef8a43fa7513c732440013910a5e80e7b8a1",
+      "identical_to_base": true
+    },
+    {
+      "path": "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs",
+      "head_git_blob": "ef8caf25e9c9679634661af972bad7a66a1603c7",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs",
+      "base_git_blob": "ef8caf25e9c9679634661af972bad7a66a1603c7",
+      "identical_to_base": true
+    },
+    {
+      "path": "codex-rs/hepta-operator-acceptance/src/trust.rs",
+      "head_git_blob": "cceef4a4a0195b7e510a119742433ca33b0f011f",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-operator-acceptance/src/trust.rs",
+      "base_git_blob": "cceef4a4a0195b7e510a119742433ca33b0f011f",
+      "identical_to_base": true
+    },
+    {
+      "path": "codex-rs/hepta-operator-acceptance/src/g5_trust.rs",
+      "head_git_blob": "4a767f487138eef390cec1645b51b25c19848df4",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-operator-acceptance/src/g5_trust.rs",
+      "base_git_blob": "4a767f487138eef390cec1645b51b25c19848df4",
+      "identical_to_base": true
+    },
+    {
+      "path": "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+      "head_git_blob": "1783fc06c81fd55d8332311e0eab2fd0b932708f",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-operator-acceptance/BUILD.bazel",
+      "base_git_blob": "1783fc06c81fd55d8332311e0eab2fd0b932708f",
+      "identical_to_base": true
+    },
+    {
+      "path": "codex-rs/hepta-operator-acceptance/Cargo.toml",
+      "head_git_blob": "5f54bdf40f505adec2e5b0681bc4d7a48ad097af",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-operator-acceptance/Cargo.toml"
+    },
+    {
+      "path": ".github/workflows/Dockerfile.bazel",
+      "head_git_blob": "51c199dcc3d8928d742e6b9a75ed55c7cee7aa25",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/.github/workflows/Dockerfile.bazel",
+      "base_git_blob": "51c199dcc3d8928d742e6b9a75ed55c7cee7aa25",
+      "identical_to_base": true
+    },
+    {
+      "path": "rbe.bzl",
+      "head_git_blob": "57e301ac776d9c7196e9c854bc6e27ce2718d886",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/rbe.bzl",
+      "base_git_blob": "57e301ac776d9c7196e9c854bc6e27ce2718d886",
+      "identical_to_base": true
+    },
+    {
+      "path": ".bazelrc",
+      "head_git_blob": "0ce81ff3d71d30aeedd7240ee001dd8166364ee2",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/.bazelrc"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "head_git_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/.github/workflows/bazel.yml"
+    },
+    {
+      "path": "BUILD.bazel",
+      "head_git_blob": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/BUILD.bazel"
+    }
+  ],
+  "change": {
+    "path": ".github/workflows/Dockerfile.bazel",
+    "original_git_blob_sha1": "51c199dcc3d8928d742e6b9a75ed55c7cee7aa25",
+    "candidate_sha256": "6a9122567d0dc410eb4a37b2cb0d9ab8bda77a5ced08d3c3cb6ce06c9ac37dd7",
+    "only_change": "Add openssh-client to the existing apt-get package list."
+  },
+  "current_pinned_image_digests": {
+    "amd64": "0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70",
+    "arm64": "136487cc4b7cf6f1021816ca18ed00896daed98404ea91dc4d6dd9e9d1cf9564"
+  },
+  "new_built_image_digests": {
+    "amd64": null,
+    "arm64": null
+  },
+  "activation_performed": false,
+  "capabilities_observed": {
+    "docker": false,
+    "podman": false,
+    "buildctl": false,
+    "buildx": false,
+    "crane": false,
+    "skopeo": false,
+    "docker_sock": false,
+    "workflow_dispatch_tool": false
+  },
+  "workflow_scan": {
+    "files": 80,
+    "all_git_blobs_verified": true,
+    "direct_image_build_publish_matches": 0,
+    "receipt_sha256": "5bfe122062ea5b4c5b0e4f3d7ecb7b07b5d6a2dfa4fc34cfe57071a4bb7a8144"
+  },
+  "workflow_api": {
+    "endpoint": "actions/workflows?per_page=100",
+    "result": "GitHub fetch rejected this endpoint with HTTP 400 INVALID_ARGUMENT: not an allowed public GitHub repository or search endpoint."
+  },
+  "validation": {
+    "local_host_smoke": {
+      "command": "python3 verify_sshsig_dependency.py > LOCAL_OPENSSH_SMOKE.json",
+      "exit_code": 0,
+      "result": {
+        "scope": "Local host /usr/bin/ssh-keygen primitive test; not the pinned RBE image or native Rust suite",
+        "executable": "/usr/bin/ssh-keygen",
+        "sha256": "bae95dd024aed593da92f8a03fcb5fca6b5a153f89f603bf8118a0cceb7c58f5",
+        "namespace": "hepta-vnext-operator-acceptance-v1",
+        "inherited_descriptors": true,
+        "cleared_environment": true,
+        "outcomes": {
+          "valid": 0,
+          "tampered_statement": 255,
+          "wrong_namespace": 255
+        },
+        "ephemeral_private_key_removed": true
+      },
+      "not_a_pinned_image_result": true
+    },
+    "formatting": {
+      "command": "just fmt",
+      "cwd": "format-checkout/codex-rs",
+      "exit_code": 0,
+      "output": "No changed files need formatting. Use --all for a full repository check.",
+      "scope": "Actual unchanged repository recipe; no formatter is configured for Dockerfile.bazel."
+    },
+    "patch_checks": [
+      {
+        "command": "git diff --check",
+        "exit_code": 0
+      },
+      {
+        "command": "git apply --reverse --check ../openssh_image_dependency.patch",
+        "cwd": "format-checkout",
+        "exit_code": 0
+      }
+    ],
+    "earlier_patch_check": {
+      "cwd": "format-checkout/codex-rs",
+      "exit_code": 1,
+      "error": "codex-rs/.github/workflows/Dockerfile.bazel: No such file or directory",
+      "resolution": "Repeated the same read-only check from the checkout root; exit0."
+    },
+    "image_build": {
+      "state": "not_run",
+      "reason": "No builder/daemon or reusable image publication workflow, and registry publishing access has not been established."
+    },
+    "native_rbe_tests": {
+      "state": "not_run",
+      "gate_preserved": true
+    }
+  },
+  "closure_conditions": "ACTIVATION_PLAN.md",
+  "unchanged": [
+    "rbe.bzl image digests",
+    "production absolute executable path",
+    "environment clearing and Unix inherited descriptors",
+    "namespace/trust/revocation assertions",
+    "test coverage and remote execution",
+    "Windows security policy"
+  ]
+}
