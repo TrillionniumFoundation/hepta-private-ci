@@ -3,22 +3,22 @@
   "base_commit": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
   "items": [
     {
-      "detail": "Reject nonfinite transitions and optimal/actual-policy values",
-      "evidence": "test_planner_safety.py",
+      "detail": "Checked finite transitions and optimal/actual-policy values pass published R14/R15 regression.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
       "id": "numerical_finiteness",
-      "status": "closed_local"
+      "status": "closed_remote_research_profile"
     },
     {
-      "detail": "Preserve permanently restricted actions and absent reset channel",
-      "evidence": "test_planner_safety.py",
+      "detail": "Restricted actions and absent reset channel pass published regression.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
       "id": "no_reset_channels",
-      "status": "closed_local"
+      "status": "closed_remote_research_profile"
     },
     {
-      "detail": "Preserve original sequential tolerance and use the same guarded action selector",
-      "evidence": "test_planner_safety.py",
+      "detail": "Original sequential tolerance and channel/action selector identity pass published regression.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
       "id": "tie_and_channel_action_identity",
-      "status": "closed_local"
+      "status": "closed_remote_research_profile"
     },
     {
       "detail": "19927 reachable decisions match; 192 measured full executions preserve all records",
@@ -33,22 +33,22 @@
       "status": "diagnosed_below_original_floor"
     },
     {
-      "detail": "Nine original ZIPs replaced by26 genuine gzip containers; all original bytes recoverable",
-      "evidence": "transport_evidence/VALIDATION.json",
+      "detail": "All nine original ZIPs recover exactly from26 containers; remote512000-byte check passed all120 changed files.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
       "id": "oversized_archives",
-      "status": "repaired_local_pending_remote"
+      "status": "closed_remote_research_profile"
     },
     {
-      "detail": "Actual R14/R15 suites configured; no new-head remote run yet",
-      "evidence": "../../../.github/workflows/hcsn-task-flow-r14.yml",
+      "detail": "Published source candidate ran48 original plus22 continuation tests and source-cleanliness successfully.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
       "id": "r14_regression_workflow",
-      "status": "implemented_pending_remote"
+      "status": "closed_remote_research_profile"
     },
     {
-      "detail": "Prettier3.5.3 passes and YAML meaning unchanged",
-      "evidence": "evidence/UPSTREAM_CI_SUMMARY.json",
+      "detail": "R13 numerical contract and repository build-test passed remotely; original YAML meaning retained.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
       "id": "r13_workflow_format",
-      "status": "repaired_local_pending_remote"
+      "status": "closed_remote_research_profile"
     },
     {
       "detail": "Original both-domain mean0.01/CI/Holm acceptance unmet; no threshold change",
@@ -69,10 +69,10 @@
       "status": "unsupported_in_this_model"
     },
     {
-      "detail": "No new FP32 qualification or mixed precision relabeling",
-      "evidence": "../task_aligned_r14_20261101/REPORT_ZH.md",
+      "detail": "Full operator native FP32 remains136/432 rows and0/18 cases; five current-source failures reproduced; debt-only rearrangement is not full qualification.",
+      "evidence": "evidence/FP32_DIAGNOSIS.json",
       "id": "full_financial_fp32",
-      "status": "open"
+      "status": "failed_reproduced_current_source"
     },
     {
       "detail": "No production NeuronRuntime/state ownership replacement or integration qualification",
@@ -93,20 +93,35 @@
       "status": "unmeasured"
     },
     {
-      "detail": "Inherited Codespell, Rust API/lint and cargo-deny failures remain separately tracked",
-      "evidence": "evidence/UPSTREAM_CI_SUMMARY.json",
+      "detail": "Exact spelling contexts and inherited test build/lint fixes prepared; final-head CI pending. Five compatible dependency updates reduce pinned advisories from22 to14; cargo-deny still fails.",
+      "evidence": "evidence/CODESPELL_REVIEW_SUMMARY.json",
       "id": "repository_wide_ci",
       "status": "open"
     },
     {
-      "detail": "Concrete local commits and reviewable evidence prepared; remote write/CI not claimed",
-      "evidence": null,
+      "detail": "PR4550 published; seven remote stage trees match local and research regressions/blob policy pass. Followup native/spelling checks remain separate.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
       "id": "remote_publication_and_verification",
-      "status": "pending"
+      "status": "closed_for_research_candidate"
+    },
+    {
+      "id": "dependency_security_policy",
+      "status": "open_reduced_not_passed",
+      "detail": "Pinned RustSec audit22 to14: eight removed, zero new; eight vulnerabilities and six unmaintained advisories remain. Cargo/Bazel locks agree, no ignore expansion; new native dependency qualification pending.",
+      "evidence": "evidence/DEPENDENCY_REVIEW_RECEIPT.json"
+    },
+    {
+      "id": "windows_native_toolchain_and_runtime",
+      "status": "open_observed_remote",
+      "detail": "First-head decoded Windows release/test logs show native crypto objects with unresolved MinGW/stack-check symbols in MSVC link; a V8 sandbox feature test also fails. Source-fixture repairs do not establish resolution.",
+      "evidence": "evidence/WINDOWS_NATIVE_FAILURES.json"
     }
   ],
   "new_confirmation_opened": false,
   "production_activation": false,
   "schema": "hcsn.r15.blockers.v1",
-  "scientific_acceptance_changed": false
+  "scientific_acceptance_changed": false,
+  "published_research_head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+  "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4550",
+  "followup_ci_scope": "Native and spelling followups require final-head CI; publication receipt records the first research candidate."
 }
