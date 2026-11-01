@@ -1,0 +1,41 @@
+{
+  "closed_in_scope": [
+    {
+      "evidence": "results/run02/SUMMARY.json",
+      "item": "Cold-interpreter restore",
+      "scope": "Single immutable fit151101; two deterministic six-query owner worlds; full and anchored memories"
+    },
+    {
+      "evidence": "results/run02/INDEPENDENT_AUDIT.json",
+      "item": "Pending logical WAIT/READ/REFRESH recovery",
+      "scope": "76 actual SIGKILL/restart cases at prepared/elapsed/received/applied and query boundary; entire state/fee/effect equality"
+    },
+    {
+      "evidence": "results/run02/SUMMARY.json",
+      "item": "Checksum/model/owner/stale-sequence/effect replay rejection",
+      "scope": "9 registered local-database API misuse/corruption checks"
+    }
+  ],
+  "cost": {
+    "both_runs_complete_child_cpu_seconds": 123.091589,
+    "boundary": "Linux wait4 across328 worker processes. Includes interpreter/import/reconstruction/fsync/output and killed attempts; parent reference/audit/developer CPU not fully metered. Not full project lifecycle or joules.",
+    "run01_complete_child_cpu_seconds": 63.114996999999995,
+    "run02_complete_child_cpu_seconds": 59.976592
+  },
+  "production_activation": false,
+  "remaining": [
+    "Production Rust ownership and real stateful service transport",
+    "Concurrent ownership, fencing and external exactly-once effects",
+    "Power loss and machine reboot durability",
+    "All fitted models and future software/hardware qualification",
+    "Analytic core D-B quality gain and same-quality complete-cost advantage",
+    "GPU and joule measurement",
+    "Unknown-generator/open-domain multimodal tasks",
+    "Continuous free-boundary and full learning gradients"
+  ],
+  "schema": "hcsn-r17-recovery-blockers-v1",
+  "source_scope": {
+    "run01": "Narrow local29-file freeze; missing inherited kernel/protocol dependencies identified by independent review; retained as development.",
+    "run02": "Corrected32-file local freeze before execution; complete imported project source and cell-protocol identities. Remote source publication overlapped execution; no remote preregistration claim."
+  }
+}

@@ -99,10 +99,10 @@ def negative_tests(directory, config):
     return results
 
 
-def run(output):
+def run(output, manifest_path):
     output.mkdir(parents=True, exist_ok=False)
     protocol = json.loads((HERE / "PROTOCOL.json").read_text())
-    freeze = json.loads((HERE / "SOURCE_MANIFEST.json").read_text())
+    freeze = json.loads(manifest_path.read_text())
     for path, sha in freeze["files"].items():
         if hashlib.sha256((ROOT / path).read_bytes()).hexdigest() != sha:
             raise ValueError(f"Source changed since freeze: {path}")
@@ -157,7 +157,8 @@ def run(output):
                 if negatives is None and policy == "fixed" and pattern == "wait_read":
                     negatives = negative_tests(output, config)
     summary = dict(schema="hcsn-r17-cold-recovery-results-v1", scope=protocol["scope"],
-        source_manifest_sha256=hashlib.sha256((HERE / "SOURCE_MANIFEST.json").read_bytes()).hexdigest(),
+        source_manifest_sha256=hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+        source_manifest=str(manifest_path.relative_to(ROOT)),
         cases=cases, recovery_cases=len(cases), negative_rejections=negatives,
         all_passed=all(c["equal_complete_state"] for c in cases) and all(negatives.values()),
         complete_child_cpu_seconds=sum(r["cpu_seconds"] for r in process_receipts),
@@ -172,4 +173,6 @@ def run(output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, required=True)
-    run(parser.parse_args().output)
+    parser.add_argument("--manifest", type=Path, default=HERE / "SOURCE_MANIFEST.json")
+    args = parser.parse_args()
+    run(args.output.resolve(), args.manifest.resolve())
