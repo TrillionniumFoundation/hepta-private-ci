@@ -1340,6 +1340,30 @@
       "sha256": "b84cbcc08a1b2c8aa9a9d4ed8e9900540f47c8e8e14c3d94e342ca6a7f34a084",
       "uncompressed_bytes": 45208,
       "uncompressed_sha256": "58ea4611045fc2f568500562f7c40ae31e9d8d1bba09677f1bbf25e23d3000a6"
+    },
+    {
+      "path": "validation/blob-policy-first-unavailable.log.gz",
+      "original_receipt_log_name": "blob-policy-first-unavailable.log",
+      "bytes": 555,
+      "sha256": "ca738f9ebdf44f046db754ddac8b11b6dfb0b3cc273038d8a89d64d1617dc821",
+      "uncompressed_bytes": 1387,
+      "uncompressed_sha256": "343d90eaeba57d0dbe0e30e1fc7e695ef3ff45c69ad355bd49a836d04556842f"
+    },
+    {
+      "path": "validation/blob-policy-before.log.gz",
+      "original_receipt_log_name": "blob-policy-before.log",
+      "bytes": 2920,
+      "sha256": "881ae70340316f9c6df8208443e1f2bc258cc0394c28398b1c87c9a03545dc31",
+      "uncompressed_bytes": 18699,
+      "uncompressed_sha256": "3126cce6c82a1b13f5bb8ac35cc212091c6643d2a97127b0d9c1a11f9c20d9ef"
+    },
+    {
+      "path": "validation/blob-policy-declared-assets.log.gz",
+      "original_receipt_log_name": "blob-policy-declared-assets.log",
+      "bytes": 2752,
+      "sha256": "2d253fbe0c5b8e972bb8fc5deee435d32aca0b9ec24ae9775fa1ec8d99f44caf",
+      "uncompressed_bytes": 18016,
+      "uncompressed_sha256": "09f0a9b845d3a0cf4989994243b43194da6b1e48b629bc67e0173f9a2555c68c"
     }
   ],
   "old_live_ci_snapshot": "ci/triage.json",
@@ -1349,5 +1373,38 @@
     "paired_native_pressure_passed": false,
     "whole_chain_pq_qualified": false
   },
-  "counting_note": "269 is one fresh run of two complete library targets. It overlaps earlier contracts tests and is not added to previous phase totals. Windows CI and all other original release/security/pressure gates retain independent outcomes."
+  "counting_note": "269 is one fresh run of two complete library targets. It overlaps earlier contracts tests and is not added to previous phase totals. Windows CI and all other original release/security/pressure gates retain independent outcomes.",
+  "repository_evidence_asset_policy": {
+    "max_bytes": 512000,
+    "max_bytes_changed": false,
+    "mechanism": "Existing exact-path allowlist for intentional checked-in assets, as documented by scripts/check_blob_size.py.",
+    "registered_assets": [
+      {
+        "path": "qualification/pq-service-recovery-20261101/followup/ci/artifacts/arm-source-head-evidence.zip",
+        "bytes": 5194393,
+        "sha256": "6fb34cbd21ed39888912c0ea0fe516e0002805c4d22d713c4669fb74444430a9"
+      },
+      {
+        "path": "qualification/pq-service-recovery-20261101/followup/ci/logs/current-job-124811350776.log.gz",
+        "bytes": 785659,
+        "sha256": "d33cb769b25d04ab5666160d50c6a16bfb7a8d3e01fadcebd1bf18aae26c27b2"
+      },
+      {
+        "path": "qualification/pq-service-recovery-20261101/followup/ci/logs/current-job-124811350879.log.gz",
+        "bytes": 990136,
+        "sha256": "de7f1a3b5f5cac87fdb8d61a9e4bc3f86d253f48e3d51f886724a62e813c3351"
+      },
+      {
+        "path": "qualification/pq-service-recovery-20261101/followup/ci/logs/prior-job-124094124342.log.gz",
+        "bytes": 755699,
+        "sha256": "1cf0be5907f290fa113fd2a12b82425d9f03e743b800749353e127adad9a6404"
+      }
+    ],
+    "allowlist_sha256": "a18a37ab69fc2aaff31682cdacc4062da8db90d3a6bf1f16336fc3d355616c8d",
+    "first_sandbox_attempt": "validation/blob-policy-first-unavailable.json",
+    "original_completed_failure": "validation/blob-policy-before.json",
+    "candidate_with_declared_assets_check": "validation/blob-policy-declared-assets.json",
+    "native_source_changed": false,
+    "runtime_or_security_budget_changed": false
+  }
 }

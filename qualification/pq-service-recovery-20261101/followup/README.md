@@ -3,7 +3,8 @@
 This follow-up is based on published commit
 `7ff91a4368bc110c35da789b16916e046f79b42c`. It changes two test files and adds
 failure/verification evidence. Production authorization, durable owner logic,
-dependencies, resource budgets, CI gates and lint policy remain unchanged.
+dependencies, resource budgets, security acceptance predicates and lint policy
+remain unchanged.
 **The complete hosted CI and whole-chain PQ qualification have not passed.**
 
 ## Two concrete test fixes
@@ -71,7 +72,18 @@ they do not override the failed overall campaign. Neither this follow-up nor its
 269 local tests changes that result.
 
 Other dependency-audit, caller-contract, release-build, native-link and executor
-resource failures remain recorded with their actual attribution limits. No
-allowlist, deadline, workload, retry count or security assertion is relaxed to
-obtain a passing status. The original complete product/Chain pairing, migration,
+resource failures remain recorded with their actual attribution limits. Original
+deadlines, workloads, retry counts and security assertions are preserved.
+The original complete product/Chain pairing, migration,
 independent rollback anchor, WAN and whole-system acceptance remain open.
+
+## Intentional repository evidence assets
+
+The repository's existing 500 KiB blob policy supports exact-path exceptions for
+intentional checked-in assets. The full ARM ZIP and three original compressed CI
+logs exceed that limit. Their four exact paths are registered in the existing
+asset list, with hashes and provenance retained in the CI inventory. The limit
+stays 512,000 bytes, and no wildcard exception or security/pressure predicate is
+changed. The original failing blob-policy result and the subsequent check using
+these declared assets are retained separately. No failed log or artifact is
+truncated to meet the size rule.

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "a575cf03e2bc871a2f48021859c03ace806421c8",
+    "--head",
+    "e4093f919da9324648617e8479ab4b9ce6e472cc",
+    "--max-bytes",
+    "512000",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "observed_utc": "2026-11-01T10:36:11.681828+00:00",
+  "exit_code": 1,
+  "source_head": "e4093f919da9324648617e8479ab4b9ce6e472cc",
+  "allowlist_sha256": "bb867bc531c86f5341a031698e16b4e5a4a0d31f7d8f4cc5ff26e101d84f9d75",
+  "log": "blob-policy-first-unavailable.log",
+  "log_sha256": "343d90eaeba57d0dbe0e30e1fc7e695ef3ff45c69ad355bd49a836d04556842f",
+  "interpretation": "This attempt could not load a missing baseline Git blob through the sandbox. It is not a completed size-policy verdict."
+}

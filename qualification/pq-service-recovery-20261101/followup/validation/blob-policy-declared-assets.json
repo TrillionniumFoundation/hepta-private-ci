@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "a575cf03e2bc871a2f48021859c03ace806421c8",
+    "--head",
+    "e4093f919da9324648617e8479ab4b9ce6e472cc",
+    "--max-bytes",
+    "512000",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "observed_utc": "2026-11-01T10:36:51.239731+00:00",
+  "exit_code": 0,
+  "source_head": "e4093f919da9324648617e8479ab4b9ce6e472cc",
+  "allowlist_sha256": "a18a37ab69fc2aaff31682cdacc4062da8db90d3a6bf1f16336fc3d355616c8d",
+  "log": "blob-policy-declared-assets.log",
+  "log_sha256": "09f0a9b845d3a0cf4989994243b43194da6b1e48b629bc67e0173f9a2555c68c",
+  "scope": "Exact published source and separately identified allowlist; the later metadata commit will receive its own committed-head check."
+}
