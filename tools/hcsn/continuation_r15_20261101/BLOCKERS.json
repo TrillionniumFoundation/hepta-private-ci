@@ -93,10 +93,10 @@
       "status": "unmeasured"
     },
     {
-      "detail": "Assessed source1e91c5cf passes full R16 numerical replay, R14/R15, R13, Codespell, blob policy and eight Linux V8 canaries. YAML Cargo aliases were not forwarded by Bazel; reviewed V2 repairs all four consumers and nine rule generation sites. Local93-target macro execution and actual just fmt pass; native GNU/SDK compilation and runtime suites need new-head verification. Additional22 GNU runtime failures are explicitly classified.",
-      "evidence": "evidence/R16_REMOTE_REGRESSION.json",
+      "detail": "At exact source889e7ace, GNU release, GNU Clippy and SDK actual builds/lint/tests pass, closing the observed YAML alias compilation failures. R16 numerical regression, R13, finite-model regressions, Codespell, blob policy and repository checks pass. Native platform tests were still running in recorded snapshot; cargo-deny fails. Later exec/supervisor/SSHSIG candidates need their own head verification.",
+      "evidence": "evidence/R16_REMOTE_889E_NATIVE_SNAPSHOT.json",
       "id": "repository_wide_ci",
-      "status": "open_reviewed_repairs_pending_native_verification"
+      "status": "open_native_builds_passed_remaining_runtime_and_policy"
     },
     {
       "detail": "PR4550 published; seven remote stage trees match local and research regressions/blob policy pass. Followup native/spelling checks remain separate.",
@@ -119,13 +119,13 @@
     {
       "id": "codespell_frozen_false_positives",
       "status": "closed_remote_at_assessed_head",
-      "detail": "Actual Codespell guard passed again at1e91c5cf; exact frozen identities and complete literal-line review retained.",
-      "evidence": "evidence/R16_REMOTE_REGRESSION.json"
+      "detail": "Actual Codespell guard passed again at889e7ace; exact frozen identities and complete literal-line review retained.",
+      "evidence": "evidence/R16_REMOTE_889E_NATIVE_SNAPSHOT.json"
     },
     {
       "id": "compensated_fp32_finite_numerics",
       "status": "passed_independent_finite_validation_and_remote_regression",
-      "detail": "Two-word FP32 passes432 development rows and512 distinct independently frozen V1 rows across128 points at unchanged five-output and ten-column Jacobian gates. New-head remote replay passed. This is not ordinary FP32, whole-domain, global-C1, training or production admission.",
+      "detail": "Two-word FP32 passes432 development rows and512 distinct independently frozen V1 rows across128 points at unchanged five-output and ten-column Jacobian gates. Actual remote replay passed again at889e7ace. This is not ordinary FP32, whole-domain, global-C1, training or production admission.",
       "evidence": "../compensated_fp32_r16_20261101/README.md"
     },
     {
@@ -160,9 +160,9 @@
     },
     {
       "id": "actual_financial_autograd_interface",
-      "status": "in_progress_separate_adapter",
-      "detail": "A separate CPU adapter is being built against the qualified FP64 internal kernel. Packed float32 input, branch conventions, complete boundary-chain derivatives, first-order-only backward and actual training updates need explicit validation; no adapter result is admitted yet.",
-      "evidence": null
+      "status": "closed_for_first_order_cpu_interface_v3",
+      "detail": "Actual immutable FP64 H-X kernel:168/168 fixed functional directions and32/32 contracts pass. Independent48-channel audit confirms ordinary first-order values/VJPs bit-identical to V2 and first create_graph=True explicitly rejected.80-step two-layer training MSE1.2916021347 to0.1068059132;8 parameter tensors updated. V1 serialization failure and V2 incomplete-Hessian counterexample retained. No second-order, recurrent, generalization or mechanism advantage admission.",
+      "evidence": "../hx_autograd_r16_20261101/README.md"
     },
     {
       "id": "inherited_runtime_fixtures",
@@ -181,6 +181,36 @@
       "status": "proved_for_exact_fixed_continuous_model",
       "detail": "Separate reviewed proof: a(t) in[0,.9], the selected trajectory has x in[-9,3], unique equilibrium is a hyperbolic source, a local repelling Lyapunov ellipse excludes it from the omega limit. Poincare-Bendixson establishes a periodic omega limit and nonconstant periodic R. Does not prove a unique/stable orbit, boundary crossing, exact period, full rollover dynamics or sampled-map identity.",
       "evidence": "../c1_value_dynamics_r16_20261101/analysis/PERIODIC_ORBIT_PROOF_ZH.md"
+    },
+    {
+      "id": "linux_sshsig_image_dependency",
+      "status": "source_patch_ready_image_activation_blocked",
+      "detail": "Ten inherited GNU failures need real /usr/bin/ssh-keygen in the pinned RBE images. Dockerfile adds openssh-client, local real-signature positive/negative controls pass; current executor has no image builder and no existing image publication workflow was identified. Publishing access to the existing registry namespace is not established. Both replacement platform digests remain unset; rbe.bzl unchanged. Source recipe alone does not activate CI.",
+      "evidence": "evidence/sshsig_image_dependency_1e91/ACTIVATION_PLAN.md"
+    },
+    {
+      "id": "stable_handle_authorized_rpc_contract",
+      "status": "fail_closed_source_repair_native_execution_pending",
+      "detail": "The server checks the same advertised stable-handle capability before any authorized file read. Linux capability staysfalse and this RPC rejects unsupported; ordinary reads/read-stream/Local bounded APIs unchanged. Raw RPC test source covers valid,outside,oversize,parent and Unix symlink requests; RemoteFileSystem unsupported branches stop at client guard. Native RPC execution count locally is0; formatting and source review passed, real CI remains required.",
+      "evidence": "evidence/native_repairs/authorized_read_rpc/EXEC_AUTHORIZED_READ_REPORT_ZH.md"
+    },
+    {
+      "id": "supervisor_lifecycle_fixtures_and_events",
+      "status": "source_repair_and_fragment_red_green_passed_native_pending",
+      "detail": "Three inherited failures: controlled process now answers Drain with current lifecycle/generation; automatic restart emits existing diagnostic events; exhausted budget tests preserve and assert the real fault. Exact-source fragment harness improves3-pass3-fail to6-pass0-fail with explicit stubs; actual just fmt and patch checks pass. Original native suite execution is pending.",
+      "evidence": "evidence/supervisor_lifecycle_1e91/VALIDATION_RECEIPT.json"
+    },
+    {
+      "id": "actual_financial_recurrent_bptt",
+      "status": "in_progress_separate_signed_c1_readout_extension",
+      "detail": "A pre-frozen short recurrent candidate will use the actual H-X E/b and transformed R, plus signed margin and recovery state. Raw financial domain and accepted kernel gates remain unchanged. No recurrent qualification has been admitted yet.",
+      "evidence": null
+    },
+    {
+      "id": "signed_abort_owner_and_exit_evidence",
+      "status": "blocked_exact_source_and_counterexamples_preserved",
+      "detail": "Existing recovery does not consume exact-digest Abort directives. Safe activation requires one lifetime owner capability across daemon/public Supervisor/Fleet/CLI and all journal writers, versioned protected snapshot, retained Matrix process/lease until observed exit, and independent release admission fences.25 exact source blobs and71 writer/definition locations reviewed;2 synthetic real-filesystem race witnesses plus same-generation CAS rejection control executed. No product mutation, no weakened terminal-state gate, original quarantine remains.",
+      "evidence": "evidence/signed_abort_1e91/SAFETY_REVIEW.json"
     }
   ],
   "new_confirmation_opened": false,
@@ -190,7 +220,7 @@
   "published_research_head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
   "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4550",
   "followup_ci_scope": "Final source and prospective-merge tree identities must be checked. Published prior-head green jobs do not qualify new native source repairs.",
-  "latest_assessed_head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "latest_assessed_head": "889e7acebd14ecb05018c1d8c6ae4d26287cbcf8",
   "confirmation_scope": "new_confirmation_opened concerns the original R14 efficacy task only; R16 numerical validation is separate.",
   "independent_numerical_validation_r16_opened": true,
   "executor_recovery": {

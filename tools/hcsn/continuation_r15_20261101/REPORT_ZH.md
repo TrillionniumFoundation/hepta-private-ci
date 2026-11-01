@@ -8,7 +8,7 @@
 成果表述为“全部 blocker 已闭合”。
 
 [PR #4550](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4550)
-保存代码和证据。以下远端 CI 观察对应源码头 `1e91c5cf18272505508b9ce880fd34879bb6a546`；
+保存代码和证据。最新远端 CI 观察对应源码头 `889e7acebd14ecb05018c1d8c6ae4d26287cbcf8`；
 后续修复需要自己的最终提交验证。编译核完整证据已先保存至
 `bfd3a5a6f9445ae681b27d3947865ad67ef5651e`，其远端 Git 树与本地独立计算一致。
 
@@ -100,19 +100,49 @@ x 有界于 [-9,3]。平衡点唯一且为双曲源，局部排斥椭圆使它�
 仅把固定边界 b 传到下层不会传递当前 V 的变化；裕度/状态旁路也能避免
 只读 default 平台时丢失局部状态与梯度。
 
-## 4. 已执行的远端回归与新的构建修复
+## 4. 实际金融核已接入一阶 BP
 
-实际远端 job `124813869962` 重新计算了 Python 补偿核的 701 个基本
+独立的 [PyTorch 适配器](../hx_autograd_r16_20261101/README.md)调用原冻结
+C++ FP64 金融核，接受 CPU FP32 输入，返回 FP64 值及 FP32 一阶 VJP。
+它保留原 asset/default 与 log-distance/续行侧右导数约定，明确区分原五
+字段、七字段诊断向量和只含 E/b、R、x 的条件 C1 读出。
+
+六个既有功能例的 **168/168 方向差分、32/32 合同检查**通过；完整七字段
+链式导数最大缩放误差为 `5.270680520615516e-8`。独立审阅另查原六例
+raw5/readout3 共 **48 个通道**：普通一阶值及 VJP 与 V2 逐位相同。
+这些是接口回归，没有新增金融 holdout，也没有放宽原金融核数值门槛。
+
+两层、28 个可训练标量的固定 80 步 smoke 中，训练集 MSE 从
+`1.2916021347` 降至 `0.1068059132`，八个参数 tensor 均发生更新。
+金融参数的独立通道 VJP 非零，asset 的 `-b_theta/b` 链和独立 log x 的
+零参数导数均核验。训练 loss 下降不能归因于金融机制：x 旁路和 head
+也能参与拟合；没有消融或泛化验收，跨时间 BPTT 另行验证。
+
+独立审阅发现并修复了真实高阶合同缺陷：V2 的 `once_differentiable`
+不能阻止复合读出返回不完整 Hessian。V3 在 backward 入口显式拒绝
+首次 `create_graph=True`。48/48 独立通道确认首次拒绝；全部一阶矩阵、
+80 步 loss/梯度和初末参数/预测与 V2 规范 JSON 逐字一致。V1 写出失败、
+V2 高阶反例和真实中断退出码均保留。该接口支持普通 BP，不提供 Hessian、
+GPU、torch.compile 或稀疏事件优势；每状态保存的 5×10 FP64 Jacobian
+本身占 400 字节。
+
+## 5. 已执行的远端回归与新的构建修复
+
+最新远端 job `124919123170` 重新计算了 Python 补偿核的 701 个基本
 函数检查、432 行开发回归和 512 行已打开 V1 回归，独立验收、输出归档
 与源码完整性全部通过。R14/R15、R13、Codespell、文件大小策略以及
-8 个 Linux V8 canary 在已评估源码头也通过。
-[回归收据与原始日志](evidence/R16_REMOTE_REGRESSION.json)绑定具体提交。
+仓库基本构建在已评估源码头也通过。旧头的 8 个 Linux V8 canary
+证据保持原身份。[新回归收据与原始日志](evidence/R16_REMOTE_889E_REGRESSION.json)
+绑定源码头、同树 merge、真实 job 和归档摘要。
 
 接受的 YAML 维护分支迁移保留 Cargo 导入名 `serde_yaml`，但既有 Bazel
 宏没有传递 aliases，导致 GNU release、SDK 和 Clippy 出现真实 E0433。
 V2 修复覆盖全部四个直接消费者和九个规则生成点，按实际依赖和平台筛选
 别名，并正确处理 workspace 测试替换。实际宏执行的 93 个 target 记录与
-原有非 alias 属性一致，原 `just fmt` 通过；仍需新头真实编译验收。
+原有非 alias 属性一致，原 `just fmt` 通过。源码头 `889e7ace` 的 GNU
+release、GNU Clippy 和 SDK 实际编译、SDK lint/test 已全部通过；
+[精确 job/step 快照](evidence/R16_REMOTE_889E_NATIVE_SNAPSHOT.json)保留验证范围。
+原生测试矩阵仍运行，依赖审计失败，不能声称全仓绿色。
 [修复与证据](evidence/yaml_bazel_alias_v2/VALIDATION_RECEIPT.json)。
 
 Windows 目录测试改用正确句柄/路径操作，macOS V8 限制客户端并发为
@@ -135,7 +165,41 @@ Robrix 两项 artifact 测试还缺少 Bazel 数据声明，且用了构建时�
 `just fmt` 通过。合成 fixture 探针不冒充完整原生测试。
 [完整收据](evidence/native_repairs/robrix_fixture/ROBRIX_REPAIR_RECEIPT.json)。
 
-## 5. 继续保留的实质障碍与历史证据
+十项 Linux SSHSIG 失败已定位为固定 RBE 镜像缺少 `/usr/bin/ssh-keygen`。
+Dockerfile 现在明确安装 `openssh-client`，本机真实 OpenSSH 的合法签名、
+篡改 statement 和错误 namespace 控制均按预期接受/拒绝。现有镜像的
+两架构摘要没有改写；当前没有可用镜像 builder，也未建立原 registry
+namespace 的发布能力。故状态是源码补丁就绪、镜像激活仍阻塞，不能把
+本机原语测试算作 RBE 验收。[完整激活条件](evidence/sshsig_image_dependency_1e91/ACTIVATION_PLAN.md)
+要求真实构建、每架构镜像验签、实际发布摘要和原测试重跑。
+
+授权读 RPC 还存在 capability 合同不一致：Linux 声明没有稳定句柄能力，
+直接 RPC 却仍能走普通 stream fallback。新增服务器检查在读取前拒绝该
+未支持能力，保留 Linux capability=false；普通读、read-stream 和 Local
+bounded API 不变。测试源码补上真实 raw RPC 路径的合法/越界/超限/父目录
+及 Unix symlink 断言。RemoteFileSystem 的 unsupported 分支会由客户端
+拦截，不能冒称执行服务器 RPC。本地实际原 suite 执行数为 0，只有源码
+审阅、原 `just fmt` 与 patch 检查通过；[原生验收仍待 CI](evidence/native_repairs/authorized_read_rpc/EXEC_AUTHORIZED_READ_REPORT_ZH.md)。
+
+另外三项 supervisor 失败已经有小范围修复：受控测试子进程按当前代际
+实际回复 DrainSnapshot；生产队列补发已经声明的自动重启诊断事件；
+重启预算耗尽测试明确期待原有的故障报告。真实预算拒绝不变，原断言
+数量保留。提取的真实源逻辑与明确的 stub 边界做了红绿验证，原
+`just fmt` 和 patch 检查通过。[完整收据](evidence/supervisor_lifecycle_1e91/VALIDATION_RECEIPT.json)
+不冒充原生 suite，必须在包含这次补丁的提交上执行。
+
+signed-intent Abort 恢复还有独立的安全前提缺口。精确源码复核确认：
+public Supervisor 恢复没有持有与 daemon 统一的 owner 锁，单文件
+lifecycle CAS 也不覆盖 intent、lease 和 transaction 的共同快照；Matrix
+的一条恢复路径在 kill 请求后即丢弃句柄与 lease，尚不能证明进程已退出。
+直接把 Aborted 加入终态还可能绕过未决 release transaction 的独立隔离。
+25 份原源码、71 条 writer/定义调用位置及真实文件系统上的两个合成
+并发反例已经保存。没有启用不安全 Abort，也没有删除原失败断言。
+[最小完整迁移方案](evidence/signed_abort_1e91/OWNER_RECOVERY_DESIGN.md)
+和[独立复核](evidence/native_repairs/signed_intent_lock_audit/SIGNED_INTENT_LOCK_AUDIT.json)
+列明统一 owner 能力、持久化次序、退出证据和原生并发验证要求。
+
+## 6. 继续保留的实质障碍与历史证据
 
 - 原有限任务的最优公开策略相对固定 B 的期望上限，仅为 IID
   `0.000624852`、OOD `0.000824513`，低于原 `0.01` 门槛。原确认失败
@@ -146,7 +210,7 @@ Robrix 两项 artifact 测试还缺少 Bazel 数据声明，且用了构建时�
 - Windows 缺失的安全后端需要真正的访问控制、句柄绑定、链接攻击
   防御、持久化和验签语义；普通文件打开或跳过测试不能替代。
 - 生产神经元状态归属、完整 rollover 动态网络、全模态泛化优势、GPU
-  与焦耳成本尚未获得资格。真实金融核的 BP 适配器另行验证。
+  与焦耳成本尚未获得资格。一阶 BP 接线已通过，真实跨时间模型另行验证。
 
 旧执行环境丢失的未上传 C++ 768 行 raw、完整旧协议和 36 批原计时没有
 恢复；只有源码与重编译二进制身份精确恢复。此次新协议、新独立样本和
