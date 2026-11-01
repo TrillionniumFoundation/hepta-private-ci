@@ -235,6 +235,33 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
                     "failed Bazel must release its target file",
                 )
 
+    def test_authenticated_native_windows_keeps_cache_and_matching_c_toolchain(
+        self,
+    ) -> None:
+        self.env["BUILDBUDDY_API_KEY"] = "test-token"
+        result, calls = self.run_wrapper(
+            "--windows-msvc-host-platform",
+            "--",
+            "test",
+            "--platforms=//:windows_x86_64_msvc",
+            "--",
+            "//fake:target",
+            "//fake:other",
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1)
+        args = calls[0]
+        self.assertIn("--config=buildbuddy-generic", args)
+        self.assertIn("--remote_header=x-buildbuddy-api-key=test-token", args)
+        self.assertIn("--host_platform=//:local_windows_msvc", args)
+        self.assertIn("--platforms=//:windows_x86_64_msvc", args)
+        self.assertIn("--extra_toolchains=//:local_windows_msvc_cc_toolchain", args)
+        self.assertIn("--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0", args)
+        self.assertFalse(any(arg.endswith("-rbe") for arg in args))
+        self.assertEqual(
+            args[args.index("--") + 1 :], ["//fake:target", "//fake:other"]
+        )
+
     def test_native_windows_forwards_required_msvc_environment(self) -> None:
         result, calls = self.run_wrapper(
             "--windows-msvc-host-platform",

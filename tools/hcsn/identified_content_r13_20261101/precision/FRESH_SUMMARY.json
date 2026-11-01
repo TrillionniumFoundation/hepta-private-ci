@@ -1,0 +1,85 @@
+{
+  "freeze_sha256": "5e5a970ba23e32df1c5ab2da591320c44c2dc1c6ce521194753f0cc0c8d57a00",
+  "inputs_sha256": "157427fdc262a79d9fa6e425bbd38b0a1d4b2d71a73f9c4a352e52b8aca7c53b",
+  "summary": {
+    "lhs128": {
+      "single32": {
+        "rows": 128,
+        "passed": 103,
+        "rejected": 0,
+        "max_value_error": 8.728783783673231e-06,
+        "max_jacobian_error": 0.00039392417805852645,
+        "kernel_seconds": 1.1611524199979613
+      },
+      "double_single": {
+        "rows": 128,
+        "passed": 128,
+        "rejected": 0,
+        "max_value_error": 5.7474314131072806e-08,
+        "max_jacobian_error": 5.055585212015416e-07,
+        "kernel_seconds": 72.7604085590001
+      },
+      "mixed64": {
+        "rows": 128,
+        "passed": 128,
+        "rejected": 0,
+        "max_value_error": 5.7474314131072806e-08,
+        "max_jacobian_error": 5.8556696902882305e-08,
+        "kernel_seconds": 0.4706367879989557
+      }
+    },
+    "pressure_log64": {
+      "single32": {
+        "rows": 64,
+        "passed": 36,
+        "rejected": 0,
+        "max_value_error": 1.041797394415782e-05,
+        "max_jacobian_error": 0.00121902356301858,
+        "kernel_seconds": 0.6063246200010326
+      },
+      "double_single": {
+        "rows": 64,
+        "passed": 64,
+        "rejected": 0,
+        "max_value_error": 5.75357368030272e-08,
+        "max_jacobian_error": 5.651508360216466e-08,
+        "kernel_seconds": 35.763396231000115
+      },
+      "mixed64": {
+        "rows": 64,
+        "passed": 64,
+        "rejected": 0,
+        "max_value_error": 5.75357368030272e-08,
+        "max_jacobian_error": 5.651508360216466e-08,
+        "kernel_seconds": 0.21172503500201856
+      }
+    },
+    "pressure_asset24": {
+      "single32": {
+        "rows": 24,
+        "passed": 13,
+        "rejected": 0,
+        "max_value_error": 0.005018254261441428,
+        "max_jacobian_error": 4.60998508611232,
+        "kernel_seconds": 0.15583453999897756
+      },
+      "double_single": {
+        "rows": 24,
+        "passed": 24,
+        "rejected": 0,
+        "max_value_error": 5.75357368030272e-08,
+        "max_jacobian_error": 2.5294660620147486e-07,
+        "kernel_seconds": 8.710074254000574
+      },
+      "mixed64": {
+        "rows": 24,
+        "passed": 24,
+        "rejected": 0,
+        "max_value_error": 5.75357368030272e-08,
+        "max_jacobian_error": 5.412945469317674e-08,
+        "kernel_seconds": 0.06670284800020454
+      }
+    }
+  },
+  "seconds": 145.56583842500004
+}

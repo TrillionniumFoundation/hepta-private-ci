@@ -1,0 +1,129 @@
+{
+  "schema": "hcsn-r13-preregistration-v1",
+  "base_commit": "7d19d1f68b5c03f61c4ba92c42abf0cf4774d7c1",
+  "scope": "Real public SMS text observations in a controlled regenerative latent process; not natural chronological SMS dynamics or production readiness.",
+  "development_seed": 139901,
+  "seeds": [
+    131101,
+    131103,
+    131107,
+    131109,
+    131113,
+    131117,
+    131119,
+    131123
+  ],
+  "cores": [
+    "hx_distribution",
+    "gru",
+    "continuous_diagonal_ssm"
+  ],
+  "ordinary_width": 64,
+  "train_sequences": 384,
+  "validation_sequences": 96,
+  "sequence_length": 12,
+  "batch_size": 32,
+  "fit_cpu_seconds_per_core": 40.0,
+  "training_observation_probability": 0.65,
+  "confirmation_sequences_per_domain": 512,
+  "confirmation_episodes_per_domain": 1024,
+  "train_dt": [
+    0.15,
+    0.45,
+    1.05
+  ],
+  "iid_dt": [
+    0.15,
+    0.45,
+    1.05
+  ],
+  "ood_dt": [
+    0.05,
+    0.75,
+    2.1
+  ],
+  "domains": [
+    "text_iid",
+    "text_ood_time"
+  ],
+  "decision_horizon": 3,
+  "read_budget": 2,
+  "training_amortization_episodes": 1000,
+  "cost_ratio_threshold": 0.9,
+  "quality_gain_minimum": 0.01,
+  "quality_noninferiority_margin": 0.01,
+  "familywise_alpha": 0.05,
+  "gain_test": "two-sided exact paired sign flips over eight fit seed means, Holm over two primary domains",
+  "noninferiority_test": "simultaneous one-sided t lower bound (alpha/2 per domain) on eight paired fit seed means",
+  "cost_test": "ratio of total measured CPU per episode, including unique full-process fit/preparation/calibration, frontend and actual read/encode/native work; quality bound must also pass",
+  "model_search_cost": "all three candidate fits and selection cost disclosed separately, shared model search cannot be silently omitted; deployment unique and equal-calibration-charge sensitivities also reported",
+  "baseline_financial_parameters": [
+    0.08,
+    0.02,
+    0.3,
+    0.6,
+    0.27,
+    0.02,
+    1.3,
+    6.39,
+    61.68
+  ],
+  "physical_indices": [
+    2,
+    5
+  ],
+  "physical_lower": [
+    0.15,
+    0.005
+  ],
+  "physical_upper": [
+    0.4,
+    0.04
+  ],
+  "physical_initial": [
+    0.25,
+    0.012
+  ],
+  "fixed_maturity": 1.3,
+  "reset_asset": 90.0,
+  "recovery": 0.35,
+  "retention": 0.75,
+  "grid": {
+    "inner_step": 0.025,
+    "horizon": 29.4,
+    "sigma_max": 0.4,
+    "drift_upper": 0.04875,
+    "tail_budget": 0.0001,
+    "growth": 1.2
+  },
+  "tie_tolerance": 1e-12,
+  "tie_rule": "lowest finite action within tolerance using exact subtraction correction; same rule at every Bellman node and content classification",
+  "dataset": {
+    "name": "UCI SMS Spam Collection",
+    "doi": "10.24432/C5CC84",
+    "url": "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip",
+    "sha256": "1587ea43e58e82b14ff1f5425c88e17f8496bfcdb67a583dbff9eefaf9963ce3",
+    "license": "CC BY 4.0",
+    "normalization": "NFKC + whitespace collapse + casefold for dedup/split identity; original text for encoding",
+    "conflicting_duplicates": "remove all identities with multiple labels",
+    "partition": "int(sha256(normalized_utf8)[:8],16)%100: 0..49 encoder_train, 50..64 core_train, 65..74 validation, 75..99 confirmation",
+    "shared_frontend": "HashingVectorizer word 1..2 grams, 2^14 dimensions, alternate_sign=False, L2; LogisticRegression C=1 max_iter=300 random_state=130001, trained only encoder_train",
+    "evidence_logit_edges": [
+      -2.0,
+      -0.7,
+      0.0,
+      0.7,
+      2.0
+    ],
+    "smoothing": "training empirical categorical counts + 0.5 per bin; actual corpus sampling uses no invented messages",
+    "visible_information": "all actors receive same six-bin encoded text evidence, unavailable token, observed mask and dt; full shared calibrated Q/likelihood/payoff given to all value controllers",
+    "class_prior": "controlled process initially balanced; not natural SMS class proportions",
+    "confirmation_read_policy": "materialize and encode raw confirmation text only at actual READ; unseen data never enter fit or model selection",
+    "estimand": "conditional on the deduplicated fixed corpus; seed independence concerns training and controlled trajectories, not an independent corpus sample"
+  },
+  "ordinary_selection": "minimum validation posterior CE between GRU64 and gated continuous diagonal SSM64; choice frozen per seed",
+  "structural_reference": "generic Bayes/HMM with identical calibrated Q, prior, emissions and controller; mathematical equivalence is an expected null, not a success target",
+  "production_gate": "No default activation; evidence must separately establish quality, cost, supported precision, discretization scope, actual device and workload.",
+  "confirmation_freeze": "source, native binary, all fitted weights, frontend and chosen ordinary cores hashed before encoding or evaluating confirmation split; outcomes append-only",
+  "allowed_development": "training/validation partitions and dedicated development seed only; failures retained; no retuning after confirmation"
+}

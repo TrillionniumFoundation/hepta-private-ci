@@ -1,0 +1,27 @@
+{
+  "ds_freeze_sha256": "5e5a970ba23e32df1c5ab2da591320c44c2dc1c6ce521194753f0cc0c8d57a00",
+  "task_freeze_sha256": "be3b72c8786724fc03f72a1abcf919e6d063a40a36697a8bdc4dab35a5ba610c",
+  "script_sha256": "b931a6969e06f3b8c2261110fea3a0357590d4ecf07c58aab0588b6dfa2a40a1",
+  "fit_sha256": {
+    "fits/131101_hx_distribution.json": "95ec04cf63878f666bc115c3ce9c4b0923e219c812432c0fcdf6a3ab489d3c45",
+    "fits/131103_hx_distribution.json": "287a52e9430bf32acd040d0dde1d2071a8da6a2f637789cca1a2b3c8670e4f98",
+    "fits/131107_hx_distribution.json": "340b2a59786fd6f8afaa41e01abdd4fb32271837af3fa9956f92306b36f757d6",
+    "fits/131109_hx_distribution.json": "b70a242f52b41711c215b4dc4cccd73be4fd23100f0ab83b03e4412f1434b743",
+    "fits/131113_hx_distribution.json": "43e31add030770671290020fe89f6dfe00ff34bdad585ffc7627fc02a6f61a6c",
+    "fits/131117_hx_distribution.json": "c42c1c71cf4a2bd772e9f070fe8a73adb309ec63ebadd5936489b8dde626f34a",
+    "fits/131119_hx_distribution.json": "a8bd1cba274ebfe4eef9c9fdadb96d85d66cbd67ffc5dfecdb901a70bdf839ba",
+    "fits/131123_hx_distribution.json": "ebdf5fcb9c43b3d1b3c21b34957a15640d0876a132f02a6eceff8f0c22e0ed64"
+  },
+  "rows": 448,
+  "reference": "Unchanged 80-digit literal R11 A5/A7; centered Jacobian differences at 1e-18 and 5e-19 for FP32-represented inputs; original-grid inputs also checked at 1e-18",
+  "gates": {
+    "value": 8e-07,
+    "jacobian": 2e-05,
+    "reference_halving": 1e-12
+  },
+  "comparisons": [
+    "arithmetic at same quantized input",
+    "total financial-output deviation from original FP64 fitted theta/grid inputs"
+  ],
+  "qualification": "Only these eight fitted financial parameter tuples and 56 centers; no whole-SNN pure-FP32, full-parameter-box, or policy-quality claim"
+}

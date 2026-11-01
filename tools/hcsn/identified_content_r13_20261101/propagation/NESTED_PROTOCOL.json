@@ -1,0 +1,12 @@
+{
+  "purpose": "Supplement the near-boundary step scan with actual nested refinement of every frozen cell; examine accumulated Bellman tie tolerance.",
+  "reason": "With fixed geometric growth 1.2, reducing inner_step alone need not shrink every far-field cell. It is not a uniform-mesh convergence sequence.",
+  "base_grid": "Exactly propagation.api.make_grid(), already frozen at 56 active cells.",
+  "subdivision_factors": [1, 2, 4],
+  "physical_cases": "All physical parameter cases and all 54 first-hit cases from VALIDATION_PROTOCOL.json.",
+  "actions": "All 72 independent contexts and inherited witness from VALIDATION_PROTOCOL.json; same R12 observation law and same root tolerance controller.",
+  "reference": "Finite 224-active-cell model formed by quartering each frozen cell. This remains a finite reference, not an analytic continuum solution.",
+  "tie_bound": "Use H*tau for a policy computed with tolerance at each of H Bellman levels; a local Q-vector check is not a full reachable-state policy regret bound.",
+  "discrete_renewal_sanity": "Compare fast/slow quantized exponential phases against an independent four-state expm with exactly zero active excursion duration, at T=2.1, retention=.75, recovery=.35, steps128/256/512.",
+  "confirmation": "No confirmation data, fitted efficacy results or task outcome generation. Frozen runtime files remain unchanged."
+}

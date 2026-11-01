@@ -1,0 +1,8 @@
+{
+  "source_root": "tools/hcsn/unified_cell_r12_20261031/native",
+  "source_sha256": {
+    "core.rs": "79853dbfb448231679c8366ad43a899eeb01d6810dc66bc3e9a4545eca31d063",
+    "sha256.rs": "372ed9940f1a6b04c3100a5c906bdfabf2c691cf3eabe2c415811211611b5ff2"
+  },
+  "changes": "core.rs exposes prepared sparse generator and numerical constants, plus handle/version/cache error codes; R12 source remains unchanged. sha256.rs is byte-identical."
+}

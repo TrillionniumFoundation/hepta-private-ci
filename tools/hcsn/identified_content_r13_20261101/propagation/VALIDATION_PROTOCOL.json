@@ -1,0 +1,49 @@
+{
+  "purpose": "Independent numerical validation of the frozen R13 finite-volume propagation; no confirmation episode generation or gain analysis.",
+  "frozen_model_files": {
+    "api.py": "e920ade1072f9871bd944bc967c067ed3f8ba030fdfcee8ab6abf68de9f98e92",
+    "finite_volume.py": "9f8b284f32e7c45898938a3fa050130289501083e156ee4afea4f4b9252888c1",
+    "bounds.py": "1e8f174924092d3e73ab669cb9fb95bd380e9beefa17915ba2419b7d82cdefff"
+  },
+  "physical_parameter_cases": [
+    {"sigma": 0.3, "mu": 0.015, "reset_x": 0.325},
+    {"sigma": 0.4, "mu": -0.02, "reset_x": 0.25},
+    {"sigma": 0.15, "mu": 0.04875, "reset_x": 0.45}
+  ],
+  "first_hit": {
+    "initial_gaussian_means": [0.04, 0.2, 0.6],
+    "initial_gaussian_widths": [0.03, 0.1],
+    "support": [0, 0.8],
+    "times": [0.05, 0.45, 2.1],
+    "near_steps": [0.1, 0.05, 0.025, 0.0125],
+    "domain": "Frozen worst-case T=29.4, sigma_max=.4, drift_upper=.04875, tail_budget=1e-4",
+    "reference": "Unbounded killed Brownian first-hit CDF, Gaussian quadrature orders 160 and 320; independent monotone endpoint bounds."
+  },
+  "renewal": {
+    "recovery_mean": 0.35,
+    "retention": 0.75,
+    "reset_width": 0.1,
+    "reset_support": [0, 0.8],
+    "initial_means": [0.04, 0.2, 0.6],
+    "initial_width": 0.03,
+    "times": [0.45, 2.1, 6.0],
+    "clock_steps": [512, 1024, 2048],
+    "spatial_reset_bins": [128, 256, 512],
+    "evaluated_cdf_padding": 2e-13,
+    "scope": "Mathematical stochastic-clock enclosures conditional on CDF evaluation accuracy; no formal directed-rounding certificate. Include arbitrarily many resets, both recovery stages and content-phase correlation."
+  },
+  "action_validation": {
+    "inherited_witness": {"mean": 0.04, "width": 0.03, "p_bit0": 0.875, "dt": 0.05},
+    "independent_initial_means": [0.06, 0.27, 0.55],
+    "independent_initial_widths": [0.035, 0.085],
+    "independent_bit0_probabilities": [0.55, 0.7, 0.85, 0.9],
+    "independent_dt": [0.075, 0.6, 1.8],
+    "near_steps": [0.1, 0.05, 0.025, 0.0125],
+    "finite_reference_near_step": 0.00625,
+    "horizon": 3,
+    "budget": 2,
+    "time_cost": 0.01,
+    "scope": "Compare against an explicitly finite finer model using the same physical initial/reset law. Grid differences are not continuum bounds."
+  },
+  "stopping": "Freeze runtime files now. Validation may diagnose limitations; it must not modify the registered training model after confirmation fits begin."
+}

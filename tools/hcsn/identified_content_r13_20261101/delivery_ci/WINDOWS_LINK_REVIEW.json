@@ -1,0 +1,126 @@
+{
+  "created_utc": "2026-11-01T02:55:44.400640+00:00",
+  "status": "local regression passed; native Windows CI validation pending",
+  "base_head": "8237b70d566657e2cfdddb190a8624406f6dd298",
+  "old_failure": {
+    "run_id": 41265424224,
+    "job_id": 124727579324,
+    "job_api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/124727579324",
+    "source_head": "90d1c11c5e654b1bf595c2564f1160df7d8e07a9",
+    "test_step_number": 6,
+    "test_step_conclusion": "failure",
+    "later_log_upload_conclusion": "cancelled",
+    "log_sha256": "06f31e93aa260cc8fbd135f45da4a835e08a284a0d70973e3b91514fb22c1beb",
+    "configuration_signals": [
+      "2026-11-01T02:34:01.4881938Z Using generic BuildBuddy configuration: buildbuddy-generic.",
+      "2026-11-01T02:34:47.4626243Z BuildBuddy API key is available; using remote Bazel configuration.",
+      "2026-11-01T02:34:47.6237914Z Using generic BuildBuddy configuration: buildbuddy-generic."
+    ],
+    "undefined_symbols": [
+      "___chkstk_ms",
+      "__stack_chk_fail",
+      "__stack_chk_guard",
+      "__mingw_fprintf"
+    ],
+    "observed_native_dependencies": [
+      "zstd_sys",
+      "ring",
+      "aws-lc",
+      "libsqlite3_sys"
+    ],
+    "interpretation": "GNU or MinGW native objects reached an MSVC Rust link, including host proc macros."
+  },
+  "confirmed_branch_omission": {
+    "function": "bazel_args_with_remote_config",
+    "old_behavior": "A present API key bypassed all local Windows ABI setup even when the selected BuildBuddy configuration supplied only cache and BES.",
+    "local_setup_already_present": [
+      "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+      "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0"
+    ],
+    "why_needed": "The global configuration disables local C/C++ detection and registers hermetic LLVM. The explicit native MSVC platform needs the existing ABI-scoped installed compiler override.",
+    "source_at_old_failure_matches_snapshot": true,
+    "old_wrapper_git_blob": "2e5cfff384e8aff462e5e48fc5ddc6fc6ba5f6b3"
+  },
+  "repair": {
+    "production_lines_added": 3,
+    "test_lines_added": 64,
+    "behavior": "For authenticated Windows calls without RBE, normalize the local ABI before inserting the unchanged remote cache and BES arguments.",
+    "preserved": [
+      "all target arguments",
+      "caller payload after --",
+      "authenticated cache and BES",
+      "actual RBE paths",
+      "other operating systems",
+      "test assertions and failure status",
+      "cryptography and security functionality"
+    ],
+    "no_runtime_symbol_shim": true,
+    "source_receipts": [
+      {
+        "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+        "old_git_blob": "2e5cfff384e8aff462e5e48fc5ddc6fc6ba5f6b3",
+        "old_sha256": "b58755a05dfec69e129262ee3c8608a25898ad2805a6fac4a6d7a31087dfe2fc",
+        "new_git_blob": "82f4fbcb470b79d5624f03de8984840ae05de1a6",
+        "new_sha256": "bd9d56415470059e09a628f8421ef3331c0e011ead3be7d63c7039066be4afdc"
+      },
+      {
+        "path": ".github/scripts/test_run_bazel_native_msvc_toolchain.py",
+        "old_git_blob": "57206e3d14d068d141a13e2350cd88799a9655eb",
+        "old_sha256": "1a3f5f3a878c9480efb6718da6273d5804dcdbcc90c85ca5583daa5c1eb3eee2",
+        "new_git_blob": "01dcc5c34b3a1f320de5097201be07693f286f40",
+        "new_sha256": "5336c0e45db45eb4b595247107a16e27b5a2ad716187153f23ad7fdcc9840e1d"
+      },
+      {
+        "path": ".github/scripts/test_run_bazel_ci.py",
+        "old_git_blob": "03cbaf7cf988f978d60b59f2efddf599d97255b5",
+        "old_sha256": "a488cb579d618237af53cd16cf377984a622aedc1cc64fb2d4f356810742ff04",
+        "new_git_blob": "80a9155c82dfb122d910ee1bb9c65bd2c82db5bc",
+        "new_sha256": "2a9cb3f7e481a7f21a66877400793c7501e2c6d314bdacac3c59e5273b3ea971"
+      }
+    ]
+  },
+  "validation": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "linux",
+    "runs": {
+      "original_suite": {
+        "returncode": 0,
+        "tests": 43,
+        "failures": 0,
+        "elapsed_seconds": 0.9840261210010794,
+        "output_sha256": "c4c1781fbceae805c4eb4c1b3e6fdbac898cc3d69cd0a8e581d1d2433117b55d"
+      },
+      "regression_before": {
+        "returncode": 1,
+        "tests": 45,
+        "failures": 15,
+        "elapsed_seconds": 1.1087091580011474,
+        "output_sha256": "e0e20433b40edecf1d7351990b8cb02bc8ad60d5764e999b552d71d2e2bfa174"
+      },
+      "regression_after": {
+        "returncode": 0,
+        "tests": 45,
+        "failures": 0,
+        "elapsed_seconds": 1.2702663310010394,
+        "output_sha256": "bf2b2253fcf0ac782d894548835d2af39a5118c70d71474ea5a61dd1879d9682"
+      }
+    },
+    "native_windows_link_executed": false
+  },
+  "coverage": {
+    "new_unit_cases": "Both generic and trusted upstream cache configurations across build, test, run, coverage, cquery, aquery and info; argument input is unchanged.",
+    "new_integration_case": "The real shell and Python wrappers call a recording Bazel process with a key, explicit native MSVC target, and both original target labels.",
+    "existing_suite": "Includes keyless fallback, authenticated cross RBE, explicit options, target transport, caller payload, failure status, and non-Windows paths.",
+    "native_windows_link_executed_locally": false,
+    "local_host": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "git_diff_check": "passed",
+    "source_codespell_2_4_3": "passed"
+  },
+  "causal_boundary": "The argument omission is reproduced directly and the observed symbols match its ABI failure mode. The local checks use a recording Bazel process on Linux; they do not prove that a repaired native Windows build has completed or that no additional toolchain issue exists.",
+  "remaining_acceptance": "Run the unchanged Windows target shards in CI and verify native compilation and linking, including host proc macros, complete without these ABI errors.",
+  "evidence": {
+    "path": "WINDOWS_LINK_VALIDATION.json.gz",
+    "bytes": 307743,
+    "sha256": "c645f4265f512a9d668c1670d6c6225ef977089c84db6138135617c0d1a54bf1"
+  }
+}

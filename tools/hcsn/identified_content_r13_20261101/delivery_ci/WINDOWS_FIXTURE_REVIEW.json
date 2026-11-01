@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.ci.windows_workspace_fixture.v1",
+  "base_head": "eeb17ab1f4127d365025e9b1b53f9cc44eed01a5",
+  "job_id": 124727579324,
+  "test": "registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths",
+  "reported_failure": "The fixture returned the canonical workspace root validation error before comparing the sweep with its pairwise oracle.",
+  "diagnosis": "The test constructs child paths from TempDir.path and passes those paths directly to WorkspaceBinding.new. On Windows the physical canonical path has a verbatim prefix. WorkspaceBinding requires the caller to supply its canonical path. This is a fixture contract violation, not evidence of a failed sweep algorithm.",
+  "change": {
+    "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+    "behavior": "Canonicalize each created physical directory before constructing its workspace binding.",
+    "production_isolation_validation_unchanged": true,
+    "existing_subset_and_identity_order_comparisons_preserved": true,
+    "additional_duplicate_tests_added": false
+  },
+  "validation_at_receipt": {
+    "just_fmt": "passed",
+    "git_diff_check": "passed",
+    "local_existing_test": "queued_with_fleet_checks",
+    "windows_existing_test": "pending_new_head_ci"
+  },
+  "scope": "This change does not address the separate Windows native linker diagnostics or claim that all Windows jobs pass. Frozen R13 numerical runtime and outcomes are unchanged."
+}
