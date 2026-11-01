@@ -90,7 +90,7 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
     let denied = client
         .fs_read_file_authorized(FsReadFileAuthorizedParams {
             path: PathUri::from_host_native_path(&denied_file)?,
-            sandbox,
+            sandbox: sandbox.clone(),
             max_bytes: SECRET.len() as u64,
         })
         .await
@@ -101,8 +101,61 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
         };
         assert_eq!(*code, -32600);
         assert_eq!(message, "Permission denied");
+    } else {
+        let ExecServerError::Server { code, message } = &denied else {
+            bail!("expected unsupported authorized-read RPC, got {denied:?}");
+        };
+        assert_eq!(*code, -32603);
+        assert_eq!(message, "bounded authorized file reads are unsupported");
     }
     assert!(!denied.to_string().contains("secret.txt"));
+
+    let mut rejected_requests = vec![(
+        "oversized",
+        allowed_file,
+        ALLOWED.len() - 1,
+        -32603,
+        "authorized file read exceeds bound",
+    )];
+    rejected_requests.push((
+        "parent escape",
+        allowed_dir.join("..").join("denied").join("secret.txt"),
+        SECRET.len(),
+        -32600,
+        "Permission denied",
+    ));
+    #[cfg(unix)]
+    {
+        std::os::unix::fs::symlink(&denied_dir, allowed_dir.join("link"))?;
+        rejected_requests.push((
+            "symlink escape",
+            allowed_dir.join("link").join("secret.txt"),
+            SECRET.len(),
+            -32600,
+            "Permission denied",
+        ));
+    }
+    for (scenario, path, max_bytes, supported_code, supported_message) in rejected_requests {
+        let error = client
+            .fs_read_file_authorized(FsReadFileAuthorizedParams {
+                path: PathUri::from_host_native_path(path)?,
+                sandbox: sandbox.clone(),
+                max_bytes: max_bytes as u64,
+            })
+            .await
+            .expect_err("authorized-read rejection must not depend on the client capability guard");
+        let ExecServerError::Server { code, message } = &error else {
+            bail!("expected server rejection for {scenario}, got {error:?}");
+        };
+        if info.capabilities.stable_handle_authorized_read {
+            assert_eq!(*code, supported_code, "{scenario}");
+            assert_eq!(message, supported_message, "{scenario}");
+        } else {
+            assert_eq!(*code, -32603, "{scenario}");
+            assert_eq!(message, "bounded authorized file reads are unsupported");
+        }
+        assert!(!error.to_string().contains("secret.txt"));
+    }
 
     drop(client);
     server.shutdown().await?;

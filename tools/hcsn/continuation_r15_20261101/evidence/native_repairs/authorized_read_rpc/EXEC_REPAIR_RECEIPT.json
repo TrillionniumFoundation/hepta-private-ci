@@ -1,0 +1,88 @@
+{
+  "schema": "hcsn.exec-authorized-read-fail-closed-repair.v1",
+  "base_head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "original_failed_job": 124814581056,
+  "patch_sha256": "d10cae0737e5262169bb39964a8de581319fa3f315b7dffd1f10546d5640d876",
+  "files": [
+    {
+      "path": "codex-rs/exec-server/src/server/file_system_handler.rs",
+      "base_sha256": "509a8b8f3880f6418fdbf6625ee583de24572e8e1e3c0894a48d2087514db10b",
+      "candidate_sha256": "5aa844517513a0d213224784f1596627894f4e397783258f72ae41c5b808230a",
+      "candidate_bytes": 15783
+    },
+    {
+      "path": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+      "base_sha256": "e90844ada44b4f0f7d52818284d705bdd88d15f401420ecd26ba2852505c884b",
+      "candidate_sha256": "2d86b77b785d89e8438f55a5e1b8c936102df0a8743661285580da4cad168b55",
+      "candidate_bytes": 6149
+    },
+    {
+      "path": "codex-rs/exec-server/tests/file_system_unix.rs",
+      "base_sha256": "79651ba2e486920d21f7ca6c1342fb2d91df3c8e07e51cde45c341afd59223d1",
+      "candidate_sha256": "627c4630ad1ade2d690598a28d424a3590b59cfec4f8a7e1478ada2075d924c0",
+      "candidate_bytes": 59771
+    },
+    {
+      "path": "codex-rs/exec-server/tests/file_system/support.rs",
+      "base_sha256": "b5bb84d9f6af9a7b34ebd17f2a3949b93b23d50e53074f94d4cf11d7d60fa295",
+      "candidate_sha256": "c458db4c7fea9e9e53b31ba9d1f7a6f51aa421760470e609cb877a79f7e5367a",
+      "candidate_bytes": 6765
+    }
+  ],
+  "contract_source_sha256": {
+    "codex-rs/exec-server/src/lib.rs": "52b29e12c0c4584d327326ae2a6dee376542142b3534ee88607a6e2de23b4b92",
+    "codex-rs/exec-server/src/local_file_system.rs": "d03ebdaaeeee2ea66ee716a7e7d4651e7117a6f2b78d8a780609cbdb0dcf57d1",
+    "codex-rs/exec-server/src/remote_file_system.rs": "b2a37a65c1ef55b76b2ef5f55bc573137a02eda095b8d359f157b5d46df1bbeb",
+    "codex-rs/file-system/src/lib.rs": "bc4a5ce51555ff36df9053cfaa9411f62f585760ea1371e87f330a385ddb375d",
+    "codex-rs/utils/path-uri/src/lib.rs": "883cd0cb547512ef0c4845a2a4254be9c24d0e7d76913d2a39955e5706abe1dc",
+    "codex-rs/utils/absolute-path/src/lib.rs": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70"
+  },
+  "production_change": "Reject unadvertised stable-handle authorized-read RPC before user-file access; do not claim the generic bounded-stream fallback has stable pathname/inode provenance.",
+  "linux_stable_handle_capability_before": false,
+  "linux_stable_handle_capability_after": false,
+  "ordinary_read_stream_and_local_bounded_api_changed": false,
+  "macos_path_inode_symlink_bound_or_redaction_checks_changed": false,
+  "cargo_or_lock_or_schema_changes": false,
+  "test_path_distinction": {
+    "direct_rpc": "Test source uses ExecServerClient to issue allowed/outside-root/oversized/parent and Unix symlink requests in both capability branches. The original suite has not been executed locally; real RPC results await native CI.",
+    "remote_file_system": "API calls are retained; unsupported branch is blocked by the existing client capability guard, before any authorized-read RPC.",
+    "no_original_test_skipped": true,
+    "supported_escape_and_bound_assertions_retained": true,
+    "parent_path": "Absolute checked path constructor normalizes .. to an outside-root target; no early constructor rejection expected from exact source, not a raw wire traversal fuzz test."
+  },
+  "validation": {
+    "actual_just_fmt_returncode": 0,
+    "toolchain": "1.95.0",
+    "scope": "Exact justfile/scripts and rustfmt configuration in isolated scoped Git fixture",
+    "checks": {
+      "diff_check": {
+        "args": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "reverse_apply_check": {
+        "args": [
+          "git",
+          "apply",
+          "--reverse",
+          "--check",
+          "/tmp/hcsn-r15-fixture-capability-review/exec_authorized_read_fail_closed.patch"
+        ],
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    "original_suite_executed_locally": false,
+    "real_rpc_calls_executed_locally": 0,
+    "workspace_members_declared": 187,
+    "workspace_member_manifests_missing_in_fixture": 186
+  },
+  "status": "prepared_not_native_qualified",
+  "required_gate": "New-head native GNU/macOS/Windows CI, including original exec-server suite. No old failure marked passed."
+}
