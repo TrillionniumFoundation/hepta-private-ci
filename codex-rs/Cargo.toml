@@ -568,7 +568,17 @@ which = "8"
 whoami = "1.6.1"
 wildmatch = "2.6.1"
 winapi-util = "0.1.11"
-zip = "2.4.2"
+# Preserve the existing archive formats and C bzip2 backend across the ZIP upgrade.
+zip = { version = "9.0.2", default-features = false, features = [
+    "aes-crypto",
+    "bzip2-rs",
+    "deflate64",
+    "deflate",
+    "lzma",
+    "time",
+    "zstd",
+    "xz",
+] }
 zstd = "0.13"
 
 wiremock = "0.6"
