@@ -1,0 +1,21 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "publication_commit": "57f2143f81b0432928c4dbd893410bd1b6c3afe2",
+  "publication_receipt": "Parent agent reported successful source commit before execution; independent remote readback was not performed by this subagent.",
+  "source_freeze_sha256": "02bcbeb444bbebdde61c368def7b63bc39a1b2361b98e1eb0f86a3bfcc87cd68",
+  "source_files": {
+    "PROTOCOL.json": "9a74caee67d9ec6745d3df6f84b3e826c9cc25ae9e13e7463c155ed0b69245a3",
+    "__init__.py": "df2a49be9d949d53ff4f535ed5863e2626a8844e131e25a49a1c3c7ba448c26f",
+    "controller.py": "d6dd76de25e57a18df52bb9ab11df24b734035c8c787b0f953a78e888f2ab069",
+    "full_clock.py": "5e456e92efa026c084237fd702f7964584cef5a2a313f75096ea2243fa5e7c16",
+    "run.py": "23fe89a8a90713639cbabf3d97fccabe4575c55fe291121dd4fa6b4975e81d78",
+    "tests.py": "28091a08542a923836ee4bcf5af8f1d83c2ec4d7daafbef470a7a972a0dff91a"
+  },
+  "tests": {
+    "command": "python -B -m experiments.hcsn_validation_r14_20261101.value.rollout_repair.tests -v",
+    "exit_code": 0,
+    "passed": 6,
+    "unittest_seconds": 0.095
+  },
+  "source_review_sha256": "c32b2948e93f061053e0ee9768e3411324baf3256194321671093097f1491e1a"
+}
