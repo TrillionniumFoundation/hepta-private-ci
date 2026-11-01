@@ -1,0 +1,93 @@
+{
+  "schema": "hcsn.r16.bundle-materializer-safety.v1",
+  "helper_sha256": "16e4c7c694d721c08d7c453f8f188b59bdefaabf963fba3ee82c2018ff88d5d0",
+  "checks": 14,
+  "all_passed": true,
+  "rows": [
+    {
+      "case": "nested_success",
+      "passed": true,
+      "returncode": 0,
+      "expected_error": null
+    },
+    {
+      "case": "absolute",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "Unsafe manifest path"
+    },
+    {
+      "case": "parent_traversal",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "Unsafe manifest path"
+    },
+    {
+      "case": "windows_drive",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "Unsafe manifest path"
+    },
+    {
+      "case": "duplicate_file",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "Duplicate output"
+    },
+    {
+      "case": "duplicate_decoded",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "Duplicate output"
+    },
+    {
+      "case": "reserved_manifest",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "manifest is reserved"
+    },
+    {
+      "case": "decoded_traversal",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "Unsafe manifest path"
+    },
+    {
+      "case": "file_directory_collision",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "File/directory output collision"
+    },
+    {
+      "case": "stored_length",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "Stored artifact length mismatch"
+    },
+    {
+      "case": "decoded_length",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "Uncompressed artifact length mismatch"
+    },
+    {
+      "case": "source_symlink",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "Source file escapes"
+    },
+    {
+      "case": "existing_destination",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "new directory outside"
+    },
+    {
+      "case": "inside_source_destination",
+      "passed": true,
+      "returncode": 1,
+      "expected_error": "new directory outside"
+    }
+  ],
+  "scope": "Packaging helper only; financial candidate, protocol and numerical evidence are unchanged."
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "hcsn.r16.holdout-posthoc-coverage.v1",
+  "scope": "Observed coverage description only, no additional validation claim or changed gate",
+  "holdout_sha256": "44f6340bbe2f783e10f36aeddda6f96ed67df1efe5f6d6cf2a0732241f798310",
+  "summary_sha256": "8b347f0865f9d244979e3a45891e090e3b15fc7e4281f9b01eac33b7d1cb5f4a",
+  "unique_parameter_points": 128,
+  "unique_parameter_state_coordinate_tuples": 512,
+  "branches_from_independent_boundary": {
+    "asset_default": 36,
+    "taylor": 128,
+    "blend": 128,
+    "raw_A7": 220
+  },
+  "parameter_order": [
+    "r",
+    "delta",
+    "sigma",
+    "alpha",
+    "tax",
+    "liquidity",
+    "maturity",
+    "coupon",
+    "principal"
+  ],
+  "parameter_observed_min": [
+    0.04039449617266655,
+    0.011439121328294277,
+    0.08552087098360062,
+    0.0021065399050712585,
+    0.0023072732146829367,
+    0.00010146500426344573,
+    0.010157445445656776,
+    0.5033735036849976,
+    20.456995010375977
+  ],
+  "parameter_observed_max": [
+    0.14988087117671967,
+    0.1993088573217392,
+    0.7948423624038696,
+    0.9936521053314209,
+    0.5962839722633362,
+    0.09870892763137817,
+    19.061155319213867,
+    9.99975872039795,
+    99.37527465820312
+  ],
+  "small_B_relative_denominator_points": 34,
+  "small_A_relative_denominator_points": 76,
+  "minimum_relative_denominator": 0.00012610503724641773,
+  "accepted_independently_rejected_points": 0,
+  "worst_jacobian_row": {
+    "case": "lhs_049",
+    "coordinate": "log_distance",
+    "state": 0.0008884732378646731,
+    "scaled_error": 7.1891889198427705e-06,
+    "index": [
+      1,
+      9
+    ],
+    "candidate": 0.7946392893791199,
+    "reference": 0.7946464785680397
+  },
+  "no_claims": [
+    "No exact boundary asset state in this holdout; exact/default identities are separate invariant diagnostics.",
+    "A Latin hypercube finite sample is not a uniform parameter-box error proof."
+  ],
+  "postprocessing_note": "Initial coverage JSON serialization aborted on NumPy int64; partial output retained as R16_COVERAGE_V1_ABORTED_SERIALIZATION.txt. No numerical source or evaluation was changed."
+}

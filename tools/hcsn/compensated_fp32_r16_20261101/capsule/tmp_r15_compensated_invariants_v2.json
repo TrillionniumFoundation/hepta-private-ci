@@ -1,0 +1,268 @@
+{
+  "schema": "hcsn-compensated-independent-invariants-v2",
+  "review_test_status": "Post-development independent review witnesses, not preregistered holdout points.",
+  "script_sha256": "8d39479c06b773b70d09e2c165dc72be3de689ac844fd8db765372212d59f46a",
+  "source_sha256": {
+    "compensated_kernel.py": "c1088ca5cfd2c8a18877078b8a14ff251986c1eaeca0911a838c2d55e400643f",
+    "float32_pair.py": "63010529b91de196698c7b096a5bac94f73460f3a811f70b61a95d53ffd87ae9",
+    "frozen_kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0"
+  },
+  "dtype_instrumentation": {
+    "pair_constructions": 253406,
+    "two_product": 34142,
+    "two_sum": 127326
+  },
+  "non_fp32_pair_input_constants": [
+    [
+      "float",
+      "-0.5"
+    ],
+    [
+      "float",
+      "0.0"
+    ],
+    [
+      "float",
+      "0.001"
+    ],
+    [
+      "float",
+      "0.002"
+    ],
+    [
+      "float",
+      "0.01"
+    ],
+    [
+      "float",
+      "0.02"
+    ],
+    [
+      "float",
+      "0.05"
+    ],
+    [
+      "float",
+      "0.5"
+    ],
+    [
+      "float",
+      "1.0"
+    ],
+    [
+      "float",
+      "2.5066282746310002"
+    ],
+    [
+      "int",
+      "-1"
+    ],
+    [
+      "int",
+      "-104"
+    ],
+    [
+      "int",
+      "-2"
+    ],
+    [
+      "int",
+      "0"
+    ],
+    [
+      "int",
+      "1"
+    ],
+    [
+      "int",
+      "10"
+    ],
+    [
+      "int",
+      "120"
+    ],
+    [
+      "int",
+      "1307674368000"
+    ],
+    [
+      "int",
+      "15"
+    ],
+    [
+      "int",
+      "2"
+    ],
+    [
+      "int",
+      "20"
+    ],
+    [
+      "int",
+      "20922789888000"
+    ],
+    [
+      "int",
+      "21"
+    ],
+    [
+      "int",
+      "24"
+    ],
+    [
+      "int",
+      "28"
+    ],
+    [
+      "int",
+      "3"
+    ],
+    [
+      "int",
+      "35"
+    ],
+    [
+      "int",
+      "362880"
+    ],
+    [
+      "int",
+      "3628800"
+    ],
+    [
+      "int",
+      "39916800"
+    ],
+    [
+      "int",
+      "4"
+    ],
+    [
+      "int",
+      "40320"
+    ],
+    [
+      "int",
+      "479001600"
+    ],
+    [
+      "int",
+      "5"
+    ],
+    [
+      "int",
+      "5040"
+    ],
+    [
+      "int",
+      "56"
+    ],
+    [
+      "int",
+      "6"
+    ],
+    [
+      "int",
+      "6227020800"
+    ],
+    [
+      "int",
+      "7"
+    ],
+    [
+      "int",
+      "70"
+    ],
+    [
+      "int",
+      "720"
+    ],
+    [
+      "int",
+      "8"
+    ],
+    [
+      "int",
+      "87178291200"
+    ],
+    [
+      "int",
+      "88"
+    ]
+  ],
+  "homogeneity": [
+    {
+      "scale": 0.5,
+      "value_error": 0.0,
+      "jacobian_error": 0.0
+    },
+    {
+      "scale": 2.0,
+      "value_error": 0.0,
+      "jacobian_error": 0.0
+    }
+  ],
+  "value_matching_and_smooth_pasting": {
+    "equity": 0.0,
+    "equity_jacobian_max": 0.0,
+    "F_G": [
+      1.0,
+      1.0
+    ],
+    "F_G_parameter_jacobian_max": 1.0658141036401503e-14,
+    "right_risk_state_derivatives": [
+      -4.140120506286621,
+      -4.446661472320557
+    ],
+    "recovery_value_error": 1.8312970797754463e-08,
+    "recovery_parameter_jacobian_error": 4.507544680120475e-08,
+    "right_debt_state_derivative": 63.9282112121582
+  },
+  "default_extension": {
+    "equity_F_G": [
+      0.0,
+      1.0,
+      1.0
+    ],
+    "all_state_jacobian_max": 0.0,
+    "equity_F_G_jacobian_max": 0.0,
+    "recovery_value_error": 1.8312970797754463e-08,
+    "recovery_jacobian_error": 4.507544680120475e-08
+  },
+  "default_seam": {
+    "equity_smooth_pasting": "Equity value and its state derivative vanish at the boundary.",
+    "risk_and_debt_not_globally_C1": "Default-region state derivatives are zero; continuation-side F, G and debt slopes are nonzero.",
+    "right_risk_asset_derivatives": [
+      -0.09450219571590424,
+      -0.1014992892742157
+    ],
+    "right_debt_asset_derivative": 1.4592223167419434
+  },
+  "coordinate_chain": {
+    "value_error": 5.802246444151289e-07,
+    "jacobian_error": 5.385370219290881e-07,
+    "qualification": "Coordinates are separately rounded to FP32, so this is a tolerance check, not bitwise equality."
+  },
+  "primitive_range_limits": {
+    "sqrt_zero_input": 0.0,
+    "sqrt_zero_expected": 0.0,
+    "sqrt_zero_finite": false,
+    "sqrt_zero_observed_words": [
+      "nan",
+      "nan"
+    ],
+    "product_inputs_as_fp32": [
+      1.0000000409184788e+35,
+      1.000000013351432e-10
+    ],
+    "product_expected_representable_as_fp32": true,
+    "finite_product_with_splitter_overflow": false,
+    "product_observed_words": [
+      "nan",
+      "nan"
+    ],
+    "scope": "Outside the tested financial path; these disprove a generic all-normal-FP32-range primitive guarantee, not the frozen development-grid result."
+  },
+  "check_seconds": 0.9264126699999906,
+  "not_a_performance_benchmark": true
+}

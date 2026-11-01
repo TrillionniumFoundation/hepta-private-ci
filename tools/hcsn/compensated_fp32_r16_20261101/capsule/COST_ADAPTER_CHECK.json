@@ -1,0 +1,50 @@
+{
+  "schema": "hcsn.r16.cost-adapter-equivalence.v1",
+  "scope": "Six baseline adapter checks against original public evaluator, all finite; not a new precision qualification",
+  "runner_sha256": "de48a838705602b9300bb9796c31d6a5faf16b14e04348354a864bcaf2051406",
+  "rows": [
+    {
+      "mode": "original_float64",
+      "coordinate": "log_distance",
+      "state": 0.0010000000474974513,
+      "values_bit_equal": true,
+      "jacobian_bit_equal": true
+    },
+    {
+      "mode": "original_float64",
+      "coordinate": "log_distance",
+      "state": 0.10000000149011612,
+      "values_bit_equal": true,
+      "jacobian_bit_equal": true
+    },
+    {
+      "mode": "original_float64",
+      "coordinate": "asset",
+      "state": 100.0,
+      "values_bit_equal": true,
+      "jacobian_bit_equal": true
+    },
+    {
+      "mode": "original_single_float32",
+      "coordinate": "log_distance",
+      "state": 0.0010000000474974513,
+      "values_bit_equal": true,
+      "jacobian_bit_equal": true
+    },
+    {
+      "mode": "original_single_float32",
+      "coordinate": "log_distance",
+      "state": 0.10000000149011612,
+      "values_bit_equal": true,
+      "jacobian_bit_equal": true
+    },
+    {
+      "mode": "original_single_float32",
+      "coordinate": "asset",
+      "state": 100.0,
+      "values_bit_equal": true,
+      "jacobian_bit_equal": true
+    }
+  ],
+  "all_passed": true
+}

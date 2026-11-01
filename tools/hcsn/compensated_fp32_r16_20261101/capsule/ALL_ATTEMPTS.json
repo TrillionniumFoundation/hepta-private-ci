@@ -1,0 +1,120 @@
+{
+  "schema": "hcsn.r16.all-attempts.v1",
+  "no_ordinary_fp32_admission": true,
+  "original_gates": {
+    "value_scaled": 8e-07,
+    "jacobian_scaled": 2e-05
+  },
+  "original_single_fp32": {
+    "rows": 432,
+    "passed_rows": 136,
+    "passed_cases": 0,
+    "max_value_error": 0.0162872771445453,
+    "max_jacobian_error": 61.81494268103482,
+    "evidence": "FROZEN_REFERENCE.json"
+  },
+  "ordinary_fp32_attempt01": {
+    "summary": {
+      "rows": 432,
+      "passed_rows": 344,
+      "cases": {
+        "joint_m20.0_l0.0001": false,
+        "maturity_0.01": false,
+        "sigma_0.8": false,
+        "joint_m20.0_l0.1": false,
+        "liquidity_0.1": false,
+        "sigma_0.08": false,
+        "recovery_0": false,
+        "baseline": false,
+        "maturity_0.1": false,
+        "tax_0": false,
+        "maturity_5": false,
+        "recovery_1": false,
+        "tax_0.6": false,
+        "lower_liquidity_limit": false,
+        "delta_0.2": false,
+        "joint_m0.01_l0.0001": false,
+        "joint_m0.01_l0.1": false,
+        "maturity_20": false
+      },
+      "passed_cases": 0,
+      "max_value_error": 1.3521923641993384e-05,
+      "max_jacobian_error": 0.0032525232844084033
+    },
+    "evidence": "ATTEMPT01_FULL.json",
+    "regression_evidence": "ATTEMPT01_REVIEW.json",
+    "previously_passing_rows_regressed": 2
+  },
+  "compensated_primitive_diagnostics": {
+    "checks": 701,
+    "evidence": "COMP_PRIMITIVES01.json",
+    "scope": "Development diagnostic, not full financial qualification"
+  },
+  "compensated_development": {
+    "summary": {
+      "rows": 432,
+      "passed_rows": 432,
+      "cases": {
+        "joint_m20.0_l0.1": true,
+        "delta_0.2": true,
+        "maturity_0.1": true,
+        "maturity_20": true,
+        "sigma_0.8": true,
+        "maturity_0.01": true,
+        "liquidity_0.1": true,
+        "maturity_5": true,
+        "recovery_1": true,
+        "tax_0.6": true,
+        "tax_0": true,
+        "sigma_0.08": true,
+        "lower_liquidity_limit": true,
+        "joint_m0.01_l0.0001": true,
+        "joint_m0.01_l0.1": true,
+        "joint_m20.0_l0.0001": true,
+        "recovery_0": true,
+        "baseline": true
+      },
+      "passed_cases": 18,
+      "max_value_error": 5.665080594681952e-08,
+      "max_jacobian_error": 9.439639804099026e-07
+    },
+    "evidence": "COMP_ATTEMPT01_FULL.json",
+    "unique_inputs": 419,
+    "duplicate_rows": 13,
+    "asset_default_rows": 2
+  },
+  "compensated_independent_v1": {
+    "summary": {
+      "generated_points": 128,
+      "independently_valid_points": 128,
+      "independently_rejected_points": 0,
+      "evaluated_rows": 512,
+      "passed_rows": 512,
+      "passed_valid_points": 128,
+      "oracle_halving_failures": 0,
+      "max_value_error": 5.718660608053465e-08,
+      "max_jacobian_error": 7.1891889198427705e-06,
+      "max_oracle_halving_error": 4.778802063239728e-59,
+      "all_valid_rows_passed": true,
+      "diagnostic_wall_seconds": 167.27297413899942,
+      "diagnostic_cpu_seconds": 167.157670013
+    },
+    "evidence": "R16_HOLDOUT_V1.json.gz",
+    "protocol": "R16_VALIDATION_PROTOCOL_V1.json",
+    "candidate_not_retuned_after_opening": true
+  },
+  "cpu_cost": {
+    "evidence": "R16_CPU_COST_V1.json",
+    "full_compensated_to_original_fp64_ratio": 93.64726857539767,
+    "full_compensated_to_original_single_fp32_ratio": 85.48575241957974,
+    "claim": "Python prototype is slower, not a speedup; compiled follow-up requires same-backend baselines and fresh validation."
+  },
+  "independent_review": {
+    "receipt": "tmp_r15_compensated_independent_review.json",
+    "invariants": "tmp_r15_compensated_invariants_v2.json",
+    "script": "tmp_r15_compensated_review.py",
+    "generic_range_counterexamples_retained": 2,
+    "reviewer_initial_debt_state_assertion_corrected_without_candidate_change": true
+  },
+  "postprocessing_attempt": "Initial coverage serialization failed on numpy.int64; partial text retained, then serialization converted metadata counts to int. No numerical source or evaluation changed."
+}

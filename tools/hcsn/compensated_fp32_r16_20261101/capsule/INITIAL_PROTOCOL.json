@@ -1,0 +1,30 @@
+{
+  "schema": "hcsn.stable-fp32-development.v1",
+  "stage": "new additive implementation, no qualification claimed",
+  "base_kernel_sha256": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+  "frozen_protocol_sha256": "07e4abe9e19da7b1617484a0697dbe7fb9767f3b5a33136976327e6b61711836",
+  "frozen_reference_archive_sha256": "aa35be2e7e8760518ca6d0865abb363256d04f937ab831f35c408e719e92bec0",
+  "unchanged_gates": {
+    "value_scaled": 8e-07,
+    "jacobian_scaled": 2e-05
+  },
+  "cases": 18,
+  "rows": 432,
+  "coordinates": [
+    "asset",
+    "log_distance"
+  ],
+  "jacobian_columns": [
+    "r",
+    "delta",
+    "sigma",
+    "alpha",
+    "tax",
+    "liquidity",
+    "maturity",
+    "coupon",
+    "principal",
+    "state"
+  ],
+  "arithmetic_contract": "Financial values and tangents use float32 operations. Reference comparisons may use FP64/high precision. No mixed32 relabeling. Any later compensated representation must be reported separately."
+}
