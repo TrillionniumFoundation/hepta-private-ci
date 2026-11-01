@@ -1,0 +1,3157 @@
+{
+  "schema": "hcsn-v8-remote-delivery-verification.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/hcsn-v8-causal-execution-20261101",
+  "base_commit": "7b57b61ffd99e7d3920d0bcb771e2c5fcf2b9503",
+  "verified_evidence_commit": "78158f8f2d1a815e71de9ef77c71cee9355cb502",
+  "verified_root_tree": "c3283c522f36b3b5f0d25aec1956183bcc89def1",
+  "verified_v8_tree": "f95f8fc61ad70b5b0f0119583c23f80960ca9582",
+  "semantics": "This receipt records read-only verification of the named immutable evidence commit. The receipt is added in a later descendant commit; its own bytes are not part of the inventory below.",
+  "published_file_count": 424,
+  "published_bytes": 8220962,
+  "every_published_git_blob_sha_mode_and_size_matches_local": true,
+  "old_root_entries_unchanged_except_experiments": true,
+  "inherited_experiment_entries_unchanged": 19,
+  "v7_local_blob_checks": {
+    "v7_files_checked": 60,
+    "mismatches": []
+  },
+  "recovered_oversized_originals": [
+    "experiments/hcsn_v8_execution_20261101/frontend/validation/development001/PAIRED_ROWS.jsonl",
+    "experiments/hcsn_v8_execution_20261101/frontend/validation/replay002/PAIRED_ROWS.jsonl",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/evaluation/runs.jsonl.gz",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81101/sampled_data.npz",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81103/sampled_data.npz",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81107/sampled_data.npz",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81109/sampled_data.npz",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81113/sampled_data.npz"
+  ],
+  "transport_validation": "publication/RESTORE_VALIDATION.json",
+  "independent_transport_review": "publication/INDEPENDENT_REVIEW.md",
+  "direct_content_readbacks": [
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/REPORT_ZH.md",
+      "encoding": "utf-8",
+      "git_blob_sha": "3470935f74b34efc6f65d7795bbaae7480d94b5d",
+      "content_matches_local": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/ACCEPTANCE.json",
+      "encoding": "utf-8",
+      "git_blob_sha": "cdfdc24349c9d5e1e9b7bed49c2320e227bb763a",
+      "content_matches_local": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/MANIFEST.json",
+      "encoding": "utf-8",
+      "git_blob_sha": "19a4ebcc3c9199c652d392a921a0c3178f182e3b",
+      "content_matches_local": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/evaluation/worlds.jsonl.gz",
+      "encoding": "base64",
+      "git_blob_sha": "de5b9e86642a76aa829c1f3daef28d134e724a51",
+      "content_matches_local": true
+    }
+  ],
+  "source_and_evidence_commits": [
+    {
+      "stage": "count interventions and recurrent fits",
+      "sha": "2fc4fbe666f0367455881929ce6a19142920c79f"
+    },
+    {
+      "stage": "development campaign",
+      "sha": "9d8ad310a179f10c92907a672b57136ce0a9016b"
+    },
+    {
+      "stage": "Restore exact historical AV inputs from inherited archives",
+      "sha": "9958de84d6c1d32404a4ae3fc68ebefa777a1be9"
+    },
+    {
+      "stage": "Connect frozen real content head to causal cache",
+      "sha": "dc96e15b24f5a74c5c2643b152a45c21b4317486"
+    },
+    {
+      "stage": "Replay exact content and verify future-payload isolation",
+      "sha": "c66525914991fcc51f12d6295f2ac2acb0c6e1b0"
+    },
+    {
+      "stage": "Execute bounded multistep plans with explicit source time",
+      "sha": "aadaa062b45f0904373904b498a0b3f98b41c7a8"
+    },
+    {
+      "stage": "Exercise causal service, timeout and output behavior",
+      "sha": "3b83fb505fe184e0a18f7e317b1026c44d2e9bd2"
+    },
+    {
+      "stage": "Run historical fitted heads and balanced binding controls",
+      "sha": "75a906b4cf690f8a0edf8e0f4c80090990e58d0d"
+    },
+    {
+      "stage": "Measure enclosing worker and waited process-family CPU",
+      "sha": "a734925dc75d2bc2475714f4a676015d90d20af4"
+    },
+    {
+      "stage": "Independently probe accounting and audit raw mechanism outcomes",
+      "sha": "027d1aee5b081d974a0658df3f89739e0f5c603c"
+    },
+    {
+      "stage": "Preserve fitted models and exact evidence transport",
+      "sha": "b5de2ae7ad33b1edc8e536e45f9c6a6e6e0ac47c"
+    },
+    {
+      "stage": "Retain independent audit builder, acceptance and measured evidence (1/20)",
+      "sha": "53c826a21158861b9fe6431dd28a845d3922f0b0"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (2/20)",
+      "sha": "155f831b2a649b0905174c2671930d59dbff4387"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (3/20)",
+      "sha": "be06c846a19eef4535e7692527efc051145e67b5"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (4/20)",
+      "sha": "5e58686099010590a28daaef09d658f1151909a6"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (5/20)",
+      "sha": "de1f74a5601d20788a166f4a29340c8955cd966f"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (6/20)",
+      "sha": "1864a33df898a04b1d030c3977a2cdceef2b7eac"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (7/20)",
+      "sha": "64437a73c02699ac9adc994f25d1cbd665c95be5"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (8/20)",
+      "sha": "2ad25bc1fd4f352b87dcd8895c57a57fad453d37"
+    },
+    {
+      "stage": "Add byte-preserving transport with actual restoration evidence (9/20)",
+      "sha": "f094720df98c3b0fbc88e6efa2372b6a15cf812b"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (10/20)",
+      "sha": "674a97be2d46968992f0dabd568d4dea27a598ea"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (11/20)",
+      "sha": "248e73077e76a855677fc8f6323eb0b02b25b27e"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (12/20)",
+      "sha": "210f626eb61cdeda36b65e0b800f4b94ebe613fa"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (13/20)",
+      "sha": "12e7368348833bd4c538a694f698c2241587952d"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (14/20)",
+      "sha": "d5657f351977f5e43ba2fe79d29a02086791ed16"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (15/20)",
+      "sha": "78605e6b7c6562f1d01cac839c9283b65819b191"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (16/20)",
+      "sha": "f40a34b1b627acd828dc437d5d53953bb1b9f1d1"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (17/20)",
+      "sha": "ed00c5d535f16f7f81b6eeea9fe68ae60b68ffb3"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (18/20)",
+      "sha": "79a0d04f681bd4a19c2663d280c4919e5b692887"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (19/20)",
+      "sha": "4204057b7ecc6091b6fa519a8453eeb13075c475"
+    },
+    {
+      "stage": "Preserve hcsn-v8 raw development and verification evidence (20/20)",
+      "sha": "78158f8f2d1a815e71de9ef77c71cee9355cb502"
+    }
+  ],
+  "files": [
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/ACCEPTANCE.json",
+      "bytes": 1735,
+      "sha256": "04b5159adbf6f831fc47ec4af4f339d1f773fbb28c5b6115af39937fb0699b02",
+      "git_blob_sha": "cdfdc24349c9d5e1e9b7bed49c2320e227bb763a",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/__init__.py",
+      "bytes": 76,
+      "sha256": "9ecb5fb74605debf2f001f20538e8a0387217575a5941f0409cc4b8f77ff8099",
+      "git_blob_sha": "1eeb192debcb6266d253851456e1e45d1e83fda3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/audit_mechanism_records.py",
+      "bytes": 11707,
+      "sha256": "580e0ae9cdf13657b15614c13c8f192689ff414c9edc1b250260295940041622",
+      "git_blob_sha": "435b8c75e87f8934664875f826ba2791d21b6c66",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/EVIDENCE_AUDIT.json",
+      "bytes": 3932,
+      "sha256": "977f6bbdc0ff305dbea2cd034f746d18e816904fe7fa34fde7d40ebd393aa964",
+      "git_blob_sha": "1aaa43f68e48f3fd7f03b38a2b58acba296682c7",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/INDEPENDENT_REVIEW.md",
+      "bytes": 1875,
+      "sha256": "e5877e903b6b06675ce6b00dd60dde2e421837dc254269f9199b365dd5d5986d",
+      "git_blob_sha": "1a5f112e1fce34422fe59d9321dd0720f773562a",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/process_tree_probe.py",
+      "bytes": 2366,
+      "sha256": "f2bdac2993aba9d89966f4c2e5f4647f54cf0e35f929134a01955bd0f6c9a86b",
+      "git_blob_sha": "ef21d292e80ef9514e04038ed41d5203040aa5d7",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/README.md",
+      "bytes": 8195,
+      "sha256": "4367708b3f2555ea2fa6b7027fa7e4ec98779817875ccff717586d5c5be17ebe",
+      "git_blob_sha": "2ce7a331199453dbf7c0a15f69a060f9323f598f",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/build_mechanism_review.py",
+      "bytes": 19018,
+      "sha256": "47b0d0da3b0105ab49a7e9433d7875cd25fd38e0dd2b8d5309bc4850b1488b45",
+      "git_blob_sha": "fd04c8f003c8d050e303b4331f9b5a86c48d8fd9",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism_report001/CONFIG.json",
+      "bytes": 496,
+      "sha256": "b77019ac609e801914f946aeefcc9063aa73f7d9f222b2f5430ad06d316ae839",
+      "git_blob_sha": "e9e318ca4dc91da71a11566f422930ab0c2dc9e0",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism_report001/RECEIPT.json",
+      "bytes": 2110,
+      "sha256": "b3bcc1397b76cfe8776997792e9569447a1e13791206e93cda081f369436a8f1",
+      "git_blob_sha": "47677ea719e60ae3fe50e283f38904b78b1bc8b2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism_report001/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism_report001/stdout.log",
+      "bytes": 363,
+      "sha256": "2ae286dbae81e5686614b86853b55a67d39add1d885c8da50ba90266026454d8",
+      "git_blob_sha": "e73e5f563ca481bd4f8ce478fd00a119ecec86a7",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism_report001/SUPERVISION.json",
+      "bytes": 3201,
+      "sha256": "a4a3a6b2f95c03affc03aebab784ab8ab7531f1a8c02d673df97ba2632640f82",
+      "git_blob_sha": "5e68dc5e2694fb511682fcf9b537785b2a08b03c",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism_report001/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/MECHANISM_REVIEW.md",
+      "bytes": 6079,
+      "sha256": "64ba3e4044aad17ad25ecc7d7883fcc66ce1d04aff761173bec22c4216fbbbd3",
+      "git_blob_sha": "928386d0f5e94a0e452362b35ce8bc62adec2819",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism001/AUDIT.json",
+      "bytes": 1615,
+      "sha256": "4d0b5a2dc0b3dcb955b862b44d1ce4dea35fae10112065362b2a87b151441194",
+      "git_blob_sha": "c988ed2b13331c0155dadd66a8267fc11b51ce94",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism001/CONFIG.json",
+      "bytes": 558,
+      "sha256": "8694522669b4c7fb7bbbc62cf6ce0e3866626a3c1041b9152fb5a131c1d8fed7",
+      "git_blob_sha": "267dcd076809697a5e249116a7b411767da8f5ef",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism001/RECEIPT.json",
+      "bytes": 2169,
+      "sha256": "dccb40683f55c59f44d44acce0f9175d49f1f36403e943ad463ef9cd832e6342",
+      "git_blob_sha": "183563830901118b1569c5671a74f72827975440",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism001/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism001/stdout.log",
+      "bytes": 239,
+      "sha256": "0478224fea77dff8bc2ace51ed3b8a0c819762da83d5d4a9813e1261ee53c4b8",
+      "git_blob_sha": "6116771c57fad89a38f96d4882eaa0a79c7d4867",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism001/SUPERVISION.json",
+      "bytes": 3249,
+      "sha256": "9a1fe2c62c5d15e350554721814dea0771de7ea58abecd673e38f6773317761b",
+      "git_blob_sha": "ae8e4624cd8ee8e3c2fb2939bcc6055636391177",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/mechanism001/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/review/REPORT.json",
+      "bytes": 10721,
+      "sha256": "98990c54764b83e40af311d0e7247484a8ab7a68ecc5e6f365162695ffabd464",
+      "git_blob_sha": "4b6546ad09baeaea8e82be606254b1cb7c8dd95d",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/SOURCE_FREEZE_PRE_REVIEW.json",
+      "bytes": 664,
+      "sha256": "c4c57db77538a54d89b1f84666f2e65cfbac93ba12d94415fe064667402f6742",
+      "git_blob_sha": "7b7ec90d9afa8c63d3b44e76fee4c0619a638089",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/SOURCE_FREEZE.json",
+      "bytes": 708,
+      "sha256": "384787f60e2a9d0f6af83818113149acddeb420af0a10511ae1d9f7799ed7ba2",
+      "git_blob_sha": "71e1e8432eecfd691c6eb134ba19e43ff05cc061",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/test_worker_cost.py",
+      "bytes": 4625,
+      "sha256": "7a7af616afea9bac28081d695039bd8ffc64be8b99cabc0663c45910cbc317cd",
+      "git_blob_sha": "056d180448d49671ef36db3eafd2ef6087e86616",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/normal_tree_nodes/child.json",
+      "bytes": 279,
+      "sha256": "68ee86073c7612ec5bf43bbbfd9a1f17247993544e9a9520bcad8eb6962fb06d",
+      "git_blob_sha": "5ad492b213bbcadb00e4f25b085c4ad9bd2710c2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/normal_tree_nodes/grandchild.json",
+      "bytes": 238,
+      "sha256": "300812e8572ec5c4a966ba0ae4ae544c9f0e3ebdeaa2fef91aabc448791b1549",
+      "git_blob_sha": "3f2bcf369641a8940a453ee2e0a4e98e8fb8cae6",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/normal_tree_nodes/root.json",
+      "bytes": 281,
+      "sha256": "43178a2e265af7e87c224dc4b3a03cd4b7ab15dd53517593a1efd10e8ebaf13e",
+      "git_blob_sha": "ca9c3a699e22183ed94460822bcd167270434b46",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/normal_tree/CONFIG.json",
+      "bytes": 438,
+      "sha256": "9cf473b02f014464efcbc1b9fe176b168cc33fe92a76403fec1c093337d6c355",
+      "git_blob_sha": "e43e0eb7000c45bd710c38fd02c5bc74c3d6abb5",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/normal_tree/RECEIPT.json",
+      "bytes": 2046,
+      "sha256": "28324774466d8eb1978f1f6307a19ccc0ddb487aafb10677bb7a15150a2f412e",
+      "git_blob_sha": "876aa920eb33a0be3dde07d2732e38644b153ac2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/normal_tree/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/normal_tree/stdout.log",
+      "bytes": 380,
+      "sha256": "5df5d210a65dd6cbcd8d1e7442d1f731ba19f1f6f47278a8acc1b7d7f80f3fe7",
+      "git_blob_sha": "87725f1a6f54cd2d6140a1b18d489472a5eb0778",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/normal_tree/SUPERVISION.json",
+      "bytes": 5714,
+      "sha256": "4ec5f75f71ca1c8292171e3dfd245046cbb0c903428567d3131291966c7f96c6",
+      "git_blob_sha": "ae52b71fc3a6d05cf67cdcb31b4c351a0a9f5d28",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/normal_tree/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/orphan_tree_nodes/child.json",
+      "bytes": 290,
+      "sha256": "10adccc58b4a1bcbcdee6b2c5bd6d87e7bfe551243d18e25bfe107e0924185a5",
+      "git_blob_sha": "9a8bf9516bb4448671892fa7ffc5c790e577359c",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/orphan_tree_nodes/grandchild.json",
+      "bytes": 230,
+      "sha256": "46a550ea09e79daf48bc3a84ac4f369b9e1960bc1be150b219352b806a279df7",
+      "git_blob_sha": "3a87ba721411627442fe7ab38a0121aa407dba18",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/orphan_tree_nodes/root.json",
+      "bytes": 217,
+      "sha256": "d6884b2a77e0a0494ff1b2df639df611448609eaafb92888a7a779ed45e15be5",
+      "git_blob_sha": "cad35e2a33ef0c66a3e2934c61f814ece2e11160",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/orphan_tree/CONFIG.json",
+      "bytes": 454,
+      "sha256": "81bf133da33d8b73c19708ba125fea714cda989db59354afb4e9f870d4fd19e3",
+      "git_blob_sha": "00152a6b2842d773d42a4f065183defb16bcb640",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/orphan_tree/RECEIPT.json",
+      "bytes": 2073,
+      "sha256": "2dc1ab65546188d15d7415df0905a2dd68fd7e6e46166cdab10dd85f79ea2b23",
+      "git_blob_sha": "66b30b29593453d998b55998f9f613870ce67381",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/orphan_tree/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/orphan_tree/stdout.log",
+      "bytes": 380,
+      "sha256": "7040a0f99e62122d458c26074346600faabfcc62dbfbcb79e7afeb0a297dad13",
+      "git_blob_sha": "045e6f5477f2aaafed690be0cdac089676c97195",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/orphan_tree/SUPERVISION.json",
+      "bytes": 5616,
+      "sha256": "fb704fc7bf7f9e243dd71c040fc00c7a84f3ef2e7d628986cb3c066a22f81c26",
+      "git_blob_sha": "eb5c7b5ab64ce2a710b4986d03fa10f4eae53096",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/orphan_tree/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/reserved_key_fix/CONFIG.json",
+      "bytes": 389,
+      "sha256": "e326f547e24730b24295ec6bc667f7df0904dc09d11571c04d7dcf0cc2c042f4",
+      "git_blob_sha": "4a59d782ded768a3a24997a2a3e1c14d42bd60c2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/reserved_key_fix/RECEIPT.json",
+      "bytes": 1992,
+      "sha256": "61ede4dc3ead547899a724039b0e7cf033fb65eaa05af3f8321e5f27afeff965",
+      "git_blob_sha": "840aa1986d261e0888b7df3c49a25e606a800162",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/reserved_key_fix/stderr.log",
+      "bytes": 284,
+      "sha256": "fee7d0621b99a4148a72e32c404c236c8512920bdbf3ca10303bdcfa32e158dd",
+      "git_blob_sha": "bb822a0d6f520a292444638f7ad564d20ef1cf01",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/reserved_key_fix/stdout.log",
+      "bytes": 148,
+      "sha256": "ececea48defd84abd6cab53337ff57cc3c1c3edbee6ebcd0813d204564d6c167",
+      "git_blob_sha": "71e3373b2769f467992473d27ae355a6986f99e2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/reserved_key_fix/SUPERVISION.json",
+      "bytes": 3344,
+      "sha256": "f34ec97b7ba52ba9acabd5cbf54b693508d745a0d4c484c333181c1aeec4bce0",
+      "git_blob_sha": "cba8f149de63c88930b2c16e6de5042df389fc2a",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/reserved_key_fix/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/scheduler_live/CONFIG.json",
+      "bytes": 441,
+      "sha256": "d820e49afea9f9e0ff3288eae84ceeca0330b1c470f51afad0dc5dd2fa4b92c0",
+      "git_blob_sha": "25d2e1c8325a2e5b8b6a8c293376e377dae8bcd7",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/scheduler_live/PROBE.json",
+      "bytes": 7056,
+      "sha256": "9c7de8031f40ca0f4134a27208c224cb1d5cabb4988a3b59218c634cf4e9b63d",
+      "git_blob_sha": "cd21d92ec8e3c95c240bb784b4bcb41da6d0dae8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/scheduler_live/RECEIPT.json",
+      "bytes": 2067,
+      "sha256": "948f6af65f2b544553044f55a31afdd377a2d3760c8dcd24a1c326c74960f367",
+      "git_blob_sha": "4258638e87afa6a622cd4c9c8cd2bdc31437c006",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/scheduler_live/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/scheduler_live/stdout.log",
+      "bytes": 1033,
+      "sha256": "0c71ff66ef7ba68ee8e3e3767a99effa50b1b116451365c3f0950f1758701263",
+      "git_blob_sha": "764ce33121df1508dd7b6cd01593f941ed6fdccd",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/scheduler_live/SUPERVISION.json",
+      "bytes": 11480,
+      "sha256": "cb818cb575d4775f1cdf3bf5365c42b90e5e1ecc04e0b9b7e7aca1cb4a214ba9",
+      "git_blob_sha": "501450066c4e21ac0c0121c9f8f1cc286838786b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/scheduler_live/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/smoke001/CONFIG.json",
+      "bytes": 241,
+      "sha256": "0793242e007734b913ab1bc7813da966b1064b1c38f2a1381d9679f01226ef12",
+      "git_blob_sha": "c6e34a92f9ec7ef5c11a938e35cf2a5531dfe76b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/smoke001/RECEIPT.json",
+      "bytes": 1214,
+      "sha256": "faa0cd1532dadafc8ad8e968249366eb3db369720a0d9d4ab7390cfa0fcb1f24",
+      "git_blob_sha": "39ac0e8ab551389b6790403116080629c12571f4",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/smoke001/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/smoke001/stdout.log",
+      "bytes": 154,
+      "sha256": "3ee75e28ca5e77b758601c97241806076a7fbb157e3edf52201846ccc8a852e4",
+      "git_blob_sha": "8f2a7b713a6c8b514581df7a613130f13522bda9",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/smoke001/SUPERVISION.json",
+      "bytes": 3192,
+      "sha256": "7bbfd1890058fbe372884d831377ee6ecbc44bb1bd33ba1c1d4580076db6b27b",
+      "git_blob_sha": "b79db3e392aaac0dc0ba29e6e05a30a60944b8ed",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/smoke001/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/source001/process_tree_probe.py",
+      "bytes": 2366,
+      "sha256": "f2bdac2993aba9d89966f4c2e5f4647f54cf0e35f929134a01955bd0f6c9a86b",
+      "git_blob_sha": "ef21d292e80ef9514e04038ed41d5203040aa5d7",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/source001/test_worker_cost.py",
+      "bytes": 4476,
+      "sha256": "8b1afdc56e1953230719f03422f27651fe35e15c75078cf4351bd180495f7d74",
+      "git_blob_sha": "94dcf1fdb25cf18cca7761649d9b15e9579953c3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/source001/worker_cost.py",
+      "bytes": 17108,
+      "sha256": "f77b8cbfcba4b8fd484ca75b36c888af0420b104b846f8b8519ce67da1426538",
+      "git_blob_sha": "7324170f9fde4271cee6dc19ffa77ef367f037d4",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/source001/worker_entry.py",
+      "bytes": 778,
+      "sha256": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+      "git_blob_sha": "8ce68d9f80f502158c15a90f425e382f67afc6a8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/source002/__init__.py",
+      "bytes": 76,
+      "sha256": "9ecb5fb74605debf2f001f20538e8a0387217575a5941f0409cc4b8f77ff8099",
+      "git_blob_sha": "1eeb192debcb6266d253851456e1e45d1e83fda3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/source002/process_tree_probe.py",
+      "bytes": 2366,
+      "sha256": "f2bdac2993aba9d89966f4c2e5f4647f54cf0e35f929134a01955bd0f6c9a86b",
+      "git_blob_sha": "ef21d292e80ef9514e04038ed41d5203040aa5d7",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/source002/test_worker_cost.py",
+      "bytes": 4476,
+      "sha256": "8b1afdc56e1953230719f03422f27651fe35e15c75078cf4351bd180495f7d74",
+      "git_blob_sha": "94dcf1fdb25cf18cca7761649d9b15e9579953c3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/source002/worker_cost.py",
+      "bytes": 18658,
+      "sha256": "de2906fd435ef875b84f2d7290118e49a221ee3e1aeea4cded4bfbf4adf36f5e",
+      "git_blob_sha": "3776412940d66bba25cb187e961993191db72fa9",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/source002/worker_entry.py",
+      "bytes": 778,
+      "sha256": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+      "git_blob_sha": "8ce68d9f80f502158c15a90f425e382f67afc6a8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests001/CONFIG.json",
+      "bytes": 317,
+      "sha256": "00e7de8fc75783f1f68e9551fbce72165593f881521fceed4610d86ac9d67ea2",
+      "git_blob_sha": "8c358d8b12e96caf726967863333f37be2282614",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests001/RECEIPT.json",
+      "bytes": 1321,
+      "sha256": "09523665d6c94702980198474fdaf233dae668ddd03af69ef1651c0b48e9f074",
+      "git_blob_sha": "d917b643ab88f95d83e0b7fa9131a2e3e0a45f78",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests001/stderr.log",
+      "bytes": 995,
+      "sha256": "39c37e8c509f9d9978e52561ae43946fbaf3d3ada56b21ac9778c2429d7d6ef4",
+      "git_blob_sha": "f770c81ac02662ede88808cc9f5224eb78c105bd",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests001/stdout.log",
+      "bytes": 148,
+      "sha256": "55fbbec0685b44237130bcb2ee7c68648a8f5303f8609d145c5756b0b3b1561f",
+      "git_blob_sha": "89255b2402938c7bd2f5dbabc250afdbbedb14a5",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests001/SUPERVISION.json",
+      "bytes": 8202,
+      "sha256": "87e1bfdc4063838d60a71fa47c876afb87c617b6a7819dcf9313a1a688c4f272",
+      "git_blob_sha": "60124f479ef74fa4e51fb6b42fd24615551cf476",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests001/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests002/CONFIG.json",
+      "bytes": 317,
+      "sha256": "4dd96def12bd5ef35faf5cf3df16d603cc0357faebfcdcfafe6f38072399014e",
+      "git_blob_sha": "ebe241d083c1585c8f77d28bee55a9187da6e028",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests002/RECEIPT.json",
+      "bytes": 1938,
+      "sha256": "74aff8044a12a85edc6f4ecb818babcb02cbadccdb703af157a566f42c2fa62d",
+      "git_blob_sha": "79cdfb91331d2f5cce6bbd07f242ec83d70a10c2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests002/stderr.log",
+      "bytes": 995,
+      "sha256": "238ed4cbaca5dcd11c3addd7eab74f8b01e496c2a124b38a6f620182e7c2187a",
+      "git_blob_sha": "2d32049951fa4a0f3583c3721e6ae443091927ba",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests002/stdout.log",
+      "bytes": 148,
+      "sha256": "daeef7dfcc29e5cf8c159f12ea0c14750e9b8f337b42843b9501b10a9540250d",
+      "git_blob_sha": "7de7430d12eb8d32ceacb9cdddc5b960d94e5d42",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests002/SUPERVISION.json",
+      "bytes": 7601,
+      "sha256": "5de0194e5ec89ee9016efbc33b0ab6a3fdd561b9344753f9cc7e4451690719a6",
+      "git_blob_sha": "1e083a0dc59a6714df120c10161b0b9d81d81a52",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/validation/tests002/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/worker_cost.py",
+      "bytes": 18771,
+      "sha256": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+      "git_blob_sha": "373fcf5d8d7d783b7bd5c04456362f274e44bb61",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/worker_entry.py",
+      "bytes": 778,
+      "sha256": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+      "git_blob_sha": "8ce68d9f80f502158c15a90f425e382f67afc6a8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/FORMATTING_STATUS.json",
+      "bytes": 681,
+      "sha256": "5af54c1423be5714bb1cccece7f36263668f8d45cfbca6d3642d2dd971e72820",
+      "git_blob_sha": "8ceaf627583500acc914d360bdd122c82553360c",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/__init__.py",
+      "bytes": 78,
+      "sha256": "b1ba835e26e080f34adfabab53734560ce38f083e9e361430c0623487f3db700",
+      "git_blob_sha": "5a5e1c1187da11d965fa747ed55bb702e5f15a0c",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/causality_check.py",
+      "bytes": 3412,
+      "sha256": "9a3d157238bd4c18b41222b389d0308ce6385464b90de5f26da813f5f35afa5d",
+      "git_blob_sha": "b33c2b33e62556a456cbd944f14ef053e2437f25",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py",
+      "bytes": 7679,
+      "sha256": "1b5efffde74c64f2e1f0f7ca1ed4e7b4d10f0de80cc23a9294c483d7cc7177c5",
+      "git_blob_sha": "e1a1fa85fafbbe9e167cda318aa0efe9f08863ee",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/README.md",
+      "bytes": 6871,
+      "sha256": "a6ef2922870ab21fca47ed9c91a860645d5c707de9c764b954be7b147870a5fd",
+      "git_blob_sha": "7a94646baf6d4a45ff4ac103fed682a21c8c6c77",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/recover_local.py",
+      "bytes": 5873,
+      "sha256": "16bcec9b33606213c646ec102573382ab60bcd9fb2d2aebce0f0c110bcbd3c21",
+      "git_blob_sha": "31ed32d0df891a818e712f3ddda5922337fbdc8f",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/RECOVERY_SPEC.json",
+      "bytes": 5146,
+      "sha256": "5738f5c975d698ddb2f3b936c9cf6128b09532cd156ce032a5589422da2b1902",
+      "git_blob_sha": "419bb1dd8c6b7fa33a91c69e20786f372e2da0fc",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/replay.py",
+      "bytes": 10177,
+      "sha256": "4a813a54eaa0d115c62e3f9538e9db549edb5eb3c1f4a882cc80dc5d0c862518",
+      "git_blob_sha": "242383c2be2ade232f7c1996078956dbeb69f7ce",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/review/FINAL_REPORT_REVIEW.md",
+      "bytes": 2965,
+      "sha256": "929a2377fb516f615250dbc46e8523510f6e7cf74fd76e330a9dc3823bb7f956",
+      "git_blob_sha": "ebcd75fde8c18f204521d856fd8954bec2cdcdb5",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/review/INDEPENDENT_MECHANISM_REVIEW.md",
+      "bytes": 6690,
+      "sha256": "fee7a293847b8195e3a90d9c0507fcf76b952177a74c329a7a3552dafbc1534d",
+      "git_blob_sha": "7f85c6ce3c5600d78748db972a59f054647c40e0",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/review/MECHANISM_WORLD_BLOCK_REVIEW.json",
+      "bytes": 25671,
+      "sha256": "f3d6c13e7d9add8de65e8671664e332d046afad0e07bee6f92e0157b36f3c1bc",
+      "git_blob_sha": "2d64796d3a592778fe0c6f65b677e22db985afda",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/test_legacy_v3.py",
+      "bytes": 4614,
+      "sha256": "6aa76ad6b1e16f564435b3b264082662ff4f062413aa6982208c018e2e850361",
+      "git_blob_sha": "3b2e25fcbb13368bde306816defd155e940d6bf2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/CAUSAL_HARDENING.json",
+      "bytes": 519,
+      "sha256": "c41958d177b4bc4340d79216030aab3a7c0ff8d3dda520506b48cf4e6de02696",
+      "git_blob_sha": "c559c27022403d524a2d3258f3d57a63155337bf",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/development001/HISTORICAL_AUDIT.json",
+      "bytes": 1490,
+      "sha256": "5a208806a1e018259e264aefb1731172e0d2c0625abef05a7e0ed42735544bc0",
+      "git_blob_sha": "6fa2e307f3d5128ec66b1e29621986198485edfb",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/development001/PROTOCOL.json",
+      "bytes": 1599,
+      "sha256": "708e76f621d1904c555cddf088aa13f45da2af3b2463f7ea7786f64252e3179b",
+      "git_blob_sha": "27a1a2fd70f0ce1d6924ec7862e0c874865e8eaf",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/development001/SUMMARY.json",
+      "bytes": 5367,
+      "sha256": "425b7241f469c8d5249a6a3860632ce3868ca41c950a3246bbd64478b84a9ce6",
+      "git_blob_sha": "8bb0fe16de8b41eda0c3bec944ede847e437367c",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_boundary002/CONFIG.json",
+      "bytes": 322,
+      "sha256": "a2d28dfebed57470dad16f22d4ce8dbd4f25cfb85641a82ac8080245c6c0a9c3",
+      "git_blob_sha": "e7fa747019d5cf7c172c8652682eea66cb9b985e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_boundary002/RECEIPT.json",
+      "bytes": 1934,
+      "sha256": "4beca6c38139833b6df6dfbdf133661b9e2a6abf4450e35f7e5bb3bae59d4b4c",
+      "git_blob_sha": "b9d359b91e1fcda0dce5bc816fa5dca604547254",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_boundary002/stderr.log",
+      "bytes": 1742,
+      "sha256": "b83154112d978365a3e52fff9903428fc274095e748c1a5c0ea4e44a77bea2bb",
+      "git_blob_sha": "045d05bfe366175f26943a77e408137e32c5ec11",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_boundary002/stdout.log",
+      "bytes": 148,
+      "sha256": "4fc16fa0b3a94b118c04a9484fa835377ca76a84fbd0ccaca114bea35dbb7136",
+      "git_blob_sha": "635a6d724efcfa16816e75959d387f645b045bc4",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_boundary002/SUPERVISION.json",
+      "bytes": 2992,
+      "sha256": "4507518a6051b7a6ed69c8f5216954796eddb9dbdc3141a279eb5222f018728f",
+      "git_blob_sha": "41e865e1c99d2136eb0761de5aa9b549644d08ea",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_boundary002/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_causality003/CONFIG.json",
+      "bytes": 531,
+      "sha256": "de38a2d7b37ab69429fb3cc2b02be99d3b514d80f7354c7935191756bfb0638e",
+      "git_blob_sha": "283a7f1b6e0a2d8580dcee8ce594c1742b9b3a2c",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_causality003/RECEIPT.json",
+      "bytes": 2143,
+      "sha256": "4bb1e1665b8058939090f671246b4ecad6cd3666c5f07bfe210812ded55bc945",
+      "git_blob_sha": "d93efa7b7a191e2df6f14f33e95026071ba5ebd6",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_causality003/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_causality003/stdout.log",
+      "bytes": 667,
+      "sha256": "d44677de6ab0d43108dc5f3a41e534a72992a492f7e1fc84068926c6850b08ce",
+      "git_blob_sha": "9f3e42c0312614fff9e4fb2df88031527a252f36",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_causality003/SUPERVISION.json",
+      "bytes": 11114,
+      "sha256": "6a7139a24f5a45571df8026f7ebbbeba0a94037db14c0743caf84195167cd31f",
+      "git_blob_sha": "7e8c092d5238a982a57f8f57dffa96530d179cb1",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_causality003/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/CONFIG.json",
+      "bytes": 379,
+      "sha256": "afd8bcbb5f1466b5e1d62d29f73d7f9aee1f85a3f8dd52d59cfca0622e09bf58",
+      "git_blob_sha": "f2f12ced495fdd3d6cbbf924574663f24b7ec863",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/RECEIPT.json",
+      "bytes": 1985,
+      "sha256": "1bced8c577f4105166862c976eb9e0b6c3e60edb2c36ddbaeada9d06ed3a11c9",
+      "git_blob_sha": "c17ed2f77a08eb88cca88da2ffa6cfb8dfe7285e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/source_snapshot/ARCHIVE_RECOVERY_RECEIPT.json",
+      "bytes": 701,
+      "sha256": "0a1810aa3db2ee1143cc4d6847c9ee2a9056eff3353ecd862faf30b1dddf0f76",
+      "git_blob_sha": "75eb04299d62bba68d53a51dcb8deaa09415c6eb",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/source_snapshot/legacy_v3.py",
+      "bytes": 7587,
+      "sha256": "860ebfb6e261f9793b258dc847a3c5f24e6225d054369409210dbca36e7ced31",
+      "git_blob_sha": "0f14770a3d76c3e7da88303a5ffefc25401e20e6",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/source_snapshot/replay.py",
+      "bytes": 10177,
+      "sha256": "4a813a54eaa0d115c62e3f9538e9db549edb5eb3c1f4a882cc80dc5d0c862518",
+      "git_blob_sha": "242383c2be2ade232f7c1996078956dbeb69f7ce",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/source_snapshot/SOURCE_VERIFICATION.json",
+      "bytes": 3380,
+      "sha256": "24e8941b2025b8d2542713bc007be121de6d94cce4d6a924fbbb1d697c85872c",
+      "git_blob_sha": "d990a179392bb91381a6fed2d318a8e9052277b5",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/stdout.log",
+      "bytes": 5514,
+      "sha256": "675d0710bf0403b4d2a4f8824b756c7f02d2e9f302532f1982526b3324d5602f",
+      "git_blob_sha": "f069c2308e55ae1eb1a6632e0e90fc57e238d539",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/SUPERVISION.json",
+      "bytes": 14319,
+      "sha256": "21665255c1c92e296464a012fa603ee1dd436699f6c870f631764821602ed397",
+      "git_blob_sha": "f362cca594c4d4dd2c9b76140749fa7f9072206e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/metered_parity001/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/RECOVERY_VALIDATION.json",
+      "bytes": 178472,
+      "sha256": "9a7ce55b44a3170159437e4cb2cb5151600fa3eb052aa97a73d86a68f1323290",
+      "git_blob_sha": "4249985d4757d567a4b08186bfbff4fa21d44193",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/replay002/HISTORICAL_AUDIT.json",
+      "bytes": 1490,
+      "sha256": "5a208806a1e018259e264aefb1731172e0d2c0625abef05a7e0ed42735544bc0",
+      "git_blob_sha": "6fa2e307f3d5128ec66b1e29621986198485edfb",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/replay002/PROTOCOL.json",
+      "bytes": 1423,
+      "sha256": "a95fa90ae0b9fea1ecb24f282e667c6a155bdb34aaff82aba2761e782aefbdd5",
+      "git_blob_sha": "c7a651b50da81e2820a06a17e707e2e63ce21b80",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/replay002/SUMMARY.json",
+      "bytes": 5366,
+      "sha256": "18c057f48c4dad133415044606260d2f3566251b9ab9569b759b0e6947c3fada",
+      "git_blob_sha": "40146e2aae5d685352d09bb52d5c890f7a0c3691",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/campaign.py",
+      "bytes": 13534,
+      "sha256": "f6d19254032dec4b0276475bc95f6ca83c163b8f4341633f872b2d9696c657b0",
+      "git_blob_sha": "7de6325e05b81202c97448edafa4907b4213be85",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/count_interventions.py",
+      "bytes": 2193,
+      "sha256": "572b11dfbb67cd3b92a4fc3d14f1b57f662f97323c4dd16d703d8fecbaefa58e",
+      "git_blob_sha": "5237d0ccbf977b663a115bde3e168bcf6d08d5a4",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/INITIAL_ENVIRONMENT_FAILURE.json",
+      "bytes": 611,
+      "sha256": "0a975d18bf6df466693b012ea763022ee6a16a8a6d50e1e5b306dd5794136e76",
+      "git_blob_sha": "a8b5d9ea7f4c93145746e3005835a156a88b678b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/recurrent_counts.py",
+      "bytes": 5920,
+      "sha256": "eef2fd26eb764d70e58ce7b2334b751e9916e9cf2aaa3f7598ba47b24f44ceb7",
+      "git_blob_sha": "72cef439e3a44a580cd7deddd7e6bec5fe0f6719",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/evaluation/COMPLETE.json",
+      "bytes": 297,
+      "sha256": "35fdb6f337bb0edd1b1ae639df242167fa3e41d1a620e512fb8f71dc27eaf062",
+      "git_blob_sha": "fcb210c4206f3ec9223f7b08cf9a0677a744321a",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/evaluation/FROZEN_INPUTS.json",
+      "bytes": 666,
+      "sha256": "2e32fa771f39f4b63a5d9b6a301426112765b78256e64264dc6407bc0ea320a9",
+      "git_blob_sha": "eeed4a41d763c27f29be4a77206b2e87fbfbfba6",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/evaluation/worlds.jsonl.gz",
+      "bytes": 17829,
+      "sha256": "17c47dda2b44b137fb9dc6fdc465527fed559fc9b11f6237091410eacf2f8e4e",
+      "git_blob_sha": "de5b9e86642a76aa829c1f3daef28d134e724a51",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81101/FIT.json",
+      "bytes": 6011,
+      "sha256": "5548d663dcf903bdbd062a4ba706cb1809a3467d69069ad9277c5b8cb6c957ac",
+      "git_blob_sha": "f4c380a55b33a31f5068414718012f26360e6178",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81101/models.pt",
+      "bytes": 149949,
+      "sha256": "95b89e04a4c2dc2b7dba78f754d7422bc6a1a3720ac3db131452b937278163f3",
+      "git_blob_sha": "2d7fcb8431414d32e2366a1a2463b9aa9c24395a",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81103/FIT.json",
+      "bytes": 6030,
+      "sha256": "f11bf7d477666bef4976cef8e99bf6917214cdfced278e865850d8ecb0f0a74e",
+      "git_blob_sha": "9e1565e46accc6564efd7484a53c39057a9bddfe",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81103/models.pt",
+      "bytes": 149949,
+      "sha256": "1445db4ff68e612237bde72e93d3dd37a8db3de76db0c2ff3209232b35ca4df0",
+      "git_blob_sha": "6a71b239c72f1e2393c16c21e2a9e7e7541038c5",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81107/FIT.json",
+      "bytes": 6014,
+      "sha256": "8247ec5f9f0813090013ae9df19366798595e66f53dd405b4a01db81766243de",
+      "git_blob_sha": "21c2f6cb7d27480dee7078fcbb210626fe113c4a",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81107/models.pt",
+      "bytes": 149949,
+      "sha256": "c5a43747b858f2927d29c69316c063cdb1777a0f341feead78777782232c6aca",
+      "git_blob_sha": "66957aa346dc3bfb38938e9de70bf25e6051bb75",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81109/FIT.json",
+      "bytes": 6005,
+      "sha256": "1082b9c41c10fa9aaf886cf073e1cc2fd3e6cbf771d9e2caca8b289ed3adf725",
+      "git_blob_sha": "e2d4a15f7c68e4aa06ed12f7d2154ac241927777",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81109/models.pt",
+      "bytes": 149949,
+      "sha256": "3fd4da24bf5faa029a1b2cddaf41fb158250e488842058b251b4e915e1c1fc21",
+      "git_blob_sha": "27b1a21508a3ad6113f821e0922f02a7c388359f",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81113/FIT.json",
+      "bytes": 6018,
+      "sha256": "24605c5e539a9fb491c2f1fad8fbbe622034ac66db7b922aaa352d06d5dc3195",
+      "git_blob_sha": "aabd9b4428c1a246581fbde579dad553038443c8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81113/models.pt",
+      "bytes": 149949,
+      "sha256": "0332b3f548e170d8879aecc66b61a5fe619850b6cb99905765c15f68b6c3221d",
+      "git_blob_sha": "1b53cc00ff68c3a7c09c893bba6c92daa39a213c",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/PLAN.json",
+      "bytes": 3097,
+      "sha256": "0e53fb8057a67f40a35a3ab046a5b694260fa3f1cad11dc14e66e9c78c6f333f",
+      "git_blob_sha": "b1782d308e9b29705e16147a7541692970f713aa",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/SUMMARY.json",
+      "bytes": 20621,
+      "sha256": "e6c02c0b9fe0f0a41ecf99538ad7b55826105fa8e27027aa90b9bd732e5a2f85",
+      "git_blob_sha": "d671b2d25d5a2ceb6412649d73e22b955f46f25d",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/test_mechanisms.py",
+      "bytes": 3334,
+      "sha256": "bb7a7c513a5b678f1da45458b9bf907383b95bbd519da9cf78e68d8e9d6b5929",
+      "git_blob_sha": "9d64831aa9ac2384b5fd19e3eeda845bef8af0a3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/aggregate/CONFIG.json",
+      "bytes": 562,
+      "sha256": "973ad226597bff2dfeb1e9ceaf56fa76f37d3559464e95c90ac8048101831d59",
+      "git_blob_sha": "12b8aedf01631c0ba19887c7eb4d904593167a68",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/aggregate/RECEIPT.json",
+      "bytes": 2183,
+      "sha256": "3722c15e7be7772e6196ff82529509fc1303a5a6954af8de038fb18a0304d561",
+      "git_blob_sha": "5332771e3e472596fb03cfa15257f66fd205fef5",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/aggregate/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/aggregate/stdout.log",
+      "bytes": 748,
+      "sha256": "435e8ed72f949e2b258fd8c19d1d066d38998c29d93d8a0bcf6debe21e50d50c",
+      "git_blob_sha": "7b4ea366367a014b31fff58d597f5466eadd5ce9",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/aggregate/SUPERVISION.json",
+      "bytes": 5847,
+      "sha256": "72e8dec0cb440bfa2809a9b7911150623708d342cff0d216e1202ca3546da54c",
+      "git_blob_sha": "8de482397fbffe32f8c60d631391022fba3f839e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/aggregate/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/campaign_envelope/CONFIG.json",
+      "bytes": 280,
+      "sha256": "d8ea19db87efcd4dffd436df0b9dd62b1c68a846b51dcfa909c7b6ebc41d3753",
+      "git_blob_sha": "9a2964de57bfd02840134018ce1ecd978251729b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/campaign_envelope/RECEIPT.json",
+      "bytes": 1897,
+      "sha256": "f528c3e92b39a30fc139abc020f7c23866128e3de2542dcb3ebcd35c99190cc0",
+      "git_blob_sha": "6ea8597cfc80ac2f501438329ce6c187ea6caaa3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/campaign_envelope/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/campaign_envelope/stdout.log",
+      "bytes": 1777,
+      "sha256": "6825812c32506f295d13baa1ced45035a3a8596662ac7bba7bef983b8cf0df4f",
+      "git_blob_sha": "272aff702c21c1a648ded9a4ad3264996b5e67f4",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/campaign_envelope/SUPERVISION.json",
+      "bytes": 215859,
+      "sha256": "af940c8672d20e88595e94b6b6b0616aa5cbe10882af5e87ac9950eb65381141",
+      "git_blob_sha": "fe3e88adf2039323deb110d2f1818f3ce794b2ee",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/campaign_envelope/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/evaluate/CONFIG.json",
+      "bytes": 560,
+      "sha256": "a5a3090f0e31a0b257dc405901edd6fb96b5df5840f94c293a85645b3f5d7151",
+      "git_blob_sha": "f7242434d5fd04ccf3c1e915394f485fbc22c57f",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/evaluate/RECEIPT.json",
+      "bytes": 2177,
+      "sha256": "2d49222f1aff5d0f48919f7df839b86ac2517d956de728a8474bbafe95962104",
+      "git_blob_sha": "2e44df8c8cdb04da9ef6f811bccc98a15ef32a08",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/evaluate/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/evaluate/stdout.log",
+      "bytes": 3583,
+      "sha256": "7ec7eff36f5f37cd549701ee07b0b1f6ec0546d6bf65aa5acea7a306cf581d87",
+      "git_blob_sha": "1fd8fbdcb4938f4f50a235221d41ccf3d85e639e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/evaluate/SUPERVISION.json",
+      "bytes": 93103,
+      "sha256": "6976f1a3633818ab2806390f2109c9dcc8bebc2691f1c4a15bb5e53ab4697690",
+      "git_blob_sha": "f1f7b6948e946f2df0bffc29ffc9c0c28e85ad86",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/evaluate/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81101/CONFIG.json",
+      "bytes": 583,
+      "sha256": "652d94ae843c0ccc95e15ec6ab9eb447f258e9fc2d6ee4180fd87173f690cf6e",
+      "git_blob_sha": "80b726cf1bdfb6e2f3aa5d65f207d06857bc1050",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81101/RECEIPT.json",
+      "bytes": 2197,
+      "sha256": "23c15041563434caecbbf98d7180e92d0b1d2c1f7d83b5a5b1954036cc3c5e35",
+      "git_blob_sha": "029456cc5442bb460b830e8a1ea0c1fb1a1aa981",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81101/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81101/stdout.log",
+      "bytes": 257,
+      "sha256": "c26c3e1dc720b4aae8a6600d42a1f88d55f81bdfb2836c90bafd20caae82475b",
+      "git_blob_sha": "bd0e9d6f54f3d3d41f56039e1e8c3b2244bb6512",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81101/SUPERVISION.json",
+      "bytes": 46055,
+      "sha256": "3df23636b28ba887c6ed630727042681b4ef82b8ad691e427f9cb37c4065e84f",
+      "git_blob_sha": "7300b33c985a791d21d77b6e29eb7fb748ca3145",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81101/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81103/CONFIG.json",
+      "bytes": 583,
+      "sha256": "7f91301af288c572e04812ef34cc8a9fd26970636af7855b9af57312e7b1a758",
+      "git_blob_sha": "00c4854cce3206eeded2fd1d1f00b57824a972f7",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81103/RECEIPT.json",
+      "bytes": 2196,
+      "sha256": "3dc78a1aa70b3268586ac3d419088a81ad573030b0409b2b7d79d46702a1f54b",
+      "git_blob_sha": "b5dacbed3aff20ef6e74612f9925456f5cf8cb29",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81103/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81103/stdout.log",
+      "bytes": 257,
+      "sha256": "2b8e6b885bff56617cc678289eaa6d84ece63bc884ae65448a582088e11763ae",
+      "git_blob_sha": "ab8e814c7a135fb44fda4a52226f278aaceaedc4",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81103/SUPERVISION.json",
+      "bytes": 40503,
+      "sha256": "e12f069322325e48a3c69b1db1fc4e6832c40a0296b45479764578f879bb785c",
+      "git_blob_sha": "57ad1b752a610d86e5060e02d858b51b77cfbdec",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81103/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81107/CONFIG.json",
+      "bytes": 583,
+      "sha256": "f55981245483864e364935ca2b899f38959dd1343429af23026ec6ed547dbcda",
+      "git_blob_sha": "dd10448b20146c6d66ac7a976e67fe35cf1995e8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81107/RECEIPT.json",
+      "bytes": 2204,
+      "sha256": "6bf9acbb846f8f16f1231f348fbf1911d4ab45f61e13198809cb3099fd03a1be",
+      "git_blob_sha": "456c96af5c166de8d89d44b6fc9f4ee248a86000",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81107/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81107/stdout.log",
+      "bytes": 258,
+      "sha256": "9b6702d70fa10270c007c18e77cc22b6893422dee0a92060928d919b0df707f9",
+      "git_blob_sha": "0e48b17014704827248d8f77b781fbd5e54a5519",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81107/SUPERVISION.json",
+      "bytes": 21744,
+      "sha256": "1498fb9e037f2e6ef510676a72b1ec93537713509e4b57519ae4ef90d6f58dad",
+      "git_blob_sha": "4c4c17b024b12542908073def93d98aa8e0356bb",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81107/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81109/CONFIG.json",
+      "bytes": 583,
+      "sha256": "474d20a851d79fe9fa976c556afef1bdf35fd23c0235b02451076ca4648826f3",
+      "git_blob_sha": "2968c97d27d42a922c49afe3a0eaf3fda5ffaa2c",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81109/RECEIPT.json",
+      "bytes": 2214,
+      "sha256": "cdf35d215ff6a998284a515b9a0fa21c4aff8992dada5e74783768d4c3c02572",
+      "git_blob_sha": "95c8cd8a795847c91b4bf2b09297ed8da34bcce3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81109/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81109/stdout.log",
+      "bytes": 257,
+      "sha256": "691e246cd19ed5a7ec9a2a7ca2f50e51291fcdc0542ad58aa722a2c5c2f4f0b2",
+      "git_blob_sha": "9d7764354171c55e2c36030ab9e35784b4efd80f",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81109/SUPERVISION.json",
+      "bytes": 13308,
+      "sha256": "2b68134a0fb47641c1c6e293670391c51a6eaca68ecb5d755ab624d5479d5461",
+      "git_blob_sha": "55882050273373329e5c303f69555b2b25f45b9e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81109/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81113/CONFIG.json",
+      "bytes": 583,
+      "sha256": "6b53b90398043954187e9a317958575904795deb92c81a6096535a0c78b89e69",
+      "git_blob_sha": "b2337a06080e00bc52cce4c0188ca506116ba341",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81113/RECEIPT.json",
+      "bytes": 2205,
+      "sha256": "dc963486681a013c072319d852b0c3fcf9ded3c8f23879a3c4bdf2176adc73b9",
+      "git_blob_sha": "5604b901e6c088b385af715c7a74d4c4edaaffba",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81113/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81113/stdout.log",
+      "bytes": 258,
+      "sha256": "87902f0ed2a9fa137e07ef1567ab3181a2dfe5fbe1d0d9c0ba11ebe63becf7cd",
+      "git_blob_sha": "6c83864920313ca55d4583b3146ab83e76a3f992",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81113/SUPERVISION.json",
+      "bytes": 16751,
+      "sha256": "683803a60f2447dfe572b09c8d5b83187746a6ec86635fb462fd30d2048db4d7",
+      "git_blob_sha": "e0cc120fc35bdc7cd6fac46249beb41e507c2316",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/fit_81113/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/prepare001/CONFIG.json",
+      "bytes": 495,
+      "sha256": "677ad8c08db12738afc242bdec98c1b74f336f2fd8b1d4d0ac74ae3766f64df3",
+      "git_blob_sha": "8586414b973bae3fbd37e0c52b4951328c52adef",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/prepare001/RECEIPT.json",
+      "bytes": 2104,
+      "sha256": "6df7cfb88f93cc480c7d86cbb134520ee0cede4010351edb5ec0a1f744c1da73",
+      "git_blob_sha": "4884ca278b1dee5626b26aa9d61867b691c319c3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/prepare001/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/prepare001/stdout.log",
+      "bytes": 365,
+      "sha256": "f435fb4704bbda208a2f4189897896f271e6553db37740d9ddc64ec57bb91b4f",
+      "git_blob_sha": "228f51a75540b15f0abe95e3ebc9e0fe8d1b3a2d",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/prepare001/SUPERVISION.json",
+      "bytes": 6000,
+      "sha256": "4c9d4c5da1dfc8685d27a7b76f5e2b19e49150480fc18229ad7750de59a2f680",
+      "git_blob_sha": "9944730acb390488a092fb80f91f1b5a4e714f7a",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/prepare001/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/tests001/CONFIG.json",
+      "bytes": 371,
+      "sha256": "973574b2f7b7e46fa2fd2d6be37640a75b2466b3862e7549a9b37ecfcca76f13",
+      "git_blob_sha": "f50c2f321fe7f8526444ca8655da003efc607ade",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/tests001/RECEIPT.json",
+      "bytes": 1981,
+      "sha256": "8fef35976cc8ffc3253121238ec1b313592ef57bdc6495aeedd87993a90647e2",
+      "git_blob_sha": "564e9567b853281b98688ab1b74097dc973cc107",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/tests001/stderr.log",
+      "bytes": 1456,
+      "sha256": "cce5f63d34b918f9d1a142dc7dd159bfa15bedc3a753a6f05b9a1f5097a79776",
+      "git_blob_sha": "f08f73edc031e0d625c8e4305faca16453d6927a",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/tests001/stdout.log",
+      "bytes": 148,
+      "sha256": "3a8427fe1678e0ae2b646357a1f942b9c1a8d83435cb8714655ded22effe2a87",
+      "git_blob_sha": "52693f6de593fb338a06213ebaae55c427c11bb8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/tests001/SUPERVISION.json",
+      "bytes": 6451,
+      "sha256": "8ac7541509445ee37f731b7b0b341fd9bf67d5d6c5bd052c449cde0f8ffc2efb",
+      "git_blob_sha": "eafab220295179b76a68d677151b62e68afacfc8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/tests001/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/validation/WORKFLOW_STATUS.json",
+      "bytes": 373,
+      "sha256": "f70c8765af1751e032e6393f14a09e39deda3bb8f35d6a90fbd8dd50ca90d503",
+      "git_blob_sha": "44bee400d263295814442d103c4ffc138d7e5c6a",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/INDEPENDENT_REVIEW.md",
+      "bytes": 5077,
+      "sha256": "b0ef911ff18b76d70388ce53c6a81f80c0c35649f7585ef07b42572b9005f025",
+      "git_blob_sha": "709c4b52582e4f4d1d4be5ea121ad0964abac0dc",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/MANIFEST.json",
+      "bytes": 11024,
+      "sha256": "f34d171657a23dfc7a74b45d2d973af96b80f1ffa19a6fee2405811f40bbf65a",
+      "git_blob_sha": "19a4ebcc3c9199c652d392a921a0c3178f182e3b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/0d52c9b002981c9d99f2112f55eaf7dc68b4c39c5865eb4972d0441500fdc5a4.0000.gz",
+      "bytes": 400143,
+      "sha256": "6ae6cdbb58aa00d19ccb31da588e3011802494f6e660d82545bf6fbff465bb34",
+      "git_blob_sha": "95e68928881d6d3708d9af80eeac33399cc60207",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/0d52c9b002981c9d99f2112f55eaf7dc68b4c39c5865eb4972d0441500fdc5a4.0001.gz",
+      "bytes": 101367,
+      "sha256": "230a32b749327e463231024f73fddf4aaf320124c5175f9aeecf8c730f3e80ee",
+      "git_blob_sha": "f7ec07c2950f6f09c171b198cf91cc712ae5daf7",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/36dfa235179c446fad5e02d9f44a4303d3bfa94da07e0bcae7f3b5924641bf61.0000.gz",
+      "bytes": 32780,
+      "sha256": "1d8449b69cb025e661e5db6c1c89b33d8b2eddb52d22856c1abd5a5adfd1dc4a",
+      "git_blob_sha": "8f25e485e77edd2d416edb9246185b82ab92d597",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/36dfa235179c446fad5e02d9f44a4303d3bfa94da07e0bcae7f3b5924641bf61.0001.gz",
+      "bytes": 26643,
+      "sha256": "65e54c7444ba1b18cc9174048b2ac3de97e27b16a6483554a967fa43cd894fdd",
+      "git_blob_sha": "29600c200eb0e6b526ff95bcf6bb710e0abe56ff",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/36dfa235179c446fad5e02d9f44a4303d3bfa94da07e0bcae7f3b5924641bf61.0002.gz",
+      "bytes": 18175,
+      "sha256": "6560c45a818a64bb0d56542c722d0d7218796f6b528fd4538c8e42eab80ab4da",
+      "git_blob_sha": "cce68cf30d32efff57923b4d2a3c296110717946",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/36dfa235179c446fad5e02d9f44a4303d3bfa94da07e0bcae7f3b5924641bf61.0003.gz",
+      "bytes": 6819,
+      "sha256": "4d204a861836aec2fc96d310710c8c9a38bffd0004297e5804eb71002bfa3eff",
+      "git_blob_sha": "613060a2afb2d16ca62118253c81d5a3a938dbb1",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/460046359957dddbd9b29710e4f60296ea515645deca8670a7a47a20b9097be8.0000.gz",
+      "bytes": 400124,
+      "sha256": "bb32c43e6bb92a1f9442bb7ebd9a2dbd25b478873f8ebfcf4bf9f682ca20b7fc",
+      "git_blob_sha": "91bcd99d97782ea149352fc0034013ca8dcd2347",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/460046359957dddbd9b29710e4f60296ea515645deca8670a7a47a20b9097be8.0001.gz",
+      "bytes": 101019,
+      "sha256": "40f11335e7108b2c2192261995d9271ebe80ceee33d8cc3ade0bb40d0d8359e3",
+      "git_blob_sha": "58932f9b0d4d3c557eb59c276c48ce44fc796f8d",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/7aeba42c7b3493256d3b80f588837afa7bc70325babe1732f8f6fb6710f470b7.0000.gz",
+      "bytes": 397717,
+      "sha256": "2068f9ffb01fc874c062c32edb1f21c4da67233591d95a2e20ce6934130d520e",
+      "git_blob_sha": "bcfb30dd137729aaa4c617e7279837805caad7be",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/7aeba42c7b3493256d3b80f588837afa7bc70325babe1732f8f6fb6710f470b7.0001.gz",
+      "bytes": 396961,
+      "sha256": "d398441bb9703f45db6cd931d26e4ca42bc7c6074d5472c6a58c413fa7fae9a8",
+      "git_blob_sha": "64784ab4f1598450fdf1de962646e6ad670e2f55",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/7aeba42c7b3493256d3b80f588837afa7bc70325babe1732f8f6fb6710f470b7.0002.gz",
+      "bytes": 397294,
+      "sha256": "90bd091ff853dc024c2be831f02abd76bf31957c9ed21dd2ce4e0eb3507f69b3",
+      "git_blob_sha": "77621b65cda485455aba43de0ace52fd22baa4a1",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/7aeba42c7b3493256d3b80f588837afa7bc70325babe1732f8f6fb6710f470b7.0003.gz",
+      "bytes": 397952,
+      "sha256": "6c415d034cb45a8537f3baed39b2eee7e6e3de3793beebf636d69a1d2d628985",
+      "git_blob_sha": "3d77452a9e79e6cb21c529fe7e0ca0970716a519",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/7aeba42c7b3493256d3b80f588837afa7bc70325babe1732f8f6fb6710f470b7.0004.gz",
+      "bytes": 397215,
+      "sha256": "705fba475fba3a499077ca9dad6f89e42b355cdbec8fdff9ebcc4f747359acd5",
+      "git_blob_sha": "992d20732cd8e5fd65b8dda6cb9346a8c42ae4c2",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/7aeba42c7b3493256d3b80f588837afa7bc70325babe1732f8f6fb6710f470b7.0005.gz",
+      "bytes": 89976,
+      "sha256": "8de1d813043d0e24e45a23c93feec5eaad3ac12dea137d5bf580a644e44b1d2a",
+      "git_blob_sha": "018415d6269c3c62c55477f07a2d228c9385c8ba",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/96c6f30c37726919fb1ce42b1c3c3f5a66cd666d7bfd353b02ed012b8e2f5fe9.0000.gz",
+      "bytes": 400143,
+      "sha256": "0b00b73960ce2ac798cbe2aa10beead3b40a6b9d72a23f80023196f9875815a0",
+      "git_blob_sha": "1bb5e1b94ab73d46d003c12487fea657919acf4a",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/96c6f30c37726919fb1ce42b1c3c3f5a66cd666d7bfd353b02ed012b8e2f5fe9.0001.gz",
+      "bytes": 101281,
+      "sha256": "1dfbcac316e1ee0b146dd723b23a17649085f259367d0a13183ed07518292b3d",
+      "git_blob_sha": "5414ba9522d6c25f6c9f04323d4a57daea482dea",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/d4f3ed48d2489c9dd94eaf11d749b04ef4f385a6433d111247f6f43de83f452d.0000.gz",
+      "bytes": 400143,
+      "sha256": "8403746e7b04550790a3f517d88291f15613539abc370b38ab0b2b77e5735f5d",
+      "git_blob_sha": "633ec826de26bf2525986df2a12e92fcc649c9b4",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/d4f3ed48d2489c9dd94eaf11d749b04ef4f385a6433d111247f6f43de83f452d.0001.gz",
+      "bytes": 101092,
+      "sha256": "85ecd3e0596046240a07f13429048bd54ca8452c4689402f8fb85db7cf848b67",
+      "git_blob_sha": "84646c0442882713c0ca96a81b480b54ced4455c",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/ef0f93d74d4b4a6c7a9f0fec7f629b910918cfacd101be3c4389e0c9fd1b28f9.0000.gz",
+      "bytes": 400127,
+      "sha256": "433d0309434d1b8a7422413424e22dd2f50f7cc061841755a51fc6e9c1feb476",
+      "git_blob_sha": "7347aa2c71803514ce5ecf3ff3f1af0681b80a53",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/parts/ef0f93d74d4b4a6c7a9f0fec7f629b910918cfacd101be3c4389e0c9fd1b28f9.0001.gz",
+      "bytes": 101295,
+      "sha256": "e633d05542053b4294089d1482dbac36b4a547b4958232aaa81f20c922a2ff18",
+      "git_blob_sha": "9e54c3ab5bb033ee5e893fb5e84a652eaef7e081",
+      "binary": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/README.md",
+      "bytes": 6212,
+      "sha256": "c1fb9716905ce748256636065a3700f68c55e5afca224a68de1fc1bbcac2d250",
+      "git_blob_sha": "6c546a0d2dbbea3ffa7d958837a55a78382d43a8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/RESTORE_VALIDATION.json",
+      "bytes": 5513,
+      "sha256": "82a418c7f247646abad01b1fed4a4dab4bf0376740a87f051d942e30027b25b9",
+      "git_blob_sha": "5754689914deac53bfd198d431c29a32db96ca7f",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/transport.py",
+      "bytes": 11285,
+      "sha256": "6d865e73e08869d04fff66b6d7ae0c6b3dce24759494bbec43a4fb3dd916d128",
+      "git_blob_sha": "ee2f909fc3dd571184beb158aa10a3285fff6bb0",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validate_transport.py",
+      "bytes": 5890,
+      "sha256": "218c4bd150d8283f518b2debb94e3ed2e7601fff4a98670162b5f9cc7dd2dc0d",
+      "git_blob_sha": "adf72589e826171f74a88a895d0df73974493bdd",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/pack_cost001/CONFIG.json",
+      "bytes": 462,
+      "sha256": "4c1b2ed603d3c47a230975881094bc9aeb8eb4191d0df93205a866ebe92d6ab6",
+      "git_blob_sha": "e0ed450347cfa5c0b53ee6f9fd0e97e1ea77823d",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/pack_cost001/RECEIPT.json",
+      "bytes": 2100,
+      "sha256": "7739f89477fc9c709cdee50762ffb64e9e4e980982f4a40a1340dab366c374dd",
+      "git_blob_sha": "a39aaf51540f3c4ec610784e61d59b507887aeb1",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/pack_cost001/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/pack_cost001/stdout.log",
+      "bytes": 395,
+      "sha256": "8bd29792e2bcbdfe4ffd86aff736153f5ab8fd8a9412b046901c494af7ff56b6",
+      "git_blob_sha": "f3f1f307d81d706a15c10c05e21fe72db5136746",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/pack_cost001/SUPERVISION.json",
+      "bytes": 4089,
+      "sha256": "4ff380606d54c072ff2e379c27ff2a40ad5e6fd3e793005e298dbce259f573e7",
+      "git_blob_sha": "e9456cfdc1bacf0ca1acf99217d7d706f56fe6cf",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/pack_cost001/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/restore_cost001/CONFIG.json",
+      "bytes": 515,
+      "sha256": "f49ba260f1e2b1127cb3c5b80e7365cbd6de0f330037fcdab3551cf8bf2a2bc4",
+      "git_blob_sha": "5437a85a54b1ca1d3b6659d32d15a5553f64c660",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/restore_cost001/RECEIPT.json",
+      "bytes": 2127,
+      "sha256": "f35c0f3e218710898a0d2fc9b1d378c60e33acbf0fae244efdd24ccfc25c993f",
+      "git_blob_sha": "bd9da97a31749b0b54350588e0bd12c0e1b19384",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/restore_cost001/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/restore_cost001/stdout.log",
+      "bytes": 644,
+      "sha256": "26e4bfd12affb21b9b0546e06813eac8c3a56d3943b035f76bf534e368638e79",
+      "git_blob_sha": "2a57c99fd02abc7e32b14390bd825a0583e8757f",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/restore_cost001/SUPERVISION.json",
+      "bytes": 3688,
+      "sha256": "78636f6a903df11e2817f4ecaeb6792ef83945769bb34ff931425c1702b8f607",
+      "git_blob_sha": "05363c21ad984ba41455c8cce2b1e2f8a8dfae72",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/publication/validation/restore_cost001/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/README.md",
+      "bytes": 1735,
+      "sha256": "b7cd73b0880cb0e7de6a88f0946af1a35ced4ed678389e764da2515de44f83fe",
+      "git_blob_sha": "20a5502cc27bdd8dc85fed1ebc7652aca8f27f98",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/REPORT_ZH.md",
+      "bytes": 13824,
+      "sha256": "f6c2725891d72804669fa0a9741dfdb2396ddd28ade2f8dfa4823539023a37f6",
+      "git_blob_sha": "3470935f74b34efc6f65d7795bbaae7480d94b5d",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/REPRODUCE.md",
+      "bytes": 6236,
+      "sha256": "eddc0b3b4ff7caa5a52e277dd960601c99180b170975820c7bb919fed5673df8",
+      "git_blob_sha": "18fdb7d978ec5404055d5131abc6c09cf2e90ac3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/balanced_binding_replay.py",
+      "bytes": 7269,
+      "sha256": "e10d2b549b46f58ab54e59ed7e12ac84089cdec016a19e8782b2930f769dc2cf",
+      "git_blob_sha": "160e7c6a5e2bf4b650e35ec374ef7d71980736d9",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/execution.py",
+      "bytes": 10902,
+      "sha256": "f38d0ea01ba71d7c128da9ddd86597e41b83b79cbba428eaade0f33e4177243b",
+      "git_blob_sha": "28dfaebcc2ea85b1a2f670b5513a79fc316c8d5d",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/historical_probe.py",
+      "bytes": 15290,
+      "sha256": "75dc935d4ff5ba68d5d3736880ab68b34dde5653df4ff2df337f1a54ace1080c",
+      "git_blob_sha": "387ae2fac6e7c7a711407d1dac3431bc4321e1d1",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/historical_service.py",
+      "bytes": 2858,
+      "sha256": "82af46b00edabd63a19cbe6e169b4a321502b600e5212753d67060ebfacb0eb9",
+      "git_blob_sha": "a367b4c02fa11fde0940e869613d8558a8ac211b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/INDEPENDENT_REVIEW.md",
+      "bytes": 3666,
+      "sha256": "854576a49a9eee7aab2149971a39f91cdc7bad1694cc760f44eea145c9439fbe",
+      "git_blob_sha": "2a76bba3902877f12f47b533feec124ac8b8fbdc",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/live_probe.py",
+      "bytes": 3292,
+      "sha256": "6a101119d24547ee037fdcada01ab3719facee454aa2aede4c2b17db59ca44a1",
+      "git_blob_sha": "a491746638a7fc2a69b951fdf4886e57a4dfcd40",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/planning.py",
+      "bytes": 8365,
+      "sha256": "3b616986599fb242d715c5a8b92fb73a68be01858723c6c6cc3111cda773ed61",
+      "git_blob_sha": "218e5f49e07d16f0ce845bee42aa8c85df31cc2b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/README.md",
+      "bytes": 11402,
+      "sha256": "9e8ef082f47854f221e877988cd8cccab21baf96a2ac2a9f89a9699f1ee668f9",
+      "git_blob_sha": "986aa10245d52f17887242a133d0304d271f3902",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/service.py",
+      "bytes": 3745,
+      "sha256": "82610a5ea4145d80726a5b0e15b8521016121bdb65f0bfaa78af188937ffeeb2",
+      "git_blob_sha": "f71ba64d9926d94946ae0780011ba85af1f6e1ee",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/test_scheduler.py",
+      "bytes": 12544,
+      "sha256": "2b272a9daed62ba7400bdfa54de737f5e85f23d059dcbacf15fd75dde1f628a1",
+      "git_blob_sha": "a9bd9efc45327dd9dc65ba6c8c95c4bd4c37508b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced_cost001/CONFIG.json",
+      "bytes": 494,
+      "sha256": "da82319179e7a2241801c89e5e05782f74c8a228221232295beb9a2b3c3dcdba",
+      "git_blob_sha": "c60c25570acd5f9f539d93b135bb64a60d52e057",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced_cost001/RECEIPT.json",
+      "bytes": 2109,
+      "sha256": "eba7b78b3f154f12ef7c6f7dc093e04ed8f1b6b59be8b7d0e4f6b0b5c96959be",
+      "git_blob_sha": "9c9a8df4697f588c94c89d75ad3d7a41aa410bb9",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced_cost001/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced_cost001/stdout.log",
+      "bytes": 704,
+      "sha256": "96e898e0dbb3b1b0641b3f118fe14741daa5178f36014bfff6dda7159a29f4ce",
+      "git_blob_sha": "2f23b4e9b34d7b5ec9bf3acd486c93a601ae91ec",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced_cost001/SUPERVISION.json",
+      "bytes": 17231,
+      "sha256": "a05d0da58e882d16d523df6d81193c74fd5762047a0fe73ab201008fe97ccae5",
+      "git_blob_sha": "31cccd24440af1173d3705f3e3fcd9ce79a91017",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced_cost001/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-0-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "131b3f3762df2ff8380f02e62f7e7f21afd326d62ee60b891514a184d32c3dd0",
+      "git_blob_sha": "770555f069d33ffa9ebb8bf73743d682255af2c6",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-0-cache_value.json",
+      "bytes": 16283,
+      "sha256": "d7bee8794e82306b3dc1e1c91e8e1a30f403df6cd8db42bf623a2463e14bd022",
+      "git_blob_sha": "d140ffe823d156aa94f7f21f27db7a665c9a3396",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-0-common_full.json",
+      "bytes": 5579,
+      "sha256": "3336bf67c0af7b56a208fb387e6a0ae3452400a44701f0f0f7ef2e2784f7b2c4",
+      "git_blob_sha": "d7020b3f19de702ae3d181e1d159c566738a4d06",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-1-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "3a54db5b27a8498200ce6bb75ec308654d910a3b899413b197583027eb6a6151",
+      "git_blob_sha": "eb7501981c250a17decafd855b6c7e7013ac0bff",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-1-cache_value.json",
+      "bytes": 6401,
+      "sha256": "d53a69fe1402780b97f0486e18649ca155d6b847c6a5fd7b87557e184ccfe746",
+      "git_blob_sha": "29d479b7adbade9848d8b0418500897b274728e6",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-1-common_full.json",
+      "bytes": 5580,
+      "sha256": "53de7a71c38ef628271294121843c5b3d832d49d169c0997b191b9b850a86391",
+      "git_blob_sha": "f27c77e82e4cb4c870680271cfc2469af265e9ae",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-10-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "44d7cd2f01a9f41144fd4ffc1cfc636f1c6481d8ffc4213305764cfe617f249e",
+      "git_blob_sha": "fc9ecc80cd53e7814528eda8d6cd6a0eaefe938b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-10-cache_value.json",
+      "bytes": 16285,
+      "sha256": "74ff2fff029bbbddea88e521cddf952cb05fe7c3a09195f95c930bb1863bd22e",
+      "git_blob_sha": "f1958db0f0f22c8c38d19505f02e2a037fc92de6",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-10-common_full.json",
+      "bytes": 5581,
+      "sha256": "5d5081e4306d41d676cc2f3992b310f05a621f2eab2bd7f6a5931eeeab2eb68d",
+      "git_blob_sha": "bec7a38f0047738264a8d714a86de7f954daa4b3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-11-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "2353d2f2fc86666e83c63962e64fa7e33d15a8393aeece953c13886aea3f2e03",
+      "git_blob_sha": "0d9f3328013dcdcf6cb8c66e1cabb97a34d30c4b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-11-cache_value.json",
+      "bytes": 23737,
+      "sha256": "990af846ef4b17b56e9c6781c2041d4fcd766aae0c1b253be5bc7b225ed3295c",
+      "git_blob_sha": "c79ba5fab0e2d389bda762bfa9b4c79bacdba01b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-11-common_full.json",
+      "bytes": 5579,
+      "sha256": "c81a53932e7d4d31db8bd5a65ea8ae5b2ac49635fc0da3933ebfcf2a7ae85731",
+      "git_blob_sha": "dab1fb6fba8793421a09a966bb6d2fb40d16d69e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-12-audio_only_common_head.json",
+      "bytes": 3845,
+      "sha256": "d50313ce7e367b8ec898b060b8adb134c9dc01fe61fa1834fcfbe093fc01aeda",
+      "git_blob_sha": "4eba22f80cc3758054bb59942278ee3437be7256",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-12-cache_value.json",
+      "bytes": 16285,
+      "sha256": "7ac0312b7206589dd2a2c43bc95a1a46e9d2dfeaace838076b3d0855aaa941fd",
+      "git_blob_sha": "37bf482f4f0155922935bb6295c01fdbea4f3b4c",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-12-common_full.json",
+      "bytes": 5580,
+      "sha256": "3fa5c00ca7de8f465a20a341c85b783a00f7efffee79655f92d2d0b611ae780e",
+      "git_blob_sha": "2d1368ecfbdeed72f990afd5bdd7a5a9cbbd0976",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-13-audio_only_common_head.json",
+      "bytes": 3845,
+      "sha256": "43c2efbb69da964e414ffccfcf617ac7fdd29f0f53902fb1ccdbadea460067ab",
+      "git_blob_sha": "2392bebc98e37534da5bbb66d2b94a4ca866f8eb",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-13-cache_value.json",
+      "bytes": 6402,
+      "sha256": "47145bdba5be947cb17793cfe90af96c54a4b4bdbc35f95d986676d715bbc9fd",
+      "git_blob_sha": "e20a2915d11e705da5b577be78cca46f81b7e6c0",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-13-common_full.json",
+      "bytes": 5578,
+      "sha256": "7a841697137376f33d6147f29a580c9a81e6d40ac5c7955586a8d0e8bdcc7f1b",
+      "git_blob_sha": "33c29ee8949608d8b8833693932f89149d3ba5e5",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-14-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "925e30aee2db3d8007662d7122d8ad9ab360cef4be92ee0f6e4475c5aa0a0e50",
+      "git_blob_sha": "6ca102991270dbb08d6977550b14b2e38a3e317e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-14-cache_value.json",
+      "bytes": 20381,
+      "sha256": "ce1a4ac5affb0d7a8659266ac290f723e879da3d742583f4af4732e6b7c3b644",
+      "git_blob_sha": "87aeb4c18c9e99cf60da126d882ccad0e08bae00",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-14-common_full.json",
+      "bytes": 5580,
+      "sha256": "15c865dd47b6c21845944085cd5f6e4b99408a043dd6c89f7fbe145c61da70c4",
+      "git_blob_sha": "aeac4681de6f3ab0305160b66abb892fb87bb594",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-15-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "774c0d68940b45d3105c9ab5c46e3e92a346e486a9e8938196758d1f6f04e23c",
+      "git_blob_sha": "6bf4a108ed037089d0ee2cef8f2d848aca0f0751",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-15-cache_value.json",
+      "bytes": 19530,
+      "sha256": "30a1bbdabca8c7480e6b8fb6507d374bd685721372c466b15b51e521686dadeb",
+      "git_blob_sha": "ba32a2fd5bbd0f4f831247c16c22006b7801d0c0",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-15-common_full.json",
+      "bytes": 5581,
+      "sha256": "0e1eeda5f1fe5a1946eb1dde1e3a31ec4a6f6e991bc9d6603df1cd93235b3484",
+      "git_blob_sha": "b6ccf00e81bdeaad0f02e9c929546bccbf211f5b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-16-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "e617ce97be070d0a0f65181e44979c3f1139943a3dcab64f5e060ac7843a29a7",
+      "git_blob_sha": "9341376cedf5d641ac6b97315923accec08a6222",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-16-cache_value.json",
+      "bytes": 20359,
+      "sha256": "e76ab350985484a2f42fda9f9deca20a0efdafb311171c9825baf61af74efe7c",
+      "git_blob_sha": "d1a1302506df38e33fde3e8db7b00b02b662b1ab",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-16-common_full.json",
+      "bytes": 5581,
+      "sha256": "ab9cea627e9e78818777e2f92a141034608a73ea6b5abb3604f40aab5fb99898",
+      "git_blob_sha": "c8b25cadfd907c4da7316160c1f6664f470863f5",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-17-audio_only_common_head.json",
+      "bytes": 3845,
+      "sha256": "cbc7dfe8d8917de601ff242f221f13ce24f870bd8ffc1f6349c957780111d097",
+      "git_blob_sha": "4641722f198c14c0f1146a08229951bc9dfee469",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-17-cache_value.json",
+      "bytes": 16510,
+      "sha256": "faceac5da75dae6d59f9032da732b4b8f033ca5975eddc4d4983b16ca0a571ad",
+      "git_blob_sha": "acefebbe5e19227750d66cdb77a66b3d50e9b451",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-17-common_full.json",
+      "bytes": 5578,
+      "sha256": "7f5d0c83f0e9a46268c3785782a832621a9410ef608ae28fd79dbccd2fc1216b",
+      "git_blob_sha": "66ba3e9fcf7ca678e6720c6e4a0a32cedcefd90e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-18-audio_only_common_head.json",
+      "bytes": 3845,
+      "sha256": "3e74d24c57a1f85e04da9d95ca02099a134efff619ad641a0d7c7e132edc3d2e",
+      "git_blob_sha": "95baebec60cda0f8134db99bee533575c2c2e541",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-18-cache_value.json",
+      "bytes": 11372,
+      "sha256": "c84e7ec8ec4ad2d4ca746551036058047200c3a0097cb258b76aa2c35132e264",
+      "git_blob_sha": "aeab999d2d07d39bd8560980381f876b66083061",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-18-common_full.json",
+      "bytes": 5581,
+      "sha256": "8e913f11cb5f98d6a0984c1d23fb5519760582d5ead3579cc82a9bf79804ec7f",
+      "git_blob_sha": "5e2628caca4205beeb15cee325f9213a994d6890",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-19-audio_only_common_head.json",
+      "bytes": 3845,
+      "sha256": "7a34f86f88603d3286701054ea8884afae1bd46a585aeb6f2da0d47be3c3b9d4",
+      "git_blob_sha": "3f6d1134fbb85c4bc40d6190e7279361735872b0",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-19-cache_value.json",
+      "bytes": 16282,
+      "sha256": "cd54554bab39abf330cb04b0b73e3e4fa4980675dce3f3943529b6e58c1d953a",
+      "git_blob_sha": "ac3663d3f4af34f5aa4a4607ff212b836841b181",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-19-common_full.json",
+      "bytes": 5580,
+      "sha256": "ffcb3ffa8e6304ab85daabff1573626df4196064620c16aab4602b77c570626d",
+      "git_blob_sha": "f3570114f693379f9d43375e76789a5eb0ce0e7e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-2-audio_only_common_head.json",
+      "bytes": 3843,
+      "sha256": "82ba68e075a05d5f9aaffdf5f6326b334cdb11c1823ab256435e011005f872a6",
+      "git_blob_sha": "d81995999c13eb1e35395c984b25b1e087d85c6e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-2-cache_value.json",
+      "bytes": 11372,
+      "sha256": "f782e662b9aa7411cafc8cd64a35db4ec99163ac32a14d8b640446dc722e4c8e",
+      "git_blob_sha": "48c34bb0801bb4fd11ebaa28224e43053a7bba0a",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-2-common_full.json",
+      "bytes": 5580,
+      "sha256": "6fd8682679e9815a8bca936116e58a7aa62913e171435ed19d91106484dd51f3",
+      "git_blob_sha": "8a10a1e8745224b295f84a626485e2cdb8113920",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-20-audio_only_common_head.json",
+      "bytes": 3845,
+      "sha256": "a9e46ac44cedcdb625ace44992b5f38415b7a7a7846c6bf76f8d43774e9f893c",
+      "git_blob_sha": "71d10a436619b977a089ae5764a4c8b74e2c3c85",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-20-cache_value.json",
+      "bytes": 16283,
+      "sha256": "7e5d01a4a83b2a1e1890ea0af971eee8ffc2416bcef8b38953bb086a22d9554d",
+      "git_blob_sha": "af3348811ef1ee4dcbfe90582e3bd9c5d6b81410",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-20-common_full.json",
+      "bytes": 5580,
+      "sha256": "5acb58bde6938ae3b1291e0c7751f0ecd6013d87398080f59a87625e620d2d2c",
+      "git_blob_sha": "0ef63d07713646f64571206378ecd237bb03a8cc",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-21-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "041fd633ccab8ca689f5b790595df7de555336d645069a0db14ba4a91742b7d3",
+      "git_blob_sha": "c134c030a734d9e50809327bf26540085376d209",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-21-cache_value.json",
+      "bytes": 23629,
+      "sha256": "3c304cffd4f20870435e30efcdd9f7e1b0db1f757234e7ca1e0211dbe4945576",
+      "git_blob_sha": "dba851e74f50c14c252135678aba3d60e5080945",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-21-common_full.json",
+      "bytes": 5581,
+      "sha256": "7f104f045333e0e94a2b7b4cac113e1e04f26fcf5fa30ffc34d6b2689487a1be",
+      "git_blob_sha": "89dd5e4f2c7474af8df45b9e3afabc7435c1e0ed",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-22-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "c1ff3c608ba8d57985667fde80934bc0c4c059f6ee9521fcaa70c145bd897dcf",
+      "git_blob_sha": "1a87dd8b62f29a49cca6806e78ad122992c2f397",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-22-cache_value.json",
+      "bytes": 11369,
+      "sha256": "42e0bfb8c032ccf0ca401eed40f802a6d77d9c5e48689c49b93fd42721d576c5",
+      "git_blob_sha": "5925d2ad1656bebed4835c57bdbbfd684283c0d1",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-22-common_full.json",
+      "bytes": 5580,
+      "sha256": "a6b9c24b8e3e24ab05dcc87ef0652c6ee35915516d1f9841e37d54a9a60992db",
+      "git_blob_sha": "30513e3ee3b6d3db6aee4d36057faa02abd8d109",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-23-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "62b58e577070d8a6dde9c511f2889305c3c37171e5fbbb72dd595b3f255ba17f",
+      "git_blob_sha": "f0504533712c7978fc692910203f9ac87a6e36f3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-23-cache_value.json",
+      "bytes": 23703,
+      "sha256": "f2e91c53cecbc82ef9065e3f99a5d13da171112c8452bdb55f3194bbbcddc0db",
+      "git_blob_sha": "e82a96c656cf62dfc49e941fb30a0d4704109996",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-23-common_full.json",
+      "bytes": 5580,
+      "sha256": "27f9e15d0b56492d59b165675a40bb3f63712c946fb89ee49bd160966f59d3cf",
+      "git_blob_sha": "e21efacbfb17fe06185eb43e506f82dd899b9c46",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-3-audio_only_common_head.json",
+      "bytes": 3843,
+      "sha256": "6b9e28fa50dd003b3487407be6b4171eb5b2f929119107c227596b218beb51a3",
+      "git_blob_sha": "5d979b342d828d223bcc1558c63d8760ef418abc",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-3-cache_value.json",
+      "bytes": 20597,
+      "sha256": "3c491955ccb345091764cdd9b7d6f1a6b67667bcfa7c9d559c82054d5f4fa131",
+      "git_blob_sha": "581f0daa3155bd5722be600777e816ed3c87c29a",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-3-common_full.json",
+      "bytes": 5577,
+      "sha256": "89079020a2f6ba76e60d51126501e16c1e27b7bf65f049f4ab0e3513fd02150b",
+      "git_blob_sha": "106e2b8476b5fa24b0b7813d558ec3ddaba3755f",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-4-audio_only_common_head.json",
+      "bytes": 3843,
+      "sha256": "bb5b9c068a8f8f916fd111029076b008d75bee6964c0e1787ace9e9490d6fc80",
+      "git_blob_sha": "0cac9cb28a70767418735ac1aa030ba477662d31",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-4-cache_value.json",
+      "bytes": 23627,
+      "sha256": "853a1a8aff62b6e539064074889d3eba5e5cf813dc43fb52e57377a4a57cec78",
+      "git_blob_sha": "9ccc4553c22989700ec0a1c44d8eeb9292ddfca7",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-4-common_full.json",
+      "bytes": 5579,
+      "sha256": "230167decd7a2e777323ad394ec47bbf25c669f027e993b5835f20bb5810ce62",
+      "git_blob_sha": "aa150f2fcf903ea299e8d1a5d78bbfc8878768a0",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-5-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "e730c70750d42e637b018d5b898e94e1dd27cdba59b81a51785f00ddbcf63422",
+      "git_blob_sha": "2d43d62e69ef805071b2f2734b2e789267b85f68",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-5-cache_value.json",
+      "bytes": 19529,
+      "sha256": "7baf14c6b1ee4d9f3f47ae6c3f455bc3c1fc87c50e4944e39c0d7da2e2a8f055",
+      "git_blob_sha": "6895444fc73f0ddf7ff9d55059e8050ccb7820f1",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-5-common_full.json",
+      "bytes": 5580,
+      "sha256": "d61f0e1df0dd1238f57bae6e6419cb4602f97f97ca92f4ea4985051fa728c4c6",
+      "git_blob_sha": "9344b0170e53985d135a21cf23931a2a149d2a00",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-6-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "3114d7613eeeb3d58b0317c6467a09ef87fc4145ab3f853e3423db9202ba8a66",
+      "git_blob_sha": "9f53b6182e171be18302a381aba535ce972e5b2d",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-6-cache_value.json",
+      "bytes": 11369,
+      "sha256": "6950bd48d1836d11e44493fa237804de089150381c077128c746fc3562a13d3e",
+      "git_blob_sha": "432cd5536ceda273aea8a4d75cef5ba0d7be262e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-6-common_full.json",
+      "bytes": 5580,
+      "sha256": "8d015ae71403f86f28640858a3dc4657c57e8302eab2c4b22be3bc3c74ff9328",
+      "git_blob_sha": "605a4d52ff533e21ee544fdb5e8532ef5e4b8fcd",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-7-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "bf41b9a0e02d33aa0ab30eefde608cdfcfbc74eeadab843349b102da81eed457",
+      "git_blob_sha": "af3f241ce566bbbc486bbc68836ef1af23d1c4e8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-7-cache_value.json",
+      "bytes": 19528,
+      "sha256": "b3a24e3214060201c62ecadbb18f800bb4fc555322f222fffe1db9afc3fcc29f",
+      "git_blob_sha": "f9017300cb756eab43265abf15f7c310e4194a33",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-7-common_full.json",
+      "bytes": 5579,
+      "sha256": "e80405ba0ac6ae9fe1af49e8ac7b94878649433b89bc98f8d48f60e00141d9ae",
+      "git_blob_sha": "2e89e93fe7d7e9544e59ed58fcf1390ff5cf5ed2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-8-audio_only_common_head.json",
+      "bytes": 3844,
+      "sha256": "b64bb825d71c1750114e7ea37fdad743f7b2973057b60967548e5b05c74546cf",
+      "git_blob_sha": "82dec5f07b820e788b2adf3511f0967bd8d558ba",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-8-cache_value.json",
+      "bytes": 19529,
+      "sha256": "f83a148911de6dc51add7147f9392f6f329371f99d2cb07e25944c0356fd432f",
+      "git_blob_sha": "e9a42709866bb7948f64583ed73b8ec3bca010b9",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-8-common_full.json",
+      "bytes": 5580,
+      "sha256": "82dcd9c940018fd63f2268e7d6046657c3822aac5f13f183fd0f4cfadbd582ec",
+      "git_blob_sha": "94369da2dafa2570578803df3c447c5db4478b51",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-9-audio_only_common_head.json",
+      "bytes": 3843,
+      "sha256": "cc5977a8a21e4f0abd157a40819fa57cd40ecb46163b4feccc13f55420bc48d6",
+      "git_blob_sha": "f1d133489f9ce1ef16a6977e1d1fbd291cc7b0c8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-9-cache_value.json",
+      "bytes": 11368,
+      "sha256": "1cd2b9cf5813d98849e6861d10c8317b46ed4fd0638fdfe46404ea80f8cbd3f2",
+      "git_blob_sha": "8e23e608f352a309f3b581415d075e45cf48dfe1",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/episode-9-common_full.json",
+      "bytes": 5579,
+      "sha256": "ff4f9bfd6f01dfed3153eec7d3a92b980f7b60aecdfa2ec3e3847b7e3bde12dc",
+      "git_blob_sha": "b7e35eee43f1896125ef3388edead813352dfb83",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/EXTERNAL_PREFIX_AUDIT.json",
+      "bytes": 12068,
+      "sha256": "79ffa96be1ecc253015cd77d0cc09b94cef6b50bd0ed0281c3528d38ca58c5eb",
+      "git_blob_sha": "c7c28f8b58b0157dc6fc7cf6c99900a47a0b6052",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/PROTOCOL.json",
+      "bytes": 6487,
+      "sha256": "adfcf25f48fdde26e22956416ecb5c78fce5e6b5e95963e34e7258768f1611b0",
+      "git_blob_sha": "930136019c4315845921db389a5297558a9ef982",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/balanced001/SUMMARY.json",
+      "bytes": 23710,
+      "sha256": "fa1e4fc3babc34434043070aea251adcc3bc06c22ac77d5ee3d76fa5b0de6239",
+      "git_blob_sha": "e2908f8de9322243e066dc24b4d44747e55fc0c6",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical_cost001/CONFIG.json",
+      "bytes": 395,
+      "sha256": "ab987980c5e7c48611ab06b5a655eba6080e3fa8272a82c9fac89929b18d28ab",
+      "git_blob_sha": "41038ae1abb84f8f2a43c4254c9d4fe7da959ee2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical_cost001/RECEIPT.json",
+      "bytes": 2000,
+      "sha256": "7ee13c3143933d4c6ac22791c44736d395771d905b39b856b2fe58adcc51759f",
+      "git_blob_sha": "bed7d725629aaabafb77ffef278779c38c9d40d2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical_cost001/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical_cost001/stdout.log",
+      "bytes": 6221,
+      "sha256": "199253132c9a8743f8cc3a408e2df8362f37231afb43c85e3cb0b5bb3f47c2d7",
+      "git_blob_sha": "49c056043d006406a77e8611d2f9ebc597f794be",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical_cost001/SUPERVISION.json",
+      "bytes": 128199,
+      "sha256": "cc84b5bbdbf9a51864d35b8092c2e2dafc689922d49154b87c5e5dc77180ef56",
+      "git_blob_sha": "7a81be4b56b021172f953f075f6bc2663d8e7d6d",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical_cost001/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/async_av_ADAPTERS.json",
+      "bytes": 43865,
+      "sha256": "2445a6ca8b4d3c84520fe2659650b1d322ad54d4d2f41a6cc6e7148630d7066d",
+      "git_blob_sha": "680e25f3ab8fe3cbb9ff8c1300dd98da4aa6b21b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/av_binding_ADAPTERS.json",
+      "bytes": 20962,
+      "sha256": "eedb7999140887ad3ab3bcfdd5bde0b75575e0625787887d6b30f3788faa09ee",
+      "git_blob_sha": "864157d53d5b0a7c73d00b3f6faa73cc34277425",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/live-async_av-0.json",
+      "bytes": 5768,
+      "sha256": "5bd35ea51c4bdfa6b7d89806b0835d39070447a3833cc3d0b29fff18025097b9",
+      "git_blob_sha": "7c8c7e17e028079f08cf782ded761bcb9833e1f8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/live-async_av-1.json",
+      "bytes": 5770,
+      "sha256": "5ee298f9eb5ac0e0e815347b8e38fb40e8f7e66a4279d9f46196ec9764284778",
+      "git_blob_sha": "e221df7a99551635d263ab0a4a361851165535f1",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/live-async_av-6.json",
+      "bytes": 5773,
+      "sha256": "c82fb1c249588d78ace04d4219fd0a6381a17c58a1bd53579802292e3ce01e35",
+      "git_blob_sha": "9058a8ac95384a838e678ffa8bd03fbc915cfc34",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/live-async_av-7.json",
+      "bytes": 5771,
+      "sha256": "4b80d28fbbc84598533c412b6a2909285f7ac07f005d0ce943880adc382221f7",
+      "git_blob_sha": "e3015a18f2f1df276524ac8c62392ad71b6d79cf",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/live-av_binding-0.json",
+      "bytes": 5663,
+      "sha256": "b200fb8f37f858daa0ea9bd3e64a88a216ab7bf104f47cb33707e46fb42eb874",
+      "git_blob_sha": "74246d967b10eac298789f30b76a84cd328e0940",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/live-av_binding-12.json",
+      "bytes": 5672,
+      "sha256": "84f4bae7a22cfbea185da7f5f2cbfa5e2c4c30d14eb20d26d6e6e5551a6bc94e",
+      "git_blob_sha": "0b76ea852e98998b8418adf5e35b41056ce90ffa",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/live-av_binding-18.json",
+      "bytes": 5667,
+      "sha256": "d61a22871b68ffccf0a65ddaa0e8ef983be11d843891ee5382cdde5b8ab12698",
+      "git_blob_sha": "4721885599d2af57208b2ad23239a7fb32a9871c",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/live-av_binding-6.json",
+      "bytes": 5673,
+      "sha256": "fd1f96b290203b23e684ab46ab1fe45686330dfb041aa05b6eccd773b1b18bc4",
+      "git_blob_sha": "fdc550cd493d56ca27fa97416be83d74fee30bb0",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-0-audio_only_common_head.json",
+      "bytes": 3950,
+      "sha256": "cb5f5c791f705376a9768eaea1833c6d1096a2350663d1f6b6b1e083905df00e",
+      "git_blob_sha": "0123ae80cdab027b2f6daf169477be76cb76dc78",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-0-cache_value.json",
+      "bytes": 19130,
+      "sha256": "c9e96b074b7cbc74ce74b6babd24bbeb96a164d7c3674588cbdd2e066ee89802",
+      "git_blob_sha": "89a677d8d1251221b807a945d69f3a2801749d93",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-0-common_full.json",
+      "bytes": 5685,
+      "sha256": "1d945901c3b040dd93abd717a6c33c5f343fd73b08e9a007c62a527ec27a71f5",
+      "git_blob_sha": "7945a12c3546ff2635e8d3641ffa4216ba1ccb25",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-1-audio_only_common_head.json",
+      "bytes": 3952,
+      "sha256": "58646c5a66f725413a87d0a86a3f6a5a11623f0040a49ebf6403b5be857f3679",
+      "git_blob_sha": "fbf4ef019b9a9945f249f58b3c3a521df191616a",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-1-cache_value.json",
+      "bytes": 6781,
+      "sha256": "78151f3c0220cf3930101b8c904ddcfcfa71e1518be584ba54d28947ac9d73c4",
+      "git_blob_sha": "2a8d13bf8adba4dd73eeb40477289377fd98dfa2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-1-common_full.json",
+      "bytes": 5689,
+      "sha256": "8f22440b1d6fb336650df94c8db395f7a2fc48e28996bc6935f392856cc37446",
+      "git_blob_sha": "009b4b4fd728efe4fc9eaa09cf3adc9de13f9ef2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-10-audio_only_common_head.json",
+      "bytes": 3952,
+      "sha256": "ed150026a0d9348acb4a4c1cbccfcc45ffd6d4d2540b8947719dbbc8a5499741",
+      "git_blob_sha": "86c8ed68a8e2fdbded08292a72fccdf2f73456d2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-10-cache_value.json",
+      "bytes": 24253,
+      "sha256": "5fdf0ea33b8958606a42d8eed6cc6a0ffb49d10c4f7c0f0dff80e8bad6bb1d79",
+      "git_blob_sha": "6f940334c087cb5ed5ade0a3c2696cbc5d92cfa7",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-10-common_full.json",
+      "bytes": 5686,
+      "sha256": "4c59c9b3259b03d34cb117b5465ec28d9f44499fe498f7246517cca522b2b375",
+      "git_blob_sha": "927986550a7af8ca165274d3ec21b1c00b458952",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-11-audio_only_common_head.json",
+      "bytes": 3954,
+      "sha256": "4e9faebcf8ac04769601658128dccddbfb2b9e0136c79d66e835d66ec875637a",
+      "git_blob_sha": "194946a01ad39d981e99788de432f4868a73f8a2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-11-cache_value.json",
+      "bytes": 18020,
+      "sha256": "9d07b49947e2e00154f9117b42f09316bf55dc5799aba343a53ccfa3d2fe7096",
+      "git_blob_sha": "ac46e26494ac5809359335234c69d73752c18bb8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-11-common_full.json",
+      "bytes": 5688,
+      "sha256": "c946ff3682eeff525b7b06dd5a73f88741eec0d8f49bf196c9edbe122ef5016a",
+      "git_blob_sha": "73e315400f1981c7790d7d8b06f8bce307658407",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-2-audio_only_common_head.json",
+      "bytes": 3950,
+      "sha256": "b9efcf92e4681ff11401db093d639306092dc31e9825fc7222f71424e1279357",
+      "git_blob_sha": "43d9a8719884eb2e259d2f014f788086f3bd839d",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-2-cache_value.json",
+      "bytes": 20894,
+      "sha256": "1a13e39419db699a758693ad8fca141849b334cec531162a147862bd19d709ca",
+      "git_blob_sha": "bb72f43470e213b6a1b837c4f3f9d5e5915ff4ce",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-2-common_full.json",
+      "bytes": 5687,
+      "sha256": "d97f6923c36ea337bcfe8c8cb53239efe7d85ef0be3933b6a62f4d83d17c053a",
+      "git_blob_sha": "f414ffd42402590aecc9f6a241558aec645b6cae",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-3-audio_only_common_head.json",
+      "bytes": 3952,
+      "sha256": "badcd0fa9d8b061adf8a69dd05b9986fd00b80eaff634d1cb0ebad7000191b1e",
+      "git_blob_sha": "772c549824db983359724ebea2f62ebdb55b3589",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-3-cache_value.json",
+      "bytes": 15011,
+      "sha256": "d2b17f5d48d4294648339ee41a529fdbdec164f86b3967fe98f27b186f473d98",
+      "git_blob_sha": "81a03d845a08fb260b5d98c2d53e64a372d7c955",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-3-common_full.json",
+      "bytes": 5685,
+      "sha256": "edca725bd39d3dc32a315c245c1875dfad5ce56bd0e1395788fc03978892d46b",
+      "git_blob_sha": "ed5d005564128941df77a4b53177683c00ec6324",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-4-audio_only_common_head.json",
+      "bytes": 3949,
+      "sha256": "f1343e8c6264f44cf4f9bd5553b1127b653c38fc75deed1ba776330849ae0a99",
+      "git_blob_sha": "f9ea733bdb39d6ebc91b1b33b9e21db7c6d1a0c3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-4-cache_value.json",
+      "bytes": 23876,
+      "sha256": "9de73d0345afedd661aee11623039d381e258748dabf00e7007898cc7566cd9d",
+      "git_blob_sha": "e333d7e4577fe73057299cf46170823f4c7960b9",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-4-common_full.json",
+      "bytes": 5686,
+      "sha256": "3312b648f4ab80da26a3bbb499c04e4b2dcc1c24db80a8bf9fdf980cc84c52ed",
+      "git_blob_sha": "9e60f32e5832f1a5fb74e0164b0b30a5a1716985",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-5-audio_only_common_head.json",
+      "bytes": 3952,
+      "sha256": "bb6b0ccd5485f5945962cb054e841ae4e68d8e41cb53ba926f4ab77d1bb193d6",
+      "git_blob_sha": "a00036671135852c6b142065bf455444d52b579e",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-5-cache_value.json",
+      "bytes": 20899,
+      "sha256": "cfe36769303a54099182cfce3625a70c82eef8f15664bb0f88ce89c45f6d1c83",
+      "git_blob_sha": "89a6b422fe937904dc183ea6d3deaaf83b992bd1",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-5-common_full.json",
+      "bytes": 5686,
+      "sha256": "71c3736d1830eccd023b90c935c613fb12e540f49aff63a04fd35aa51ecef607",
+      "git_blob_sha": "c48f7f9cf3af79ce20a7dca2aec6207d5ba23af9",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-6-audio_only_common_head.json",
+      "bytes": 3950,
+      "sha256": "10ab488f5b1ba2ae8d856a05ccb52e74010d2be3c8beedeef1a84623272b8405",
+      "git_blob_sha": "7c71f05de9b7ed6fa05ae43619133a9f11b2ed98",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-6-cache_value.json",
+      "bytes": 22015,
+      "sha256": "a2536dcc00a40af304f0d84fc22f3c3f45158d72e2dad2bf74766252b081afc6",
+      "git_blob_sha": "c9042a3b5e91d15dd6c3d39da53abd1b8bd352c2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-6-common_full.json",
+      "bytes": 5687,
+      "sha256": "869a0513136eef59a516967ab0df487848d082755b48d7b8520e7070d7ffabbc",
+      "git_blob_sha": "a9813ff31bb67ec7512f5d91e0badc48b7f21f94",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-7-audio_only_common_head.json",
+      "bytes": 3952,
+      "sha256": "63780f3f60e7bc51d19f79ff18a2198196c27410d2542ebcd03b8c51ab83c957",
+      "git_blob_sha": "f3c3995a712ccdadf5fa90409587c051759e97f4",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-7-cache_value.json",
+      "bytes": 15193,
+      "sha256": "90e117ddb6fc5c175a72e8dd1a8d5fd185bc76b05af65912f3d08870f354a7e7",
+      "git_blob_sha": "b38f6c88a3f4269b37b194c6b4c096f15f8d359f",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-7-common_full.json",
+      "bytes": 5686,
+      "sha256": "d314f5ebdca526a9926cda77833fb050f95614df9d7961bf04ced2f57ce565b9",
+      "git_blob_sha": "a8ad88f3c0e4a2aac95d0f8e5a2cc510369d310f",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-8-audio_only_common_head.json",
+      "bytes": 3949,
+      "sha256": "bfb306bfe41596f353d32e078b17fc092e29e7efbcd97db5fa97c73cc6874c62",
+      "git_blob_sha": "b857ccf5fbe7261640a2f2bb5b312e40d4b900f9",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-8-cache_value.json",
+      "bytes": 23959,
+      "sha256": "7258439cf53a2f743fe104fbc4bda6126611ba0dd7bbda82991f3620ea068f9a",
+      "git_blob_sha": "5347d0f080fded5fa0a7fc83c657d63fdc997f20",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-8-common_full.json",
+      "bytes": 5685,
+      "sha256": "dc9eb07e5d46703da1c091cb0d06c488881c9d4a2c287ac126d71859538d0e78",
+      "git_blob_sha": "21d8e40a4876ad2815f888320b779d7dcf059cd3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-9-audio_only_common_head.json",
+      "bytes": 3949,
+      "sha256": "c38e22294b268096f165af3d95ab919b40cfddd66e0aecb62ab76007da45b7ef",
+      "git_blob_sha": "c7bb1f6f631b9ed5c3060d0112bd6266cffe9253",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-9-cache_value.json",
+      "bytes": 24081,
+      "sha256": "92f3f4bd9104ec33ab8dc2a9d0dfdf66164f048cbfa61202f3b468add613a641",
+      "git_blob_sha": "f54e7bf09455770296f1327ef5bcd6ec6ddc63fd",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-async_av-9-common_full.json",
+      "bytes": 5684,
+      "sha256": "3ff2524f3617fb4160e8a7247725f43526ee76b3faa90b7d9e69fa56426ff173",
+      "git_blob_sha": "20e706fd537e3b8cc2c06ff75f12d3dab954dfad",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-0-audio_only_common_head.json",
+      "bytes": 3845,
+      "sha256": "522bf270661aea20b1b8d57d1236e6539de56f5f268b2706b7aef510ed3d2616",
+      "git_blob_sha": "71b721e624d2bbc4a353d01036e3730fa51e5724",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-0-cache_value.json",
+      "bytes": 16284,
+      "sha256": "52aaf98f753d1698052e99a356c33601c4be8f3fee8a1fca23f89a201be65fa3",
+      "git_blob_sha": "7aa397919b19b0a0868fa6fa5e06a391d2f930ac",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-0-common_full.json",
+      "bytes": 5580,
+      "sha256": "991285b772e3c08360d8fb8185362f33abe080f4948b82e22f5417d2882bfebe",
+      "git_blob_sha": "6dcff8caafae7706057b88e3caa1ea8657561fb8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-12-audio_only_common_head.json",
+      "bytes": 3846,
+      "sha256": "2c321a6f2483c753145aca83124a6992d3027c4f0e22803183a8cc4f625fdba5",
+      "git_blob_sha": "a8d34225c1593beaf3da5bbc81c7b6500f78c9a8",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-12-cache_value.json",
+      "bytes": 16286,
+      "sha256": "10514bd6fb46ee6f0d216a797255eea5b2c03d848f2e592eac437a3e16c2c770",
+      "git_blob_sha": "8ddbaa287760546507cbd3bba907f2d25b8bd867",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-12-common_full.json",
+      "bytes": 5581,
+      "sha256": "b635e0dc6e9497810280c1ad3715a76860e35b9e0feb4fa09b81860f30b67ef0",
+      "git_blob_sha": "73851ac7ebcf8ad7077dd89db9812dd510243a8d",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-18-audio_only_common_head.json",
+      "bytes": 3846,
+      "sha256": "ffc5c703643e3d52346809238b979f7798d1a57e0681a6959cf8c86ac0e8174c",
+      "git_blob_sha": "778b4574d8e4f4f44ac49d5053e02cf062771024",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-18-cache_value.json",
+      "bytes": 11373,
+      "sha256": "04ed2fed4b0e4061e4c6a1b26a1226108a9f1a4ba2e32a837bc0fbe0da7349fa",
+      "git_blob_sha": "38d979601934deb198a40c4932b50b6caf33e315",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-18-common_full.json",
+      "bytes": 5582,
+      "sha256": "701cc91d11fb0ad3a63969d4f5dd1638bd0e82689783af6dffc1f8cc36fec6e9",
+      "git_blob_sha": "3f38c23bc7046742a82c5c3de921bcd09b29ac2f",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-6-audio_only_common_head.json",
+      "bytes": 3845,
+      "sha256": "a880f831f5aedb1f7d9a7255ee6072c12200e99895b629c089bd1329ef828de2",
+      "git_blob_sha": "e320531221b061dd15c56149881a438169f3de67",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-6-cache_value.json",
+      "bytes": 11370,
+      "sha256": "62afe6babe0065a4891a939fade0c80285242e50b1c53049922b2e4f10e76ce0",
+      "git_blob_sha": "ee24860235160e0d7dbca49249d477f8b260a29b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/logical-av_binding-6-common_full.json",
+      "bytes": 5581,
+      "sha256": "df59966a7959aeec2ea5410c4f3536da6a0b77756e71b1c2b1c1db86997aa3c6",
+      "git_blob_sha": "17546852cd17e1ce11ca40cc6d07b8f0bfb0736b",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/POSTHOC_SUBSET_MARGINAL_AUDIT.json",
+      "bytes": 1093,
+      "sha256": "19b4ac344fc51ab53f5ba82c1fb1b973bbf6da3068ec28972d68aa08edd2e312",
+      "git_blob_sha": "5f05cc7c3cf05a246403164f5b1810648d2d0207",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/PROTOCOL.json",
+      "bytes": 4641,
+      "sha256": "20b1e0cec4fe5ea060defd31e91b4a5bf92c4e7ea07b68ad3a72c45f8c6b408a",
+      "git_blob_sha": "f9d893e5c8da9292e08d30396869473cdeea96e7",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/historical001/SUMMARY.json",
+      "bytes": 21520,
+      "sha256": "13c95f9cc3646a84d3ff9c7b516ca56208b116de0fd4771c6b67f5904fb68d33",
+      "git_blob_sha": "32b98c035b7c7fdc2aec5f27a95bc06eb9ad044f",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/source002/execution.py",
+      "bytes": 10112,
+      "sha256": "587709160c6ada443b726552f58d0393c8d046eb54c412db099f00506285b6db",
+      "git_blob_sha": "b9f59fffaedb196ea6e23d5e9bd5f3bfc3d92774",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/source002/live_probe.py",
+      "bytes": 3270,
+      "sha256": "131f39655c8470b83b7a98cd3ceb8a7d02e175ac67519a100375b08112fd4d6b",
+      "git_blob_sha": "9a1c0b8803f3e7c0effeac4495dbc32919f4af51",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/source002/planning.py",
+      "bytes": 7918,
+      "sha256": "0f6bb460494454da7a68f03fe3f32a7a0d1fa83e4f003070c8bbd4ba328cbf5c",
+      "git_blob_sha": "9d3f8ab0384a1d807d534c723864fc27f8dad5ef",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/source002/service.py",
+      "bytes": 3745,
+      "sha256": "82610a5ea4145d80726a5b0e15b8521016121bdb65f0bfaa78af188937ffeeb2",
+      "git_blob_sha": "f71ba64d9926d94946ae0780011ba85af1f6e1ee",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/source002/test_scheduler.py",
+      "bytes": 10972,
+      "sha256": "bb785bfb3de8dd319307397d2d5a3b63523078158f1b56af51cf1b7c4068a48b",
+      "git_blob_sha": "8c3323f97dd94a13c2d9416a3ee8964c2573a541",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/tests001/RECEIPT.json",
+      "bytes": 582,
+      "sha256": "4d9e4b215cc8c5bbb25bfe76bde8c18c041725fb36c4722f59a6ce296c6a5cc4",
+      "git_blob_sha": "68a891a3179472170ba708323e62c4fcfd8b1db7",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/tests001/worker.log",
+      "bytes": 3288,
+      "sha256": "6167e5f4c57cbcf8a3a5f924b585e4a7fefaa2534d9ad8efbda60bd9c3126a87",
+      "git_blob_sha": "66f393115dd0d19a095beb999329259b48013179",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/tests002/RECEIPT.json",
+      "bytes": 1288,
+      "sha256": "726c8de55caa390c5c75707ee49825b18ace7e81e43f4c88627614d1e8f9a634",
+      "git_blob_sha": "b76aca7d29dfcd133f0526e65f5fcea7fec9b3db",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/tests002/worker.log",
+      "bytes": 2549,
+      "sha256": "cadf070e2eb674fd3b3f223d1429eb985e7a7a89d25196b42db64150f10de1c3",
+      "git_blob_sha": "3a7b5f7d78e378a13c0b1b0865cbbde1b935e2d5",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/tests003/CONFIG.json",
+      "bytes": 315,
+      "sha256": "faebbd06033395092920f4560c7394db2c7ec28a67d4e66633ae2bba8113e49b",
+      "git_blob_sha": "a768fb7fbb0f9a42bb0dad84c088bb962b308eaa",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/tests003/RECEIPT.json",
+      "bytes": 1926,
+      "sha256": "3e8a076644fa391796127f12f432fdaafdddfb39e6d2a660bff546fd9430b628",
+      "git_blob_sha": "be84e839defc6c0409b98e3e9d739960f41503d3",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/tests003/stderr.log",
+      "bytes": 2955,
+      "sha256": "c6ee8cdccc60f557e094a57005d0728e7a4f5a060b4d83f3148fc3b66ffa3f0a",
+      "git_blob_sha": "dd7f1224347ef13aab852d490eb46771dc94ac57",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/tests003/stdout.log",
+      "bytes": 148,
+      "sha256": "b25224237fe8ccd7d1b69ab01b9bfde81000a885664318606cbeec18ae9463a4",
+      "git_blob_sha": "cf1c955bb06a99fb92fe0bf0c3e820ba388ebf72",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/tests003/SUPERVISION.json",
+      "bytes": 3544,
+      "sha256": "c96dbe9f0f8ea99da3aa2ee0c5e4920577228f1c0b2eeb247ea85f442e5bfdf1",
+      "git_blob_sha": "bdc51509fc56d401134093dc09dabb8ea07dc8b2",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/validation/tests003/supervisor.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/SOURCE_PROVENANCE.json",
+      "bytes": 10775,
+      "sha256": "1eae102c87aaa1fbc126ad998bbcd50a8ff4dce2d18e6478de71fb4ec0f75516",
+      "git_blob_sha": "68341260961afbed9c759c126955ada107426608",
+      "binary": false
+    }
+  ],
+  "local_environment_note": "A full disk briefly prevented sandbox process startup. Only /tmp/hcsn-v8-transport-verify-fa_fubmm, the already validated temporary restoration copy, was removed to recover operation. The original eight evidence files, all models, source, receipts, and recovered/portability001 were preserved. A broader cleanup request was rejected by automatic review and was not executed.",
+  "full_repository_ci_passed": false,
+  "formatting_status": "FORMATTING_STATUS.json",
+  "scientific_gates": "ACCEPTANCE.json: strict new-AV, sustained-core and full-economics gates remain false/null."
+}
