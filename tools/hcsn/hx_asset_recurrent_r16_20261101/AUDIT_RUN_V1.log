@@ -1,0 +1,57 @@
+{
+  "artifact": {
+    "path": "/tmp/hcsn-asset-recurrent-next-v1/ASSET_AUDIT_V1.json.gz",
+    "bytes": 57104,
+    "sha256": "4cf14304a8e38340f72b278bd14d96ae8cb69dbef280352cd3e6e6788324b450"
+  },
+  "audit_passed": true,
+  "fixed_potential_readout_passed": true,
+  "temporal_checks": {
+    "complete_shapes": true,
+    "all_finite": true,
+    "fixed_rest_reference": true,
+    "bounded_z": true,
+    "bounded_adaptation": true,
+    "positive_represented_assets": true,
+    "risk_in_range": true,
+    "equity_nonnegative": true,
+    "true_asset_default_Q_R": true,
+    "terminal_only_loss": true,
+    "normal_early_theta_nonzero": true,
+    "normal_initial_state_nonzero": true,
+    "normal_early_drive_nonzero": true,
+    "normal_middle_state_nonzero": true,
+    "detached_forward_exact_numerical_equal": true,
+    "detached_early_theta_zero": true,
+    "detached_initial_state_zero": true,
+    "detached_early_drive_zero": true,
+    "input_driven_branch_crossing_observed": true,
+    "negative_and_positive_margins_observed": true,
+    "complete_temporal_comparison_count": true
+  },
+  "negative_checks": {
+    "complete_shapes": true,
+    "all_finite": true,
+    "fixed_rest_reference": true,
+    "bounded_z": true,
+    "bounded_adaptation": true,
+    "positive_represented_assets": true,
+    "risk_in_range": true,
+    "equity_nonnegative": true,
+    "true_asset_default_Q_R": true,
+    "all_margins_strictly_negative": true,
+    "theta_gradients_exactly_zero": true,
+    "exact_default_observables": true,
+    "linear_discrete_state_gradient": true
+  },
+  "runtime": {
+    "evaluation_started_at_utc": "2026-11-01T17:59:49.877505+00:00",
+    "wall_seconds": 0.26625945100022363,
+    "process_cpu_seconds": 0.07185497500000015,
+    "financial_calls": 73,
+    "financial_states": 435,
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "cuda_available": false
+  }
+}

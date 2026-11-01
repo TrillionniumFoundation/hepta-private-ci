@@ -1,0 +1,276 @@
+{
+  "schema": "hcsn.hx-fixed-potential-results-summary.v1",
+  "protocol_sha256": "7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa",
+  "audit_passed": true,
+  "training_passed": true,
+  "result_check_passed": true,
+  "checker_faults_passed": true,
+  "counts": {
+    "fixed_z_fixtures": 5,
+    "contracts": 15,
+    "temporal_comparisons": 8,
+    "steps": 16,
+    "batch": 8,
+    "training_updates": 12,
+    "full_trajectories": 16
+  },
+  "raw_branch_states_checked": 2057,
+  "source_checkpoint": "786e535bd2a396b14e9ffab4504bc855c6f4d6b1",
+  "remote_checkpoint_preceded_first_model_evaluation": true,
+  "fixed_physical_boundary_movement": {
+    "boundary_before": 67.44151430180042,
+    "boundary_after": 68.3123767033789,
+    "represented_assets": [
+      50.000003814697266,
+      67.00001525878906,
+      67.43476104736328,
+      67.44827270507812,
+      100.00000762939453
+    ],
+    "actual_default_before": [
+      true,
+      true,
+      true,
+      false,
+      false
+    ],
+    "actual_default_after": [
+      true,
+      true,
+      true,
+      true,
+      false
+    ],
+    "margin_shift": -0.012830193542637428
+  },
+  "early_theta_vjp_l2": 1.2382783188276665e-05,
+  "maximum_temporal_gradient_absolute_error": 4.369049245653289e-10,
+  "initial_loss": 0.00047014461597427726,
+  "final_loss": 0.0004700341960415244,
+  "percentage_loss_decrease": 0.02348637610664226,
+  "initial_default_states": 107,
+  "final_default_states": 127,
+  "states_per_training_trajectory": 136,
+  "initial_sampled_phase_changes": 8,
+  "final_sampled_phase_changes": 4,
+  "negative_observation": "More states entered the saturated Q=0,R=1 region and phase changes decreased. The very small same-batch loss change is not evidence of quality, regenerative spiking or generalization.",
+  "coordinate_scope": "New fixed z/rest/target family, not an equivalent coordinate rewrite of fixed x V1. Theta/b are constant within each rollout and move across optimizer updates.",
+  "parameter_count": 9,
+  "raw_parameter_update_l2": 0.5113682962089355,
+  "precision": "FP32 inputs/exp/Euler states, FP64 internal financial arithmetic and 5x10 saved Jacobians, first-order continuous-formula VJP at represented points.",
+  "audit_runtime": {
+    "evaluation_started_at_utc": "2026-11-01T17:59:49.877505+00:00",
+    "wall_seconds": 0.26625945100022363,
+    "process_cpu_seconds": 0.07185497500000015,
+    "financial_calls": 73,
+    "financial_states": 435,
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "cuda_available": false
+  },
+  "training_runtime": {
+    "evaluation_started_at_utc": "2026-11-01T18:00:53.573984+00:00",
+    "wall_seconds": 0.8798394240002381,
+    "process_cpu_seconds": 0.25520760099999995,
+    "financial_calls": 223,
+    "financial_states": 1778,
+    "additional_boundary_diagnostic_calls": 1,
+    "additional_boundary_diagnostic_states": 2,
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "cuda_available": false
+  },
+  "audit_controller_wall_seconds": 6.487645092001912,
+  "training_controller_wall_seconds": 12.92494563999935,
+  "native_branch_reference": {
+    "calls": 1,
+    "states": 18,
+    "unique_trajectory_theta": 13,
+    "boundaries": [
+      {
+        "theta": [
+          0.07999999821186066,
+          0.019999999552965164,
+          0.23000000417232513,
+          0.6000000238418579,
+          0.27000001072883606,
+          0.009999999776482582,
+          1.0,
+          6.389999866485596,
+          61.68000030517578
+        ],
+        "boundary": 67.44151430180042
+      },
+      {
+        "theta": [
+          0.07995953410863876,
+          0.020005900412797928,
+          0.22992467880249023,
+          0.5996600985527039,
+          0.2698669135570526,
+          0.010003483854234219,
+          0.9994895458221436,
+          6.387409687042236,
+          61.716064453125
+        ],
+        "boundary": 67.51896371946145
+      },
+      {
+        "theta": [
+          0.07991964370012283,
+          0.020011605694890022,
+          0.2298518866300583,
+          0.5993232131004333,
+          0.2697359323501587,
+          0.010006867349147797,
+          0.9989862442016602,
+          6.384881496429443,
+          61.75187301635742
+        ],
+        "boundary": 67.59572458131245
+      },
+      {
+        "theta": [
+          0.07988013327121735,
+          0.020017191767692566,
+          0.22978068888187408,
+          0.5989884734153748,
+          0.26960644125938416,
+          0.010010184720158577,
+          0.9984880089759827,
+          6.38239860534668,
+          61.78746795654297
+        ],
+        "boundary": 67.67198947711617
+      },
+      {
+        "theta": [
+          0.07984092831611633,
+          0.020022697746753693,
+          0.22971056401729584,
+          0.5986557602882385,
+          0.2694781720638275,
+          0.010013452731072903,
+          0.9979938268661499,
+          6.379951477050781,
+          61.82285690307617
+        ],
+        "boundary": 67.74781798718544
+      },
+      {
+        "theta": [
+          0.07980211824178696,
+          0.02002810500562191,
+          0.2296416461467743,
+          0.5983258485794067,
+          0.2693515121936798,
+          0.010016662999987602,
+          0.9975049495697021,
+          6.377547740936279,
+          61.85795974731445
+        ],
+        "boundary": 67.82302963158672
+      },
+      {
+        "theta": [
+          0.07976391166448593,
+          0.02003338560461998,
+          0.22957433760166168,
+          0.5980002880096436,
+          0.2692270278930664,
+          0.010019799694418907,
+          0.99702388048172,
+          6.3751983642578125,
+          61.892601013183594
+        ],
+        "boundary": 67.89725070736375
+      },
+      {
+        "theta": [
+          0.07972640544176102,
+          0.02003852277994156,
+          0.22950881719589233,
+          0.5976800322532654,
+          0.2691051661968231,
+          0.010022850707173347,
+          0.9965519905090332,
+          6.372910976409912,
+          61.92668151855469
+        ],
+        "boundary": 67.97026199711223
+      },
+      {
+        "theta": [
+          0.07968968898057938,
+          0.02004351280629635,
+          0.229445219039917,
+          0.5973659753799438,
+          0.26898616552352905,
+          0.010025814175605774,
+          0.9960904717445374,
+          6.37069034576416,
+          61.96009826660156
+        ],
+        "boundary": 68.04185702365618
+      },
+      {
+        "theta": [
+          0.07965380698442459,
+          0.0200483538210392,
+          0.2293834388256073,
+          0.5970584154129028,
+          0.26887011528015137,
+          0.010028688237071037,
+          0.9956396222114563,
+          6.368536472320557,
+          61.99282455444336
+        ],
+        "boundary": 68.11197368595998
+      },
+      {
+        "theta": [
+          0.07961872965097427,
+          0.02005304954946041,
+          0.2293233722448349,
+          0.5967574119567871,
+          0.2687569856643677,
+          0.010031476616859436,
+          0.9951993227005005,
+          6.366447925567627,
+          62.02484893798828
+        ],
+        "boundary": 68.18060050798175
+      },
+      {
+        "theta": [
+          0.07958459854125977,
+          0.020057594403624535,
+          0.22926519811153412,
+          0.5964640378952026,
+          0.2686471939086914,
+          0.010034171864390373,
+          0.9947711825370789,
+          6.364431858062744,
+          62.05603790283203
+        ],
+        "boundary": 68.24746533738376
+      },
+      {
+        "theta": [
+          0.07955151051282883,
+          0.02006196603178978,
+          0.2292090505361557,
+          0.5961792469024658,
+          0.26854103803634644,
+          0.010036767460405827,
+          0.9943565130233765,
+          6.362492084503174,
+          62.08631134033203
+        ],
+        "boundary": 68.3123767033789
+      }
+    ],
+    "scope": "Same frozen FP64 kernel, raw boundary and five fixed local records only; not a new independent financial oracle or accuracy qualification."
+  },
+  "no_frozen_source_modified": true
+}

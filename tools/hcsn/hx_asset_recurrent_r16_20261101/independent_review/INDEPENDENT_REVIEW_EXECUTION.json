@@ -1,0 +1,12 @@
+{
+  "schema": "hcsn.asset-record-review-execution.v1",
+  "actual_execution": {
+    "chunk_id": "5f1957",
+    "wall_time_seconds": 0.175812226,
+    "exit_code": 0,
+    "original_token_count": 312,
+    "output": "{\"passed\": true, \"receipt\": \"/tmp/hcsn-asset-recurrent-independent-review/ASSET_RESULT_INDEPENDENT_REVIEW.json\", \"sha256\": \"30f42dc53558f86867cbdf8c2a43d32b6465470ea4d90a9327b7936984eb2016\", \"counts\": {\"fixed_fixtures\": 5, \"contracts\": 15, \"temporal_comparisons\": 8, \"steps\": 16, \"batch\": 8, \"training_updates\": 12, \"full_trajectories_checked\": 16, \"trajectory_state_records_checked\": 2057, \"changed_raw_parameters\": 9, \"changed_effective_parameters\": 9}, \"loss\": {\"initial\": 0.00047014461597427726, \"final\": 0.0004700341960415244, \"absolute_decrease\": 1.1041993275284767e-07, \"percentage_decrease\": 0.02348637610664226, \"interpretation\": \"Small change on fixed synthetic training data; no quality/generalization or optimization-superiority result.\"}, \"boundary\": {\"represented_asset_words_equal\": true, \"initial_boundary\": 67.44151430180042, \"final_boundary\": 68.3123767033789, \"expected_margin_shift\": -0.012830193542637428, \"maximum_margin_shift_error\": 1.8735013540549517e-16, \"changed_branch_fixture_indices\": [3], \"changed_branch_asset_values\": [67.44827270507812], \"interpretation\": \"Boundary motion against fixed physical assets is observed. All nine parameters also change field shape; this does not isolate causal threshold benefit.\"}}\n"
+  },
+  "financial_kernel_calls": 0,
+  "pytorch_calls": 0
+}

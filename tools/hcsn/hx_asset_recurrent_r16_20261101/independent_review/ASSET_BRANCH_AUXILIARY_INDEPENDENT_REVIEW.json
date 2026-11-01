@@ -1,0 +1,118 @@
+{
+  "schema": "hcsn.asset-branch-auxiliary-independent-review.v1",
+  "passed": true,
+  "main_independent_review_sha256": "30f42dc53558f86867cbdf8c2a43d32b6465470ea4d90a9327b7936984eb2016",
+  "auxiliary_checker_sha256": "6bfdadae171d833d32039d892fe26d9687aa9b888351c8a3f19111e68293c369",
+  "auxiliary_result_sha256": "41aa48f552a3b83a71ca48cde130b683b05da5e21bfc094b09ed5bae46c70e82",
+  "reviewer_recomputed_recorded_branches": 2057,
+  "trajectory_count": 16,
+  "unique_theta_boundaries": 13,
+  "all_reported_masks_match_recorded_native_boundaries": true,
+  "minimum_abs_reported_margin": 1.576608232500358e-05,
+  "branch_counts": {
+    "audit": {
+      "states": 136,
+      "default_states": 107,
+      "phase_changes": 8,
+      "minimum_abs_margin": 0.00021795182364283257
+    },
+    "detached": {
+      "states": 136,
+      "default_states": 107,
+      "phase_changes": 8,
+      "minimum_abs_margin": 0.00021795182364283257
+    },
+    "all_default": {
+      "states": 17,
+      "default_states": 17,
+      "phase_changes": 0,
+      "minimum_abs_margin": 0.26602531089130194
+    },
+    "training_0": {
+      "states": 136,
+      "default_states": 107,
+      "phase_changes": 8,
+      "minimum_abs_margin": 0.00021795182364283257
+    },
+    "training_1": {
+      "states": 136,
+      "default_states": 113,
+      "phase_changes": 5,
+      "minimum_abs_margin": 0.0001359000381810712
+    },
+    "training_2": {
+      "states": 136,
+      "default_states": 115,
+      "phase_changes": 3,
+      "minimum_abs_margin": 0.0001987591239549723
+    },
+    "training_3": {
+      "states": 136,
+      "default_states": 115,
+      "phase_changes": 3,
+      "minimum_abs_margin": 2.074355795992492e-05
+    },
+    "training_4": {
+      "states": 136,
+      "default_states": 122,
+      "phase_changes": 4,
+      "minimum_abs_margin": 1.576608232500358e-05
+    },
+    "training_5": {
+      "states": 136,
+      "default_states": 123,
+      "phase_changes": 4,
+      "minimum_abs_margin": 0.00021455667158983254
+    },
+    "training_6": {
+      "states": 136,
+      "default_states": 123,
+      "phase_changes": 4,
+      "minimum_abs_margin": 0.0008632283089801091
+    },
+    "training_7": {
+      "states": 136,
+      "default_states": 124,
+      "phase_changes": 4,
+      "minimum_abs_margin": 0.0002115142151588334
+    },
+    "training_8": {
+      "states": 136,
+      "default_states": 124,
+      "phase_changes": 4,
+      "minimum_abs_margin": 8.181824017818104e-05
+    },
+    "training_9": {
+      "states": 136,
+      "default_states": 126,
+      "phase_changes": 4,
+      "minimum_abs_margin": 0.0001309080876509587
+    },
+    "training_10": {
+      "states": 136,
+      "default_states": 127,
+      "phase_changes": 4,
+      "minimum_abs_margin": 0.0005409209805015807
+    },
+    "training_11": {
+      "states": 136,
+      "default_states": 127,
+      "phase_changes": 4,
+      "minimum_abs_margin": 0.001518343081571787
+    },
+    "final": {
+      "states": 136,
+      "default_states": 127,
+      "phase_changes": 4,
+      "minimum_abs_margin": 0.0005856286376114091
+    }
+  },
+  "producer_financial_calls": 1,
+  "producer_financial_states": 18,
+  "reviewer_financial_calls": 0,
+  "reviewer_pytorch_calls": 0,
+  "source_review": "Read full auxiliary source: seals financial protocol/sources/binary, evaluates one 18-state batch, uses actual raw b for exact represented V<=b predicates, checks all17 states per trace including logging-only terminal state; preserves frozen original candidate and gates.",
+  "scope": "Producer reuses same frozen financial kernel; reviewer recomputes predicates using recorded raw boundaries. Neither step is an independent financial oracle. This closes the recorded-trajectory phase proxy ambiguity only.",
+  "negative_observation": "For this fixed synthetic batch, default states increase from107/136 to127/136 and sampled phase changes fall from8 to4. Do not describe the update as richer spiking, superior training or beneficial threshold learning.",
+  "source_and_artifact_binding_verified": true
+}

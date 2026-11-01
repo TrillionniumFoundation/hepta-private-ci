@@ -1,0 +1,43 @@
+{
+  "artifact": {
+    "path": "/tmp/hcsn-asset-recurrent-next-v1/ASSET_TRAINING_V1.json.gz",
+    "bytes": 137863,
+    "sha256": "c128dd57936ce1f113b745223deb3ad8e1055b7002cf6373b0d8daedcafb2d1c"
+  },
+  "training_passed": true,
+  "initial_loss": 0.00047014461597427726,
+  "final_loss": 0.0004700341960415244,
+  "parameter_update_l2": 0.5113682962089355,
+  "checks": {
+    "complete_shapes": true,
+    "all_finite": true,
+    "fixed_rest_reference": true,
+    "bounded_z": true,
+    "bounded_adaptation": true,
+    "positive_represented_assets": true,
+    "risk_in_range": true,
+    "equity_nonnegative": true,
+    "true_asset_default_Q_R": true,
+    "fixed_physical_fixture_assets_unchanged": true,
+    "boundary_moved_against_fixed_physical_assets": true,
+    "fixed_asset_margin_shift_matches_boundary": true,
+    "fixed_initial_z_and_rest_throughout_training": true,
+    "complete_training_history": true,
+    "nine_trainable_parameters_only": true,
+    "finite_parameters_and_gradients": true,
+    "actual_parameter_update": true,
+    "bounded_theta_change": true
+  },
+  "runtime": {
+    "evaluation_started_at_utc": "2026-11-01T18:00:53.573984+00:00",
+    "wall_seconds": 0.8798394240002381,
+    "process_cpu_seconds": 0.25520760099999995,
+    "financial_calls": 223,
+    "financial_states": 1778,
+    "additional_boundary_diagnostic_calls": 1,
+    "additional_boundary_diagnostic_states": 2,
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "cuda_available": false
+  }
+}

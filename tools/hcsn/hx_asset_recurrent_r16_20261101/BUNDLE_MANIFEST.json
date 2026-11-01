@@ -1,0 +1,186 @@
+{
+  "schema": "hcsn.hx-fixed-potential-bundle-manifest.v1",
+  "publication_prefix": "tools/hcsn/hx_asset_recurrent_r16_20261101",
+  "frozen_protocol_sha256": "7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa",
+  "dependencies": {
+    "adapter_protocol_sha256": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+    "adapter_source_sha256": "8117df2cae6b17612d7537b96d72ca74a340bb5356e61bbc3f73b9fe478aa870",
+    "financial_protocol_sha256": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+    "financial_binary_sha256": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+    "financial_mode": "float64",
+    "adapter_coordinate": "asset"
+  },
+  "source_checkpoint": "786e535bd2a396b14e9ffab4504bc855c6f4d6b1",
+  "files": [
+    {
+      "path": "ASSET_AUDIT_V1.json.gz",
+      "bytes": 57104,
+      "sha256": "4cf14304a8e38340f72b278bd14d96ae8cb69dbef280352cd3e6e6788324b450"
+    },
+    {
+      "path": "ASSET_CHECKER_FAULTS_V1.json",
+      "bytes": 14897,
+      "sha256": "e96e583a51d3747061a973b37376bb09ee32e126959fb7e13e1edfb7875f85ab"
+    },
+    {
+      "path": "ASSET_INPUTS.json",
+      "bytes": 10420,
+      "sha256": "74e8a4cae1734762579a65608b8350ba8545bb1be79df2de657eaf2e4b65b079"
+    },
+    {
+      "path": "ASSET_PROTOCOL.json",
+      "bytes": 5706,
+      "sha256": "7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa"
+    },
+    {
+      "path": "ASSET_RESULT_CHECK_V1.json",
+      "bytes": 12632,
+      "sha256": "41aa48f552a3b83a71ca48cde130b683b05da5e21bfc094b09ed5bae46c70e82"
+    },
+    {
+      "path": "ASSET_TRAINING_V1.json.gz",
+      "bytes": 137863,
+      "sha256": "c128dd57936ce1f113b745223deb3ad8e1055b7002cf6373b0d8daedcafb2d1c"
+    },
+    {
+      "path": "AUDIT_EXECUTION_V1.json",
+      "bytes": 759,
+      "sha256": "3fe2e7137562fae08ff55e073f9b1017989cd055fe20a9ef61e87ab7aec308b8"
+    },
+    {
+      "path": "AUDIT_LAUNCH_V1.json",
+      "bytes": 719,
+      "sha256": "e44390f5bccb503a33bc54ed8ad25ccc41586fc42001a9ca7cd9435904d6c7e9"
+    },
+    {
+      "path": "AUDIT_RUN_V1.log",
+      "bytes": 1869,
+      "sha256": "d5e5fe2625c780fafa02a48ec013ebd6cb28efbb30cced73c1a974e4eb87d98a"
+    },
+    {
+      "path": "FUNCTIONAL_EVIDENCE.png",
+      "bytes": 323565,
+      "sha256": "1c8c176dbf6c0aef1a42b72d0473a6c8450faf09ce0f503840195066e6d0551f"
+    },
+    {
+      "path": "FUNCTIONAL_EVIDENCE.svg",
+      "bytes": 143606,
+      "sha256": "6f795646860267e2c9f218750004d5fa085431ee4a07ea5fa71fcf40e89d6a37"
+    },
+    {
+      "path": "FUNCTIONAL_EVIDENCE_PROVENANCE.json",
+      "bytes": 1238,
+      "sha256": "220e2d7a955285f77ee53f1a15a62031dfb07fd1f5889d04bd3503a9aa5ea632"
+    },
+    {
+      "path": "PREVALIDATION_MAPPING.json",
+      "bytes": 2729,
+      "sha256": "b212a7db0794a6f0c4bcc4baf645747f2e41f1702ff1cd8ecf296f3b5f552c73"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5648,
+      "sha256": "4b5e0da20b9e2acd3b1de045d2a0432e5d1f41b4522729747372080465df0b1c"
+    },
+    {
+      "path": "RESULTS.md",
+      "bytes": 8383,
+      "sha256": "9dab22105a521c1c6ed360b470edd1864355b7b1e48db9370634f7e3c190b9f4"
+    },
+    {
+      "path": "RESULTS_SUMMARY.json",
+      "bytes": 7999,
+      "sha256": "54e2d539631e458f50291c5356009b3564fc17c55f667d2573ad707e563aba73"
+    },
+    {
+      "path": "TRAINING_EXECUTION_V1.json",
+      "bytes": 762,
+      "sha256": "3211765d02372af8202db1b6b1f8d391c41f44b7a3fedfb516934b6f3a5ff202"
+    },
+    {
+      "path": "TRAINING_LAUNCH_V1.json",
+      "bytes": 722,
+      "sha256": "9eb00113f192098b82ad6af09e65edd1054d8fbd3aa24bd5ec6b19c2a3dc547d"
+    },
+    {
+      "path": "TRAINING_RUN_V1.log",
+      "bytes": 1480,
+      "sha256": "56eb5a7e9d2514b05920d3268c9b79e6fff74ccbb613d9c6f6b442f89152fc5c"
+    },
+    {
+      "path": "asset_common.py",
+      "bytes": 5547,
+      "sha256": "f237b9034342845faef433f43ec452c987f8f9d0b8314d4619241311c5ac6590"
+    },
+    {
+      "path": "asset_model.py",
+      "bytes": 6770,
+      "sha256": "ae59e1ed4bb84ce9ad48fdaa0d7c0fd7140f4f3ea3bee7f9aa3ac9d665eed68d"
+    },
+    {
+      "path": "audit_asset.py",
+      "bytes": 17683,
+      "sha256": "fb99430491cbb73733cb65cc6dbcb7571d83c67bf21dda9f75be2b1e042b40bc"
+    },
+    {
+      "path": "check_asset_results.py",
+      "bytes": 18970,
+      "sha256": "6bfdadae171d833d32039d892fe26d9687aa9b888351c8a3f19111e68293c369"
+    },
+    {
+      "path": "checker_faults.py",
+      "bytes": 4944,
+      "sha256": "097df2b132b08c608668e43d2b326d320331243b01c0dcec127123dfe1d899a2"
+    },
+    {
+      "path": "freeze_asset.py",
+      "bytes": 10297,
+      "sha256": "4e9d7b8a3b9347202ee78351b5422acb36dca1acd781e72a4c3f26b7b5aff00f"
+    },
+    {
+      "path": "make_figure.py",
+      "bytes": 5419,
+      "sha256": "ed59e459ec597439b0a21b62a752dc4b3218924e5e3d1377e7697ff67b3a0ed0"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 31,
+      "sha256": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+    },
+    {
+      "path": "train_asset.py",
+      "bytes": 8930,
+      "sha256": "339d7023456cc3a8b248fa29f07c1c39e52c52bf8a6eb45a809e59554c2c91af"
+    },
+    {
+      "path": "independent_review/ASSET_PREVALIDATION_INDEPENDENT_REVIEW.json",
+      "bytes": 4776,
+      "sha256": "f57b191598d1e9f930e0fe999090f559a7e22a006a84ab853f3e9488263c71de"
+    },
+    {
+      "path": "independent_review/review_asset_records.py",
+      "bytes": 16607,
+      "sha256": "1e3c97f332a0116715b684d891752f2aa28601e89f98e835db5326e7599d0b54"
+    },
+    {
+      "path": "independent_review/ASSET_RESULT_INDEPENDENT_REVIEW.json",
+      "bytes": 4931,
+      "sha256": "30f42dc53558f86867cbdf8c2a43d32b6465470ea4d90a9327b7936984eb2016"
+    },
+    {
+      "path": "independent_review/INDEPENDENT_REVIEW_EXECUTION.json",
+      "bytes": 1585,
+      "sha256": "277afcb31c1899f51ac30893e364b86b9cb29859032ce28964eacf7653c2d478"
+    },
+    {
+      "path": "independent_review/ASSET_BRANCH_AUXILIARY_INDEPENDENT_REVIEW.json",
+      "bytes": 4031,
+      "sha256": "7406b0a15ba4ca2161cb74f01d70bc6e465037d92ef90961c5427f645a05d141"
+    },
+    {
+      "path": "independent_review/ASSET_INDEPENDENT_PUBLICATION_MAPPING.json",
+      "bytes": 1910,
+      "sha256": "58c63a5f1fc03e30061873db56c7cadde05b9f1663d2aced43203b3710d58fd8"
+    }
+  ]
+}

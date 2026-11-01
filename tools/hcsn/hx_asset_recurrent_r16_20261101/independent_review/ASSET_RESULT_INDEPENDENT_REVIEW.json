@@ -1,0 +1,100 @@
+{
+  "schema": "hcsn.fixed-potential-independent-result-review.v1",
+  "passed": true,
+  "input_sha256": {
+    "ASSET_PROTOCOL.json": "7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa",
+    "ASSET_INPUTS.json": "74e8a4cae1734762579a65608b8350ba8545bb1be79df2de657eaf2e4b65b079",
+    "ASSET_AUDIT_V1.json.gz": "4cf14304a8e38340f72b278bd14d96ae8cb69dbef280352cd3e6e6788324b450",
+    "ASSET_TRAINING_V1.json.gz": "c128dd57936ce1f113b745223deb3ad8e1055b7002cf6373b0d8daedcafb2d1c",
+    "AUDIT_EXECUTION_V1.json": "3fe2e7137562fae08ff55e073f9b1017989cd055fe20a9ef61e87ab7aec308b8",
+    "TRAINING_EXECUTION_V1.json": "3211765d02372af8202db1b6b1f8d391c41f44b7a3fedfb516934b6f3a5ff202",
+    "asset_model.py": "ae59e1ed4bb84ce9ad48fdaa0d7c0fd7140f4f3ea3bee7f9aa3ac9d665eed68d",
+    "asset_common.py": "f237b9034342845faef433f43ec452c987f8f9d0b8314d4619241311c5ac6590",
+    "audit_asset.py": "fb99430491cbb73733cb65cc6dbcb7571d83c67bf21dda9f75be2b1e042b40bc",
+    "train_asset.py": "339d7023456cc3a8b248fa29f07c1c39e52c52bf8a6eb45a809e59554c2c91af",
+    "freeze_asset.py": "4e9d7b8a3b9347202ee78351b5422acb36dca1acd781e72a4c3f26b7b5aff00f",
+    "README.md": "4b5e0da20b9e2acd3b1de045d2a0432e5d1f41b4522729747372080465df0b1c",
+    "requirements.txt": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+  },
+  "review_script_sha256": "1e3c97f332a0116715b684d891752f2aa28601e89f98e835db5326e7599d0b54",
+  "original_execution_receipts": {
+    "audit": {
+      "returncode": 0,
+      "controller_launch_utc": "2026-11-01T17:59:45.837394+00:00"
+    },
+    "training": {
+      "returncode": 0,
+      "controller_launch_utc": "2026-11-01T18:00:45.200088+00:00"
+    }
+  },
+  "remote_checkpoint": {
+    "commit": "786e535bd2a396b14e9ffab4504bc855c6f4d6b1",
+    "commit_time_utc": "2026-11-01T17:59:10Z",
+    "provided_and_verified_by_parent_before_first_execution": true
+  },
+  "counts": {
+    "fixed_fixtures": 5,
+    "contracts": 15,
+    "temporal_comparisons": 8,
+    "steps": 16,
+    "batch": 8,
+    "training_updates": 12,
+    "full_trajectories_checked": 16,
+    "trajectory_state_records_checked": 2057,
+    "changed_raw_parameters": 9,
+    "changed_effective_parameters": 9
+  },
+  "gradient_max_absolute_errors": {
+    "step_theta": 3.8839807360428226e-12,
+    "shared_theta": 8.407731481245139e-12,
+    "initial_z": 4.369049245653289e-10,
+    "initial_adaptation": 3.116071318077368e-10,
+    "drive": 3.5432187620119265e-11,
+    "middle_z": 2.982810296502103e-10,
+    "middle_adaptation": 1.7997413455372868e-10,
+    "shared_equals_sum_of_step_contributions": 1.4033219031261979e-12
+  },
+  "early_theta_l2": 1.2382783188276665e-05,
+  "initial_raw_parameter_chain_max_absolute_error": 0.0,
+  "detach_early_theta_drive_initial_gradients_exactly_zero": true,
+  "detach_forward_scope": "Exact numerical equality, not a signed-zero byte comparison.",
+  "all_negative_theta_gradients_exactly_zero": true,
+  "all_negative_A_power_16_max_error": 8.0346011621657e-08,
+  "maximum_exp_log_roundtrip_error": 5.983339690374123e-08,
+  "minimum_nonzero_reported_abs_margin": 1.576608232500358e-05,
+  "initial_final_sampled_phase_change_counts": [
+    8,
+    4
+  ],
+  "maximum_terminal_loss_recomposition_error": 2.8027336419593485e-11,
+  "loss": {
+    "initial": 0.00047014461597427726,
+    "final": 0.0004700341960415244,
+    "absolute_decrease": 1.1041993275284767e-07,
+    "percentage_decrease": 0.02348637610664226,
+    "interpretation": "Small change on fixed synthetic training data; no quality/generalization or optimization-superiority result."
+  },
+  "fixed_physical_boundary_motion": {
+    "represented_asset_words_equal": true,
+    "initial_boundary": 67.44151430180042,
+    "final_boundary": 68.3123767033789,
+    "expected_margin_shift": -0.012830193542637428,
+    "maximum_margin_shift_error": 1.8735013540549517e-16,
+    "changed_branch_fixture_indices": [
+      3
+    ],
+    "changed_branch_asset_values": [
+      67.44827270507812
+    ],
+    "interpretation": "Boundary motion against fixed physical assets is observed. All nine parameters also change field shape; this does not isolate causal threshold benefit."
+  },
+  "review_financial_kernel_calls": 0,
+  "review_pytorch_calls": 0,
+  "limitations": [
+    "Record recomposition and source review are not an independent financial oracle.",
+    "Raw per-trajectory exact asset branch checking is delegated to a separately disclosed same-kernel auxiliary check; this review checks the recorded margin phase and the fixed fixtures with known raw boundaries.",
+    "Adam algorithm not independently replayed.",
+    "Finite-step range/finiteness and first-order BPTT only; no convergence, nonlinear stability, autonomous spiking, energy, latency or multimodal quality claim.",
+    "This fixed-z candidate changes the initial-state/vector-field family from V1. Its loss is not a directly comparable architecture advantage; all V1 evidence remains retained."
+  ]
+}
