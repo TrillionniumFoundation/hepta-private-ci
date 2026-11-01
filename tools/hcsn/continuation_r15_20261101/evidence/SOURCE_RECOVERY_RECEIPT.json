@@ -1,0 +1,64 @@
+{
+  "scope": "Recovery after ephemeral executor reset. Historical validations below were completed before reset; they have not been rerun by reconstruction. Exact byte matches establish identity of recovered artifacts, not new native CI success.",
+  "remote_source_ref": "6500d80838d0baf5304a9de584b93d9e0df8c914",
+  "artifacts": [
+    {
+      "path": "/tmp/hcsn-r15-source-recovery/CLASSIFICATION.json",
+      "relative_path": "CLASSIFICATION.json",
+      "bytes": 24866,
+      "sha256": "3b53e951ae11db6765af577db9dc5036e041d9fb48256028f64938bbdd30d174",
+      "matches_known_historical_hash": true
+    },
+    {
+      "path": "/tmp/hcsn-r15-source-recovery/windows-fixtures/windows_fixture_portability.patch",
+      "relative_path": "windows-fixtures/windows_fixture_portability.patch",
+      "bytes": 3143,
+      "sha256": "0033c33df24aa7372ffd675b53ea0e15a3e724e501bf967d6a2028902bfb3193",
+      "matches_known_historical_hash": true
+    },
+    {
+      "path": "/tmp/hcsn-r15-source-recovery/windows-fixtures/RECEIPT.json",
+      "relative_path": "windows-fixtures/RECEIPT.json",
+      "bytes": 5045,
+      "sha256": "0c46c9db3853bf34722f4f469ebb9713dcfe5690a51ac3d9518565c2d26f35ab",
+      "matches_known_historical_hash": true
+    },
+    {
+      "path": "/tmp/hcsn-r15-source-recovery/v8-client-budget/v8_macos_client_budget.patch",
+      "relative_path": "v8-client-budget/v8_macos_client_budget.patch",
+      "bytes": 1317,
+      "sha256": "7ae6d6256deb3865d02e7f1ad2c733eac0baaf7f29ab39bc441ebb94f2848b35",
+      "matches_known_historical_hash": true
+    },
+    {
+      "path": "/tmp/hcsn-r15-source-recovery/v8-client-budget/RECEIPT.json",
+      "relative_path": "v8-client-budget/RECEIPT.json",
+      "bytes": 2729,
+      "sha256": "0d13b35ff28944d525c90b6b5118179ff2b9d2d0b8677813b85ab00b44d1ff1a",
+      "matches_known_historical_hash": null
+    },
+    {
+      "path": "/tmp/hcsn-r15-source-recovery/windows-fixture-reopen-followup/windows_fixture_reopen_followup.patch",
+      "relative_path": "windows-fixture-reopen-followup/windows_fixture_reopen_followup.patch",
+      "bytes": 801,
+      "sha256": "0037c4e14a2d0e184fdeb65a5b597d6eea3251b8b49b920bac3b067e5a6febea",
+      "matches_known_historical_hash": null
+    },
+    {
+      "path": "/tmp/hcsn-r15-source-recovery/windows-fixture-reopen-followup/RECEIPT.json",
+      "relative_path": "windows-fixture-reopen-followup/RECEIPT.json",
+      "bytes": 2025,
+      "sha256": "5a11d2d2c157def81daab7c70425240e5eb87bd0e62124e59ff1be62d8767223",
+      "matches_known_historical_hash": null
+    }
+  ],
+  "known_historical_hashes": {
+    "CLASSIFICATION.json": "3b53e951ae11db6765af577db9dc5036e041d9fb48256028f64938bbdd30d174",
+    "windows-fixtures/windows_fixture_portability.patch": "0033c33df24aa7372ffd675b53ea0e15a3e724e501bf967d6a2028902bfb3193",
+    "windows-fixtures/RECEIPT.json": "0c46c9db3853bf34722f4f469ebb9713dcfe5690a51ac3d9518565c2d26f35ab",
+    "v8-client-budget/v8_macos_client_budget.patch": "7ae6d6256deb3865d02e7f1ad2c733eac0baaf7f29ab39bc441ebb94f2848b35"
+  },
+  "budget_receipt_note": "Budget receipt reconstructed from the complete preserved dictionary and historical tool observations. No earlier digest was recorded, so byte-for-byte identity of that receipt cannot be asserted.",
+  "unrecoverable_from_this_agent": "No C++ kernel source, protocol, build receipt or raw C++ audit outputs were ever read into this agent store; received summary statistics cannot replace those artifacts.",
+  "source_provenance": "RECOVERED_INPUTS contains exact GitHub blobs. reconstruct.py recomputes each Git blob identity and matches original candidate hashes. These recovery inputs are intermediate provenance; only small selected deliverables should be published."
+}

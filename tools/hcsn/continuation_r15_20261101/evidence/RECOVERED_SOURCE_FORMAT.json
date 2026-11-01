@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn.r16.local-source-format.v1",
+  "scope": "Actual unmodified repository just fmt in isolated Git fixture with exact base formatter scripts, manifests and Rust configuration; all candidate Rust and Bazel files copied byte-for-byte. Not a full native build.",
+  "exit_code": 0,
+  "files": {
+    "defs.bzl": "0190c8ac91e1de5a9124d06c9b5608d1cd04e9fcdbdccd3a73b14fd751a54336",
+    "codex-rs/third_party/i18n-config-0.4.8/BUILD.bazel": "069832905879dd1ceaad199d2c8df398ce079f1a891d2bc8a3654f6cfe0f149e",
+    "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs": "c3ebdfa4118ef76043357f9e6993debaa87433d2f4e1f63f4f8e3f5fd85a002d",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs": "6dc0c10881f12a07f6320ed9c9969bbdc348622c4d2b5ce1dfc6ee5a3271f190",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs": "16abc27a86e96ff7609551143d0abd60b5addd5ff99dbcefeab82ed9ddcf4708",
+    "codex-rs/hepta-intelligence/src/directory_test_support.rs": "6235ac6d1877c5f15fdd2b72a45cd54b9f8b1db7ae644a2e20e7c32b27e50fde",
+    "codex-rs/hepta-intelligence/src/lib.rs": "733cc7381c7f5c086278a8a13784d15b320021de53371712086c3526c3f26498",
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "461c2479e3cdc4bc16164bbbab334599195f371ffff2eca291b586fe169e3e57",
+    "bazel/rules/rust_crate_aliases.bzl": "0881176bff495caa39615536ea8e05433e9d31a8d0ec2c738a73e088d3e2d57c",
+    "bazel/rules/BUILD.bazel": "5963d7e67bdcc17566ce41f0f2e4b78728720b07432034ccce2c52ecd174cadf"
+  },
+  "all_candidate_bytes_unchanged": true,
+  "output": "",
+  "initial_tool_launch_attempt": {
+    "schema": "hcsn.r16.local-source-format.v1",
+    "scope": "Actual unmodified repository just fmt in isolated Git fixture with exact base formatter scripts, manifests and Rust configuration; all candidate Rust and Bazel files copied byte-for-byte. Not a full native build.",
+    "exit_code": 1,
+    "files": {
+      "defs.bzl": "0190c8ac91e1de5a9124d06c9b5608d1cd04e9fcdbdccd3a73b14fd751a54336",
+      "codex-rs/third_party/i18n-config-0.4.8/BUILD.bazel": "069832905879dd1ceaad199d2c8df398ce079f1a891d2bc8a3654f6cfe0f149e",
+      "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs": "c3ebdfa4118ef76043357f9e6993debaa87433d2f4e1f63f4f8e3f5fd85a002d",
+      "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs": "6dc0c10881f12a07f6320ed9c9969bbdc348622c4d2b5ce1dfc6ee5a3271f190",
+      "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs": "16abc27a86e96ff7609551143d0abd60b5addd5ff99dbcefeab82ed9ddcf4708",
+      "codex-rs/hepta-intelligence/src/directory_test_support.rs": "6235ac6d1877c5f15fdd2b72a45cd54b9f8b1db7ae644a2e20e7c32b27e50fde",
+      "codex-rs/hepta-intelligence/src/lib.rs": "733cc7381c7f5c086278a8a13784d15b320021de53371712086c3526c3f26498",
+      "codex-rs/hepta-fleet/src/registry_tests.rs": "461c2479e3cdc4bc16164bbbab334599195f371ffff2eca291b586fe169e3e57",
+      "bazel/rules/rust_crate_aliases.bzl": "0881176bff495caa39615536ea8e05433e9d31a8d0ec2c738a73e088d3e2d57c",
+      "bazel/rules/BUILD.bazel": "5963d7e67bdcc17566ce41f0f2e4b78728720b07432034ccce2c52ecd174cadf"
+    },
+    "all_candidate_bytes_unchanged": true,
+    "output": "==> Bazel/Starlark formatter failed\n$ dotslash /tmp/hcsn-publication-format-fixture/tools/buildifier -mode=fix -lint=off bazel/rules/BUILD.bazel bazel/rules/rust_crate_aliases.bzl codex-rs/third_party/i18n-config-0.4.8/BUILD.bazel defs.bzl\ndotslash error: problem with `/tmp/hcsn-publication-format-fixture/tools/buildifier`\ncaused by: failed to download artifact into cache `/root/.cache/dotslash` artifact location `/root/.cache/dotslash/38/49595345ba081dc58d065529866038a1e5ed8d`\ncaused by: failed to create directory `/root/.cache/dotslash/38`\ncaused by: Read-only file system (os error 30)\n==> Rust formatter failed\n$ rustfmt --edition 2024 --config imports_granularity=Item,skip_children=true -- /tmp/hcsn-publication-format-fixture/codex-rs/hepta-fleet/src/registry_tests.rs\n\nthread 'main' (17) panicked at /cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wait-timeout-0.2.1/src/unix.rs:233:17:\nbad error on write fd: Operation not permitted (os error 1)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nthread 'main' (17) panicked at /rustc/58cf8f9c35b355199727627d07ae34a4e2846d67/library/core/src/panicking.rs:225:5:\npanic in a function that cannot unwind\nstack backtrace:\n   0:     0x55e2decdc455 - <<std[68c81ae915296b05]::sys::backtrace::BacktraceLock>::print::DisplayBacktrace as core[efd5e57aef94d71e]::fmt::Display>::fmt\n   1:     0x55e2de91648a - core[efd5e57aef94d71e]::fmt::write\n   2:     0x55e2decdbcfb - <std[68c81ae915296b05]::sys::stdio::unix::Stderr as core[efd5e57aef94d71e]::io::write::Write>::write_fmt\n   3:     0x55e2decdbbbb - std[68c81ae915296b05]::panicking::panic_with_hook\n   4:     0x55e2decfd892 - std[68c81ae915296b05]::panicking::panic_handler::{closure#0}\n   5:     0x55e2decfd819 - std[68c81ae915296b05]::sys::backtrace::__rust_end_short_backtrace::<std[68c81ae915296b05]::panicking::panic_handler::{closure#0}, !>\n   6:     0x55e2decfdd2c - __rustc[3d2f79520d6fa809]::rust_begin_unwind\n   7:     0x55e2de74cd8c - core[efd5e57aef94d71e]::panicking::panic_nounwind_fmt\n   8:     0x55e2de74cd57 - core[efd5e57aef94d71e]::panicking::panic_nounwind\n   9:     0x55e2de74cda3 - core[efd5e57aef94d71e]::panicking::panic_cannot_unwind\n  10:     0x55e2ded77ac6 - wait_timeout[fd9157b959b477c]::imp::sigchld_handler\n  11:     0x7f9e58bff330 - <unknown>\n  12:     0x7f9e58cd54fd - poll\n  13:     0x55e2debdc795 - <rustup[e14fd9e98ca56b6f]::toolchain::Toolchain>::rustc_version\n  14:     0x55e2dec48a85 - <rustup[e14fd9e98ca56b6f]::dist::DistOptions>::for_update\n  15:     0x55e2de7d0da0 - <rustup[e14fd9e98ca56b6f]::config::Cfg>::ensure_installed::{closure#0}::{closure#0}\n  16:     0x55e2de805fc8 - <rustup[e14fd9e98ca56b6f]::config::Cfg>::ensure_installed::{closure#0}\n  17:     0x55e2de7d21c0 - <rustup[e14fd9e98ca56b6f]::config::Cfg>::ensure_active_toolchain::{closure#0}::{closure#0}\n  18:     0x55e2de806a76 - <rustup[e14fd9e98ca56b6f]::config::Cfg>::ensure_active_toolchain::{closure#0}\n  19:     0x55e2de806ee9 - <rustup[e14fd9e98ca56b6f]::config::Cfg>::maybe_ensure_active_toolchain::{closure#0}\n  20:     0x55e2de804f58 - <rustup[e14fd9e98ca56b6f]::config::Cfg>::local_toolchain::{closure#0}\n  21:     0x55e2de7d6bfe - rustup[e14fd9e98ca56b6f]::cli::proxy_mode::main::{closure#0}::{closure#0}\n  22:     0x55e2de7cb82d - rustup_init[d992496db2c5a96d]::run_rustup_inner::{closure#0}::{closure#0}\n  23:     0x55e2de7c9204 - rustup_init[d992496db2c5a96d]::run_rustup::{closure#0}::{closure#0}\n  24:     0x55e2de7fd7f7 - rustup_init[d992496db2c5a96d]::main::{closure#0}\n  25:     0x55e2de79783d - <tokio[5c194925ad13c33a]::runtime::runtime::Runtime>::block_on::<rustup_init[d992496db2c5a96d]::main::{closure#0}>\n  26:     0x55e2de832b82 - rustup_init[d992496db2c5a96d]::main\n  27:     0x55e2de7baebb - std[68c81ae915296b05]::sys::backtrace::__rust_begin_short_backtrace::<fn() -> core[efd5e57aef94d71e]::result::Result<std[68c81ae915296b05]::process::ExitCode, anyhow[7a40af7b0b602bc]::Error>, core[efd5e57aef94d71e]::result::Result<std[68c81ae915296b05]::process::ExitCode, anyhow[7a40af7b0b602bc]::Error>>\n  28:     0x55e2de859730 - main\n  29:     0x7f9e58be41ca - <unknown>\n  30:     0x7f9e58be428b - __libc_start_main\n  31:     0x55e2de796a33 - <unknown>\n  32:                0x0 - <unknown>\nthread caused non-unwinding panic. aborting.\nFormatting failed: Bazel/Starlark, Rust\nerror: recipe `fmt` failed on line 51 with exit code 1\n"
+  },
+  "tooling_correction": "Use supported DOTSLASH_CACHE and the official installed1.95 toolchain binaries directly. The initial rustup proxy/tool cache launch failed before formatting; files stayed unchanged."
+}

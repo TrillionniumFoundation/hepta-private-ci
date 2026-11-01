@@ -1,0 +1,37 @@
+{
+  "schema": "hcsn.r16.remote-regression.v1",
+  "source_head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "source_tree": "35b0c8181166b7cc7f67e8a852f7b279edcf2bbd",
+  "prospective_merge": "73ffeaf2d120289b935f3aed3cc4608866c20b4a",
+  "job_id": 124813869962,
+  "conclusion": "success",
+  "primitive_checks": 701,
+  "development": {
+    "rows": 432,
+    "max_value_error": 5.665080594681952e-08,
+    "max_jacobian_error": 9.439639804099026e-07
+  },
+  "opened_v1_regression": {
+    "rows": 512,
+    "max_value_error": 5.718660608053465e-08,
+    "max_jacobian_error": 7.1891889198427705e-06
+  },
+  "source_cleanliness": "passed",
+  "artifact_upload": "passed",
+  "scope": "Actual new-head recomputation plus independent acceptance; opened fixtures are regression, not a fresh independent confirmation.",
+  "linux_v8_canary_success_job_ids": [
+    124814280128,
+    124814280104,
+    124814280088,
+    124814280081,
+    124814280054,
+    124814280044,
+    124814280020,
+    124814279998
+  ],
+  "remaining_native_ci": "failed; new YAML alias errors under diagnosis, other platforms not qualified",
+  "decoded_log_sha256": "8e1f070cf95c5984ff9480aece92e58b82b16d4e8c6b610eae137e13951c53cb",
+  "stored_log_sha256": "813ad7210a60b7e0d896798f6574568347fcbb327afe9bd9b26e610c4a957759",
+  "prospective_merge_tree": "35b0c8181166b7cc7f67e8a852f7b279edcf2bbd",
+  "source_and_merge_trees_verified_equal": true
+}

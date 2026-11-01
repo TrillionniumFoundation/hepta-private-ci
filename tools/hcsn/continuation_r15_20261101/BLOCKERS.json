@@ -69,7 +69,7 @@
       "status": "unsupported_in_this_model"
     },
     {
-      "detail": "Full operator native FP32 remains136/432 rows and0/18 cases; five current-source failures reproduced; debt-only rearrangement is not full qualification.",
+      "detail": "Original frozen Python native FP32 remains136/432 development rows and0/18 points. Separate renewed compiled control passes155/768 rows and0/128 points. Two-word FP32 uses extended effective precision and does not qualify ordinary single-word FP32.",
       "evidence": "evidence/FP32_DIAGNOSIS.json",
       "id": "full_financial_fp32",
       "status": "failed_reproduced_current_source"
@@ -93,10 +93,10 @@
       "status": "unmeasured"
     },
     {
-      "detail": "Exact spelling contexts and inherited test build/lint fixes prepared; final-head CI pending. Five compatible dependency updates reduce pinned advisories from22 to14; cargo-deny still fails.",
-      "evidence": "evidence/CODESPELL_REVIEW_SUMMARY.json",
+      "detail": "Assessed source1e91c5cf passes full R16 numerical replay, R14/R15, R13, Codespell, blob policy and eight Linux V8 canaries. YAML Cargo aliases were not forwarded by Bazel; reviewed V2 repairs all four consumers and nine rule generation sites. Local93-target macro execution and actual just fmt pass; native GNU/SDK compilation and runtime suites need new-head verification. Additional22 GNU runtime failures are explicitly classified.",
+      "evidence": "evidence/R16_REMOTE_REGRESSION.json",
       "id": "repository_wide_ci",
-      "status": "open"
+      "status": "open_reviewed_repairs_pending_native_verification"
     },
     {
       "detail": "PR4550 published; seven remote stage trees match local and research regressions/blob policy pass. Followup native/spelling checks remain separate.",
@@ -106,15 +106,81 @@
     },
     {
       "id": "dependency_security_policy",
-      "status": "open_reduced_not_passed",
-      "detail": "Pinned RustSec audit22 to14: eight removed, zero new; eight vulnerabilities and six unmaintained advisories remain. Cargo/Bazel locks agree, no ignore expansion; new native dependency qualification pending.",
-      "evidence": "evidence/DEPENDENCY_REVIEW_RECEIPT.json"
+      "status": "open_six_findings_after_accepted_migrations",
+      "detail": "Same pinned DB22 to14 to11 to8 to7 to6; two vulnerabilities and four unmaintained advisories remain. ZIP3, zstd3, i18n3 and existing parser6 isolated native tests passed; complete workspace integration is not admitted. Later keyring and AWS attempts were rejected/insufficient, not merged.",
+      "evidence": "evidence/DEPENDENCY_YAML_REVIEW.json"
     },
     {
       "id": "windows_native_toolchain_and_runtime",
-      "status": "open_observed_remote",
-      "detail": "First-head decoded Windows release/test logs show native crypto objects with unresolved MinGW/stack-check symbols in MSVC link; a V8 sandbox feature test also fails. Source-fixture repairs do not establish resolution.",
-      "evidence": "evidence/WINDOWS_NATIVE_FAILURES.json"
+      "status": "open_repair_candidates_and_missing_backends",
+      "detail": "ABI, V8 and test-directory/canonical-path fixes are separate from missing Windows secure-storage/SSHSIG semantics. The exact source6500 four-shard classification contains36 unique named failed tests; no skips or weaker security checks qualify these.",
+      "evidence": "evidence/WINDOWS_FAILURE_CLASSIFICATION.json"
+    },
+    {
+      "id": "codespell_frozen_false_positives",
+      "status": "closed_remote_at_assessed_head",
+      "detail": "Actual Codespell guard passed again at1e91c5cf; exact frozen identities and complete literal-line review retained.",
+      "evidence": "evidence/R16_REMOTE_REGRESSION.json"
+    },
+    {
+      "id": "compensated_fp32_finite_numerics",
+      "status": "passed_independent_finite_validation_and_remote_regression",
+      "detail": "Two-word FP32 passes432 development rows and512 distinct independently frozen V1 rows across128 points at unchanged five-output and ten-column Jacobian gates. New-head remote replay passed. This is not ordinary FP32, whole-domain, global-C1, training or production admission.",
+      "evidence": "../compensated_fp32_r16_20261101/README.md"
+    },
+    {
+      "id": "compensated_fp32_evaluation_cost",
+      "status": "open_negative_cost_evidence",
+      "detail": "Complete Python kernel219.005ms/state versus2.339ms FP64. New same-template C++ full boundary+five-output+ten-column-Jacobian medians:243.961649us compensated versus10.749016us FP64 (22.696185x). Reusing one boundary per three states remains21.314831x.36 full new raw timing batches preserved; no CPU cost advantage.",
+      "evidence": "../compiled_fp32_r16_20261101/recovery/RECOVERY_CPU_COST_V1.json"
+    },
+    {
+      "id": "compiled_candidate_evidence",
+      "status": "passed_renewed_independent_finite_validation",
+      "detail": "Pre-evaluation protocol checkpoint086baf3ee freezes seed2026110127. New128x6 observations: FP64 and two-word FP32 each768/768 rows and128/128 points at unchanged gates. Independent checker recomputes every five-output and5x10 Jacobian,15360 neighboring branch checks and128 continuation-side right derivatives. Complete52-file evidence is published atbfd3a5a6f9445ae681b27d3947865ad67ef5651e; original lost raw evidence is not relabeled recovered.",
+      "evidence": "../compiled_fp32_r16_20261101/recovery/README_RECOVERY.md"
+    },
+    {
+      "id": "global_c1_original_dual_channel",
+      "status": "unsupported_for_untransformed_risk",
+      "detail": "Equity satisfies boundary value matching and smooth pasting, but F/G and debt have nonzero continuation-side slopes and constant/default-side behavior. A separate transformed observable requires its own explicit assumptions and cannot be mislabeled the original put.",
+      "evidence": "../compensated_fp32_r16_20261101/capsule/tmp_r15_compensated_independent_review.json"
+    },
+    {
+      "id": "transformed_c1_risk_observable",
+      "status": "proved_under_explicit_regularity_conditions",
+      "detail": "R=2F-F^2 with default-side1 is jointly C1 when b is C1, F is continuous to F=1 and its complete first derivatives are locally bounded. The transformed PDE has a gradient-square source; this is a new observable, generally not C2 or the original put. Equity needs joint regularity as well as smooth pasting.",
+      "evidence": "../c1_risk_observable_r16_20261101/README.md"
+    },
+    {
+      "id": "continuous_recurrent_activity_candidate",
+      "status": "observed_in_separate_simplified_model",
+      "detail": "Direct C1 E/R values in a two-state ODE produce stable focus atgamma0.2 and repeated broad plateaus atgamma0.8 without hard reset or0/1 dynamics. Four fixed RK4 step sizes agree; finest tail has four full plateaus, period74.308476 and duty64.57percent. This is a separate perpetual example, not the full rollover neuron, sparse spiking or trained-network admission.",
+      "evidence": "../c1_value_dynamics_r16_20261101/REPORT_ZH.md"
+    },
+    {
+      "id": "actual_financial_autograd_interface",
+      "status": "in_progress_separate_adapter",
+      "detail": "A separate CPU adapter is being built against the qualified FP64 internal kernel. Packed float32 input, branch conventions, complete boundary-chain derivatives, first-order-only backward and actual training updates need explicit validation; no adapter result is admitted yet.",
+      "evidence": null
+    },
+    {
+      "id": "inherited_runtime_fixtures",
+      "status": "repaired_sql_integration_passed_native_ci_pending",
+      "detail": "Three test-only changes restore complete v1 schema rewind, include migration15, and populate global outbox capacity without violating per-issuer512 bound. Exact source-extracted SQL red/green passes, all original assertions retained except explicitly current ledger version. Actual just fmt passes; source blobs match original base, so inherited defects not attributed to this dependency migration.",
+      "evidence": "evidence/runtime_fixtures_1e91/VALIDATION_RECEIPT.json"
+    },
+    {
+      "id": "robrix_fixture_runfiles",
+      "status": "repaired_launcher_probe_passed_native_ci_pending",
+      "detail": "Declare unchanged tracked fixtures as Bazel test data and use the launcher runfiles workspace at runtime. Original launcher plus unchanged extracted Rust reader exercised six meaningful cases; actual macro data emission and just fmt pass. Synthetic fixture harness is not full Bazel/native test execution.",
+      "evidence": "evidence/native_repairs/robrix_fixture/ROBRIX_REPAIR_RECEIPT.json"
+    },
+    {
+      "id": "simplified_periodic_orbit_existence",
+      "status": "proved_for_exact_fixed_continuous_model",
+      "detail": "Separate reviewed proof: a(t) in[0,.9], the selected trajectory has x in[-9,3], unique equilibrium is a hyperbolic source, a local repelling Lyapunov ellipse excludes it from the omega limit. Poincare-Bendixson establishes a periodic omega limit and nonconstant periodic R. Does not prove a unique/stable orbit, boundary crossing, exact period, full rollover dynamics or sampled-map identity.",
+      "evidence": "../c1_value_dynamics_r16_20261101/analysis/PERIODIC_ORBIT_PROOF_ZH.md"
     }
   ],
   "new_confirmation_opened": false,
@@ -123,5 +189,16 @@
   "scientific_acceptance_changed": false,
   "published_research_head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
   "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4550",
-  "followup_ci_scope": "Native and spelling followups require final-head CI; publication receipt records the first research candidate."
+  "followup_ci_scope": "Final source and prospective-merge tree identities must be checked. Published prior-head green jobs do not qualify new native source repairs.",
+  "latest_assessed_head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "confirmation_scope": "new_confirmation_opened concerns the original R14 efficacy task only; R16 numerical validation is separate.",
+  "independent_numerical_validation_r16_opened": true,
+  "executor_recovery": {
+    "old_local_workspace_survived": false,
+    "published_python_capsule_and_accepted_dependency_evidence_preserved": true,
+    "original_unpublished_cpp_raw_evidence_recovered": false,
+    "source_and_windows_classification_recovered": true,
+    "later_keyring_crypto_raw_archives_recovered": false
+  },
+  "compiled_recovery_checkpoint": "bfd3a5a6f9445ae681b27d3947865ad67ef5651e"
 }
