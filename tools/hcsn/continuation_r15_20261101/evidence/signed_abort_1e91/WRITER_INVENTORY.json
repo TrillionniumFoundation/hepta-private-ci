@@ -1,0 +1,817 @@
+{
+  "head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "coverage": "Exact inspected head files for Supervisor lifecycle, intent, release transaction, leases and automatic restart writers, plus public Fleet lifecycle/release-state APIs and CLI directive writer. Default-branch code search was only a discovery hint; listed lines come from verified head bytes. Raw external filesystem writes are outside the cooperative API contract and are not claimed to be prevented by advisory locks.",
+  "sources_sha256": "cf7b2a8e7125f859bf0857f474bf73d7545c1f1f67c391a298709620f4f2c6bf",
+  "operations": [
+    "compare_and_transition",
+    "compare_and_set_release_state",
+    "write_intent",
+    "write_recovery_directive",
+    "write_signed_intent_recovery_directive",
+    "write_release_transaction",
+    "write_lease",
+    "remove_lease",
+    "write_matrix_lease",
+    "remove_matrix_lease",
+    "claim_restart",
+    "complete_restart",
+    "write_restart_budget",
+    "write_restart_journal",
+    "clear_main_restart_budget",
+    "persist_restart_journal"
+  ],
+  "entries": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "line": 603,
+      "function": "apply_production_grant",
+      "operation": "write_intent",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_intent(record.layout.run_root(), &intent)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "line": 619,
+      "function": "apply_production_grant",
+      "operation": "write_intent",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "let _ = write_intent(record.layout.run_root(), &recovery);"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "line": 626,
+      "function": "apply_production_grant",
+      "operation": "write_intent",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_intent(record.layout.run_root(), &queued)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "line": 678,
+      "function": "commit_signed_intent_if_target",
+      "operation": "write_intent",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_intent(record.layout.run_root(), &terminal)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "line": 768,
+      "function": "recover_signed_intent",
+      "operation": "write_intent",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_intent(record.layout.run_root(), &terminal)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "line": 785,
+      "function": "recover_signed_intent",
+      "operation": "write_intent",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_intent(record.layout.run_root(), &recovery)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "line": 1071,
+      "function": "resolve_production_recovery",
+      "operation": "write_release_transaction",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_release_transaction(record.layout.run_root(), &terminal_transaction)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "line": 1077,
+      "function": "resolve_production_recovery",
+      "operation": "write_intent",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_intent(record.layout.run_root(), &terminal_intent)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "line": 1153,
+      "function": "transition_without_runtime",
+      "operation": "compare_and_transition",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": ".compare_and_transition(agent_id, expected, lifecycle)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_intent.rs",
+      "git_blob": "a48cd70d219c54f0cf753a8966d61169341f3696",
+      "line": 247,
+      "function": "write_intent",
+      "operation": "write_intent",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub fn write_intent("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_intent.rs",
+      "git_blob": "a48cd70d219c54f0cf753a8966d61169341f3696",
+      "line": 271,
+      "function": "write_recovery_directive",
+      "operation": "write_recovery_directive",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub fn write_recovery_directive("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_intent.rs",
+      "git_blob": "a48cd70d219c54f0cf753a8966d61169341f3696",
+      "line": 324,
+      "function": "intent_round_trips_and_rejects_unresolved_overwrite",
+      "operation": "write_intent",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "write_intent(dir.path(), &first).expect(\"write\");"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_intent.rs",
+      "git_blob": "a48cd70d219c54f0cf753a8966d61169341f3696",
+      "line": 339,
+      "function": "intent_round_trips_and_rejects_unresolved_overwrite",
+      "operation": "write_intent",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "write_intent(dir.path(), &other),"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_intent.rs",
+      "git_blob": "a48cd70d219c54f0cf753a8966d61169341f3696",
+      "line": 343,
+      "function": "intent_round_trips_and_rejects_unresolved_overwrite",
+      "operation": "write_intent",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "write_intent(dir.path(), &committed).expect(\"terminal replacement\");"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_intent.rs",
+      "git_blob": "a48cd70d219c54f0cf753a8966d61169341f3696",
+      "line": 362,
+      "function": "abort_directive_is_bound_to_exact_intent_digest",
+      "operation": "write_recovery_directive",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "write_recovery_directive(dir.path(), &directive)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+      "git_blob": "eed817dcac736beded62ad83c2cbb908936370e4",
+      "line": 1668,
+      "function": "unresolved_signed_intent_keeps_daemon_reachable_but_not_ready",
+      "operation": "compare_and_transition",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": ".compare_and_transition("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+      "git_blob": "eed817dcac736beded62ad83c2cbb908936370e4",
+      "line": 1692,
+      "function": "unresolved_signed_intent_keeps_daemon_reachable_but_not_ready",
+      "operation": "write_intent",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "crate::signed_intent::write_intent(record.layout.run_root(), &intent)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/lease.rs",
+      "git_blob": "69fd6ca44842139bcbffbe0b0f75df44ca426046",
+      "line": 98,
+      "function": "write_lease",
+      "operation": "write_lease",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub(crate) fn write_lease(run_root: &Path, lease: &ProcessLease) -> Result<(), SupervisorError> {"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/lease.rs",
+      "git_blob": "69fd6ca44842139bcbffbe0b0f75df44ca426046",
+      "line": 132,
+      "function": "remove_lease",
+      "operation": "remove_lease",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub(crate) fn remove_lease("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/lease.rs",
+      "git_blob": "69fd6ca44842139bcbffbe0b0f75df44ca426046",
+      "line": 187,
+      "function": "write_matrix_lease",
+      "operation": "write_matrix_lease",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub(crate) fn write_matrix_lease("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/lease.rs",
+      "git_blob": "69fd6ca44842139bcbffbe0b0f75df44ca426046",
+      "line": 226,
+      "function": "remove_matrix_lease",
+      "operation": "remove_matrix_lease",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub(crate) fn remove_matrix_lease("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "git_blob": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+      "line": 207,
+      "function": "start_matrix_companion",
+      "operation": "write_matrix_lease",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "if let Err(error) = write_matrix_lease(record.layout.matrixd_process_lease(), &lease) {"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "git_blob": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+      "line": 222,
+      "function": "start_matrix_companion",
+      "operation": "remove_matrix_lease",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "let _ = remove_matrix_lease(record.layout.matrixd_process_lease(), &lease);"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "git_blob": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+      "line": 347,
+      "function": "recover_matrix_companion",
+      "operation": "remove_matrix_lease",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "git_blob": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+      "line": 361,
+      "function": "recover_matrix_companion",
+      "operation": "remove_matrix_lease",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "git_blob": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+      "line": 375,
+      "function": "recover_matrix_companion",
+      "operation": "remove_matrix_lease",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "git_blob": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+      "line": 515,
+      "function": "tick_matrix_companion",
+      "operation": "remove_matrix_lease",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+      "git_blob": "529b16dfa8e8ba0d192bedd17b4d6698e0dc3e3c",
+      "line": 125,
+      "function": "start_release_slot",
+      "operation": "compare_and_transition",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "let starting = self.registry.compare_and_transition("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+      "git_blob": "529b16dfa8e8ba0d192bedd17b4d6698e0dc3e3c",
+      "line": 164,
+      "function": "start_release_slot",
+      "operation": "write_lease",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "if let Err(error) = write_lease(record.layout.run_root(), &lease) {"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+      "git_blob": "529b16dfa8e8ba0d192bedd17b4d6698e0dc3e3c",
+      "line": 332,
+      "function": "recover_slot",
+      "operation": "remove_lease",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "remove_lease(record.layout.run_root(), &lease)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+      "git_blob": "529b16dfa8e8ba0d192bedd17b4d6698e0dc3e3c",
+      "line": 346,
+      "function": "recover_slot",
+      "operation": "remove_lease",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "remove_lease(record.layout.run_root(), &lease)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+      "git_blob": "fc0b8657107d450d2d81edd95ef44e8d1d8dbd27",
+      "line": 339,
+      "function": "write_release_transaction",
+      "operation": "write_release_transaction",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub fn write_release_transaction("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+      "git_blob": "fc0b8657107d450d2d81edd95ef44e8d1d8dbd27",
+      "line": 419,
+      "function": "transaction_round_trips_across_phases",
+      "operation": "write_release_transaction",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "write_release_transaction(dir.path(), &value).expect(\"prepared\");"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+      "git_blob": "fc0b8657107d450d2d81edd95ef44e8d1d8dbd27",
+      "line": 423,
+      "function": "transaction_round_trips_across_phases",
+      "operation": "write_release_transaction",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "write_release_transaction(dir.path(), &draining).expect(\"draining\");"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release.rs",
+      "git_blob": "8fb9c220b1254bd6d0618896140cee7f9c17c10f",
+      "line": 124,
+      "function": "prepare_release_transaction",
+      "operation": "write_release_transaction",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_release_transaction(record.layout.run_root(), &transaction)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release.rs",
+      "git_blob": "8fb9c220b1254bd6d0618896140cee7f9c17c10f",
+      "line": 144,
+      "function": "bind_release_transaction_authority",
+      "operation": "write_release_transaction",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_release_transaction(record.layout.run_root(), &transaction)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release.rs",
+      "git_blob": "8fb9c220b1254bd6d0618896140cee7f9c17c10f",
+      "line": 163,
+      "function": "advance_release_transaction",
+      "operation": "write_release_transaction",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_release_transaction(record.layout.run_root(), &transaction)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release.rs",
+      "git_blob": "8fb9c220b1254bd6d0618896140cee7f9c17c10f",
+      "line": 225,
+      "function": "reconcile_unsigned_release_outcome",
+      "operation": "write_release_transaction",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_release_transaction(record.layout.run_root(), &terminal_transaction)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release.rs",
+      "git_blob": "8fb9c220b1254bd6d0618896140cee7f9c17c10f",
+      "line": 403,
+      "function": "persist_release_state",
+      "operation": "compare_and_set_release_state",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "let next = self.registry.compare_and_set_release_state("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release.rs",
+      "git_blob": "8fb9c220b1254bd6d0618896140cee7f9c17c10f",
+      "line": 503,
+      "function": "recover_release_transaction",
+      "operation": "write_release_transaction",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_release_transaction(record.layout.run_root(), &transaction)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/bin/hepta-supervisor-intent-recovery.rs",
+      "git_blob": "305f4b397bcd6125a78a5d32f093ce6cee28f41b",
+      "line": 57,
+      "function": "main",
+      "operation": "write_signed_intent_recovery_directive",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_signed_intent_recovery_directive(&run_root, &directive)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+      "git_blob": "fe819a589a0e575849186de8b839793670dd1c99",
+      "line": 130,
+      "function": "exact_digest_abort_terminalizes_unresolved_intent",
+      "operation": "compare_and_transition",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": ".compare_and_transition(&fleet.agent_id, 0, AgentLifecycle::Starting)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+      "git_blob": "fe819a589a0e575849186de8b839793670dd1c99",
+      "line": 131,
+      "function": "exact_digest_abort_terminalizes_unresolved_intent",
+      "operation": "compare_and_transition",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "let failed = fleet.registry.compare_and_transition("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+      "git_blob": "fe819a589a0e575849186de8b839793670dd1c99",
+      "line": 170,
+      "function": "exact_digest_abort_terminalizes_unresolved_intent",
+      "operation": "write_signed_intent_recovery_directive",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_signed_intent_recovery_directive(record.layout.run_root(), &directive)"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "git_blob": "b17115eb5cffff5f890f34a786534c588d0d3aa5",
+      "line": 183,
+      "function": "compare_and_transition",
+      "operation": "compare_and_transition",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub fn compare_and_transition("
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/release.rs",
+      "git_blob": "47d2d1304e6b9ab774dc82f01664a9e4982fa8bd",
+      "line": 503,
+      "function": "compare_and_set_release_state",
+      "operation": "compare_and_set_release_state",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub fn compare_and_set_release_state("
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/release.rs",
+      "git_blob": "47d2d1304e6b9ab774dc82f01664a9e4982fa8bd",
+      "line": 1273,
+      "function": "program_mutation_is_detected_and_release_state_survives_reopen",
+      "operation": "compare_and_set_release_state",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "let first = fixture.registry.compare_and_set_release_state("
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/release.rs",
+      "git_blob": "47d2d1304e6b9ab774dc82f01664a9e4982fa8bd",
+      "line": 1279,
+      "function": "program_mutation_is_detected_and_release_state_survives_reopen",
+      "operation": "compare_and_set_release_state",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "let second = fixture.registry.compare_and_set_release_state("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/control.rs",
+      "git_blob": "97faf9d3ee33b31808aedfa47bf650fd17938e60",
+      "line": 38,
+      "function": "drain_slot",
+      "operation": "compare_and_transition",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "let next = self.registry.compare_and_transition("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/control.rs",
+      "git_blob": "97faf9d3ee33b31808aedfa47bf650fd17938e60",
+      "line": 131,
+      "function": "restart_slot",
+      "operation": "claim_restart",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "let claim = claim_restart("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/control.rs",
+      "git_blob": "97faf9d3ee33b31808aedfa47bf650fd17938e60",
+      "line": 175,
+      "function": "prepare_termination",
+      "operation": "compare_and_transition",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "let next = self.registry.compare_and_transition("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_state.rs",
+      "git_blob": "1970b9551635ed8079bf852edf4822e06f55c106",
+      "line": 143,
+      "function": "persist_restart_budget_for_release",
+      "operation": "write_restart_journal",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_restart_journal(record.layout.run_root(), &journal)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+      "line": 70,
+      "function": "tick_slot",
+      "operation": "complete_restart",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "crate::restart_budget::complete_restart(record.layout.run_root())"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+      "line": 95,
+      "function": "queue_automatic_restart_before_exit",
+      "operation": "claim_restart",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "match crate::restart_budget::claim_restart("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+      "line": 182,
+      "function": "tick_runtime",
+      "operation": "compare_and_transition",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "let next = self.registry.compare_and_transition("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+      "line": 196,
+      "function": "tick_runtime",
+      "operation": "complete_restart",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "crate::restart_budget::complete_restart(record.layout.run_root())"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+      "line": 201,
+      "function": "tick_runtime",
+      "operation": "compare_and_transition",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "let next = self.registry.compare_and_transition("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+      "line": 256,
+      "function": "tick_runtime",
+      "operation": "complete_restart",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "crate::restart_budget::complete_restart(record.layout.run_root())"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+      "line": 285,
+      "function": "finalize_exit",
+      "operation": "remove_lease",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "remove_lease(record.layout.run_root(), &lease)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+      "line": 302,
+      "function": "finalize_exit",
+      "operation": "compare_and_transition",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": ".compare_and_transition(agent_id, runtime.generation, target)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109",
+      "line": 42,
+      "function": "claim_restart",
+      "operation": "claim_restart",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub fn claim_restart("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109",
+      "line": 98,
+      "function": "claim_restart",
+      "operation": "write_restart_budget",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_restart_budget(run_root, &state)?;"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109",
+      "line": 105,
+      "function": "complete_restart",
+      "operation": "complete_restart",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub fn complete_restart(run_root: &Path) -> Result<(), RestartBudgetError> {"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109",
+      "line": 111,
+      "function": "complete_restart",
+      "operation": "write_restart_budget",
+      "kind": "call",
+      "inline_test_module": false,
+      "text": "write_restart_budget(run_root, &state)"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109",
+      "line": 177,
+      "function": "write_restart_budget",
+      "operation": "write_restart_budget",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "fn write_restart_budget("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109",
+      "line": 202,
+      "function": "budget_is_durable_bounded_and_pending_is_idempotent",
+      "operation": "claim_restart",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "let first = claim_restart("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109",
+      "line": 210,
+      "function": "budget_is_durable_bounded_and_pending_is_idempotent",
+      "operation": "claim_restart",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "let replay = claim_restart("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109",
+      "line": 218,
+      "function": "budget_is_durable_bounded_and_pending_is_idempotent",
+      "operation": "complete_restart",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "complete_restart(dir.path()).expect(\"complete\");"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109",
+      "line": 220,
+      "function": "budget_is_durable_bounded_and_pending_is_idempotent",
+      "operation": "claim_restart",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "claim_restart("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_journal.rs",
+      "git_blob": "d0d721e3843067fdb129f2100126b06237ce0a27",
+      "line": 322,
+      "function": "write_restart_journal",
+      "operation": "write_restart_journal",
+      "kind": "definition",
+      "inline_test_module": false,
+      "text": "pub(crate) fn write_restart_journal("
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_journal.rs",
+      "git_blob": "d0d721e3843067fdb129f2100126b06237ce0a27",
+      "line": 419,
+      "function": "restart_journal_round_trips_and_rejects_clock_rollback_with_full_budget",
+      "operation": "write_restart_journal",
+      "kind": "call",
+      "inline_test_module": true,
+      "text": "write_restart_journal(dir.path(), &journal).expect(\"write\");"
+    }
+  ],
+  "owner_participants_required": [
+    {
+      "record": "Agent lifecycle",
+      "definition": "FleetRegistry::compare_and_transition",
+      "writers": [
+        "control.rs",
+        "recovery.rs",
+        "tick.rs",
+        "Supervisor::transition_without_runtime"
+      ],
+      "current_atomicity": "hard-link CAS for one generation; public API has no owner argument"
+    },
+    {
+      "record": "Fleet release state",
+      "definition": "FleetRegistry::compare_and_set_release_state",
+      "writers": [
+        "release.rs release commit/rollback/persist paths"
+      ],
+      "current_atomicity": "single revision immutable publication; public API has no owner argument"
+    },
+    {
+      "record": "Signed intent",
+      "definition": "signed_intent::write_intent",
+      "writers": [
+        "apply_production_grant",
+        "commit_signed_intent_if_target",
+        "recover_signed_intent",
+        "resolve_production_recovery"
+      ],
+      "current_atomicity": "same-grant read check followed by fsynced atomic replacement; no expected intent digest CAS"
+    },
+    {
+      "record": "Recovery directive",
+      "definition": "signed_intent::write_recovery_directive exported as write_signed_intent_recovery_directive",
+      "writers": [
+        "hepta-supervisor-intent-recovery abort CLI",
+        "public exported API"
+      ],
+      "current_atomicity": "fsynced atomic replacement; no owner or fleet identity token"
+    },
+    {
+      "record": "Release transaction",
+      "definition": "release_transaction::write_release_transaction",
+      "writers": [
+        "release.rs transition/recovery phases",
+        "Supervisor::resolve_production_recovery"
+      ],
+      "current_atomicity": "validated fsynced atomic replacement; no shared owner token argument"
+    },
+    {
+      "record": "Agent process lease",
+      "definition": "lease::{write_lease,remove_lease}",
+      "writers": [
+        "recovery::start_release_slot",
+        "recovery::recover_slot",
+        "tick::finalize_exit"
+      ],
+      "current_atomicity": "no-clobber hard-link create, expected-record read plus unlink; no multi-record transaction"
+    },
+    {
+      "record": "Matrix process lease and handle",
+      "definition": "lease::{write_matrix_lease,remove_matrix_lease}",
+      "writers": [
+        "matrix::start_matrix_companion",
+        "matrix::recover_matrix_companion",
+        "matrix::tick_matrix_companion"
+      ],
+      "current_atomicity": "no-clobber hard-link create; non-exact adopted recovery removes after kill request, without observed exit"
+    },
+    {
+      "record": "Automatic restart / pending actions",
+      "definition": "restart_budget plus restart_journal/restart_state",
+      "writers": [
+        "tick::queue_automatic_restart_before_exit",
+        "tick::tick_slot",
+        "tick::tick_runtime",
+        "recovery::recover_restart_budget",
+        "control and matrix restart scheduling"
+      ],
+      "current_atomicity": "separate durable journals/in-memory queued actions; must be suppressed under recovery before abort publication can be considered terminal"
+    }
+  ]
+}

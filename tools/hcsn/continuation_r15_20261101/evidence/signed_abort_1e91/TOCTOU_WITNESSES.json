@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "status": "two_counterexamples_and_one_CAS_control_reproduced",
+  "source_head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "source_identity_sha256": "cf7b2a8e7125f859bf0857f474bf73d7545c1f1f67c391a298709620f4f2c6bf",
+  "scope": "real temporary-filesystem primitives; synthetic records and explicit interleaving; not a current activated-abort vulnerability or native Supervisor test",
+  "platform": "Linux",
+  "cases": [
+    {
+      "name": "lease_and_lifecycle_change_after_abort_checks",
+      "schedule": [
+        "abort reader sees exact unresolved intent, Failed generation20, absent lease/transaction",
+        "other writer publishes Starting generation21 with hard_link",
+        "other writer publishes process lease21",
+        "naive abort writer atomically replaces intent using stale checked snapshot"
+      ],
+      "observed": {
+        "intent": {
+          "grant": "synthetic-grant",
+          "intent_digest": "synthetic-aborted-digest",
+          "status": "aborted"
+        },
+        "lifecycle": {
+          "generation": 21,
+          "lifecycle": "starting"
+        },
+        "lease": {
+          "identity": "synthetic-child",
+          "spawn_generation": 21
+        }
+      },
+      "counterexample_reproduced": true
+    },
+    {
+      "name": "single_lifecycle_generation_CAS_control",
+      "same_generation_competitor_rejected": true,
+      "proves": "hard_link single-path CAS works; it does not coordinate the intent replacement"
+    },
+    {
+      "name": "intent_changes_after_exact_directive_check",
+      "schedule": [
+        "abort reader validates directive against unresolved intent digest",
+        "another same-grant writer durably commits intent",
+        "naive abort writer overwrites committed record with stale snapshot"
+      ],
+      "counterexample_reproduced": true,
+      "observed": {
+        "grant": "synthetic-grant",
+        "intent_digest": "synthetic-aborted-digest",
+        "status": "aborted"
+      }
+    }
+  ],
+  "safe_action": "leave directive consumption unactivated and retain recovery quarantine until an owner/transaction protocol protects all checks through publication"
+}
