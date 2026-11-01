@@ -1,0 +1,57 @@
+{
+  "all_review_checks_passed": true,
+  "complete_child_cpu_seconds": 13.661849,
+  "corrected_findings": [
+    {
+      "issue": "Provider mutated effect counter/dedup before persist and continued serving errors; cached success could follow failed durability",
+      "resolution": "Operate on a cloned candidate, persist complete candidate atomically before publication; propagate storage errors out of service. Injected ENOSPC verifies fail-stop/no success and restart reconciliation."
+    },
+    {
+      "issue": "LEASE generation and durable request reply were separate commits; crash between them repeated lease increment",
+      "resolution": "LEASE generation, effects and requestID-bound exact reply have one durable candidate commit. lease_committed fault occurs after this commit and before mailbox response; all130 resumed cases retain generation2, with exactly2durable lease replies."
+    },
+    {
+      "issue": "Original Unix socket unavailable in executor",
+      "resolution": "Preserved EPERM failure and narrowed tested transport to durable local filesystem mailbox; no network qualification."
+    }
+  ],
+  "limits": [
+    "Precomputed Python numerical states/actions remain opaque to the Rust owner; this is not a native financial CTMC kernel",
+    "Provider is a cooperating local service with bounded frozen jobs and trusted files, not an authenticated production remote service",
+    "Fencing is checked at the provider for new operations; exact prior receipts and durable request replies are safely replayable",
+    "Process death and injected IO failure do not establish physical power-loss or distributed fencing guarantees",
+    "No production owner activation, full model quality/cost gate, GPU or joule claim"
+  ],
+  "negative_checks": {
+    "altered_duplicate": true,
+    "duplicate_returns_exact_receipt": true,
+    "persist_failure_fail_stop_no_ack": true,
+    "stale_generation": true,
+    "unknown_operation": true,
+    "wrong_run": true
+  },
+  "record_audit_file": "tools/hcsn/four_stage_r18_20261101/independent_native_record_audit_v2.json",
+  "record_audit_sha256": "f0800981ea43b3088c75ca729d2f0bfa92461bc597ecbc9763f4db96c8878dbf",
+  "schema": "hcsn-r18-native-independent-review-v2",
+  "scope": "Source review plus independent invocation of saved-record auditor for Rust local durable-mailbox owner/provider. No new numerical model or production activation.",
+  "source_files_verified": 22,
+  "source_hashes": {
+    "audit.py": "234e253b2a04a936e7d9f6be488f6ed7e00e0b430f4ed740c5d0ce1964911c53",
+    "campaign.py": "6021a64d32721feb302dddf20b539b086a35e20602909d9253ad5326e695bec7",
+    "common.rs": "6ccfac7e38109696bbb9bbebe9b5e9490445007a7b00a6741d65f1b943d051ac",
+    "main.rs": "dd85715744d22acaaa90727c7aa94421fae6d555c3ac0d162841977d9722010e",
+    "owner.rs": "331a5bf06cea1beed79713b43db00abb223b962346506922af2b7dbbbdb55097",
+    "provider.rs": "f74ce50f52057b5284ffe96497a6e9a0091a1234c8944af8cd6c9ad198392e94"
+  },
+  "source_manifest_sha256": "ff5feb5473c415fe9504081f75aa00ecb9905cfe32a50c3da57251367c33c6d4",
+  "verified_records": {
+    "all_passed": true,
+    "cases": 130,
+    "durable_lease_replies": 260,
+    "effect_receipts": 780,
+    "native_processes": 408,
+    "queries": 780,
+    "schema": "hcsn-r18-native-independent-record-audit-v1",
+    "scope": "Saved record/protocol/billing/fencing audit without campaign, runtime, planner or numerical imports; no claim of native CTMC or production activation"
+  }
+}

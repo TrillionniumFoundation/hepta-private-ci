@@ -1,0 +1,934 @@
+{
+  "all_passed": true,
+  "binary_sha256": "beca1ae009acb6b062fcd1e911be69f02aea54b134dc434e7cf1a6290f31cb5b",
+  "cases": 130,
+  "checks": [
+    {
+      "case": "151101_iid_full_fixed_wait_read/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_full_fixed_wait_read/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_full_fixed_wait_read/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_full_fixed_wait_read/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_full_fixed_wait_read/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_full_fixed_wait_read/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_full_fixed_wait_read/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_full_fixed_wait_read/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_full_fixed_wait_read/provider_storage_error",
+      "exact_numeric_state": true,
+      "mode": "provider_storage_error",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_full_fixed_wait_read/lease_committed",
+      "exact_numeric_state": true,
+      "mode": "lease_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_full_fixed_refresh/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_full_fixed_refresh/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_full_fixed_refresh/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_full_fixed_refresh/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_full_fixed_refresh/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_full_fixed_refresh/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_full_fixed_refresh/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_full_fixed_refresh/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_anchored_fixed_wait_read/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_anchored_fixed_wait_read/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_anchored_fixed_wait_read/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_anchored_fixed_wait_read/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_anchored_fixed_wait_read/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_anchored_fixed_wait_read/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_anchored_fixed_wait_read/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_anchored_fixed_wait_read/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_iid_anchored_fixed_refresh/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_anchored_fixed_refresh/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_anchored_fixed_refresh/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_anchored_fixed_refresh/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_anchored_fixed_refresh/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_anchored_fixed_refresh/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_anchored_fixed_refresh/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_iid_anchored_fixed_refresh/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_full_fixed_wait_read/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_full_fixed_wait_read/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_full_fixed_wait_read/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_full_fixed_wait_read/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_full_fixed_wait_read/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_full_fixed_wait_read/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_full_fixed_wait_read/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_full_fixed_wait_read/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_full_fixed_refresh/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_full_fixed_refresh/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_full_fixed_refresh/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_full_fixed_refresh/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_full_fixed_refresh/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_full_fixed_refresh/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_full_fixed_refresh/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_full_fixed_refresh/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_anchored_fixed_wait_read/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_anchored_fixed_wait_read/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_anchored_fixed_wait_read/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_anchored_fixed_wait_read/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_anchored_fixed_wait_read/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_anchored_fixed_wait_read/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_anchored_fixed_wait_read/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_anchored_fixed_wait_read/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151101_ood_anchored_fixed_refresh/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_anchored_fixed_refresh/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_anchored_fixed_refresh/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_anchored_fixed_refresh/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_anchored_fixed_refresh/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_anchored_fixed_refresh/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_anchored_fixed_refresh/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151101_ood_anchored_fixed_refresh/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_full_fixed_wait_read/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_full_fixed_wait_read/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_full_fixed_wait_read/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_full_fixed_wait_read/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_full_fixed_wait_read/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_full_fixed_wait_read/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_full_fixed_wait_read/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_full_fixed_wait_read/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_full_fixed_refresh/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_full_fixed_refresh/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_full_fixed_refresh/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_full_fixed_refresh/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_full_fixed_refresh/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_full_fixed_refresh/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_full_fixed_refresh/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_full_fixed_refresh/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_anchored_fixed_wait_read/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_anchored_fixed_wait_read/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_anchored_fixed_wait_read/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_anchored_fixed_wait_read/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_anchored_fixed_wait_read/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_anchored_fixed_wait_read/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_anchored_fixed_wait_read/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_anchored_fixed_wait_read/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_iid_anchored_fixed_refresh/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_anchored_fixed_refresh/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_anchored_fixed_refresh/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_anchored_fixed_refresh/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_anchored_fixed_refresh/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_anchored_fixed_refresh/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_anchored_fixed_refresh/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_iid_anchored_fixed_refresh/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_full_fixed_wait_read/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_full_fixed_wait_read/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_full_fixed_wait_read/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_full_fixed_wait_read/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_full_fixed_wait_read/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_full_fixed_wait_read/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_full_fixed_wait_read/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_full_fixed_wait_read/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_full_fixed_refresh/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_full_fixed_refresh/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_full_fixed_refresh/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_full_fixed_refresh/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_full_fixed_refresh/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_full_fixed_refresh/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_full_fixed_refresh/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_full_fixed_refresh/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_anchored_fixed_wait_read/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_anchored_fixed_wait_read/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_anchored_fixed_wait_read/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_anchored_fixed_wait_read/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_anchored_fixed_wait_read/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_anchored_fixed_wait_read/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_anchored_fixed_wait_read/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_anchored_fixed_wait_read/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 337500
+    },
+    {
+      "case": "151103_ood_anchored_fixed_refresh/owner_prepared",
+      "exact_numeric_state": true,
+      "mode": "owner_prepared",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_anchored_fixed_refresh/owner_elapsed",
+      "exact_numeric_state": true,
+      "mode": "owner_elapsed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_anchored_fixed_refresh/owner_received_before_commit",
+      "exact_numeric_state": true,
+      "mode": "owner_received_before_commit",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_anchored_fixed_refresh/owner_received",
+      "exact_numeric_state": true,
+      "mode": "owner_received",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_anchored_fixed_refresh/owner_applied",
+      "exact_numeric_state": true,
+      "mode": "owner_applied",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_anchored_fixed_refresh/owner_boundary",
+      "exact_numeric_state": true,
+      "mode": "owner_boundary",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_anchored_fixed_refresh/provider_committed",
+      "exact_numeric_state": true,
+      "mode": "provider_committed",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    },
+    {
+      "case": "151103_ood_anchored_fixed_refresh/stale_owner",
+      "exact_numeric_state": true,
+      "mode": "stale_owner",
+      "provider_count": 6,
+      "provider_fee_micros": 945000
+    }
+  ],
+  "complete_child_cpu_seconds": 13.661849,
+  "max_child_rss_kib": 77476,
+  "native_processes": 408,
+  "negative_checks": {
+    "altered_duplicate": true,
+    "duplicate_returns_exact_receipt": true,
+    "persist_failure_fail_stop_no_ack": true,
+    "stale_generation": true,
+    "unknown_operation": true,
+    "wrong_run": true
+  },
+  "production_activation": false,
+  "protocol_sha256": "1094be0787c0751ab175bc4a05d40ec5b269b76b49ebd721ba52bee1a42dd94a",
+  "schema": "hcsn-native-r18-stateful-replay-v1",
+  "scope": "Opt-in Rust local durable-mailbox owner/provider engineering replay. Actual persistent external billing/dedup/lease effects; opaque numerical states and actions replay frozen Python R17 CTMC traces. This is not native CTMC integration, scientific core gain, production neural activation, or socket/network qualification.",
+  "source_manifest": "tools/hcsn/native_owner_r18_20261101/SOURCE_MANIFEST_V2.json",
+  "source_manifest_sha256": "ff5feb5473c415fe9504081f75aa00ecb9905cfe32a50c3da57251367c33c6d4"
+}
