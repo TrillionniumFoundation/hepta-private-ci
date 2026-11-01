@@ -1,0 +1,36 @@
+{
+  "schema": "hcsn-r15-native-formatter-v1",
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "cwd": "/workspace/scratch/d87ad18a3bba/hepta-r15-git/codex-rs",
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "",
+  "wall_seconds": 0.12702444499882404,
+  "child_user_seconds": 0.08195799999999999,
+  "child_system_seconds": 0.04533099999999999,
+  "formatter_command": [
+    "dotslash",
+    "/workspace/scratch/d87ad18a3bba/hepta-r15-git/tools/buildifier",
+    "-mode=fix",
+    "-lint=off",
+    "codex-rs/hepta-agentd/BUILD.bazel",
+    "defs.bzl"
+  ],
+  "before_sha256": {
+    "codex-rs/hepta-agentd/BUILD.bazel": "2eae63afb57da8acaaef0fcf517133c0c04742178fa98f645b7c814da71f843d",
+    "defs.bzl": "3fc965c2f62659b7257ba316b41fd11f19365205a4a20e421f0005aaa78a6d52"
+  },
+  "after_sha256": {
+    "codex-rs/hepta-agentd/BUILD.bazel": "f193ff8bdd0f42cd804a5ee46a5cb44e7dfa467ca80c6a10a4218e4387a67a9e",
+    "defs.bzl": "3fc965c2f62659b7257ba316b41fd11f19365205a4a20e421f0005aaa78a6d52"
+  },
+  "status_before": " M codex-rs/hepta-agentd/BUILD.bazel\n M defs.bzl\n?? tools/hcsn/continuation_r15_20261101/audit_fp32.py\n?? tools/hcsn/continuation_r15_20261101/audit_integration_wiring.py\n?? tools/hcsn/continuation_r15_20261101/evidence/FP32_DIAGNOSIS.json\n?? tools/hcsn/continuation_r15_20261101/evidence/NATIVE_TARGET_EMISSION.json\n",
+  "status_after": " M codex-rs/hepta-agentd/BUILD.bazel\n M defs.bzl\n?? tools/hcsn/continuation_r15_20261101/audit_fp32.py\n?? tools/hcsn/continuation_r15_20261101/audit_integration_wiring.py\n?? tools/hcsn/continuation_r15_20261101/evidence/FP32_DIAGNOSIS.json\n?? tools/hcsn/continuation_r15_20261101/evidence/NATIVE_TARGET_EMISSION.json\n",
+  "dotslash_version": "0.5.9",
+  "buildifier_version": "8.5.1",
+  "unchanged_manifest_git_blob": "d18dd60ac6b317d06c6ccf850654b2e06e29395d",
+  "buildifier_binary_sha256": "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7"
+}

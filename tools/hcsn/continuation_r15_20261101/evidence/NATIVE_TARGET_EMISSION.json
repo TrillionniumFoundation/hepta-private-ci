@@ -1,0 +1,49 @@
+{
+  "kind": "source-level-target-emission-not-Bazel-build",
+  "real_macro_executed": true,
+  "real_dependency_helper_executed": true,
+  "synthetic_external_dependencies": true,
+  "baseline_ref": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "input_sha256": {
+    "before_defs": "0e6a2e5b63f9456ac77f900d0e6be8fde1b57f577973c6069ae680814106f9c4",
+    "after_defs": "3fc965c2f62659b7257ba316b41fd11f19365205a4a20e421f0005aaa78a6d52",
+    "before_build": "c812be464d0c35cdf857464fd236968f528eca2a9457b1c3cff3d50e3033a49f",
+    "after_build": "f193ff8bdd0f42cd804a5ee46a5cb44e7dfa467ca80c6a10a4218e4387a67a9e",
+    "existing_dependency_helper": "b64c9972a9e8d75f3442ed79e1095db1e45c84a62e96c05c7356c04521178074"
+  },
+  "emitted_target_count": 56,
+  "checks": {
+    "hepta-agentd-plasticity_process_e2e-test": {
+      "before": [
+        "@crates//:fixture_external",
+        "//codex-rs/hepta-learning-ledger:hepta-learning-ledger",
+        "hepta-agentd"
+      ],
+      "after": [
+        "@crates//:fixture_external",
+        "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+        "hepta-agentd"
+      ]
+    },
+    "hepta-agentd-plasticity_process_e2e-test-windows-cross-bin": {
+      "before": [
+        "@crates//:fixture_external",
+        "//codex-rs/hepta-learning-ledger:hepta-learning-ledger",
+        "hepta-agentd"
+      ],
+      "after": [
+        "@crates//:fixture_external",
+        "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+        "hepta-agentd"
+      ]
+    },
+    "sharded_native_and_windows": true,
+    "product_library_binary_and_neighbor_unchanged": true,
+    "only_targeted_integration_rules_changed": [
+      "hepta-agentd-plasticity_process_e2e-test",
+      "hepta-agentd-plasticity_process_e2e-test-windows-cross-bin"
+    ]
+  },
+  "actual_bazel_analysis_run": false,
+  "rust_compilation_run": false
+}
