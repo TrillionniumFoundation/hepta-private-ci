@@ -1,0 +1,9 @@
+{
+  "schema": "hcsn-r17-inherited-regression-v1",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest tools.hcsn.support_retention_r16_20261101.test_compression tools.hcsn.support_retention_r16_20261101.test_execution",
+  "tests_run": 10,
+  "failures": 0,
+  "errors": 0,
+  "reported_test_seconds": 0.202,
+  "scope": "Unchanged inherited support, anchored partition, checkpoint and execution regression. Not full repository CI, Rust build, GPU or production qualification."
+}

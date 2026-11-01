@@ -1,0 +1,43 @@
+{
+  "schema": "hcsn-r17-remote-readback-v1",
+  "all_match": true,
+  "total_files": 270,
+  "records": [
+    {
+      "mode": "cold",
+      "commit_sha": "bf776c32f8d3be915fa0d83f550d4c9abff73926",
+      "tree_sha": "ca5aa7244cd2a59b259e6b288d8011ccf05ce7b2",
+      "verified_files": 42,
+      "all_git_blob_ids_match": true,
+      "scope": "tools/hcsn/cold_recovery_r17_20261101",
+      "pr_number": 4566
+    },
+    {
+      "mode": "missing",
+      "commit_sha": "b3c782f7bced4f975884c788a3a2e7f436515bb4",
+      "tree_sha": "dcb60f652107ba9e926027edf1bff5f90c01f831",
+      "verified_files": 27,
+      "all_git_blob_ids_match": true,
+      "scope": "experiments/hcsn_multi_missing_r17_20261101",
+      "pr_number": 4568
+    },
+    {
+      "mode": "flow",
+      "commit_sha": "5760c2d268e3ec09c599c40a57d793edc8bc5390",
+      "tree_sha": "73ff9c7c2c10871ebc1ee7e5d057485442378dc9",
+      "verified_files": 41,
+      "all_git_blob_ids_match": true,
+      "scope": "tools/hcsn/parameter_flow_r17_20261101",
+      "pr_number": 4569
+    },
+    {
+      "mode": "fast",
+      "commit_sha": "cb405b0d08a6d87589294552fd292b02306135b5",
+      "tree_sha": "72a05107530ef02817e7276789f236ae084c5821",
+      "verified_files": 160,
+      "all_git_blob_ids_match": true,
+      "scope": "tools/hcsn/symmetric_fastpath_r17_20261101",
+      "pr_number": 4570
+    }
+  ]
+}
