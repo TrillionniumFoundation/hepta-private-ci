@@ -1,0 +1,77 @@
+{
+  "scope": "Real macro/helper target emission with explicit synthetic external dependency/platform fixtures; not Bazel analysis or Rust compilation.",
+  "real_macro_executed": true,
+  "real_alias_helper_executed": true,
+  "real_test_dependency_helper_executed": true,
+  "checks": [
+    {
+      "platform": "//conditions:default",
+      "sharded": false,
+      "emitted_targets": 15,
+      "unchanged_non_alias_attributes": true,
+      "aliases_subset_selected_deps": true,
+      "test_replacement_aliases_follow_selected_identity": true,
+      "external_replacement_ignored_like_dependency_helper": true
+    },
+    {
+      "platform": "//conditions:default",
+      "sharded": true,
+      "emitted_targets": 16,
+      "unchanged_non_alias_attributes": true,
+      "aliases_subset_selected_deps": true,
+      "test_replacement_aliases_follow_selected_identity": true,
+      "external_replacement_ignored_like_dependency_helper": true
+    },
+    {
+      "platform": "//fixture:linux",
+      "sharded": false,
+      "emitted_targets": 15,
+      "unchanged_non_alias_attributes": true,
+      "aliases_subset_selected_deps": true,
+      "test_replacement_aliases_follow_selected_identity": true,
+      "external_replacement_ignored_like_dependency_helper": true
+    },
+    {
+      "platform": "//fixture:linux",
+      "sharded": true,
+      "emitted_targets": 16,
+      "unchanged_non_alias_attributes": true,
+      "aliases_subset_selected_deps": true,
+      "test_replacement_aliases_follow_selected_identity": true,
+      "external_replacement_ignored_like_dependency_helper": true
+    },
+    {
+      "platform": "//fixture:windows",
+      "sharded": false,
+      "emitted_targets": 15,
+      "unchanged_non_alias_attributes": true,
+      "aliases_subset_selected_deps": true,
+      "test_replacement_aliases_follow_selected_identity": true,
+      "external_replacement_ignored_like_dependency_helper": true
+    },
+    {
+      "platform": "//fixture:windows",
+      "sharded": true,
+      "emitted_targets": 16,
+      "unchanged_non_alias_attributes": true,
+      "aliases_subset_selected_deps": true,
+      "test_replacement_aliases_follow_selected_identity": true,
+      "external_replacement_ignored_like_dependency_helper": true
+    }
+  ],
+  "cargo_lock_complete_yaml_consumers": [
+    "codex-core-plugins",
+    "codex-external-agent-migration",
+    "codex-skills",
+    "codex-skills-extension"
+  ],
+  "four_actual_consumer_build_invocations_checked": true,
+  "all_non_alias_target_attributes_unchanged": true,
+  "source_sha256": {
+    "before_defs": "3fc965c2f62659b7257ba316b41fd11f19365205a4a20e421f0005aaa78a6d52",
+    "after_defs": "0190c8ac91e1de5a9124d06c9b5608d1cd04e9fcdbdccd3a73b14fd751a54336",
+    "alias_helper": "0881176bff495caa39615536ea8e05433e9d31a8d0ec2c738a73e088d3e2d57c",
+    "test_dependency_helper": "b64c9972a9e8d75f3442ed79e1095db1e45c84a62e96c05c7356c04521178074"
+  },
+  "native_remote_compilation_gate": "Still required on the followup head"
+}

@@ -1,0 +1,205 @@
+{
+  "head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "merge": "73ffeaf2d120289b935f3aed3cc4608866c20b4a",
+  "scope": "Actual new-head GNU release and SDK logs; new YAML alias build failures, not old 6500 head diagnostics.",
+  "logs": [
+    {
+      "job": 124814580988,
+      "raw_log_sha256": "ca819337c2247403f37710a68820c328f30d2a5f050cc304489b83a5d9c2b849",
+      "raw_bytes": 732236,
+      "diagnostics": [
+        {
+          "line": 4642,
+          "excerpt": "2026-11-01T09:59:30.2817548Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T09:59:30.2818251Z   --> codex-rs/skills/src/parser.rs:50:42\n2026-11-01T09:59:30.2818662Z    |\n2026-11-01T09:59:30.2819436Z 50 |     let parsed: SkillFrontmatter = match serde_yaml::from_str(&frontmatter) {\n2026-11-01T09:59:30.2820205Z    |                                          ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T09:59:30.2820744Z    |\n2026-11-01T09:59:30.2821478Z    = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 4650,
+          "excerpt": "2026-11-01T09:59:30.2822338Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T09:59:30.2822917Z   --> codex-rs/skills/src/parser.rs:57:17\n2026-11-01T09:59:30.2823306Z    |\n2026-11-01T09:59:30.2823768Z 57 |                 serde_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)\n2026-11-01T09:59:30.2824456Z    |                 ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T09:59:30.2824952Z    |\n2026-11-01T09:59:30.2825529Z    = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 4658,
+          "excerpt": "2026-11-01T09:59:30.2826366Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T09:59:30.2826928Z    --> codex-rs/skills/src/parser.rs:168:16\n2026-11-01T09:59:30.2827320Z     |\n2026-11-01T09:59:30.2827727Z 168 |             && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();\n2026-11-01T09:59:30.2828357Z     |                ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T09:59:30.2828853Z     |\n2026-11-01T09:59:30.2829426Z     = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 4666,
+          "excerpt": "2026-11-01T09:59:30.2830244Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T09:59:30.2830767Z   --> codex-rs/skills/src/parser.rs:36:27\n2026-11-01T09:59:30.2831144Z    |\n2026-11-01T09:59:30.3492462Z 36 |     InvalidYaml(#[source] serde_yaml::Error),\n2026-11-01T09:59:30.3493142Z    |                           ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T09:59:30.3493934Z    |\n2026-11-01T09:59:30.3494550Z    = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 4674,
+          "excerpt": "2026-11-01T09:59:30.3495409Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T09:59:30.3495972Z    --> codex-rs/skills/src/parser.rs:168:39\n2026-11-01T09:59:30.3496378Z     |\n2026-11-01T09:59:30.3496792Z 168 |             && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();\n2026-11-01T09:59:30.3497479Z     |                                       ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T09:59:30.3498013Z     |\n2026-11-01T09:59:30.3498608Z     = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 4708,
+          "excerpt": "2026-11-01T09:59:30.3517142Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T09:59:30.3517670Z   --> skills/src/parser.rs:50:42\n2026-11-01T09:59:30.3518019Z    |\n2026-11-01T09:59:30.3518486Z 50 |     let parsed: SkillFrontmatter = match serde_yaml::from_str(&frontmatter) {\n2026-11-01T09:59:30.3519215Z    |                                          ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T09:59:30.3519757Z    |\n2026-11-01T09:59:30.3520343Z    = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 4716,
+          "excerpt": "2026-11-01T09:59:30.3521164Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T09:59:30.4180400Z   --> skills/src/parser.rs:57:17\n2026-11-01T09:59:30.4181136Z    |\n2026-11-01T09:59:30.4181851Z 57 |                 serde_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)\n2026-11-01T09:59:30.4182594Z    |                 ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T09:59:30.4183111Z    |\n2026-11-01T09:59:30.4183719Z    = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 4724,
+          "excerpt": "2026-11-01T09:59:30.4184590Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T09:59:30.4185145Z    --> skills/src/parser.rs:168:16\n2026-11-01T09:59:30.4185536Z     |\n2026-11-01T09:59:30.4185957Z 168 |             && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();\n2026-11-01T09:59:30.4186605Z     |                ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T09:59:30.4187119Z     |\n2026-11-01T09:59:30.4187730Z     = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 4732,
+          "excerpt": "2026-11-01T09:59:30.4188584Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T09:59:30.4189143Z   --> skills/src/parser.rs:36:27\n2026-11-01T09:59:30.4189504Z    |\n2026-11-01T09:59:30.4189835Z 36 |     InvalidYaml(#[source] serde_yaml::Error),\n2026-11-01T09:59:30.4190420Z    |                           ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T09:59:30.4190940Z    |\n2026-11-01T09:59:30.4191630Z    = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 4740,
+          "excerpt": "2026-11-01T09:59:30.4192494Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T09:59:30.4193035Z    --> skills/src/parser.rs:168:39\n2026-11-01T09:59:30.4193403Z     |\n2026-11-01T09:59:30.4193973Z 168 |             && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();\n2026-11-01T09:59:30.4194667Z     |                                       ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T09:59:30.4195226Z     |\n2026-11-01T09:59:30.4195811Z     = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        }
+      ]
+    },
+    {
+      "job": 124814580804,
+      "raw_log_sha256": "9b01cfdd62d958ca0a4f32dda6691a91dc0f393a4cc29bf6eb884bc31f72042b",
+      "raw_bytes": 669826,
+      "diagnostics": [
+        {
+          "line": 6935,
+          "excerpt": "2026-11-01T10:00:01.4599606Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T10:00:01.4600386Z   --> codex-rs/skills/src/parser.rs:50:42\n2026-11-01T10:00:01.4600925Z    |\n2026-11-01T10:00:01.4601692Z 50 |     let parsed: SkillFrontmatter = match serde_yaml::from_str(&frontmatter) {\n2026-11-01T10:00:01.4602764Z    |                                          ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T10:00:01.4603491Z    |\n2026-11-01T10:00:01.4604355Z    = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 6943,
+          "excerpt": "2026-11-01T10:00:01.4605619Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T10:00:01.4606402Z   --> codex-rs/skills/src/parser.rs:57:17\n2026-11-01T10:00:01.4606920Z    |\n2026-11-01T10:00:01.4607702Z 57 |                 serde_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)\n2026-11-01T10:00:01.4608695Z    |                 ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T10:00:01.4609337Z    |\n2026-11-01T10:00:01.4610539Z    = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 6951,
+          "excerpt": "2026-11-01T10:00:01.4611838Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T10:00:01.4612984Z    --> codex-rs/skills/src/parser.rs:168:16\n2026-11-01T10:00:01.4613510Z     |\n2026-11-01T10:00:01.4614221Z 168 |             && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();\n2026-11-01T10:00:01.4615137Z     |                ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T10:00:01.4615803Z     |\n2026-11-01T10:00:01.4616622Z     = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 6959,
+          "excerpt": "2026-11-01T10:00:01.4617878Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T10:00:01.4618663Z   --> codex-rs/skills/src/parser.rs:36:27\n2026-11-01T10:00:01.4619176Z    |\n2026-11-01T10:00:01.4619693Z 36 |     InvalidYaml(#[source] serde_yaml::Error),\n2026-11-01T10:00:01.4620841Z    |                           ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T10:00:01.4621538Z    |\n2026-11-01T10:00:01.4622439Z    = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        },
+        {
+          "line": 6967,
+          "excerpt": "2026-11-01T10:00:01.4623774Z error[E0433]: cannot find module or crate `serde_yaml` in this scope\n2026-11-01T10:00:01.4624519Z    --> codex-rs/skills/src/parser.rs:168:39\n2026-11-01T10:00:01.4625024Z     |\n2026-11-01T10:00:01.4625694Z 168 |             && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();\n2026-11-01T10:00:01.4626716Z     |                                       ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_yaml`\n2026-11-01T10:00:01.4627428Z     |\n2026-11-01T10:00:01.4628334Z     = help: if you wanted to use a crate named `serde_yaml`, use `cargo add serde_yaml` to add it to your `Cargo.toml`"
+        }
+      ]
+    }
+  ],
+  "cargo_lock_direct_serde_norway_consumers": [
+    "codex-core-plugins",
+    "codex-external-agent-migration",
+    "codex-skills",
+    "codex-skills-extension"
+  ],
+  "source_identities": [
+    {
+      "path": "defs.bzl",
+      "git_blob": "aa4eacbcb1bb7ca8c325944b16e47f28f11980d2",
+      "sha256": "3fc965c2f62659b7257ba316b41fd11f19365205a4a20e421f0005aaa78a6d52",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/defs.bzl"
+    },
+    {
+      "path": "bazel/rules/BUILD.bazel",
+      "git_blob": "218872c73c381ad4246a8e4650d5055a24439e0c",
+      "sha256": "64977e47d22274fcf8a25c5023485ef430ce85c490b7a678057f511f256a1713",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/bazel/rules/BUILD.bazel"
+    },
+    {
+      "path": "bazel/rules/testing/rust_test_dependencies.bzl",
+      "git_blob": "140bde6995e31f11dcafaee0484e01baecb99d6c",
+      "sha256": "b64c9972a9e8d75f3442ed79e1095db1e45c84a62e96c05c7356c04521178074",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/bazel/rules/testing/rust_test_dependencies.bzl"
+    },
+    {
+      "path": "AGENTS.md",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/AGENTS.md"
+    },
+    {
+      "path": "MODULE.bazel",
+      "git_blob": "a49ef6c1cf4cf6b12f76296cd488c93f0753905b",
+      "sha256": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/MODULE.bazel"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "git_blob": "71867ac2c28d2e3d7db071b014ff3a28b236c6f5",
+      "sha256": "fc5bed00217a44790fe5be1ee3284249b7f806293384141bae12a2d1faf1383e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/Cargo.toml"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "git_blob": "dd10ff92a5044e1b077bcd54e221dd0bfaa8b7b9",
+      "sha256": "53df80eb7b16cb343388de5a9c10c76595d12c01af8d0f86d5bf45952ed04d88",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/Cargo.lock"
+    },
+    {
+      "path": "tools/buildifier",
+      "git_blob": "d18dd60ac6b317d06c6ccf850654b2e06e29395d",
+      "sha256": "818bfc01e21fceb0d83ddaf4614531418ea763e25499f7f9fd03c7a853948fe6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/tools/buildifier"
+    },
+    {
+      "path": "justfile",
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/justfile"
+    },
+    {
+      "path": "tools/hcsn/continuation_r15_20261101/audit_integration_wiring.py",
+      "git_blob": "d21ef20af439ebe5a93c6b0f4a70a757a8849e31",
+      "sha256": "3a5f14903d916494d55d20445c09c9e5511c5451c24c77a94b3e57bfdfde78b1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/tools/hcsn/continuation_r15_20261101/audit_integration_wiring.py"
+    },
+    {
+      "path": "codex-rs/skills/Cargo.toml",
+      "git_blob": "7342975aaea0e3ecc61da41f145674cd154a12c9",
+      "sha256": "099f2da853fa6853df18b7923ccd55b6bd1374af7741fd6156ec84b7765ae086",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/skills/Cargo.toml"
+    },
+    {
+      "path": "codex-rs/skills/BUILD.bazel",
+      "git_blob": "d4c5ad2675eadce4bbe40e2917b259c5f3f62f65",
+      "sha256": "24b912b97c066722761c9a5e487a98b06f5546a9011666073f4c697c242ed6c6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/skills/BUILD.bazel"
+    },
+    {
+      "path": "codex-rs/ext/skills/Cargo.toml",
+      "git_blob": "256d0aaa8710fff8d7a9d5c8eba242cd282b868e",
+      "sha256": "6dc94276d1316b6c3d911e957f1c80f849c4b92ad679edd64864d7128ce350e0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/ext/skills/Cargo.toml"
+    },
+    {
+      "path": "codex-rs/core-plugins/Cargo.toml",
+      "git_blob": "0899163accb0edc3e98b27b9b9fdfd86adab46ae",
+      "sha256": "d691c34a799cd2751e7b03a2eb9aef3c6f2abb085e8cd91ef5bb61e07146ca11",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/core-plugins/Cargo.toml"
+    },
+    {
+      "path": "codex-rs/external-agent-migration/Cargo.toml",
+      "git_blob": "3db739977ce9e94f66a3c4c9f22ce869610fa910",
+      "sha256": "9d8bac37beeef7e70f85b273285b2b0bfc3d80fea758eafc69a51511b5f24997",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/external-agent-migration/Cargo.toml"
+    },
+    {
+      "path": "codex-rs/ext/skills/BUILD.bazel",
+      "git_blob": "81410ca1f614779e09036ab2ad7c371b5ceecd4f",
+      "sha256": "59efe16cbca59dffbed08053f5e562868c877eb02fd058b9689b182144e9401f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/ext/skills/BUILD.bazel"
+    },
+    {
+      "path": "codex-rs/core-plugins/BUILD.bazel",
+      "git_blob": "58503cb031e51c95b3326679fc86fe1862a6dfad",
+      "sha256": "3db4cdde4a75b76c31707584ffb803d309aad933f9a94166b8751afba371db6c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/core-plugins/BUILD.bazel"
+    },
+    {
+      "path": "codex-rs/external-agent-migration/BUILD.bazel",
+      "git_blob": "f0cf82950d26629de0f3350a654d867f857faef5",
+      "sha256": "4d7d007dd9be3cbf35b7721e540319fcec13dd056aa0ff0d2a343d56c9765afa",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/external-agent-migration/BUILD.bazel"
+    },
+    {
+      "path": "bazel/rules/testing/BUILD.bazel",
+      "git_blob": "dcf62bb7392164d6b7611cc462208e992ca7bde2",
+      "sha256": "35f1d129b330fc4e619341c81246c7e2606c8e6c71e07ff9423aff62f47a8ebd",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/bazel/rules/testing/BUILD.bazel"
+    }
+  ],
+  "inference": "Cargo preserves the serde_yaml import alias for serde_norway0.9.42; codex_rust_crate passes generated deps but does not pass generated aliases to any Rust rule. Pinned rules_rs exposes aliases(package_name=None).",
+  "raw_log_retention": "Complete logs retained in agent store and scratch; bounded excerpts retained here. Rustc uses response files, so actual --extern arguments are not visible in primary logs."
+}

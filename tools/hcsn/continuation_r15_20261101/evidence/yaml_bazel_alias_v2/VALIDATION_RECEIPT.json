@@ -1,0 +1,116 @@
+{
+  "scope": "Minimal Cargo dependency-name wiring repair for the actual new-head serde_yaml regression; no Rust source, Cargo manifest, lockfile, feature or gate changes.",
+  "failure_head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "failure_merge": "73ffeaf2d120289b935f3aed3cc4608866c20b4a",
+  "actual_failure_jobs": [
+    124814580988,
+    124814580804
+  ],
+  "actual_failure": "E0433 serde_yaml unresolved in skills parser.rs at lines36,50,57,168. GNU release also fails the skills unit-test binary; SDK fails the shared skills library.",
+  "cause": "The workspace Cargo alias maps serde_yaml to serde_norway0.9.42. The pinned rules_rs0.0.96 generates aliases(), but codex_rust_crate previously passed only deps and never passed these aliases to rules_rust.",
+  "api_sources": [
+    {
+      "repository": "hermeticbuild/rules_rs",
+      "ref": "v0.0.96",
+      "path": "rs/extensions.bzl",
+      "git_blob": "03c143215149f281fd1b03626d43b273254c0d2e",
+      "fact": "Generated aliases(package_name=None) returns DEP_DATA aliases."
+    },
+    {
+      "repository": "hermeticbuild/rules_rs",
+      "ref": "v0.0.96",
+      "path": "rs/private/cargo_workspace_graph.bzl",
+      "git_blob": "9baee0e86df8b03d93e7e8828138cdede765819e",
+      "fact": "Cargo rename is mapped from the resolved bazel_target; normal/dev/build and platform dependency sets are separately recorded."
+    },
+    {
+      "repository": "hermeticbuild/rules_rust",
+      "ref": "f19661ba71f77c993ce1eb082053692610fe4313",
+      "path": "rust/private/rust.bzl",
+      "git_blob": "51e5067db99a1e7aee9b61c79b3732ff518d9503",
+      "fact": "aliases is a label_keyed_string_dict; the unit-test crate inherits and extends the library aliases."
+    }
+  ],
+  "design": "Filter generated aliases to the same dependency kind and platform branch as each rule; retain shared aliases in every branch. Rewrite selected alias keys through the same Label-normalized test dependency replacements. Reject conflicting replacement aliases. This avoids introducing dev-only or foreign-platform graph edges merely by setting aliases. External @crates replacements are ignored exactly as rust_test_dependencies ignores them; aliases do not redirect an edge which the dependency helper retained.",
+  "consumer_coverage": [
+    "codex-core-plugins",
+    "codex-external-agent-migration",
+    "codex-skills",
+    "codex-skills-extension"
+  ],
+  "complete_consumer_evidence": "All direct serde_norway dependencies were enumerated from exact 1e91 Cargo.lock, then each corresponding exact Cargo.toml and BUILD invocation was checked.",
+  "validation": {
+    "target_emission": {
+      "command": "python3 audit_cargo_aliases.py --before-root original --candidate-root candidate --output TARGET_EMISSION.json",
+      "returncode": 0,
+      "receipt": "TARGET_EMISSION.json",
+      "cases": 6,
+      "emitted_records": 93,
+      "coverage": "Actual macro and helpers executed with synthetic external dependency/platform fixtures; all non-alias attributes unchanged; alias keys subset selected deps; all nine Rust rule callsites wired. This is not Bazel analysis or Rust compilation.",
+      "external_replacement_closure_checked": true
+    },
+    "pinned_buildifier": {
+      "version": "8.5.1",
+      "binary_sha256": "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7",
+      "check_returncode": 0,
+      "source_manifest": "tools/buildifier at1e91, Git blobd18dd60ac6b317d06c6ccf850654b2e06e29395d"
+    },
+    "actual_just_fmt": {
+      "command": "env PATH=/tmp/hcsn-r15-yaml-alias-tools:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/usr/local/bin:/usr/bin:/bin DOTSLASH_CACHE=/tmp/hcsn-r15-yaml-alias-tools/dotslash-cache /tmp/hcsn-r15-yaml-alias-tools/just fmt",
+      "cwd": "/tmp/hcsn-r15-yaml-alias/format-fixture/codex-rs",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "scope": "Unchanged actual repository justfile/scripts/format.py/scripts/just-shell.py/tools/buildifier, in isolated exact-file Git fixture with only the three repair paths changed. The full old checkout was lost; this validates the scoped formatter, not a reconstructed full repository build.",
+      "candidate_bytes_unchanged": true,
+      "tools": [
+        {
+          "tool": "just",
+          "archive_sha256": "409044617b6f06517c1035e55ca38c8c856ff8b650e41bc2aa1ef82d5903a23e",
+          "binary_sha256": "50cd9b4a47c26a2570a0cca1bf86a106290b1cd35b131630696f63b9fbd1400d",
+          "version": "just 1.59.0"
+        },
+        {
+          "tool": "dotslash",
+          "archive_sha256": "5cefa0f258e0a58ae53c7a9a5be3890574ddd33d57c66bc9c143cb411012d72a",
+          "binary_sha256": "2d7880483256edf24e1c8b3e903ca174a723e70d945ffb1a16363c51cb271018",
+          "version": "DotSlash 0.5.9"
+        }
+      ],
+      "revision": "V2, after the external replacement closure correction; actual just fmt exit0. No formatter changes to the candidate bytes."
+    },
+    "patch_reverse_apply_check": {
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "native_followup_gate": "Actual next-head GNU release, Clippy, test and SDK builds remain necessary; no local native or full Bazel build was claimed.",
+    "additional_runtime_failures": "GNU_ADDITIONAL_FAILURES_1E91.json separately preserves22 unique GNU runtime test failures; this alias patch does not claim to fix them."
+  },
+  "files": [
+    {
+      "path": "defs.bzl",
+      "candidate_sha256": "0190c8ac91e1de5a9124d06c9b5608d1cd04e9fcdbdccd3a73b14fd751a54336",
+      "bytes": 33758
+    },
+    {
+      "path": "bazel/rules/BUILD.bazel",
+      "candidate_sha256": "5963d7e67bdcc17566ce41f0f2e4b78728720b07432034ccce2c52ecd174cadf",
+      "bytes": 129
+    },
+    {
+      "path": "bazel/rules/rust_crate_aliases.bzl",
+      "candidate_sha256": "0881176bff495caa39615536ea8e05433e9d31a8d0ec2c738a73e088d3e2d57c",
+      "bytes": 2068
+    }
+  ],
+  "patch_sha256": "2900e85e564b88306996e9e90f9734dc49cc194555885c65c946c26568a07103",
+  "network_tooling": "Default curl failed with exit7 because browser-proxy:8889 was unavailable. Auto-reviewed require_escalated downloaded official tooling; archives/binary were verified against published release and repo manifest digests before execution. No secrets or user caches were accessed.",
+  "independent_review_correction": {
+    "reviewer": "architecture_comparison",
+    "finding": "V1 applied replacements to registry alias keys although the existing dependency helper only replaces workspace labels.",
+    "repair": "V2 preserves external @crates alias keys and values; all six fixture scenarios explicitly check this invariant.",
+    "previous_patch_sha256": "0681cc91b73a22af4caa09284f49fd230163910f89fecd86ce0e17ccfbdc7baa",
+    "current_scope": "Same existing YAML repair; no financial candidate or test gate edits."
+  }
+}
