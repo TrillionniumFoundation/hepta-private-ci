@@ -166,7 +166,7 @@ IID D−B 的 raw p=0.015625，Holm p=0.03125，方向为负。OOD 的 raw/Holm 
 | OOD HX | 0.00004989 | 81.19032% | 0.129013 |
 | OOD SSM | 0.03991469 | 80.43620% | 0.135004 |
 
-HX 的联合分布校准明显更接近同模型 teacher，尤其是不规则时间 OOD；但 IID 的 bit accuracy 和主任务 utility 均没有优势。这正是保留 D−B 的意义：不能用传播误差或 posterior KL 代替任务能力验收。
+HX 的联合分布估计明显更接近同模型 teacher，尤其是不规则时间 OOD；但 IID 的 bit accuracy 和主任务 utility 均没有优势。这正是保留 D−B 的意义：不能用传播误差或 posterior KL 代替任务能力验收。
 
 相同 fitted Q/E 的普通 HMM 与 HX posterior 最大差仅为 IID 2.22e-16、OOD 3.33e-16。两者是相同有限 Bayesian filtering 算子的两种实现，不能主张 HX 独有推断能力。
 
