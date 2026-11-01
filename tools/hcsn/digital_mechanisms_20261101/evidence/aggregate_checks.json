@@ -1,0 +1,23 @@
+{
+  "suite": "model_checks+policy_checks+analysis_checks",
+  "passed": 24,
+  "skipped": 0,
+  "seconds": 4.211,
+  "source_sha256": {
+    "launch.py": "d66633ffdc4372cc8546c7f3a1ae243e4abb9f7577461319b0f532e6704dca1b",
+    "policy_checks.py": "2a1e5eb8c1a087bc7d2f709fea500cdf0d4e18d3e7111bd49ac4fb18d0990766",
+    "run_study.py": "e76859935287e56fd8963404dfd2d29393460ce39eaf0ea906f37cf497398039",
+    "analysis_checks.py": "f48b89c339d7bb9e9061c30c5987badfe7b3d5076632dba0c7fe5d190255727e",
+    "analyze.py": "be83b8c5bec3b698d1c5e35ee164a4220b9bd807dd198d479d0d3b2393f29c01",
+    "models.py": "a1ba992b5756e53317964629aeb063b60732d632670ad8da2193700cb33ef495",
+    "execution.py": "c8d604228be101a452a8aef9753d6f3d7844b83126773ec76504c6637e79911b",
+    "renewal_checks.py": "2cb086d533c07681e4d6815fb3e1fd4ce9df975a94583d0afaaf1b128e70de7a",
+    "exact_policy.py": "0c59774c4724b77f8adfbc13e1f109574bd1ba2817a45161ac87c6c6b6a41738",
+    "freeze.py": "08275430a4da04334e84ba28d33fab31097ca073950355ba50e759e25a3428c2",
+    "training.py": "7bdf1274dd3f2207e0c79c82a6e92a5f122cbc1acaac7a77ef78d310c9600f46",
+    "renewal.py": "9a4412daf954dc07d466a3cd07a96c4ea1bddd6d66a6e4be3d50b717a313012f",
+    "model_checks.py": "b997c877fa91c3c6361a37e54d4d413b4eb68af64b29ad56b4af7a8c41f4f540",
+    "forecast_comparison.py": "4f7038651d50c6f63db93e71f0f176821ecdc875267f2de664edc7f66bca1761"
+  },
+  "warning": "PyTorch warned when one test converted a differentiable scalar to float; explicit gradients were separately checked and unaffected."
+}

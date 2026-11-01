@@ -1,0 +1,19 @@
+{
+  "archive_probe": {
+    "members": 501,
+    "index_pages": 2,
+    "byte_identical_restore": true,
+    "corruption_rejected": true,
+    "empty_formal_freeze_rejected": true
+  },
+  "format_command": "just fmt",
+  "format_exit": 0,
+  "python_formatter_scope": "tools/hcsn Python sources are outside the repository Python formatter groups",
+  "native_change": "use std::fs::{self, OpenOptions} split into equivalent imports by imports_granularity=Item",
+  "native_before_sha256": "d37e25193c318a34f6e79a025b0661c23147a9af840bfcc3bfaa7cfc33cb80ef",
+  "native_after_sha256": "64df3f47465ba0d66451830e8cc845339b8dd67fedd64727b14fab5ca988f2fc",
+  "source_sha256": {
+    "freeze.py": "8dcb442cc924f742603c9cfb94e0344d80b6791f688483361eea4950b831f249",
+    "run_study.py": "ba9bf22e1f291b58c13ac49f6ece26b516d6872415c01a363e322152053990b7"
+  }
+}

@@ -1,0 +1,211 @@
+{
+  "actual_content_execution": false,
+  "conclusion": "Action probabilities are inside the joint task/cell path measure; finite differences verify the declared soft policy expectation.",
+  "cpu_seconds": 2.152481422,
+  "efficacy_confirmation": false,
+  "fitted_confusion": [
+    [
+      0.94,
+      0.06
+    ],
+    [
+      0.11,
+      0.89
+    ]
+  ],
+  "horizon": 2,
+  "inherited_task_deadline": 6,
+  "public": {
+    "deadline": 6,
+    "duration": [
+      0.25,
+      1.5,
+      0.5,
+      1.0,
+      0.5,
+      1.0
+    ],
+    "failure_probability": 0.08,
+    "id": "exact-policy-witness",
+    "initial_budget": 3,
+    "latency_price": 0.025,
+    "packet_sha256": [
+      "0000000000000000000000000000000000000000000000000000000000000000",
+      "0000000000000000000000000000000000000000000000000000000000000000",
+      "0000000000000000000000000000000000000000000000000000000000000000",
+      "0000000000000000000000000000000000000000000000000000000000000000",
+      "0000000000000000000000000000000000000000000000000000000000000000",
+      "0000000000000000000000000000000000000000000000000000000000000000"
+    ],
+    "packets": [
+      "packet_0.json",
+      "packet_1.json",
+      "packet_2.json",
+      "packet_3.json",
+      "packet_4.json",
+      "packet_5.json"
+    ],
+    "read_delay": [
+      1,
+      2,
+      1,
+      2,
+      1,
+      2
+    ],
+    "read_price": [
+      0.03,
+      0.12,
+      0.03,
+      0.12,
+      0.03,
+      0.12
+    ],
+    "reliability": [
+      0.95,
+      0.65,
+      0.85,
+      0.65,
+      0.85,
+      0.65
+    ],
+    "repair_price": 0.03,
+    "schema": "digital-read-before-public-v1"
+  },
+  "rows": [
+    {
+      "central_difference": -0.007905315064192509,
+      "derivative_absolute_error": 1.65298330578878e-13,
+      "detached_forward_value": -0.010249028181391982,
+      "expected_action_counts": [
+        0.43032907677769894,
+        0.250390042531499,
+        0.20418871723388535,
+        0.0019205273043554323,
+        0.33060651347822023,
+        0.23906440974408066
+      ],
+      "expected_utility": -0.010249028181391982,
+      "family": "raw_history",
+      "head_wait_bias_gradient": -0.00790531506402721,
+      "monte_carlo": {
+        "action_counts": [
+          0.43266666666666664,
+          0.25266666666666665,
+          0.19833333333333333,
+          0.0016666666666666668,
+          0.327,
+          0.24033333333333334
+        ],
+        "episodes": 6000,
+        "independent_hidden_class_sampling": true,
+        "mean": -0.011952916666666669,
+        "seed": 8800001,
+        "standard_error": 0.009725439453594761
+      },
+      "task_state_nodes": 13,
+      "terminal_mass": 1.0000000000000002
+    },
+    {
+      "central_difference": -0.005393367740955112,
+      "derivative_absolute_error": 3.2891658147127245e-13,
+      "detached_forward_value": -0.01582505612171417,
+      "expected_action_counts": [
+        0.40992502220774546,
+        0.220153483301405,
+        0.19865074945370198,
+        0.001974603061841191,
+        0.34043604760865864,
+        0.24963893018359565
+      ],
+      "expected_utility": -0.01582505612171417,
+      "family": "ordinary_bank",
+      "head_wait_bias_gradient": -0.005393367740626195,
+      "monte_carlo": {
+        "action_counts": [
+          0.4135,
+          0.22066666666666668,
+          0.19166666666666668,
+          0.0018333333333333333,
+          0.339,
+          0.2475
+        ],
+        "episodes": 6000,
+        "independent_hidden_class_sampling": true,
+        "mean": -0.01125791666666667,
+        "seed": 8800001,
+        "standard_error": 0.009902152012961747
+      },
+      "task_state_nodes": 13,
+      "terminal_mass": 0.9999999999999997
+    },
+    {
+      "central_difference": -0.0053198460311411335,
+      "derivative_absolute_error": 3.307545209940699e-13,
+      "detached_forward_value": -0.015517033899024238,
+      "expected_action_counts": [
+        0.4093626074798368,
+        0.22015769146207714,
+        0.19865215951125098,
+        0.001974593762472424,
+        0.34085470737985074,
+        0.24978268514031227
+      ],
+      "expected_utility": -0.015517033899024238,
+      "family": "clocked_bank",
+      "head_wait_bias_gradient": -0.005319846030810379,
+      "monte_carlo": {
+        "action_counts": [
+          0.4125,
+          0.22066666666666668,
+          0.19166666666666668,
+          0.0018333333333333333,
+          0.3398333333333333,
+          0.24766666666666667
+        ],
+        "episodes": 6000,
+        "independent_hidden_class_sampling": true,
+        "mean": -0.009591250000000003,
+        "seed": 8800001,
+        "standard_error": 0.009908159274139553
+      },
+      "task_state_nodes": 13,
+      "terminal_mass": 0.9999999999999997
+    },
+    {
+      "central_difference": -0.005289574989825185,
+      "derivative_absolute_error": 2.242893371029453e-13,
+      "detached_forward_value": -0.015389587698350568,
+      "expected_action_counts": [
+        0.40909894386904877,
+        0.22016190878381248,
+        0.19865357888994448,
+        0.0019745841702885885,
+        0.34113742419396725,
+        0.24976363193698375
+      ],
+      "expected_utility": -0.015389587698350568,
+      "family": "first_passage_bank",
+      "head_wait_bias_gradient": -0.005289574989600896,
+      "monte_carlo": {
+        "action_counts": [
+          0.4126666666666667,
+          0.22066666666666668,
+          0.19166666666666668,
+          0.0018333333333333333,
+          0.3398333333333333,
+          0.2475
+        ],
+        "episodes": 6000,
+        "independent_hidden_class_sampling": true,
+        "mean": -0.008757916666666667,
+        "seed": 8800001,
+        "standard_error": 0.009905599242560974
+      },
+      "task_state_nodes": 13,
+      "terminal_mass": 0.9999999999999994
+    }
+  ],
+  "schema": "digital-autonomous-policy-witness-v1",
+  "temperature": 0.7
+}

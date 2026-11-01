@@ -1,0 +1,90 @@
+{
+  "alpha": 0.05,
+  "benefit_threshold": 0.02,
+  "contrasts": [
+    {
+      "contrast": "terminal_structure",
+      "fit_differences": [
+        -0.056640625,
+        -0.19081250000000002,
+        -0.016453124999999964
+      ],
+      "fit_ids": [
+        101,
+        103,
+        107
+      ],
+      "heuristic_planning_sd": 0.11412976766197833,
+      "required_fits_normal_approx": 47,
+      "sample_sd": 0.09130381412958266
+    },
+    {
+      "contrast": "occupancy_supervision",
+      "fit_differences": [
+        -0.25804687499999995,
+        -0.11070312499999999,
+        -0.03515625
+      ],
+      "fit_ids": [
+        101,
+        103,
+        107
+      ],
+      "heuristic_planning_sd": 0.14169522539887575,
+      "required_fits_normal_approx": 72,
+      "sample_sd": 0.11335618031910061
+    },
+    {
+      "contrast": "impulse_mechanism",
+      "fit_differences": [
+        0.22499999999999992,
+        0.283671875,
+        0.05859375000000003
+      ],
+      "fit_ids": [
+        101,
+        103,
+        107
+      ],
+      "heuristic_planning_sd": 0.14594661490860147,
+      "required_fits_normal_approx": 76,
+      "sample_sd": 0.11675729192688118
+    },
+    {
+      "contrast": "analytic_increment",
+      "fit_differences": [
+        -0.05945312499999994,
+        -0.46804687500000003,
+        -0.03554687500000002
+      ],
+      "fit_ids": [
+        101,
+        103,
+        107
+      ],
+      "heuristic_planning_sd": 0.30387112268202215,
+      "required_fits_normal_approx": 328,
+      "sample_sd": 0.24309689814561772
+    }
+  ],
+  "development_fits": [
+    101,
+    103,
+    107
+  ],
+  "heuristic_sd_multiplier": 1.25,
+  "interpretation": "Normal-approximation planning from only three validation fits; sd x1.25 is a heuristic, not a variance confidence bound. A binding resource cap explicitly misses the nominal planning requirement; finite-sample t power is not certified.",
+  "maximum_requested_fits": 328,
+  "minimum_fits": 8,
+  "multiplier_is_confidence_bound": false,
+  "planned_power_claim": false,
+  "planning_true_effect": 0.08,
+  "resource_cap_binds": true,
+  "resource_cap_fits": 16,
+  "schema": "digital-mechanism-fit-planning-v1",
+  "selected_fits": 16,
+  "simultaneous_intervals": 8,
+  "target_power": 0.8,
+  "z_critical": 2.7343687865331767,
+  "z_power": 0.8416212335729143
+}
