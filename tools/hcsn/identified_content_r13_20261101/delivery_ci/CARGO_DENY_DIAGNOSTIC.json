@@ -1,0 +1,4663 @@
+{
+  "schema": "hepta-r13-cargo-deny-readonly-diagnostic-v1",
+  "status": "locally_reproduced_inherited_advisory_blockers",
+  "observed_at_utc": "2026-11-01T02:54:25.290Z",
+  "interpretation": {
+    "error_count": 22,
+    "error_categories": {
+      "unmaintained": 6,
+      "vulnerability": 16
+    },
+    "affected_package_versions": 16,
+    "remote_original_logs_obtained": false,
+    "local_same_configuration_reproduction": true,
+    "dependency_inputs_identical_r12_r13": true,
+    "no_repository_dependency_or_policy_mutation_during_baseline_run": true,
+    "no_tests_or_training_run_by_baseline_diagnostic": true,
+    "no_runtime_exploitability_claim": true,
+    "static_matrix_sdk_indexeddb_wrapper_candidate_was_not_an_actual_ban_error": true
+  },
+  "limitations": [
+    "Remote job step summaries show failure, but raw remote logs remain unavailable (Transport closed).",
+    "Local reproduction uses the pinned action's cargo-deny 0.19.0, Rust 1.95.0 and --all-features, adding --locked and changing only color output.",
+    "The advisory database is time-varying; its exact local commit and the 22 matched source-file hashes are recorded.",
+    "Advisory matching is a dependency-policy finding; exposure depends on enabled runtime features, paths and deployment.",
+    "The six unmaintained findings have no patched version of the same crate in this database; the tool's text does not prove migration impossible.",
+    "Workspace-only metadata was a limited initial check; the subsequent full resolved graph contains 1517 packages and nodes.",
+    "Two-stage repair plans are prospective, and are not counts of already closed blockers."
+  ],
+  "raw_stderr": {
+    "bytes": 14296348,
+    "sha256": "373df4b45c83f0130af8e6642bf78cefc08821c2a688fc0d7476a960330d645d",
+    "gzip_bytes": 789458,
+    "gzip_sha256": "34e6d66f931c4ea543734738db82f3965dc716d5ad767dcb3f858f77e41407f8",
+    "parts": [
+      {
+        "path": "CARGO_DENY_BASELINE.stderr.txt.gz.vol000",
+        "bytes": 480000,
+        "sha256": "3e36583860ad718dad97c5ccd932a92cce5dcdb35efd811a778fe4d6eb7a7749"
+      },
+      {
+        "path": "CARGO_DENY_BASELINE.stderr.txt.gz.vol001",
+        "bytes": 309458,
+        "sha256": "4f1cfa74ec0acfba171a5a858bd2c3010a435c291352fbcaaecaeae42b434540"
+      }
+    ]
+  },
+  "raw_stdout": "advisories FAILED, bans ok, licenses ok, sources ok\n",
+  "evidence": {
+    "run_summary": {
+      "command": [
+        "/tmp/hepta_r13_cargo_deny_diagnostic/cargo-deny",
+        "--log-level",
+        "warn",
+        "--color",
+        "never",
+        "--manifest-path",
+        "./codex-rs/Cargo.toml",
+        "--all-features",
+        "--locked",
+        "check"
+      ],
+      "cwd": "/workspace/scratch/3a732c35be06/hepta-r12",
+      "same_toolchain": "Rust 1.95.0",
+      "intentional_ci_difference": [
+        "--locked prevents Cargo.lock mutation",
+        "--color never avoids ANSI output"
+      ],
+      "before_hashes": {
+        "codex-rs/Cargo.lock": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+        "codex-rs/deny.toml": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+      },
+      "returncode": 1,
+      "elapsed_seconds": 25.307028266000998,
+      "after_hashes": {
+        "codex-rs/Cargo.lock": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+        "codex-rs/deny.toml": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+      }
+    },
+    "tool_install": {
+      "version": "cargo-deny 0.19.0",
+      "download_bytes": 8265108,
+      "archive_sha256": "0e8c2aa59128612c90d9e09c02204e912f29a5b8d9a64671b94608cbe09e064f",
+      "binary_sha256": "06f9d1a0ba92b201bff1215b6dc24e669b212c151ecd52cae5d38aab73931d3c",
+      "archive_member": "cargo-deny-0.19.0-x86_64-unknown-linux-musl/cargo-deny"
+    },
+    "connector_provenance": {
+      "observed_at_utc": "2026-11-01T02:54:25.290Z",
+      "sources": [
+        {
+          "index": 0,
+          "sha": "0b93acf955da200d7728b9a9e47b6118293701ab",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/90d1c11c5e654b1bf595c2564f1160df7d8e07a9/.github/workflows/cargo-deny.yml",
+          "content": "name: cargo-deny\n\non:\n  workflow_call:\n\npermissions:\n  contents: read\n\njobs:\n  cargo-deny:\n    timeout-minutes: 30\n    runs-on: ubuntu-latest\n    defaults:\n      run:\n        working-directory: ./codex-rs\n    steps:\n      - name: Checkout\n        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2\n        with:\n          persist-credentials: false\n\n      - uses: ./.github/actions/setup-ci-build\n\n      - name: Install Rust toolchain\n        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0\n\n      - name: Run cargo-deny\n        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246 # v2\n        with:\n          rust-version: 1.95.0\n          manifest-path: ./codex-rs/Cargo.toml\n\n      - name: Check for a clean worktree\n        if: always() && !cancelled()\n        uses: ./.github/actions/check-clean-worktree\n"
+        },
+        {
+          "index": 1,
+          "sha": "fc4dd3b2553105b018e08d987b06a85a31fc2bf7",
+          "url": "https://github.com/EmbarkStudios/cargo-deny-action/blob/82eb9f621fbc699dd0918f3ea06864c14cc84246/action.yml",
+          "content": "name: \"cargo-deny\"\ndescription: \"Help manage Cargo crate dependencies and validate licenses\"\nauthor: \"Embark Studios\"\n\nbranding:\n  icon: \"slash\"\n  color: \"red\"\n\ninputs:\n  command:\n    description: \"The command to run with cargo-deny\"\n    required: false\n    default: \"check\"\n  arguments:\n    description: \"The arguments to pass to cargo-deny\"\n    required: false\n    default: \"--all-features\"\n  command-arguments:\n    description: \"The arguments to pass to the command\"\n    required: false\n    default: \"\"\n  manifest-path:\n    description: \"Repo root relative path to the Cargo manifest to check\"\n    required: false\n    default: \"./Cargo.toml\"\n  log-level:\n    description: \"The log level for cargo-deny\"\n    required: false\n    default: \"warn\"\n  rust-version:\n    description: \"The Rust version that is updated to before running cargo deny\"\n    required: false\n    default: \"\"\n  credentials:\n    description: \"The git credentials for credential.helper store using github username and github's private access token (PAT)\"\n    required: false\n    default: \"\"\n  ssh-key:\n    description: \"Set the used ssh key\"\n    required: false\n    default: \"\"\n  ssh-known-hosts:\n    description: \"Set ssh known hosts\"\n    required: false\n    default: \"\"\n  use-git-cli:\n    description: \"Set CARGO_NET_GIT_FETCH_WITH_CLI\"\n    required: false\n    default: \"false\"\n\nruns:\n  using: \"docker\"\n  image: \"Dockerfile\"\n  args:\n    - ${{ inputs.rust-version }}\n    - ${{ inputs.credentials }}\n    - ${{ inputs.ssh-key }}\n    - ${{ inputs.ssh-known-hosts }}\n    - ${{ inputs.use-git-cli }}\n    - --log-level\n    - ${{ inputs.log-level }}\n    - --manifest-path\n    - ${{ inputs.manifest-path }}\n    - ${{ inputs.arguments }}\n    - ${{ inputs.command }}\n    - ${{ inputs.command-arguments }}\n"
+        },
+        {
+          "index": 2,
+          "sha": "94f38ebce29aa536404c614879576defbb272c15",
+          "url": "https://github.com/EmbarkStudios/cargo-deny-action/blob/82eb9f621fbc699dd0918f3ea06864c14cc84246/Dockerfile",
+          "content": "FROM rust:1.85.0-alpine3.20@sha256:f0cef6c65992995b1c7816cb667de95799852e3fbed9d06f95855cbc512a0fd0\n\nENV deny_version=\"0.19.0\"\n\nRUN set -eux; \\\n    apk update; \\\n    apk add bash curl git tar openssh; \\\n    curl --silent -L https://github.com/EmbarkStudios/cargo-deny/releases/download/$deny_version/cargo-deny-$deny_version-x86_64-unknown-linux-musl.tar.gz | tar -xzv -C /usr/bin --strip-components=1;\n\nCOPY entrypoint.sh /entrypoint.sh\n\nENTRYPOINT [\"/entrypoint.sh\"]\n"
+        },
+        {
+          "index": 3,
+          "sha": "ba9fa82bb74e75bbf14ab3aa1852e2c601d5234e",
+          "url": "https://github.com/EmbarkStudios/cargo-deny-action/blob/82eb9f621fbc699dd0918f3ea06864c14cc84246/entrypoint.sh",
+          "content": "#!/bin/bash\nset -e\n\nPATH=$PATH:/usr/local/cargo/bin\n\nif [ -n \"$1\" ]; then\n    rustup set profile minimal\n    rustup default \"$1\"\nfi\n\nif [ -n \"$2\" ]; then\n    git config --global credential.helper store\n    git config --global --replace-all url.https://github.com/.insteadOf ssh://git@github.com/\n    git config --global --add url.https://github.com/.insteadOf git@github.com:\n\n    echo \"$2\" > \"$HOME/.git-credentials\"\n    chmod 600 \"$HOME/.git-credentials\"\nfi\n\nif [ -n \"$3\" ]; then\n    mkdir -p \"/root/.ssh\"\n    chmod 0700 \"/root/.ssh\"\n    echo \"${3}\" > \"/root/.ssh/id_rsa\"\n    chmod 0600 \"/root/.ssh/id_rsa\"\nfi\n\nif [ -n \"$4\" ]; then\n    mkdir -p \"/root/.ssh\"\n    chmod 0700 \"/root/.ssh\"\n    echo \"${4}\" > \"/root/.ssh/known_hosts\"\n    chmod 0600 \"/root/.ssh/known_hosts\"\nfi\n\nif [ -n \"$5\" ]; then\n    export CARGO_NET_GIT_FETCH_WITH_CLI=\"$5\"\nfi\n\nshift 5\n\n# Due to how github actions run containers we need to explicitly force colors\n# as TTY detection fails inside them\nexport CARGO_TERM_COLOR=\"always\"\n\n# Workaround for rustup 1.28 completely breaking rust-toolchain.toml\n(cd \"$(dirname \"$4\")\"; rustup show || rustup toolchain install)\n\ncargo-deny $*\n"
+        }
+      ],
+      "official_release": {
+        "tag": "0.19.0",
+        "url": "https://github.com/EmbarkStudios/cargo-deny/releases/tag/0.19.0",
+        "published_at": "2026-01-08T12:12:51Z",
+        "asset": {
+          "url": "https://api.github.com/repos/EmbarkStudios/cargo-deny/releases/assets/337862798",
+          "id": 337862798,
+          "node_id": "RA_kwDOCxvMOc4UI2CO",
+          "name": "cargo-deny-0.19.0-x86_64-unknown-linux-musl.tar.gz",
+          "label": "",
+          "uploader": {
+            "login": "embark-bot",
+            "id": 47564659,
+            "node_id": "MDQ6VXNlcjQ3NTY0NjU5",
+            "avatar_url": "https://avatars.githubusercontent.com/u/47564659?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/embark-bot",
+            "html_url": "https://github.com/embark-bot",
+            "followers_url": "https://api.github.com/users/embark-bot/followers",
+            "following_url": "https://api.github.com/users/embark-bot/following{/other_user}",
+            "gists_url": "https://api.github.com/users/embark-bot/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/embark-bot/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/embark-bot/subscriptions",
+            "organizations_url": "https://api.github.com/users/embark-bot/orgs",
+            "repos_url": "https://api.github.com/users/embark-bot/repos",
+            "events_url": "https://api.github.com/users/embark-bot/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/embark-bot/received_events",
+            "type": "User",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "content_type": "application/gzip",
+          "state": "uploaded",
+          "size": 8265108,
+          "digest": "sha256:0e8c2aa59128612c90d9e09c02204e912f29a5b8d9a64671b94608cbe09e064f",
+          "download_count": 1770109,
+          "created_at": "2026-01-08T12:16:36Z",
+          "updated_at": "2026-01-08T12:16:37Z",
+          "browser_download_url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.19.0/cargo-deny-0.19.0-x86_64-unknown-linux-musl.tar.gz"
+        }
+      },
+      "remote": {
+        "r12_ref": "7d19d1f68b5c03f61c4ba92c42abf0cf4774d7c1",
+        "r13_ref": "eeb17ab1f4127d365025e9b1b53f9cc44eed01a5",
+        "r12_job": {
+          "id": 124715983908,
+          "run_id": 41261536832,
+          "workflow_name": "blocking-ci",
+          "head_branch": "research/hcsn-unified-cell-r12-20261031",
+          "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41261536832",
+          "run_attempt": 1,
+          "node_id": "CR_kwDOTrgxoM8AAAAdCabkJA",
+          "head_sha": "7d19d1f68b5c03f61c4ba92c42abf0cf4774d7c1",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/124715983908",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41261536832/job/124715983908",
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-01T01:34:40Z",
+          "started_at": "2026-11-01T01:34:43Z",
+          "completed_at": "2026-11-01T01:36:44Z",
+          "name": "cargo-deny / cargo-deny",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-11-01T01:34:44Z",
+              "completed_at": "2026-11-01T01:34:45Z"
+            },
+            {
+              "name": "Build EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-11-01T01:34:45Z",
+              "completed_at": "2026-11-01T01:34:55Z"
+            },
+            {
+              "name": "Checkout",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-11-01T01:34:55Z",
+              "completed_at": "2026-11-01T01:35:35Z"
+            },
+            {
+              "name": "Run ./.github/actions/setup-ci-build",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-11-01T01:35:35Z",
+              "completed_at": "2026-11-01T01:35:36Z"
+            },
+            {
+              "name": "Install Rust toolchain",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-11-01T01:35:36Z",
+              "completed_at": "2026-11-01T01:35:44Z"
+            },
+            {
+              "name": "Run cargo-deny",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 6,
+              "started_at": "2026-11-01T01:35:44Z",
+              "completed_at": "2026-11-01T01:36:40Z"
+            },
+            {
+              "name": "Check for a clean worktree",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-11-01T01:36:40Z",
+              "completed_at": "2026-11-01T01:36:41Z"
+            },
+            {
+              "name": "Post Checkout",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14,
+              "started_at": "2026-11-01T01:36:41Z",
+              "completed_at": "2026-11-01T01:36:41Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15,
+              "started_at": "2026-11-01T01:36:41Z",
+              "completed_at": "2026-11-01T01:36:41Z"
+            }
+          ],
+          "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/124715983908",
+          "labels": [
+            "ubuntu-latest"
+          ],
+          "runner_id": 1000310442,
+          "runner_name": "GitHub Actions 1000310442",
+          "runner_group_id": 0,
+          "runner_group_name": "GitHub Actions"
+        },
+        "r13_job_initial": {
+          "id": 124730176835,
+          "run_id": 41266239169,
+          "workflow_name": "blocking-ci",
+          "head_branch": "research/hcsn-identified-content-r13-20261101",
+          "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41266239169",
+          "run_attempt": 1,
+          "node_id": "CR_kwDOTrgxoM8AAAAdCn91Qw",
+          "head_sha": "eeb17ab1f4127d365025e9b1b53f9cc44eed01a5",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/124730176835",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41266239169/job/124730176835",
+          "status": "in_progress",
+          "conclusion": null,
+          "created_at": "2026-11-01T02:45:12Z",
+          "started_at": "2026-11-01T02:45:15Z",
+          "completed_at": null,
+          "name": "cargo-deny / cargo-deny",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-11-01T02:45:15Z",
+              "completed_at": "2026-11-01T02:45:16Z"
+            },
+            {
+              "name": "Build EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-11-01T02:45:16Z",
+              "completed_at": "2026-11-01T02:45:26Z"
+            },
+            {
+              "name": "Checkout",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-11-01T02:45:26Z",
+              "completed_at": "2026-11-01T02:46:09Z"
+            },
+            {
+              "name": "Run ./.github/actions/setup-ci-build",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-11-01T02:46:09Z",
+              "completed_at": "2026-11-01T02:46:09Z"
+            },
+            {
+              "name": "Install Rust toolchain",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-11-01T02:46:09Z",
+              "completed_at": "2026-11-01T02:46:18Z"
+            },
+            {
+              "name": "Run cargo-deny",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 6,
+              "started_at": "2026-11-01T02:46:18Z",
+              "completed_at": null
+            },
+            {
+              "name": "Check for a clean worktree",
+              "status": "pending",
+              "conclusion": null,
+              "number": 7,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Checkout",
+              "status": "pending",
+              "conclusion": null,
+              "number": 14,
+              "started_at": null,
+              "completed_at": null
+            }
+          ],
+          "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/124730176835",
+          "labels": [
+            "ubuntu-latest"
+          ],
+          "runner_id": 1000311058,
+          "runner_name": "GitHub Actions 1000311058",
+          "runner_group_id": 0,
+          "runner_group_name": "GitHub Actions"
+        },
+        "r13_final_steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Build EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Checkout",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Run ./.github/actions/setup-ci-build",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Install Rust toolchain",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Run cargo-deny",
+            "status": "completed",
+            "conclusion": "failure",
+            "number": 6
+          },
+          {
+            "name": "Check for a clean worktree",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Post Checkout",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          }
+        ],
+        "logs_result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/github.fetch_workflow_job_logs`\n\nCaused by:\n    Transport closed"
+            }
+          ],
+          "isError": true
+        },
+        "unavailable_annotations": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        }
+      }
+    },
+    "dependency_tree_comparison": {
+      "refs": [
+        "7d19d1f68b5c03f61c4ba92c42abf0cf4774d7c1",
+        "eeb17ab1f4127d365025e9b1b53f9cc44eed01a5"
+      ],
+      "counts": {
+        "7d19d1f68b5c03f61c4ba92c42abf0cf4774d7c1": 202,
+        "eeb17ab1f4127d365025e9b1b53f9cc44eed01a5": 202
+      },
+      "differences": [],
+      "files": {
+        "7d19d1f68b5c03f61c4ba92c42abf0cf4774d7c1": {
+          ".github/workflows/cargo-deny.yml": "0b93acf955da200d7728b9a9e47b6118293701ab",
+          "codex-rs/.cargo/config.toml": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+          "codex-rs/Cargo.lock": "8a9eab30d8957daab7dd027e86e88ca792e04a1c",
+          "codex-rs/Cargo.toml": "d2703b590935ab17316e6c258657c0ce5ab7412a",
+          "codex-rs/agent-graph-store/Cargo.toml": "15d116823b73afa82021f3ca55a28ce25e9044aa",
+          "codex-rs/agent-identity/Cargo.toml": "36d5eb41fd694a9eb283cbd6af4bc0977fa36c80",
+          "codex-rs/analytics/Cargo.toml": "8546427469212f824055765ffe79dd174aab3f7f",
+          "codex-rs/ansi-escape/Cargo.toml": "edb5b6e514cc2d36596a5dce7e9f6963cc2def8d",
+          "codex-rs/app-server-client/Cargo.toml": "cfe7a3d47f690470979c4386d5a89e640a4270d0",
+          "codex-rs/app-server-daemon/Cargo.toml": "fee57321978f8033232071940d85e5a1b8942b51",
+          "codex-rs/app-server-protocol-noop-macros/Cargo.toml": "93a24b070beffa187ab27f331e35cdcefe21c4b8",
+          "codex-rs/app-server-protocol/Cargo.toml": "da3876496ae9b90bdf3cea620b5a2eac6324e239",
+          "codex-rs/app-server-test-client/Cargo.toml": "901afb70d00f16e004913c764337d92afc82808b",
+          "codex-rs/app-server-transport/Cargo.toml": "7beaa4e42b225d14975aa6cc3368d66b13a03470",
+          "codex-rs/app-server/Cargo.toml": "7008939cb5c05ba76d39d76e063108f2dc0e449c",
+          "codex-rs/app-server/tests/common/Cargo.toml": "8dd43051c7e4087c3c7213f05799db1b43dbe759",
+          "codex-rs/apply-patch/Cargo.toml": "8e1d7f651f47a76de2a6ed6226aa2ec1a55cf5d6",
+          "codex-rs/arg0/Cargo.toml": "bb45db45521a60e80088f9032431d28ff4e717ed",
+          "codex-rs/async-utils/Cargo.toml": "093bbe0972b4a4fce1f8a7ef87b3c1f04f5b9ca0",
+          "codex-rs/aws-auth/Cargo.toml": "6bb5a69ae9dbf82efcf6b637e30d521e19a8ecfe",
+          "codex-rs/backend-client/Cargo.toml": "512d9606170bd8fcdc12c98d82dda43e47910a65",
+          "codex-rs/build-info/Cargo.toml": "f9cc3d040fb872382d7801e7720f41447f62e1f9",
+          "codex-rs/bwrap/Cargo.toml": "ed7010c8fdaea270f028ceb9a053e60c278d2b4c",
+          "codex-rs/chatgpt/Cargo.toml": "04b9cb7df6786401aa2c2cbad225cc40a26d277d",
+          "codex-rs/cli/Cargo.toml": "d2360ef42c5a8c8a9ffe3231f85220597847f0ab",
+          "codex-rs/cloud-config/Cargo.toml": "ecb33d34beb89a3112cbd316e6bcf672b089a833",
+          "codex-rs/cloud-tasks-client/Cargo.toml": "8efd78cb22d0b6458e9ec9138f0df03590f75d75",
+          "codex-rs/cloud-tasks-mock-client/Cargo.toml": "b249b654e02f36360389a12ccc14bffb787b9726",
+          "codex-rs/cloud-tasks/Cargo.toml": "12bd6fdf7fd03e8b9c16de911f4ca69d625fba90",
+          "codex-rs/code-mode-host/Cargo.toml": "685397aadfa0a681dcad1b2f84f3b9ae8964186a",
+          "codex-rs/code-mode-protocol/Cargo.toml": "cad10b47ebf4e577d9d9278703424f266ba6cc71",
+          "codex-rs/code-mode-runtime/Cargo.toml": "e3708b657ebd5e05a289acffea1dccb2061db4fd",
+          "codex-rs/code-mode/Cargo.toml": "0ef5079bebb7f523b4b5557ec07e46d3c5230465",
+          "codex-rs/codex-api/Cargo.toml": "01cacbe2b4608ab8ea0853ce21e1b11768f9eb80",
+          "codex-rs/codex-backend-openapi-models/Cargo.toml": "7baf01935d36ad701d79d0c6e7e9ece0b056142f",
+          "codex-rs/codex-client/Cargo.toml": "bc67e383a83d13d9a841ef3017ff4fc58284d4c3",
+          "codex-rs/codex-experimental-api-macros/Cargo.toml": "2e148a21d782b2ca20f5c81fc4ea896523d4d80d",
+          "codex-rs/codex-home/Cargo.toml": "a8fa625dcfc1a38ebfc0bbdd18ec57ce7c1e625b",
+          "codex-rs/codex-mcp/Cargo.toml": "6134f2126db203999727d05f61921836dfed06b7",
+          "codex-rs/collaboration-mode-templates/Cargo.toml": "2c17b1fd2ad989bda8a38e80dee1c5380f887c03",
+          "codex-rs/config/Cargo.toml": "37a1c32439b633761727924dc9e762ae0781658d",
+          "codex-rs/connectors/Cargo.toml": "ac3ce9241c2d6f4deb3ac09ced64087fd51b29b3",
+          "codex-rs/context-fragments/Cargo.toml": "ca84916ce99b61eef9f5b02cf7dd102c399e5732",
+          "codex-rs/core-api/Cargo.toml": "b82d5ee4802d68b29f574bc8ebee1334cf751caa",
+          "codex-rs/core-plugins/Cargo.toml": "0899163accb0edc3e98b27b9b9fdfd86adab46ae",
+          "codex-rs/core/Cargo.toml": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+          "codex-rs/core/tests/common/Cargo.toml": "a4851eb1d9ef3f9bc0d1535f84e937bfb82aaf93",
+          "codex-rs/deny.toml": "677f941360b2d82ab96aa4d419d97f4616cc2194",
+          "codex-rs/diagnostics/Cargo.toml": "2eb2125a102e121ed5a51d8dad3013c7cc258cf0",
+          "codex-rs/exec-server-protocol/Cargo.toml": "9dac711e1a0f404be080113747997690e9cf4a49",
+          "codex-rs/exec-server/Cargo.toml": "746bfb231d61c1a67163ff55c46cd7e92964457a",
+          "codex-rs/exec-server/tests/support/Cargo.toml": "85ad347b6c5494746f3f017096c7c6a8f4392435",
+          "codex-rs/exec/Cargo.toml": "9c3a236bf7c5d678bdf03aaa140fe40f2e7a807e",
+          "codex-rs/execpolicy/Cargo.toml": "42040222336513132da0b6a274bcd3fc80589f99",
+          "codex-rs/ext/agent/Cargo.toml": "6c3f10a43319a122e2da129e31ba34aa4f1df49a",
+          "codex-rs/ext/connectors/Cargo.toml": "1aead727731475bc9590ac90efb37c2ae7adef64",
+          "codex-rs/ext/extension-api/Cargo.toml": "c6eb90ec97d6fae953e8899edca318c492d5138c",
+          "codex-rs/ext/git-attribution/Cargo.toml": "e96d0dbcd577bcc0645f3f6175bbe31429f87159",
+          "codex-rs/ext/goal/Cargo.toml": "22ee1794fdf1341819bb8041882b84124ef2362e",
+          "codex-rs/ext/guardian-v2/Cargo.toml": "ebe48e99b3927ba3d4f407a21e662dbe93bdbce8",
+          "codex-rs/ext/hepta-governance/Cargo.toml": "229991524ea3a5219054f2b36b87c7708a2d93a6",
+          "codex-rs/ext/hepta-memory/Cargo.toml": "2d17c6481dbe0d75bd057e2edc9e3ee46de88c73",
+          "codex-rs/ext/hepta-prompt/Cargo.toml": "152fea264155931b3994e98e3c754b8f79c57718",
+          "codex-rs/ext/history-notes/Cargo.toml": "08fb92dd74557893eb7cf6fa989e798d72a92660",
+          "codex-rs/ext/image-generation/Cargo.toml": "ad10b2b0a640744ce3986a22990cc46aa24b89b3",
+          "codex-rs/ext/items/Cargo.toml": "4d58b29bc7004171361e4828e1dda712815ad8d1",
+          "codex-rs/ext/mcp/Cargo.toml": "e639081358ca76910ed744f5abc426f60a65a74e",
+          "codex-rs/ext/memories/Cargo.toml": "e283140b15ef1547c642310138fc8b04c4ce7607",
+          "codex-rs/ext/queue/Cargo.toml": "007cbbbde0e7cdd4c067d70e5b3d40f40f1d6187",
+          "codex-rs/ext/skills/Cargo.toml": "256d0aaa8710fff8d7a9d5c8eba242cd282b868e",
+          "codex-rs/ext/web-search/Cargo.toml": "84d5a8cad1ec4749e3cea6aa6a9a86eb7178523b",
+          "codex-rs/external-agent-migration/Cargo.toml": "3db739977ce9e94f66a3c4c9f22ce869610fa910",
+          "codex-rs/features/Cargo.toml": "95be6c400dd0d22ca7304146714a2678164fb38b",
+          "codex-rs/feedback/Cargo.toml": "8a01696952358c792d622afe675b609b8b315138",
+          "codex-rs/file-search/Cargo.toml": "e235898982f6eba908c5c0751eae91a5b25cdb1a",
+          "codex-rs/file-system/Cargo.toml": "382eacb43d3353b2046806f91ba0f976866c9282",
+          "codex-rs/file-watcher/Cargo.toml": "afb14fcde634f5478f4d6f981c52bf982b03b0f0",
+          "codex-rs/git-utils/Cargo.toml": "a0bd7872854cffa38dd559805a1dea2d06db85ae",
+          "codex-rs/hepta-agent-protocol/Cargo.toml": "ca7afd5c2905cdc02666b0cb20c1f6238a84dbba",
+          "codex-rs/hepta-agentd/Cargo.toml": "5d13cd8f355bab3ecb95f8c068517de200dd143f",
+          "codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml": "49874f52adebb338f8fd7038ac84fb13d3be8157",
+          "codex-rs/hepta-authbus/Cargo.toml": "5b14273ea4ff6ff2e71dda151560ae6ba7f90dba",
+          "codex-rs/hepta-automation/Cargo.toml": "4a5f0fa0db6a0f27d685012c89f87d0406f2f41b",
+          "codex-rs/hepta-bao-adapter/Cargo.toml": "fc8435728a0eeae5c1a2292b8ef33d2ae5c55e90",
+          "codex-rs/hepta-bellman-operator/Cargo.toml": "5231fed894f15b6e5ba6255523709067ea656e3d",
+          "codex-rs/hepta-codex-adapter/Cargo.toml": "0af5dc81a2488f2b273f79c13ef281db2be048c2",
+          "codex-rs/hepta-cognitive-read/Cargo.toml": "9804ca394a12c4bf31f01031853d7e52c73dbb75",
+          "codex-rs/hepta-cognitive-store/Cargo.toml": "34598e61d6aaff043e048907b48967086d6ecc83",
+          "codex-rs/hepta-cognitive-types/Cargo.toml": "c836b15097ff4812e735e3feff1d552a87c2cae8",
+          "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml": "83047ff105ece6cf2aaa92324558729f37589a9c",
+          "codex-rs/hepta-compact-engine/Cargo.toml": "60bc6fb1ee73f31eac3a152db40be10b52b495e3",
+          "codex-rs/hepta-context-compiler/Cargo.toml": "2ce0fb9520b8440a9b20a441d2c7bcbc4529dba0",
+          "codex-rs/hepta-contracts/Cargo.toml": "cab373fecdfb7eba529753ecbb4943bc46ceec32",
+          "codex-rs/hepta-control-plane/Cargo.toml": "37cd75393a4ef4164d96ba827a3531f37d668d15",
+          "codex-rs/hepta-evidence/Cargo.toml": "7d5a851797a8c8fdc9c14382418158f9c9789dad",
+          "codex-rs/hepta-fleet/Cargo.toml": "a271fa91b84d9ea0100703ff491c6826b0aabc6e",
+          "codex-rs/hepta-infer-core/Cargo.toml": "d89bf7c4764cdaaa4b040a447a295965ea0142c5",
+          "codex-rs/hepta-infer-worker-host/Cargo.toml": "bffa8bfcb7abffd460886a27b2f63a6a0ecb21df",
+          "codex-rs/hepta-inferd/Cargo.toml": "4b7d6a9e0a775e3da69a873d3d92ff643662731a",
+          "codex-rs/hepta-intelligence-eval/Cargo.toml": "c9096b1f1c77b27b7b94d7be86e4679212960295",
+          "codex-rs/hepta-intelligence/Cargo.toml": "162205d6bc62834e1b04fed33dd67f5955f218d1",
+          "codex-rs/hepta-intuition/Cargo.toml": "26e2f53c1c2a33d5ab30e56ff504d2c52779bfc5",
+          "codex-rs/hepta-kg/Cargo.toml": "892dbf28b9bc2ecdf0fe72c79eff19294140c198",
+          "codex-rs/hepta-learning-artifacts/Cargo.toml": "725a63c9f2475ad632c7c189fd9ca271702a8899",
+          "codex-rs/hepta-learning-ledger/Cargo.toml": "1d76cad44498e9538cefff1e20202482520257ff",
+          "codex-rs/hepta-matrix-protocol/Cargo.toml": "8312e8b0a739d033976c0058a25e5850e3af66a9",
+          "codex-rs/hepta-matrix-sdk/Cargo.toml": "1a8864fd643349c4db345b0e2dfbcb4a4d53719a",
+          "codex-rs/hepta-matrix-store/Cargo.toml": "211f8fb711d2c91d1421da930c067c28b61315b0",
+          "codex-rs/hepta-matrixd/Cargo.toml": "c7b4306766955aafb24d1f66c55803a35c2aee96",
+          "codex-rs/hepta-memory-federation/Cargo.toml": "49113a3bccd7a2f56b18459924d3ec9151cbf980",
+          "codex-rs/hepta-memory-retrieval/Cargo.toml": "913ad075e730da2b3bbff7fcfa153c457141a944",
+          "codex-rs/hepta-memory/Cargo.toml": "6ba04f39f78e7d6295c9922d279e37e0492180f2",
+          "codex-rs/hepta-native-gateway/Cargo.toml": "ecad366f0c5bcedb8d37cb32250a0eb94b9ff4f0",
+          "codex-rs/hepta-ndu/Cargo.toml": "d92d388b0c5bd29552ed0b2719551af973b5cfc4",
+          "codex-rs/hepta-neuron/Cargo.toml": "dbd650a75e7ebe47d2642bc653468355d42cd2e3",
+          "codex-rs/hepta-objective/Cargo.toml": "39085cf5d2edb3766cd1c17cd721d17389ed93cc",
+          "codex-rs/hepta-operations/Cargo.toml": "af2e656fcacea8db6ea84d8bdc8715f3aa62e739",
+          "codex-rs/hepta-operator-acceptance/Cargo.toml": "5f54bdf40f505adec2e5b0681bc4d7a48ad097af",
+          "codex-rs/hepta-paths/Cargo.toml": "2c16f5b19d830d4370d9d1b294fd97eae6b8d1af",
+          "codex-rs/hepta-plasticity/Cargo.toml": "07cb9e40d44990874991620f89af8c0078575de1",
+          "codex-rs/hepta-prompt-optimizer/Cargo.toml": "f463e790c182452434287c7ccba68dd78a7c69ca",
+          "codex-rs/hepta-prompt-registry/Cargo.toml": "61676abe534702cd1c665197212065ec2d267f3f",
+          "codex-rs/hepta-runtime/Cargo.toml": "83f681ba2fc42402c78aa8ef33889b2b7191bf33",
+          "codex-rs/hepta-shadow-qualification/Cargo.toml": "91b8dfb7204a5244374b81ee3ce12b5d08af8e0d",
+          "codex-rs/hepta-supervisor/Cargo.toml": "3ed96436070a4e0d5a06aca8f247c25f28a798f1",
+          "codex-rs/hepta-types/Cargo.toml": "753e54835f933be4bf647417b2fb4c90a5e55181",
+          "codex-rs/hepta-wire/Cargo.toml": "ab9372f8287d8596794c1ea63d49217b45fd6759",
+          "codex-rs/hepta-wire/fuzz/Cargo.toml": "1afca1ef1eb80fe9eeb6e0c94eefa2f8069f6244",
+          "codex-rs/history/Cargo.toml": "bd938d2c2ea45333b8f040f41399674a28e54644",
+          "codex-rs/hooks/Cargo.toml": "0cdf84418a713110811febd88c5ec8c4e3a0cbfa",
+          "codex-rs/http-client/Cargo.toml": "2d54ca7158900eda362091c71e8d1bd742459d4c",
+          "codex-rs/install-context/Cargo.toml": "ee84ad2962acf57a698e399b38dbc0a03c51bd11",
+          "codex-rs/keyring-store/Cargo.toml": "7a4499687b45059ecc1617760ff541c79ccb5a2c",
+          "codex-rs/linux-sandbox/Cargo.toml": "0f7c68a152a75cfc2f0369dc098dcf2b996185f2",
+          "codex-rs/lmstudio/Cargo.toml": "e84bcfed51c3683e87ea7ae2e0a7809aade43a76",
+          "codex-rs/login/Cargo.toml": "2971dec6c1a81cb80379477333371bba6e8fbece",
+          "codex-rs/mcp-server/Cargo.toml": "e32d5c6c9cc8e569a49396e085191811835cfdb7",
+          "codex-rs/mcp-server/tests/common/Cargo.toml": "515aa01b5a4a098a6f49cad9d5e4ad3cbbe54f77",
+          "codex-rs/memories/read/Cargo.toml": "2c0c5f2c954ceb8b986057bdd929badca4ecd64d",
+          "codex-rs/memories/write/Cargo.toml": "bf031a6a164f5a098757efdb6c791d9e2705ca50",
+          "codex-rs/message-history/Cargo.toml": "176b9579097499b050e24823217eec93502c004b",
+          "codex-rs/model-provider-info/Cargo.toml": "827dd8744b54ffcaa98673c0c262f5265b717ebf",
+          "codex-rs/model-provider/Cargo.toml": "377dc7a5c258538df7c52e0f821169fbfc1fa09a",
+          "codex-rs/models-manager/Cargo.toml": "2655bb2e7fd80fc1737549d6b5b4a78f607643a9",
+          "codex-rs/network-proxy/Cargo.toml": "82407b00d104568250c63f87be6aea8113199e44",
+          "codex-rs/ollama/Cargo.toml": "29c0852092c0ebdb9846f50f91384e4720f15d71",
+          "codex-rs/otel/Cargo.toml": "6efa93043db5e52f6ec45212435b377ca847d9ad",
+          "codex-rs/plugin/Cargo.toml": "3e55f55c332a06a99a9f6415f2235c3d18cd4fb1",
+          "codex-rs/process-hardening/Cargo.toml": "60a5729ff57a961dd9ccc145f8ae7171fe0b3176",
+          "codex-rs/prompts/Cargo.toml": "6302d49e2ff3e1e67722a3fc891a7e6e90a72362",
+          "codex-rs/protocol/Cargo.toml": "221275fe73543cc9cd5d882514855204d673353e",
+          "codex-rs/response-debug-context/Cargo.toml": "fcdb6c9630c4d04da55b9c64318e4c111afce441",
+          "codex-rs/responses-api-proxy/Cargo.toml": "05d638843f64eacad298a79011798f3a2ef924f7",
+          "codex-rs/rmcp-client/Cargo.toml": "a24df4a4a2c094b2b7a8efc949553dd2e5ba1cd9",
+          "codex-rs/rollout-trace/Cargo.toml": "b368c9acc5ffc3a0ba3a27ae7ea1ab48e38baa31",
+          "codex-rs/rollout/Cargo.toml": "1bb4b54f146488e737a3d5bdaeef9dc1510d0b03",
+          "codex-rs/sandboxing/Cargo.toml": "2c0885729b4ea05f0b597b37823f4758839ecb62",
+          "codex-rs/secrets/Cargo.toml": "2a294ee39134e0a4d4160ed7b422d5fe3c2ba6da",
+          "codex-rs/shell-command/Cargo.toml": "999295ec314a37a523f65bd050e8b95453cc7c77",
+          "codex-rs/shell-escalation/Cargo.toml": "92ae8b033f3c38edb1609e6347084be6dd9fdc47",
+          "codex-rs/skills/Cargo.toml": "7342975aaea0e3ecc61da41f145674cd154a12c9",
+          "codex-rs/state/Cargo.toml": "334f8c7a98199777a025abfa91aa18f0b7bbb008",
+          "codex-rs/stdio-to-uds/Cargo.toml": "6b5c037d755d4dc8006424aa836b29036cea8185",
+          "codex-rs/terminal-detection/Cargo.toml": "9b1bf3a51663289c68b61f566201df8d05e385cf",
+          "codex-rs/test-binary-support/Cargo.toml": "12d995b9720b942daf802ce30c2976b3f36e7371",
+          "codex-rs/third_party/imbl-6.1.0/Cargo.toml": "5a3f10354681eb382046da6e29bc272803405610",
+          "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/Cargo.toml": "7088dc696477279578bcb853e43400dd196a1a26",
+          "codex-rs/thread-manager-sample/Cargo.toml": "9e857ad0bc7fa670089008eeddf7d593a4a6f45f",
+          "codex-rs/thread-store/Cargo.toml": "f79e8d6c81eb4eac00149b45121fa052cdecef64",
+          "codex-rs/tools/Cargo.toml": "e621bb830bb4d564c772f5e558c57919de8b32db",
+          "codex-rs/tui/Cargo.toml": "95db9bee4158d69882f480f6b0842c47a510ca59",
+          "codex-rs/uds/Cargo.toml": "66ba1d9d2d915dae795b2cda4eef7d2d4bd91539",
+          "codex-rs/utils/absolute-path/Cargo.toml": "7c5b4840d15d81deed1d1ea30c0b269d399772bc",
+          "codex-rs/utils/approval-presets/Cargo.toml": "6efd2c482b4386b505a15d96bf60504050633e61",
+          "codex-rs/utils/audio/Cargo.toml": "90540228a6bf5608329d2f2773225271229b9813",
+          "codex-rs/utils/build-identity/Cargo.toml": "d21f6b0fff86daef23570d5c583edbf18eeecafb",
+          "codex-rs/utils/cache/Cargo.toml": "3c120c032e8d595a7675f0474ab6d91b0b52a59e",
+          "codex-rs/utils/cargo-bin/Cargo.toml": "a56e5758306799cc5962eaf57e8ad3a26b73033f",
+          "codex-rs/utils/cli/Cargo.toml": "9d330c5ce6badd0d15e6c401cd777fb3d13c8d08",
+          "codex-rs/utils/elapsed/Cargo.toml": "7ba5e6ae6614fddadaa1ba1e1f8299ffc251d78f",
+          "codex-rs/utils/fuzzy-match/Cargo.toml": "704386e74f6924a016c30bfbaa6447b093f70be0",
+          "codex-rs/utils/home-dir/Cargo.toml": "2d2de0230e38004d562b8ab5546888cd5da74851",
+          "codex-rs/utils/image/Cargo.toml": "7ba28f49962a5ec0e35aad82ce2b93cfeffbfa09",
+          "codex-rs/utils/json-to-toml/Cargo.toml": "57a28696c8fc2148525480511551b256b35d8b02",
+          "codex-rs/utils/oss/Cargo.toml": "78cc0cb2f8ed60f3d4b8a3bb007b348d700024ac",
+          "codex-rs/utils/output-truncation/Cargo.toml": "17176c9f5643b3a4f1d5a678a25076094cb7441d",
+          "codex-rs/utils/path-uri/Cargo.toml": "5bb6328139c7fe2f7759e7edf34be0de9e2f0371",
+          "codex-rs/utils/path-utils/Cargo.toml": "d1503fd060c960845b2f514cbe69f824291eff07",
+          "codex-rs/utils/plugins/Cargo.toml": "1a4576d59d0fcf04a54236f57976e42683c266a6",
+          "codex-rs/utils/pty/Cargo.toml": "2a27ab72ea290862887abfc857c86efe6fad12c1",
+          "codex-rs/utils/readiness/Cargo.toml": "076651d5227baa047d95a42e9e8795c65dc0bc52",
+          "codex-rs/utils/redacted-string/Cargo.toml": "39f60d8eb109312fba4b052e69649b1c9382a1a4",
+          "codex-rs/utils/rustls-provider/Cargo.toml": "af79eff69252fc01244e2ae721b5a263c1d2fc4c",
+          "codex-rs/utils/sandbox-summary/Cargo.toml": "ab6df005dac274f638a16c387779458950525728",
+          "codex-rs/utils/sleep-inhibitor/Cargo.toml": "f2abb6df2110e7f3de215cb34a0cd627c0345649",
+          "codex-rs/utils/stream-parser/Cargo.toml": "6eb5fb9a8747b95cb3dbd113f4ebfcda53b8fed5",
+          "codex-rs/utils/string/Cargo.toml": "8710cffe4697ae4cce6e97d6bac35566db426672",
+          "codex-rs/utils/template/Cargo.toml": "f24caec190455f3ac685004fc1f6e474ee8f8ed9",
+          "codex-rs/v8-poc/Cargo.toml": "9615ab977f9dfdb35467d1eadaf0bc6dfa641625",
+          "codex-rs/websocket-client/Cargo.toml": "19baf9842b591c6aba15d5253f124a737d0d1cdf",
+          "codex-rs/windows-sandbox-rs/Cargo.toml": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+          "codex-rs/workload-identity/Cargo.toml": "b64177282accbb1975aa7adbe2411ace4da52662"
+        },
+        "eeb17ab1f4127d365025e9b1b53f9cc44eed01a5": {
+          ".github/workflows/cargo-deny.yml": "0b93acf955da200d7728b9a9e47b6118293701ab",
+          "codex-rs/.cargo/config.toml": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+          "codex-rs/Cargo.lock": "8a9eab30d8957daab7dd027e86e88ca792e04a1c",
+          "codex-rs/Cargo.toml": "d2703b590935ab17316e6c258657c0ce5ab7412a",
+          "codex-rs/agent-graph-store/Cargo.toml": "15d116823b73afa82021f3ca55a28ce25e9044aa",
+          "codex-rs/agent-identity/Cargo.toml": "36d5eb41fd694a9eb283cbd6af4bc0977fa36c80",
+          "codex-rs/analytics/Cargo.toml": "8546427469212f824055765ffe79dd174aab3f7f",
+          "codex-rs/ansi-escape/Cargo.toml": "edb5b6e514cc2d36596a5dce7e9f6963cc2def8d",
+          "codex-rs/app-server-client/Cargo.toml": "cfe7a3d47f690470979c4386d5a89e640a4270d0",
+          "codex-rs/app-server-daemon/Cargo.toml": "fee57321978f8033232071940d85e5a1b8942b51",
+          "codex-rs/app-server-protocol-noop-macros/Cargo.toml": "93a24b070beffa187ab27f331e35cdcefe21c4b8",
+          "codex-rs/app-server-protocol/Cargo.toml": "da3876496ae9b90bdf3cea620b5a2eac6324e239",
+          "codex-rs/app-server-test-client/Cargo.toml": "901afb70d00f16e004913c764337d92afc82808b",
+          "codex-rs/app-server-transport/Cargo.toml": "7beaa4e42b225d14975aa6cc3368d66b13a03470",
+          "codex-rs/app-server/Cargo.toml": "7008939cb5c05ba76d39d76e063108f2dc0e449c",
+          "codex-rs/app-server/tests/common/Cargo.toml": "8dd43051c7e4087c3c7213f05799db1b43dbe759",
+          "codex-rs/apply-patch/Cargo.toml": "8e1d7f651f47a76de2a6ed6226aa2ec1a55cf5d6",
+          "codex-rs/arg0/Cargo.toml": "bb45db45521a60e80088f9032431d28ff4e717ed",
+          "codex-rs/async-utils/Cargo.toml": "093bbe0972b4a4fce1f8a7ef87b3c1f04f5b9ca0",
+          "codex-rs/aws-auth/Cargo.toml": "6bb5a69ae9dbf82efcf6b637e30d521e19a8ecfe",
+          "codex-rs/backend-client/Cargo.toml": "512d9606170bd8fcdc12c98d82dda43e47910a65",
+          "codex-rs/build-info/Cargo.toml": "f9cc3d040fb872382d7801e7720f41447f62e1f9",
+          "codex-rs/bwrap/Cargo.toml": "ed7010c8fdaea270f028ceb9a053e60c278d2b4c",
+          "codex-rs/chatgpt/Cargo.toml": "04b9cb7df6786401aa2c2cbad225cc40a26d277d",
+          "codex-rs/cli/Cargo.toml": "d2360ef42c5a8c8a9ffe3231f85220597847f0ab",
+          "codex-rs/cloud-config/Cargo.toml": "ecb33d34beb89a3112cbd316e6bcf672b089a833",
+          "codex-rs/cloud-tasks-client/Cargo.toml": "8efd78cb22d0b6458e9ec9138f0df03590f75d75",
+          "codex-rs/cloud-tasks-mock-client/Cargo.toml": "b249b654e02f36360389a12ccc14bffb787b9726",
+          "codex-rs/cloud-tasks/Cargo.toml": "12bd6fdf7fd03e8b9c16de911f4ca69d625fba90",
+          "codex-rs/code-mode-host/Cargo.toml": "685397aadfa0a681dcad1b2f84f3b9ae8964186a",
+          "codex-rs/code-mode-protocol/Cargo.toml": "cad10b47ebf4e577d9d9278703424f266ba6cc71",
+          "codex-rs/code-mode-runtime/Cargo.toml": "e3708b657ebd5e05a289acffea1dccb2061db4fd",
+          "codex-rs/code-mode/Cargo.toml": "0ef5079bebb7f523b4b5557ec07e46d3c5230465",
+          "codex-rs/codex-api/Cargo.toml": "01cacbe2b4608ab8ea0853ce21e1b11768f9eb80",
+          "codex-rs/codex-backend-openapi-models/Cargo.toml": "7baf01935d36ad701d79d0c6e7e9ece0b056142f",
+          "codex-rs/codex-client/Cargo.toml": "bc67e383a83d13d9a841ef3017ff4fc58284d4c3",
+          "codex-rs/codex-experimental-api-macros/Cargo.toml": "2e148a21d782b2ca20f5c81fc4ea896523d4d80d",
+          "codex-rs/codex-home/Cargo.toml": "a8fa625dcfc1a38ebfc0bbdd18ec57ce7c1e625b",
+          "codex-rs/codex-mcp/Cargo.toml": "6134f2126db203999727d05f61921836dfed06b7",
+          "codex-rs/collaboration-mode-templates/Cargo.toml": "2c17b1fd2ad989bda8a38e80dee1c5380f887c03",
+          "codex-rs/config/Cargo.toml": "37a1c32439b633761727924dc9e762ae0781658d",
+          "codex-rs/connectors/Cargo.toml": "ac3ce9241c2d6f4deb3ac09ced64087fd51b29b3",
+          "codex-rs/context-fragments/Cargo.toml": "ca84916ce99b61eef9f5b02cf7dd102c399e5732",
+          "codex-rs/core-api/Cargo.toml": "b82d5ee4802d68b29f574bc8ebee1334cf751caa",
+          "codex-rs/core-plugins/Cargo.toml": "0899163accb0edc3e98b27b9b9fdfd86adab46ae",
+          "codex-rs/core/Cargo.toml": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+          "codex-rs/core/tests/common/Cargo.toml": "a4851eb1d9ef3f9bc0d1535f84e937bfb82aaf93",
+          "codex-rs/deny.toml": "677f941360b2d82ab96aa4d419d97f4616cc2194",
+          "codex-rs/diagnostics/Cargo.toml": "2eb2125a102e121ed5a51d8dad3013c7cc258cf0",
+          "codex-rs/exec-server-protocol/Cargo.toml": "9dac711e1a0f404be080113747997690e9cf4a49",
+          "codex-rs/exec-server/Cargo.toml": "746bfb231d61c1a67163ff55c46cd7e92964457a",
+          "codex-rs/exec-server/tests/support/Cargo.toml": "85ad347b6c5494746f3f017096c7c6a8f4392435",
+          "codex-rs/exec/Cargo.toml": "9c3a236bf7c5d678bdf03aaa140fe40f2e7a807e",
+          "codex-rs/execpolicy/Cargo.toml": "42040222336513132da0b6a274bcd3fc80589f99",
+          "codex-rs/ext/agent/Cargo.toml": "6c3f10a43319a122e2da129e31ba34aa4f1df49a",
+          "codex-rs/ext/connectors/Cargo.toml": "1aead727731475bc9590ac90efb37c2ae7adef64",
+          "codex-rs/ext/extension-api/Cargo.toml": "c6eb90ec97d6fae953e8899edca318c492d5138c",
+          "codex-rs/ext/git-attribution/Cargo.toml": "e96d0dbcd577bcc0645f3f6175bbe31429f87159",
+          "codex-rs/ext/goal/Cargo.toml": "22ee1794fdf1341819bb8041882b84124ef2362e",
+          "codex-rs/ext/guardian-v2/Cargo.toml": "ebe48e99b3927ba3d4f407a21e662dbe93bdbce8",
+          "codex-rs/ext/hepta-governance/Cargo.toml": "229991524ea3a5219054f2b36b87c7708a2d93a6",
+          "codex-rs/ext/hepta-memory/Cargo.toml": "2d17c6481dbe0d75bd057e2edc9e3ee46de88c73",
+          "codex-rs/ext/hepta-prompt/Cargo.toml": "152fea264155931b3994e98e3c754b8f79c57718",
+          "codex-rs/ext/history-notes/Cargo.toml": "08fb92dd74557893eb7cf6fa989e798d72a92660",
+          "codex-rs/ext/image-generation/Cargo.toml": "ad10b2b0a640744ce3986a22990cc46aa24b89b3",
+          "codex-rs/ext/items/Cargo.toml": "4d58b29bc7004171361e4828e1dda712815ad8d1",
+          "codex-rs/ext/mcp/Cargo.toml": "e639081358ca76910ed744f5abc426f60a65a74e",
+          "codex-rs/ext/memories/Cargo.toml": "e283140b15ef1547c642310138fc8b04c4ce7607",
+          "codex-rs/ext/queue/Cargo.toml": "007cbbbde0e7cdd4c067d70e5b3d40f40f1d6187",
+          "codex-rs/ext/skills/Cargo.toml": "256d0aaa8710fff8d7a9d5c8eba242cd282b868e",
+          "codex-rs/ext/web-search/Cargo.toml": "84d5a8cad1ec4749e3cea6aa6a9a86eb7178523b",
+          "codex-rs/external-agent-migration/Cargo.toml": "3db739977ce9e94f66a3c4c9f22ce869610fa910",
+          "codex-rs/features/Cargo.toml": "95be6c400dd0d22ca7304146714a2678164fb38b",
+          "codex-rs/feedback/Cargo.toml": "8a01696952358c792d622afe675b609b8b315138",
+          "codex-rs/file-search/Cargo.toml": "e235898982f6eba908c5c0751eae91a5b25cdb1a",
+          "codex-rs/file-system/Cargo.toml": "382eacb43d3353b2046806f91ba0f976866c9282",
+          "codex-rs/file-watcher/Cargo.toml": "afb14fcde634f5478f4d6f981c52bf982b03b0f0",
+          "codex-rs/git-utils/Cargo.toml": "a0bd7872854cffa38dd559805a1dea2d06db85ae",
+          "codex-rs/hepta-agent-protocol/Cargo.toml": "ca7afd5c2905cdc02666b0cb20c1f6238a84dbba",
+          "codex-rs/hepta-agentd/Cargo.toml": "5d13cd8f355bab3ecb95f8c068517de200dd143f",
+          "codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml": "49874f52adebb338f8fd7038ac84fb13d3be8157",
+          "codex-rs/hepta-authbus/Cargo.toml": "5b14273ea4ff6ff2e71dda151560ae6ba7f90dba",
+          "codex-rs/hepta-automation/Cargo.toml": "4a5f0fa0db6a0f27d685012c89f87d0406f2f41b",
+          "codex-rs/hepta-bao-adapter/Cargo.toml": "fc8435728a0eeae5c1a2292b8ef33d2ae5c55e90",
+          "codex-rs/hepta-bellman-operator/Cargo.toml": "5231fed894f15b6e5ba6255523709067ea656e3d",
+          "codex-rs/hepta-codex-adapter/Cargo.toml": "0af5dc81a2488f2b273f79c13ef281db2be048c2",
+          "codex-rs/hepta-cognitive-read/Cargo.toml": "9804ca394a12c4bf31f01031853d7e52c73dbb75",
+          "codex-rs/hepta-cognitive-store/Cargo.toml": "34598e61d6aaff043e048907b48967086d6ecc83",
+          "codex-rs/hepta-cognitive-types/Cargo.toml": "c836b15097ff4812e735e3feff1d552a87c2cae8",
+          "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml": "83047ff105ece6cf2aaa92324558729f37589a9c",
+          "codex-rs/hepta-compact-engine/Cargo.toml": "60bc6fb1ee73f31eac3a152db40be10b52b495e3",
+          "codex-rs/hepta-context-compiler/Cargo.toml": "2ce0fb9520b8440a9b20a441d2c7bcbc4529dba0",
+          "codex-rs/hepta-contracts/Cargo.toml": "cab373fecdfb7eba529753ecbb4943bc46ceec32",
+          "codex-rs/hepta-control-plane/Cargo.toml": "37cd75393a4ef4164d96ba827a3531f37d668d15",
+          "codex-rs/hepta-evidence/Cargo.toml": "7d5a851797a8c8fdc9c14382418158f9c9789dad",
+          "codex-rs/hepta-fleet/Cargo.toml": "a271fa91b84d9ea0100703ff491c6826b0aabc6e",
+          "codex-rs/hepta-infer-core/Cargo.toml": "d89bf7c4764cdaaa4b040a447a295965ea0142c5",
+          "codex-rs/hepta-infer-worker-host/Cargo.toml": "bffa8bfcb7abffd460886a27b2f63a6a0ecb21df",
+          "codex-rs/hepta-inferd/Cargo.toml": "4b7d6a9e0a775e3da69a873d3d92ff643662731a",
+          "codex-rs/hepta-intelligence-eval/Cargo.toml": "c9096b1f1c77b27b7b94d7be86e4679212960295",
+          "codex-rs/hepta-intelligence/Cargo.toml": "162205d6bc62834e1b04fed33dd67f5955f218d1",
+          "codex-rs/hepta-intuition/Cargo.toml": "26e2f53c1c2a33d5ab30e56ff504d2c52779bfc5",
+          "codex-rs/hepta-kg/Cargo.toml": "892dbf28b9bc2ecdf0fe72c79eff19294140c198",
+          "codex-rs/hepta-learning-artifacts/Cargo.toml": "725a63c9f2475ad632c7c189fd9ca271702a8899",
+          "codex-rs/hepta-learning-ledger/Cargo.toml": "1d76cad44498e9538cefff1e20202482520257ff",
+          "codex-rs/hepta-matrix-protocol/Cargo.toml": "8312e8b0a739d033976c0058a25e5850e3af66a9",
+          "codex-rs/hepta-matrix-sdk/Cargo.toml": "1a8864fd643349c4db345b0e2dfbcb4a4d53719a",
+          "codex-rs/hepta-matrix-store/Cargo.toml": "211f8fb711d2c91d1421da930c067c28b61315b0",
+          "codex-rs/hepta-matrixd/Cargo.toml": "c7b4306766955aafb24d1f66c55803a35c2aee96",
+          "codex-rs/hepta-memory-federation/Cargo.toml": "49113a3bccd7a2f56b18459924d3ec9151cbf980",
+          "codex-rs/hepta-memory-retrieval/Cargo.toml": "913ad075e730da2b3bbff7fcfa153c457141a944",
+          "codex-rs/hepta-memory/Cargo.toml": "6ba04f39f78e7d6295c9922d279e37e0492180f2",
+          "codex-rs/hepta-native-gateway/Cargo.toml": "ecad366f0c5bcedb8d37cb32250a0eb94b9ff4f0",
+          "codex-rs/hepta-ndu/Cargo.toml": "d92d388b0c5bd29552ed0b2719551af973b5cfc4",
+          "codex-rs/hepta-neuron/Cargo.toml": "dbd650a75e7ebe47d2642bc653468355d42cd2e3",
+          "codex-rs/hepta-objective/Cargo.toml": "39085cf5d2edb3766cd1c17cd721d17389ed93cc",
+          "codex-rs/hepta-operations/Cargo.toml": "af2e656fcacea8db6ea84d8bdc8715f3aa62e739",
+          "codex-rs/hepta-operator-acceptance/Cargo.toml": "5f54bdf40f505adec2e5b0681bc4d7a48ad097af",
+          "codex-rs/hepta-paths/Cargo.toml": "2c16f5b19d830d4370d9d1b294fd97eae6b8d1af",
+          "codex-rs/hepta-plasticity/Cargo.toml": "07cb9e40d44990874991620f89af8c0078575de1",
+          "codex-rs/hepta-prompt-optimizer/Cargo.toml": "f463e790c182452434287c7ccba68dd78a7c69ca",
+          "codex-rs/hepta-prompt-registry/Cargo.toml": "61676abe534702cd1c665197212065ec2d267f3f",
+          "codex-rs/hepta-runtime/Cargo.toml": "83f681ba2fc42402c78aa8ef33889b2b7191bf33",
+          "codex-rs/hepta-shadow-qualification/Cargo.toml": "91b8dfb7204a5244374b81ee3ce12b5d08af8e0d",
+          "codex-rs/hepta-supervisor/Cargo.toml": "3ed96436070a4e0d5a06aca8f247c25f28a798f1",
+          "codex-rs/hepta-types/Cargo.toml": "753e54835f933be4bf647417b2fb4c90a5e55181",
+          "codex-rs/hepta-wire/Cargo.toml": "ab9372f8287d8596794c1ea63d49217b45fd6759",
+          "codex-rs/hepta-wire/fuzz/Cargo.toml": "1afca1ef1eb80fe9eeb6e0c94eefa2f8069f6244",
+          "codex-rs/history/Cargo.toml": "bd938d2c2ea45333b8f040f41399674a28e54644",
+          "codex-rs/hooks/Cargo.toml": "0cdf84418a713110811febd88c5ec8c4e3a0cbfa",
+          "codex-rs/http-client/Cargo.toml": "2d54ca7158900eda362091c71e8d1bd742459d4c",
+          "codex-rs/install-context/Cargo.toml": "ee84ad2962acf57a698e399b38dbc0a03c51bd11",
+          "codex-rs/keyring-store/Cargo.toml": "7a4499687b45059ecc1617760ff541c79ccb5a2c",
+          "codex-rs/linux-sandbox/Cargo.toml": "0f7c68a152a75cfc2f0369dc098dcf2b996185f2",
+          "codex-rs/lmstudio/Cargo.toml": "e84bcfed51c3683e87ea7ae2e0a7809aade43a76",
+          "codex-rs/login/Cargo.toml": "2971dec6c1a81cb80379477333371bba6e8fbece",
+          "codex-rs/mcp-server/Cargo.toml": "e32d5c6c9cc8e569a49396e085191811835cfdb7",
+          "codex-rs/mcp-server/tests/common/Cargo.toml": "515aa01b5a4a098a6f49cad9d5e4ad3cbbe54f77",
+          "codex-rs/memories/read/Cargo.toml": "2c0c5f2c954ceb8b986057bdd929badca4ecd64d",
+          "codex-rs/memories/write/Cargo.toml": "bf031a6a164f5a098757efdb6c791d9e2705ca50",
+          "codex-rs/message-history/Cargo.toml": "176b9579097499b050e24823217eec93502c004b",
+          "codex-rs/model-provider-info/Cargo.toml": "827dd8744b54ffcaa98673c0c262f5265b717ebf",
+          "codex-rs/model-provider/Cargo.toml": "377dc7a5c258538df7c52e0f821169fbfc1fa09a",
+          "codex-rs/models-manager/Cargo.toml": "2655bb2e7fd80fc1737549d6b5b4a78f607643a9",
+          "codex-rs/network-proxy/Cargo.toml": "82407b00d104568250c63f87be6aea8113199e44",
+          "codex-rs/ollama/Cargo.toml": "29c0852092c0ebdb9846f50f91384e4720f15d71",
+          "codex-rs/otel/Cargo.toml": "6efa93043db5e52f6ec45212435b377ca847d9ad",
+          "codex-rs/plugin/Cargo.toml": "3e55f55c332a06a99a9f6415f2235c3d18cd4fb1",
+          "codex-rs/process-hardening/Cargo.toml": "60a5729ff57a961dd9ccc145f8ae7171fe0b3176",
+          "codex-rs/prompts/Cargo.toml": "6302d49e2ff3e1e67722a3fc891a7e6e90a72362",
+          "codex-rs/protocol/Cargo.toml": "221275fe73543cc9cd5d882514855204d673353e",
+          "codex-rs/response-debug-context/Cargo.toml": "fcdb6c9630c4d04da55b9c64318e4c111afce441",
+          "codex-rs/responses-api-proxy/Cargo.toml": "05d638843f64eacad298a79011798f3a2ef924f7",
+          "codex-rs/rmcp-client/Cargo.toml": "a24df4a4a2c094b2b7a8efc949553dd2e5ba1cd9",
+          "codex-rs/rollout-trace/Cargo.toml": "b368c9acc5ffc3a0ba3a27ae7ea1ab48e38baa31",
+          "codex-rs/rollout/Cargo.toml": "1bb4b54f146488e737a3d5bdaeef9dc1510d0b03",
+          "codex-rs/sandboxing/Cargo.toml": "2c0885729b4ea05f0b597b37823f4758839ecb62",
+          "codex-rs/secrets/Cargo.toml": "2a294ee39134e0a4d4160ed7b422d5fe3c2ba6da",
+          "codex-rs/shell-command/Cargo.toml": "999295ec314a37a523f65bd050e8b95453cc7c77",
+          "codex-rs/shell-escalation/Cargo.toml": "92ae8b033f3c38edb1609e6347084be6dd9fdc47",
+          "codex-rs/skills/Cargo.toml": "7342975aaea0e3ecc61da41f145674cd154a12c9",
+          "codex-rs/state/Cargo.toml": "334f8c7a98199777a025abfa91aa18f0b7bbb008",
+          "codex-rs/stdio-to-uds/Cargo.toml": "6b5c037d755d4dc8006424aa836b29036cea8185",
+          "codex-rs/terminal-detection/Cargo.toml": "9b1bf3a51663289c68b61f566201df8d05e385cf",
+          "codex-rs/test-binary-support/Cargo.toml": "12d995b9720b942daf802ce30c2976b3f36e7371",
+          "codex-rs/third_party/imbl-6.1.0/Cargo.toml": "5a3f10354681eb382046da6e29bc272803405610",
+          "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/Cargo.toml": "7088dc696477279578bcb853e43400dd196a1a26",
+          "codex-rs/thread-manager-sample/Cargo.toml": "9e857ad0bc7fa670089008eeddf7d593a4a6f45f",
+          "codex-rs/thread-store/Cargo.toml": "f79e8d6c81eb4eac00149b45121fa052cdecef64",
+          "codex-rs/tools/Cargo.toml": "e621bb830bb4d564c772f5e558c57919de8b32db",
+          "codex-rs/tui/Cargo.toml": "95db9bee4158d69882f480f6b0842c47a510ca59",
+          "codex-rs/uds/Cargo.toml": "66ba1d9d2d915dae795b2cda4eef7d2d4bd91539",
+          "codex-rs/utils/absolute-path/Cargo.toml": "7c5b4840d15d81deed1d1ea30c0b269d399772bc",
+          "codex-rs/utils/approval-presets/Cargo.toml": "6efd2c482b4386b505a15d96bf60504050633e61",
+          "codex-rs/utils/audio/Cargo.toml": "90540228a6bf5608329d2f2773225271229b9813",
+          "codex-rs/utils/build-identity/Cargo.toml": "d21f6b0fff86daef23570d5c583edbf18eeecafb",
+          "codex-rs/utils/cache/Cargo.toml": "3c120c032e8d595a7675f0474ab6d91b0b52a59e",
+          "codex-rs/utils/cargo-bin/Cargo.toml": "a56e5758306799cc5962eaf57e8ad3a26b73033f",
+          "codex-rs/utils/cli/Cargo.toml": "9d330c5ce6badd0d15e6c401cd777fb3d13c8d08",
+          "codex-rs/utils/elapsed/Cargo.toml": "7ba5e6ae6614fddadaa1ba1e1f8299ffc251d78f",
+          "codex-rs/utils/fuzzy-match/Cargo.toml": "704386e74f6924a016c30bfbaa6447b093f70be0",
+          "codex-rs/utils/home-dir/Cargo.toml": "2d2de0230e38004d562b8ab5546888cd5da74851",
+          "codex-rs/utils/image/Cargo.toml": "7ba28f49962a5ec0e35aad82ce2b93cfeffbfa09",
+          "codex-rs/utils/json-to-toml/Cargo.toml": "57a28696c8fc2148525480511551b256b35d8b02",
+          "codex-rs/utils/oss/Cargo.toml": "78cc0cb2f8ed60f3d4b8a3bb007b348d700024ac",
+          "codex-rs/utils/output-truncation/Cargo.toml": "17176c9f5643b3a4f1d5a678a25076094cb7441d",
+          "codex-rs/utils/path-uri/Cargo.toml": "5bb6328139c7fe2f7759e7edf34be0de9e2f0371",
+          "codex-rs/utils/path-utils/Cargo.toml": "d1503fd060c960845b2f514cbe69f824291eff07",
+          "codex-rs/utils/plugins/Cargo.toml": "1a4576d59d0fcf04a54236f57976e42683c266a6",
+          "codex-rs/utils/pty/Cargo.toml": "2a27ab72ea290862887abfc857c86efe6fad12c1",
+          "codex-rs/utils/readiness/Cargo.toml": "076651d5227baa047d95a42e9e8795c65dc0bc52",
+          "codex-rs/utils/redacted-string/Cargo.toml": "39f60d8eb109312fba4b052e69649b1c9382a1a4",
+          "codex-rs/utils/rustls-provider/Cargo.toml": "af79eff69252fc01244e2ae721b5a263c1d2fc4c",
+          "codex-rs/utils/sandbox-summary/Cargo.toml": "ab6df005dac274f638a16c387779458950525728",
+          "codex-rs/utils/sleep-inhibitor/Cargo.toml": "f2abb6df2110e7f3de215cb34a0cd627c0345649",
+          "codex-rs/utils/stream-parser/Cargo.toml": "6eb5fb9a8747b95cb3dbd113f4ebfcda53b8fed5",
+          "codex-rs/utils/string/Cargo.toml": "8710cffe4697ae4cce6e97d6bac35566db426672",
+          "codex-rs/utils/template/Cargo.toml": "f24caec190455f3ac685004fc1f6e474ee8f8ed9",
+          "codex-rs/v8-poc/Cargo.toml": "9615ab977f9dfdb35467d1eadaf0bc6dfa641625",
+          "codex-rs/websocket-client/Cargo.toml": "19baf9842b591c6aba15d5253f124a737d0d1cdf",
+          "codex-rs/windows-sandbox-rs/Cargo.toml": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+          "codex-rs/workload-identity/Cargo.toml": "b64177282accbb1975aa7adbe2411ace4da52662"
+        }
+      }
+    },
+    "local_manifest_comparison": {
+      "source_ref": "eeb17ab1f4127d365025e9b1b53f9cc44eed01a5",
+      "statuses": {
+        "not_materialized": 1,
+        "equal": 201
+      },
+      "files": [
+        {
+          "path": ".github/workflows/cargo-deny.yml",
+          "status": "not_materialized"
+        },
+        {
+          "path": "codex-rs/.cargo/config.toml",
+          "status": "equal",
+          "git_blob": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44"
+        },
+        {
+          "path": "codex-rs/Cargo.lock",
+          "status": "equal",
+          "git_blob": "8a9eab30d8957daab7dd027e86e88ca792e04a1c"
+        },
+        {
+          "path": "codex-rs/Cargo.toml",
+          "status": "equal",
+          "git_blob": "d2703b590935ab17316e6c258657c0ce5ab7412a"
+        },
+        {
+          "path": "codex-rs/agent-graph-store/Cargo.toml",
+          "status": "equal",
+          "git_blob": "15d116823b73afa82021f3ca55a28ce25e9044aa"
+        },
+        {
+          "path": "codex-rs/agent-identity/Cargo.toml",
+          "status": "equal",
+          "git_blob": "36d5eb41fd694a9eb283cbd6af4bc0977fa36c80"
+        },
+        {
+          "path": "codex-rs/analytics/Cargo.toml",
+          "status": "equal",
+          "git_blob": "8546427469212f824055765ffe79dd174aab3f7f"
+        },
+        {
+          "path": "codex-rs/ansi-escape/Cargo.toml",
+          "status": "equal",
+          "git_blob": "edb5b6e514cc2d36596a5dce7e9f6963cc2def8d"
+        },
+        {
+          "path": "codex-rs/app-server-client/Cargo.toml",
+          "status": "equal",
+          "git_blob": "cfe7a3d47f690470979c4386d5a89e640a4270d0"
+        },
+        {
+          "path": "codex-rs/app-server-daemon/Cargo.toml",
+          "status": "equal",
+          "git_blob": "fee57321978f8033232071940d85e5a1b8942b51"
+        },
+        {
+          "path": "codex-rs/app-server-protocol-noop-macros/Cargo.toml",
+          "status": "equal",
+          "git_blob": "93a24b070beffa187ab27f331e35cdcefe21c4b8"
+        },
+        {
+          "path": "codex-rs/app-server-protocol/Cargo.toml",
+          "status": "equal",
+          "git_blob": "da3876496ae9b90bdf3cea620b5a2eac6324e239"
+        },
+        {
+          "path": "codex-rs/app-server-test-client/Cargo.toml",
+          "status": "equal",
+          "git_blob": "901afb70d00f16e004913c764337d92afc82808b"
+        },
+        {
+          "path": "codex-rs/app-server-transport/Cargo.toml",
+          "status": "equal",
+          "git_blob": "7beaa4e42b225d14975aa6cc3368d66b13a03470"
+        },
+        {
+          "path": "codex-rs/app-server/Cargo.toml",
+          "status": "equal",
+          "git_blob": "7008939cb5c05ba76d39d76e063108f2dc0e449c"
+        },
+        {
+          "path": "codex-rs/app-server/tests/common/Cargo.toml",
+          "status": "equal",
+          "git_blob": "8dd43051c7e4087c3c7213f05799db1b43dbe759"
+        },
+        {
+          "path": "codex-rs/apply-patch/Cargo.toml",
+          "status": "equal",
+          "git_blob": "8e1d7f651f47a76de2a6ed6226aa2ec1a55cf5d6"
+        },
+        {
+          "path": "codex-rs/arg0/Cargo.toml",
+          "status": "equal",
+          "git_blob": "bb45db45521a60e80088f9032431d28ff4e717ed"
+        },
+        {
+          "path": "codex-rs/async-utils/Cargo.toml",
+          "status": "equal",
+          "git_blob": "093bbe0972b4a4fce1f8a7ef87b3c1f04f5b9ca0"
+        },
+        {
+          "path": "codex-rs/aws-auth/Cargo.toml",
+          "status": "equal",
+          "git_blob": "6bb5a69ae9dbf82efcf6b637e30d521e19a8ecfe"
+        },
+        {
+          "path": "codex-rs/backend-client/Cargo.toml",
+          "status": "equal",
+          "git_blob": "512d9606170bd8fcdc12c98d82dda43e47910a65"
+        },
+        {
+          "path": "codex-rs/build-info/Cargo.toml",
+          "status": "equal",
+          "git_blob": "f9cc3d040fb872382d7801e7720f41447f62e1f9"
+        },
+        {
+          "path": "codex-rs/bwrap/Cargo.toml",
+          "status": "equal",
+          "git_blob": "ed7010c8fdaea270f028ceb9a053e60c278d2b4c"
+        },
+        {
+          "path": "codex-rs/chatgpt/Cargo.toml",
+          "status": "equal",
+          "git_blob": "04b9cb7df6786401aa2c2cbad225cc40a26d277d"
+        },
+        {
+          "path": "codex-rs/cli/Cargo.toml",
+          "status": "equal",
+          "git_blob": "d2360ef42c5a8c8a9ffe3231f85220597847f0ab"
+        },
+        {
+          "path": "codex-rs/cloud-config/Cargo.toml",
+          "status": "equal",
+          "git_blob": "ecb33d34beb89a3112cbd316e6bcf672b089a833"
+        },
+        {
+          "path": "codex-rs/cloud-tasks-client/Cargo.toml",
+          "status": "equal",
+          "git_blob": "8efd78cb22d0b6458e9ec9138f0df03590f75d75"
+        },
+        {
+          "path": "codex-rs/cloud-tasks-mock-client/Cargo.toml",
+          "status": "equal",
+          "git_blob": "b249b654e02f36360389a12ccc14bffb787b9726"
+        },
+        {
+          "path": "codex-rs/cloud-tasks/Cargo.toml",
+          "status": "equal",
+          "git_blob": "12bd6fdf7fd03e8b9c16de911f4ca69d625fba90"
+        },
+        {
+          "path": "codex-rs/code-mode-host/Cargo.toml",
+          "status": "equal",
+          "git_blob": "685397aadfa0a681dcad1b2f84f3b9ae8964186a"
+        },
+        {
+          "path": "codex-rs/code-mode-protocol/Cargo.toml",
+          "status": "equal",
+          "git_blob": "cad10b47ebf4e577d9d9278703424f266ba6cc71"
+        },
+        {
+          "path": "codex-rs/code-mode-runtime/Cargo.toml",
+          "status": "equal",
+          "git_blob": "e3708b657ebd5e05a289acffea1dccb2061db4fd"
+        },
+        {
+          "path": "codex-rs/code-mode/Cargo.toml",
+          "status": "equal",
+          "git_blob": "0ef5079bebb7f523b4b5557ec07e46d3c5230465"
+        },
+        {
+          "path": "codex-rs/codex-api/Cargo.toml",
+          "status": "equal",
+          "git_blob": "01cacbe2b4608ab8ea0853ce21e1b11768f9eb80"
+        },
+        {
+          "path": "codex-rs/codex-backend-openapi-models/Cargo.toml",
+          "status": "equal",
+          "git_blob": "7baf01935d36ad701d79d0c6e7e9ece0b056142f"
+        },
+        {
+          "path": "codex-rs/codex-client/Cargo.toml",
+          "status": "equal",
+          "git_blob": "bc67e383a83d13d9a841ef3017ff4fc58284d4c3"
+        },
+        {
+          "path": "codex-rs/codex-experimental-api-macros/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2e148a21d782b2ca20f5c81fc4ea896523d4d80d"
+        },
+        {
+          "path": "codex-rs/codex-home/Cargo.toml",
+          "status": "equal",
+          "git_blob": "a8fa625dcfc1a38ebfc0bbdd18ec57ce7c1e625b"
+        },
+        {
+          "path": "codex-rs/codex-mcp/Cargo.toml",
+          "status": "equal",
+          "git_blob": "6134f2126db203999727d05f61921836dfed06b7"
+        },
+        {
+          "path": "codex-rs/collaboration-mode-templates/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2c17b1fd2ad989bda8a38e80dee1c5380f887c03"
+        },
+        {
+          "path": "codex-rs/config/Cargo.toml",
+          "status": "equal",
+          "git_blob": "37a1c32439b633761727924dc9e762ae0781658d"
+        },
+        {
+          "path": "codex-rs/connectors/Cargo.toml",
+          "status": "equal",
+          "git_blob": "ac3ce9241c2d6f4deb3ac09ced64087fd51b29b3"
+        },
+        {
+          "path": "codex-rs/context-fragments/Cargo.toml",
+          "status": "equal",
+          "git_blob": "ca84916ce99b61eef9f5b02cf7dd102c399e5732"
+        },
+        {
+          "path": "codex-rs/core-api/Cargo.toml",
+          "status": "equal",
+          "git_blob": "b82d5ee4802d68b29f574bc8ebee1334cf751caa"
+        },
+        {
+          "path": "codex-rs/core-plugins/Cargo.toml",
+          "status": "equal",
+          "git_blob": "0899163accb0edc3e98b27b9b9fdfd86adab46ae"
+        },
+        {
+          "path": "codex-rs/core/Cargo.toml",
+          "status": "equal",
+          "git_blob": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d"
+        },
+        {
+          "path": "codex-rs/core/tests/common/Cargo.toml",
+          "status": "equal",
+          "git_blob": "a4851eb1d9ef3f9bc0d1535f84e937bfb82aaf93"
+        },
+        {
+          "path": "codex-rs/deny.toml",
+          "status": "equal",
+          "git_blob": "677f941360b2d82ab96aa4d419d97f4616cc2194"
+        },
+        {
+          "path": "codex-rs/diagnostics/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2eb2125a102e121ed5a51d8dad3013c7cc258cf0"
+        },
+        {
+          "path": "codex-rs/exec-server-protocol/Cargo.toml",
+          "status": "equal",
+          "git_blob": "9dac711e1a0f404be080113747997690e9cf4a49"
+        },
+        {
+          "path": "codex-rs/exec-server/Cargo.toml",
+          "status": "equal",
+          "git_blob": "746bfb231d61c1a67163ff55c46cd7e92964457a"
+        },
+        {
+          "path": "codex-rs/exec-server/tests/support/Cargo.toml",
+          "status": "equal",
+          "git_blob": "85ad347b6c5494746f3f017096c7c6a8f4392435"
+        },
+        {
+          "path": "codex-rs/exec/Cargo.toml",
+          "status": "equal",
+          "git_blob": "9c3a236bf7c5d678bdf03aaa140fe40f2e7a807e"
+        },
+        {
+          "path": "codex-rs/execpolicy/Cargo.toml",
+          "status": "equal",
+          "git_blob": "42040222336513132da0b6a274bcd3fc80589f99"
+        },
+        {
+          "path": "codex-rs/ext/agent/Cargo.toml",
+          "status": "equal",
+          "git_blob": "6c3f10a43319a122e2da129e31ba34aa4f1df49a"
+        },
+        {
+          "path": "codex-rs/ext/connectors/Cargo.toml",
+          "status": "equal",
+          "git_blob": "1aead727731475bc9590ac90efb37c2ae7adef64"
+        },
+        {
+          "path": "codex-rs/ext/extension-api/Cargo.toml",
+          "status": "equal",
+          "git_blob": "c6eb90ec97d6fae953e8899edca318c492d5138c"
+        },
+        {
+          "path": "codex-rs/ext/git-attribution/Cargo.toml",
+          "status": "equal",
+          "git_blob": "e96d0dbcd577bcc0645f3f6175bbe31429f87159"
+        },
+        {
+          "path": "codex-rs/ext/goal/Cargo.toml",
+          "status": "equal",
+          "git_blob": "22ee1794fdf1341819bb8041882b84124ef2362e"
+        },
+        {
+          "path": "codex-rs/ext/guardian-v2/Cargo.toml",
+          "status": "equal",
+          "git_blob": "ebe48e99b3927ba3d4f407a21e662dbe93bdbce8"
+        },
+        {
+          "path": "codex-rs/ext/hepta-governance/Cargo.toml",
+          "status": "equal",
+          "git_blob": "229991524ea3a5219054f2b36b87c7708a2d93a6"
+        },
+        {
+          "path": "codex-rs/ext/hepta-memory/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2d17c6481dbe0d75bd057e2edc9e3ee46de88c73"
+        },
+        {
+          "path": "codex-rs/ext/hepta-prompt/Cargo.toml",
+          "status": "equal",
+          "git_blob": "152fea264155931b3994e98e3c754b8f79c57718"
+        },
+        {
+          "path": "codex-rs/ext/history-notes/Cargo.toml",
+          "status": "equal",
+          "git_blob": "08fb92dd74557893eb7cf6fa989e798d72a92660"
+        },
+        {
+          "path": "codex-rs/ext/image-generation/Cargo.toml",
+          "status": "equal",
+          "git_blob": "ad10b2b0a640744ce3986a22990cc46aa24b89b3"
+        },
+        {
+          "path": "codex-rs/ext/items/Cargo.toml",
+          "status": "equal",
+          "git_blob": "4d58b29bc7004171361e4828e1dda712815ad8d1"
+        },
+        {
+          "path": "codex-rs/ext/mcp/Cargo.toml",
+          "status": "equal",
+          "git_blob": "e639081358ca76910ed744f5abc426f60a65a74e"
+        },
+        {
+          "path": "codex-rs/ext/memories/Cargo.toml",
+          "status": "equal",
+          "git_blob": "e283140b15ef1547c642310138fc8b04c4ce7607"
+        },
+        {
+          "path": "codex-rs/ext/queue/Cargo.toml",
+          "status": "equal",
+          "git_blob": "007cbbbde0e7cdd4c067d70e5b3d40f40f1d6187"
+        },
+        {
+          "path": "codex-rs/ext/skills/Cargo.toml",
+          "status": "equal",
+          "git_blob": "256d0aaa8710fff8d7a9d5c8eba242cd282b868e"
+        },
+        {
+          "path": "codex-rs/ext/web-search/Cargo.toml",
+          "status": "equal",
+          "git_blob": "84d5a8cad1ec4749e3cea6aa6a9a86eb7178523b"
+        },
+        {
+          "path": "codex-rs/external-agent-migration/Cargo.toml",
+          "status": "equal",
+          "git_blob": "3db739977ce9e94f66a3c4c9f22ce869610fa910"
+        },
+        {
+          "path": "codex-rs/features/Cargo.toml",
+          "status": "equal",
+          "git_blob": "95be6c400dd0d22ca7304146714a2678164fb38b"
+        },
+        {
+          "path": "codex-rs/feedback/Cargo.toml",
+          "status": "equal",
+          "git_blob": "8a01696952358c792d622afe675b609b8b315138"
+        },
+        {
+          "path": "codex-rs/file-search/Cargo.toml",
+          "status": "equal",
+          "git_blob": "e235898982f6eba908c5c0751eae91a5b25cdb1a"
+        },
+        {
+          "path": "codex-rs/file-system/Cargo.toml",
+          "status": "equal",
+          "git_blob": "382eacb43d3353b2046806f91ba0f976866c9282"
+        },
+        {
+          "path": "codex-rs/file-watcher/Cargo.toml",
+          "status": "equal",
+          "git_blob": "afb14fcde634f5478f4d6f981c52bf982b03b0f0"
+        },
+        {
+          "path": "codex-rs/git-utils/Cargo.toml",
+          "status": "equal",
+          "git_blob": "a0bd7872854cffa38dd559805a1dea2d06db85ae"
+        },
+        {
+          "path": "codex-rs/hepta-agent-protocol/Cargo.toml",
+          "status": "equal",
+          "git_blob": "ca7afd5c2905cdc02666b0cb20c1f6238a84dbba"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/Cargo.toml",
+          "status": "equal",
+          "git_blob": "5d13cd8f355bab3ecb95f8c068517de200dd143f"
+        },
+        {
+          "path": "codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml",
+          "status": "equal",
+          "git_blob": "49874f52adebb338f8fd7038ac84fb13d3be8157"
+        },
+        {
+          "path": "codex-rs/hepta-authbus/Cargo.toml",
+          "status": "equal",
+          "git_blob": "5b14273ea4ff6ff2e71dda151560ae6ba7f90dba"
+        },
+        {
+          "path": "codex-rs/hepta-automation/Cargo.toml",
+          "status": "equal",
+          "git_blob": "4a5f0fa0db6a0f27d685012c89f87d0406f2f41b"
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/Cargo.toml",
+          "status": "equal",
+          "git_blob": "fc8435728a0eeae5c1a2292b8ef33d2ae5c55e90"
+        },
+        {
+          "path": "codex-rs/hepta-bellman-operator/Cargo.toml",
+          "status": "equal",
+          "git_blob": "5231fed894f15b6e5ba6255523709067ea656e3d"
+        },
+        {
+          "path": "codex-rs/hepta-codex-adapter/Cargo.toml",
+          "status": "equal",
+          "git_blob": "0af5dc81a2488f2b273f79c13ef281db2be048c2"
+        },
+        {
+          "path": "codex-rs/hepta-cognitive-read/Cargo.toml",
+          "status": "equal",
+          "git_blob": "9804ca394a12c4bf31f01031853d7e52c73dbb75"
+        },
+        {
+          "path": "codex-rs/hepta-cognitive-store/Cargo.toml",
+          "status": "equal",
+          "git_blob": "34598e61d6aaff043e048907b48967086d6ecc83"
+        },
+        {
+          "path": "codex-rs/hepta-cognitive-types/Cargo.toml",
+          "status": "equal",
+          "git_blob": "c836b15097ff4812e735e3feff1d552a87c2cae8"
+        },
+        {
+          "path": "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml",
+          "status": "equal",
+          "git_blob": "83047ff105ece6cf2aaa92324558729f37589a9c"
+        },
+        {
+          "path": "codex-rs/hepta-compact-engine/Cargo.toml",
+          "status": "equal",
+          "git_blob": "60bc6fb1ee73f31eac3a152db40be10b52b495e3"
+        },
+        {
+          "path": "codex-rs/hepta-context-compiler/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2ce0fb9520b8440a9b20a441d2c7bcbc4529dba0"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/Cargo.toml",
+          "status": "equal",
+          "git_blob": "cab373fecdfb7eba529753ecbb4943bc46ceec32"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/Cargo.toml",
+          "status": "equal",
+          "git_blob": "37cd75393a4ef4164d96ba827a3531f37d668d15"
+        },
+        {
+          "path": "codex-rs/hepta-evidence/Cargo.toml",
+          "status": "equal",
+          "git_blob": "7d5a851797a8c8fdc9c14382418158f9c9789dad"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/Cargo.toml",
+          "status": "equal",
+          "git_blob": "a271fa91b84d9ea0100703ff491c6826b0aabc6e"
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/Cargo.toml",
+          "status": "equal",
+          "git_blob": "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+          "status": "equal",
+          "git_blob": "bffa8bfcb7abffd460886a27b2f63a6a0ecb21df"
+        },
+        {
+          "path": "codex-rs/hepta-inferd/Cargo.toml",
+          "status": "equal",
+          "git_blob": "4b7d6a9e0a775e3da69a873d3d92ff643662731a"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/Cargo.toml",
+          "status": "equal",
+          "git_blob": "c9096b1f1c77b27b7b94d7be86e4679212960295"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/Cargo.toml",
+          "status": "equal",
+          "git_blob": "162205d6bc62834e1b04fed33dd67f5955f218d1"
+        },
+        {
+          "path": "codex-rs/hepta-intuition/Cargo.toml",
+          "status": "equal",
+          "git_blob": "26e2f53c1c2a33d5ab30e56ff504d2c52779bfc5"
+        },
+        {
+          "path": "codex-rs/hepta-kg/Cargo.toml",
+          "status": "equal",
+          "git_blob": "892dbf28b9bc2ecdf0fe72c79eff19294140c198"
+        },
+        {
+          "path": "codex-rs/hepta-learning-artifacts/Cargo.toml",
+          "status": "equal",
+          "git_blob": "725a63c9f2475ad632c7c189fd9ca271702a8899"
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/Cargo.toml",
+          "status": "equal",
+          "git_blob": "1d76cad44498e9538cefff1e20202482520257ff"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-protocol/Cargo.toml",
+          "status": "equal",
+          "git_blob": "8312e8b0a739d033976c0058a25e5850e3af66a9"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-sdk/Cargo.toml",
+          "status": "equal",
+          "git_blob": "1a8864fd643349c4db345b0e2dfbcb4a4d53719a"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/Cargo.toml",
+          "status": "equal",
+          "git_blob": "211f8fb711d2c91d1421da930c067c28b61315b0"
+        },
+        {
+          "path": "codex-rs/hepta-matrixd/Cargo.toml",
+          "status": "equal",
+          "git_blob": "c7b4306766955aafb24d1f66c55803a35c2aee96"
+        },
+        {
+          "path": "codex-rs/hepta-memory-federation/Cargo.toml",
+          "status": "equal",
+          "git_blob": "49113a3bccd7a2f56b18459924d3ec9151cbf980"
+        },
+        {
+          "path": "codex-rs/hepta-memory-retrieval/Cargo.toml",
+          "status": "equal",
+          "git_blob": "913ad075e730da2b3bbff7fcfa153c457141a944"
+        },
+        {
+          "path": "codex-rs/hepta-memory/Cargo.toml",
+          "status": "equal",
+          "git_blob": "6ba04f39f78e7d6295c9922d279e37e0492180f2"
+        },
+        {
+          "path": "codex-rs/hepta-native-gateway/Cargo.toml",
+          "status": "equal",
+          "git_blob": "ecad366f0c5bcedb8d37cb32250a0eb94b9ff4f0"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/Cargo.toml",
+          "status": "equal",
+          "git_blob": "d92d388b0c5bd29552ed0b2719551af973b5cfc4"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/Cargo.toml",
+          "status": "equal",
+          "git_blob": "dbd650a75e7ebe47d2642bc653468355d42cd2e3"
+        },
+        {
+          "path": "codex-rs/hepta-objective/Cargo.toml",
+          "status": "equal",
+          "git_blob": "39085cf5d2edb3766cd1c17cd721d17389ed93cc"
+        },
+        {
+          "path": "codex-rs/hepta-operations/Cargo.toml",
+          "status": "equal",
+          "git_blob": "af2e656fcacea8db6ea84d8bdc8715f3aa62e739"
+        },
+        {
+          "path": "codex-rs/hepta-operator-acceptance/Cargo.toml",
+          "status": "equal",
+          "git_blob": "5f54bdf40f505adec2e5b0681bc4d7a48ad097af"
+        },
+        {
+          "path": "codex-rs/hepta-paths/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2c16f5b19d830d4370d9d1b294fd97eae6b8d1af"
+        },
+        {
+          "path": "codex-rs/hepta-plasticity/Cargo.toml",
+          "status": "equal",
+          "git_blob": "07cb9e40d44990874991620f89af8c0078575de1"
+        },
+        {
+          "path": "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+          "status": "equal",
+          "git_blob": "f463e790c182452434287c7ccba68dd78a7c69ca"
+        },
+        {
+          "path": "codex-rs/hepta-prompt-registry/Cargo.toml",
+          "status": "equal",
+          "git_blob": "61676abe534702cd1c665197212065ec2d267f3f"
+        },
+        {
+          "path": "codex-rs/hepta-runtime/Cargo.toml",
+          "status": "equal",
+          "git_blob": "83f681ba2fc42402c78aa8ef33889b2b7191bf33"
+        },
+        {
+          "path": "codex-rs/hepta-shadow-qualification/Cargo.toml",
+          "status": "equal",
+          "git_blob": "91b8dfb7204a5244374b81ee3ce12b5d08af8e0d"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/Cargo.toml",
+          "status": "equal",
+          "git_blob": "3ed96436070a4e0d5a06aca8f247c25f28a798f1"
+        },
+        {
+          "path": "codex-rs/hepta-types/Cargo.toml",
+          "status": "equal",
+          "git_blob": "753e54835f933be4bf647417b2fb4c90a5e55181"
+        },
+        {
+          "path": "codex-rs/hepta-wire/Cargo.toml",
+          "status": "equal",
+          "git_blob": "ab9372f8287d8596794c1ea63d49217b45fd6759"
+        },
+        {
+          "path": "codex-rs/hepta-wire/fuzz/Cargo.toml",
+          "status": "equal",
+          "git_blob": "1afca1ef1eb80fe9eeb6e0c94eefa2f8069f6244"
+        },
+        {
+          "path": "codex-rs/history/Cargo.toml",
+          "status": "equal",
+          "git_blob": "bd938d2c2ea45333b8f040f41399674a28e54644"
+        },
+        {
+          "path": "codex-rs/hooks/Cargo.toml",
+          "status": "equal",
+          "git_blob": "0cdf84418a713110811febd88c5ec8c4e3a0cbfa"
+        },
+        {
+          "path": "codex-rs/http-client/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2d54ca7158900eda362091c71e8d1bd742459d4c"
+        },
+        {
+          "path": "codex-rs/install-context/Cargo.toml",
+          "status": "equal",
+          "git_blob": "ee84ad2962acf57a698e399b38dbc0a03c51bd11"
+        },
+        {
+          "path": "codex-rs/keyring-store/Cargo.toml",
+          "status": "equal",
+          "git_blob": "7a4499687b45059ecc1617760ff541c79ccb5a2c"
+        },
+        {
+          "path": "codex-rs/linux-sandbox/Cargo.toml",
+          "status": "equal",
+          "git_blob": "0f7c68a152a75cfc2f0369dc098dcf2b996185f2"
+        },
+        {
+          "path": "codex-rs/lmstudio/Cargo.toml",
+          "status": "equal",
+          "git_blob": "e84bcfed51c3683e87ea7ae2e0a7809aade43a76"
+        },
+        {
+          "path": "codex-rs/login/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2971dec6c1a81cb80379477333371bba6e8fbece"
+        },
+        {
+          "path": "codex-rs/mcp-server/Cargo.toml",
+          "status": "equal",
+          "git_blob": "e32d5c6c9cc8e569a49396e085191811835cfdb7"
+        },
+        {
+          "path": "codex-rs/mcp-server/tests/common/Cargo.toml",
+          "status": "equal",
+          "git_blob": "515aa01b5a4a098a6f49cad9d5e4ad3cbbe54f77"
+        },
+        {
+          "path": "codex-rs/memories/read/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2c0c5f2c954ceb8b986057bdd929badca4ecd64d"
+        },
+        {
+          "path": "codex-rs/memories/write/Cargo.toml",
+          "status": "equal",
+          "git_blob": "bf031a6a164f5a098757efdb6c791d9e2705ca50"
+        },
+        {
+          "path": "codex-rs/message-history/Cargo.toml",
+          "status": "equal",
+          "git_blob": "176b9579097499b050e24823217eec93502c004b"
+        },
+        {
+          "path": "codex-rs/model-provider-info/Cargo.toml",
+          "status": "equal",
+          "git_blob": "827dd8744b54ffcaa98673c0c262f5265b717ebf"
+        },
+        {
+          "path": "codex-rs/model-provider/Cargo.toml",
+          "status": "equal",
+          "git_blob": "377dc7a5c258538df7c52e0f821169fbfc1fa09a"
+        },
+        {
+          "path": "codex-rs/models-manager/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2655bb2e7fd80fc1737549d6b5b4a78f607643a9"
+        },
+        {
+          "path": "codex-rs/network-proxy/Cargo.toml",
+          "status": "equal",
+          "git_blob": "82407b00d104568250c63f87be6aea8113199e44"
+        },
+        {
+          "path": "codex-rs/ollama/Cargo.toml",
+          "status": "equal",
+          "git_blob": "29c0852092c0ebdb9846f50f91384e4720f15d71"
+        },
+        {
+          "path": "codex-rs/otel/Cargo.toml",
+          "status": "equal",
+          "git_blob": "6efa93043db5e52f6ec45212435b377ca847d9ad"
+        },
+        {
+          "path": "codex-rs/plugin/Cargo.toml",
+          "status": "equal",
+          "git_blob": "3e55f55c332a06a99a9f6415f2235c3d18cd4fb1"
+        },
+        {
+          "path": "codex-rs/process-hardening/Cargo.toml",
+          "status": "equal",
+          "git_blob": "60a5729ff57a961dd9ccc145f8ae7171fe0b3176"
+        },
+        {
+          "path": "codex-rs/prompts/Cargo.toml",
+          "status": "equal",
+          "git_blob": "6302d49e2ff3e1e67722a3fc891a7e6e90a72362"
+        },
+        {
+          "path": "codex-rs/protocol/Cargo.toml",
+          "status": "equal",
+          "git_blob": "221275fe73543cc9cd5d882514855204d673353e"
+        },
+        {
+          "path": "codex-rs/response-debug-context/Cargo.toml",
+          "status": "equal",
+          "git_blob": "fcdb6c9630c4d04da55b9c64318e4c111afce441"
+        },
+        {
+          "path": "codex-rs/responses-api-proxy/Cargo.toml",
+          "status": "equal",
+          "git_blob": "05d638843f64eacad298a79011798f3a2ef924f7"
+        },
+        {
+          "path": "codex-rs/rmcp-client/Cargo.toml",
+          "status": "equal",
+          "git_blob": "a24df4a4a2c094b2b7a8efc949553dd2e5ba1cd9"
+        },
+        {
+          "path": "codex-rs/rollout-trace/Cargo.toml",
+          "status": "equal",
+          "git_blob": "b368c9acc5ffc3a0ba3a27ae7ea1ab48e38baa31"
+        },
+        {
+          "path": "codex-rs/rollout/Cargo.toml",
+          "status": "equal",
+          "git_blob": "1bb4b54f146488e737a3d5bdaeef9dc1510d0b03"
+        },
+        {
+          "path": "codex-rs/sandboxing/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2c0885729b4ea05f0b597b37823f4758839ecb62"
+        },
+        {
+          "path": "codex-rs/secrets/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2a294ee39134e0a4d4160ed7b422d5fe3c2ba6da"
+        },
+        {
+          "path": "codex-rs/shell-command/Cargo.toml",
+          "status": "equal",
+          "git_blob": "999295ec314a37a523f65bd050e8b95453cc7c77"
+        },
+        {
+          "path": "codex-rs/shell-escalation/Cargo.toml",
+          "status": "equal",
+          "git_blob": "92ae8b033f3c38edb1609e6347084be6dd9fdc47"
+        },
+        {
+          "path": "codex-rs/skills/Cargo.toml",
+          "status": "equal",
+          "git_blob": "7342975aaea0e3ecc61da41f145674cd154a12c9"
+        },
+        {
+          "path": "codex-rs/state/Cargo.toml",
+          "status": "equal",
+          "git_blob": "334f8c7a98199777a025abfa91aa18f0b7bbb008"
+        },
+        {
+          "path": "codex-rs/stdio-to-uds/Cargo.toml",
+          "status": "equal",
+          "git_blob": "6b5c037d755d4dc8006424aa836b29036cea8185"
+        },
+        {
+          "path": "codex-rs/terminal-detection/Cargo.toml",
+          "status": "equal",
+          "git_blob": "9b1bf3a51663289c68b61f566201df8d05e385cf"
+        },
+        {
+          "path": "codex-rs/test-binary-support/Cargo.toml",
+          "status": "equal",
+          "git_blob": "12d995b9720b942daf802ce30c2976b3f36e7371"
+        },
+        {
+          "path": "codex-rs/third_party/imbl-6.1.0/Cargo.toml",
+          "status": "equal",
+          "git_blob": "5a3f10354681eb382046da6e29bc272803405610"
+        },
+        {
+          "path": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/Cargo.toml",
+          "status": "equal",
+          "git_blob": "7088dc696477279578bcb853e43400dd196a1a26"
+        },
+        {
+          "path": "codex-rs/thread-manager-sample/Cargo.toml",
+          "status": "equal",
+          "git_blob": "9e857ad0bc7fa670089008eeddf7d593a4a6f45f"
+        },
+        {
+          "path": "codex-rs/thread-store/Cargo.toml",
+          "status": "equal",
+          "git_blob": "f79e8d6c81eb4eac00149b45121fa052cdecef64"
+        },
+        {
+          "path": "codex-rs/tools/Cargo.toml",
+          "status": "equal",
+          "git_blob": "e621bb830bb4d564c772f5e558c57919de8b32db"
+        },
+        {
+          "path": "codex-rs/tui/Cargo.toml",
+          "status": "equal",
+          "git_blob": "95db9bee4158d69882f480f6b0842c47a510ca59"
+        },
+        {
+          "path": "codex-rs/uds/Cargo.toml",
+          "status": "equal",
+          "git_blob": "66ba1d9d2d915dae795b2cda4eef7d2d4bd91539"
+        },
+        {
+          "path": "codex-rs/utils/absolute-path/Cargo.toml",
+          "status": "equal",
+          "git_blob": "7c5b4840d15d81deed1d1ea30c0b269d399772bc"
+        },
+        {
+          "path": "codex-rs/utils/approval-presets/Cargo.toml",
+          "status": "equal",
+          "git_blob": "6efd2c482b4386b505a15d96bf60504050633e61"
+        },
+        {
+          "path": "codex-rs/utils/audio/Cargo.toml",
+          "status": "equal",
+          "git_blob": "90540228a6bf5608329d2f2773225271229b9813"
+        },
+        {
+          "path": "codex-rs/utils/build-identity/Cargo.toml",
+          "status": "equal",
+          "git_blob": "d21f6b0fff86daef23570d5c583edbf18eeecafb"
+        },
+        {
+          "path": "codex-rs/utils/cache/Cargo.toml",
+          "status": "equal",
+          "git_blob": "3c120c032e8d595a7675f0474ab6d91b0b52a59e"
+        },
+        {
+          "path": "codex-rs/utils/cargo-bin/Cargo.toml",
+          "status": "equal",
+          "git_blob": "a56e5758306799cc5962eaf57e8ad3a26b73033f"
+        },
+        {
+          "path": "codex-rs/utils/cli/Cargo.toml",
+          "status": "equal",
+          "git_blob": "9d330c5ce6badd0d15e6c401cd777fb3d13c8d08"
+        },
+        {
+          "path": "codex-rs/utils/elapsed/Cargo.toml",
+          "status": "equal",
+          "git_blob": "7ba5e6ae6614fddadaa1ba1e1f8299ffc251d78f"
+        },
+        {
+          "path": "codex-rs/utils/fuzzy-match/Cargo.toml",
+          "status": "equal",
+          "git_blob": "704386e74f6924a016c30bfbaa6447b093f70be0"
+        },
+        {
+          "path": "codex-rs/utils/home-dir/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2d2de0230e38004d562b8ab5546888cd5da74851"
+        },
+        {
+          "path": "codex-rs/utils/image/Cargo.toml",
+          "status": "equal",
+          "git_blob": "7ba28f49962a5ec0e35aad82ce2b93cfeffbfa09"
+        },
+        {
+          "path": "codex-rs/utils/json-to-toml/Cargo.toml",
+          "status": "equal",
+          "git_blob": "57a28696c8fc2148525480511551b256b35d8b02"
+        },
+        {
+          "path": "codex-rs/utils/oss/Cargo.toml",
+          "status": "equal",
+          "git_blob": "78cc0cb2f8ed60f3d4b8a3bb007b348d700024ac"
+        },
+        {
+          "path": "codex-rs/utils/output-truncation/Cargo.toml",
+          "status": "equal",
+          "git_blob": "17176c9f5643b3a4f1d5a678a25076094cb7441d"
+        },
+        {
+          "path": "codex-rs/utils/path-uri/Cargo.toml",
+          "status": "equal",
+          "git_blob": "5bb6328139c7fe2f7759e7edf34be0de9e2f0371"
+        },
+        {
+          "path": "codex-rs/utils/path-utils/Cargo.toml",
+          "status": "equal",
+          "git_blob": "d1503fd060c960845b2f514cbe69f824291eff07"
+        },
+        {
+          "path": "codex-rs/utils/plugins/Cargo.toml",
+          "status": "equal",
+          "git_blob": "1a4576d59d0fcf04a54236f57976e42683c266a6"
+        },
+        {
+          "path": "codex-rs/utils/pty/Cargo.toml",
+          "status": "equal",
+          "git_blob": "2a27ab72ea290862887abfc857c86efe6fad12c1"
+        },
+        {
+          "path": "codex-rs/utils/readiness/Cargo.toml",
+          "status": "equal",
+          "git_blob": "076651d5227baa047d95a42e9e8795c65dc0bc52"
+        },
+        {
+          "path": "codex-rs/utils/redacted-string/Cargo.toml",
+          "status": "equal",
+          "git_blob": "39f60d8eb109312fba4b052e69649b1c9382a1a4"
+        },
+        {
+          "path": "codex-rs/utils/rustls-provider/Cargo.toml",
+          "status": "equal",
+          "git_blob": "af79eff69252fc01244e2ae721b5a263c1d2fc4c"
+        },
+        {
+          "path": "codex-rs/utils/sandbox-summary/Cargo.toml",
+          "status": "equal",
+          "git_blob": "ab6df005dac274f638a16c387779458950525728"
+        },
+        {
+          "path": "codex-rs/utils/sleep-inhibitor/Cargo.toml",
+          "status": "equal",
+          "git_blob": "f2abb6df2110e7f3de215cb34a0cd627c0345649"
+        },
+        {
+          "path": "codex-rs/utils/stream-parser/Cargo.toml",
+          "status": "equal",
+          "git_blob": "6eb5fb9a8747b95cb3dbd113f4ebfcda53b8fed5"
+        },
+        {
+          "path": "codex-rs/utils/string/Cargo.toml",
+          "status": "equal",
+          "git_blob": "8710cffe4697ae4cce6e97d6bac35566db426672"
+        },
+        {
+          "path": "codex-rs/utils/template/Cargo.toml",
+          "status": "equal",
+          "git_blob": "f24caec190455f3ac685004fc1f6e474ee8f8ed9"
+        },
+        {
+          "path": "codex-rs/v8-poc/Cargo.toml",
+          "status": "equal",
+          "git_blob": "9615ab977f9dfdb35467d1eadaf0bc6dfa641625"
+        },
+        {
+          "path": "codex-rs/websocket-client/Cargo.toml",
+          "status": "equal",
+          "git_blob": "19baf9842b591c6aba15d5253f124a737d0d1cdf"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+          "status": "equal",
+          "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd"
+        },
+        {
+          "path": "codex-rs/workload-identity/Cargo.toml",
+          "status": "equal",
+          "git_blob": "b64177282accbb1975aa7adbe2411ace4da52662"
+        }
+      ]
+    },
+    "advisory_errors": [
+      {
+        "kind": "unmaintained",
+        "title": "anymap2 is unmaintained",
+        "crate": "anymap2",
+        "version": "0.13.0",
+        "advisory_id": "RUSTSEC-2026-0319",
+        "solution_from_tool": "No safe upgrade is available!",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0319"
+      },
+      {
+        "kind": "unmaintained",
+        "title": "`basic-toml` is unmaintained",
+        "crate": "basic-toml",
+        "version": "0.1.10",
+        "advisory_id": "RUSTSEC-2026-0374",
+        "solution_from_tool": "No safe upgrade is available!",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0374"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "Multiple timing variability issues in operations intended to be constant-time",
+        "crate": "crypto-bigint",
+        "version": "0.5.5",
+        "advisory_id": "RUSTSEC-2026-0387",
+        "solution_from_tool": "Upgrade to >=0.7.6 (try `cargo update -p crypto-bigint`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0387"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "Sending custom to-device messages may panics",
+        "crate": "matrix-sdk-crypto",
+        "version": "0.18.0",
+        "advisory_id": "RUSTSEC-2026-0318",
+        "solution_from_tool": "Upgrade to >=0.19.0 (try `cargo update -p matrix-sdk-crypto`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0318"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "`Debug` impls for client session values expose TLS secrets",
+        "crate": "rustls",
+        "version": "0.23.45",
+        "advisory_id": "RUSTSEC-2026-0346",
+        "solution_from_tool": "Upgrade to >=0.23.46 (try `cargo update -p rustls`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0346"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "Buffered application data sent to outer server after ECH rejection",
+        "crate": "rustls",
+        "version": "0.23.45",
+        "advisory_id": "RUSTSEC-2026-0347",
+        "solution_from_tool": "Upgrade to >=0.23.46 (try `cargo update -p rustls`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0347"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "Brotli certificate decompression can allocate up to 1 GiB before authentication",
+        "crate": "rustls",
+        "version": "0.23.45",
+        "advisory_id": "RUSTSEC-2026-0348",
+        "solution_from_tool": "Upgrade to >=0.23.46 (try `cargo update -p rustls`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0348"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "Unauthenticated ServerHello can downgrade later connections to classical key exchange",
+        "crate": "rustls",
+        "version": "0.23.45",
+        "advisory_id": "RUSTSEC-2026-0349",
+        "solution_from_tool": "Upgrade to >=0.23.46 (try `cargo update -p rustls`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0349"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "Certificate verification may accept distrusted intermediates",
+        "crate": "rustls-webpki",
+        "version": "0.103.15",
+        "advisory_id": "RUSTSEC-2026-0382",
+        "solution_from_tool": "Upgrade to >=0.103.16, <0.104.0-alpha.1 OR >=0.104.0-alpha.8 (try `cargo update -p rustls-webpki`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0382"
+      },
+      {
+        "kind": "unmaintained",
+        "title": "unsafe-libyaml is unmaintained",
+        "crate": "unsafe-libyaml",
+        "version": "0.2.11",
+        "advisory_id": "RUSTSEC-2024-0449",
+        "solution_from_tool": "No safe upgrade is available!",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2024-0449"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "Bundled root certificates allow trust in distrusted emSign intermediates",
+        "crate": "webpki-root-certs",
+        "version": "1.0.5",
+        "advisory_id": "RUSTSEC-2026-0383",
+        "solution_from_tool": "Upgrade to >=1.0.10 (try `cargo update -p webpki-root-certs`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0383"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "Bundled root certificates allow trust in distrusted emSign intermediates",
+        "crate": "webpki-roots",
+        "version": "1.0.9",
+        "advisory_id": "RUSTSEC-2026-0381",
+        "solution_from_tool": "Upgrade to >=1.0.10 (try `cargo update -p webpki-roots`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0381"
+      },
+      {
+        "kind": "unmaintained",
+        "title": "`zbus_names` is unmaintained",
+        "crate": "zbus_names",
+        "version": "3.0.0",
+        "advisory_id": "RUSTSEC-2026-0371",
+        "solution_from_tool": "No safe upgrade is available!",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0371"
+      },
+      {
+        "kind": "vulnerability",
+        "title": " Insecure Preservation of SUID/SGID Bits during ZIP Extraction Leading to Potential Privilege Escalation",
+        "crate": "zip",
+        "version": "2.4.2",
+        "advisory_id": "RUSTSEC-2026-0367",
+        "solution_from_tool": "Upgrade to >=9.0.0 (try `cargo update -p zip`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0367"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "zip: `ZipArchive::extract` creates symbolic links whose attacker-controlled targets are outside the destination directory",
+        "crate": "zip",
+        "version": "2.4.2",
+        "advisory_id": "RUSTSEC-2026-0368",
+        "solution_from_tool": "Upgrade to >=9.0.0 (try `cargo update -p zip`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0368"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "ZipStreamReader::extract() and ZipArchive::extract() apply Unix permissions through symlinks without confining the target",
+        "crate": "zip",
+        "version": "2.4.2",
+        "advisory_id": "RUSTSEC-2026-0369",
+        "solution_from_tool": "Upgrade to >=9.0.0 (try `cargo update -p zip`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0369"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "Data from an abandoned stream leaks into the next stream on a reused context",
+        "crate": "zstd",
+        "version": "0.13.3",
+        "advisory_id": "RUSTSEC-2026-0391",
+        "solution_from_tool": "Upgrade to >=0.14.3 (try `cargo update -p zstd`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0391"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "`Seekable::decompress` sets a `Vec` length beyond its capacity for offsets past the end",
+        "crate": "zstd-safe",
+        "version": "7.2.4",
+        "advisory_id": "RUSTSEC-2026-0398",
+        "solution_from_tool": "Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0398"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "Uninitialized memory exposed when streaming decompression of a legacy frame fails",
+        "crate": "zstd-safe",
+        "version": "7.2.4",
+        "advisory_id": "RUSTSEC-2026-0403",
+        "solution_from_tool": "Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0403"
+      },
+      {
+        "kind": "vulnerability",
+        "title": "WebAssembly allocator shim corrupts memory on allocation failure",
+        "crate": "zstd-sys",
+        "version": "2.0.16+zstd.1.5.7",
+        "advisory_id": "RUSTSEC-2026-0410",
+        "solution_from_tool": "Upgrade to >=2.1.2 (try `cargo update -p zstd-sys`)",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0410"
+      },
+      {
+        "kind": "unmaintained",
+        "title": "`zvariant` is unmaintained",
+        "crate": "zvariant",
+        "version": "4.2.0",
+        "advisory_id": "RUSTSEC-2026-0370",
+        "solution_from_tool": "No safe upgrade is available!",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0370"
+      },
+      {
+        "kind": "unmaintained",
+        "title": "`zvariant_derive` is unmaintained",
+        "crate": "zvariant_derive",
+        "version": "4.2.0",
+        "advisory_id": "RUSTSEC-2026-0372",
+        "solution_from_tool": "No safe upgrade is available!",
+        "url": "https://rustsec.org/advisories/RUSTSEC-2026-0372"
+      }
+    ],
+    "advisory_parent_chains": [
+      {
+        "crate": "anymap2",
+        "version": "0.13.0",
+        "advisory_ids": [
+          "RUSTSEC-2026-0319"
+        ],
+        "direct_parents": [
+          {
+            "name": "matrix-sdk",
+            "version": "0.18.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.13.0",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "anymap2"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-hepta-matrix-sdk": [
+            "codex-hepta-matrix-sdk@0.0.0",
+            "matrix-sdk@0.18.0",
+            "anymap2@0.13.0"
+          ],
+          "codex-hepta-matrixd": [
+            "codex-hepta-matrixd@0.0.0",
+            "matrix-sdk@0.18.0",
+            "anymap2@0.13.0"
+          ]
+        }
+      },
+      {
+        "crate": "basic-toml",
+        "version": "0.1.10",
+        "advisory_ids": [
+          "RUSTSEC-2026-0374"
+        ],
+        "direct_parents": [
+          {
+            "name": "i18n-config",
+            "version": "0.4.8",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.1",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "basic_toml"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-secrets": [
+            "codex-secrets@0.0.0",
+            "age@0.11.2",
+            "i18n-embed-fl@0.9.4",
+            "i18n-config@0.4.8",
+            "basic-toml@0.1.10"
+          ]
+        }
+      },
+      {
+        "crate": "crypto-bigint",
+        "version": "0.5.5",
+        "advisory_ids": [
+          "RUSTSEC-2026-0387"
+        ],
+        "direct_parents": [
+          {
+            "name": "elliptic-curve",
+            "version": "0.13.8",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.5",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "crypto_bigint"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-aws-auth": [
+            "codex-aws-auth@0.0.0",
+            "aws-config@1.8.12",
+            "p256@0.13.2",
+            "elliptic-curve@0.13.8",
+            "crypto-bigint@0.5.5"
+          ]
+        }
+      },
+      {
+        "crate": "matrix-sdk-crypto",
+        "version": "0.18.0",
+        "advisory_ids": [
+          "RUSTSEC-2026-0318"
+        ],
+        "direct_parents": [
+          {
+            "name": "matrix-sdk-sqlite",
+            "version": "0.18.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.18.0",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              },
+              {
+                "req": "^0.18.0",
+                "kind": "dev",
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "matrix_sdk_crypto"
+            ]
+          },
+          {
+            "name": "matrix-sdk-base",
+            "version": "0.18.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.18.0",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "matrix_sdk_crypto"
+            ]
+          },
+          {
+            "name": "matrix-sdk-indexeddb",
+            "version": "0.18.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.18.0",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              },
+              {
+                "req": "^0.18.0",
+                "kind": "dev",
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "matrix_sdk_crypto"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-hepta-matrix-sdk": [
+            "codex-hepta-matrix-sdk@0.0.0",
+            "matrix-sdk@0.18.0",
+            "matrix-sdk-base@0.18.0",
+            "matrix-sdk-crypto@0.18.0"
+          ],
+          "codex-hepta-matrixd": [
+            "codex-hepta-matrixd@0.0.0",
+            "matrix-sdk@0.18.0",
+            "matrix-sdk-base@0.18.0",
+            "matrix-sdk-crypto@0.18.0"
+          ]
+        }
+      },
+      {
+        "crate": "rustls",
+        "version": "0.23.45",
+        "advisory_ids": [
+          "RUSTSEC-2026-0346",
+          "RUSTSEC-2026-0347",
+          "RUSTSEC-2026-0348",
+          "RUSTSEC-2026-0349"
+        ],
+        "direct_parents": [
+          {
+            "name": "tokio-tungstenite",
+            "version": "0.28.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23.0",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "tungstenite",
+            "version": "0.27.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23.0",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "codex-exec-server",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.23",
+                "kind": "dev",
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "codex-hepta-bao-adapter",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.23",
+                "kind": "dev",
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "codex-http-client",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.23",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "codex-utils-rustls-provider",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.23",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "codex-websocket-client",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.23",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "aws-smithy-http-client",
+            "version": "1.1.12",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23.31",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "hyper-rustls",
+            "version": "0.27.7",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              },
+              {
+                "req": "^0.23",
+                "kind": "dev",
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "matrix-sdk",
+            "version": "0.18.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23.38",
+                "kind": null,
+                "target": "cfg(target_os = \"android\")",
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "quinn-proto",
+            "version": "0.11.14",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23.5",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "quinn",
+            "version": "0.11.9",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23.5",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "rama-tls-rustls",
+            "version": "0.3.0-alpha.4",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "reqwest",
+            "version": "0.12.28",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23.4",
+                "kind": null,
+                "target": "cfg(not(target_arch = \"wasm32\"))",
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "reqwest",
+            "version": "0.13.4",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23.4",
+                "kind": null,
+                "target": "cfg(not(all(target_arch = \"wasm32\", any(target_os = \"unknown\", target_os = \"none\"))))",
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "rustls-platform-verifier",
+            "version": "0.7.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23.27",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              },
+              {
+                "req": "^0.23",
+                "kind": "dev",
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "sqlx-core",
+            "version": "0.9.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23.24",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          },
+          {
+            "name": "tokio-rustls",
+            "version": "0.26.4",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.23.27",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "rustls"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-exec-server": [
+            "codex-exec-server@0.0.0",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-bao-adapter": [
+            "codex-hepta-bao-adapter@0.0.0",
+            "rustls@0.23.45"
+          ],
+          "codex-http-client": [
+            "codex-http-client@0.0.0",
+            "rustls@0.23.45"
+          ],
+          "codex-utils-rustls-provider": [
+            "codex-utils-rustls-provider@0.0.0",
+            "rustls@0.23.45"
+          ],
+          "codex-websocket-client": [
+            "codex-websocket-client@0.0.0",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-matrix-sdk": [
+            "codex-hepta-matrix-sdk@0.0.0",
+            "matrix-sdk@0.18.0",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-matrixd": [
+            "codex-hepta-matrixd@0.0.0",
+            "matrix-sdk@0.18.0",
+            "rustls@0.23.45"
+          ],
+          "codex-network-proxy": [
+            "codex-network-proxy@0.0.0",
+            "rama-tls-rustls@0.3.0-alpha.4",
+            "rustls@0.23.45"
+          ],
+          "codex-code-mode": [
+            "codex-code-mode@0.0.0",
+            "reqwest@0.12.28",
+            "rustls@0.23.45"
+          ],
+          "codex-otel": [
+            "codex-otel@0.0.0",
+            "reqwest@0.12.28",
+            "rustls@0.23.45"
+          ],
+          "codex-responses-api-proxy": [
+            "codex-responses-api-proxy@0.0.0",
+            "reqwest@0.12.28",
+            "rustls@0.23.45"
+          ],
+          "codex-api": [
+            "codex-api@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45"
+          ],
+          "codex-app-server": [
+            "codex-app-server@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45"
+          ],
+          "codex-app-server-client": [
+            "codex-app-server-client@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45"
+          ],
+          "codex-app-server-daemon": [
+            "codex-app-server-daemon@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45"
+          ],
+          "codex-app-server-transport": [
+            "codex-app-server-transport@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45"
+          ],
+          "codex-cli": [
+            "codex-cli@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45"
+          ],
+          "codex-code-mode-host": [
+            "codex-code-mode-host@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45"
+          ],
+          "codex-core": [
+            "codex-core@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45"
+          ],
+          "codex-tui": [
+            "codex-tui@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45"
+          ],
+          "core_test_support": [
+            "core_test_support@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45"
+          ],
+          "codex-app-server-test-client": [
+            "codex-app-server-test-client@0.0.0",
+            "tungstenite@0.27.0",
+            "rustls@0.23.45"
+          ],
+          "codex-rmcp-client": [
+            "codex-rmcp-client@0.0.0",
+            "oauth2@5.0.0",
+            "reqwest@0.12.28",
+            "rustls@0.23.45"
+          ],
+          "codex-feedback": [
+            "codex-feedback@0.0.0",
+            "sentry@0.46.1",
+            "reqwest@0.12.28",
+            "rustls@0.23.45"
+          ],
+          "codex-app-server-protocol": [
+            "codex-app-server-protocol@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls@0.23.45"
+          ],
+          "codex-mcp": [
+            "codex-mcp@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls@0.23.45"
+          ],
+          "codex-mcp-server": [
+            "codex-mcp-server@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls@0.23.45"
+          ],
+          "codex-tools": [
+            "codex-tools@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls@0.23.45"
+          ],
+          "mcp_test_support": [
+            "mcp_test_support@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-agentd": [
+            "codex-hepta-agentd@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-authbus": [
+            "codex-hepta-authbus@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-automation": [
+            "codex-hepta-automation@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-evidence": [
+            "codex-hepta-evidence@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-matrix-store": [
+            "codex-hepta-matrix-store@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-memory": [
+            "codex-hepta-memory@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-operations": [
+            "codex-hepta-operations@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-runtime": [
+            "codex-hepta-runtime@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45"
+          ],
+          "codex-hepta-shadow-qualification": [
+            "codex-hepta-shadow-qualification@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45"
+          ],
+          "codex-state": [
+            "codex-state@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45"
+          ],
+          "codex-thread-store": [
+            "codex-thread-store@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45"
+          ],
+          "codex-code-mode-protocol": [
+            "codex-code-mode-protocol@0.0.0",
+            "tonic@0.14.3",
+            "tokio-rustls@0.26.4",
+            "rustls@0.23.45"
+          ],
+          "codex-config": [
+            "codex-config@0.0.0",
+            "tonic@0.14.3",
+            "tokio-rustls@0.26.4",
+            "rustls@0.23.45"
+          ],
+          "codex-aws-auth": [
+            "codex-aws-auth@0.0.0",
+            "aws-config@1.8.12",
+            "aws-smithy-runtime@1.9.5",
+            "aws-smithy-http-client@1.1.12",
+            "rustls@0.23.45"
+          ]
+        }
+      },
+      {
+        "crate": "rustls-webpki",
+        "version": "0.103.15",
+        "advisory_ids": [
+          "RUSTSEC-2026-0382"
+        ],
+        "direct_parents": [
+          {
+            "name": "rustls-platform-verifier",
+            "version": "0.7.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.103",
+                "kind": null,
+                "target": "cfg(all(unix, not(target_os = \"android\"), not(target_vendor = \"apple\"), not(target_arch = \"wasm32\")))",
+                "optional": false,
+                "rename": "webpki"
+              },
+              {
+                "req": "^0.103",
+                "kind": null,
+                "target": "cfg(target_arch = \"wasm32\")",
+                "optional": false,
+                "rename": "webpki"
+              },
+              {
+                "req": "^0.103",
+                "kind": null,
+                "target": "cfg(target_os = \"android\")",
+                "optional": false,
+                "rename": "webpki"
+              }
+            ],
+            "resolved_edge_names": [
+              "webpki"
+            ]
+          },
+          {
+            "name": "rustls",
+            "version": "0.23.45",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.103.14",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": "webpki"
+              }
+            ],
+            "resolved_edge_names": [
+              "webpki"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-exec-server": [
+            "codex-exec-server@0.0.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-bao-adapter": [
+            "codex-hepta-bao-adapter@0.0.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-http-client": [
+            "codex-http-client@0.0.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-utils-rustls-provider": [
+            "codex-utils-rustls-provider@0.0.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-websocket-client": [
+            "codex-websocket-client@0.0.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-matrix-sdk": [
+            "codex-hepta-matrix-sdk@0.0.0",
+            "matrix-sdk@0.18.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-matrixd": [
+            "codex-hepta-matrixd@0.0.0",
+            "matrix-sdk@0.18.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-network-proxy": [
+            "codex-network-proxy@0.0.0",
+            "rama-tls-rustls@0.3.0-alpha.4",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-code-mode": [
+            "codex-code-mode@0.0.0",
+            "reqwest@0.12.28",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-otel": [
+            "codex-otel@0.0.0",
+            "reqwest@0.12.28",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-responses-api-proxy": [
+            "codex-responses-api-proxy@0.0.0",
+            "reqwest@0.12.28",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-api": [
+            "codex-api@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-app-server": [
+            "codex-app-server@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-app-server-client": [
+            "codex-app-server-client@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-app-server-daemon": [
+            "codex-app-server-daemon@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-app-server-transport": [
+            "codex-app-server-transport@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-cli": [
+            "codex-cli@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-code-mode-host": [
+            "codex-code-mode-host@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-core": [
+            "codex-core@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-tui": [
+            "codex-tui@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "core_test_support": [
+            "core_test_support@0.0.0",
+            "tokio-tungstenite@0.28.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-app-server-test-client": [
+            "codex-app-server-test-client@0.0.0",
+            "tungstenite@0.27.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-rmcp-client": [
+            "codex-rmcp-client@0.0.0",
+            "oauth2@5.0.0",
+            "reqwest@0.12.28",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-feedback": [
+            "codex-feedback@0.0.0",
+            "sentry@0.46.1",
+            "reqwest@0.12.28",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-app-server-protocol": [
+            "codex-app-server-protocol@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-mcp": [
+            "codex-mcp@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-mcp-server": [
+            "codex-mcp-server@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-tools": [
+            "codex-tools@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "mcp_test_support": [
+            "mcp_test_support@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-agentd": [
+            "codex-hepta-agentd@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-authbus": [
+            "codex-hepta-authbus@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-automation": [
+            "codex-hepta-automation@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-evidence": [
+            "codex-hepta-evidence@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-matrix-store": [
+            "codex-hepta-matrix-store@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-memory": [
+            "codex-hepta-memory@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-operations": [
+            "codex-hepta-operations@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-runtime": [
+            "codex-hepta-runtime@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-hepta-shadow-qualification": [
+            "codex-hepta-shadow-qualification@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-state": [
+            "codex-state@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-thread-store": [
+            "codex-thread-store@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-code-mode-protocol": [
+            "codex-code-mode-protocol@0.0.0",
+            "tonic@0.14.3",
+            "tokio-rustls@0.26.4",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-config": [
+            "codex-config@0.0.0",
+            "tonic@0.14.3",
+            "tokio-rustls@0.26.4",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ],
+          "codex-aws-auth": [
+            "codex-aws-auth@0.0.0",
+            "aws-config@1.8.12",
+            "aws-smithy-runtime@1.9.5",
+            "aws-smithy-http-client@1.1.12",
+            "rustls@0.23.45",
+            "rustls-webpki@0.103.15"
+          ]
+        }
+      },
+      {
+        "crate": "unsafe-libyaml",
+        "version": "0.2.11",
+        "advisory_ids": [
+          "RUSTSEC-2024-0449"
+        ],
+        "direct_parents": [
+          {
+            "name": "serde_yaml",
+            "version": "0.9.34+deprecated",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.2.11",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "unsafe_libyaml"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-core-plugins": [
+            "codex-core-plugins@0.0.0",
+            "serde_yaml@0.9.34+deprecated",
+            "unsafe-libyaml@0.2.11"
+          ],
+          "codex-external-agent-migration": [
+            "codex-external-agent-migration@0.0.0",
+            "serde_yaml@0.9.34+deprecated",
+            "unsafe-libyaml@0.2.11"
+          ],
+          "codex-skills": [
+            "codex-skills@0.0.0",
+            "serde_yaml@0.9.34+deprecated",
+            "unsafe-libyaml@0.2.11"
+          ],
+          "codex-skills-extension": [
+            "codex-skills-extension@0.0.0",
+            "serde_yaml@0.9.34+deprecated",
+            "unsafe-libyaml@0.2.11"
+          ]
+        }
+      },
+      {
+        "crate": "webpki-root-certs",
+        "version": "1.0.5",
+        "advisory_ids": [
+          "RUSTSEC-2026-0383"
+        ],
+        "direct_parents": [
+          {
+            "name": "rustls-platform-verifier",
+            "version": "0.7.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^1",
+                "kind": "dev",
+                "target": null,
+                "optional": false,
+                "rename": null
+              },
+              {
+                "req": "^1",
+                "kind": null,
+                "target": "cfg(target_arch = \"wasm32\")",
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "webpki_root_certs"
+            ]
+          },
+          {
+            "name": "ureq",
+            "version": "3.1.4",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^1.0.0",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "webpki_root_certs"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-feedback": [
+            "codex-feedback@0.0.0",
+            "sentry@0.46.1",
+            "ureq@3.1.4",
+            "webpki-root-certs@1.0.5"
+          ],
+          "codex-hepta-matrix-sdk": [
+            "codex-hepta-matrix-sdk@0.0.0",
+            "matrix-sdk@0.18.0",
+            "reqwest@0.13.4",
+            "rustls-platform-verifier@0.7.0",
+            "webpki-root-certs@1.0.5"
+          ],
+          "codex-hepta-matrixd": [
+            "codex-hepta-matrixd@0.0.0",
+            "matrix-sdk@0.18.0",
+            "reqwest@0.13.4",
+            "rustls-platform-verifier@0.7.0",
+            "webpki-root-certs@1.0.5"
+          ],
+          "codex-app-server": [
+            "codex-app-server@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls-platform-verifier@0.7.0",
+            "webpki-root-certs@1.0.5"
+          ],
+          "codex-app-server-protocol": [
+            "codex-app-server-protocol@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls-platform-verifier@0.7.0",
+            "webpki-root-certs@1.0.5"
+          ],
+          "codex-core": [
+            "codex-core@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls-platform-verifier@0.7.0",
+            "webpki-root-certs@1.0.5"
+          ],
+          "codex-mcp": [
+            "codex-mcp@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls-platform-verifier@0.7.0",
+            "webpki-root-certs@1.0.5"
+          ],
+          "codex-mcp-server": [
+            "codex-mcp-server@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls-platform-verifier@0.7.0",
+            "webpki-root-certs@1.0.5"
+          ],
+          "codex-rmcp-client": [
+            "codex-rmcp-client@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls-platform-verifier@0.7.0",
+            "webpki-root-certs@1.0.5"
+          ],
+          "codex-tools": [
+            "codex-tools@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls-platform-verifier@0.7.0",
+            "webpki-root-certs@1.0.5"
+          ],
+          "codex-tui": [
+            "codex-tui@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls-platform-verifier@0.7.0",
+            "webpki-root-certs@1.0.5"
+          ],
+          "mcp_test_support": [
+            "mcp_test_support@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "rustls-platform-verifier@0.7.0",
+            "webpki-root-certs@1.0.5"
+          ]
+        }
+      },
+      {
+        "crate": "webpki-roots",
+        "version": "1.0.9",
+        "advisory_ids": [
+          "RUSTSEC-2026-0381"
+        ],
+        "direct_parents": [
+          {
+            "name": "hyper-rustls",
+            "version": "0.27.7",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^1",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "webpki_roots"
+            ]
+          },
+          {
+            "name": "matrix-sdk",
+            "version": "0.18.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^1.0.6",
+                "kind": null,
+                "target": "cfg(target_os = \"android\")",
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "webpki_roots"
+            ]
+          },
+          {
+            "name": "rama-tls-rustls",
+            "version": "0.3.0-alpha.4",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^1.0",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "webpki_roots"
+            ]
+          },
+          {
+            "name": "reqwest",
+            "version": "0.12.28",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^1",
+                "kind": null,
+                "target": "cfg(not(target_arch = \"wasm32\"))",
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "webpki_roots"
+            ]
+          },
+          {
+            "name": "sqlx-core",
+            "version": "0.9.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^1",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "webpki_roots"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-hepta-matrix-sdk": [
+            "codex-hepta-matrix-sdk@0.0.0",
+            "matrix-sdk@0.18.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-hepta-matrixd": [
+            "codex-hepta-matrixd@0.0.0",
+            "matrix-sdk@0.18.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-network-proxy": [
+            "codex-network-proxy@0.0.0",
+            "rama-tls-rustls@0.3.0-alpha.4",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-code-mode": [
+            "codex-code-mode@0.0.0",
+            "reqwest@0.12.28",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-http-client": [
+            "codex-http-client@0.0.0",
+            "reqwest@0.12.28",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-otel": [
+            "codex-otel@0.0.0",
+            "reqwest@0.12.28",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-responses-api-proxy": [
+            "codex-responses-api-proxy@0.0.0",
+            "reqwest@0.12.28",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-rmcp-client": [
+            "codex-rmcp-client@0.0.0",
+            "oauth2@5.0.0",
+            "reqwest@0.12.28",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-feedback": [
+            "codex-feedback@0.0.0",
+            "sentry@0.46.1",
+            "reqwest@0.12.28",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-cli": [
+            "codex-cli@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-hepta-agentd": [
+            "codex-hepta-agentd@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-hepta-authbus": [
+            "codex-hepta-authbus@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-hepta-automation": [
+            "codex-hepta-automation@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-hepta-evidence": [
+            "codex-hepta-evidence@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-hepta-matrix-store": [
+            "codex-hepta-matrix-store@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-hepta-memory": [
+            "codex-hepta-memory@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-hepta-operations": [
+            "codex-hepta-operations@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-hepta-runtime": [
+            "codex-hepta-runtime@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-hepta-shadow-qualification": [
+            "codex-hepta-shadow-qualification@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-state": [
+            "codex-state@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-thread-store": [
+            "codex-thread-store@0.0.0",
+            "sqlx@0.9.0",
+            "sqlx-core@0.9.0",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-app-server": [
+            "codex-app-server@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "hyper-rustls@0.27.7",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-app-server-protocol": [
+            "codex-app-server-protocol@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "hyper-rustls@0.27.7",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-core": [
+            "codex-core@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "hyper-rustls@0.27.7",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-mcp": [
+            "codex-mcp@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "hyper-rustls@0.27.7",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-mcp-server": [
+            "codex-mcp-server@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "hyper-rustls@0.27.7",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-tools": [
+            "codex-tools@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "hyper-rustls@0.27.7",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-tui": [
+            "codex-tui@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "hyper-rustls@0.27.7",
+            "webpki-roots@1.0.9"
+          ],
+          "mcp_test_support": [
+            "mcp_test_support@0.0.0",
+            "rmcp@3.1.3",
+            "reqwest@0.13.4",
+            "hyper-rustls@0.27.7",
+            "webpki-roots@1.0.9"
+          ],
+          "codex-aws-auth": [
+            "codex-aws-auth@0.0.0",
+            "aws-config@1.8.12",
+            "aws-smithy-runtime@1.9.5",
+            "aws-smithy-http-client@1.1.12",
+            "hyper-rustls@0.27.7",
+            "webpki-roots@1.0.9"
+          ]
+        }
+      },
+      {
+        "crate": "zbus_names",
+        "version": "3.0.0",
+        "advisory_ids": [
+          "RUSTSEC-2026-0371"
+        ],
+        "direct_parents": [
+          {
+            "name": "zbus",
+            "version": "4.4.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^3.0",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zbus_names"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-keyring-store": [
+            "codex-keyring-store@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zbus_names@3.0.0"
+          ],
+          "codex-login": [
+            "codex-login@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zbus_names@3.0.0"
+          ],
+          "codex-rmcp-client": [
+            "codex-rmcp-client@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zbus_names@3.0.0"
+          ],
+          "codex-secrets": [
+            "codex-secrets@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zbus_names@3.0.0"
+          ]
+        }
+      },
+      {
+        "crate": "zip",
+        "version": "2.4.2",
+        "advisory_ids": [
+          "RUSTSEC-2026-0367",
+          "RUSTSEC-2026-0368",
+          "RUSTSEC-2026-0369"
+        ],
+        "direct_parents": [
+          {
+            "name": "codex-core-plugins",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^2.4.2",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zip"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-core-plugins": [
+            "codex-core-plugins@0.0.0",
+            "zip@2.4.2"
+          ]
+        }
+      },
+      {
+        "crate": "zstd",
+        "version": "0.13.3",
+        "advisory_ids": [
+          "RUSTSEC-2026-0391"
+        ],
+        "direct_parents": [
+          {
+            "name": "codex-app-server-protocol",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.13",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zstd"
+            ]
+          },
+          {
+            "name": "codex-cli",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.13",
+                "kind": "dev",
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zstd"
+            ]
+          },
+          {
+            "name": "codex-core",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.13",
+                "kind": "dev",
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zstd"
+            ]
+          },
+          {
+            "name": "core_test_support",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.13",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zstd"
+            ]
+          },
+          {
+            "name": "codex-queue-extension",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.13",
+                "kind": "dev",
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zstd"
+            ]
+          },
+          {
+            "name": "codex-http-client",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.13",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zstd"
+            ]
+          },
+          {
+            "name": "codex-rollout",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.13",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zstd"
+            ]
+          },
+          {
+            "name": "codex-thread-store",
+            "version": "0.0.0",
+            "workspace": true,
+            "requirements": [
+              {
+                "req": "^0.13",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zstd"
+            ]
+          },
+          {
+            "name": "zip",
+            "version": "2.4.2",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^0.13",
+                "kind": null,
+                "target": null,
+                "optional": true,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zstd"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-app-server-protocol": [
+            "codex-app-server-protocol@0.0.0",
+            "zstd@0.13.3"
+          ],
+          "codex-cli": [
+            "codex-cli@0.0.0",
+            "zstd@0.13.3"
+          ],
+          "codex-core": [
+            "codex-core@0.0.0",
+            "zstd@0.13.3"
+          ],
+          "codex-http-client": [
+            "codex-http-client@0.0.0",
+            "zstd@0.13.3"
+          ],
+          "codex-queue-extension": [
+            "codex-queue-extension@0.0.0",
+            "zstd@0.13.3"
+          ],
+          "codex-rollout": [
+            "codex-rollout@0.0.0",
+            "zstd@0.13.3"
+          ],
+          "codex-thread-store": [
+            "codex-thread-store@0.0.0",
+            "zstd@0.13.3"
+          ],
+          "core_test_support": [
+            "core_test_support@0.0.0",
+            "zstd@0.13.3"
+          ],
+          "codex-core-plugins": [
+            "codex-core-plugins@0.0.0",
+            "zip@2.4.2",
+            "zstd@0.13.3"
+          ]
+        }
+      },
+      {
+        "crate": "zstd-safe",
+        "version": "7.2.4",
+        "advisory_ids": [
+          "RUSTSEC-2026-0398",
+          "RUSTSEC-2026-0403"
+        ],
+        "direct_parents": [
+          {
+            "name": "zstd",
+            "version": "0.13.3",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^7.1.0",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zstd_safe"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-app-server-protocol": [
+            "codex-app-server-protocol@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4"
+          ],
+          "codex-cli": [
+            "codex-cli@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4"
+          ],
+          "codex-core": [
+            "codex-core@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4"
+          ],
+          "codex-http-client": [
+            "codex-http-client@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4"
+          ],
+          "codex-queue-extension": [
+            "codex-queue-extension@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4"
+          ],
+          "codex-rollout": [
+            "codex-rollout@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4"
+          ],
+          "codex-thread-store": [
+            "codex-thread-store@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4"
+          ],
+          "core_test_support": [
+            "core_test_support@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4"
+          ],
+          "codex-core-plugins": [
+            "codex-core-plugins@0.0.0",
+            "zip@2.4.2",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4"
+          ]
+        }
+      },
+      {
+        "crate": "zstd-sys",
+        "version": "2.0.16+zstd.1.5.7",
+        "advisory_ids": [
+          "RUSTSEC-2026-0410"
+        ],
+        "direct_parents": [
+          {
+            "name": "zstd-safe",
+            "version": "7.2.4",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^2.0.15",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zstd_sys"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-app-server-protocol": [
+            "codex-app-server-protocol@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4",
+            "zstd-sys@2.0.16+zstd.1.5.7"
+          ],
+          "codex-cli": [
+            "codex-cli@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4",
+            "zstd-sys@2.0.16+zstd.1.5.7"
+          ],
+          "codex-core": [
+            "codex-core@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4",
+            "zstd-sys@2.0.16+zstd.1.5.7"
+          ],
+          "codex-http-client": [
+            "codex-http-client@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4",
+            "zstd-sys@2.0.16+zstd.1.5.7"
+          ],
+          "codex-queue-extension": [
+            "codex-queue-extension@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4",
+            "zstd-sys@2.0.16+zstd.1.5.7"
+          ],
+          "codex-rollout": [
+            "codex-rollout@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4",
+            "zstd-sys@2.0.16+zstd.1.5.7"
+          ],
+          "codex-thread-store": [
+            "codex-thread-store@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4",
+            "zstd-sys@2.0.16+zstd.1.5.7"
+          ],
+          "core_test_support": [
+            "core_test_support@0.0.0",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4",
+            "zstd-sys@2.0.16+zstd.1.5.7"
+          ],
+          "codex-core-plugins": [
+            "codex-core-plugins@0.0.0",
+            "zip@2.4.2",
+            "zstd@0.13.3",
+            "zstd-safe@7.2.4",
+            "zstd-sys@2.0.16+zstd.1.5.7"
+          ]
+        }
+      },
+      {
+        "crate": "zvariant",
+        "version": "4.2.0",
+        "advisory_ids": [
+          "RUSTSEC-2026-0370"
+        ],
+        "direct_parents": [
+          {
+            "name": "zbus",
+            "version": "4.4.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^4.2.0",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zvariant"
+            ]
+          },
+          {
+            "name": "zbus_names",
+            "version": "3.0.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "^4.0.0",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zvariant"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-keyring-store": [
+            "codex-keyring-store@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zvariant@4.2.0"
+          ],
+          "codex-login": [
+            "codex-login@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zvariant@4.2.0"
+          ],
+          "codex-rmcp-client": [
+            "codex-rmcp-client@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zvariant@4.2.0"
+          ],
+          "codex-secrets": [
+            "codex-secrets@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zvariant@4.2.0"
+          ]
+        }
+      },
+      {
+        "crate": "zvariant_derive",
+        "version": "4.2.0",
+        "advisory_ids": [
+          "RUSTSEC-2026-0372"
+        ],
+        "direct_parents": [
+          {
+            "name": "zvariant",
+            "version": "4.2.0",
+            "workspace": false,
+            "requirements": [
+              {
+                "req": "=4.2.0",
+                "kind": null,
+                "target": null,
+                "optional": false,
+                "rename": null
+              }
+            ],
+            "resolved_edge_names": [
+              "zvariant_derive"
+            ]
+          }
+        ],
+        "shortest_first_workspace_chains": {
+          "codex-keyring-store": [
+            "codex-keyring-store@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zvariant@4.2.0",
+            "zvariant_derive@4.2.0"
+          ],
+          "codex-login": [
+            "codex-login@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zvariant@4.2.0",
+            "zvariant_derive@4.2.0"
+          ],
+          "codex-rmcp-client": [
+            "codex-rmcp-client@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zvariant@4.2.0",
+            "zvariant_derive@4.2.0"
+          ],
+          "codex-secrets": [
+            "codex-secrets@0.0.0",
+            "keyring@3.6.3",
+            "zbus@4.4.0",
+            "zvariant@4.2.0",
+            "zvariant_derive@4.2.0"
+          ]
+        }
+      }
+    ],
+    "advisory_db": [
+      {
+        "cache_name": "advisory-db-3157b0e258782691",
+        "head": "2295466c4e9df26647fd67d8fa1c705ac2fc7f81",
+        "matched_advisory_files": [
+          {
+            "id": "RUSTSEC-2026-0319",
+            "path": "crates/anymap2/RUSTSEC-2026-0319.md",
+            "sha256": "007e3cd8483c1048401637e8543b504adb01d7ba494642879aacc9846effc469"
+          },
+          {
+            "id": "RUSTSEC-2026-0374",
+            "path": "crates/basic-toml/RUSTSEC-2026-0374.md",
+            "sha256": "4817464e71fb0162eed7b2f931c4bcb813b8772c25c97bc2f63b4e0bd65d7766"
+          },
+          {
+            "id": "RUSTSEC-2026-0387",
+            "path": "crates/crypto-bigint/RUSTSEC-2026-0387.md",
+            "sha256": "7c9f3f944105638e613e83e97690035198e453d701e56506ee911e1fbfcb46f3"
+          },
+          {
+            "id": "RUSTSEC-2026-0318",
+            "path": "crates/matrix-sdk-crypto/RUSTSEC-2026-0318.md",
+            "sha256": "c0949dd67483de64aed6271c8ace350dc1b905ccb7b0a76e1efa3bfd553de6f0"
+          },
+          {
+            "id": "RUSTSEC-2026-0346",
+            "path": "crates/rustls/RUSTSEC-2026-0346.md",
+            "sha256": "04933c9695fedb8b523c96723f0e193e2f8fd1c0f22945dc82904571967cb9bd"
+          },
+          {
+            "id": "RUSTSEC-2026-0347",
+            "path": "crates/rustls/RUSTSEC-2026-0347.md",
+            "sha256": "b1b31d99c76e17daae8211937a0c28197c68c2e573caeba5875e0fc769c548a8"
+          },
+          {
+            "id": "RUSTSEC-2026-0348",
+            "path": "crates/rustls/RUSTSEC-2026-0348.md",
+            "sha256": "99ec103400ea094e34211303d4b87ec52893cd60560e5b192b328f570fb23555"
+          },
+          {
+            "id": "RUSTSEC-2026-0349",
+            "path": "crates/rustls/RUSTSEC-2026-0349.md",
+            "sha256": "147d66906c11c601bdc4c47f26dc9e017340e310e86e177b34a8845453485876"
+          },
+          {
+            "id": "RUSTSEC-2026-0382",
+            "path": "crates/rustls-webpki/RUSTSEC-2026-0382.md",
+            "sha256": "525ad607d24f67fd22a20e70b28b3962a9039962340e3ad1f351c9611772e671"
+          },
+          {
+            "id": "RUSTSEC-2024-0449",
+            "path": "crates/unsafe-libyaml/RUSTSEC-2024-0449.md",
+            "sha256": "99da8fa8d7ce73ca12b32cadedef33ff160d120dd63a338447a8fa70eac0d549"
+          },
+          {
+            "id": "RUSTSEC-2026-0383",
+            "path": "crates/webpki-root-certs/RUSTSEC-2026-0383.md",
+            "sha256": "4a9c2377d34c5c3e04c6f3e203f2002b7455caaca7468a4a2921afc49318fd67"
+          },
+          {
+            "id": "RUSTSEC-2026-0381",
+            "path": "crates/webpki-roots/RUSTSEC-2026-0381.md",
+            "sha256": "9be83b1a3b668d3b3ccb720faf514e1ac5f42754bd03cb2b7900f5f9157a9300"
+          },
+          {
+            "id": "RUSTSEC-2026-0371",
+            "path": "crates/zbus_names/RUSTSEC-2026-0371.md",
+            "sha256": "3e618914dab3ef0d6d2434f42ac8aa1947cb1738fd156b4f0092d6c7ad53b394"
+          },
+          {
+            "id": "RUSTSEC-2026-0367",
+            "path": "crates/zip/RUSTSEC-2026-0367.md",
+            "sha256": "a3ceec31db85c2e07a2b8daf0a7a17a5a624601bb256cedab4c508750ff677df"
+          },
+          {
+            "id": "RUSTSEC-2026-0368",
+            "path": "crates/zip/RUSTSEC-2026-0368.md",
+            "sha256": "c056588fb9936466517e99b8644aab34804502a01f34c6cae323bd40e4e63ba0"
+          },
+          {
+            "id": "RUSTSEC-2026-0369",
+            "path": "crates/zip/RUSTSEC-2026-0369.md",
+            "sha256": "4bed2ec03d7b53525422dc136075476eaeb644e2ab3483547a525437ae722dc5"
+          },
+          {
+            "id": "RUSTSEC-2026-0391",
+            "path": "crates/zstd/RUSTSEC-2026-0391.md",
+            "sha256": "80b6c3a9c20db6c6c9b62fa9215905859493d02b376e1cc390e23f2f30fc0481"
+          },
+          {
+            "id": "RUSTSEC-2026-0398",
+            "path": "crates/zstd-safe/RUSTSEC-2026-0398.md",
+            "sha256": "04d6d98f826402766ae3bbdd7d395335f6503d071dbe158c9d271dd3c46c1d96"
+          },
+          {
+            "id": "RUSTSEC-2026-0403",
+            "path": "crates/zstd-safe/RUSTSEC-2026-0403.md",
+            "sha256": "05ac3b7223d7837dae022a5a857185b891f89801d94468d65b214c747b0bf432"
+          },
+          {
+            "id": "RUSTSEC-2026-0410",
+            "path": "crates/zstd-sys/RUSTSEC-2026-0410.md",
+            "sha256": "5b7e7181131b2b3f5236f650229f62cb3c45e79ed5de2764ca3d5a6d47b81356"
+          },
+          {
+            "id": "RUSTSEC-2026-0370",
+            "path": "crates/zvariant/RUSTSEC-2026-0370.md",
+            "sha256": "55991b6a4484c3541c8091cb16cf7446c8610de09ac642ab3ff88c332e394bf0"
+          },
+          {
+            "id": "RUSTSEC-2026-0372",
+            "path": "crates/zvariant_derive/RUSTSEC-2026-0372.md",
+            "sha256": "e03677b3351db11984e2fd3bd839b6368cfc3a93aca08c4401980264b228635d"
+          }
+        ],
+        "path": "/root/.cargo/advisory-dbs/advisory-db-3157b0e258782691"
+      }
+    ],
+    "metadata_checks": [
+      {
+        "label": "workspace_only",
+        "returncode": 0,
+        "stderr": "",
+        "command": [
+          "/tmp/hepta-digital-rust195/bin/cargo",
+          "metadata",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "--all-features",
+          "--locked",
+          "--offline",
+          "--format-version",
+          "1",
+          "--no-deps"
+        ],
+        "packages": 193,
+        "workspace_members": 193,
+        "has_resolved_graph": false
+      },
+      {
+        "label": "complete_graph",
+        "returncode": 101,
+        "stderr": "error: failed to load source for dependency `tungstenite`\n\nCaused by:\n  unable to update https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30\n\nCaused by:\n  can't checkout from 'https://github.com/openai-oss-forks/tungstenite-rs': you are in the offline mode (--offline)\n",
+        "command": [
+          "/tmp/hepta-digital-rust195/bin/cargo",
+          "metadata",
+          "--manifest-path",
+          "codex-rs/Cargo.toml",
+          "--all-features",
+          "--locked",
+          "--offline",
+          "--format-version",
+          "1"
+        ]
+      }
+    ],
+    "resolved_metadata_summary": {
+      "command": [
+        "/tmp/hepta-digital-rust195/bin/cargo",
+        "metadata",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--all-features",
+        "--locked",
+        "--offline",
+        "--format-version",
+        "1"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 1.2795155490002799,
+      "stderr": "",
+      "packages": 1517,
+      "resolve_nodes": 1517
+    },
+    "workspace_direct_bans": [
+      {
+        "banned": "async-trait",
+        "workspace_direct_references": []
+      },
+      {
+        "banned": "reqwest",
+        "workspace_direct_references": [
+          {
+            "package": "codex-http-client",
+            "allowed_wrapper": true,
+            "kind": null,
+            "optional": false,
+            "target": null,
+            "req": "^0.12"
+          },
+          {
+            "package": "codex-otel",
+            "allowed_wrapper": true,
+            "kind": null,
+            "optional": false,
+            "target": null,
+            "req": "^0.12"
+          },
+          {
+            "package": "codex-code-mode",
+            "allowed_wrapper": true,
+            "kind": null,
+            "optional": false,
+            "target": null,
+            "req": "^0.12"
+          },
+          {
+            "package": "codex-responses-api-proxy",
+            "allowed_wrapper": true,
+            "kind": null,
+            "optional": false,
+            "target": null,
+            "req": "^0.12"
+          },
+          {
+            "package": "codex-hepta-matrixd",
+            "allowed_wrapper": true,
+            "kind": "dev",
+            "optional": false,
+            "target": null,
+            "req": "^0.12"
+          }
+        ]
+      }
+    ],
+    "lock_sources": {
+      "lock_packages": 1517,
+      "lock_sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+      "deny_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+      "sources": [
+        "git+https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8465e74127f1ea216f813cd377295ad81",
+        "git+https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9faabb4e5c6d81d946a5e35a90f87347ee",
+        "git+https://github.com/openai-oss-forks/crossterm?rev=45fecb9508105988f42fe6ff0441783ed3717f92#45fecb9508105988f42fe6ff0441783ed3717f92",
+        "git+https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186",
+        "git+https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30fe373adbdcffab9545e9e9bf4f2fc19f",
+        "registry+https://github.com/rust-lang/crates.io-index"
+      ],
+      "configured_sources": {
+        "unknown-registry": "deny",
+        "unknown-git": "deny",
+        "required-git-spec": "rev",
+        "allow-registry": [
+          "https://github.com/rust-lang/crates.io-index"
+        ],
+        "allow-git": [
+          "https://github.com/dzbarsky/rules_rust",
+          "https://github.com/helix-editor/nucleo.git",
+          "https://github.com/juberti-oai/rust-sdks.git",
+          "https://github.com/openai-oss-forks/crossterm",
+          "https://github.com/openai-oss-forks/tokio-tungstenite",
+          "https://github.com/openai-oss-forks/tungstenite-rs"
+        ],
+        "allow-org": {
+          "github": [],
+          "gitlab": [],
+          "bitbucket": []
+        }
+      }
+    },
+    "lock_ban_parents": [
+      {
+        "crate": "async-trait",
+        "locked_parent_edges": [
+          {
+            "name": "hickory-proto",
+            "version": "0.25.2",
+            "allowed": true,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          },
+          {
+            "name": "matrix-sdk",
+            "version": "0.18.0",
+            "allowed": true,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          },
+          {
+            "name": "matrix-sdk-base",
+            "version": "0.18.0",
+            "allowed": true,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          },
+          {
+            "name": "matrix-sdk-crypto",
+            "version": "0.18.0",
+            "allowed": true,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          },
+          {
+            "name": "matrix-sdk-indexeddb",
+            "version": "0.18.0",
+            "allowed": false,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          },
+          {
+            "name": "matrix-sdk-sqlite",
+            "version": "0.18.0",
+            "allowed": true,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          },
+          {
+            "name": "opentelemetry-http",
+            "version": "0.31.0",
+            "allowed": true,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          },
+          {
+            "name": "pagable",
+            "version": "0.4.1",
+            "allowed": true,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          },
+          {
+            "name": "rmcp",
+            "version": "3.1.3",
+            "allowed": true,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          },
+          {
+            "name": "tonic",
+            "version": "0.14.3",
+            "allowed": true,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          },
+          {
+            "name": "zbus",
+            "version": "4.4.0",
+            "allowed": true,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          }
+        ],
+        "not_allowlisted": [
+          {
+            "name": "matrix-sdk-indexeddb",
+            "version": "0.18.0",
+            "allowed": false,
+            "dependency_entries": [
+              "async-trait"
+            ]
+          }
+        ]
+      },
+      {
+        "crate": "reqwest",
+        "locked_parent_edges": [
+          {
+            "name": "codex-code-mode",
+            "version": "0.0.0",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.12.28"
+            ]
+          },
+          {
+            "name": "codex-hepta-matrixd",
+            "version": "0.0.0",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.12.28"
+            ]
+          },
+          {
+            "name": "codex-http-client",
+            "version": "0.0.0",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.12.28"
+            ]
+          },
+          {
+            "name": "codex-otel",
+            "version": "0.0.0",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.12.28"
+            ]
+          },
+          {
+            "name": "codex-responses-api-proxy",
+            "version": "0.0.0",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.12.28"
+            ]
+          },
+          {
+            "name": "matrix-sdk",
+            "version": "0.18.0",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.13.4"
+            ]
+          },
+          {
+            "name": "oauth2",
+            "version": "5.0.0",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.12.28"
+            ]
+          },
+          {
+            "name": "oauth2-reqwest",
+            "version": "0.1.0-alpha.3",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.13.4"
+            ]
+          },
+          {
+            "name": "opentelemetry-http",
+            "version": "0.31.0",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.12.28"
+            ]
+          },
+          {
+            "name": "opentelemetry-otlp",
+            "version": "0.31.0",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.12.28"
+            ]
+          },
+          {
+            "name": "rmcp",
+            "version": "3.1.3",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.13.4"
+            ]
+          },
+          {
+            "name": "sentry",
+            "version": "0.46.1",
+            "allowed": true,
+            "dependency_entries": [
+              "reqwest 0.12.28"
+            ]
+          }
+        ],
+        "not_allowlisted": []
+      }
+    ]
+  },
+  "assembly_script": {
+    "path": "CARGO_DENY_DIAGNOSTIC.py.gz",
+    "uncompressed_sha256": "24d999ef86c4b7a1f41a3a4ec734a4a02eb45f101f3ed62f84c0e20e2ee1c6fe",
+    "scope": "assemble existing evidence; does not execute cargo or network"
+  }
+}
