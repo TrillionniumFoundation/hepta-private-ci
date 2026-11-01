@@ -1,0 +1,592 @@
+{
+  "passed": true,
+  "heldout_opened": false,
+  "records": [
+    {
+      "task": "recall",
+      "split": "train",
+      "domain": "iid",
+      "shape": [
+        512,
+        12,
+        9
+      ],
+      "class_counts": [
+        152,
+        168,
+        192
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "b3e99c8c12c8717195ef786ec0835aa1f2a9a5d5ddb10b96eb2316c066c179b2",
+      "elapsed_min": 12.0,
+      "elapsed_max": 12.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "train",
+      "domain": "long_distractors",
+      "shape": [
+        512,
+        24,
+        9
+      ],
+      "class_counts": [
+        152,
+        168,
+        192
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "00408e847d81973f30fc5c0161ad4246d269747ddcf6eb07ef4bcc3e04714716",
+      "elapsed_min": 24.0,
+      "elapsed_max": 24.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "train",
+      "domain": "blank_retention",
+      "shape": [
+        512,
+        20,
+        9
+      ],
+      "class_counts": [
+        152,
+        168,
+        192
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "ad08563afc746dd35da986dcd3ef96ec92fd3f204d72ee9bce5c46db64c1be3e",
+      "elapsed_min": 20.0,
+      "elapsed_max": 20.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "train",
+      "domain": "irregular_dt",
+      "shape": [
+        512,
+        12,
+        9
+      ],
+      "class_counts": [
+        152,
+        168,
+        192
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "178a3ca9ad2cfb3df399ca465860b69635a6d416217e38a9bcdfbfb4e9686d59",
+      "elapsed_min": 12.0,
+      "elapsed_max": 12.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "train",
+      "domain": "clock4x",
+      "shape": [
+        512,
+        12,
+        9
+      ],
+      "class_counts": [
+        152,
+        168,
+        192
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "bed2b67e818eb543c2a1e06e35be97bb7f9f9d5e0876c753d57a530e681dad04",
+      "elapsed_min": 48.0,
+      "elapsed_max": 48.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "train",
+      "domain": "query_swap",
+      "shape": [
+        512,
+        12,
+        9
+      ],
+      "class_counts": [
+        169,
+        166,
+        177
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "e5b66352b8a0f34912c1798614331d8a3fa04e6208a764da102f206520a4aed9",
+      "elapsed_min": 12.0,
+      "elapsed_max": 12.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "train",
+      "domain": "missing_payload",
+      "shape": [
+        512,
+        12,
+        9
+      ],
+      "class_counts": [
+        152,
+        168,
+        192
+      ],
+      "label_reconstruction_equal": null,
+      "input_sha256": "25ce4d2e5dc1661e990ec5a4f6c64dfb66b19e14e6aaa9e16fcfc59d3abcbbd5",
+      "elapsed_min": 12.0,
+      "elapsed_max": 12.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "val",
+      "domain": "iid",
+      "shape": [
+        128,
+        12,
+        9
+      ],
+      "class_counts": [
+        40,
+        39,
+        49
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "c1cf77e14acaedc527683ad9a7d54645da04b1cba0057d74d072c69e400025b9",
+      "elapsed_min": 12.0,
+      "elapsed_max": 12.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "val",
+      "domain": "long_distractors",
+      "shape": [
+        128,
+        24,
+        9
+      ],
+      "class_counts": [
+        40,
+        39,
+        49
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "fd6f0749d1f60b543310026e3d2913362d168c4fd46149acaf5b167a0e685c9f",
+      "elapsed_min": 24.0,
+      "elapsed_max": 24.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "val",
+      "domain": "blank_retention",
+      "shape": [
+        128,
+        20,
+        9
+      ],
+      "class_counts": [
+        40,
+        39,
+        49
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "852367aa33fe0b19432ec88ff5db7700ebf415aad45ec7671ba31f61d75e825c",
+      "elapsed_min": 20.0,
+      "elapsed_max": 20.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "val",
+      "domain": "irregular_dt",
+      "shape": [
+        128,
+        12,
+        9
+      ],
+      "class_counts": [
+        40,
+        39,
+        49
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "346b3da5cfca658e890ce5e1970b1398bb7834e2eadd649735a5ca6297f9dc26",
+      "elapsed_min": 12.0,
+      "elapsed_max": 12.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "val",
+      "domain": "clock4x",
+      "shape": [
+        128,
+        12,
+        9
+      ],
+      "class_counts": [
+        40,
+        39,
+        49
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "8a07fa0ae0e3c9249144f80910b376c2ff6921d7d570851e30ca5457aea72eef",
+      "elapsed_min": 48.0,
+      "elapsed_max": 48.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "val",
+      "domain": "query_swap",
+      "shape": [
+        128,
+        12,
+        9
+      ],
+      "class_counts": [
+        49,
+        37,
+        42
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "5fe88c9f4a61eedf352643a85c0f49fcd83db5e5f33495f4a5fabb3de814ba4e",
+      "elapsed_min": 12.0,
+      "elapsed_max": 12.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "recall",
+      "split": "val",
+      "domain": "missing_payload",
+      "shape": [
+        128,
+        12,
+        9
+      ],
+      "class_counts": [
+        40,
+        39,
+        49
+      ],
+      "label_reconstruction_equal": null,
+      "input_sha256": "a849db93c25038061810ec37174fc05b69c52dac1f822b4bae7e7238fc3f6eba",
+      "elapsed_min": 12.0,
+      "elapsed_max": 12.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "train",
+      "domain": "iid",
+      "shape": [
+        512,
+        9,
+        17
+      ],
+      "class_counts": [
+        256,
+        256
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "372925954643dcbb8895f7e6d61fd88e36c1cf901aa5bde153fb3a71001cbf6b",
+      "elapsed_min": 9.0,
+      "elapsed_max": 9.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "train",
+      "domain": "long_distractors",
+      "shape": [
+        512,
+        21,
+        17
+      ],
+      "class_counts": [
+        256,
+        256
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "dc382e4640d3a4998bd236cd5ca65823ca2985c04837d9ed82498faa283be553",
+      "elapsed_min": 21.0,
+      "elapsed_max": 21.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "train",
+      "domain": "blank_retention",
+      "shape": [
+        512,
+        17,
+        17
+      ],
+      "class_counts": [
+        256,
+        256
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "6b0603f7bc3437971420b2c8cf5745dc01b3dc376de52609832094c80b7692ab",
+      "elapsed_min": 17.0,
+      "elapsed_max": 17.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "train",
+      "domain": "irregular_dt",
+      "shape": [
+        512,
+        9,
+        17
+      ],
+      "class_counts": [
+        256,
+        256
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "83a4a8d598472c2e5a455db5611ddffa47718d842ce938dc39570bf51f8ce012",
+      "elapsed_min": 8.25,
+      "elapsed_max": 8.25,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "train",
+      "domain": "clock4x",
+      "shape": [
+        512,
+        9,
+        17
+      ],
+      "class_counts": [
+        256,
+        256
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "b7ad569705b619d0c80d49a0ac43afaa24bda50613aaa9785876dbfd45cdb304",
+      "elapsed_min": 36.0,
+      "elapsed_max": 36.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "train",
+      "domain": "query_swap",
+      "shape": [
+        512,
+        9,
+        17
+      ],
+      "class_counts": [
+        280,
+        232
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "a6a86633dc4aeece5c3f0a5602ef2a69ea09ea903b3b8495f7ff0c374d2a46f7",
+      "elapsed_min": 9.0,
+      "elapsed_max": 9.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "train",
+      "domain": "missing_a",
+      "shape": [
+        512,
+        9,
+        17
+      ],
+      "class_counts": [
+        256,
+        256
+      ],
+      "label_reconstruction_equal": null,
+      "input_sha256": "10eb9a72dfe0f825614245f76d2665132027ed54b2db8e281d76f0115fc4014c",
+      "elapsed_min": 9.0,
+      "elapsed_max": 9.0,
+      "exact_missing_modality_balance": true
+    },
+    {
+      "task": "binding",
+      "split": "train",
+      "domain": "missing_b",
+      "shape": [
+        512,
+        9,
+        17
+      ],
+      "class_counts": [
+        256,
+        256
+      ],
+      "label_reconstruction_equal": null,
+      "input_sha256": "3153d59d8788a7ddca94e32508c8a0fafac18d63d9494b261f9bc3854897b516",
+      "elapsed_min": 9.0,
+      "elapsed_max": 9.0,
+      "exact_missing_modality_balance": true
+    },
+    {
+      "task": "binding",
+      "split": "val",
+      "domain": "iid",
+      "shape": [
+        128,
+        9,
+        17
+      ],
+      "class_counts": [
+        64,
+        64
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "f759434f9ae7bcd522d4fb6858d0fe3cd1c0a0d198320df376469642af73ac72",
+      "elapsed_min": 9.0,
+      "elapsed_max": 9.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "val",
+      "domain": "long_distractors",
+      "shape": [
+        128,
+        21,
+        17
+      ],
+      "class_counts": [
+        64,
+        64
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "2c91cf6509e518dcd7cb4b8a286614e18ad74e9a79ddeb89b9db3e45a026f94e",
+      "elapsed_min": 21.0,
+      "elapsed_max": 21.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "val",
+      "domain": "blank_retention",
+      "shape": [
+        128,
+        17,
+        17
+      ],
+      "class_counts": [
+        64,
+        64
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "ce5754cf701ae76bfa76b441e539c9742029eba639f3e01633696ef2d2ae7695",
+      "elapsed_min": 17.0,
+      "elapsed_max": 17.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "val",
+      "domain": "irregular_dt",
+      "shape": [
+        128,
+        9,
+        17
+      ],
+      "class_counts": [
+        64,
+        64
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "001f66bffcbfa7afa1a58c832dc46b4832846f8d29a541654006658064b28f18",
+      "elapsed_min": 8.25,
+      "elapsed_max": 8.25,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "val",
+      "domain": "clock4x",
+      "shape": [
+        128,
+        9,
+        17
+      ],
+      "class_counts": [
+        64,
+        64
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "c7bdfc36e4ebf3257e191a2e2c9f90f9816486ad2f586dd9ecadc53d5bdb36ad",
+      "elapsed_min": 36.0,
+      "elapsed_max": 36.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "val",
+      "domain": "query_swap",
+      "shape": [
+        128,
+        9,
+        17
+      ],
+      "class_counts": [
+        44,
+        84
+      ],
+      "label_reconstruction_equal": true,
+      "input_sha256": "956639ac04535e984282021f786a1c0a0444c726d61228a1fb8b771b0e58340f",
+      "elapsed_min": 9.0,
+      "elapsed_max": 9.0,
+      "exact_missing_modality_balance": null
+    },
+    {
+      "task": "binding",
+      "split": "val",
+      "domain": "missing_a",
+      "shape": [
+        128,
+        9,
+        17
+      ],
+      "class_counts": [
+        64,
+        64
+      ],
+      "label_reconstruction_equal": null,
+      "input_sha256": "bc9088bbd09fe8cefbfeca81493a3490bc42fa9ae55f3ba39a5dffb5dfde514f",
+      "elapsed_min": 9.0,
+      "elapsed_max": 9.0,
+      "exact_missing_modality_balance": true
+    },
+    {
+      "task": "binding",
+      "split": "val",
+      "domain": "missing_b",
+      "shape": [
+        128,
+        9,
+        17
+      ],
+      "class_counts": [
+        64,
+        64
+      ],
+      "label_reconstruction_equal": null,
+      "input_sha256": "4a548d097afe057a89fd6a2359114ad743c0b9d6aefb254b92014bc960bc2b18",
+      "elapsed_min": 9.0,
+      "elapsed_max": 9.0,
+      "exact_missing_modality_balance": true
+    }
+  ],
+  "scope": "Independent raw-frame task-label reconstruction and complete-input single-modality symmetry; train/val only. No learned-model or heldout scores inspected.",
+  "timing_limitation": "Odd-length binding irregular_dt has horizon 8.25 vs 9.0 IID; it changes both spacing and total horizon. Recall irregular_dt preserves total horizon. Neither should be described as a universal fixed-horizon irregularity-only effect."
+}

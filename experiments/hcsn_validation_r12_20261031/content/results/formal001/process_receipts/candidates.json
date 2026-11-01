@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_validation_r12_20261031.content.study",
+    "candidates",
+    "--protocol",
+    "experiments/hcsn_validation_r12_20261031/content/results/formal001/PROTOCOL.json"
+  ],
+  "cpu_seconds": 1.986977,
+  "device_energy_joules": null,
+  "energy_sensor_available": false,
+  "input_blocks": 120,
+  "involuntary_context_switches": 207,
+  "log_sha256": "9d199ef1977ee871899ebb9a7e59f5dd6d348f2237fcb9376747903df7e398dc",
+  "output_blocks": 80,
+  "peak_rss_bytes": 201953280,
+  "returncode": 0,
+  "scope": "Linux wait4 fresh process and waited descendants; imports/loading/evaluation/output included",
+  "timing_environment": "Single thread, shared host; other tenants cannot be excluded",
+  "voluntary_context_switches": 35,
+  "wall_seconds": 2.4661369290001858
+}

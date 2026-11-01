@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "renewal_probability_max_gap": 1.1102230246251565e-16,
+  "renewal_gradient_max_gap": 1.6653345369377348e-16,
+  "dual_step_max_gap": 3.3306690738754696e-16,
+  "recurrent_directional_AD": -0.0008931915676333307,
+  "recurrent_directional_finite_difference": -0.0008931915677565238,
+  "causal_prefix_errors": {
+    "ordinary_dual": 0.0,
+    "probit": 0.0,
+    "analytic": 0.0,
+    "lif_snn": 0.0,
+    "continuous_rnn": 0.0,
+    "cfc": 0.0,
+    "mamba1": 0.0,
+    "transformer": 0.0
+  },
+  "core_parameter_counts": {
+    "ordinary_dual": 1584,
+    "probit": 1584,
+    "analytic": 1584,
+    "lif_snn": 1536,
+    "continuous_rnn": 1633,
+    "cfc": 1616,
+    "mamba1": 1584,
+    "transformer": 1676
+  },
+  "exact_single_modality_label_balance": true,
+  "test_split_opened": false
+}

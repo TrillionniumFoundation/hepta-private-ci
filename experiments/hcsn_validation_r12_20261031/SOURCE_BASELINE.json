@@ -1,0 +1,37 @@
+{
+  "base": {
+    "pr": 4529,
+    "commit": "631d33ba7ee815ee48c017269033e94cb2bc107c",
+    "branch": "research/hcsn-regeneration-content-20261031"
+  },
+  "references": [
+    {
+      "pr": 4519,
+      "commit": "c5e159ec6c5ba174b36debacad166da635c57d48",
+      "role": "prior frozen/joint mechanism/content negative findings"
+    },
+    {
+      "pr": 4525,
+      "commit": "1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d",
+      "role": "causal execution and fresh-process meter"
+    },
+    {
+      "pr": 4523,
+      "commit": "b426b83eb5fd27487c8dba3f90fe9af0dff615e1",
+      "role": "full financial kernel and finite/continuous propagation distinction"
+    },
+    {
+      "pr": 4159,
+      "commit": "23c98e77e4d2cc98e8c32caf7db763bc85c6794b",
+      "role": "verified CfC/Mamba1/LIF/SDPA baseline implementation"
+    }
+  ],
+  "prior_findings_retained": {
+    "pr4519_analytic_net_gain": "not established",
+    "pr4523_full_financial_fp32": "failed 0/18",
+    "pr4529_deployed_advantage_sign_accuracy": "about 44.8%; Qstar fitting does not establish Qpi calibration",
+    "pr4529_analytic_core_advantage": "not established"
+  },
+  "checkout": "isolated sparse checkout; imported sources carry individual origin records",
+  "public_authorization": "user's explicit standing authorization for this project's code, reports, checkpoints and raw evidence in TrillionniumFoundation/hepta-private-ci"
+}

@@ -1,0 +1,1029 @@
+{
+  "analytic": "Exact #4529 finite fixed-refractory renewal gate, FP64 internal arithmetic; additional ordinary write head. Fixed mu=-.25,sigma=1,reset=.8,refractory=.15; no full He-Xiong or learned physical boundary claim.",
+  "batch_size": 32,
+  "causality": "Current/previous raw frame and elapsed prefix clock only; no labels, posterior, computed address or future total length in model inputs.",
+  "core_configs": {
+    "analytic": {
+      "n_parameters": 1584,
+      "relative_gap": 0.0,
+      "target_parameters": 1584
+    },
+    "cfc": {
+      "hidden_width": 16,
+      "n_parameters": 1616,
+      "relative_gap": 0.020202020202020204,
+      "target_parameters": 1584
+    },
+    "continuous_rnn": {
+      "hidden_width": 21,
+      "n_parameters": 1633,
+      "relative_gap": 0.030934343434343436,
+      "target_parameters": 1584
+    },
+    "lif_snn": {
+      "hidden_width": 20,
+      "n_parameters": 1536,
+      "relative_gap": 0.030303030303030304,
+      "target_parameters": 1584
+    },
+    "mamba1": {
+      "hidden_width": 8,
+      "n_parameters": 1584,
+      "relative_gap": 0.0,
+      "target_parameters": 1584
+    },
+    "ordinary_dual": {
+      "n_parameters": 1584,
+      "relative_gap": 0.0,
+      "target_parameters": 1584
+    },
+    "probit": {
+      "n_parameters": 1584,
+      "relative_gap": 0.0,
+      "target_parameters": 1584
+    },
+    "transformer": {
+      "hidden_width": 10,
+      "n_parameters": 1676,
+      "relative_gap": 0.05808080808080808,
+      "target_parameters": 1584
+    }
+  },
+  "costs": "Parent fresh-process wait4 receipts include import/data/fit/selection/serialization; internal costs are nested. Serial profile after all fits; CPU is not energy. GPU and joules unavailable.",
+  "domains": {
+    "binding": [
+      "iid",
+      "long_distractors",
+      "blank_retention",
+      "irregular_dt",
+      "clock4x",
+      "query_swap",
+      "missing_a",
+      "missing_b"
+    ],
+    "recall": [
+      "iid",
+      "long_distractors",
+      "blank_retention",
+      "irregular_dt",
+      "clock4x",
+      "query_swap",
+      "missing_payload"
+    ]
+  },
+  "donor_learning_rate": 0.003,
+  "donor_updates": 128,
+  "fit_updates": 128,
+  "frozen": "Freeze only the common causal current/previous-frame content encoder; dynamics and new task readout remain trainable. Joint updates all. This is not a pretrained multimodal foundation encoder.",
+  "gradient_clip": 1.0,
+  "interpretation": "Synthetic bounded CPU development. Three fits conditional on fixed datasets; raw rows and repeated profiles are not independent fit replications. Negative and step-zero results retained.",
+  "jobs": [
+    {
+      "id": "recall_s12031_donor",
+      "kind": "donor",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "ordinary_dual",
+      "id": "recall_s12031_frozen_frontend_ordinary_dual",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "probit",
+      "id": "recall_s12031_frozen_frontend_probit",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "analytic",
+      "id": "recall_s12031_frozen_frontend_analytic",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "lif_snn",
+      "id": "recall_s12031_frozen_frontend_lif_snn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "continuous_rnn",
+      "id": "recall_s12031_frozen_frontend_continuous_rnn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "cfc",
+      "id": "recall_s12031_frozen_frontend_cfc",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "mamba1",
+      "id": "recall_s12031_frozen_frontend_mamba1",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "transformer",
+      "id": "recall_s12031_frozen_frontend_transformer",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "ordinary_dual",
+      "id": "recall_s12031_joint_ordinary_dual",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "probit",
+      "id": "recall_s12031_joint_probit",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "analytic",
+      "id": "recall_s12031_joint_analytic",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "lif_snn",
+      "id": "recall_s12031_joint_lif_snn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "continuous_rnn",
+      "id": "recall_s12031_joint_continuous_rnn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "cfc",
+      "id": "recall_s12031_joint_cfc",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "mamba1",
+      "id": "recall_s12031_joint_mamba1",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12031_donor",
+      "family": "transformer",
+      "id": "recall_s12031_joint_transformer",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "recall"
+    },
+    {
+      "id": "recall_s12032_donor",
+      "kind": "donor",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "ordinary_dual",
+      "id": "recall_s12032_frozen_frontend_ordinary_dual",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "probit",
+      "id": "recall_s12032_frozen_frontend_probit",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "analytic",
+      "id": "recall_s12032_frozen_frontend_analytic",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "lif_snn",
+      "id": "recall_s12032_frozen_frontend_lif_snn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "continuous_rnn",
+      "id": "recall_s12032_frozen_frontend_continuous_rnn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "cfc",
+      "id": "recall_s12032_frozen_frontend_cfc",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "mamba1",
+      "id": "recall_s12032_frozen_frontend_mamba1",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "transformer",
+      "id": "recall_s12032_frozen_frontend_transformer",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "ordinary_dual",
+      "id": "recall_s12032_joint_ordinary_dual",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "probit",
+      "id": "recall_s12032_joint_probit",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "analytic",
+      "id": "recall_s12032_joint_analytic",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "lif_snn",
+      "id": "recall_s12032_joint_lif_snn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "continuous_rnn",
+      "id": "recall_s12032_joint_continuous_rnn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "cfc",
+      "id": "recall_s12032_joint_cfc",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "mamba1",
+      "id": "recall_s12032_joint_mamba1",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12032_donor",
+      "family": "transformer",
+      "id": "recall_s12032_joint_transformer",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "recall"
+    },
+    {
+      "id": "recall_s12033_donor",
+      "kind": "donor",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "ordinary_dual",
+      "id": "recall_s12033_frozen_frontend_ordinary_dual",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "probit",
+      "id": "recall_s12033_frozen_frontend_probit",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "analytic",
+      "id": "recall_s12033_frozen_frontend_analytic",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "lif_snn",
+      "id": "recall_s12033_frozen_frontend_lif_snn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "continuous_rnn",
+      "id": "recall_s12033_frozen_frontend_continuous_rnn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "cfc",
+      "id": "recall_s12033_frozen_frontend_cfc",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "mamba1",
+      "id": "recall_s12033_frozen_frontend_mamba1",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "transformer",
+      "id": "recall_s12033_frozen_frontend_transformer",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "ordinary_dual",
+      "id": "recall_s12033_joint_ordinary_dual",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "probit",
+      "id": "recall_s12033_joint_probit",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "analytic",
+      "id": "recall_s12033_joint_analytic",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "lif_snn",
+      "id": "recall_s12033_joint_lif_snn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "continuous_rnn",
+      "id": "recall_s12033_joint_continuous_rnn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "cfc",
+      "id": "recall_s12033_joint_cfc",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "mamba1",
+      "id": "recall_s12033_joint_mamba1",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "donor": "recall_s12033_donor",
+      "family": "transformer",
+      "id": "recall_s12033_joint_transformer",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "recall"
+    },
+    {
+      "id": "binding_s12031_donor",
+      "kind": "donor",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "ordinary_dual",
+      "id": "binding_s12031_frozen_frontend_ordinary_dual",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "probit",
+      "id": "binding_s12031_frozen_frontend_probit",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "analytic",
+      "id": "binding_s12031_frozen_frontend_analytic",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "lif_snn",
+      "id": "binding_s12031_frozen_frontend_lif_snn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "continuous_rnn",
+      "id": "binding_s12031_frozen_frontend_continuous_rnn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "cfc",
+      "id": "binding_s12031_frozen_frontend_cfc",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "mamba1",
+      "id": "binding_s12031_frozen_frontend_mamba1",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "transformer",
+      "id": "binding_s12031_frozen_frontend_transformer",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "ordinary_dual",
+      "id": "binding_s12031_joint_ordinary_dual",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "probit",
+      "id": "binding_s12031_joint_probit",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "analytic",
+      "id": "binding_s12031_joint_analytic",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "lif_snn",
+      "id": "binding_s12031_joint_lif_snn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "continuous_rnn",
+      "id": "binding_s12031_joint_continuous_rnn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "cfc",
+      "id": "binding_s12031_joint_cfc",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "mamba1",
+      "id": "binding_s12031_joint_mamba1",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12031_donor",
+      "family": "transformer",
+      "id": "binding_s12031_joint_transformer",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12031,
+      "task": "binding"
+    },
+    {
+      "id": "binding_s12032_donor",
+      "kind": "donor",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "ordinary_dual",
+      "id": "binding_s12032_frozen_frontend_ordinary_dual",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "probit",
+      "id": "binding_s12032_frozen_frontend_probit",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "analytic",
+      "id": "binding_s12032_frozen_frontend_analytic",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "lif_snn",
+      "id": "binding_s12032_frozen_frontend_lif_snn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "continuous_rnn",
+      "id": "binding_s12032_frozen_frontend_continuous_rnn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "cfc",
+      "id": "binding_s12032_frozen_frontend_cfc",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "mamba1",
+      "id": "binding_s12032_frozen_frontend_mamba1",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "transformer",
+      "id": "binding_s12032_frozen_frontend_transformer",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "ordinary_dual",
+      "id": "binding_s12032_joint_ordinary_dual",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "probit",
+      "id": "binding_s12032_joint_probit",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "analytic",
+      "id": "binding_s12032_joint_analytic",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "lif_snn",
+      "id": "binding_s12032_joint_lif_snn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "continuous_rnn",
+      "id": "binding_s12032_joint_continuous_rnn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "cfc",
+      "id": "binding_s12032_joint_cfc",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "mamba1",
+      "id": "binding_s12032_joint_mamba1",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12032_donor",
+      "family": "transformer",
+      "id": "binding_s12032_joint_transformer",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12032,
+      "task": "binding"
+    },
+    {
+      "id": "binding_s12033_donor",
+      "kind": "donor",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "ordinary_dual",
+      "id": "binding_s12033_frozen_frontend_ordinary_dual",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "probit",
+      "id": "binding_s12033_frozen_frontend_probit",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "analytic",
+      "id": "binding_s12033_frozen_frontend_analytic",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "lif_snn",
+      "id": "binding_s12033_frozen_frontend_lif_snn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "continuous_rnn",
+      "id": "binding_s12033_frozen_frontend_continuous_rnn",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "cfc",
+      "id": "binding_s12033_frozen_frontend_cfc",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "mamba1",
+      "id": "binding_s12033_frozen_frontend_mamba1",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "transformer",
+      "id": "binding_s12033_frozen_frontend_transformer",
+      "kind": "fit",
+      "mode": "frozen_frontend",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "ordinary_dual",
+      "id": "binding_s12033_joint_ordinary_dual",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "probit",
+      "id": "binding_s12033_joint_probit",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "analytic",
+      "id": "binding_s12033_joint_analytic",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "lif_snn",
+      "id": "binding_s12033_joint_lif_snn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "continuous_rnn",
+      "id": "binding_s12033_joint_continuous_rnn",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "cfc",
+      "id": "binding_s12033_joint_cfc",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "mamba1",
+      "id": "binding_s12033_joint_mamba1",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "binding"
+    },
+    {
+      "donor": "binding_s12033_donor",
+      "family": "transformer",
+      "id": "binding_s12033_joint_transformer",
+      "kind": "fit",
+      "mode": "joint",
+      "seed": 12033,
+      "task": "binding"
+    }
+  ],
+  "learning_rate": 0.003,
+  "matching": "Identical common donor, task head initialization, data, batches and update count; three dual-gate cores have identical active parameters and initialization; other real architectures use nearest active hidden-width parameter match and report gaps.",
+  "primary": "Analytic minus ordinary_dual for each task and training mode; report all three paired seed differences, mean and all stress results. Advantage and same-quality cost conclusions require separate uncertainty/cost review; no pass inferred from positive mean.",
+  "runtime": {
+    "cfc_cell_sha256": "79dcc1cbb3b6898dc2310e9086a2e031e31cbaeb129d69adcbf45eaa16d6b74d",
+    "cfc_source_file": "cfc_cell.py",
+    "compute_device": "cpu",
+    "gpu_available": false,
+    "ncps": "1.0.1",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu"
+  },
+  "schema": "hcsn-r12.content.v1",
+  "seeds": [
+    12031,
+    12032,
+    12033
+  ],
+  "selection": "minimum validation cross entropy (task) or reconstruction MSE (donor); include step 0; first tie",
+  "splits": {
+    "test": [
+      256,
+      81103
+    ],
+    "train": [
+      512,
+      81101
+    ],
+    "val": [
+      128,
+      81102
+    ]
+  },
+  "tasks": {
+    "binding": [
+      17,
+      2
+    ],
+    "recall": [
+      9,
+      3
+    ]
+  },
+  "test_rule": "No test dataset access in donor/fit. Freeze all 96 selected checkpoints before test generation/evaluation. All attempts retained; no per-family tuning.",
+  "validate_every": 32,
+  "width": 16
+}

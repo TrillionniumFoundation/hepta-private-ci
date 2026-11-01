@@ -1,0 +1,32 @@
+{
+  "schema": "hcsn.validation.r12.numerics.gradient-pde.v1",
+  "registered_before_first_gradient_pde_run": true,
+  "parent_protocol_sha256": "20c1504b273197166f72fe85e69260c0b4f1249a1bb5ebc42b7a2b8d4379cba9",
+  "purpose": "Resolve whether closed-form six-parameter derivatives match an independently discretized complete regenerative process, beyond differentiating the same expression",
+  "case_source": "PROTOCOL.json gradient.cases",
+  "parameter_order": [
+    "x",
+    "mu",
+    "sigma",
+    "horizon",
+    "reset",
+    "refractory"
+  ],
+  "spacings": [
+    0.02,
+    0.01
+  ],
+  "central_steps": [
+    0.0001,
+    0.00005
+  ],
+  "gates": {
+    "gradient_atol": 0.003,
+    "gradient_rtol": 0.01,
+    "step_stability_atol": 0.001,
+    "step_stability_rtol": 0.005,
+    "refinement_factor": 0.8
+  },
+  "semantics": "Central PDE secants around interpolation/time-grid knots are numerical comparisons to the continuum derivative, not an ordinary derivative claimed for a piecewise discrete representation.",
+  "not_established": "No uniform derivative bound, arbitrary moving-boundary gradients, or complete recurrent training proof"
+}

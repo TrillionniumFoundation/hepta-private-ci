@@ -1,0 +1,175 @@
+{
+  "schema": "hcsn.validation.r12.numerics.v1",
+  "preregistered_before_formal_execution": true,
+  "base_commit": "631d33ba7ee815ee48c017269033e94cb2bc107c",
+  "semantics": {
+    "distance": "X=x+mu*t+sigma*W until first hit of zero",
+    "hit": "Count immediately; deterministic refractory then fixed positive reset distance",
+    "moving_boundary": "X-b(t); exact linear b(t)=speed*t is mu-speed; general deterministic C1 b(t) uses time-varying PDE, no stationary closed form claimed",
+    "successor": "Unconditional killed active density plus every post-reset active branch and refractory age law; not reset-at-end mixture",
+    "financial": "Original R11 stopping-value model; not identified with regenerative neuron"
+  },
+  "first_hit_cases": [
+    [
+      0.2,
+      -0.6,
+      0.7,
+      0.3
+    ],
+    [
+      0.4,
+      0,
+      0.8,
+      1
+    ],
+    [
+      0.8,
+      0.4,
+      1.1,
+      1.5
+    ],
+    [
+      1.2,
+      -0.25,
+      0.6,
+      1.2
+    ]
+  ],
+  "successor_cases": [
+    {
+      "x": 0.4,
+      "mu": -0.6,
+      "sigma": 0.7,
+      "horizon": 1.2,
+      "reset": 0.8,
+      "refractory": 0.2
+    },
+    {
+      "x": 0.4,
+      "mu": 0.3,
+      "sigma": 1,
+      "horizon": 1.2,
+      "reset": 0.8,
+      "refractory": 0.2
+    }
+  ],
+  "pde": {
+    "spacings": [
+      0.04,
+      0.02,
+      0.01
+    ],
+    "upper": 8,
+    "scheme": "positive centered CTMC generator with explicit Euler and delayed boundary-flux reinjection",
+    "cfl": 0.4,
+    "raw_final_state": true,
+    "finite_grid_not_native": true
+  },
+  "bins": [
+    0,
+    0.25,
+    0.5,
+    1,
+    2,
+    4,
+    8
+  ],
+  "moving_cases": [
+    {
+      "x": 0.4,
+      "mu": 0.1,
+      "sigma": 0.7,
+      "horizon": 1.2,
+      "speed": 0.2,
+      "curvature": 0
+    },
+    {
+      "x": 0.4,
+      "mu": 0.1,
+      "sigma": 0.7,
+      "horizon": 1.2,
+      "speed": 0.1,
+      "curvature": 0.15
+    }
+  ],
+  "gradient": {
+    "order": [
+      "x",
+      "mu",
+      "sigma",
+      "horizon",
+      "reset",
+      "refractory"
+    ],
+    "reference": "70-digit independently evaluated literal reflection CDF with mpmath.diff",
+    "refractory_derivative_domain": "strictly positive refractory; all finite count branches",
+    "cases": [
+      {
+        "x": 0.4,
+        "mu": -0.6,
+        "sigma": 0.7,
+        "horizon": 1.2,
+        "reset": 0.8,
+        "refractory": 0.2
+      },
+      {
+        "x": 0.4,
+        "mu": 0.3,
+        "sigma": 1,
+        "horizon": 1.2,
+        "reset": 0.8,
+        "refractory": 0.2
+      }
+    ]
+  },
+  "gates": {
+    "first_hit_atol": 2e-10,
+    "first_hit_rtol": 2e-8,
+    "killed_mass_atol": 2e-10,
+    "semigroup_atol": 2e-9,
+    "gradient_atol": 2e-7,
+    "gradient_rtol": 0.000002,
+    "full_successor_mass_atol": 2e-8,
+    "pde_final_count_atol": 0.002,
+    "pde_final_bins_l1": 0.006,
+    "pde_final_refractory_atol": 0.002,
+    "pde_upper_loss_max": 1e-8,
+    "pde_mass_atol": 2e-10,
+    "pde_min_probability": -2e-13,
+    "pde_refinement_factor": 0.8,
+    "nonlinear_refinement_atol": 0.002,
+    "hx_value_scaled": 2e-8,
+    "hx_jacobian_scaled": 0.00002
+  },
+  "hx": {
+    "admitted_precision": [
+      "float64",
+      "mixed32"
+    ],
+    "log_distance_envelope": [
+      0,
+      2
+    ],
+    "parameters": "R11 existing box unchanged; sampled qualification not uniform guarantee",
+    "reference_points": [
+      0,
+      0.000001,
+      0.1,
+      1,
+      2
+    ],
+    "retain_historical_failure_states": [
+      1e+308
+    ],
+    "pure_float32": "retain audit result and refuse as admitted training mode"
+  },
+  "not_established": [
+    "all-parameter uniform interval certificate",
+    "random or learned state-dependent boundary",
+    "complete financial HX regeneration equivalence",
+    "continuous equivalence of old three-bin CTMC",
+    "GPU efficiency or energy",
+    "network efficacy"
+  ],
+  "failure_policy": "All protocol gates remain fixed. Development and formal attempts use new directories; exceptions and failed rows retained."
+}
