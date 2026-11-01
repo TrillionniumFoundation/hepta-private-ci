@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.memory.structural-admission.protocol.v14",
+  "timing": "Written after inspecting the V14 routing run; this is a prospective publication guard and a descriptive audit, not a new preregistered efficacy experiment.",
+  "evidence_run": 41259326679,
+  "source_experiment_unchanged": true,
+  "selection": "Use the recorded calibration-only SELECTION.json. Keep-family and merge candidates remain eligible. Never choose a new structure using held labels.",
+  "keep_candidates": ["single", "continue", "wide", "ridge", "centroid", "nearest", "bm25"],
+  "merge_candidates": ["merge_retrain"],
+  "split_candidates": ["fixed_raw", "fixed_calibrated", "gradient_raw", "gradient_calibrated", "random_raw", "random_calibrated"],
+  "split_admission": {
+    "must_be_recorded_calibration_winner": true,
+    "strict_calibration_correctness_gain_over_best_keep_or_merge": true,
+    "strict_actual_held_correctness_gain_over_best_keep_or_merge": true,
+    "candidate_bound_retention_evidence_required": true,
+    "candidate_bound_positive_complete_cost_evidence_required": true,
+    "all_exploration_and_rejected_candidates_charged": true,
+    "missing_evidence": "reject; preserve eligible keep/merge candidate"
+  },
+  "merge_admission": "Calibration selection may choose merge. A selected merge is compared with the best keep candidate, never itself. Publication still requires candidate-bound noninferiority/retention and positive net value; no child parameter averaging.",
+  "selective_service_guard": "Where selective results exist, require no actual-output, accepted-coverage or OOD-rejection regression against the same retained alternative. Paired held request IDs must match.",
+  "cost_accounting": "Count each parent training stage once, each split training stage once, partition search, all four crossfit calibration fits and final refit. Child nested seconds are not added again. Saved raw/calibrated snapshots share trained networks but occupy separate artifact bytes in the executed experiment. Count shared encoder artifact/load/encoding once. The original process receipt measures entire routing-command wall/CPU/peak RSS and runner-wide network; these totals include unseparated serialization/calibration/diagnostic/executor work and must not be added to component times again. Original artifact inventory supplies source/cache/output file bytes. Per-component resource breakdown, energy, billing, deployment queues and resident object overhead remain unmeasured. Numerical bytes are not total serving or economic cost.",
+  "selection_cost_audit": "The original centroid parameter_count=0 field means the generic weights accessor did not count prototype state: there are 4608 learned-from-training prototype coefficients plus 12 labels. BM25 numerical bytes omit dictionaries. Keep the executed source unchanged and qualify these counters. Centroid wins calibration strictly, so the incomplete byte tie-break did not determine this winner.",
+  "isolation_attribution": "The isolated experiment itself uses fixed skill/project partitions. Preserved skills and current-source fallback demonstrate that implemented service policy; they do not establish learned gradient splitting, compression, or superiority to exact current project storage.",
+  "comparison_limits": "Routing uses newly authored V14 language; isolation reuses V13 fixtures. Do not pool their requests or compare different-host wall times as paired speedups. All isolation runs use the same qualified seed-713 skill model; project-seed repeats are not independent skill evaluations.",
+  "authority": "The guard is a research caller check; it is not a production installation grant. require_structural_admission raises on rejected or incomplete evidence."
+}
