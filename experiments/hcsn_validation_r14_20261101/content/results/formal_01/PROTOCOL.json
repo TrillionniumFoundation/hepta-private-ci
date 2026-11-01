@@ -1,0 +1,300 @@
+{
+  "actions": [
+    "STOP",
+    "READ one raw frame then follow the same policy"
+  ],
+  "batch_size": 32,
+  "cost": "Full child CPU receipts; joint/frozen backend training changes measured separately. Tariffs are not Joules. Actual causal prefix-recomputing dynamic actor timed; evaluator full-pass time is not claimed online saving.",
+  "domains": {
+    "binding": [
+      "iid",
+      "long_distractors",
+      "blank_retention",
+      "irregular_dt",
+      "clock4x",
+      "query_swap",
+      "missing_a",
+      "missing_b"
+    ],
+    "recall": [
+      "iid",
+      "long_distractors",
+      "blank_retention",
+      "irregular_dt",
+      "clock4x",
+      "query_swap",
+      "missing_payload"
+    ]
+  },
+  "estimand": "A/B and C/D execute identical backend weights within each mode. In joint_backend these weights were jointly value-trained: B-A, D-C and the interaction are execution-control effects conditional on that training regime. They are not total effects of separately training light and value policies. D-B compares cores under the same value-training objective, shared critic and execution rule.",
+  "families": [
+    "ordinary_dual",
+    "probit",
+    "analytic",
+    "lif_snn",
+    "continuous_rnn",
+    "cfc",
+    "mamba1",
+    "transformer"
+  ],
+  "frozen": "All encoder/core/readout parameters frozen and byte-verified; only shared controller learns.",
+  "grad_clip": 1.0,
+  "historical_commit": "9c97642cea5478cd9e7d078a192399bef9c9efc8",
+  "inference": "Three inherited independent fit seeds; descriptive paired results only. No significance or foundation-core acceptance inferred from three seeds.",
+  "inherited_manifests": {
+    "experiments/hcsn_validation_r12_20261031/content/results/formal001/CANDIDATE_FREEZE.json": "530b985e3c72a968ca32840e6ad9edbdd109936f0383fe5c1c6dde2a5e15d547",
+    "experiments/hcsn_validation_r12_20261031/content/results/formal001/PROTOCOL.json": "82274af680c32b7fc6adf431abbe8753bb72aaf40f4ad8c9b6c8a8507efc6512",
+    "experiments/hcsn_validation_r12_20261031/content/results/formal001/SOURCE_FREEZE.json": "0a7606bdf6b493b3c1143eb0320dcb31d96dcc3cbb3e734a42debb21231ba6fe"
+  },
+  "initial_stop": true,
+  "initialization": "Original R12 selected JOINT complete backends for every mode; no new donor.",
+  "inputs": {
+    "binding_s12031_joint_analytic": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12031_joint_analytic/attempt001/selected.pt",
+      "sha256": "25e9dab0c532bd0ab0b25a50c1008ce3c51aad4b1f3c5af9372f5e4b9d79e223"
+    },
+    "binding_s12031_joint_cfc": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12031_joint_cfc/attempt001/selected.pt",
+      "sha256": "d9dfac73372a4940de3f811f0b36d5307ed62417281ae760daa0868aa63970e4"
+    },
+    "binding_s12031_joint_continuous_rnn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12031_joint_continuous_rnn/attempt001/selected.pt",
+      "sha256": "3b2408f6940f8cc5d1619e300e7646d25626f5dc76ef3f4dd6ac179c0052654c"
+    },
+    "binding_s12031_joint_lif_snn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12031_joint_lif_snn/attempt001/selected.pt",
+      "sha256": "e1ed8716c2fee3d474c5098bb4011fad7d8823126e6977b99f6fbcef40d51c6a"
+    },
+    "binding_s12031_joint_mamba1": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12031_joint_mamba1/attempt001/selected.pt",
+      "sha256": "c0b7a022a64e1c5affdad36ef593146bb7666c05daa766ec138e5d2180de9ac2"
+    },
+    "binding_s12031_joint_ordinary_dual": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12031_joint_ordinary_dual/attempt001/selected.pt",
+      "sha256": "ff0b12e355fa9090695090ac8e33fdab597ce8bcf0cc5c977fa62cea9d789de6"
+    },
+    "binding_s12031_joint_probit": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12031_joint_probit/attempt001/selected.pt",
+      "sha256": "6882ae9417353151a9af74b2fc3340c2ad110e3170d1efa9a5fb052e71b48579"
+    },
+    "binding_s12031_joint_transformer": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12031_joint_transformer/attempt001/selected.pt",
+      "sha256": "8985307e9ad4fcc74a3492de565438a30e6c6ac6ac6d8a4d1d8fa9b7b588da22"
+    },
+    "binding_s12032_joint_analytic": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12032_joint_analytic/attempt001/selected.pt",
+      "sha256": "42d8f2f24c7716da0ed26b4a98494e3bb399683eaa1495f81c55ec9988cf486c"
+    },
+    "binding_s12032_joint_cfc": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12032_joint_cfc/attempt001/selected.pt",
+      "sha256": "b6893fbaed89ecf54a15ab38b5cb89cbba8b3869ace2c9b4f44da71e909bad36"
+    },
+    "binding_s12032_joint_continuous_rnn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12032_joint_continuous_rnn/attempt001/selected.pt",
+      "sha256": "29d4edab84a7875cca5d55eb58b1c0d27d540781dbffd2aee5986e962c1cd0a0"
+    },
+    "binding_s12032_joint_lif_snn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12032_joint_lif_snn/attempt001/selected.pt",
+      "sha256": "dc257f51ac8f98c90ff74acd64685fd51367c3122b22d468d9040ea679e89d57"
+    },
+    "binding_s12032_joint_mamba1": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12032_joint_mamba1/attempt001/selected.pt",
+      "sha256": "d1b36169bb9ed87536259bb3f4ad58b10e8938fda74e3b44b2b8f19cb8fc8749"
+    },
+    "binding_s12032_joint_ordinary_dual": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12032_joint_ordinary_dual/attempt001/selected.pt",
+      "sha256": "195a84abc90cb0b9e2339f00ba00702a49a0fe002e54db05f90be5f3760a33fa"
+    },
+    "binding_s12032_joint_probit": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12032_joint_probit/attempt001/selected.pt",
+      "sha256": "f8eafe12b086ed43978e7c2aa57a2e749fb6bcef36bb5d54e6ec76550218f377"
+    },
+    "binding_s12032_joint_transformer": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12032_joint_transformer/attempt001/selected.pt",
+      "sha256": "40f699cc54d01a5f24ddbb6830ae4407ba6f6fc9debbdf667b18e3f7d7d17756"
+    },
+    "binding_s12033_joint_analytic": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12033_joint_analytic/attempt001/selected.pt",
+      "sha256": "8d0fe182205209bbf113b27f38745f71ad659c249ae11a0f3dc08ad08f37811c"
+    },
+    "binding_s12033_joint_cfc": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12033_joint_cfc/attempt001/selected.pt",
+      "sha256": "f41f07ae834833408b4c74e39efa2155edf4cb7177008cb4ca1fa58b13b5f45d"
+    },
+    "binding_s12033_joint_continuous_rnn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12033_joint_continuous_rnn/attempt001/selected.pt",
+      "sha256": "b20572c555800cf93ee53aeaefe37fe04fb69c198460fa596ba44fde1836db9e"
+    },
+    "binding_s12033_joint_lif_snn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12033_joint_lif_snn/attempt001/selected.pt",
+      "sha256": "8c0b96d30729f591267434861df882be03cd01693f7b86db5184d2b0c9a99c90"
+    },
+    "binding_s12033_joint_mamba1": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12033_joint_mamba1/attempt001/selected.pt",
+      "sha256": "40cab8cdb75262f4b9250251599957f21f1e85832ef7546db7bd224eba7f96a5"
+    },
+    "binding_s12033_joint_ordinary_dual": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12033_joint_ordinary_dual/attempt001/selected.pt",
+      "sha256": "7271ef4283d06d5bb6e5f051e9ccd781b06f27368e4ce0a7c1ae42f66ce18e84"
+    },
+    "binding_s12033_joint_probit": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12033_joint_probit/attempt001/selected.pt",
+      "sha256": "4da2842fa4db145e06c9441c8aba22d4ed01641b3f180f45e837d7029c4c8ebb"
+    },
+    "binding_s12033_joint_transformer": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/binding_s12033_joint_transformer/attempt001/selected.pt",
+      "sha256": "1c433ae2f774744a22a0663ae46ea7c9c5d259dfaa4c74209053c0d5d32b845f"
+    },
+    "recall_s12031_joint_analytic": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12031_joint_analytic/attempt001/selected.pt",
+      "sha256": "69ea61e99bfbfc06145c969c567c4972cffcdc8a43cfa349e1ded12dcd700d06"
+    },
+    "recall_s12031_joint_cfc": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12031_joint_cfc/attempt001/selected.pt",
+      "sha256": "f9052582f4bfcf94ae4ac3e9e6f8daedc6b88d929b89e2e124375fc08ae10d5b"
+    },
+    "recall_s12031_joint_continuous_rnn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12031_joint_continuous_rnn/attempt001/selected.pt",
+      "sha256": "196d52d3877770363d61323f5794d8975f0f1dfe8fc8a3000203dbd6f0b1e6bb"
+    },
+    "recall_s12031_joint_lif_snn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12031_joint_lif_snn/attempt001/selected.pt",
+      "sha256": "65f7d578a7edd2aa15ece4f623e50efeb63d8ed83fe6c1899dd60eb60fbacd36"
+    },
+    "recall_s12031_joint_mamba1": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12031_joint_mamba1/attempt001/selected.pt",
+      "sha256": "6f966f7b5809ddd6cabaadc040ecdb4204c7bcb6fb637e955d40d51e3edc60c3"
+    },
+    "recall_s12031_joint_ordinary_dual": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12031_joint_ordinary_dual/attempt001/selected.pt",
+      "sha256": "369aa4ea91966b70a5605c41ec17099d8ff502bf225d01ae414ccffb83bf245e"
+    },
+    "recall_s12031_joint_probit": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12031_joint_probit/attempt001/selected.pt",
+      "sha256": "1f87ec1f17a3ead05ddc0b1fcd494b80fb525168cfa56f58d5b63f2cd50d088a"
+    },
+    "recall_s12031_joint_transformer": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12031_joint_transformer/attempt001/selected.pt",
+      "sha256": "3a489168e45a31d02c2ad7279b14d070d47c37c3393e42a33120f5f2621fe4f7"
+    },
+    "recall_s12032_joint_analytic": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12032_joint_analytic/attempt001/selected.pt",
+      "sha256": "f30dc6f40337f0254b77474799602bddb9e7295ec23b960e69a8a354f885f665"
+    },
+    "recall_s12032_joint_cfc": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12032_joint_cfc/attempt001/selected.pt",
+      "sha256": "0dc6008c72b1b0e579801dd189196980d3766c417d353e7a35855b28b1ab71af"
+    },
+    "recall_s12032_joint_continuous_rnn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12032_joint_continuous_rnn/attempt001/selected.pt",
+      "sha256": "4081fc051fffef495556d2e367a203b6f48438951c9050cd45f2b0616a5bc71d"
+    },
+    "recall_s12032_joint_lif_snn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12032_joint_lif_snn/attempt001/selected.pt",
+      "sha256": "b545d0e24aaaf24f3e19b67fe1af61d8ecb286bf9e989052922b7054322e137b"
+    },
+    "recall_s12032_joint_mamba1": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12032_joint_mamba1/attempt001/selected.pt",
+      "sha256": "b5f7f87f7d7da1cdc6dea0a6e6618f1b153d8a3f50cf08c552656981c7dd4f22"
+    },
+    "recall_s12032_joint_ordinary_dual": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12032_joint_ordinary_dual/attempt001/selected.pt",
+      "sha256": "c877f76e9dd7a18cf6e6fa2b100fa5909061a37c8b79d4febce909e06e816d0e"
+    },
+    "recall_s12032_joint_probit": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12032_joint_probit/attempt001/selected.pt",
+      "sha256": "59dedd0d43c884a906151c2e30b60009a1d2593fcc01a26620306395a5ac4cd8"
+    },
+    "recall_s12032_joint_transformer": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12032_joint_transformer/attempt001/selected.pt",
+      "sha256": "71367a5e738b3a5d33a6d00ecf55b73838fb1d38d10a7bb590f7a33c4b64e960"
+    },
+    "recall_s12033_joint_analytic": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12033_joint_analytic/attempt001/selected.pt",
+      "sha256": "223e31c661428cd0409d9deef9657e2435e4782792b5301f0962797609bec17f"
+    },
+    "recall_s12033_joint_cfc": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12033_joint_cfc/attempt001/selected.pt",
+      "sha256": "402e0135a0b25733489e61d926b5b1b363115295c3d5bb9e461dec9d72195898"
+    },
+    "recall_s12033_joint_continuous_rnn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12033_joint_continuous_rnn/attempt001/selected.pt",
+      "sha256": "d7a8b22d4d6020fed8bd2ded0060bfe345d6f20a9406e0d71fe913f52b8e4e9e"
+    },
+    "recall_s12033_joint_lif_snn": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12033_joint_lif_snn/attempt001/selected.pt",
+      "sha256": "7f84ce361f16d7ef6375dd56ceb075b27ed405b9569b56fc807b99e1f206e1a4"
+    },
+    "recall_s12033_joint_mamba1": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12033_joint_mamba1/attempt001/selected.pt",
+      "sha256": "fdb52106137f58e4da07b02634a5a4107d4a8bb2186b92120f750c078d991beb"
+    },
+    "recall_s12033_joint_ordinary_dual": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12033_joint_ordinary_dual/attempt001/selected.pt",
+      "sha256": "62ec77345c1fffcd23973badb63c8838cfc5a69f010c305eed9f3a881c974155"
+    },
+    "recall_s12033_joint_probit": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12033_joint_probit/attempt001/selected.pt",
+      "sha256": "a9d1190c479764f8f9af468f8932d220833a66d4c6144ee6ddd2009e2be41a57"
+    },
+    "recall_s12033_joint_transformer": {
+      "path": "experiments/hcsn_validation_r12_20261031/content/results/formal001/jobs/recall_s12033_joint_transformer/attempt001/selected.pt",
+      "sha256": "56110b4154c48194bcfd3a8401e01d540a91c318eefa98d93a3dab57a0d8cf78"
+    }
+  },
+  "joint": "All eight backends plus their one exactly shared controller learn together. Same batches, updates, data, objective and initialization as frozen mode.",
+  "learning_rate": 0.003,
+  "light": "Read every frame, then submit. Content weights identical across light/value arms.",
+  "modes": [
+    "frozen_backend",
+    "joint_backend"
+  ],
+  "objective": "Per-prefix content CE + legal-action MSE to actual sample-path Q-pi targets; targets detached. No future/label inputs to actor.",
+  "primary": "Per task/mode: D-B versus matched ordinary_dual; also report D minus validation-selected strongest ordinary family. All five contrasts, all domains, all seeds.",
+  "read_fee": 0.0025,
+  "runtime": {
+    "cfc_source_sha256": "79dcc1cbb3b6898dc2310e9086a2e031e31cbaeb129d69adcbf45eaa16d6b74d",
+    "cuda": false,
+    "ncps": "1.0.1",
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "torch": "2.8.0+cpu"
+  },
+  "schedule": "The complete timestamp schedule and finite observation budget are public before initial STOP. Payload frames remain inaccessible until paid READ. This does not cover unknown future arrival times.",
+  "schema": "hcsn-r14.complete-backend.v1",
+  "scope": "Synthetic recall/binding; analytic remains the inherited fixed renewal gate, not a full conditional distribution network. This fixes the complete-backend freeze/control factorial only.",
+  "seeds": [
+    12031,
+    12032,
+    12033
+  ],
+  "selection": "Select whole backend/controller group by maximum mean validation utility over eight cores; step zero eligible; earliest tie. Ordinary family selected on validation utility within seven ordinary families.",
+  "splits": {
+    "test": [
+      256,
+      141103
+    ],
+    "train": [
+      512,
+      141101
+    ],
+    "val": [
+      128,
+      141102
+    ]
+  },
+  "tasks": {
+    "binding": [
+      17,
+      2
+    ],
+    "recall": [
+      9,
+      3
+    ]
+  },
+  "time_fee": 0.0005,
+  "updates": 256,
+  "validate_every": 64,
+  "value": "One exact shared 10->24->2 critic per task/seed/mode. Scores see class predictions plus public clocks/budget/fees only."
+}

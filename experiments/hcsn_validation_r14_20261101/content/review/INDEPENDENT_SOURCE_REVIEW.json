@@ -41,9 +41,23 @@
       ],
       "reason": "Owner added protocol and README estimand clarification before formal source freeze; no computation changed. All other reviewed source SHA values unchanged.",
       "reviewed_at_utc": "2026-11-01T07:45:17.782826+00:00"
+    },
+    {
+      "previous_record_sha256": "80093d9479fd520f0caf0cbed46d2a6166f2c67fca99c27f4a72d22667cba1d1",
+      "previous_source_entries": [
+        {
+          "ast_parse": "passed",
+          "bytes": 15505,
+          "git_blob_sha1": "ae689d4cb4677ca696801e3c2d6a676122665fe6",
+          "path": "experiments/hcsn_validation_r14_20261101/content/study.py",
+          "sha256": "5b65412c50a453475d74f9f0a109c91928dd2e774893349b6d94ebf9608a658c"
+        }
+      ],
+      "reason": "Development execution exposed Long/Bool mean error. Verified by reversing the single .float() cast and recovering the exact previously reviewed study.py SHA; all other reviewed files unchanged.",
+      "reviewed_at_utc": "2026-11-01T07:52:11.922464+00:00"
     }
   ],
-  "reviewed_at_utc": "2026-11-01T07:45:17.782826+00:00",
+  "reviewed_at_utc": "2026-11-01T07:52:11.922464+00:00",
   "reviewed_findings": [
     {
       "id": "R14-CONTENT-01",
@@ -107,6 +121,23 @@
       ],
       "status": "resolved_by_explicit_scope",
       "title": "Joint-training factorial estimand"
+    },
+    {
+      "development_failure_owner_report": {
+        "attempt": "development_01",
+        "evidence": "Original source snapshot, stderr and FAILED_ATTEMPT.json retained by owner; this reviewer has not rerun the pipeline.",
+        "full_child_cpu_seconds": 3.931498,
+        "heldout_opened": false
+      },
+      "id": "R14-CONTENT-06",
+      "original_problem": "Development step-zero validation attempted Tensor.mean() on Long read_count and Bool initial_selected, which is unsupported; static source review did not catch this runtime dtype defect.",
+      "remaining_scope": "Owner will run a new development attempt; prior failed attempt must remain in evidence and cost ledger.",
+      "resolution": "validation now applies stats[k].float().mean() before Python float conversion for each metric. This defines intended metric averages without changing target construction, data or selection rule.",
+      "source_functions": [
+        "study.validation"
+      ],
+      "status": "resolved_in_source_runtime_recheck_pending",
+      "title": "Validation means for integer and Boolean metrics"
     }
   ],
   "reviewer_role": "Independent numerical-review agent; not the author of this content implementation",
@@ -153,10 +184,10 @@
     },
     {
       "ast_parse": "passed",
-      "bytes": 15505,
-      "git_blob_sha1": "ae689d4cb4677ca696801e3c2d6a676122665fe6",
+      "bytes": 15513,
+      "git_blob_sha1": "2f05104e41d276a7637cd9df53d113a5a7aaa289",
       "path": "experiments/hcsn_validation_r14_20261101/content/study.py",
-      "sha256": "5b65412c50a453475d74f9f0a109c91928dd2e774893349b6d94ebf9608a658c"
+      "sha256": "25a60a094934a60bd2b2bc9eff5a301a1a71759452b7128a354526eb8792a974"
     },
     {
       "ast_parse": "passed",

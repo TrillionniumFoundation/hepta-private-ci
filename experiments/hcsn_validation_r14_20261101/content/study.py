@@ -128,7 +128,7 @@ def validation(models, controller, values):
         for family, model in models.items():
             logits = all_logits(model, x, dt)
             stats = replay(logits, policy_values(controller, logits, dt), dt, y)
-            result[family] = {k: float(stats[k].mean()) for k in
+            result[family] = {k: float(stats[k].float().mean()) for k in
                 ('value_utility', 'light_utility', 'value_accuracy', 'light_accuracy', 'initial_stop', 'read_count', 'initial_selected')}
     return result
 

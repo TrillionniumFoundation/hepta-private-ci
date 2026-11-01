@@ -1,0 +1,11 @@
+{
+  "attempt": "development_01",
+  "status": "failed_before_first_update",
+  "reason": "Validation mean on Long read_count and Bool initial_selected is unsupported by PyTorch.",
+  "fix": "Cast validation summary tensors to float before mean; no training objective, data or selection rule changed.",
+  "heldout_opened": false,
+  "child_cpu_seconds": 3.9314980000000004,
+  "coordinator_cpu_seconds": null,
+  "source_snapshot": "development_01/source",
+  "retry": "development_02"
+}

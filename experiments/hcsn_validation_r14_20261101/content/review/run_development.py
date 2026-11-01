@@ -1,5 +1,6 @@
 """Small pre-formal pipeline check; keep complete child receipts and failures."""
 
+import argparse
 import json
 import os
 from pathlib import Path
@@ -9,10 +10,15 @@ import time
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--attempt', type=int, required=True)
+    args = parser.parse_args()
+    if args.attempt < 2:
+        raise ValueError('Attempt 1 is retained unchanged; use a new attempt number')
     base = Path(__file__).resolve().parents[1]
     repo = base.parents[2]
-    output = base / 'results/development_01'
-    receipts = base / 'results/development_process'
+    output = base / f'results/development_{args.attempt:02d}'
+    receipts = base / f'results/development_{args.attempt:02d}_process'
     receipts.mkdir(parents=True, exist_ok=False)
     common = [sys.executable, '-B', '-m',
               'experiments.hcsn_validation_r14_20261101.content.study']
@@ -45,6 +51,11 @@ def main():
         print(json.dumps(dict(job=name, exit_code=code,
                               cpu_seconds=record['cpu_seconds'])), flush=True)
         if code:
+            (receipts / 'TOTAL.json').write_text(json.dumps(dict(
+                records=records, child_cpu_seconds=sum(r['cpu_seconds'] for r in records),
+                coordinator_cpu_seconds=time.process_time() - own_cpu,
+                wall_seconds=time.perf_counter() - start, heldout_opened=False,
+                complete=False), indent=2) + '\n')
             raise RuntimeError('Development failure retained: ' + name)
     (receipts / 'TOTAL.json').write_text(json.dumps(dict(
         records=records, child_cpu_seconds=sum(r['cpu_seconds'] for r in records),
