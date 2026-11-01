@@ -1,0 +1,20 @@
+{
+  "command": [
+    "patch",
+    "--dry-run",
+    "--fuzz=0",
+    "-p1",
+    "-d",
+    "/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zstd-sys-2.1.2+zstd.1.5.7",
+    "-i",
+    "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/patches/zstd-sys_windows_msvc_include_dirs.patch"
+  ],
+  "cwd": "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review",
+  "returncode": 0,
+  "stdout": "File build.rs is read-only; trying to patch anyway\nchecking file build.rs\n",
+  "stderr": "",
+  "upstream_build_rs_sha256": "ff97fca52b72ba76c2c71f0d4ca3475d5fa746e184e7d01c6085f9efee360171",
+  "registry_source_unchanged": true,
+  "upstream_already_guards_hidden_visibility_for_msvc": true,
+  "native_compile_executed": false
+}
