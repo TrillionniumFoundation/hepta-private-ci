@@ -1,0 +1,104 @@
+{
+  "actual_result": {
+    "cpu_seconds": 1.7367400000000002,
+    "exit_code": 0,
+    "identity": {
+      "parent_pid": 3037,
+      "pgid": 3031,
+      "pid": 3061,
+      "sid": 3031,
+      "start_ticks": 22096
+    },
+    "ownership_closure": {
+      "bytes": 3369,
+      "path": "/work/native_capacity/measurement/CLOSURE.json",
+      "sha256": "e9d198598a90db0946a24fc837e3dc4330b2948e8082de6dfceaa0a3db881187"
+    },
+    "peak_rss_bytes": 245764096,
+    "pid": 3061,
+    "scientific_completion_claim": false,
+    "scope": "Direct worker and descendants it waited for; nested inside outer controller wait4.",
+    "system_cpu_seconds": 0.196107,
+    "user_cpu_seconds": 1.5406330000000001,
+    "wait4_receipt": {
+      "bytes": 534,
+      "path": "/work/native_capacity/measurement/001.WAIT4.json",
+      "sha256": "b73e0c8d21ecdf57136f368ef6e26ebc1204e89373ccec46c6f452e55253b47a"
+    },
+    "wait_status": 0,
+    "waited_unix": 1793494199.3615353,
+    "wall_seconds": 21.403564130000007
+  },
+  "complete": true,
+  "cost_scope": "Real diagnose child and reaped descendants only. Earlier container/runtime setup and later workflow artifact delivery CPU remain separate unknown scopes.",
+  "current_producer": {
+    "head_sha": "c7af1f6c11ff655ecdb11f37ad8e2b87c26ec08f",
+    "job": "capacity",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_attempt": "2",
+    "run_id": "41257583905"
+  },
+  "engineering_expected_binding": {
+    "component_schema_is_implementation_version_not_execution_episode": true,
+    "execution_episode": "visited_counterfactual_capacity_20261031",
+    "input_contract": {
+      "bytes": 32258,
+      "path": "/work/native_capacity/INPUT_CONTRACT.json",
+      "sha256": "801aa61ceae47c6783366a1d34dce65af2f3218720d17343957f710589bafa38"
+    },
+    "measurement_program": {
+      "bytes": 9467,
+      "path": "/work/source/operational/parameter_field_native_capacity_20261031/measure.py",
+      "sha256": "9f66105e3df7595dd21555c843e8561e0071f372b2bff984df4f05d98abdacb1"
+    },
+    "owned_core_sha256": "ad6f049d5d2beb2f999921bc796908c5b4b37b1c4a22094e4669d480cd3cca01",
+    "phase": "capacity",
+    "source_commit": "c7af1f6c11ff655ecdb11f37ad8e2b87c26ec08f"
+  },
+  "engineering_measurement": {
+    "attempt_intent": {
+      "bytes": 632,
+      "path": "/work/native_capacity/measurement/001.INTENT.json",
+      "sha256": "0d9e6e1d686958851806598ef8e89e6f1afa0882d94e61902fbcf761a0f50ab2"
+    },
+    "closure": {
+      "bytes": 3369,
+      "path": "/work/native_capacity/measurement/CLOSURE.json",
+      "sha256": "e9d198598a90db0946a24fc837e3dc4330b2948e8082de6dfceaa0a3db881187"
+    },
+    "intent": {
+      "bytes": 1293,
+      "path": "/work/native_capacity/measurement/INTENT.json",
+      "sha256": "cb2bbbb43b9c2156c927fd495e2c3149213fc7961e901875fe514cd7140bb543"
+    },
+    "start": {
+      "bytes": 469,
+      "path": "/work/native_capacity/measurement/001.START.json",
+      "sha256": "d09fa259c6771fa107ce29a68e4b34924df6a663a89d36ba034651db011d8139"
+    },
+    "wait4": {
+      "bytes": 534,
+      "path": "/work/native_capacity/measurement/001.WAIT4.json",
+      "sha256": "b73e0c8d21ecdf57136f368ef6e26ebc1204e89373ccec46c6f452e55253b47a"
+    }
+  },
+  "engineering_receipt": {
+    "bytes": 8325,
+    "path": "/work/native_capacity/RUNTIME.json",
+    "sha256": "65df59f221dd35afcc28f269a271c799cafc6b85b8e80b3e46a615e638c93ff7"
+  },
+  "execution_episode": "visited_counterfactual_capacity_20261031",
+  "finite_cgroup_memory_bytes": 8589934592,
+  "full_completion_within_deadline_guaranteed": false,
+  "input_contract": {
+    "bytes": 32258,
+    "path": "/work/native_capacity/INPUT_CONTRACT.json",
+    "sha256": "801aa61ceae47c6783366a1d34dce65af2f3218720d17343957f710589bafa38"
+  },
+  "schema": "hepta.visited-counterfactual.capacity-complete.1",
+  "scientific_inputs_requested": false,
+  "scientific_models_created": false,
+  "scientific_training_microsteps": 0,
+  "scientific_values_decoded": false,
+  "source_commit": "c7af1f6c11ff655ecdb11f37ad8e2b87c26ec08f"
+}

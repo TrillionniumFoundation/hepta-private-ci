@@ -1,0 +1,529 @@
+{
+  "additional_gradient_microsteps_claimed_from_metadata_only": 0,
+  "completed_jobs": [
+    "A-17",
+    "A-29",
+    "A-43",
+    "C",
+    "B-17",
+    "B-29",
+    "B-43",
+    "W",
+    "R-17",
+    "R-29",
+    "R-43",
+    "A_endpoint",
+    "B_endpoint"
+  ],
+  "completed_raw_union_bytes": 1818675364,
+  "completed_raw_union_files": 3514,
+  "cost_scope": "One actual complete pipeline child lifetime, including its reaped descendants; do not add nested worker or transport costs. Earlier setup, later upload and measuring-parent CPU are separate scopes.",
+  "failure_message": "Registered cumulative logical raw cap exhausted",
+  "full_scientific_closure": false,
+  "last_job": "C_endpoint",
+  "operations_archive": {
+    "bytes": 1587530,
+    "id": 13054487777,
+    "sha256": "73002927e8fd22ded4db125b81f807601bfa9fa5a130ac31dd3be8425db94e8d"
+  },
+  "outer_measurement": {
+    "001.INTENT": {
+      "bytes": 686,
+      "path": "operational/parameter_field_recovery08/records/execution07_failure/001.INTENT.json",
+      "sha256": "af8e8c25333c8e876a523ff6e26b1a011d078f88d020e8641a5d06c4ec408890"
+    },
+    "001.START": {
+      "bytes": 523,
+      "path": "operational/parameter_field_recovery08/records/execution07_failure/001.START.json",
+      "sha256": "8377f088e58b6bcfda5120df91fa6ebd80c03ba75f7ac09f6bc6441d3be1169a"
+    },
+    "001.WAIT4": {
+      "bytes": 525,
+      "path": "operational/parameter_field_recovery08/records/execution07_failure/001.WAIT4.json",
+      "sha256": "183e4f0039beda7df7312b4e1c2a8c00d4e64154dbe79ff98d44ca0c4443668e"
+    },
+    "CLOSURE": {
+      "bytes": 3276,
+      "path": "operational/parameter_field_recovery08/records/execution07_failure/CLOSURE.json",
+      "sha256": "75b982b134be1ef1fd3c8db6865e25b25f19d0801988a9e11acd480db603c529"
+    },
+    "INTENT": {
+      "bytes": 1147,
+      "path": "operational/parameter_field_recovery08/records/execution07_failure/INTENT.json",
+      "sha256": "b8202704defda6d5e430f6a9096cccc78ad21a88544679d27f0ddf08751d199f"
+    }
+  },
+  "outer_wait4": {
+    "cpu_seconds": 20587.204849,
+    "exit_code": 2,
+    "identity": {
+      "parent_pid": 2963,
+      "pgid": 2951,
+      "pid": 3010,
+      "sid": 2951,
+      "start_ticks": 15291
+    },
+    "peak_rss_bytes": 1036124160,
+    "pid": 3010,
+    "scientific_completion_claim": false,
+    "scope": "Direct worker and descendants it waited for; nested inside outer controller wait4.",
+    "system_cpu_seconds": 1990.558266,
+    "user_cpu_seconds": 18596.646583,
+    "wait_status": 512,
+    "waited_unix": 1793474732.5624201,
+    "wall_seconds": 14115.235135389
+  },
+  "provider_job": {
+    "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/124577752524",
+    "completed_at": "2026-10-31T19:26:16Z",
+    "conclusion": "failure",
+    "created_at": "2026-10-31T15:29:02Z",
+    "head_branch": "research/parameter-field-recovery07-20261031",
+    "head_sha": "87c96ff825128fe5e13c8228e87c83f856c7a9ed",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41215053433/job/124577752524",
+    "id": 124577752524,
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "name": "registered-study",
+    "node_id": "CR_kwDOTrgxoM8AAAAdAWmlzA",
+    "run_attempt": 1,
+    "run_id": 41215053433,
+    "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41215053433",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions",
+    "runner_id": 1000309420,
+    "runner_name": "GitHub Actions 1000309420",
+    "started_at": "2026-10-31T15:29:05Z",
+    "status": "completed",
+    "steps": [
+      {
+        "completed_at": "2026-10-31T15:29:06Z",
+        "conclusion": "success",
+        "name": "Set up job",
+        "number": 1,
+        "started_at": "2026-10-31T15:29:06Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T15:29:09Z",
+        "conclusion": "success",
+        "name": "Initialize containers",
+        "number": 2,
+        "started_at": "2026-10-31T15:29:06Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T15:29:17Z",
+        "conclusion": "success",
+        "name": "Install public container prerequisites",
+        "number": 3,
+        "started_at": "2026-10-31T15:29:09Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T15:29:24Z",
+        "conclusion": "success",
+        "name": "Checkout the exact registered source",
+        "number": 4,
+        "started_at": "2026-10-31T15:29:17Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T15:29:25Z",
+        "conclusion": "success",
+        "name": "Preserve a clean canonical source checkout",
+        "number": 5,
+        "started_at": "2026-10-31T15:29:24Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T15:29:25Z",
+        "conclusion": "success",
+        "name": "Select Node24 for the integrity-pinned transport SDK",
+        "number": 6,
+        "started_at": "2026-10-31T15:29:25Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T15:29:46Z",
+        "conclusion": "success",
+        "name": "Restore the exact public scientific runtime",
+        "number": 7,
+        "started_at": "2026-10-31T15:29:25Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T15:30:08Z",
+        "conclusion": "success",
+        "name": "Require actual original runtime and finite cgroup before input preparation",
+        "number": 8,
+        "started_at": "2026-10-31T15:29:46Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T15:30:12Z",
+        "conclusion": "success",
+        "name": "Install the external pinned SDK without modifying source",
+        "number": 9,
+        "started_at": "2026-10-31T15:30:08Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T15:30:15Z",
+        "conclusion": "success",
+        "name": "Retrieve original inputs and seal current provenance for the original loader",
+        "number": 10,
+        "started_at": "2026-10-31T15:30:12Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T15:30:16Z",
+        "conclusion": "success",
+        "name": "Check source closure and direct-script boundaries before initialization",
+        "number": 11,
+        "started_at": "2026-10-31T15:30:15Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T19:25:32Z",
+        "conclusion": "failure",
+        "name": "Run fresh original science with measured initialization and semantic admission",
+        "number": 12,
+        "started_at": "2026-10-31T15:30:16Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T19:26:03Z",
+        "conclusion": "success",
+        "name": "Preserve complete or partial scientific RAW and CAS",
+        "number": 13,
+        "started_at": "2026-10-31T19:25:32Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T19:26:05Z",
+        "conclusion": "success",
+        "name": "Preserve operational closure, review, preparation and failure evidence",
+        "number": 14,
+        "started_at": "2026-10-31T19:26:03Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T19:26:05Z",
+        "conclusion": "skipped",
+        "name": "Post Select Node24 for the integrity-pinned transport SDK",
+        "number": 26,
+        "started_at": "2026-10-31T19:26:05Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T19:26:05Z",
+        "conclusion": "success",
+        "name": "Post Checkout the exact registered source",
+        "number": 27,
+        "started_at": "2026-10-31T19:26:05Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T19:26:14Z",
+        "conclusion": "success",
+        "name": "Stop containers",
+        "number": 28,
+        "started_at": "2026-10-31T19:26:05Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-10-31T19:26:14Z",
+        "conclusion": "success",
+        "name": "Complete job",
+        "number": 29,
+        "started_at": "2026-10-31T19:26:14Z",
+        "status": "completed"
+      }
+    ],
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/124577752524",
+    "workflow_name": "Fresh 14-job study with original science and explicit delivery"
+  },
+  "registered_raw_cap_bytes": 2147483648,
+  "schema": "hepta.execution08.prior-execution07-cost-and-capacity.1",
+  "scientific_outcomes_used_for_revision": false,
+  "scientific_values_decoded": false,
+  "source_commit": "87c96ff825128fe5e13c8228e87c83f856c7a9ed",
+  "stage_artifacts": [
+    {
+      "ack": {
+        "bytes": 118142,
+        "path": "/work/execution07/ops/durable/01_A-17/ACK.json",
+        "sha256": "3139f5016c70c1cf81e22e83abca1dd861571180c7745c51ae1c06846cc2b520"
+      },
+      "artifact": {
+        "bytes": 141467740,
+        "id": 13048930412,
+        "name": "hepta-r07-41215053433-1-A-17",
+        "sha256": "a0f9909d55b529bd60502a36da3d09fb5ad083adf0d9505e226a6c9d624f8194"
+      },
+      "label": "A-17",
+      "manifest": {
+        "bytes": 55264,
+        "path": "/work/execution07/ops/durable/01_A-17/upload/MANIFEST.json",
+        "sha256": "9ad1d04e6f50ab56d5823a74d281db2cc2338f5bd2422ac3675849257923b677"
+      },
+      "raw_files": 287,
+      "raw_logical_bytes": 140886685
+    },
+    {
+      "ack": {
+        "bytes": 123330,
+        "path": "/work/execution07/ops/durable/02_A-29/ACK.json",
+        "sha256": "f0dcf8d9629821994d9ebe7a42eed94a4aae99241247c9d802f540c8f8d978d8"
+      },
+      "artifact": {
+        "bytes": 134335234,
+        "id": 13048975993,
+        "name": "hepta-r07-41215053433-1-A-29",
+        "sha256": "e72158090b9d16517081c6e304aadd133a0542ea35ab81ecf113d7d52ec6bd54"
+      },
+      "label": "A-29",
+      "manifest": {
+        "bytes": 57783,
+        "path": "/work/execution07/ops/durable/02_A-29/upload/MANIFEST.json",
+        "sha256": "6a670693c847cb133f8d67a55e19520ad6849c53c55020adba603f39619ea7d4"
+      },
+      "raw_files": 287,
+      "raw_logical_bytes": 133518599
+    },
+    {
+      "ack": {
+        "bytes": 128414,
+        "path": "/work/execution07/ops/durable/03_A-43/ACK.json",
+        "sha256": "a1a65c1f8874d715425a341a9441e70931be222647938e515a80ac9b1c23d17e"
+      },
+      "artifact": {
+        "bytes": 139404306,
+        "id": 13048614778,
+        "name": "hepta-r07-41215053433-1-A-43",
+        "sha256": "b491b2cc4f70c316968beb3bf9330270d107a25a582b235c5b3da0444b5b7e93"
+      },
+      "label": "A-43",
+      "manifest": {
+        "bytes": 60158,
+        "path": "/work/execution07/ops/durable/03_A-43/upload/MANIFEST.json",
+        "sha256": "1ca383c3a7400fffb81d0855fe15e8ca478c04e0efedd3fdc2da1534cb1e8856"
+      },
+      "raw_files": 287,
+      "raw_logical_bytes": 138343086
+    },
+    {
+      "ack": {
+        "bytes": 146155,
+        "path": "/work/execution07/ops/durable/04_C/ACK.json",
+        "sha256": "129b33c3df2f74ad010d0a2d65240c1565dada78faf12e5e244a9f65588ad63e"
+      },
+      "artifact": {
+        "bytes": 278011283,
+        "id": 13051122097,
+        "name": "hepta-r07-41215053433-1-C",
+        "sha256": "8200307c63a564c0f5f8cba4778eb74c9d89691a26c4e1c71827027a88caa6a1"
+      },
+      "label": "C",
+      "manifest": {
+        "bytes": 68558,
+        "path": "/work/execution07/ops/durable/04_C/upload/MANIFEST.json",
+        "sha256": "6c75189f02c3d6e6112f538234fe796b1d2381817331374f853e9eccc020fe1e"
+      },
+      "raw_files": 316,
+      "raw_logical_bytes": 276148049
+    },
+    {
+      "ack": {
+        "bytes": 99729,
+        "path": "/work/execution07/ops/durable/05_B-17/ACK.json",
+        "sha256": "c3a3c2196e419a94a134aac22a392125543aac868727def49ae22079e6b75ce4"
+      },
+      "artifact": {
+        "bytes": 62459840,
+        "id": 13052027393,
+        "name": "hepta-r07-41215053433-1-B-17",
+        "sha256": "143764e5b772c22ca4a4e9a43354840bde88517b9acce89f1d07b95ce28e5030"
+      },
+      "label": "B-17",
+      "manifest": {
+        "bytes": 46381,
+        "path": "/work/execution07/ops/durable/05_B-17/upload/MANIFEST.json",
+        "sha256": "bd0b8c44dd2891cbf37dac10436f5120f8c20d112c28512895e9d652e2cdc002"
+      },
+      "raw_files": 167,
+      "raw_logical_bytes": 60371324
+    },
+    {
+      "ack": {
+        "bytes": 104796,
+        "path": "/work/execution07/ops/durable/06_B-29/ACK.json",
+        "sha256": "e341d60c45f23b08ed7ec808ae9d227e20c58fa4e5edbbf13fab1ac205a4224c"
+      },
+      "artifact": {
+        "bytes": 53884415,
+        "id": 13052103285,
+        "name": "hepta-r07-41215053433-1-B-29",
+        "sha256": "068c04f46a15f482d2dd5a839f1ed482d5747e251d72fe01dd5db49df800c377"
+      },
+      "label": "B-29",
+      "manifest": {
+        "bytes": 48757,
+        "path": "/work/execution07/ops/durable/06_B-29/upload/MANIFEST.json",
+        "sha256": "2c13f0b88976621a66dfe18332205efdb4f60b715418a401604f9bed37ad8fc8"
+      },
+      "raw_files": 167,
+      "raw_logical_bytes": 51594813
+    },
+    {
+      "ack": {
+        "bytes": 109871,
+        "path": "/work/execution07/ops/durable/07_B-43/ACK.json",
+        "sha256": "e309d82cdfe49f7be76b092b2cf817f7942523a4a19c3a9882bdf69939c27ae2"
+      },
+      "artifact": {
+        "bytes": 62340561,
+        "id": 13053025371,
+        "name": "hepta-r07-41215053433-1-B-43",
+        "sha256": "f026c580c76a6c4860f4069c152426dd014556a60a61581cb9d9144ce79e743e"
+      },
+      "label": "B-43",
+      "manifest": {
+        "bytes": 51133,
+        "path": "/work/execution07/ops/durable/07_B-43/upload/MANIFEST.json",
+        "sha256": "5b51e4bf6b916558d1d1b1ccddc52137ce9a45bfe02426f5084d2b6bb6ba7da8"
+      },
+      "raw_files": 167,
+      "raw_logical_bytes": 59840810
+    },
+    {
+      "ack": {
+        "bytes": 75824,
+        "path": "/work/execution07/ops/durable/08_W/ACK.json",
+        "sha256": "694322a77b1d36f8a0fd9fef150005b64a0b4297022b932ec69e975afe73af9a"
+      },
+      "artifact": {
+        "bytes": 23912775,
+        "id": 13052556260,
+        "name": "hepta-r07-41215053433-1-W",
+        "sha256": "f93f9b3f622c3026e56ec280a7d29c5d54fb470b231c66a60471e4b78883c31d"
+      },
+      "label": "W",
+      "manifest": {
+        "bytes": 34786,
+        "path": "/work/execution07/ops/durable/08_W/upload/MANIFEST.json",
+        "sha256": "dcb29d0e916d266333480013413b8f7834ce9ce022d5f8330d89eb7cc9f408c3"
+      },
+      "raw_files": 66,
+      "raw_logical_bytes": 21240267
+    },
+    {
+      "ack": {
+        "bytes": 201632,
+        "path": "/work/execution07/ops/durable/09_R-17/ACK.json",
+        "sha256": "978af458c7ef7509d2e1cccbe9b153a75ee67d0e30480196ac041ad2efa70141"
+      },
+      "artifact": {
+        "bytes": 61316848,
+        "id": 13053310772,
+        "name": "hepta-r07-41215053433-1-R-17",
+        "sha256": "772095d9d2b32cdcccbd5b41a1883150c8eb55a69f27b084d4ff7617eb214828"
+      },
+      "label": "R-17",
+      "manifest": {
+        "bytes": 94837,
+        "path": "/work/execution07/ops/durable/09_R-17/upload/MANIFEST.json",
+        "sha256": "34f8be257cc10d48eaa07b40a53a26554e47f667b68c5e6f2db1361d0f11dd1e"
+      },
+      "raw_files": 390,
+      "raw_logical_bytes": 58346953
+    },
+    {
+      "ack": {
+        "bytes": 206649,
+        "path": "/work/execution07/ops/durable/10_R-29/ACK.json",
+        "sha256": "a72ad7651e992d832cff144e6ba5e82e2e9075f5713640450fbef0d9cbde5351"
+      },
+      "artifact": {
+        "bytes": 44619019,
+        "id": 13053222937,
+        "name": "hepta-r07-41215053433-1-R-29",
+        "sha256": "be7835c5b08b074e1404125919312cf4ad82974785722fdc1cf6d546e169b11d"
+      },
+      "label": "R-29",
+      "manifest": {
+        "bytes": 97166,
+        "path": "/work/execution07/ops/durable/10_R-29/upload/MANIFEST.json",
+        "sha256": "d3cce5f35eea923293402f63d803c074ec722da3ff8d01dd9e3939142de7eab1"
+      },
+      "raw_files": 390,
+      "raw_logical_bytes": 41262559
+    },
+    {
+      "ack": {
+        "bytes": 211726,
+        "path": "/work/execution07/ops/durable/11_R-43/ACK.json",
+        "sha256": "245a80ea800274802b63edad2d2659ff645f42872ea1bec1be23d47113ef5cca"
+      },
+      "artifact": {
+        "bytes": 57928972,
+        "id": 13054210089,
+        "name": "hepta-r07-41215053433-1-R-43",
+        "sha256": "78e78c6a8dca1971ef160e0efbf397846ff4dc6d2ce99486a81fd1647a59bc0a"
+      },
+      "label": "R-43",
+      "manifest": {
+        "bytes": 99588,
+        "path": "/work/execution07/ops/durable/11_R-43/upload/MANIFEST.json",
+        "sha256": "e14a4d2e0b425f4c9d3bfbae43a3037205511e12a385a2eb8fe1e8d111cd9567"
+      },
+      "raw_files": 390,
+      "raw_logical_bytes": 54176891
+    },
+    {
+      "ack": {
+        "bytes": 119756,
+        "path": "/work/execution07/ops/durable/12_A_endpoint/ACK.json",
+        "sha256": "101e0a6d361d86c0aac9daeba73738a08d8dde8964c11a0fd2a547e58abe014b"
+      },
+      "artifact": {
+        "bytes": 129639119,
+        "id": 13053628539,
+        "name": "hepta-r07-41215053433-1-A_endpoint",
+        "sha256": "ed2b1b33040004a3c95c1e5b71d849f0eff0e257bf501166b2fc0342b814a824"
+      },
+      "label": "A_endpoint",
+      "manifest": {
+        "bytes": 55701,
+        "path": "/work/execution07/ops/durable/12_A_endpoint/upload/MANIFEST.json",
+        "sha256": "dc940dcf30d0253745879c64d38bc56734bb108806ab6737bf6c25cf2b5718a3"
+      },
+      "raw_files": 107,
+      "raw_logical_bytes": 123987108
+    },
+    {
+      "ack": {
+        "bytes": 267466,
+        "path": "/work/execution07/ops/durable/13_B_endpoint/ACK.json",
+        "sha256": "a60950a127f334149f57b8cce1274d76047c8b897197e731f7f563944dfa3678"
+      },
+      "artifact": {
+        "bytes": 665016761,
+        "id": 13053564730,
+        "name": "hepta-r07-41215053433-1-B_endpoint",
+        "sha256": "40eeade70fe167e803af732f86d9c13b5e43b618cbf91cea979863446ec7b22d"
+      },
+      "label": "B_endpoint",
+      "manifest": {
+        "bytes": 126421,
+        "path": "/work/execution07/ops/durable/13_B_endpoint/upload/MANIFEST.json",
+        "sha256": "da788aadb92d7d567a1188640a4488f893a5f51f140e27247e79e60e0719f4e1"
+      },
+      "raw_files": 493,
+      "raw_logical_bytes": 658958220
+    }
+  ],
+  "training_work_note": "All prescribed training/reconstruction jobs were accepted by their original completion validator. This cost-only record has not decoded their individual ledgers; zero additional claimed lower bound is not a zero-work claim."
+}

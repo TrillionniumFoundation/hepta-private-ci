@@ -1,0 +1,65 @@
+{
+  "complete_scientific_population_or_threshold_changes": false,
+  "current_runtime_receipt_may_be_inherited": false,
+  "earliest_original_one_gib_contract_completed": false,
+  "engineering_storage_budget": {
+    "C_source_layout": {
+      "caption_character_reservation": 128,
+      "checkpoints": 48,
+      "clean_conditions": 1,
+      "condition_character_reservation": 32,
+      "framing_and_C_metadata_reservation_bytes": 33554432,
+      "hex_digest_characters": 64,
+      "maximum_reserved_array_payload_bytes": 709463040,
+      "numpy_unicode_bytes_per_character": 4,
+      "pixel_bytes_per_row": 1568,
+      "purpose": "Conservative engineering reservation from the fixed original output schema. Compression savings and score values are not used. Actual source layout and all complete outputs remain validated by the original scorers.",
+      "score_files": 96,
+      "source_pairs_per_panel": 988,
+      "task_conditions": 4,
+      "total_score_rows": 237120,
+      "two_float64_observer_bytes_per_row": 16,
+      "two_source_id_character_reservation_each": 64
+    },
+    "physical_space_reservation": {
+      "conservative_separate_CAS_bytes": 6442450944,
+      "final_RAW_plus_CAS_zip_bytes": 12884901888,
+      "logical_RAW_max_bytes": 6442450944,
+      "no_successful_raw_deleted_to_fit": true,
+      "note": "Conservative prospective reservation; actual per-write, per-archive and post-write checks remain active. This is not a measured final resource result.",
+      "primary_artifact_max_payload_bytes_unchanged": 2147483648,
+      "setup_metadata_and_margin_bytes": 6442450944,
+      "three_extra_primary_delivery_copies_bytes": 19327352832,
+      "total_initial_disk_bytes": 51539607552
+    },
+    "preserved_13_job_raw_union_bytes": 1818675364
+  },
+  "execution_episode": "execution08_capacity_20261101",
+  "fresh_all_fourteen_jobs": true,
+  "full_completion_within_deadline_guaranteed": false,
+  "imported_previous_outputs": [],
+  "independent_sample_increment": 0,
+  "new_initial_disk_headroom_bytes": 51539607552,
+  "new_raw_cap_bytes": 6442450944,
+  "old_raw_cap_bytes": 2147483648,
+  "original_caps_other_than_global_raw_unchanged": true,
+  "original_initial_disk_headroom_bytes": 2415919104,
+  "original_numeric_concurrency_and_memory_contract_unchanged": true,
+  "original_scientific_source_files_unchanged": 167,
+  "original_two_gib_cap_completed": false,
+  "outcome_free_capacity_observation": {
+    "bytes": 8497,
+    "path": "operational/parameter_field_recovery08/records/CAPACITY_OBSERVATION.json",
+    "sha256": "c1894127ce60e1f66fc31324de85a4ab9ef57e54a5ac3a9defe1a36bacce5f0d"
+  },
+  "prior_failure": {
+    "bytes": 18593,
+    "path": "operational/parameter_field_recovery08/records/EXECUTION07_CAP_FAILURE.json",
+    "sha256": "bb2e152797a8f0909fd3b2d62767a72e1a734b9498dcd8a5346fef837acc4fcc"
+  },
+  "registration_reason": "The preserved execution07 run stopped in its fourteenth job at the fixed 2 GiB logical RAW cap; the same scientific population needs complete untruncated evidence.",
+  "schema": "hepta.execution08.capacity-amendment.1",
+  "scientific_outcomes_used": false,
+  "scientific_retry_automatic": false,
+  "unknown_upload_outcome_retry": false
+}

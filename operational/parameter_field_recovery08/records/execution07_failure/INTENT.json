@@ -1,0 +1,32 @@
+{
+  "binding": {
+    "component_schema_is_implementation_version_not_execution_episode": true,
+    "execution_episode": "execution07_actions_20261031",
+    "lifecycle_plan": {
+      "bytes": 34287,
+      "path": "/work/execution07/pipeline_measurement/PLAN.json",
+      "sha256": "616f48bd268c6383d02c6f8434aa2df387741ff87d7bbb2ba36de6be0f2bcd05"
+    },
+    "program": {
+      "bytes": 10913,
+      "path": "/work/source/operational/parameter_field_recovery07/bootstrap.py",
+      "sha256": "a3987117f9854cdb755140cc40c4ba29b332ddcac8f4d93afa781d98899afa42"
+    },
+    "source_commit": "87c96ff825128fe5e13c8228e87c83f856c7a9ed"
+  },
+  "controller_identity": {
+    "parent_pid": 2951,
+    "pgid": 2951,
+    "pid": 2963,
+    "sid": 2951,
+    "start_ticks": 15198
+  },
+  "cost_scope": "Direct children attributed inside an inclusive outer controller wait4; do not add twice.",
+  "global_subprocess_patched": false,
+  "kill_wait_seconds": 2.0,
+  "process_groups_changed": false,
+  "reconstruction": "CONTEXT_RECONSTRUCTION",
+  "schema": "hepta.execution06.owned-children.intent.1",
+  "started_unix": 1793460617.3265636,
+  "term_grace_seconds": 1.0
+}

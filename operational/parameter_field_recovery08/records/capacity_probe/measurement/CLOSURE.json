@@ -1,0 +1,102 @@
+{
+  "accounting_complete_for_attempted_direct_workers": true,
+  "all_returned_direct_children_reaped": true,
+  "attempt_count": 1,
+  "attempts": [
+    {
+      "argv": [
+        "/opt/runtime/venv/bin/python",
+        "-B",
+        "/work/source/tools/parameter_field_executor/diagnose.py",
+        "--output",
+        "/work/native_capacity/RUNTIME.json"
+      ],
+      "construction_entered": true,
+      "construction_wait4_unavailable": false,
+      "cwd": "/work/native_capacity/empty_cwd",
+      "executable": "/opt/runtime/venv/bin/python",
+      "number": 1,
+      "pid": 3061,
+      "returned_child": true,
+      "started_monotonic": 220.961251609
+    }
+  ],
+  "binding": {
+    "component_schema_is_implementation_version_not_execution_episode": true,
+    "execution_episode": "visited_counterfactual_capacity_20261031",
+    "input_contract": {
+      "bytes": 32258,
+      "path": "/work/native_capacity/INPUT_CONTRACT.json",
+      "sha256": "801aa61ceae47c6783366a1d34dce65af2f3218720d17343957f710589bafa38"
+    },
+    "measurement_program": {
+      "bytes": 9467,
+      "path": "/work/source/operational/parameter_field_native_capacity_20261031/measure.py",
+      "sha256": "9f66105e3df7595dd21555c843e8561e0071f372b2bff984df4f05d98abdacb1"
+    },
+    "owned_core_sha256": "ad6f049d5d2beb2f999921bc796908c5b4b37b1c4a22094e4669d480cd3cca01",
+    "phase": "capacity",
+    "source_commit": "c7af1f6c11ff655ecdb11f37ad8e2b87c26ec08f"
+  },
+  "children": [
+    {
+      "attempt": 1,
+      "identity": {
+        "parent_pid": 3037,
+        "pgid": 3031,
+        "pid": 3061,
+        "sid": 3031,
+        "start_ticks": 22096
+      },
+      "pid": 3061,
+      "signals": [],
+      "wait4": {
+        "cpu_seconds": 1.7367400000000002,
+        "exit_code": 0,
+        "identity": {
+          "parent_pid": 3037,
+          "pgid": 3031,
+          "pid": 3061,
+          "sid": 3031,
+          "start_ticks": 22096
+        },
+        "peak_rss_bytes": 245764096,
+        "pid": 3061,
+        "scientific_completion_claim": false,
+        "scope": "Direct worker and descendants it waited for; nested inside outer controller wait4.",
+        "system_cpu_seconds": 0.196107,
+        "user_cpu_seconds": 1.5406330000000001,
+        "wait_status": 0,
+        "waited_unix": 1793494199.3615353,
+        "wall_seconds": 21.403564130000007
+      },
+      "wait4_receipt": {
+        "bytes": 534,
+        "path": "/work/native_capacity/measurement/001.WAIT4.json",
+        "sha256": "b73e0c8d21ecdf57136f368ef6e26ebc1204e89373ccec46c6f452e55253b47a"
+      },
+      "wait4_unavailable": null
+    }
+  ],
+  "cleanup_errors": [],
+  "construction_wait4_unavailable": false,
+  "controller_identity": {
+    "parent_pid": 3031,
+    "pgid": 3031,
+    "pid": 3037,
+    "sid": 3031,
+    "start_ticks": 22014
+  },
+  "cost_scope": "Each direct-worker wait4 once; already nested in outer controller wait4. Own CPU excludes final summary serialization/write.",
+  "direct_workers_cpu_seconds": 1.7367400000000002,
+  "original_exception": null,
+  "own_cpu_seconds_until_summary": 0.02922398299999998,
+  "pending_signal": null,
+  "receipt_errors": [],
+  "reconstruction": "CONTEXT_RECONSTRUCTION",
+  "return_value": 0,
+  "returned_children": 1,
+  "schema": "hepta.execution06.owned-children.closure.1",
+  "scientific_completion_claim": false,
+  "wall_seconds_until_summary": 21.405120581999995
+}
