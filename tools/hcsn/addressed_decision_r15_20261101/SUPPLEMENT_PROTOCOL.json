@@ -1,0 +1,37 @@
+{
+  "schema": "hcsn-r15-supplemental-protocol-v1",
+  "declared_at": "2026-11-01T08:03:56.287884+00:00",
+  "reason": "Original confirmation completed 11 of 16 workers; five failed because the index-mean projection assigned zero likelihood to an actually emitted observation. No original confirmation efficacy means were used to change models, thresholds or sample counts.",
+  "original_source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+  "original_model_freeze_commit": "8aa146bdb9dc7fae8748393cf718e24a7a9db2d3",
+  "original_source_manifest_sha256": "6c06773eadb2ccf9edb4f992fcebd338e34854d5a7ba36c938a0014fa7e2dbf2",
+  "fit_seeds": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "confirmation_episodes_per_fit_domain": 128,
+  "namespace_increment": 1000000000000,
+  "new_namespace": "4*10^12 + fit_seed*10^5 + domain_offset + index; no mixing with old confirmation namespace3",
+  "unchanged": [
+    "all eight fitted model payloads",
+    "ordinary and fixed-program selections",
+    "learned-controller weights",
+    "world law, prices, action semantics and time intervals",
+    "four primary arms and eight other valid secondary arms",
+    "fit-level formulas, two-domain testing family and acceptance thresholds"
+  ],
+  "sole_execution_revision": "Only exact ValueError Impossible observation from mean_value/BeliefMemory.observe with likelihood exactly zero is isolated as invalid_support. It receives null reward/utility, no fallback or epsilon. All other exceptions remain fatal.",
+  "mean_policy": "Attempt every fresh episode to retain coverage/failure evidence. If any mean_value episode fails, all D-minus-mean claims are null; no success-only performance aggregates. Report counts and spent CPU.",
+  "statistical_scope": "Supplemental independent confirmation after an openly recorded initial failure; not successful completion of the original protocol. Original 11 successes and five failures excluded from new effect estimates. Independent units remain the same eight fitted seeds, not sixteen fits.",
+  "cost_scope": "Original failed campaign, supplemental campaign, training, diagnostics, development and publication records retained. Old failure CPU is cumulative research infrastructure, separately disclosed from deployment alternative cost curves; no disappearing attempts.",
+  "publication_gate": "Publish supplemental source/protocol/manifest and references to all original frozen training files; read back exact blob identities before generating any namespace4 confirmation world.",
+  "new_progress_archive": "Every completed paired episode is appended as one complete plain JSONL line, flushed and fsynced. This preserves completed evidence without requiring a gzip trailer; it is not full owner crash-resume. This work is research infrastructure CPU, not extra arm inference.",
+  "mean_episode_rule": "Every one of the 128 episodes per fit/domain is attempted independently. A failure terminates only that mean episode; no retry/reset/fallback in it. The next independent episode uses original initialization. Coverage denominator is all128, not successful cases.",
+  "deployment_cost_formula": "Unchanged original gate: all training-search worker CPU + one preparation/checkpoint + N*online CPU, at N=1000 and online, D/B <= .90 in both domains with original NI guard. Cumulative research expense is a distinct ledger including all old attempts; it does not replace or change this gate."
+}
