@@ -1,0 +1,328 @@
+{
+  "all_eight_benefit_gates": false,
+  "analysis_sha256": "28d164cc6569516d3c4725fff493eac6b55f3054dd7c76b18537d030d1d55867",
+  "blockers": [
+    {
+      "evidence": [
+        "protocol.json",
+        "evidence/CONFIRMATION_ANALYSIS.json",
+        "evidence/CONFIRMATION_INDEPENDENT_REVIEW.json"
+      ],
+      "finding": "All eight registered benefit gates fail. Every adjusted interval includes both 0 and +0.02. This does not establish harm, zero effect, equivalence, or a six-family success claim.",
+      "id": "registered_primary_benefit",
+      "next_criterion": "For any future mechanism benefit claim, register its contrasts/splits and simultaneous interval allocation before fitting; generate a new independent confirmation only after source/model publication; require the relevant registered lower confidence bound to exceed the declared practical margin. Retain every registered fit.",
+      "status": "benefit_not_established"
+    },
+    {
+      "evidence": [
+        "evidence/fit_planning.json",
+        "protocol.json",
+        "evidence/CONFIRMATION_ANALYSIS.json"
+      ],
+      "finding": "Three development fits requested 47/72/76/328 fits under a normal approximation and a heuristic 1.25 SD multiplier; the resource cap of 16 fits was binding. Neither 80% power nor a variance confidence bound is established.",
+      "id": "precision_and_fit_planning",
+      "next_criterion": "Choose a feasible next confirmation size from independently fitted development differences under a frozen planning rule, including its uncertainty and finite-sample interval method. If the resource cap again binds, explicitly retain the shortfall instead of claiming planned power.",
+      "status": "resource_cap_binds"
+    },
+    {
+      "evidence": [
+        "evidence/CONFIRMATION_ANALYSIS.json",
+        "evidence/CONFIRMATION_REVIEW.md",
+        "evidence/analysis_outer/frozen_analysis.json",
+        "evidence/analysis_outer/independent_review.json"
+      ],
+      "finding": "No complete-cost superiority gate was registered or passed. The 38 registered workers consumed 12,578.571290 CPU seconds; analysis, transport, native and auxiliary probes have additional separate receipts. Nested candidate and subprocess costs cannot be added again. Bayes/fixed includes unused oracle-Q computation and is an unoptimized reference.",
+      "id": "complete_cost_superiority",
+      "next_criterion": "Predeclare the task-quality requirement, end-to-end cost scope, deployment/reuse count and uncertainty rule. Measure optimized baselines under that scope, including setup, training/collection, discarded development, inference and I/O. A saving claim requires the registered quality criterion and lower complete amortized cost at the registered reuse count; report the break-even count or its absence. Energy requires a separate measured endpoint.",
+      "status": "not_established"
+    },
+    {
+      "actual_cpu_arms": [
+        {
+          "candidate": "ordinary_bank__structured_on__cpu",
+          "learning_cpu_seconds_mean": 16.03045448693749,
+          "learning_cpu_seconds_range": [
+            16.003648904999977,
+            16.07703900300004
+          ],
+          "optimizer_updates_mean": 248.5,
+          "optimizer_updates_range": [
+            188,
+            305
+          ],
+          "overshoot_seconds_max": 0.07703900300003852,
+          "overshoot_seconds_mean": 0.03045448693749009
+        },
+        {
+          "candidate": "first_passage_bank__structured_on__cpu",
+          "learning_cpu_seconds_mean": 16.649731238499992,
+          "learning_cpu_seconds_range": [
+            16.003839733000007,
+            24.67191630299999
+          ],
+          "optimizer_updates_mean": 65.625,
+          "optimizer_updates_range": [
+            50,
+            84
+          ],
+          "overshoot_seconds_max": 8.671916302999989,
+          "overshoot_seconds_mean": 0.6497312384999923
+        },
+        {
+          "candidate": "first_passage_bank__impulse_on__cpu",
+          "learning_cpu_seconds_mean": 16.967778939312502,
+          "learning_cpu_seconds_range": [
+            16.019360747000007,
+            29.936919510000052
+          ],
+          "optimizer_updates_mean": 61.875,
+          "optimizer_updates_range": [
+            45,
+            71
+          ],
+          "overshoot_seconds_max": 13.936919510000052,
+          "overshoot_seconds_mean": 0.9677789393125025
+        },
+        {
+          "candidate": "evidence_accumulator__structured_on__cpu",
+          "learning_cpu_seconds_mean": 16.004882140625007,
+          "learning_cpu_seconds_range": [
+            16.000295927000025,
+            16.014454359000013
+          ],
+          "optimizer_updates_mean": 1475.375,
+          "optimizer_updates_range": [
+            1238,
+            1662
+          ],
+          "overshoot_seconds_max": 0.014454359000012573,
+          "overshoot_seconds_mean": 0.004882140625007025
+        }
+      ],
+      "evidence": [
+        "protocol.json",
+        "evidence/CONFIRMATION_ANALYSIS.json",
+        "evidence/CONFIRMATION_INDEPENDENT_REVIEW.json"
+      ],
+      "finding": "The four arms assigned a nominal 16 CPU second budget have unequal actual learning-plus-collection CPU. FPT sustained reaches 24.671916 seconds and FPT impulse 29.936920 seconds. This panel cannot be described as strictly matched actual CPU.",
+      "id": "exact_actual_cpu_equality",
+      "next_criterion": "Use bounded or interruptible collection and optimization. Before running the next comparison, register a numerical CPU-overrun and between-arm disparity tolerance; require every included fit/arm to meet that tolerance with collection charged inside the same budget. Retain actual updates, overruns and all failures.",
+      "status": "not_met_in_nominal_cpu_panel"
+    },
+    {
+      "evidence": [
+        "MODEL_CONTRACT.md",
+        "protocol.json",
+        "evidence/CONFIRMATION_INDEPENDENT_REVIEW.json"
+      ],
+      "finding": "Allocated structured cell models have 1,707 parameters, but ordinary has 1,640 structurally active coordinates versus 1,707 for event models. The structured head removes 99 parameters. Raw-history/accumulator and sampled-cell models preserve observations differently; all retain public causal inputs. Analytic_increment therefore does not isolate a pure analytic operator.",
+      "id": "capacity_and_information_matching",
+      "next_criterion": "Define the next matching criterion explicitly and verify allocated/reachable parameters, active dynamics, observation/time interfaces and retained-history capacity for each arm. Add controls for unmatched factors before attributing a utility difference uniquely to an analytic operator or claiming effective-capacity equivalence.",
+      "status": "effective_capacity_equivalence_unresolved"
+    },
+    {
+      "evidence": [
+        "protocol.json",
+        "POLICY_SEMANTICS.md",
+        "evidence/CONFIRMATION_INDEPENDENT_REVIEW.json"
+      ],
+      "finding": "One halfway greedy snapshot can become stale. Coarse unseen-stratum and selected-Q error improvements are descriptive and do not establish coverage of the final greedy state/action distribution. Training uses detached realized state indices; fixed-behavior prefix mass is not an autonomous policy gradient.",
+      "id": "final_policy_occupancy",
+      "next_criterion": "Predeclare a final-policy coverage representation, selected-action Q-error/margin and utility criteria; collect feedback trajectories or held-out final-policy states and audit the full declared support. If optimizing expected policy return instead, include action probabilities in the task-by-cell joint path weights and validate the declared policy gradient.",
+      "status": "full_final_coverage_not_guaranteed"
+    },
+    {
+      "evidence": [
+        "MODEL_CONTRACT.md",
+        "evidence/TRAINED_RETENTION_REVIEW.md",
+        "evidence/ACTUAL_READOUT_REVIEW.md",
+        "evidence/CONFIRMATION_INDEPENDENT_REVIEW.json"
+      ],
+      "finding": "Impulse changes both ongoing drift and future driver features. The accumulator lacks structured_off, so its free_off-to-structured_on contrast mixes head and occupancy. Cell-only information is distinct from the full head/owner information; actual event/recovery readout differences remain selected and confounded.",
+      "id": "mechanism_isolation",
+      "next_criterion": "Separate drift versus bank-driver factors, event sign and reset on matched observation/cost interfaces; add the missing factorial controls. Compare before/after information on the same selected population and evaluate a separately trained held-out decoder before treating current readout MSE as irrecoverable memory loss or causal utility.",
+      "status": "incomplete"
+    },
+    {
+      "evidence": [
+        "RENEWAL_SEMANTICS.md",
+        "protocol.json",
+        "evidence/forecast_comparison.json",
+        "evidence/NATIVE_CONFIRMATION_SUMMARY.json"
+      ],
+      "finding": "The calibrated/reset-aware and native renewal checks concern a separate finite continuous-time CTMC. Main task efficacy still uses the inherited 17-state interval law with at most one new event per interval. Native fitted-parameter consistency is not task-policy transfer.",
+      "id": "ctmc_to_task_integration",
+      "next_criterion": "Declare one transition law and future-input assumption across training, prediction and native execution; integrate that law explicitly, verify event and remaining-time behavior/checkpoint restoration, then run a newly frozen efficacy confirmation. Parameter transfer alone does not satisfy this criterion.",
+      "status": "separate_process_not_integrated"
+    },
+    {
+      "evidence": [
+        "RENEWAL_SEMANTICS.md",
+        "evidence/forecast_comparison.json",
+        "evidence/NATIVE_CONFIRMATION_SUMMARY.json"
+      ],
+      "finding": "Exact finite-CTMC sampling and checkpoint consistency do not establish a continuous-voltage Brownian first-passage or multi-renewal limit.",
+      "id": "brownian_convergence",
+      "next_criterion": "Specify the diffusion and boundary/reset/refractory limit, establish a consistent approximation, and measure first-hit-time, post-event evolution and renewal distribution error against independent references under refinement. Increasing grid size alone is insufficient.",
+      "status": "not_established"
+    },
+    {
+      "evidence": [
+        "RENEWAL_SEMANTICS.md",
+        "evidence/NATIVE_CONFIRMATION_SUMMARY.json"
+      ],
+      "finding": "Production ACK-owner integration, crash-atomic checkpoint commits and cross-architecture determinism are outside the completed standalone native checks.",
+      "id": "production_runtime",
+      "next_criterion": "Define the production owner/checkpoint contract, including event times, pending events, RNG and recovery state; validate crash/restart and acknowledgement idempotence under fault injection and specify supported determinism scope before any production activation.",
+      "status": "incomplete_not_activated"
+    },
+    {
+      "evidence": [
+        "SOURCE_FREEZE.json",
+        "MODEL_FREEZE.json",
+        "SEALED_MODEL_FREEZE.json",
+        "evidence/MODEL_PROVENANCE_REVIEW.json",
+        "evidence/CONFIRMATION_INDEPENDENT_REVIEW.json"
+      ],
+      "finding": "This confirmation belongs to the present frozen version. It and the historical confirmation remain retained evidence; neither may be relabeled as a fresh independent confirmation after tuning.",
+      "id": "new_confirmation_independence",
+      "next_criterion": "Complete all future development/validation choices, publish source, all models and primary design, then generate a separately registered confirmation with independent fit/data seeds. Keep source/model/receipt hashes and generation chronology, with all attempted fits and costs retained.",
+      "status": "new_registration_required_for_new_claims"
+    }
+  ],
+  "complete_cost_superiority_established": false,
+  "created_utc": "2026-11-01T18:42:19.317252+00:00",
+  "current_confirmation_role": "Retained confirmation evidence for the exact frozen version; may inform a future explicitly identified development stage but is not a new independent tuning/confirmation set.",
+  "independent_review_sha256": "19eff711fe99cb341025576bd77ce7f02fbb21d566f62720f68908e373e490e5",
+  "model_publication_commit": "7dfa6bb3d155440f9697b92b705c95252e9858a2",
+  "no_additional_experiments_run": true,
+  "primary_results": [
+    {
+      "benefit_gate": false,
+      "confidence_interval": [
+        -0.06259876928328845,
+        0.06402715469995512
+      ],
+      "contrast": "terminal_structure",
+      "degrees_of_freedom": 15,
+      "mean": 0.0007141927083333319,
+      "multiplicity": 8,
+      "n_independent_fits": 16,
+      "practical_margin": 0.02,
+      "split": "iid"
+    },
+    {
+      "benefit_gate": false,
+      "confidence_interval": [
+        -0.09452111988485173,
+        0.1318681250931851
+      ],
+      "contrast": "occupancy_supervision",
+      "degrees_of_freedom": 15,
+      "mean": 0.018673502604166677,
+      "multiplicity": 8,
+      "n_independent_fits": 16,
+      "practical_margin": 0.02,
+      "split": "iid"
+    },
+    {
+      "benefit_gate": false,
+      "confidence_interval": [
+        -0.08450216276935267,
+        0.10877625131101935
+      ],
+      "contrast": "impulse_mechanism",
+      "degrees_of_freedom": 15,
+      "mean": 0.012137044270833341,
+      "multiplicity": 8,
+      "n_independent_fits": 16,
+      "practical_margin": 0.02,
+      "split": "iid"
+    },
+    {
+      "benefit_gate": false,
+      "confidence_interval": [
+        -0.0987112460998299,
+        0.11069692318316326
+      ],
+      "contrast": "analytic_increment",
+      "degrees_of_freedom": 15,
+      "mean": 0.00599283854166668,
+      "multiplicity": 8,
+      "n_independent_fits": 16,
+      "practical_margin": 0.02,
+      "split": "iid"
+    },
+    {
+      "benefit_gate": false,
+      "confidence_interval": [
+        -0.01734778244235699,
+        0.06664205327569032
+      ],
+      "contrast": "terminal_structure",
+      "degrees_of_freedom": 15,
+      "mean": 0.024647135416666667,
+      "multiplicity": 8,
+      "n_independent_fits": 16,
+      "practical_margin": 0.02,
+      "split": "ood"
+    },
+    {
+      "benefit_gate": false,
+      "confidence_interval": [
+        -0.04468398840332986,
+        0.1557907592366632
+      ],
+      "contrast": "occupancy_supervision",
+      "degrees_of_freedom": 15,
+      "mean": 0.055553385416666656,
+      "multiplicity": 8,
+      "n_independent_fits": 16,
+      "practical_margin": 0.02,
+      "split": "ood"
+    },
+    {
+      "benefit_gate": false,
+      "confidence_interval": [
+        -0.10655487770563737,
+        0.0509819610389707
+      ],
+      "contrast": "impulse_mechanism",
+      "degrees_of_freedom": 15,
+      "mean": -0.02778645833333334,
+      "multiplicity": 8,
+      "n_independent_fits": 16,
+      "practical_margin": 0.02,
+      "split": "ood"
+    },
+    {
+      "benefit_gate": false,
+      "confidence_interval": [
+        -0.12808442255064323,
+        0.07313650588397659
+      ],
+      "contrast": "analytic_increment",
+      "degrees_of_freedom": 15,
+      "mean": -0.027473958333333326,
+      "multiplicity": 8,
+      "n_independent_fits": 16,
+      "practical_margin": 0.02,
+      "split": "ood"
+    }
+  ],
+  "production_activation": false,
+  "protocol_sha256": "8b26adfe6ade5a6de9d92ab3ab344fb402216dc5468b0800684e0cf9a4ad47b3",
+  "registered_primary_equivalence_established": false,
+  "registered_primary_harm_established": false,
+  "schema": "digital-mechanism-decision-ledger-v1",
+  "scope": "Claim and next-experiment decision ledger; no protocol, threshold, model, dataset or experiment changed by this file.",
+  "source_commit": "d3d71246a49664a050e04ef4a44a782350990865",
+  "verified_invariants": {
+    "independent_review_discrepancy_count": 0,
+    "max_absolute_numeric_residual": 2.2737367544323206e-13,
+    "numeric_results_bitwise_equal": false,
+    "numeric_tolerance_abs": 1e-12,
+    "numeric_tolerance_rel": 1e-10,
+    "structured_terminal_output_max_recorded_residual": 0.0
+  }
+}

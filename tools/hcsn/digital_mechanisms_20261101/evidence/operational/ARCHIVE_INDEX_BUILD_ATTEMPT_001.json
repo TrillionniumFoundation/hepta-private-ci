@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python3.12",
+    "/workspace/scratch/1273ec953099/digital-runs/build_archive_publication_index.py"
+  ],
+  "diagnosis": "Manual count assumption was wrong: actual inventory has 30 manifests (14 named non-confirmation archives plus 16 registered confirmation archives). All per-archive hash validation completed before this count assertion.",
+  "failure": "AssertionError at assert len(archives) == 31",
+  "index_written": false,
+  "recorded_at_utc": "2026-11-01T18:38:42.249384+00:00",
+  "resolution": "Replace arbitrary numeric assertion with equality against the declared archive ID set.",
+  "returncode": 1,
+  "schema": "operational-artifact-build-attempt-v1",
+  "scientific_sources_or_archives_modified": false,
+  "source_sha256": "62e11dd2a41c1863075e2f4cea83eb151a4906b6f86ab4aaa56142f0841991e8"
+}

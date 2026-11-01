@@ -1,0 +1,50 @@
+{
+  "accounting_scope": "complete child lifetime; local Linux probe establishes waited descendants included; do not add inner subprocess CPU",
+  "child_pid": 16,
+  "child_system_cpu_seconds": 0.025904999999999997,
+  "child_user_cpu_seconds": 0.056820999999999997,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/orchestration/stream_archives.py",
+    "restore",
+    "--source",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/archives/transport/transport.manifest.json",
+    "--destination",
+    "/workspace/scratch/1273ec953099/digital-runs/restored_transport"
+  ],
+  "finished_at": "2026-11-01T18:31:25.948100+00:00",
+  "input_sha256_after": {
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/archives/transport/transport.manifest.json": "4f11a20164b18e78cb68fc2fd49d9dc137b17271026275b74c2e9cc97fb128b4",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/orchestration/stream_archives.py": "99da8b7a82f13036369d3efae42c66328cc57f80b1124698021a2b578b8af65f"
+  },
+  "input_sha256_before": {
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/archives/transport/transport.manifest.json": "4f11a20164b18e78cb68fc2fd49d9dc137b17271026275b74c2e9cc97fb128b4",
+    "/workspace/scratch/1273ec953099/hepta-mechanisms/tools/hcsn/digital_mechanisms_20261101/orchestration/stream_archives.py": "99da8b7a82f13036369d3efae42c66328cc57f80b1124698021a2b578b8af65f"
+  },
+  "involuntary_context_switches": 3,
+  "kernel_maxrss": 18444,
+  "kernel_maxrss_unit": "KiB on this recorded Linux host",
+  "major_faults": 0,
+  "minor_faults": 5793,
+  "outer_wait4_cpu_seconds": 0.082726,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python_version": "3.12.14",
+  "raw_wait_status": 0,
+  "returncode": 0,
+  "schema": "digital-external-wait4-receipt-v1",
+  "started_at": "2026-11-01T18:31:25.860722+00:00",
+  "stderr": {
+    "bytes": 0,
+    "path": "/workspace/scratch/1273ec953099/digital-runs/final_transport_outer/transport_restore.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 360,
+    "path": "/workspace/scratch/1273ec953099/digital-runs/final_transport_outer/transport_restore.stdout",
+    "sha256": "07b006593ded5588039ea45d1e8383a16e0f61b3bdcaec683bbdc120d32b3de6"
+  },
+  "supervisor_python_cpu_seconds": 0.0009234979999999983,
+  "supervisor_sha256": "c8e6bc116eb661b09b5f0b8371c73f90cc3c00c02b48d11d79728b6a5bc4144f",
+  "voluntary_context_switches": 25,
+  "wall_seconds": 0.08738885200000368
+}
