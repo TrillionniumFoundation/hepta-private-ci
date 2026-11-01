@@ -1,0 +1,13 @@
+test_bad_laws_are_rejected (experiments.hcsn_v8_execution_20261101.mechanisms.test_mechanisms.MechanismTests.test_bad_laws_are_rejected) ... ok
+test_learned_outputs_have_support_and_finite_gradients (experiments.hcsn_v8_execution_20261101.mechanisms.test_mechanisms.MechanismTests.test_learned_outputs_have_support_and_finite_gradients) ... /workspace/scratch/71893ec7be58/hepta-av-v8/experiments/hcsn_v8_execution_20261101/mechanisms/test_mechanisms.py:53: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  self.assertEqual(float(probs[1, 2:].sum()), 0)
+ok
+test_mean_preserving_intervention_keeps_reachable_mean (experiments.hcsn_v8_execution_20261101.mechanisms.test_mechanisms.MechanismTests.test_mean_preserving_intervention_keeps_reachable_mean) ... ok
+test_multiple_transition_intervention_changes_count_not_zero_mass (experiments.hcsn_v8_execution_20261101.mechanisms.test_mechanisms.MechanismTests.test_multiple_transition_intervention_changes_count_not_zero_mass) ... ok
+test_refractory_remaining_blocks_all_count_paths (experiments.hcsn_v8_execution_20261101.mechanisms.test_mechanisms.MechanismTests.test_refractory_remaining_blocks_all_count_paths) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.529s
+
+OK

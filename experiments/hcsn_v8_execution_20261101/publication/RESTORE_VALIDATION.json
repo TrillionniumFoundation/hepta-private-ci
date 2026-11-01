@@ -1,0 +1,124 @@
+{
+  "schema": "hcsn-v8-transport-validation.v1",
+  "all_passed": true,
+  "checks": {
+    "all_original_bytes_restored": true,
+    "all_originals_unchanged": true,
+    "all_existing_identical_files_reused": true,
+    "all_parts_below_512000_bytes": true,
+    "all_gzip_mtime_zero": true,
+    "conflicting_existing_file_refused": true,
+    "symlink_ancestor_refused": true,
+    "path_traversal_refused": true,
+    "part_tamper_refused_before_original_write": true,
+    "transport_source_unchanged": true
+  },
+  "files": [
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/development001/PAIRED_ROWS.jsonl",
+      "bytes": 1346364,
+      "original_sha256": "36dfa235179c446fad5e02d9f44a4303d3bfa94da07e0bcae7f3b5924641bf61",
+      "restored_sha256": "36dfa235179c446fad5e02d9f44a4303d3bfa94da07e0bcae7f3b5924641bf61",
+      "byte_by_byte_identical": true,
+      "original_unchanged": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/validation/replay002/PAIRED_ROWS.jsonl",
+      "bytes": 1346364,
+      "original_sha256": "36dfa235179c446fad5e02d9f44a4303d3bfa94da07e0bcae7f3b5924641bf61",
+      "restored_sha256": "36dfa235179c446fad5e02d9f44a4303d3bfa94da07e0bcae7f3b5924641bf61",
+      "byte_by_byte_identical": true,
+      "original_unchanged": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/evaluation/runs.jsonl.gz",
+      "bytes": 2090505,
+      "original_sha256": "7aeba42c7b3493256d3b80f588837afa7bc70325babe1732f8f6fb6710f470b7",
+      "restored_sha256": "7aeba42c7b3493256d3b80f588837afa7bc70325babe1732f8f6fb6710f470b7",
+      "byte_by_byte_identical": true,
+      "original_unchanged": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81101/sampled_data.npz",
+      "bytes": 501149,
+      "original_sha256": "460046359957dddbd9b29710e4f60296ea515645deca8670a7a47a20b9097be8",
+      "restored_sha256": "460046359957dddbd9b29710e4f60296ea515645deca8670a7a47a20b9097be8",
+      "byte_by_byte_identical": true,
+      "original_unchanged": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81103/sampled_data.npz",
+      "bytes": 501226,
+      "original_sha256": "d4f3ed48d2489c9dd94eaf11d749b04ef4f385a6433d111247f6f43de83f452d",
+      "restored_sha256": "d4f3ed48d2489c9dd94eaf11d749b04ef4f385a6433d111247f6f43de83f452d",
+      "byte_by_byte_identical": true,
+      "original_unchanged": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81107/sampled_data.npz",
+      "bytes": 501425,
+      "original_sha256": "ef0f93d74d4b4a6c7a9f0fec7f629b910918cfacd101be3c4389e0c9fd1b28f9",
+      "restored_sha256": "ef0f93d74d4b4a6c7a9f0fec7f629b910918cfacd101be3c4389e0c9fd1b28f9",
+      "byte_by_byte_identical": true,
+      "original_unchanged": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81109/sampled_data.npz",
+      "bytes": 501501,
+      "original_sha256": "0d52c9b002981c9d99f2112f55eaf7dc68b4c39c5865eb4972d0441500fdc5a4",
+      "restored_sha256": "0d52c9b002981c9d99f2112f55eaf7dc68b4c39c5865eb4972d0441500fdc5a4",
+      "byte_by_byte_identical": true,
+      "original_unchanged": true
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81113/sampled_data.npz",
+      "bytes": 501410,
+      "original_sha256": "96c6f30c37726919fb1ce42b1c3c3f5a66cd666d7bfd353b02ed012b8e2f5fe9",
+      "restored_sha256": "96c6f30c37726919fb1ce42b1c3c3f5a66cd666d7bfd353b02ed012b8e2f5fe9",
+      "byte_by_byte_identical": true,
+      "original_unchanged": true
+    }
+  ],
+  "negative_cases": [
+    {
+      "case": "conflict",
+      "exception": "FileExistsError",
+      "reason": "Different existing destination bytes: /tmp/hcsn-v8-transport-verify-fa_fubmm/conflict/experiments/hcsn_v8_execution_20261101/frontend/validation/development001/PAIRED_ROWS.jsonl"
+    },
+    {
+      "case": "symlink",
+      "exception": "ValueError",
+      "reason": "Symlink refused: /tmp/hcsn-v8-transport-verify-fa_fubmm/linked/experiments"
+    },
+    {
+      "case": "traversal",
+      "exception": "ValueError",
+      "reason": "Unsafe path component"
+    },
+    {
+      "case": "part_tamper",
+      "exception": "ValueError",
+      "reason": "Transport part identity mismatch: parts/36dfa235179c446fad5e02d9f44a4303d3bfa94da07e0bcae7f3b5924641bf61.0000.gz"
+    }
+  ],
+  "fresh_restoration_directory": "/tmp/hcsn-v8-transport-verify-fa_fubmm/restored",
+  "initial_restore": {
+    "schema": "hcsn-v8-byte-transport.v1",
+    "destination": "/tmp/hcsn-v8-transport-verify-fa_fubmm/restored",
+    "installed_files": 8,
+    "identical_existing_files": 0,
+    "verified_original_bytes": 7289944,
+    "originals_sha256_verified": true
+  },
+  "identical_restore": {
+    "schema": "hcsn-v8-byte-transport.v1",
+    "destination": "/tmp/hcsn-v8-transport-verify-fa_fubmm/restored",
+    "installed_files": 0,
+    "identical_existing_files": 8,
+    "verified_original_bytes": 7289944,
+    "originals_sha256_verified": true
+  },
+  "manifest_sha256": "f34d171657a23dfc7a74b45d2d973af96b80f1ffa19a6fee2405811f40bbf65a",
+  "transport_source_sha256": "6d865e73e08869d04fff66b6d7ae0c6b3dce24759494bbec43a4fb3dd916d128",
+  "scope": "Actual byte-preserving package restore and narrow damage/path boundary checks; no scientific reruns"
+}
