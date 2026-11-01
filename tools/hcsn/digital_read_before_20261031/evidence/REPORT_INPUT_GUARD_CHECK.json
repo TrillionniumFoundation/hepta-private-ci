@@ -1,0 +1,281 @@
+{
+  "schema": "digital-read-before-report-input-guard-check-v1",
+  "status": "passed",
+  "scope": "Report-only identity/output regression; no model execution, new training, or new performance measurement",
+  "reporting_script_sha256": "e9630982e4f0f9184630e8725149d36650cfe3219b52e221f67049d0cb06f325",
+  "original_summary_sha256": "f98f7441f5ca64e7592c82ffa3069df6aa32032cef8e7ceb294cca2eb13b2e25",
+  "original_results_sha256": "041bc3a580b77788c10a391abe5f06db52d71e5ec6dddac769d8f05ffd1b7155",
+  "exact_input_file_checks_per_success": 42,
+  "success_cases": 1,
+  "rejection_cases": 8,
+  "published_outputs_before": {
+    "REPORT.md": "7adefdf282ae784df384a68e07acd087c7131ef584a0a1185944e13f8c3d84c1",
+    "evidence/RESEARCH_TABLES.json": "d3020e9d3a44e70e64a6c375db8f793514a3822de7ab86268e857a13aa0c4a76"
+  },
+  "published_outputs_after_checks": {
+    "REPORT.md": "7adefdf282ae784df384a68e07acd087c7131ef584a0a1185944e13f8c3d84c1",
+    "evidence/RESEARCH_TABLES.json": "d3020e9d3a44e70e64a6c375db8f793514a3822de7ab86268e857a13aa0c4a76"
+  },
+  "frozen_core_sha256_unchanged": true,
+  "cases": [
+    {
+      "name": "original_restored_success",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/b4991412e0c9/hepta-digital/tools/hcsn/digital_read_before_20261031/summarize_research.py",
+        "--runs",
+        "/workspace/scratch/b4991412e0c9/digital-confirmation-v1",
+        "--training",
+        "/tmp/digital-restored-primary",
+        "--timed-training",
+        "/workspace/scratch/b4991412e0c9/digital-training-timed-v1",
+        "--report",
+        "/tmp/digital-report-input-guard-v1/original_restored_success/report.md",
+        "--tables",
+        "/tmp/digital-report-input-guard-v1/original_restored_success/tables.json"
+      ],
+      "returncode": 0,
+      "stdout": "{\"report\": \"/tmp/digital-report-input-guard-v1/original_restored_success/report.md\", \"bytes\": 41519, \"research_tables\": \"/tmp/digital-report-input-guard-v1/original_restored_success/tables.json\", \"all_primary_gates_failed\": true, \"numeric_core_modified\": false}\n",
+      "stderr": "",
+      "changed": null,
+      "report_exists": true,
+      "tables_exists": true,
+      "numeric_tables_unchanged_except_reporting_script_sha256": true,
+      "report_sha256": "faab4995f095360d1dfc2cdaa6b794880ff2414961433cf05f5401659e6b3c61",
+      "tables_sha256": "f9ff3ceae075b46e6d02c3f181b76baf86fd4ad62c79eec2c3677cde4787533a",
+      "published_outputs_unchanged": true
+    },
+    {
+      "name": "summary_byte_change",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/b4991412e0c9/hepta-digital/tools/hcsn/digital_read_before_20261031/summarize_research.py",
+        "--runs",
+        "/tmp/digital-report-input-guard-v1/summary_byte_change_input",
+        "--training",
+        "/tmp/digital-restored-primary",
+        "--timed-training",
+        "/workspace/scratch/b4991412e0c9/digital-training-timed-v1",
+        "--report",
+        "/tmp/digital-report-input-guard-v1/summary_byte_change/report.md",
+        "--tables",
+        "/tmp/digital-report-input-guard-v1/summary_byte_change/tables.json"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "usage: summarize_research.py [-h] --runs RUNS --training TRAINING\n                             --timed-training TIMED_TRAINING [--report REPORT]\n                             [--tables TABLES]\nsummarize_research.py: error: Original evidence SHA-256 mismatch: /tmp/digital-report-input-guard-v1/summary_byte_change_input/SUMMARY.json; expected f98f7441f5ca64e7592c82ffa3069df6aa32032cef8e7ceb294cca2eb13b2e25, got 00e23a31329262c94ec03a316ba37cc3b2d8e3cbe4e8eee99cddc46f61760696. This renderer accepts only byte-identical original evidence. A new run requires its own matching audit and report.\n",
+      "changed": {
+        "path": "/tmp/digital-report-input-guard-v1/summary_byte_change_input/SUMMARY.json",
+        "mutation": "Append one newline without changing parsed JSON",
+        "original_sha256": "f98f7441f5ca64e7592c82ffa3069df6aa32032cef8e7ceb294cca2eb13b2e25",
+        "modified_sha256": "00e23a31329262c94ec03a316ba37cc3b2d8e3cbe4e8eee99cddc46f61760696"
+      },
+      "report_exists": false,
+      "tables_exists": false,
+      "rejected_before_output_directory_creation": true,
+      "published_outputs_unchanged": true
+    },
+    {
+      "name": "results_byte_change",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/b4991412e0c9/hepta-digital/tools/hcsn/digital_read_before_20261031/summarize_research.py",
+        "--runs",
+        "/tmp/digital-report-input-guard-v1/results_byte_change_input",
+        "--training",
+        "/tmp/digital-restored-primary",
+        "--timed-training",
+        "/workspace/scratch/b4991412e0c9/digital-training-timed-v1",
+        "--report",
+        "/tmp/digital-report-input-guard-v1/results_byte_change/report.md",
+        "--tables",
+        "/tmp/digital-report-input-guard-v1/results_byte_change/tables.json"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "usage: summarize_research.py [-h] --runs RUNS --training TRAINING\n                             --timed-training TIMED_TRAINING [--report REPORT]\n                             [--tables TABLES]\nsummarize_research.py: error: Original evidence SHA-256 mismatch: /tmp/digital-report-input-guard-v1/results_byte_change_input/RESULTS.json; expected 041bc3a580b77788c10a391abe5f06db52d71e5ec6dddac769d8f05ffd1b7155, got 5cf0619733e2dd830652acc17eeb20a4a1f3d7df8ac3dcf065e6593075dfe6b9. This renderer accepts only byte-identical original evidence. A new run requires its own matching audit and report.\n",
+      "changed": {
+        "path": "/tmp/digital-report-input-guard-v1/results_byte_change_input/RESULTS.json",
+        "mutation": "Append one newline without changing parsed JSON",
+        "original_sha256": "041bc3a580b77788c10a391abe5f06db52d71e5ec6dddac769d8f05ffd1b7155",
+        "modified_sha256": "5cf0619733e2dd830652acc17eeb20a4a1f3d7df8ac3dcf065e6593075dfe6b9"
+      },
+      "report_exists": false,
+      "tables_exists": false,
+      "rejected_before_output_directory_creation": true,
+      "published_outputs_unchanged": true
+    },
+    {
+      "name": "training_data_byte_change",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/b4991412e0c9/hepta-digital/tools/hcsn/digital_read_before_20261031/summarize_research.py",
+        "--runs",
+        "/workspace/scratch/b4991412e0c9/digital-confirmation-v1",
+        "--training",
+        "/tmp/digital-report-input-guard-v1/training_data_byte_change_input",
+        "--timed-training",
+        "/workspace/scratch/b4991412e0c9/digital-training-timed-v1",
+        "--report",
+        "/tmp/digital-report-input-guard-v1/training_data_byte_change/report.md",
+        "--tables",
+        "/tmp/digital-report-input-guard-v1/training_data_byte_change/tables.json"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "usage: summarize_research.py [-h] --runs RUNS --training TRAINING\n                             --timed-training TIMED_TRAINING [--report REPORT]\n                             [--tables TABLES]\nsummarize_research.py: error: Original evidence SHA-256 mismatch: /tmp/digital-report-input-guard-v1/training_data_byte_change_input/fit_11/data/fit_11_data.json; expected e5db3c01003c47e871346e74719f0be3e15bb7744c2525da058b80fca3081707, got 36a83f7fa1b6f1c00be8b6ccd4cdbd69939c0d3edaab7f2cdbb7979135efe7d1. This renderer accepts only byte-identical original evidence. A new run requires its own matching audit and report.\n",
+      "changed": {
+        "path": "/tmp/digital-report-input-guard-v1/training_data_byte_change_input/fit_11/data/fit_11_data.json",
+        "mutation": "Append one newline without changing parsed JSON",
+        "original_sha256": "e5db3c01003c47e871346e74719f0be3e15bb7744c2525da058b80fca3081707",
+        "modified_sha256": "36a83f7fa1b6f1c00be8b6ccd4cdbd69939c0d3edaab7f2cdbb7979135efe7d1"
+      },
+      "report_exists": false,
+      "tables_exists": false,
+      "rejected_before_output_directory_creation": true,
+      "published_outputs_unchanged": true
+    },
+    {
+      "name": "complete_byte_change",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/b4991412e0c9/hepta-digital/tools/hcsn/digital_read_before_20261031/summarize_research.py",
+        "--runs",
+        "/workspace/scratch/b4991412e0c9/digital-confirmation-v1",
+        "--training",
+        "/tmp/digital-report-input-guard-v1/complete_byte_change_input",
+        "--timed-training",
+        "/workspace/scratch/b4991412e0c9/digital-training-timed-v1",
+        "--report",
+        "/tmp/digital-report-input-guard-v1/complete_byte_change/report.md",
+        "--tables",
+        "/tmp/digital-report-input-guard-v1/complete_byte_change/tables.json"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "usage: summarize_research.py [-h] --runs RUNS --training TRAINING\n                             --timed-training TIMED_TRAINING [--report REPORT]\n                             [--tables TABLES]\nsummarize_research.py: error: Original evidence SHA-256 mismatch: /tmp/digital-report-input-guard-v1/complete_byte_change_input/fit_11/models/COMPLETE.json; expected 6a82f63db200fde2a9d3cae13bf90f998c103105653c6c20c1d6a5738ab42ed6, got dd416aaa00febd781c10c1e3c6d19ec16e687d2dc111aef004e76cd1e62db6ac. This renderer accepts only byte-identical original evidence. A new run requires its own matching audit and report.\n",
+      "changed": {
+        "path": "/tmp/digital-report-input-guard-v1/complete_byte_change_input/fit_11/models/COMPLETE.json",
+        "mutation": "Append one newline without changing parsed JSON",
+        "original_sha256": "6a82f63db200fde2a9d3cae13bf90f998c103105653c6c20c1d6a5738ab42ed6",
+        "modified_sha256": "dd416aaa00febd781c10c1e3c6d19ec16e687d2dc111aef004e76cd1e62db6ac"
+      },
+      "report_exists": false,
+      "tables_exists": false,
+      "rejected_before_output_directory_creation": true,
+      "published_outputs_unchanged": true
+    },
+    {
+      "name": "model_byte_change",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/b4991412e0c9/hepta-digital/tools/hcsn/digital_read_before_20261031/summarize_research.py",
+        "--runs",
+        "/workspace/scratch/b4991412e0c9/digital-confirmation-v1",
+        "--training",
+        "/tmp/digital-report-input-guard-v1/model_byte_change_input",
+        "--timed-training",
+        "/workspace/scratch/b4991412e0c9/digital-training-timed-v1",
+        "--report",
+        "/tmp/digital-report-input-guard-v1/model_byte_change/report.md",
+        "--tables",
+        "/tmp/digital-report-input-guard-v1/model_byte_change/tables.json"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "usage: summarize_research.py [-h] --runs RUNS --training TRAINING\n                             --timed-training TIMED_TRAINING [--report REPORT]\n                             [--tables TABLES]\nsummarize_research.py: error: Original evidence SHA-256 mismatch: /tmp/digital-report-input-guard-v1/model_byte_change_input/fit_11/models/ordinary_bank.json; expected c44102036d2428ed8e0eacf594b612c559c9dfcc4e07f4143e5aeb70895cfcea, got 0b11968a83707f71f0379c2a55d1e45bf852fee341234cb1c2b3d79cb65b6e00. This renderer accepts only byte-identical original evidence. A new run requires its own matching audit and report.\n",
+      "changed": {
+        "path": "/tmp/digital-report-input-guard-v1/model_byte_change_input/fit_11/models/ordinary_bank.json",
+        "mutation": "Append one newline without changing parsed JSON",
+        "original_sha256": "c44102036d2428ed8e0eacf594b612c559c9dfcc4e07f4143e5aeb70895cfcea",
+        "modified_sha256": "0b11968a83707f71f0379c2a55d1e45bf852fee341234cb1c2b3d79cb65b6e00"
+      },
+      "report_exists": false,
+      "tables_exists": false,
+      "rejected_before_output_directory_creation": true,
+      "published_outputs_unchanged": true
+    },
+    {
+      "name": "timing_byte_change",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/b4991412e0c9/hepta-digital/tools/hcsn/digital_read_before_20261031/summarize_research.py",
+        "--runs",
+        "/workspace/scratch/b4991412e0c9/digital-confirmation-v1",
+        "--training",
+        "/tmp/digital-restored-primary",
+        "--timed-training",
+        "/tmp/digital-report-input-guard-v1/timing_byte_change_input",
+        "--report",
+        "/tmp/digital-report-input-guard-v1/timing_byte_change/report.md",
+        "--tables",
+        "/tmp/digital-report-input-guard-v1/timing_byte_change/tables.json"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "usage: summarize_research.py [-h] --runs RUNS --training TRAINING\n                             --timed-training TIMED_TRAINING [--report REPORT]\n                             [--tables TABLES]\nsummarize_research.py: error: Original evidence SHA-256 mismatch: /tmp/digital-report-input-guard-v1/timing_byte_change_input/fit_11/PROCESS_MEASUREMENT.json; expected 1577029c408b7083501892f0b715d01130bb50811268157785e75d933b61703a, got 242e4b02f390bf721105b99d1fcb2a89d1d900218f28860bd29da97572eb0b65. This renderer accepts only byte-identical original evidence. A new run requires its own matching audit and report.\n",
+      "changed": {
+        "path": "/tmp/digital-report-input-guard-v1/timing_byte_change_input/fit_11/PROCESS_MEASUREMENT.json",
+        "mutation": "Append one newline without changing parsed JSON",
+        "original_sha256": "1577029c408b7083501892f0b715d01130bb50811268157785e75d933b61703a",
+        "modified_sha256": "242e4b02f390bf721105b99d1fcb2a89d1d900218f28860bd29da97572eb0b65"
+      },
+      "report_exists": false,
+      "tables_exists": false,
+      "rejected_before_output_directory_creation": true,
+      "published_outputs_unchanged": true
+    },
+    {
+      "name": "actual_new_training_rejected",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/b4991412e0c9/hepta-digital/tools/hcsn/digital_read_before_20261031/summarize_research.py",
+        "--runs",
+        "/workspace/scratch/b4991412e0c9/digital-confirmation-v1",
+        "--training",
+        "/workspace/scratch/b4991412e0c9/digital-training-timed-v1",
+        "--timed-training",
+        "/workspace/scratch/b4991412e0c9/digital-training-timed-v1",
+        "--report",
+        "/tmp/digital-report-input-guard-v1/actual_new_training_rejected/report.md",
+        "--tables",
+        "/tmp/digital-report-input-guard-v1/actual_new_training_rejected/tables.json"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "usage: summarize_research.py [-h] --runs RUNS --training TRAINING\n                             --timed-training TIMED_TRAINING [--report REPORT]\n                             [--tables TABLES]\nsummarize_research.py: error: Original evidence SHA-256 mismatch: /workspace/scratch/b4991412e0c9/digital-training-timed-v1/fit_11/data/fit_11_data.json; expected e5db3c01003c47e871346e74719f0be3e15bb7744c2525da058b80fca3081707, got 7fd925995ab068fcd71732385ddf6c080bd92b05af986bf1a5e15368e38295d1. This renderer accepts only byte-identical original evidence. A new run requires its own matching audit and report.\n",
+      "changed": {
+        "reason": "Timing replay regenerated a new data JSON while all 25 exported models match original model bytes"
+      },
+      "report_exists": false,
+      "tables_exists": false,
+      "rejected_before_output_directory_creation": true,
+      "published_outputs_unchanged": true
+    },
+    {
+      "name": "output_path_collision_rejected",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/b4991412e0c9/hepta-digital/tools/hcsn/digital_read_before_20261031/summarize_research.py",
+        "--runs",
+        "/workspace/scratch/b4991412e0c9/digital-confirmation-v1",
+        "--training",
+        "/tmp/digital-restored-primary",
+        "--timed-training",
+        "/workspace/scratch/b4991412e0c9/digital-training-timed-v1",
+        "--report",
+        "/tmp/digital-report-input-guard-v1/output_path_collision_rejected/report.md",
+        "--tables",
+        "/tmp/digital-report-input-guard-v1/output_path_collision_rejected/report.md"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "usage: summarize_research.py [-h] --runs RUNS --training TRAINING\n                             --timed-training TIMED_TRAINING [--report REPORT]\n                             [--tables TABLES]\nsummarize_research.py: error: --report and --tables must name different output files\n",
+      "changed": null,
+      "report_exists": false,
+      "tables_exists": false,
+      "rejected_before_output_directory_creation": true,
+      "published_outputs_unchanged": true
+    }
+  ]
+}
