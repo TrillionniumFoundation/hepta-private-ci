@@ -82,7 +82,7 @@ def worker():
                                 seed=episode.seed,outcomes=outcomes,cache=cache.metrics(),
                                 batched_equal=good and comparable(outcomes["baseline"])==comparable(outcomes["batched"]),
                                 cached_equal=good and comparable(outcomes["baseline"])==comparable(outcomes["cached"])))
-        save(HERE/f"development/differential_v3/raw_{fit}.json.gz",dict(cases=cases,rows=rows))
+        save(HERE/f"development/differential_v4b/raw_{fit}.json.gz",dict(cases=cases,rows=rows))
         allcases+=cases;allrows+=rows
     groups={}
     for model in protocol["models"]:
@@ -91,7 +91,7 @@ def worker():
                 selected=[r for r in allrows if r["model"]==model and r["representation"]==representation and r["policy"]==policy]
                 costs={mode:sum(r["outcomes"][mode]["cpu_seconds"] for r in selected) for mode in ("baseline","batched","cached")}
                 groups[f"{model}_{representation}_{policy}"]=dict(costs=costs,batched_ratio=costs["batched"]/costs["baseline"],cached_ratio=costs["cached"]/costs["baseline"])
-    save(HERE/"development/differential_v3/SUMMARY.json",dict(value_cases=len(allcases),execution_cases=len(allrows),
+    save(HERE/"development/differential_v4b/SUMMARY.json",dict(value_cases=len(allcases),execution_cases=len(allrows),
         choice_mismatches=sum(not c["choice_equal"] for c in allcases),answer_mismatches=sum(not c["answer_equal"] for c in allcases),
         max_value_error=max(c["maximum_error"] for c in allcases),batched_execution_mismatches=sum(not r["batched_equal"] for r in allrows),
         cached_execution_mismatches=sum(not r["cached_equal"] for r in allrows),groups=groups,
@@ -104,7 +104,7 @@ if __name__=="__main__":
     else:
         wall=time.perf_counter();child=subprocess.Popen([sys.executable,"-m",__spec__.name,"--worker"])
         _,status,usage=os.wait4(child.pid,0);child.returncode=os.waitstatus_to_exitcode(status)
-        save(HERE/"development/differential_v3/PROCESS_RECEIPT.json",dict(exit_code=child.returncode,
+        save(HERE/"development/differential_v4b/PROCESS_RECEIPT.json",dict(exit_code=child.returncode,
             child_cpu_seconds=usage.ru_utime+usage.ru_stime,wall_seconds=time.perf_counter()-wall,
             max_rss_linux_kib=usage.ru_maxrss,scope="Full development child imports/allattempts/output; not scientific confirmation"))
         raise SystemExit(child.returncode)

@@ -6,7 +6,21 @@ import time
 import numpy as np
 
 from ..addressed_decision_r15_20261101.planner import Planner
-from ..support_retention_r16_20261101.compression import COLLECT, SPREAD, GROUP, _probability
+from ..support_retention_r16_20261101.compression import COLLECT, SPREAD, GROUP
+
+
+def validate_rows(p, width, minimum):
+    """Same scalar-reference rtol=0 probability predicate without generic isclose.
+
+    abs(sum-1)<=2e-11 is precisely the inherited allclose(sum,1,rtol=0,
+    atol=2e-11) condition. Finiteness and the inherited negative allowance
+    remain explicit. Returned numeric arrays are never altered.
+    """
+    p = np.asarray(p, dtype=float)
+    if (p.ndim < 1 or p.shape[-1] != width or not np.isfinite(p).all()
+            or np.any(p < minimum) or not np.all(np.abs(p.sum(-1) - 1.) <= 2e-11)):
+        raise ValueError("Invalid finite probability rows")
+    return p
 
 
 class KernelCache:
@@ -92,13 +106,13 @@ class BatchedPlanner(Planner):
         merged = (arrays[0].reshape(-1, 40) if len(arrays) == 1 else
                   np.concatenate([p.reshape(-1, 40) for p in arrays], axis=0))
         if self.projection == "full":
-            self.law._belief(merged)
+            validate_rows(merged, 40, -1e-13)
             return [p.copy() for p in arrays]
-        _probability(merged, 40)
+        validate_rows(merged, 40, 0.)
         packed = [p @ COLLECT for p in arrays]
         merged_packed = (packed[0].reshape(-1, 8) if len(packed) == 1 else
                          np.concatenate([p.reshape(-1, 8) for p in packed], axis=0))
-        _probability(merged_packed, 8)
+        validate_rows(merged_packed, 8, 0.)
         expanded = [p @ SPREAD for p in packed]
         for p, result in zip(packed, expanded, strict=True):
             if np.any((p[..., GROUP] > 0) & (result == 0)):
