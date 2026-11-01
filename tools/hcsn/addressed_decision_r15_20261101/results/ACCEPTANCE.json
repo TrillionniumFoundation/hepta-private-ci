@@ -1,0 +1,436 @@
+{
+  "schema": "hcsn-r15-research-acceptance-v1",
+  "created_utc": "2026-11-01T08:25:58.991731+00:00",
+  "decision": "scoped_research_delivery_complete_scientific_gain_and_production_not_admitted",
+  "interpretation_zh": "任务代码、冻结执行、原始结果与审计交付完成，不等于七类研究问题均已解决、HCSN/HX 科学假说成立或 hepta neuron 生产准入。",
+  "delivery": {
+    "local_research_artifacts_complete": true,
+    "frozen_source_published_before_confirmation": true,
+    "supplement_workers_complete": 16,
+    "registered_workers": 16,
+    "valid_arms_complete": 12,
+    "all_arms_attempted": 13,
+    "mean_attempt_ledger_complete": true,
+    "independent_statistics_audit_passed": true,
+    "independent_execution_audit_passed": true,
+    "final_result_remote_publication": "handled by the parent publication workflow; not independently asserted by this acceptance file"
+  },
+  "gates": {
+    "supplement_design_complete": true,
+    "quality_gain": false,
+    "quality_noninferiority": true,
+    "quality_guarded_cost": false,
+    "original_unamended": false,
+    "mean_invalid": true,
+    "mean_secondary_admissible": false,
+    "sameHMM_identical": true,
+    "uniqueHX": false,
+    "deployment_economy_admitted": false,
+    "all_thirteen_arms_valid": false,
+    "all_seven_research_questions_closed": false,
+    "production": false
+  },
+  "gate_source": "results/SUMMARY.json#/admission; production and research-scope flags are explicit scope judgments, not new performance tests",
+  "original_summary_admission": {
+    "HX_exclusive_operator_gain": false,
+    "all_thirteen_arms_valid": false,
+    "cost_rule": "Both domains: simultaneous NI for utility and reward; online and full CPU D/B <= .90 at 1000 uses",
+    "deployment_economy_admitted": false,
+    "design_complete": true,
+    "exclusive_claim_reason": "Same-matrix HMM is an available implementation of the same finite operator; selected-B gain cannot establish HX exclusivity",
+    "mean_secondary_admissible": false,
+    "quality_gain": false,
+    "quality_gain_rule": "Both domains: mean D-B >= .01, descriptive t95 lower > 0, two-domain Holm sign-flip p < .05",
+    "quality_guarded_cost": false,
+    "quality_noninferiority": true,
+    "same_matrix_HMM_behavior_identical": true,
+    "unamended_original_protocol_pass": false
+  },
+  "design": {
+    "fit_seeds": [
+      151101,
+      151103,
+      151107,
+      151109,
+      151113,
+      151117,
+      151119,
+      151123
+    ],
+    "independent_unit": "one fitted-model seed after averaging its 128 paired episodes in each domain",
+    "domains": [
+      "iid",
+      "ood"
+    ],
+    "episodes_per_fit_domain": 128,
+    "paired_worlds": 2048,
+    "queries_per_world": 6,
+    "valid_arm_episode_records": 24576,
+    "valid_arm_query_records": 147456,
+    "original_unamended_result_not_relabelled_as_supplement_pass": true,
+    "original_confirmation_performance_not_pooled": true
+  },
+  "primary_result": {
+    "iid": {
+      "D_minus_B": {
+        "ci": [
+          -0.00012153921689128915,
+          0.00021585887834963107
+        ],
+        "mean": 4.715983072917096e-05,
+        "se": 7.134285606130712e-05,
+        "values": [
+          0.0,
+          -0.00015169270833326198,
+          0.0005289713541666297,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "Holm_p": 1.0,
+      "noninferiority": {
+        "reward": {
+          "lower": -0.00029968168108532897,
+          "mean": 0.0001627604166666713,
+          "passes": true
+        },
+        "utility": {
+          "lower": -0.00015554264873287433,
+          "mean": 4.715983072917096e-05,
+          "passes": true
+        }
+      },
+      "online_D_over_B": 0.9925800358943798,
+      "full_D_over_B_by_uses": {
+        "1": 0.9999501900969467,
+        "100": 0.99798571111604,
+        "1000": 0.9941591937933183,
+        "10000": 0.9927755075883951
+      }
+    },
+    "ood": {
+      "D_minus_B": {
+        "ci": [
+          -0.000288352722528486,
+          6.312485794516992e-05
+        ],
+        "mean": -0.00011261393229165806,
+        "se": 7.431996441652508e-05,
+        "values": [
+          0.0,
+          -0.00040071614583325754,
+          -0.0005001953125000069,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "Holm_p": 1.0,
+      "noninferiority": {
+        "reward": {
+          "lower": -0.00029968168108532897,
+          "mean": 0.0001627604166666713,
+          "passes": true
+        },
+        "utility": {
+          "lower": -0.00032377510374539026,
+          "mean": -0.00011261393229165806,
+          "passes": true
+        }
+      },
+      "online_D_over_B": 0.9798441351542361,
+      "full_D_over_B_by_uses": {
+        "1": 0.9998906770610495,
+        "100": 0.9943327160044112,
+        "1000": 0.9839596474261221,
+        "10000": 0.9803485193717105
+      }
+    }
+  },
+  "mean_support": {
+    "attempts": 2048,
+    "invalid_support": 16,
+    "invalid_rate": 0.0078125,
+    "iid_invalid": 0,
+    "ood_invalid": 16,
+    "all_mean_performance_and_D_minus_mean_null_in_both_domains": true,
+    "survivor_subset_inference_allowed": false,
+    "cause": "The declared two-neighbor phase-index mean projection removes recovery support; an owner-valid erasure then has exact model likelihood zero. No blanket claim about every compressed or point-state model."
+  },
+  "same_matrix_HMM": {
+    "identical_complete_episode_traces": 2048,
+    "total_pairs": 2048,
+    "exclusive_HX_operator_claim_supported": false
+  },
+  "independent_audit": {
+    "statistics_passed": true,
+    "statistics_numeric_comparisons": 1379725,
+    "statistics_max_absolute_error": 5.684341886080802e-14,
+    "statistics_raw_complete_queries_verified": 159648,
+    "statistics_input_files_hashed": 90,
+    "statistics_used_project_summarize": false,
+    "execution_passed": true,
+    "execution_mismatch_count": 0,
+    "core_files_unchanged": 18,
+    "supplement_files_unchanged": 3
+  },
+  "research_category_origin": "These seven categories are this report's acceptance grouping. Status records bounded evidence, not user acceptance of unfinished work. Only manifest-listed source files were frozen; new report artifacts do not amend the experiment.",
+  "research_categories": [
+    {
+      "id": "R1",
+      "name_zh": "内容记忆与地址接口",
+      "status": "bounded_contract_completed_broader_learning_open",
+      "completed": [
+        "相同 typed 地址路由、WRITE、DISTRACTOR、多 query 及全 key 时间推进已实现与独立核验。",
+        "静态内容合同：4096 episodes、24576 queries 全正确，覆盖全部 24 地址排列及 8192 次 changed overwrite。"
+      ],
+      "open": [
+        "地址由任务公开给定；未学习语义 key、内容编码、写入门或检索路由。",
+        "尚未完成含延迟、漂移和干扰的 learned addressing 与匹配训练/内存/计算预算的 gated/SSM 比较。"
+      ],
+      "evidence": [
+        "dev/content_baseline.json",
+        "results/INDEPENDENT_EXECUTION_AUDIT.json"
+      ]
+    },
+    {
+      "id": "R2",
+      "name_zh": "联合分布、决策相关性与压缩",
+      "status": "partial_with_invalid_secondary",
+      "completed": [
+        "full joint、factorized 与 index-mean 的固定参数敏感性已执行。",
+        "synthetic 同 phase/content 边缘、不同 joint 的严格动作差异见证已找到；真实公开历史探针执行固定 16 episodes、768 格点，未找到对应动作差。",
+        "补充确认有少量 full/factorized 动作差，mean 全部尝试及失败费用留档。"
+      ],
+      "open": [
+        "synthetic 见证不等于可达后验或稳定效用增益。",
+        "index-mean 删除 recovery 支持，16/2048 次合法 erasure 成为零概率；两域全部 mean 性能和 D-minus-mean 必须为 null。",
+        "支持保持压缩尚未实现或重新训练确认；需要公开历史可达的同边缘对照及预算匹配净效用检验。"
+      ],
+      "evidence": [
+        "results/decision_probe.json",
+        "results/MECHANISM_ACTION_COUNTS.json",
+        "results/SUMMARY.json",
+        "results/FAILURE_DIAGNOSIS.json"
+      ]
+    },
+    {
+      "id": "R3",
+      "name_zh": "固定、学习与自由边界控制",
+      "status": "finite_controller_completed_three_way_boundary_study_open",
+      "completed": [
+        "共同有限控制器枚举当前 query 的三个时间槽及真实 READ/WAIT/REFRESH/STOP 后继；固定模式按验证效用选择并冻结。",
+        "本轮八个 fit 均选到固定 STOP；固定与有限 value 控制对比完成。"
+      ],
+      "open": [
+        "没有完成固定阈值、学习阈值、He-Xiong 自由边界的同预算三对照。",
+        "有限动作 value 最大化不是连续 QVI、value matching/smooth pasting 证明，也不优化未来全部六个 query 的信息价值。",
+        "任务自适应边界、隐式边界导数、完整训练梯度稳定性及端到端学习仍待独立验证。"
+      ],
+      "evidence": [
+        "PROTOCOL.json",
+        "results/INDEPENDENT_EXECUTION_AUDIT.json",
+        "results/SUMMARY.json"
+      ]
+    },
+    {
+      "id": "R4",
+      "name_zh": "value/risk 双通道的独立贡献",
+      "status": "descriptive_feature_ablation_completed_gain_open",
+      "completed": [
+        "四个共同 ridge 学习策略已执行：state/confidence、STOP-value、value+risk、同数量 ordinary-dual 特征。",
+        "实际动作与答案差计数已报告，并与确认效用分开解释；共同特征计算成本全部记入。"
+      ],
+      "open": [
+        "STOP-value 是终点正确率预测，并非原金融 equity value 或最优 continuation；risk 是自然首达概率，并非再生驱动力。",
+        "这些策略限一次 READ/REFRESH 后 STOP；与三槽完整控制器的差异不能归因于单个特征。",
+        "相同公开 prefix、相同完整控制范围、匹配训练/搜索预算下的决策频率、后果和净效用增益尚未确证。"
+      ],
+      "evidence": [
+        "PROTOCOL.json",
+        "results/MECHANISM_ACTION_COUNTS.json",
+        "results/MECHANISM_INTERPRETATION_ZH.md",
+        "results/SUMMARY.json"
+      ]
+    },
+    {
+      "id": "R5",
+      "name_zh": "自然再生、reset 与 recovery 语义",
+      "status": "equal_mean_recovery_sensitivity_completed_reset_learning_open",
+      "completed": [
+        "自然首达与多次事件计数分离，恢复后剩余时间继续传播；固定模型下进行了两阶段 Erlang 与同均值 exponential recovery 对照。",
+        "REFRESH 定义为有耗时和费用的新观测；不把内部状态清空当作世界修复。"
+      ],
+      "open": [
+        "没有完成可学习 reset 核、reset 时机、年龄/滞后机制或所有 recovery 家族比较。",
+        "memoryless 对照仅改变同均值恢复分布且保留拟合参数；不能推断 reset 学习已完成或已被否定。",
+        "内部无新信息 reset 不得改变 owner 真值；未来如需真实外部 repair，必须预先声明作用、耗时、费用和可见信息。"
+      ],
+      "evidence": [
+        "PROTOCOL.json",
+        "results/numerics.json",
+        "results/INDEPENDENT_EXECUTION_AUDIT.json",
+        "results/SUMMARY.json"
+      ]
+    },
+    {
+      "id": "R6",
+      "name_zh": "同信息 2×2、强普通对照与主要增益门",
+      "status": "registered_supplement_complete_primary_gain_not_admitted",
+      "completed": [
+        "补充命名空间的 8 fits × 2 domains × 128 episodes 全部 16 worker 完成；12 个有效臂完整。",
+        "B-A、D-C、C-A、D-B、interaction，256 次符号翻转、两域 Holm、四项同时非劣及双成本门均已独立复算。",
+        "same-matrix HMM 的 2048 组完整 episode/query trace 与 D 完全一致；普通候选依据验证任务效用选择。"
+      ],
+      "open": [
+        "质量非劣通过，但 D-B 主要质量增益门和质量保护的成本门均未通过。",
+        "同矩阵 HMM 等价，不能声称 HX 独有算子优势；自由 CTMC 也只覆盖一种普通参数族。",
+        "尚无充分训练、可用信息/控制深度/候选搜索/状态容量/CPU 都匹配的 gated recurrent 或 SSM 强对照。",
+        "OOD 仅更换时间间隔；跨动力学族、观测族和真实应用迁移尚未完成。"
+      ],
+      "evidence": [
+        "results/SUMMARY.json",
+        "results/INDEPENDENT_STATISTICS_AUDIT.json",
+        "results/INDEPENDENT_EXECUTION_AUDIT.json",
+        "MODEL_SPEC.md"
+      ]
+    },
+    {
+      "id": "R7",
+      "name_zh": "数值求解、完整成本与原生交付",
+      "status": "finite_numerics_and_scoped_cost_completed_production_open",
+      "completed": [
+        "同一有限 40-state Q 的 expm 与独立正 uniformization、semigroup、首达和多次事件等正确性已核验。",
+        "正式训练完整 worker、两轮确认（包括失败 worker）、冷启动、候选规划分支、在线执行和本地 belief checkpoint 成本已按范围留账。",
+        "补充冻结与源哈希已验证；执行审计和独立统计审计均通过。"
+      ],
+      "open": [
+        "expm/uniformization 是相同有限 Q 的数值比较，不是连续 PDE 与闭式有限期限控制解的精度/收敛/成本比较。",
+        "本地 belief/model/clock fsync/read/restore 不是 full-owner crash recovery；尚无 RNG、in-flight action、外部回执及网络重放恢复。",
+        "native Q24/Rust 生产集成、部署吞吐、尾延迟、能耗、网络/序列化成本及真实成本收益未完成。",
+        "研究账本明确保留未完整计量项；不得称为全部项目能耗或货币账单。"
+      ],
+      "evidence": [
+        "results/numerics.json",
+        "results/RESEARCH_COST_LEDGER.json",
+        "results/INDEPENDENT_STATISTICS_AUDIT.json",
+        "results/INDEPENDENT_EXECUTION_AUDIT.json",
+        "NUMERICS_SCOPE.md"
+      ]
+    }
+  ],
+  "open_gate_ids": [
+    "learned_addressing",
+    "matched_budget_gated_recurrent_or_SSM",
+    "decision_frequency_and_realized_net_utility",
+    "support_preserving_compression",
+    "fixed_learned_free_boundary_three_way",
+    "adaptive_boundary_and_training_gradients",
+    "learned_reset_and_recovery",
+    "continuum_PDE_closed_form_comparison",
+    "native_Q24_integration",
+    "full_owner_crash_recovery",
+    "energy_network_and_real_deployment_cost"
+  ],
+  "cost_scope": {
+    "core_formal_train_plus_both_confirmation_worker_cpu_seconds": 495.065461,
+    "nonoverlapping_recorded_research_cpu_seconds": 547.075013929,
+    "recorded_research_cost_is_not_all_project_cost": true,
+    "unmetered_items": [
+      "early development routines without parent receipts",
+      "failed diagnostic setup imports with wall-only records",
+      "mechanism-count report generation",
+      "summary and report/plot generation",
+      "artifact packaging, GitHub API transfer and remote storage",
+      "outer wrappers/final writes excluded by individual audit scopes",
+      "human/agent design time, GPU/energy and production network/owner recovery"
+    ],
+    "deployment_gate": "Both domains: utility and reward simultaneous NI; measured online D/B and full-search D/B at 1000 uses each <= 0.90. Gate failed."
+  },
+  "source_provenance": {
+    "source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+    "original_model_freeze_commit": "8aa146bdb9dc7fae8748393cf718e24a7a9db2d3",
+    "supplement_commit": "e4b51213bd19b6532553d252056573c17abc4814",
+    "original_freeze_sha256": "550e39dd4144b676f561ab8d54d91846835343515030c3033ba80bbab8dbbb3e",
+    "supplemental_freeze_sha256": "7fa3959a6244d98e90f081337d5ab6dc6172b396176017f9b02dff623156ff96",
+    "core_manifest_path": "SOURCE_MANIFEST.json",
+    "core_manifest_sha256": "6c06773eadb2ccf9edb4f992fcebd338e34854d5a7ba36c938a0014fa7e2dbf2",
+    "core_file_sha256": {
+      "tools/hcsn/addressed_decision_r15_20261101/PROTOCOL.json": "dbd4e096c3a4fdf814a48eeb41d712a040e09f3be861f6700fe4fabf0c6c5461",
+      "tools/hcsn/addressed_decision_r15_20261101/__init__.py": "176b49d47d06af0e4e71ec723aa0576e94d208812f450f66491d2aa6eb4ca54e",
+      "tools/hcsn/addressed_decision_r15_20261101/audit.py": "fb05911e625e1332a05ee82564700888ca7950a6cc42cb6c9831bf4d59e03e3d",
+      "tools/hcsn/addressed_decision_r15_20261101/calibration.py": "39d47e857809d80e06fdf02171e35499ae2fddb215b4b4c4fd7c19f94d865a21",
+      "tools/hcsn/addressed_decision_r15_20261101/campaign.py": "02997ee4d91ffd07b782b20ece2fe8089b44124f1a740fcac580601e22aa117a",
+      "tools/hcsn/addressed_decision_r15_20261101/content_baseline.py": "02e2ec1b639373a502ead99bb0f14bfedeab52839b571aa4a8b664a52556b859",
+      "tools/hcsn/addressed_decision_r15_20261101/decision_probe.py": "f45f8c6f3765d3535a2cf522efe878dd51549e328278d121a38ccdd50180c7d6",
+      "tools/hcsn/addressed_decision_r15_20261101/execution.py": "28c8876e8e5fe2087d98883986aa8a04c9afb96d83fbfb89d3ea1930c824a4b0",
+      "tools/hcsn/addressed_decision_r15_20261101/law.py": "d405c6dc629173b338828fef9bbe2b639cdc5a24de89023266786369d8997ef8",
+      "tools/hcsn/addressed_decision_r15_20261101/numerics_study.py": "4c21e00672a2fab547b0330ce7a5986b30fdf70a1c40ef58a5089001b596822a",
+      "tools/hcsn/addressed_decision_r15_20261101/planner.py": "2ca6033e52a0f941cd499230b04d9789bc761cf769ddb9a644de9641e09cc833",
+      "tools/hcsn/addressed_decision_r15_20261101/statistics.py": "8cfa4d07ab5953e22275bb16d03453dcf98f6b0d915db358cf3f0e6fe777efcc",
+      "tools/hcsn/addressed_decision_r15_20261101/supervisor.py": "b2769a2231890623c0aaf5c60d9d990d145d504f6e705294bcc6cc3cb01fe9e5",
+      "tools/hcsn/addressed_decision_r15_20261101/test_audit.py": "f9d94e729b9a14b0dafc810d4390713c4d19482452dce24d0d50daa3807c366f",
+      "tools/hcsn/addressed_decision_r15_20261101/world.py": "e3f584515dfe5272122a6647aeb36c781505f4cd7f98f916cace2bc76206ed1f",
+      "tools/hcsn/calibrated_operator_r11_20261031/numerics/kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+      "tools/hcsn/unified_cell_r12_20261031/PROTOCOL.json": "e14f397784e0c3b80edbbcf85e68b8d86f39d15004e375ee92a1f4a22b4c3621",
+      "tools/hcsn/unified_cell_r12_20261031/cell.py": "c76e6d128ecefe871b14ee3855e44420cfdfd4553e4afb588142db9a60931345"
+    },
+    "supplement_manifest_path": "SUPPLEMENT_MANIFEST.json",
+    "supplement_manifest_sha256": "f705e77ab930318ab395c1584e7d639ec1fb423e5bbdaec9fc348fc0948dec81",
+    "supplement_file_sha256": {
+      "SUPPLEMENT_PROTOCOL.json": "38c22a588a8afa46c72e0aa25844dcfcf31d0119b9d2f5ce0f666adef77fa05c",
+      "supplement.py": "2a77361b98597b0ede9ce023b454be766ecaa949e20865d37bdc217871eabf0a",
+      "supplement_statistics.py": "3aca79cc40123e00b3c11662c92125140d50fa80256b14270a0cf94c626a4cb7"
+    }
+  },
+  "evidence_paths_relative_to_study": {
+    "SOURCE_MANIFEST.json": {
+      "sha256": "6c06773eadb2ccf9edb4f992fcebd338e34854d5a7ba36c938a0014fa7e2dbf2"
+    },
+    "SUPPLEMENT_MANIFEST.json": {
+      "sha256": "f705e77ab930318ab395c1584e7d639ec1fb423e5bbdaec9fc348fc0948dec81"
+    },
+    "PROTOCOL.json": {
+      "sha256": "dbd4e096c3a4fdf814a48eeb41d712a040e09f3be861f6700fe4fabf0c6c5461"
+    },
+    "SUPPLEMENT_PROTOCOL.json": {
+      "sha256": "38c22a588a8afa46c72e0aa25844dcfcf31d0119b9d2f5ce0f666adef77fa05c"
+    },
+    "results/SUMMARY.json": {
+      "sha256": "80b62cfeba264de5683cd72d81291ad5197986339706dc9ee991a51e412be140"
+    },
+    "results/INDEPENDENT_STATISTICS_AUDIT.json": {
+      "sha256": "12a7dae93f539fb10775dcf546430918932ca6bee27ad87a406c04eb56d5453a"
+    },
+    "results/INDEPENDENT_EXECUTION_AUDIT.json": {
+      "sha256": "244155bbd0a70ae1c7273452a940c34ef4179863e914dcb3c905e9a4fc772fd5"
+    },
+    "results/FAILURE_DIAGNOSIS.json": {
+      "sha256": "eefa368bc4b90c7e9cefe6b0feafb8ddc764d2c9a7ba95aeccc4183549c1a63c"
+    },
+    "results/MECHANISM_ACTION_COUNTS.json": {
+      "sha256": "abd1ffa8d5fd2fd63e371bba0e873262db0c3d7bf530c5786be24b89f8078f3f"
+    },
+    "results/MECHANISM_INTERPRETATION_ZH.md": {
+      "sha256": "a636643ff35d19b50d0d7a4bcc458993ad347b511e6783b96a7c3454efe05f9d"
+    },
+    "results/decision_probe.json": {
+      "sha256": "a948f8bfeae021fd7a75104cf425fe49967b0171c0bb47d01d917cd75f4a316c"
+    },
+    "results/numerics.json": {
+      "sha256": "563bc33ad41b843dfcb9a1f0f2451f35077634cd93c37e897c836e359586d712"
+    },
+    "results/RESEARCH_COST_LEDGER.json": {
+      "sha256": "769f0222d6b801e16172fb4d7631ed5e752673e6888dfc110b974fdae621b824"
+    },
+    "dev/content_baseline.json": {
+      "sha256": "30d8e853cf60e62838ccf77ca178f0c23fad59fe04af2340020a5db19a1f1bfa"
+    }
+  },
+  "mutation_scope": "Only new results/ACCEPTANCE.json and results/BLOCKERS_ZH.md; frozen source, protocol, SUMMARY and audit files unchanged."
+}

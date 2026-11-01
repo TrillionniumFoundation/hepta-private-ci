@@ -1,0 +1,95 @@
+{
+  "behavior": {
+    "addressed_observation_isolation": true,
+    "all_address_advance_error": 2.0539125955565396e-15,
+    "checkpoint_replay_exact": true,
+    "high_refresh_price_dominance": true,
+    "independent_same_matrix_hmm_error": 2.0539125955565396e-15,
+    "internal_reinitialization_changes_world": false,
+    "no_early_observation": true,
+    "observation_order_invariant": true,
+    "passed": true,
+    "planner_scope": "current query finite deadline; not six-query global optimality",
+    "same_matrix_hmm_actions_identical": true,
+    "scalar_dp_max_error": 2.5868196473766147e-14,
+    "typed_write_preserves_phase": true,
+    "world_replay_fingerprint": "f0510124746f7fd94a163796fe0335435bed60407c6787e18dc72b89f9c65149"
+  },
+  "law_identity": "f9bbedf121707d5d78515698c05c2bc5f915f8a8fac78df42e5664f4d842ddf7",
+  "numerics": {
+    "correlation": {
+      "coupled_read_correctness": 1.0,
+      "coupled_reads": true,
+      "current_correctness": 0.5,
+      "diagnostic_fee": 0.32499999999999996,
+      "independent_read_correctness": 0.65,
+      "independent_stops": true,
+      "marginal_error": 0.0,
+      "read_gain_gap": 0.35,
+      "scope": "constructed joint-state witness; no elapsed-time or reachability claim"
+    },
+    "event_count": [
+      {
+        "computed": 0.24300983670999737,
+        "dt": 0.07,
+        "error": 6.078471059822732e-14,
+        "reference": 0.2430098367099366
+      },
+      {
+        "computed": 0.5562876217574779,
+        "dt": 0.65,
+        "error": 7.793765632868599e-14,
+        "reference": 0.5562876217574
+      },
+      {
+        "computed": 0.9515961562326141,
+        "dt": 2.3,
+        "error": 2.4980018054066022e-14,
+        "reference": 0.951596156232639
+      }
+    ],
+    "expm_uniformization_max_error": 3.6637359812630166e-15,
+    "first_hit": [
+      {
+        "computed": 0.2430091943930998,
+        "dt": 0.07,
+        "error": 3.4139358007223564e-15,
+        "reference": 0.2430091943931032
+      },
+      {
+        "computed": 0.534799774208673,
+        "dt": 0.65,
+        "error": 3.9968028886505635e-15,
+        "reference": 0.534799774208677
+      },
+      {
+        "computed": 0.6842145854412238,
+        "dt": 2.3,
+        "error": 5.10702591327572e-15,
+        "reference": 0.6842145854412289
+      }
+    ],
+    "independent_reference": "Poisson series and DOP853 occupation ODE",
+    "minimum_transition_entry": 3.666897233083537e-20,
+    "passed": true,
+    "repeated_events": {
+      "duration": 8.0,
+      "expected_count": 2.0046900320965033,
+      "probability_at_least_one": 0.8717838783793637
+    },
+    "semigroup_error": 7.216449660063518e-16,
+    "stochastic_row_error": 3.3306690738754696e-15
+  },
+  "passed": true,
+  "public_events": {
+    "content_changing_writes_checked": 14,
+    "distractors_checked": 48,
+    "event_metadata_returned_as_copies": true,
+    "passed": true,
+    "phase_preserved_on_write": true,
+    "pre_write_deadline_observations_checked": 16,
+    "public_writes_checked": 16,
+    "scope": "isolated deterministic sensor audit; noisy confirmation unchanged"
+  },
+  "schema": "hcsn-r15-independent-audit-v1"
+}

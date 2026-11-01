@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-r15-complete-subprocess-receipt-v1",
+  "frozen_source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "tools.hcsn.addressed_decision_r15_20261101.numerics_study",
+    "--output",
+    "tools/hcsn/addressed_decision_r15_20261101/results/numerics.json"
+  ],
+  "started_utc": "2026-11-01T07:58:19.430315+00:00",
+  "finished_utc": "2026-11-01T07:58:21.371457+00:00",
+  "wall_seconds": 1.9411419889984245,
+  "user_cpu_seconds": 0.8547899999999999,
+  "system_cpu_seconds": 0.048357,
+  "total_cpu_seconds": 0.9031469999999999,
+  "peak_rss_kib_linux": 47964,
+  "exit_code": 0,
+  "OPENBLAS_NUM_THREADS": "1",
+  "source_sha256_before": "4c21e00672a2fab547b0330ce7a5986b30fdf70a1c40ef58a5089001b596822a",
+  "source_sha256_after": "4c21e00672a2fab547b0330ce7a5986b30fdf70a1c40ef58a5089001b596822a",
+  "output_path": "tools/hcsn/addressed_decision_r15_20261101/results/numerics.json",
+  "stdout_path": "tools/hcsn/addressed_decision_r15_20261101/results/numerics.stdout.log",
+  "stderr_path": "tools/hcsn/addressed_decision_r15_20261101/results/numerics.stderr.log",
+  "scope": "Complete child process, including imports, computation and result serialization; Linux wait4 resource usage.",
+  "output_sha256": "563bc33ad41b843dfcb9a1f0f2451f35077634cd93c37e897c836e359586d712"
+}

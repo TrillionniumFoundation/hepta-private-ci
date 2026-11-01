@@ -1,0 +1,265 @@
+{
+  "schema": "hcsn-r15-decision-probe-v1",
+  "law_identity": "f9bbedf121707d5d78515698c05c2bc5f915f8a8fac78df42e5664f4d842ddf7",
+  "specification": {
+    "synthetic_seed": 815400,
+    "history_seed": 815500,
+    "durations": [
+      0.25,
+      0.5,
+      0.75,
+      0.35,
+      0.65,
+      0.95
+    ],
+    "prices": [
+      0.5,
+      1.0,
+      2.0,
+      4.0
+    ],
+    "remaining": [
+      1,
+      2,
+      3
+    ],
+    "min_strict_action_gap": 1e-06,
+    "stop_rule": "First differing action with both gaps strictly above threshold; else exhaust fixed budget"
+  },
+  "synthetic": {
+    "found": true,
+    "pair_budget": 96,
+    "maximum_pair_grid_evaluations": 6912,
+    "attempted_pair_grid_evaluations": 4,
+    "generated_pairs": 1,
+    "witness": {
+      "beliefs": [
+        [
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          0.4084047602330047,
+          0.0026219502375952834,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          0.27264629103278915,
+          0.31632609849661086,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08
+        ],
+        [
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          0.15145608694866766,
+          0.25957062352193233,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          0.529594964317126,
+          0.05937742521227386,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08,
+          2.5e-08
+        ]
+      ],
+      "pair_index": 0,
+      "dt": 0.25,
+      "price": 4.0,
+      "remaining": 1,
+      "construction": {
+        "active": 5,
+        "recovery": 8,
+        "classes": [
+          2,
+          3
+        ],
+        "phase_mass": 0.4110270714976715,
+        "class_mass": 0.6810516823174761,
+        "transport_amplitude": 0.12847446511663363
+      },
+      "actions": [
+        "STOP",
+        "READ"
+      ],
+      "gaps": [
+        0.0007500000000000284,
+        0.06785258250376036
+      ],
+      "q_values": [
+        {
+          "STOP": 0.6723111464976008,
+          "WAIT": 0.6715611464976008,
+          "READ": 0.6310927638148028
+        },
+        {
+          "STOP": 0.654407311651467,
+          "WAIT": 0.653657311651467,
+          "READ": 0.7222598941552274
+        }
+      ],
+      "phase_marginal_error": 1.1102230246251565e-16,
+      "content_marginal_error": 2.220446049250313e-16,
+      "different_action": true,
+      "qualifies": true
+    },
+    "strongest_nonqualifying": {
+      "pair_index": 0,
+      "dt": 0.25,
+      "price": 4.0,
+      "remaining": 1,
+      "construction": {
+        "active": 5,
+        "recovery": 8,
+        "classes": [
+          2,
+          3
+        ],
+        "phase_mass": 0.4110270714976715,
+        "class_mass": 0.6810516823174761,
+        "transport_amplitude": 0.12847446511663363
+      },
+      "actions": [
+        "STOP",
+        "READ"
+      ],
+      "gaps": [
+        0.0007500000000000284,
+        0.06785258250376036
+      ],
+      "q_values": [
+        {
+          "STOP": 0.6723111464976008,
+          "WAIT": 0.6715611464976008,
+          "READ": 0.6310927638148028
+        },
+        {
+          "STOP": 0.654407311651467,
+          "WAIT": 0.653657311651467,
+          "READ": 0.7222598941552274
+        }
+      ],
+      "phase_marginal_error": 1.1102230246251565e-16,
+      "content_marginal_error": 2.220446049250313e-16,
+      "different_action": true,
+      "qualifies": true
+    },
+    "exhausted_without_witness": false,
+    "cpu_seconds": 0.002035540999999974,
+    "scope": "Synthetic controllability witness; no reachable-posterior claim"
+  },
+  "reachable_history": {
+    "found": false,
+    "episode_budget": 16,
+    "maximum_pair_grid_evaluations": 768,
+    "attempted_pair_grid_evaluations": 768,
+    "generated_episodes": 16,
+    "owner_observations_consumed": 192,
+    "witness": null,
+    "strongest_nonqualifying": {
+      "episode_seed": 815512,
+      "domain": "iid",
+      "query": 3,
+      "key": 2,
+      "completed_step": 1,
+      "dt": 0.75,
+      "price": 0.5,
+      "remaining": 2,
+      "actions": [
+        "REFRESH",
+        "REFRESH"
+      ],
+      "gaps": [
+        0.1310041803798524,
+        0.13098702658694095
+      ],
+      "q_values": [
+        {
+          "STOP": 0.7444344433924917,
+          "WAIT": 0.7421844433924917,
+          "READ": 0.7994958196201498,
+          "REFRESH": 0.9305000000000022
+        },
+        {
+          "STOP": 0.7444399693096,
+          "WAIT": 0.7421899693096,
+          "READ": 0.7995129734130612,
+          "REFRESH": 0.9305000000000021
+        }
+      ],
+      "phase_marginal_error": 5.551115123125783e-17,
+      "content_marginal_error": 0.0,
+      "different_action": false,
+      "qualifies": false
+    },
+    "exhausted_without_witness": true,
+    "cpu_seconds": 1.538659278,
+    "scope": "Full posterior is reached by the listed raw public history under the true-model finite filter. Its instantaneous factorized projection need not be reachable. Both receive the same model and costs; this is not a fitted-arm or confirmation result."
+  },
+  "cost": {
+    "cpu_seconds": 1.551987628,
+    "wall_seconds": 3.439879520999966,
+    "planners_constructed": 24,
+    "planner_calls": 1544,
+    "candidate_belief_evaluations": 275000,
+    "planner_preparation_cpu_seconds": 0.0026459160000000537,
+    "scope": "All law/world construction, history generation, propagation, candidate actions and search; imported-library startup excluded"
+  },
+  "inference_limit": "Existence of a decision-sensitive joint state is not measured gain, general reachability, semantic content, or production admission."
+}

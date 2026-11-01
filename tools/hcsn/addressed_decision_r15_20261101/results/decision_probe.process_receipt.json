@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-r15-complete-subprocess-receipt-v1",
+  "frozen_source_commit": "7d634a293500982db5beb37fa1d494a75b540a91",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "tools.hcsn.addressed_decision_r15_20261101.decision_probe",
+    "--output",
+    "tools/hcsn/addressed_decision_r15_20261101/results/decision_probe.json"
+  ],
+  "started_utc": "2026-11-01T07:58:07.543402+00:00",
+  "finished_utc": "2026-11-01T07:58:11.631304+00:00",
+  "wall_seconds": 4.0879079250007635,
+  "user_cpu_seconds": 1.81534,
+  "system_cpu_seconds": 0.019975,
+  "total_cpu_seconds": 1.835315,
+  "peak_rss_kib_linux": 47152,
+  "exit_code": 0,
+  "OPENBLAS_NUM_THREADS": "1",
+  "source_sha256_before": "f45f8c6f3765d3535a2cf522efe878dd51549e328278d121a38ccdd50180c7d6",
+  "source_sha256_after": "f45f8c6f3765d3535a2cf522efe878dd51549e328278d121a38ccdd50180c7d6",
+  "output_path": "tools/hcsn/addressed_decision_r15_20261101/results/decision_probe.json",
+  "stdout_path": "tools/hcsn/addressed_decision_r15_20261101/results/decision_probe.stdout.log",
+  "stderr_path": "tools/hcsn/addressed_decision_r15_20261101/results/decision_probe.stderr.log",
+  "scope": "Complete child process, including imports, computation and result serialization; Linux wait4 resource usage.",
+  "output_sha256": "a948f8bfeae021fd7a75104cf425fe49967b0171c0bb47d01d917cd75f4a316c"
+}

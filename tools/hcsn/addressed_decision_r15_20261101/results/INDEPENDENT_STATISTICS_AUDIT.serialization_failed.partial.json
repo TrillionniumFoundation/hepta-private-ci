@@ -1,0 +1,146 @@
+{
+  "admission": {
+    "HX_exclusive_operator_gain": false,
+    "all_thirteen_arms_valid": false,
+    "design_complete": true,
+    "mean_secondary_admissible": false,
+    "quality_gain": false,
+    "quality_guarded_cost": false,
+    "quality_noninferiority": true,
+    "same_matrix_HMM_behavior_identical": true
+  },
+  "audit_process_cpu_seconds_through_report": 4.863528,
+  "audit_wall_seconds_through_report": 2.9118368620002,
+  "cohorts": 16,
+  "comparison": {
+    "discrepancies": [],
+    "maximum_absolute_difference": 5.684341886080802e-14,
+    "numeric_checks": 1379725,
+    "summary_path": "tools/hcsn/addressed_decision_r15_20261101/results/SUMMARY.json"
+  },
+  "cumulative_confirmation_cpu": {
+    "both_runs_cpu_seconds": 464.95423800000003,
+    "new_worker_cpu_seconds": 293.51855,
+    "original_confirmation_results_read": false,
+    "original_cpu_seconds": 171.435688,
+    "original_failed_worker_cpu_seconds": 22.476902,
+    "original_workers": 16
+  },
+  "domains": {
+    "iid": {
+      "Holm_p": 1.0,
+      "contrasts": {
+        "B_minus_A": {
+          "ci": [
+            0.009899915336590839,
+            0.027131741564450786
+          ],
+          "mean": 0.018515828450520813,
+          "se": 0.0036436711279292646,
+          "values": [
+            0.010400390624999978,
+            0.02912011718749996,
+            0.004335937499999942,
+            0.011201822916666604,
+            0.030953450520833314,
+            0.0303720703125,
+            0.01669270833333336,
+            0.015050130208333345
+          ]
+        },
+        "C_minus_A": {
+          "ci": [
+            0.0,
+            0.0
+          ],
+          "mean": 0.0,
+          "se": 0.0,
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "D_minus_B": {
+          "ci": [
+            -0.00012153921689128915,
+            0.00021585887834963107
+          ],
+          "mean": 4.715983072917096e-05,
+          "se": 7.134285606130712e-05,
+          "values": [
+            0.0,
+            -0.00015169270833326198,
+            0.0005289713541666297,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "D_minus_C": {
+          "ci": [
+            0.010051623491738501,
+            0.02707435307076147
+          ],
+          "mean": 0.018562988281249984,
+          "se": 0.003599457623670366,
+          "values": [
+            0.010400390624999978,
+            0.0289684244791667,
+            0.004864908854166572,
+            0.011201822916666604,
+            0.030953450520833314,
+            0.0303720703125,
+            0.01669270833333336,
+            0.015050130208333345
+          ]
+        },
+        "interaction": {
+          "ci": [
+            -0.00012153921689128915,
+            0.00021585887834963107
+          ],
+          "mean": 4.715983072917096e-05,
+          "se": 7.134285606130712e-05,
+          "values": [
+            0.0,
+            -0.00015169270833326198,
+            0.0005289713541666297,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "cost_gate": false,
+      "full_D_over_B_by_uses": {
+        "1": 0.9999501900969467,
+        "100": 0.99798571111604,
+        "1000": 0.9941591937933183,
+        "10000": 0.9927755075883951
+      },
+      "gain_gate": false,
+      "mean_invalid_support": 0,
+      "noninferiority": {
+        "reward": {
+          "lower": -0.00029968168108532897,
+          "mean": 0.0001627604166666713,
+          "passes": true
+        },
+        "utility": {
+          "lower": -0.00015554264873287433,
+          "mean": 4.715983072917096e-05,
+          "passes": true
+        }
+      },
+      "online_D_over_B": 0.9925800358943798,
+      "sign_flip_extreme": 

@@ -1,5 +1,26 @@
 # Addressed decision-sensitive HCSN study (R15)
 
+## Completed research evidence
+
+The fresh supplemental confirmation completed all 16 fit/domain workers.
+Common value control improved paid task utility over the selected fixed program;
+the registered HX core-gain and quality-guarded cost gates did not pass. Quality
+noninferiority passed. The index-mean arm is invalid, and its performance is null
+in both domains. Same-matrix HMM and D have identical full traces.
+
+- [Chinese research report](REPORT_ZH.md)
+- [Reproduction and exact freeze identities](REPRODUCE.md)
+- [Machine-readable acceptance](results/ACCEPTANCE.json) and [open research questions](results/BLOCKERS_ZH.md)
+- [Next discriminating experiment](results/NEXT_RESEARCH_ZH.md)
+- [Independent execution audit](results/INDEPENDENT_EXECUTION_AUDIT.md), [statistics audit](results/INDEPENDENT_STATISTICS_AUDIT.json), and [historical audit implementations](audit_sources/README.md)
+- [Artifact index and checksums](ARTIFACT_MANIFEST.json)
+
+The original protocol and source remain frozen. The separately published
+supplement records the mean-failure isolation and fresh confirmation namespace;
+the original incomplete run is retained, not pooled into the new estimates.
+
+## Experimental scope
+
 This research continuation fixes explicit address binding before testing whether
 conditional dynamics change valuable downstream actions. It derives its full-HX
 financial parameterization and finite phase/recovery process from the exact
