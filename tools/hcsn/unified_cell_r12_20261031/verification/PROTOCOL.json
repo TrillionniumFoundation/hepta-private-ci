@@ -1,0 +1,141 @@
+{
+  "sources": {
+    "contract.py": "cf765a72c2c7256b2827143234ba1e17ec125e4a2c41271d58c4d5f40c897ca0",
+    "models.py": "7a9c1b8ba856afbf5dfb5199e18f02b3e8df9aede7a80aef6aafff578022dba5",
+    "data.py": "3d44d034147004f7c945484271a2d0f1123277ac41eebd5d43248de77dec1918",
+    "control/controller.py": "910c8f0033b10a93aa56640231514a57525f1e6cf262ebff0d0d0d3dbc839c99"
+  },
+  "dtype": "torch.float64 throughout; no FP32 or second-order-AD claim",
+  "gradient_cases": [
+    {
+      "name": "regular",
+      "seed": 811,
+      "length": 12,
+      "dt": [
+        0.15,
+        0.45,
+        1.05
+      ],
+      "raw_shift": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "name": "long_bayes",
+      "seed": 812,
+      "length": 64,
+      "dt": [
+        0.05,
+        0.75,
+        2.1
+      ],
+      "raw_shift": [
+        1.0,
+        -1.0,
+        1.0
+      ]
+    },
+    {
+      "name": "near_boundary_reset",
+      "seed": 813,
+      "length": 48,
+      "dt": [
+        0.01,
+        0.05,
+        0.2
+      ],
+      "raw_shift": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "gradient_steps": [
+    0.0001,
+    5e-05,
+    1e-05
+  ],
+  "gradient_indices": [
+    0,
+    1,
+    2,
+    3,
+    10
+  ],
+  "gradient_scaled_gate": 2e-06,
+  "first_hit": {
+    "grids": [
+      8,
+      16,
+      32
+    ],
+    "means": [
+      0.05,
+      0.2,
+      0.6
+    ],
+    "width": 0.03,
+    "times": [
+      0.05,
+      0.45,
+      2.1,
+      10.0
+    ],
+    "upper": 0.8,
+    "spectrum_terms": [
+      256,
+      512
+    ],
+    "quadrature_nodes": 160
+  },
+  "actions": {
+    "grids": [
+      8,
+      16,
+      32,
+      64
+    ],
+    "means": [
+      0.04,
+      0.2,
+      0.6
+    ],
+    "widths": [
+      0.03,
+      0.1
+    ],
+    "bit_probabilities": [
+      0.5,
+      0.525,
+      0.55,
+      0.575,
+      0.6,
+      0.625,
+      0.65,
+      0.675,
+      0.7,
+      0.725,
+      0.75,
+      0.7749999999999999,
+      0.8,
+      0.825,
+      0.85,
+      0.875,
+      0.8999999999999999,
+      0.925,
+      0.95
+    ],
+    "times": [
+      0.05,
+      0.45,
+      2.1
+    ],
+    "horizon": 3,
+    "budget": 2,
+    "time_cost": 0.01
+  },
+  "scope": "Finite mechanistic development scan. No confirmation episodes, no continuous-regret certification."
+}

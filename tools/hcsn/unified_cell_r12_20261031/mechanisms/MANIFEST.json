@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn-r12-development-mechanisms-manifest-v1",
+  "seed": 311000,
+  "scope": "Constructed/development mechanisms and exact finite-model policy expectations; no formal gain claim.",
+  "upstream_sources_modified": false,
+  "formal_fit_or_confirmation_files_read": [],
+  "original_outcomes_preserved": true,
+  "post_confirmation_tie_rule_applied": false,
+  "files_sha256": {
+    "DEVELOPMENT_MECHANISMS.json": "7b3071281252a1f0ddd43c19389275398855e7f98f384f695c4580e5f446c07c",
+    "EXACT_POLICY_EXPECTATIONS.json": "3571fa35a6a0e50e999b958c76b889372fd56fecf71c1440b5d12052c0051028",
+    "REPORT.md": "a3a0c70d4f15fdb9818b5566b2538f8cb3609e8dd6fa0a695335cf088d048fac",
+    "SPEC.json": "26ecda8a7218aa4ca958a1d7a6dc7d2f0d61adf27ffbfcd7cfd4ee121a80a073",
+    "TIE_DIAGNOSTIC.json": "aab3faf0639d332834a800fffa3a7498d43f1c489a7ed48c0659e48aa2fa7829",
+    "policy_expectations.py": "d15b932d0974c9e7745133dd84652e21ba553a6bc49a90568a28465b1ee120da",
+    "run.py": "11227e24ce60b4f480fe25ea82d7cc98e85dac660021cbadeaa7209a44cee7b6"
+  },
+  "development_run_source_sha256": {
+    "contract.py": "cf765a72c2c7256b2827143234ba1e17ec125e4a2c41271d58c4d5f40c897ca0",
+    "data.py": "4501dd8936bdeccd6e328fdb3050b8d6a09423d549c17322029e682362900694",
+    "inference.py": "1228279709348c796107ae04a370d8d35a31bdfea80b8c4bcaf7ca0196d306a9",
+    "evaluation.py": "506b2f47c306e6abb6a829926789679291bdb17e62cf29e8c896dc31d939d76b",
+    "control/controller.py": "910c8f0033b10a93aa56640231514a57525f1e6cf262ebff0d0d0d3dbc839c99",
+    "PROTOCOL.json": "a49c8525b824b8b79b245a78ba388423d4b2ff8b82cf4179c4e4ef76ca8dde50",
+    "IMPLEMENTATION.json": "f19c2ebd366a24208402af0885dbe732c24d5cc821297ca528ef2e61161c0aec",
+    "mechanisms/run.py": "11227e24ce60b4f480fe25ea82d7cc98e85dac660021cbadeaa7209a44cee7b6",
+    "mechanisms/SPEC.json": "26ecda8a7218aa4ca958a1d7a6dc7d2f0d61adf27ffbfcd7cfd4ee121a80a073"
+  },
+  "expectation_run_source_sha256": {
+    "mechanisms/policy_expectations.py": "d15b932d0974c9e7745133dd84652e21ba553a6bc49a90568a28465b1ee120da",
+    "contract.py": "cf765a72c2c7256b2827143234ba1e17ec125e4a2c41271d58c4d5f40c897ca0",
+    "control/controller.py": "910c8f0033b10a93aa56640231514a57525f1e6cf262ebff0d0d0d3dbc839c99",
+    "mechanisms/SPEC.json": "26ecda8a7218aa4ca958a1d7a6dc7d2f0d61adf27ffbfcd7cfd4ee121a80a073"
+  },
+  "upstream_sources_still_match_development_record": {
+    "contract.py": true,
+    "data.py": true,
+    "inference.py": true,
+    "evaluation.py": true,
+    "control/controller.py": true,
+    "PROTOCOL.json": true,
+    "IMPLEMENTATION.json": true,
+    "mechanisms/run.py": true,
+    "mechanisms/SPEC.json": true
+  },
+  "tie_diagnostic_provenance": "Repeated same seed311000 world and original plan; Q values captured with an in-process observational wrapper only. No controller logic or root source was changed.",
+  "formal_gain_acceptance": false
+}

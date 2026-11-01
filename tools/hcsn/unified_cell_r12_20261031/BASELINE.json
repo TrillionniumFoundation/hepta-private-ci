@@ -1,0 +1,14 @@
+{
+  "schema": "hcsn-r12-baseline-v1",
+  "parent": "b426b83eb5fd27487c8dba3f90fe9af0dff615e1",
+  "parent_branch": "research/hcsn-calibrated-operator-r11-20261031",
+  "main_observed": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "related_independent_evidence": {
+    "causal_execution_v3": "1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d",
+    "reduced_rank_one": "039c31aea3d0b359f602367b27d41662f8f75caf",
+    "markov_risk_negative": "bbc9872ebd97892ca1e3f4a141c46917c9245216"
+  },
+  "new_paths": ["tools/hcsn/unified_cell_r12_20261031"],
+  "preservation": "Earlier research sources, results, original financial formula and production implementation remain identifiable at their original commits. New numerical candidates and failures live in this research directory.",
+  "initial_environment": {"python": "3.12.14", "rustc": "1.95.0", "torch": "2.10.0+cpu", "gpu_available": false}
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "hcsn-r12-frozen-native-v1",
+  "source_identity": "44d891bbffdf65396710fcb5b490473ae59656adede1146e9b840996d0a3a5cb",
+  "rust_source_sha256": {
+    "core.rs": "79853dbfb448231679c8366ad43a899eeb01d6810dc66bc3e9a4545eca31d063",
+    "events.rs": "86841f50d9dbf9ec6df5635b192f3eb1be29c3cfd1eca12649167b6c1480fcdc",
+    "events_main.rs": "7138e35a099f48ef70cc232d44d4e68b497b43b419900b49fa10c37dafda7004",
+    "lib.rs": "6e417c943d525542b8116aca0db7a0b1f427f1b014547eff4fa413cbe069e5c7",
+    "main.rs": "0d1c3e07f750c815b676874d1a8db3bf0e6f176278abcb2fd0514c2ecc88e63d",
+    "sha256.rs": "372ed9940f1a6b04c3100a5c906bdfabf2c691cf3eabe2c415811211611b5ff2"
+  },
+  "binaries_sha256": {
+    "libhcsn_native.so": "0dd9e0758bb9929b654a22f5528af0c0755c8ca062a1feeeb9b28d7e8027b904",
+    "hcsn-native": "c547892046e6cd53f0697528f60acfc38944653a09f8f8ebebbd6472ddd10be0",
+    "hcsn-events": "e2c37d9c691e21d2716a62c983aaff8c6c77c0b042acdb39198955e2cb58247c"
+  },
+  "contract_audit_library_identical": true,
+  "prior_contract_build_directory": "evidence/build_contract_01",
+  "format_only_changes": "Parent repository formatter split grouped imports. Core and SHA functions unchanged. The executed contract-audit library is byte-identical to the release library; CLI source-identity constants differ and old CLI evidence remains pinned to its own source.",
+  "no_production_qualification": true
+}
