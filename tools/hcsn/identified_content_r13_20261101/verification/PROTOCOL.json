@@ -1,0 +1,22 @@
+{
+  "scope":"Independent source-level gradient/identifiability verification; deterministic synthetic diagnostic sequences, no fitted weights or confirmation outcomes",
+  "physical_parameters":"Only sigma and liquidity train; maturity fixed at 1.3",
+  "mapping":"Actual R13 contract.model_terms(prices=False): boundary -> reset/prior -> 116x116 row Q",
+  "mapping_points":["initial","truth","mu_zero","mu_zero_sigma_minus_1e-6","mu_zero_sigma_plus_1e-6"],
+  "rank":"SVD of d vec(Q)/d two raw parameters; relative singular-value cutoff 1e-8; report singular values and scaling, not just rank",
+  "mapping_derivatives":"Two autograd JVP columns compared with independent centered differences at raw h=1e-4 and 5e-5",
+  "mapping_gate":2e-6,
+  "fixtures":[
+    {"name":"observed_iid12","length":12,"times_cycle":[0.15,0.45,1.05],"tokens_cycle":[0,6,5,2,6,3],"observed":"all"},
+    {"name":"missing_irregular64","length":64,"times":"2.1 at t mod16=0, else .75 at t mod4=1, else .05","tokens_cycle":[6,0,5,6,2,4],"observed":"t mod3 != 1"},
+    {"name":"repeated_recovery96","length":96,"times_cycle":[0.05,0.15,0.45],"tokens_cycle":[6,6,0,6,5,6],"observed":"all"}
+  ],
+  "likelihood":[[0.45,0.25,0.15,0.07,0.05,0.03],[0.03,0.05,0.07,0.15,0.25,0.45]],
+  "target":"Fixed posterior from same source code at declared physical truth and fixed likelihood, detached before differentiation; labels deterministic t mod2",
+  "loss_points":["initial","truth","mu_zero"],
+  "losses":["actual combined objective","posterior cross entropy","content label NLL"],
+  "loss_derivatives":"All 2 raw and 12 emission-logit parameters via centered FD h=1e-4 and 5e-5; compare same actual objective and long recurrent forward",
+  "loss_gradient_gate":2e-6,
+  "mu_smoothness":"Compare state and first gradient at sigma=mu_zero +/- 1e-4,1e-6,1e-8; report convergence to center, use no ReLU drift surrogate",
+  "nonclaims":"Local rank2 of generator map does not establish finite-data parameter recovery or observed-data global identifiability; row-softmax logits retain two additive gauge directions"
+}
