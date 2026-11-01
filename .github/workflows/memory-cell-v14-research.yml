@@ -26,7 +26,42 @@ env:
   TOKENIZERS_PARALLELISM: 'false'
 
 jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      routing: ${{ steps.paths.outputs.routing }}
+      language: ${{ steps.paths.outputs.language }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+          sparse-checkout: qualification/memory-cell-v14
+      - id: paths
+        env:
+          PREVIOUS_SHA: ${{ github.event.before }}
+        run: |
+          python3 - <<'PY'
+          import os, subprocess
+          previous = os.environ.get('PREVIOUS_SHA', '')
+          both = os.environ['GITHUB_EVENT_NAME'] == 'workflow_dispatch' or not previous or set(previous) == {'0'}
+          if both:
+              routing = language = True
+          else:
+              if subprocess.run(['git', 'cat-file', '-e', previous + '^{commit}'], capture_output=True).returncode:
+                  subprocess.run(['git', 'fetch', '--depth=1', 'origin', previous], check=True)
+              changed = subprocess.check_output(['git', 'diff', '--name-only', previous, 'HEAD'], text=True).splitlines()
+              names = [path.rsplit('/', 1)[-1] for path in changed if path.startswith('qualification/memory-cell-v14/') and '/evidence/' not in path]
+              common = any(name in ('run_receipt.py', 'preserve_evidence.py') for name in names)
+              routing = common or any(name.startswith(('routing', 'isolation', 'ROUTING_PROTOCOL')) for name in names)
+              language = common or any(name.startswith(('language', 'LANGUAGE_PROTOCOL', 'requirements-language')) for name in names)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('routing=' + str(routing).lower() + '\nlanguage=' + str(language).lower() + '\n')
+          PY
+
   routing:
+    needs: changes
+    if: needs.changes.outputs.routing == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -58,6 +93,8 @@ jobs:
           retention-days: 30
 
   language:
+    needs: changes
+    if: needs.changes.outputs.language == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     strategy:
@@ -90,7 +127,7 @@ jobs:
 
   preserve:
     needs: [routing, language]
-    if: always()
+    if: always() && (needs.routing.result != 'skipped' || needs.language.result != 'skipped')
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
@@ -98,7 +135,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          fetch-depth: 0
+          fetch-depth: 1
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           pattern: v14-*-${{ github.run_id }}-${{ github.run_attempt }}
