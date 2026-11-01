@@ -100,6 +100,18 @@ pub(crate) async fn verify_schema(pool: &SqlitePool) -> Result<(), EvidenceError
             "authbus_issuer_floor_no_delete",
             "CREATE TRIGGER authbus_issuer_floor_no_delete BEFORE DELETE ON authbus_issuer_floor BEGIN SELECT RAISE(ABORT, 'AuthBus issuer floor cannot be deleted'); END",
         ),
+        (
+            "authbus_owner_policy_floor",
+            "CREATE TABLE authbus_owner_policy_floor (singleton INTEGER PRIMARY KEY CHECK (singleton = 1), policy_revision BLOB NOT NULL CHECK (length(policy_revision) = 8 AND policy_revision > X'0000000000000000'), policy_digest BLOB NOT NULL CHECK (length(policy_digest) = 32)) WITHOUT ROWID",
+        ),
+        (
+            "authbus_owner_policy_monotonic",
+            "CREATE TRIGGER authbus_owner_policy_monotonic BEFORE UPDATE ON authbus_owner_policy_floor WHEN NEW.singleton != OLD.singleton OR NEW.policy_revision < OLD.policy_revision OR (NEW.policy_revision = OLD.policy_revision AND NEW.policy_digest != OLD.policy_digest) BEGIN SELECT RAISE(ABORT, 'AuthBus owner policy cannot regress'); END",
+        ),
+        (
+            "authbus_owner_policy_no_delete",
+            "CREATE TRIGGER authbus_owner_policy_no_delete BEFORE DELETE ON authbus_owner_policy_floor BEGIN SELECT RAISE(ABORT, 'AuthBus owner policy cannot be deleted'); END",
+        ),
     ];
     for (name, expected) in DEFINITIONS {
         let actual: Option<String> =

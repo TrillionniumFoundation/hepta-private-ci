@@ -7,12 +7,13 @@ use crate::authority_trust_unix::tests::signed;
 use codex_hepta_contracts::FinalUseFrontier;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocationUpdate;
+use ed25519_dalek::Signer;
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
 use std::sync::atomic::Ordering;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn actual_pq_host_reaches_owner_with_external_trust_and_rejects_classic_or_replayed_reply()
+async fn actual_pq_host_resumes_after_rejected_replies_and_reopens_with_spent_nonce_state()
 -> Result<()> {
     let root = tempfile::tempdir()?;
     fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700))?;
@@ -54,7 +55,7 @@ async fn actual_pq_host_reaches_owner_with_external_trust_and_rejects_classic_or
         external_clock: clock.config.clone(),
         external_frontier: frontier.config.clone(),
     };
-    let authorizer = UnixFinalUseAuthorizer::from_pq_config(config)?;
+    let authorizer = UnixFinalUseAuthorizer::from_pq_config(config.clone())?;
     assert!(
         crate::smollm_cognitive_host::validate_final_use_profile(
             &authorizer,
@@ -71,7 +72,7 @@ async fn actual_pq_host_reaches_owner_with_external_trust_and_rejects_classic_or
     );
     let server = tokio::spawn(async move {
         let mut first_challenge = [0; 32];
-        for index in 0..3 {
+        for index in 0..7 {
             let (mut socket, _) = listener.accept().await?;
             let mut length = [0; 4];
             socket.read_exact(&mut length).await?;
@@ -89,9 +90,16 @@ async fn actual_pq_host_reaches_owner_with_external_trust_and_rejects_classic_or
                 nonce: request.challenge,
                 binding: request.binding,
                 not_before_unix_ms: 1000,
-                expires_at_unix_ms: 1500,
+                expires_at_unix_ms: if index == 4 { 1100 } else { 1500 },
             };
-            let signature = issuer.sign_exact_message(&grant.signing_bytes()?)?.to_vec();
+            let signature = if matches!(index, 1 | 2) {
+                ed25519_dalek::SigningKey::from_bytes(&[84; 32])
+                    .sign(&grant.signing_bytes()?)
+                    .to_bytes()
+                    .to_vec()
+            } else {
+                issuer.sign_exact_message(&grant.signing_bytes()?)?.to_vec()
+            };
             let update = FinalUseRevocationUpdate::new_pq(
                 "feed".into(),
                 head.clone(),
@@ -101,7 +109,7 @@ async fn actual_pq_host_reaches_owner_with_external_trust_and_rejects_classic_or
             let revocation_signature = feed.sign_exact_message(&update.signing_bytes()?)?.to_vec();
             let response = PqIssuerResponseV2 {
                 schema_version: 2,
-                challenge: if index == 2 {
+                challenge: if index == 3 {
                     first_challenge
                 } else {
                     request.challenge
@@ -130,14 +138,29 @@ async fn actual_pq_host_reaches_owner_with_external_trust_and_rejects_classic_or
     };
     let token = authorizer.claim_exact(binding.clone()).await?;
     assert!(token.enter(&binding)?.matches(&binding));
-    assert!(authorizer.claim_exact(binding.clone()).await.is_err());
-    assert!(authorizer.claim_exact(binding).await.is_err());
+    let before_rejection = authorizer.authority.frontier()?;
+    for _ in 0..4 {
+        assert!(authorizer.claim_exact(binding.clone()).await.is_err());
+        assert_eq!(authorizer.authority.frontier()?, before_rejection);
+        assert_eq!(authorizer.authority.capacity()?.used_nonces, 1);
+    }
+    let token = authorizer.claim_exact(binding.clone()).await?;
+    assert!(token.enter(&binding)?.matches(&binding));
+    let before_reopen = authorizer.authority.frontier()?;
+    drop(authorizer);
+    let reopened = UnixFinalUseAuthorizer::from_pq_config(config)?;
+    assert_eq!(reopened.authority.frontier()?, before_reopen);
+    assert_eq!(reopened.authority.capacity()?.used_nonces, 2);
+    let token = reopened.claim_exact(binding.clone()).await?;
+    assert!(token.enter(&binding)?.matches(&binding));
+    assert_eq!(reopened.authority.capacity()?.used_nonces, 3);
     server.await??;
     assert!(clock.requests.load(Ordering::Relaxed) >= 4);
     assert!(frontier.requests.load(Ordering::Relaxed) >= 3);
     let stored: FinalUseFrontier =
         serde_json::from_slice(&fs::read(root.path().join("external-frontier.json"))?)?;
     assert_ne!(stored, initial);
+    assert_eq!(stored, reopened.authority.frontier()?);
     drop(clock);
     drop(frontier);
     Ok(())

@@ -21,6 +21,12 @@ pub enum AuthBusAdmissionError {
     CryptoProfileMismatch,
     #[error("AuthBus issuer epoch, key, revocation or clock is behind the durable owner floor")]
     IssuerFloorMismatch,
+    #[error("AuthBus owner policy revision or digest differs from the durable policy floor")]
+    OwnerPolicyMismatch,
+    #[error(
+        "AuthBus owner policy initialization requires an unused PQ domain; explicit migration is required"
+    )]
+    OwnerPolicyInitializationRequired,
     #[error("AuthBus message rejected: {0}")]
     Authentication(#[from] codex_hepta_authbus::Error),
     #[error(transparent)]

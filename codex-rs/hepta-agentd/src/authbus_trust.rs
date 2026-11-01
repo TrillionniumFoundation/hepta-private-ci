@@ -9,6 +9,7 @@ use std::path::Path;
 use codex_hepta_authbus::AuthBusAlgorithm;
 use codex_hepta_authbus::AuthBusVerifyingKey;
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
@@ -26,6 +27,8 @@ pub(crate) struct TextTrust {
     public_key_hex: String,
     revoked: bool,
     thread_ids: Vec<String>,
+    #[serde(default)]
+    policy_revision: Option<u64>,
 }
 
 impl TextTrust {
@@ -47,7 +50,48 @@ impl TextTrust {
             ));
         }
         trust.issuer()?;
+        match trust.algorithm()? {
+            AuthBusAlgorithm::MlDsa65V2 => {
+                trust.owner_policy()?;
+            }
+            AuthBusAlgorithm::Ed25519V1 if trust.policy_revision.is_some() => {
+                return Err(invalid(
+                    "policy_revision requires the ML-DSA-65 owner profile",
+                ));
+            }
+            AuthBusAlgorithm::Ed25519V1 => {}
+        }
         Ok(trust)
+    }
+
+    pub fn owner_policy(&self) -> Result<(Generation, Digest32), AgentdError> {
+        let revision = self
+            .policy_revision
+            .and_then(|revision| Generation::new(revision).ok())
+            .ok_or_else(|| {
+                invalid("PQ owner policy_revision must be explicitly set and nonzero")
+            })?;
+        let issuer = self.issuer()?;
+        let mut bytes = b"hepta.agentd.text-owner-policy.v1\0".to_vec();
+        for field in [
+            self.agent_id.as_bytes(),
+            issuer.issuer_id.as_str().as_bytes(),
+            issuer.verifying_key.as_bytes(),
+        ] {
+            bytes.extend_from_slice(&(field.len() as u64).to_be_bytes());
+            bytes.extend_from_slice(field);
+        }
+        bytes.extend_from_slice(&issuer.key_epoch.get().to_be_bytes());
+        bytes.push(u8::from(self.revoked));
+        let mut threads: Vec<&str> = self.thread_ids.iter().map(String::as_str).collect();
+        threads.sort_unstable();
+        threads.dedup();
+        bytes.extend_from_slice(&(threads.len() as u64).to_be_bytes());
+        for thread in threads {
+            bytes.extend_from_slice(&(thread.len() as u64).to_be_bytes());
+            bytes.extend_from_slice(thread.as_bytes());
+        }
+        Ok((revision, Digest32::of_bytes(&bytes)))
     }
 
     pub fn issuer(&self) -> Result<IssuerRegistration, AgentdError> {

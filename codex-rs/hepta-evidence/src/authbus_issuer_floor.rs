@@ -2,6 +2,8 @@
 
 use codex_hepta_authbus::AuthBusAlgorithm;
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use sqlx::Sqlite;
 use sqlx::Transaction;
 
@@ -24,6 +26,30 @@ impl HeptaEvidenceStore {
         &self,
         issuer: &IssuerRegistration,
     ) -> Result<(), AuthBusAdmissionError> {
+        self.pin_authbus_issuer_and_policy(issuer, None).await
+    }
+
+    /// Pin the current text-owner policy and its issuer in the same write
+    /// transaction. The policy revision spans issuer names and key generations.
+    /// Publish the resulting external checkpoint before using this snapshot.
+    pub async fn pin_authbus_issuer_with_owner_policy(
+        &self,
+        issuer: &IssuerRegistration,
+        policy_revision: Generation,
+        policy_digest: Digest32,
+    ) -> Result<(), AuthBusAdmissionError> {
+        if issuer.verifying_key.algorithm() != AuthBusAlgorithm::MlDsa65V2 {
+            return Err(AuthBusAdmissionError::CryptoProfileMismatch);
+        }
+        self.pin_authbus_issuer_and_policy(issuer, Some((policy_revision, policy_digest)))
+            .await
+    }
+
+    async fn pin_authbus_issuer_and_policy(
+        &self,
+        issuer: &IssuerRegistration,
+        policy: Option<(Generation, Digest32)>,
+    ) -> Result<(), AuthBusAdmissionError> {
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
@@ -35,11 +61,17 @@ impl HeptaEvidenceStore {
             tx.commit().await.map_err(classify_sqlx_error)?;
             return Ok(());
         }
+        let policy_changed = match policy {
+            Some((revision, digest)) => {
+                crate::authbus_owner_policy::update_required(&mut tx, revision, digest).await?
+            }
+            None => false,
+        };
         let now = now_millis()?;
         // Persist at most one clock-floor update per second of stable identity.
         let floor = now / 1000 * 1000;
         let epoch = issuer.key_epoch.get().to_be_bytes();
-        if let Some((prior_epoch, prior_key, prior_revoked, prior_floor)) =
+        let issuer_changed = if let Some((prior_epoch, prior_key, prior_revoked, prior_floor)) =
             load(&mut tx, issuer).await?
         {
             if epoch.as_slice() < prior_epoch.as_slice()
@@ -50,13 +82,9 @@ impl HeptaEvidenceStore {
             {
                 return Err(AuthBusAdmissionError::IssuerFloorMismatch);
             }
-            if epoch.as_slice() == prior_epoch.as_slice()
-                && issuer.revoked == prior_revoked
-                && floor == prior_floor
-            {
-                tx.commit().await.map_err(classify_sqlx_error)?;
-                return Ok(());
-            }
+            epoch.as_slice() != prior_epoch.as_slice()
+                || issuer.revoked != prior_revoked
+                || floor != prior_floor
         } else {
             let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_issuer_floor")
                 .fetch_one(&mut *tx)
@@ -65,17 +93,27 @@ impl HeptaEvidenceStore {
             if count >= MAX_ISSUERS {
                 return Err(codex_hepta_authbus::Error::CapacityExceeded.into());
             }
+            true
+        };
+        if !issuer_changed && !policy_changed {
+            tx.commit().await.map_err(classify_sqlx_error)?;
+            return Ok(());
         }
         if replay_checkpoint_pending(&mut tx).await? {
             return Err(codex_hepta_authbus::Error::ExternalCheckpointRequired.into());
         }
-        sqlx::query("INSERT INTO authbus_issuer_floor (issuer_id, key_epoch, public_key, revoked, wall_time_floor_ms)
+        if issuer_changed {
+            sqlx::query("INSERT INTO authbus_issuer_floor (issuer_id, key_epoch, public_key, revoked, wall_time_floor_ms)
             VALUES (?, ?, ?, ?, ?) ON CONFLICT(issuer_id) DO UPDATE SET
             key_epoch = excluded.key_epoch, public_key = excluded.public_key,
             revoked = excluded.revoked, wall_time_floor_ms = excluded.wall_time_floor_ms")
             .bind(issuer.issuer_id.as_str()).bind(epoch.as_slice())
             .bind(issuer.verifying_key.as_bytes()).bind(issuer.revoked).bind(floor)
             .execute(&mut *tx).await.map_err(classify_sqlx_error)?;
+        }
+        if policy_changed && let Some((revision, digest)) = policy {
+            crate::authbus_owner_policy::store(&mut tx, revision, digest).await?;
+        }
         stage_replay_checkpoint_after_mutation(&mut tx).await?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(())

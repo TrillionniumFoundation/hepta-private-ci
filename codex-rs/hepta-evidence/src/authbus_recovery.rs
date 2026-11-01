@@ -463,6 +463,7 @@ async fn replay_frontier_digest_tx(
         Some(2) => {
             bytes = b"hepta.authbus.replay-frontier.pq.v2\0".to_vec();
             crate::authbus_issuer_floor::append_frontier(tx, &mut bytes).await?;
+            crate::authbus_owner_policy::append_frontier(tx, &mut bytes).await?;
         }
         Some(_) => return Err(EvidenceError::Corrupt("invalid AuthBus profile".into())),
     }

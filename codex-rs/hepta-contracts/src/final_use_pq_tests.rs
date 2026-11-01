@@ -18,6 +18,9 @@ use zeroize::Zeroizing;
 #[path = "final_use_pq_capacity_tests.rs"]
 mod capacity_tests;
 
+#[path = "final_use_pq_recovery_tests.rs"]
+mod recovery_tests;
+
 fn key(seed: u8, id: &str) -> (PqNativeSigningKey, PqAuthorityTrustKey) {
     let seed = Zeroizing::new([seed; 32]);
     let spki = PqNativeSigningKey::public_spki_from_seed(&seed);

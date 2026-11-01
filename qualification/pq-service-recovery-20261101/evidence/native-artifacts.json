@@ -1,0 +1,147 @@
+{
+  "recorded_at_utc": "2026-11-01T09:30:46.428597+00:00",
+  "local_final_code_commit": "0c0f4a666a8a6d8c85f1ae8f67d11b72c5480a84",
+  "scope": "Local execution artifacts; local commit identities are not remote publication identities. Earlier full-suite binaries are retained with their distinct phases. No paired Chain run is claimed.",
+  "contracts_full_suite_binary_retained": false,
+  "contracts_binary_note": "The successful native contracts log remains retained; its earlier shared target was later removed during another build interruption.",
+  "active_own_target_users_before_preservation": [],
+  "artifacts": [
+    {
+      "file": "authbus_text_product-70808de24d1d48ab",
+      "original_path": "/workspace/scratch/be76671b3e90/hepta-pq/target/debug/deps/authbus_text_product-70808de24d1d48ab",
+      "retained_path": "/workspace/scratch/be76671b3e90/hepta-pq/native-verified/authbus_text_product-70808de24d1d48ab",
+      "bytes": 119687464,
+      "sha256": "437b84d75fb583cdca1d23183118b5f67cd021ea3aa699cd7d2ab80b9c5cc49d",
+      "preserved_mtime_ns": 1793524498591256176,
+      "stage": "final-code-selection-and-product",
+      "final_local_code_head_if_applicable": "0c0f4a666a8a6d8c85f1ae8f67d11b72c5480a84",
+      "fingerprints": [
+        {
+          "file": "fingerprints/codex-hepta-agentd-70808de24d1d48ab-test-integration-test-authbus_text_product.json",
+          "sha256": "c14a8909239ac8364a528906eb7d855a6dad6c5a15b87ac5aaf83ecb0570bf1e"
+        }
+      ],
+      "ldd": "\tlinux-vdso.so.1 (0x00007f318e3c7000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f3189ab7000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f31899ce000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f31897bc000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f318e3c9000)\n"
+    },
+    {
+      "file": "codex_arg0-7ce6cc26d576a691",
+      "original_path": "/workspace/scratch/be76671b3e90/hepta-pq/target/debug/deps/codex_arg0-7ce6cc26d576a691",
+      "retained_path": "/workspace/scratch/be76671b3e90/hepta-pq/native-verified/codex_arg0-7ce6cc26d576a691",
+      "bytes": 44294152,
+      "sha256": "a53dd3e408be4225e220b0f3c1cde061dd1515a436908ea75104408b66eae059",
+      "preserved_mtime_ns": 1793524334451593394,
+      "stage": "final-code-selection-and-product",
+      "final_local_code_head_if_applicable": "0c0f4a666a8a6d8c85f1ae8f67d11b72c5480a84",
+      "fingerprints": [
+        {
+          "file": "fingerprints/codex-arg0-7ce6cc26d576a691-test-lib-codex_arg0.json",
+          "sha256": "c98c452b610809b90ce5ce19c495846a85a189e83ad29a368ebd7292c558afc9"
+        }
+      ],
+      "ldd": "\tlinux-vdso.so.1 (0x00007f6e02ef8000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f6e01522000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f6e01439000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f6e01227000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f6e02efa000)\n"
+    },
+    {
+      "file": "codex_hepta_agentd-069d0e65aab0afb6",
+      "original_path": "/workspace/scratch/be76671b3e90/hepta-pq/target/debug/deps/codex_hepta_agentd-069d0e65aab0afb6",
+      "retained_path": "/workspace/scratch/be76671b3e90/hepta-pq/native-verified/codex_hepta_agentd-069d0e65aab0afb6",
+      "bytes": 160582720,
+      "sha256": "cb6b98bea5ee3799789519ac5aae5d0b1ea0865b9a1acd027a6084a46e21f738",
+      "preserved_mtime_ns": 1793523744576897015,
+      "stage": "policy-candidate-full-library-before-helper-and-classic-control",
+      "final_local_code_head_if_applicable": null,
+      "fingerprints": [
+        {
+          "file": "fingerprints/codex-hepta-agentd-069d0e65aab0afb6-test-lib-codex_hepta_agentd.json",
+          "sha256": "734928f4af7a3970497775e72ba6fb431783c19c67c1e03609042361c3cbd3bd"
+        }
+      ],
+      "ldd": "\tlinux-vdso.so.1 (0x00007f95f3d54000)\n\tlibssl.so.3 => /lib/x86_64-linux-gnu/libssl.so.3 (0x00007f95ed917000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007f95ed404000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f95ed3d6000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f95ed2ed000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f95ed0db000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f95f3d56000)\n"
+    },
+    {
+      "file": "codex_hepta_agentd-14ecdc2dd7d47e25",
+      "original_path": "/workspace/scratch/be76671b3e90/hepta-pq/target/debug/deps/codex_hepta_agentd-14ecdc2dd7d47e25",
+      "retained_path": "/workspace/scratch/be76671b3e90/hepta-pq/native-verified/codex_hepta_agentd-14ecdc2dd7d47e25",
+      "bytes": 487194200,
+      "sha256": "9d92350adbc46fbb92686fa04d758d7448d7d1880f6dcae3b11f0939902f636a",
+      "preserved_mtime_ns": 1793524511291230061,
+      "stage": "final-code-selection-and-product",
+      "final_local_code_head_if_applicable": "0c0f4a666a8a6d8c85f1ae8f67d11b72c5480a84",
+      "fingerprints": [
+        {
+          "file": "fingerprints/codex-hepta-agentd-14ecdc2dd7d47e25-bin-codex-hepta-agentd.json",
+          "sha256": "f8d966258178fe4f74ea319d998b527a4dfadbfb8125ef44f630933a851ff230"
+        }
+      ],
+      "ldd": "\tlinux-vdso.so.1 (0x00007fb713f62000)\n\tlibssl.so.3 => /lib/x86_64-linux-gnu/libssl.so.3 (0x00007fb7000fa000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007fb6ffbe7000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fb6ffbb9000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fb6ffad0000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fb6ff8be000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fb713f64000)\n"
+    },
+    {
+      "file": "codex_hepta_agentd-19091fd30f644e6e",
+      "original_path": "/workspace/scratch/be76671b3e90/hepta-pq/target/debug/deps/codex_hepta_agentd-19091fd30f644e6e",
+      "retained_path": "/workspace/scratch/be76671b3e90/hepta-pq/native-verified/codex_hepta_agentd-19091fd30f644e6e",
+      "bytes": 160593992,
+      "sha256": "6894fb16ba49ac36e9779e5588bcb821240a2b60eb926ad28bef8cf762b63531",
+      "preserved_mtime_ns": 1793524331319599394,
+      "stage": "final-code-selection-and-product",
+      "final_local_code_head_if_applicable": "0c0f4a666a8a6d8c85f1ae8f67d11b72c5480a84",
+      "fingerprints": [
+        {
+          "file": "fingerprints/codex-hepta-agentd-19091fd30f644e6e-test-lib-codex_hepta_agentd.json",
+          "sha256": "0f201aab290d0c22c01200dc80e4471f861a5d42e4ed5ce7d09e3a08800c0652"
+        }
+      ],
+      "ldd": "\tlinux-vdso.so.1 (0x00007f319d3d6000)\n\tlibssl.so.3 => /lib/x86_64-linux-gnu/libssl.so.3 (0x00007f3196f97000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007f3196a84000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f3196a56000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f319696d000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f319675b000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f319d3d8000)\n"
+    },
+    {
+      "file": "codex_hepta_evidence-ddffb60ad0030fe0",
+      "original_path": "/workspace/scratch/be76671b3e90/hepta-pq/target/debug/deps/codex_hepta_evidence-ddffb60ad0030fe0",
+      "retained_path": "/workspace/scratch/be76671b3e90/hepta-pq/native-verified/codex_hepta_evidence-ddffb60ad0030fe0",
+      "bytes": 52563496,
+      "sha256": "859bbe14cd31e39a6b36320575d0e16ebc6c6bcaa691902716ceec1955277429",
+      "preserved_mtime_ns": 1793523443537615763,
+      "stage": "policy-candidate-full-library-before-helper-and-classic-control",
+      "final_local_code_head_if_applicable": null,
+      "fingerprints": [
+        {
+          "file": "fingerprints/codex-hepta-evidence-ddffb60ad0030fe0-test-lib-codex_hepta_evidence.json",
+          "sha256": "f970291ff3ea3d21863861b2f3ee68e0eea70ef2ec7ba99e086ff17b541bd71f"
+        }
+      ],
+      "ldd": "\tlinux-vdso.so.1 (0x00007f8f53e62000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f8f51dad000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f8f51cc4000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f8f51ab2000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f8f53e64000)\n"
+    },
+    {
+      "file": "codex_hepta_infer_worker_host-72a5ccad2632a5d8",
+      "original_path": "/workspace/scratch/be76671b3e90/hepta-pq/target/debug/deps/codex_hepta_infer_worker_host-72a5ccad2632a5d8",
+      "retained_path": "/workspace/scratch/be76671b3e90/hepta-pq/native-verified/codex_hepta_infer_worker_host-72a5ccad2632a5d8",
+      "bytes": 484674664,
+      "sha256": "2ee5689fb39dcebc0f4fe22dfc14c3be842c3c9639aad6a9288a8f3f0a2a8982",
+      "preserved_mtime_ns": 1793524363695531720,
+      "stage": "final-code-selection-and-product",
+      "final_local_code_head_if_applicable": "0c0f4a666a8a6d8c85f1ae8f67d11b72c5480a84",
+      "fingerprints": [
+        {
+          "file": "fingerprints/codex-hepta-infer-worker-host-72a5ccad2632a5d8-test-lib-codex_hepta_infer_worker_host.json",
+          "sha256": "7e1af3f7618708121babb057c18fc6590746124175d282f079ae52f4089e5ff4"
+        }
+      ],
+      "ldd": "\tlinux-vdso.so.1 (0x00007fbfb0890000)\n\tlibssl.so.3 => /lib/x86_64-linux-gnu/libssl.so.3 (0x00007fbf9cc4b000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007fbf9c738000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fbf9c70a000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fbf9c621000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fbf9c40f000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fbfb0892000)\n"
+    },
+    {
+      "file": "codex_hepta_infer_worker_host-fc3492cd00dc1249",
+      "original_path": "/workspace/scratch/be76671b3e90/hepta-pq/target/debug/deps/codex_hepta_infer_worker_host-fc3492cd00dc1249",
+      "retained_path": "/workspace/scratch/be76671b3e90/hepta-pq/native-verified/codex_hepta_infer_worker_host-fc3492cd00dc1249",
+      "bytes": 484635280,
+      "sha256": "ab8b902a0cf21f3eec310b7058371775e15d7e38082e5cb6672e53eb0930f0a4",
+      "preserved_mtime_ns": 1793522604435929188,
+      "stage": "earlier-isolated-host-selection",
+      "final_local_code_head_if_applicable": null,
+      "fingerprints": [
+        {
+          "file": "fingerprints/codex-hepta-infer-worker-host-fc3492cd00dc1249-test-lib-codex_hepta_infer_worker_host.json",
+          "sha256": "d245b06dfdfcadf80a479b0724f5fd8a045ad5885fa574baab3eaba819c38df7"
+        }
+      ],
+      "ldd": "\tlinux-vdso.so.1 (0x00007f950dee2000)\n\tlibssl.so.3 => /lib/x86_64-linux-gnu/libssl.so.3 (0x00007f94fa2a5000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007f94f9d92000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f94f9d64000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f94f9c7b000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f94f9a69000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f950dee4000)\n"
+    }
+  ],
+  "production_binary_alias": "/workspace/scratch/be76671b3e90/hepta-pq/native-verified/codex-hepta-agentd"
+}
