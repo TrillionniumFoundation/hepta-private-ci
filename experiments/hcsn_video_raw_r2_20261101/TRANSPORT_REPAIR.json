@@ -1,0 +1,27 @@
+{
+  "attempts": [
+    {
+      "receipt": "acquire_train.receipt.json",
+      "exit_code": 120,
+      "cpu_seconds": 0.282118,
+      "wall_seconds": 40.06678939000267
+    },
+    {
+      "receipt": "acquire_train_retry.receipt.json",
+      "exit_code": 1,
+      "cpu_seconds": 0.187235,
+      "wall_seconds": 7.445428058999823
+    },
+    {
+      "receipt": "acquire_train_retry3.receipt.json",
+      "exit_code": 1,
+      "cpu_seconds": 0.211621,
+      "wall_seconds": 4.2439404990000185
+    }
+  ],
+  "scope": "Zero-byte download artifacts from ENOSPC persisted across cleanup attempts. No nonempty input is replaced. Repaired transport verifies full length/SHA256 before writing and after writing, refuses nonempty mismatches.",
+  "raw_source_before_sha256": "fabc54dc95ee265c38e9dc38a78a2907078eb39551718c7db91f41be7935400d",
+  "raw_source_after_sha256": "07a4290aa182e4b2fc4b4ff1c0c9a3510aeb441630e5c1f136d702e1a8028b0c",
+  "visual_fit_started": false,
+  "validation_opened": false
+}

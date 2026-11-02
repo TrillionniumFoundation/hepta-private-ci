@@ -1,0 +1,72 @@
+{
+  "actor_count": 6,
+  "actor_differences": [
+    [
+      0.05555555555555555,
+      0.01921350786582085
+    ],
+    [
+      -0.06944444444444445,
+      0.0973331195350476
+    ],
+    [
+      0.013888888888888888,
+      -0.013728017075209615
+    ],
+    [
+      0.06944444444444445,
+      -0.07351869937300252
+    ],
+    [
+      0.0,
+      -0.009860197034651928
+    ],
+    [
+      0.027777777777777776,
+      -0.02037873229857865
+    ]
+  ],
+  "all_blockers_closed": false,
+  "candidate_sha256": "e84aa62d8805d2a8619522d6870dc8ab487677a09bce9b7d7c164daec178cdd1",
+  "clip_targets_checked": {
+    "audio": 0.9583333333333334,
+    "video": 0.5416666666666666
+  },
+  "episodes": 288,
+  "fit_performed": false,
+  "lane": "joint",
+  "limitation": "The original historical six-actor development panel is not fresh external confirmation. This audit recomputes frozen-output metrics and does not establish hidden pretraining-actor exclusion or production/GPU/energy adoption.",
+  "model_inference_performed": false,
+  "output_sha256": "22e3389f3cdb7a9c70ca21aedf78fd6a14091ba1eb92ddb9ea41cdfbf14f20a5",
+  "paired_actor_bootstrap_95": [
+    [
+      -0.02314814814814815,
+      0.04861111111111111
+    ],
+    [
+      -0.03748846739384138,
+      0.043091824576771555
+    ]
+  ],
+  "real_media_opened": false,
+  "registered_gate_recomputed": false,
+  "relation": {
+    "AT_unique": {
+      "accuracy": 0.8009259259259259,
+      "brier": 0.14236067345193776
+    },
+    "AVT": {
+      "accuracy": 0.8171296296296297,
+      "brier": 0.1422041703885087
+    }
+  },
+  "result_sha256": "19152e824d02717f07033111569886e46d9e02e905b17d0f22f45ade6b828397",
+  "schema": "hcsn.crema-development.independent-output-audit.v1",
+  "shuffle_recompute_max_error": 0.0,
+  "unchanged_modalities": {
+    "text": {
+      "bit_identical": true,
+      "max_error_vs_R1": 0.0
+    }
+  }
+}
