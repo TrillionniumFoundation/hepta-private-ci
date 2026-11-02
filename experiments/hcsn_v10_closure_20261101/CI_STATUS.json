@@ -1,0 +1,49 @@
+{
+  "schema": "hcsn-v10-CI-memory-evidence-status.v1",
+  "workflow": ".github/workflows/hcsn-v10-memory-qualification.yml",
+  "runs": [
+    {
+      "run_id": 41371500148,
+      "run_attempt": 1,
+      "head_sha": "4ccada8d893a5471a39fec998fb3d14fc9728116",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41371500148",
+      "path": ".github/workflows/hcsn-v10-memory-qualification.yml",
+      "created_at": "2026-11-02T01:15:16Z",
+      "updated_at": "2026-11-02T01:18:41Z",
+      "run_started_at": "2026-11-02T01:15:16Z",
+      "artifact_id": 13108724314,
+      "artifact_sha256": "cfed367a57c8af60332a5403b5db29d0cb33b28db6d660a4b8dce39f202f4b48",
+      "peak_bytes": 51634176,
+      "independent_review": "review/CI_RECONSTRUCTION_41371500148.json"
+    },
+    {
+      "run_id": 41372584433,
+      "run_attempt": 1,
+      "head_sha": "c555fcbcf0eb153be62c30c1ba405b2f9b24dfd5",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41372584433",
+      "path": ".github/workflows/hcsn-v10-memory-qualification.yml",
+      "created_at": "2026-11-02T01:27:29Z",
+      "updated_at": "2026-11-02T01:29:41Z",
+      "run_started_at": "2026-11-02T01:27:29Z",
+      "artifact_id": 13109673051,
+      "artifact_sha256": "af96db405f146f628940a534fb59224701f0957ee59520c0156dda8c750e61f4",
+      "peak_bytes": 51703808,
+      "independent_review": "review/CI_RECONSTRUCTION_41372584433.json"
+    }
+  ],
+  "strict_source_head": "c555fcbcf0eb153be62c30c1ba405b2f9b24dfd5",
+  "first_source_head": "4ccada8d893a5471a39fec998fb3d14fc9728116",
+  "latest_qualification": "VERIFIED_FROZEN_JOINT_CGROUP_CHARGE_PROFILE",
+  "kernel_memory_evidence_verified": true,
+  "numerical_equivalence_verified": true,
+  "measured_peak_bytes": 51703808,
+  "attributable_energy_joules": null,
+  "remote_CI_CPU_and_preparation_seconds": null,
+  "scope": "Two independently identified successful CI runs replayed the same frozen joint evaluation. Each 30720 probabilities and 142 summary numeric fields independently reconstructed; strict wrapper also checked 95 registered numeric comparisons. Peak is dedicated cgroup accounted charge including attributed kernel/cache; not RSS/PSS, cold-cache qualification, AV lifecycle memory or device energy."
+}

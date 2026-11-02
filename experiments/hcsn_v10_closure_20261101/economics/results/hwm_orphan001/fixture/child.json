@@ -1,0 +1,23 @@
+{
+  "role": "child",
+  "identity": {
+    "proc_pid": 549089,
+    "start_ticks": 5495380,
+    "namespace_pid": 8
+  },
+  "shared_inherited_bytes": 33554432,
+  "private_bytes": 8388608,
+  "children_namespace_pids": [
+    10
+  ],
+  "waited_children": [
+    {
+      "namespace_pid": 10,
+      "exit_code": 0,
+      "maxrss_upper_bytes": 66863104,
+      "cpu_seconds_nested_diagnostic_not_additive": 0.017411
+    }
+  ],
+  "orphaning_root": false,
+  "self_ru_maxrss_diagnostic_bytes": 50081792
+}

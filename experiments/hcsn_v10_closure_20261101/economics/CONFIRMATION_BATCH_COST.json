@@ -1,0 +1,11 @@
+{
+  "schema": "hcsn-v10-shard-cost-window.v1",
+  "shards": 8,
+  "all_success": true,
+  "outer_cpu_seconds_sum": 1300.3076110000002,
+  "wall_span_seconds": 631.716058393,
+  "sum_of_shard_wall_seconds_diagnostic_not_elapsed": 3007.502079997,
+  "observed_maximum_concurrent_stage_windows": 6,
+  "concurrency_contract_pass": true,
+  "scope": "Single local host monotonic span covering first shard process creation through last shard collection. Includes queue and coordination gaps. CPU adds disjoint process subtrees; concurrent wall durations are not added into elapsed."
+}

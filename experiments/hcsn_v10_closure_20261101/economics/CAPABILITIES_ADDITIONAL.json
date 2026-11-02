@@ -1,0 +1,16 @@
+{
+  "schema": "hcsn-v10-additional-readonly-capability-observations.v1",
+  "probe_cpu_seconds": null,
+  "scope": "Additional read-only discovery outside formal research lifecycle phases; no full discovery-cost claim",
+  "perf_executable_available": false,
+  "visible_paths": {
+    "/sys/bus/event_source/devices/power": false,
+    "/sys/bus/event_source/devices/power_core": false,
+    "/sys/bus/event_source/devices/power_atom": false,
+    "/sys/devices/virtual/powercap": false,
+    "/sys/class/hwmon": false,
+    "/dev/cpu/0/msr": false
+  },
+  "attributable_energy_joules": null,
+  "limit": "Even a shared package counter would require independent attribution; no exclusive-host ownership is established"
+}

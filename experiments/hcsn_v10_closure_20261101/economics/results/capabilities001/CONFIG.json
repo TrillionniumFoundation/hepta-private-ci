@@ -1,0 +1,15 @@
+{
+  "study": "hardware",
+  "stage": "capability",
+  "attempt": 1,
+  "command": [
+    "python",
+    "experiments/hcsn_v10_closure_20261101/economics/capability_probe.py",
+    "--out",
+    "experiments/hcsn_v10_closure_20261101/economics/CAPABILITIES.json"
+  ],
+  "timeout_seconds": 900,
+  "inner_meter": "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v9_followup_20261101/economics/family_cost.py",
+  "inner_meter_sha256": "85f02df43788eebdd72058b80bce6d2e84e51d4d5816c9a894a107dfa066b80d",
+  "stage_meter_sha256": "a9288f5c89e8986dc2d041725bd6137d369b608a60ef7b1fb335334b9a56e096"
+}

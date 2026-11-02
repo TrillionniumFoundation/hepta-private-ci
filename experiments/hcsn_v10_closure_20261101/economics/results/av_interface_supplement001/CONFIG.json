@@ -1,0 +1,24 @@
+{
+  "study": "av_interface_supplement",
+  "stage": "audit",
+  "attempt": 1,
+  "command": [
+    "env",
+    "PYTHONPATH=/tmp/hcsn-torch-runtime",
+    "OPENBLAS_NUM_THREADS=1",
+    "OMP_NUM_THREADS=1",
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v10_closure_20261101.review.close_av_interfaces",
+    "--candidate",
+    "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001",
+    "--constant",
+    "experiments/hcsn_v10_closure_20261101/av_analytic/results/constant001",
+    "--output",
+    "experiments/hcsn_v10_closure_20261101/review/AV_INTERFACE_SUPPLEMENT.json"
+  ],
+  "timeout_seconds": 300.0,
+  "inner_meter": "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v9_followup_20261101/economics/family_cost.py",
+  "inner_meter_sha256": "85f02df43788eebdd72058b80bce6d2e84e51d4d5816c9a894a107dfa066b80d",
+  "stage_meter_sha256": "21ba1770e0ca47b992ada4c5f0658d233dc49f5539ff29a99857b653fe1ee4a8"
+}

@@ -1,0 +1,187 @@
+{
+  "selected": {
+    "feature_kind": "moments",
+    "family": "rbf_4",
+    "alpha": 10.0,
+    "temperature": 0.1,
+    "validation": {
+      "count": 36,
+      "accuracy": 0.2777777777777778,
+      "nll": 1.669442326304554
+    }
+  },
+  "by_split_model_prefix": {
+    "train": {
+      "selected_audio": {
+        "1": {
+          "count": 24,
+          "accuracy": 0.5416666666666666,
+          "nll": 1.3757037154074616
+        },
+        "2": {
+          "count": 24,
+          "accuracy": 0.5833333333333334,
+          "nll": 1.434193786984064
+        },
+        "3": {
+          "count": 24,
+          "accuracy": 0.5833333333333334,
+          "nll": 1.4242096430648787
+        }
+      },
+      "original_common_head_audio_only": {
+        "1": {
+          "count": 24,
+          "accuracy": 0.5,
+          "nll": 1.9966645900566704
+        },
+        "2": {
+          "count": 24,
+          "accuracy": 0.5833333333333334,
+          "nll": 1.4065423719407686
+        },
+        "3": {
+          "count": 24,
+          "accuracy": 0.625,
+          "nll": 1.166070875017868
+        }
+      },
+      "original_common_head_av": {
+        "1": {
+          "count": 24,
+          "accuracy": 0.5833333333333334,
+          "nll": 1.1913102689779629
+        },
+        "2": {
+          "count": 24,
+          "accuracy": 0.9583333333333334,
+          "nll": 0.5244869294341143
+        },
+        "3": {
+          "count": 24,
+          "accuracy": 1.0,
+          "nll": 0.300750526360905
+        }
+      }
+    },
+    "validation": {
+      "selected_audio": {
+        "1": {
+          "count": 12,
+          "accuracy": 0.16666666666666666,
+          "nll": 1.7482559069867192
+        },
+        "2": {
+          "count": 12,
+          "accuracy": 0.3333333333333333,
+          "nll": 1.6466814868893367
+        },
+        "3": {
+          "count": 12,
+          "accuracy": 0.3333333333333333,
+          "nll": 1.6133895850376059
+        }
+      },
+      "original_common_head_audio_only": {
+        "1": {
+          "count": 12,
+          "accuracy": 0.3333333333333333,
+          "nll": 3.0803197200028194
+        },
+        "2": {
+          "count": 12,
+          "accuracy": 0.25,
+          "nll": 2.050459730328789
+        },
+        "3": {
+          "count": 12,
+          "accuracy": 0.3333333333333333,
+          "nll": 1.8722258227195911
+        }
+      },
+      "original_common_head_av": {
+        "1": {
+          "count": 12,
+          "accuracy": 0.3333333333333333,
+          "nll": 2.322536014873465
+        },
+        "2": {
+          "count": 12,
+          "accuracy": 0.3333333333333333,
+          "nll": 1.4816003951243
+        },
+        "3": {
+          "count": 12,
+          "accuracy": 0.3333333333333333,
+          "nll": 1.2879401439137534
+        }
+      }
+    },
+    "test": {
+      "selected_audio": {
+        "1": {
+          "count": 12,
+          "accuracy": 0.4166666666666667,
+          "nll": 1.6020869572892131
+        },
+        "2": {
+          "count": 12,
+          "accuracy": 0.4166666666666667,
+          "nll": 1.5541323896344095
+        },
+        "3": {
+          "count": 12,
+          "accuracy": 0.4166666666666667,
+          "nll": 1.5987190270207672
+        }
+      },
+      "original_common_head_audio_only": {
+        "1": {
+          "count": 12,
+          "accuracy": 0.25,
+          "nll": 2.4798746627418735
+        },
+        "2": {
+          "count": 12,
+          "accuracy": 0.25,
+          "nll": 1.8311045293293546
+        },
+        "3": {
+          "count": 12,
+          "accuracy": 0.25,
+          "nll": 1.8657533918376303
+        }
+      },
+      "original_common_head_av": {
+        "1": {
+          "count": 12,
+          "accuracy": 0.16666666666666666,
+          "nll": 2.0960009176562235
+        },
+        "2": {
+          "count": 12,
+          "accuracy": 0.5,
+          "nll": 1.6676239124443042
+        },
+        "3": {
+          "count": 12,
+          "accuracy": 0.4166666666666667,
+          "nll": 1.8775912111615396
+        }
+      }
+    }
+  },
+  "binding_audio_groups_balanced": true,
+  "historical_test_recordings": 12,
+  "historical_test_actors": [
+    "1023",
+    "1040"
+  ],
+  "new_recordings": 0,
+  "strong_audio_qualified": false,
+  "frontend_gate_passed": false,
+  "v6_recovered": false,
+  "inner_cpu_seconds": 1.544559357,
+  "inner_wall_seconds": 3.771576097002253,
+  "energy_joules": null
+}

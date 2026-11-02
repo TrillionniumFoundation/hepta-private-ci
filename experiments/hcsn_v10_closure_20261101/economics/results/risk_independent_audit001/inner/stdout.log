@@ -1,0 +1,53 @@
+{
+  "schema": "hcsn-v10-independent-review.v1",
+  "candidate_implementations_imported": false,
+  "audit_source_sha256": "d7bbfe17a26a3806f9ff131db94346e051d3d1c98356a78cecd9ddd5e8c2d2c9",
+  "audit_sources_snapshot": {
+    "independent_audit.py": "d7bbfe17a26a3806f9ff131db94346e051d3d1c98356a78cecd9ddd5e8c2d2c9",
+    "joint_reconstruction.py": "e3082917270ffac40c7b0765f95c97ad689dd359b43c531d18fd6cd2d881f888"
+  },
+  "risk": {
+    "scope": "Synthetic bounded-service fixture; timeout and output miss separately reconstructed",
+    "runs_recomputed": 144,
+    "stress_rows_recomputed": 2,
+    "modes": {
+      "logical": {
+        "worlds": 16,
+        "mean_net_utility": {
+          "old_full": 0.6946749999999998,
+          "old_zero": 0.29106249999999995,
+          "reserve_full": 0.7920624999999999,
+          "reserve_zero": 0.7920624999999999,
+          "reserve_fixed_old_zero": 0.7920999999999999,
+          "old_zero_fixed_reserve": 0.29109999999999997
+        },
+        "reserve_full_minus_zero": 0.0,
+        "reserve_minus_old_zero": 0.5009999999999999,
+        "fixed_action_reservation_minus_old_zero": 0.5010375,
+        "service_timeouts": 40,
+        "reserve_output_misses": 0
+      },
+      "real": {
+        "worlds": 8,
+        "mean_net_utility": {
+          "old_full": 0.473718971211875,
+          "old_zero": -0.04982701101250002,
+          "reserve_full": 0.45102968645874997,
+          "reserve_zero": 0.45101591445249994,
+          "reserve_fixed_old_zero": 0.451052689964375,
+          "old_zero_fixed_reserve": -0.04987644928375
+        },
+        "reserve_full_minus_zero": 1.3772006250023505e-05,
+        "reserve_minus_old_zero": 0.50085669747125,
+        "fixed_action_reservation_minus_old_zero": 0.500879700976875,
+        "service_timeouts": 20,
+        "reserve_output_misses": 0
+      }
+    },
+    "raw_sha256": {
+      "runs.jsonl": "3ae869a39ef3940faf3d01a5341ec1e5d8272229326b3f15c008ed683c56a1df",
+      "stress.jsonl": "d873546f2760111929627f4bd57f6c659d0309e2f4dcc9be04078eb32ea50bc9"
+    }
+  },
+  "scientific_adoption_asserted": false
+}

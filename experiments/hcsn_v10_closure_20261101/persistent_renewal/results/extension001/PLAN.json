@@ -1,0 +1,109 @@
+{
+  "schema": "hcsn-v10-persistent-original-renewal.v1",
+  "created_unix": 1793581017.730914,
+  "source_sha256": {
+    "models.py": "ceb3b31d77fe24a33b8d86474ff0306816460092d648697b64539f53f0206b4e",
+    "environment.py": "fbece49cf72e4884f52fe39ac62280a76c6fcd8ab8394dcf25b48061d721467e",
+    "campaign.py": "bd12dfc7ed7438fe9158ac879ef67a0f6ee8f9106e69f7eb0cfebd525d829929",
+    "tests.py": "c62c9a2074f04b65a3a35cd105768dbffb05f6819a9b362cfad01ff3457764eb"
+  },
+  "original_source_sha256": {
+    "experiments/hcsn_mechanism_content_v2/renewal.py": "aa6bedde8d15d473d0b8beef36805955447fa88cc906846ee48be927ecab0cb6",
+    "experiments/hcsn_mechanism_content_v2/mechanism.py": "65754d240a34c5acf5eaac68a4aa3be1acbcfb96e07d735c5fcf6d4ca24e7fc0"
+  },
+  "physics_sha256": "7d59533aad821a1a22404101d3c02c7983d0d8b82fe4efd1d0d23eea3e825f08",
+  "extraction_sha256": "b01e6c44f45f99fd914c7b7a0f5f12a6bf479d6de88e952b2ef4eb74d3d0dd31",
+  "fit_seeds": [
+    100101,
+    100103,
+    100107,
+    100109,
+    100113
+  ],
+  "families": [
+    "gru",
+    "ssm",
+    "mlp"
+  ],
+  "ordinary_core_families": [
+    "gru",
+    "ssm"
+  ],
+  "widths": [
+    16,
+    32
+  ],
+  "train_size": 512,
+  "validation_size": 192,
+  "training": {
+    "min_epochs": 80,
+    "max_epochs": 960,
+    "patience": 40,
+    "min_delta": 0.0001,
+    "learning_rate": 0.006,
+    "batch_size": 128
+  },
+  "conditions": [
+    "matched",
+    "hidden_refractory_mismatch"
+  ],
+  "worlds_per_condition": 24,
+  "world_namespace": [
+    20261101,
+    101993
+  ],
+  "config": {
+    "dt": 0.15,
+    "ticks": 20,
+    "deadlines": [
+      5,
+      10,
+      15,
+      20
+    ],
+    "budget": 3,
+    "classes": 5,
+    "read_cost": 0.04,
+    "light_threshold": 0.28,
+    "particles": 4,
+    "condition": "matched"
+  },
+  "training_read_schedule": "Uniformly choose 0..3 distinct READ-arrival ticks from 1..20; same sampled worlds/masks for all families and widths",
+  "training_labels": "Current five-class content at each tick, supervision only; no unobserved x/content supplied to model",
+  "selection": "Within family select width/checkpoint using only separate validation NLL; select GRU/SSM ordinary family likewise, retain all candidates",
+  "early_stop": "Stop after at least 80 epochs and 40 epochs without validation improvement of 1e-4; max320; exhausted candidates remain unqualified",
+  "common_packet": "dt,READ-mask,has-read,last accepted x/rest/content,age,shared estimated nu/sigma/reset/refractory,current time",
+  "recurrence": "GRU/SSM state persists across ticks and READs, reset at episode boundary; hypothetical branches clone, never mutate actual view",
+  "controls": "Original 4-particle one-planned-READ heuristic and original lightweight threshold; READ delay1,budget3,4 mandatory outputs",
+  "exact_no_core": "Reconstruct latest sufficient packet from visible READ history, then exact renewal law; equality tests against persistent analytic",
+  "learned_no_core": "MLP uses same latest-packet sufficient information and sampled training labels, no recurrent hidden history",
+  "scope": "Original finite synthetic IG first-passage/reset/refractory process and five-class content Markov transitions; no new raw AV",
+  "known_law_prior": "Analytic/history know original physical law and transition; ordinary receives same public estimates but learns forecast from samples",
+  "real_AV_confirmation": false,
+  "strong_ordinary_qualification": false,
+  "architecture_acceptance": false,
+  "device_energy_joules": null,
+  "bootstrap": {
+    "replicates": 4000,
+    "seed": 100997,
+    "unit": "Independent fit seeds and independent worlds, not outputs"
+  },
+  "extension_only_candidates": [
+    [
+      100107,
+      "ssm",
+      16
+    ],
+    [
+      100113,
+      "ssm",
+      16
+    ],
+    [
+      100113,
+      "ssm",
+      32
+    ]
+  ],
+  "extension_plan_sha256": "b13e30c4c291cfb41dae226e317ad11e84d64740cb11ab7393594687e6d38ba4"
+}

@@ -1,0 +1,30 @@
+{
+  "role": "root",
+  "identity": {
+    "proc_pid": 549083,
+    "start_ticks": 5495361,
+    "namespace_pid": 7
+  },
+  "shared_inherited_bytes": 33554432,
+  "private_bytes": 0,
+  "children_namespace_pids": [
+    8,
+    9
+  ],
+  "waited_children": [
+    {
+      "namespace_pid": 8,
+      "exit_code": 0,
+      "maxrss_upper_bytes": 66863104,
+      "cpu_seconds_nested_diagnostic_not_additive": 0.026317999999999998
+    },
+    {
+      "namespace_pid": 9,
+      "exit_code": 0,
+      "maxrss_upper_bytes": 92024832,
+      "cpu_seconds_nested_diagnostic_not_additive": 0.028467
+    }
+  ],
+  "orphaning_root": false,
+  "self_ru_maxrss_diagnostic_bytes": 44695552
+}

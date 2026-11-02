@@ -1,0 +1,503 @@
+{
+  "schema": "hcsn-v10-current-complete-local-cost-account.v2",
+  "status": "All declared local research lifecycles completed; external CI queued/pending and excluded from local CPU total",
+  "audited_snapshot": "LEDGER005.json",
+  "audited_snapshot_sha256": "0facc41e9423c9e6930b6b4e1d9986a658b3a5a73a88c1f3e4ecdf352281e976",
+  "audited_phase_receipts": 63,
+  "phase_integrity_checks": 567,
+  "controlled_memory_bound_checks": 16,
+  "concurrency_contract_check_pass": true,
+  "all_account_checks_pass": true,
+  "local_formal_lifecycle_metering_complete": true,
+  "formal_lifecycle_coverage": {
+    "risk": {
+      "required": [
+        "prepare",
+        "validation",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare",
+        "validation"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/risk/results/closure001",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "validation": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "validation": 1,
+        "execute": 1,
+        "audit": 2
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "persistent_renewal": {
+      "required": [
+        "prepare",
+        "validation",
+        "train",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development002",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "validation": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "validation": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "persistent_renewal_extension": {
+      "required": [
+        "prepare",
+        "train",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare",
+        "train"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "high_power_confirmation": {
+      "required": [
+        "prepare",
+        "execute",
+        "aggregate",
+        "audit"
+      ],
+      "present_successful": [
+        "aggregate",
+        "audit",
+        "execute",
+        "prepare"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "execute": 8,
+        "aggregate": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "execute": 8,
+        "aggregate": 1,
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "joint_retrain": {
+      "required": [
+        "validation",
+        "prepare",
+        "data",
+        "train",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "data",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001",
+      "required_successful_attempt_counts": {
+        "validation": 1,
+        "prepare": 1,
+        "data": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "validation": 1,
+        "prepare": 1,
+        "data": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 2
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "av_analytic": {
+      "required": [
+        "validation",
+        "prepare",
+        "train",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001",
+      "required_successful_attempt_counts": {
+        "validation": 1,
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "validation": 1,
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 2
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "av_constant": {
+      "required": [
+        "prepare",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/av_analytic/results/constant001",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "historical_audio": {
+      "required": [
+        "prepare",
+        "train",
+        "execute",
+        "audit"
+      ],
+      "present_successful": [
+        "audit",
+        "execute",
+        "prepare",
+        "train"
+      ],
+      "active_output": "experiments/hcsn_v10_closure_20261101/frontend/audio001",
+      "required_successful_attempt_counts": {
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "actual_successful_attempt_counts": {
+        "prepare": 1,
+        "train": 1,
+        "execute": 1,
+        "audit": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    },
+    "publication": {
+      "required": [
+        "validation"
+      ],
+      "present_successful": [
+        "validation"
+      ],
+      "active_output": "/workspace/scratch/8da28d12955f/replay-v10-av-inputs-check",
+      "required_successful_attempt_counts": {
+        "validation": 1
+      },
+      "actual_successful_attempt_counts": {
+        "validation": 1
+      },
+      "missing": [],
+      "formal_phase_metering_complete": true
+    }
+  },
+  "confirmation_parallel_window": {
+    "shards": 8,
+    "maximum_concurrent_phase_windows": 6,
+    "wall_span_seconds": 631.716058393,
+    "disjoint_cpu_seconds_sum": 1300.3076110000002,
+    "all_shards_success": true,
+    "contract_pass": true,
+    "scope": "One local monotonic span, never the sum of overlapping wall durations"
+  },
+  "audited_snapshot_disjoint_cpu_seconds": 2102.977076,
+  "final_ledger_audit_tail_receipt": "experiments/hcsn_v10_closure_20261101/economics/results/ledger_audit005/PHASE_RECEIPT.json",
+  "tail_receipt_sha256": "55a05b4965d592dda7066b27fbd4e18c3b2722a4040b747406108efd16d74279",
+  "final_ledger_audit_tail_cpu_seconds": 0.137725,
+  "total_measured_local_disjoint_cpu_seconds_including_audit_tail": 2103.114801,
+  "total_measured_local_phase_receipts_including_tail": 64,
+  "failed_measured_stage_attempts": [
+    {
+      "study": "av_analytic",
+      "stage": "validation",
+      "attempt": 1,
+      "command": [
+        "env",
+        "PYTHONPATH=/tmp/hcsn-torch-runtime",
+        "OPENBLAS_NUM_THREADS=1",
+        "OMP_NUM_THREADS=1",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "experiments.hcsn_v10_closure_20261101.av_analytic.test_models",
+        "-v"
+      ],
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/av_validation001/PHASE_RECEIPT.json",
+      "cpu_seconds": 4.693529,
+      "wall_seconds": 9.336714586,
+      "success": false,
+      "boundary_begin_ns": 55247814876413,
+      "boundary_end_ns": 55257151590999,
+      "receipt_sha256": "175e7d541d417930899389f72eaf599207d0cba0329f5a8e6cc51700b9ce42ed"
+    }
+  ],
+  "initial_meter_initialization_failure_cpu_seconds": null,
+  "unmeasured_history_and_recovery_cpu_seconds": null,
+  "final_summary_serialization_cpu_seconds": null,
+  "local_exact_independent_family_memory_peak_bytes": null,
+  "attributable_energy_joules": null,
+  "complete_execution_economic_acceptance": false,
+  "study_totals": {
+    "historical_audio": {
+      "measured_cpu_seconds": 5.434653999999999,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare",
+        "train"
+      ]
+    },
+    "av_analytic": {
+      "measured_cpu_seconds": 247.109272,
+      "failed_attempt_cpu_seconds": 4.693529,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ]
+    },
+    "av_constant": {
+      "measured_cpu_seconds": 6.263588,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare"
+      ]
+    },
+    "publication": {
+      "measured_cpu_seconds": 0.118547,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "validation"
+      ]
+    },
+    "av_interface_supplement": {
+      "measured_cpu_seconds": 5.422386,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "av_target_diagnostic": {
+      "measured_cpu_seconds": 0.268563,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "hardware": {
+      "measured_cpu_seconds": 0.10536699999999999,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "capability"
+      ]
+    },
+    "ci_capability": {
+      "measured_cpu_seconds": 0.17541099999999998,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "capability"
+      ]
+    },
+    "frontend_review": {
+      "measured_cpu_seconds": 0.203673,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "package_inventory": {
+      "measured_cpu_seconds": 0.371828,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "validation"
+      ]
+    },
+    "high_power_confirmation": {
+      "measured_cpu_seconds": 1346.792961,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "aggregate",
+        "audit",
+        "execute",
+        "prepare"
+      ]
+    },
+    "memory_bound": {
+      "measured_cpu_seconds": 0.584409,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "validation"
+      ]
+    },
+    "joint_retrain": {
+      "measured_cpu_seconds": 37.017289,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "data",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ]
+    },
+    "economics": {
+      "measured_cpu_seconds": 0.58031,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "persistent_renewal": {
+      "measured_cpu_seconds": 256.236275,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare",
+        "train",
+        "validation"
+      ]
+    },
+    "persistent_renewal_extension": {
+      "measured_cpu_seconds": 179.77962399999998,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare",
+        "train"
+      ]
+    },
+    "review_driver_identity": {
+      "measured_cpu_seconds": 0.095534,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit"
+      ]
+    },
+    "risk": {
+      "measured_cpu_seconds": 16.469033,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "audit",
+        "execute",
+        "prepare",
+        "validation"
+      ]
+    },
+    "meter": {
+      "measured_cpu_seconds": 0.08607699999999999,
+      "failed_attempt_cpu_seconds": 0,
+      "phase_labels_present": [
+        "validation"
+      ]
+    }
+  },
+  "review_identity_correction": {
+    "original_report_unchanged": true,
+    "notice": "../review/CONFIRMATION_IDENTITY_NOTICE.json",
+    "timing_error": "End-of-run disk driver hash differed from start snapshot after CI dispatcher addition",
+    "confirmation_numeric_checker_unchanged": true
+  },
+  "external_ci": {
+    "provider": "GitHub Actions",
+    "run_id": 41371500148,
+    "workflow_id": 404015454,
+    "source_commit": "4ccada8d893a5471a39fec998fb3d14fc9728116",
+    "latest_observed_state": "queued",
+    "verification_status": "pending",
+    "included_in_local_cpu_total": false,
+    "runner_cpu_seconds": null,
+    "checkout_and_dependency_preparation_cpu_seconds": null,
+    "device_energy_joules": null,
+    "kernel_memory_qualification": "Pending successful raw kernel receipt and independent source/record reconstruction; queued status grants no qualification"
+  },
+  "tail_rule": "Final ledger audit reads all already-completed receipts. Its own wait4 CPU becomes available only after exit and is added here exactly once. This summary serialization is outside the measured phase boundary."
+}

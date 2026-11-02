@@ -1,0 +1,78 @@
+{
+  "package": {
+    "schema": "hcsn-v10-recovered-package-inventory.v1",
+    "library_file_id": "libfile_7b0ea4bcecd88191ac9ee31765d67012",
+    "filename": "HCSN_V9_20261101_source_evidence.zip",
+    "bytes": 11257341,
+    "sha256": "b9bc77d41716de8e2babec5899f3e2c80f2ebacc9ced6553ce6d7ccd2a764518",
+    "zip_members_crc_verified": 253,
+    "manifest_files_verified": 248,
+    "remote_commit": "03f338eb44bf585bfe9d4f87e4f5ef7af98884ad",
+    "remote_v9_tree": "dcfc600b44c6dfa2698969558a56b9df6dc753f3",
+    "remote_v9_blobs_exactly_matched": 250,
+    "local_incremental_bundle_header": [
+      "# v2 git bundle",
+      "-059b43a0b20ad07654880c155cc49799e0bb8858 Record byte-exact remote verification and unchanged inherited research",
+      "ad2a79d0699979108543d3052b76942b14e0e8a6 HEAD"
+    ],
+    "training_npz": {
+      "async_av": {
+        "x": {
+          "shape": [
+            240,
+            6,
+            41
+          ],
+          "dtype": "float64"
+        },
+        "y": {
+          "shape": [
+            240,
+            6,
+            16
+          ],
+          "dtype": "float64"
+        },
+        "mask": {
+          "shape": [
+            240,
+            6,
+            16
+          ],
+          "dtype": "float64"
+        }
+      },
+      "av_binding": {
+        "x": {
+          "shape": [
+            480,
+            6,
+            41
+          ],
+          "dtype": "float64"
+        },
+        "y": {
+          "shape": [
+            480,
+            6,
+            16
+          ],
+          "dtype": "float64"
+        },
+        "mask": {
+          "shape": [
+            480,
+            6,
+            16
+          ],
+          "dtype": "float64"
+        }
+      }
+    },
+    "raw_media_members": [],
+    "v6_source_or_strong_audio_recovered": false,
+    "new_independent_recordings_recovered": false,
+    "interpretation": "Persistent AV ordinary weights/features and old execution evidence; neither new capture nor v6 frontend. Raw media and capture-completeness evidence absent."
+  },
+  "partial_exclusion_recordings": 48
+}

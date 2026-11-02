@@ -1,0 +1,370 @@
+{
+  "schema": "hcsn-v10-fixed-confirmation-summary.v1",
+  "design_role": "Posthoc-designed fixed independent confirmation motivated by prior wide confidence intervals; not initial preregistration",
+  "scope": "Original finite synthetic IG first-passage/reset/refractory process and five-class content Markov transitions; no new raw AV",
+  "worlds": 384,
+  "runs": 13056,
+  "tick_states": 274176,
+  "mandatory_outputs": 52224,
+  "all_eight_shards_completed": true,
+  "conditions": {
+    "matched": {
+      "fits": {
+        "100101": {
+          "ordinary_family": "ssm",
+          "means": {
+            "A": 0.7131770833333334,
+            "B": 0.7752604166666668,
+            "C": 0.7394270833333335,
+            "D": 0.775,
+            "H": 0.775,
+            "M": 0.7726562500000002
+          },
+          "contrasts": {
+            "D-B": -0.00026041666666666574,
+            "D-M": 0.0023437500000000008,
+            "B-A": 0.062083333333333345,
+            "D-C": 0.03557291666666667,
+            "C-A": 0.02625,
+            "interaction": -0.026510416666666665,
+            "D-H": 0.0,
+            "B-M": 0.0026041666666666665
+          }
+        },
+        "100103": {
+          "ordinary_family": "ssm",
+          "means": {
+            "A": 0.71640625,
+            "B": 0.7664583333333335,
+            "C": 0.7394270833333335,
+            "D": 0.775,
+            "H": 0.775,
+            "M": 0.7700000000000001
+          },
+          "contrasts": {
+            "D-B": 0.008541666666666664,
+            "D-M": 0.005000000000000001,
+            "B-A": 0.05005208333333334,
+            "D-C": 0.03557291666666667,
+            "C-A": 0.023020833333333334,
+            "interaction": -0.014479166666666666,
+            "D-H": 0.0,
+            "B-M": -0.003541666666666665
+          }
+        },
+        "100107": {
+          "ordinary_family": "ssm",
+          "means": {
+            "A": 0.73109375,
+            "B": 0.7678125000000001,
+            "C": 0.7394270833333335,
+            "D": 0.775,
+            "H": 0.775,
+            "M": 0.7717187500000001
+          },
+          "contrasts": {
+            "D-B": 0.0071874999999999994,
+            "D-M": 0.003281249999999999,
+            "B-A": 0.03671875,
+            "D-C": 0.03557291666666667,
+            "C-A": 0.008333333333333333,
+            "interaction": -0.0011458333333333275,
+            "D-H": 0.0,
+            "B-M": -0.00390625
+          }
+        },
+        "100109": {
+          "ordinary_family": "ssm",
+          "means": {
+            "A": 0.7194791666666668,
+            "B": 0.7780208333333335,
+            "C": 0.7394270833333335,
+            "D": 0.775,
+            "H": 0.775,
+            "M": 0.7758333333333334
+          },
+          "contrasts": {
+            "D-B": -0.0030208333333333337,
+            "D-M": -0.000833333333333334,
+            "B-A": 0.05854166666666668,
+            "D-C": 0.03557291666666667,
+            "C-A": 0.019947916666666666,
+            "interaction": -0.022968749999999996,
+            "D-H": 0.0,
+            "B-M": 0.0021875
+          }
+        },
+        "100113": {
+          "ordinary_family": "ssm",
+          "means": {
+            "A": 0.7194791666666668,
+            "B": 0.7569791666666665,
+            "C": 0.7394270833333335,
+            "D": 0.775,
+            "H": 0.775,
+            "M": 0.7760937500000001
+          },
+          "contrasts": {
+            "D-B": 0.018020833333333333,
+            "D-M": -0.0010937499999999999,
+            "B-A": 0.037500000000000006,
+            "D-C": 0.03557291666666667,
+            "C-A": 0.019947916666666666,
+            "interaction": -0.0019270833333333293,
+            "D-H": 0.0,
+            "B-M": -0.019114583333333334
+          }
+        }
+      },
+      "contrasts": {
+        "D-B": {
+          "mean": 0.006093749999999999,
+          "lower": -0.013270963541666665,
+          "upper": 0.024864843750000018,
+          "confidence_level": 0.975,
+          "primary": true,
+          "positive_at_declared_threshold": false
+        },
+        "D-M": {
+          "mean": 0.0017395833333333334,
+          "lower": -0.01647942708333333,
+          "upper": 0.01929205729166669,
+          "confidence_level": 0.975,
+          "primary": true,
+          "positive_at_declared_threshold": false
+        },
+        "B-A": {
+          "mean": 0.04897916666666667,
+          "lower": 0.026468750000000003,
+          "upper": 0.07153177083333334,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": true
+        },
+        "D-C": {
+          "mean": 0.03557291666666667,
+          "lower": 0.007604166666666671,
+          "upper": 0.06401171874999999,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": true
+        },
+        "C-A": {
+          "mean": 0.0195,
+          "lower": 0.0008742187500000005,
+          "upper": 0.03845833333333334,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": true
+        },
+        "interaction": {
+          "mean": -0.013406249999999996,
+          "lower": -0.03835416666666666,
+          "upper": 0.011906510416666667,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": false
+        },
+        "D-H": {
+          "mean": 0.0,
+          "lower": 0.0,
+          "upper": 0.0,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": false
+        },
+        "B-M": {
+          "mean": -0.004354166666666667,
+          "lower": -0.015729166666666666,
+          "upper": 0.005447916666666666,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": false
+        }
+      }
+    },
+    "hidden_refractory_mismatch": {
+      "fits": {
+        "100101": {
+          "ordinary_family": "ssm",
+          "means": {
+            "A": 0.7124479166666667,
+            "B": 0.7726562500000002,
+            "C": 0.7314583333333333,
+            "D": 0.7624479166666668,
+            "H": 0.7624479166666668,
+            "M": 0.7726562500000002
+          },
+          "contrasts": {
+            "D-B": -0.010208333333333333,
+            "D-M": -0.010208333333333333,
+            "B-A": 0.060208333333333336,
+            "D-C": 0.030989583333333334,
+            "C-A": 0.01901041666666667,
+            "interaction": -0.02921874999999999,
+            "D-H": 0.0,
+            "B-M": 0.0
+          }
+        },
+        "100103": {
+          "ordinary_family": "ssm",
+          "means": {
+            "A": 0.7008854166666666,
+            "B": 0.7634375000000001,
+            "C": 0.7314583333333333,
+            "D": 0.7624479166666668,
+            "H": 0.7624479166666668,
+            "M": 0.7743229166666667
+          },
+          "contrasts": {
+            "D-B": -0.0009895833333333336,
+            "D-M": -0.011875000000000002,
+            "B-A": 0.06255208333333334,
+            "D-C": 0.030989583333333334,
+            "C-A": 0.03057291666666667,
+            "interaction": -0.03156249999999999,
+            "D-H": 0.0,
+            "B-M": -0.010885416666666667
+          }
+        },
+        "100107": {
+          "ordinary_family": "ssm",
+          "means": {
+            "A": 0.7086458333333333,
+            "B": 0.7633854166666666,
+            "C": 0.7314583333333333,
+            "D": 0.7624479166666668,
+            "H": 0.7624479166666668,
+            "M": 0.7592708333333335
+          },
+          "contrasts": {
+            "D-B": -0.0009375000000000003,
+            "D-M": 0.0031770833333333304,
+            "B-A": 0.05473958333333334,
+            "D-C": 0.030989583333333334,
+            "C-A": 0.0228125,
+            "interaction": -0.023749999999999997,
+            "D-H": 0.0,
+            "B-M": 0.004114583333333331
+          }
+        },
+        "100109": {
+          "ordinary_family": "ssm",
+          "means": {
+            "A": 0.7234895833333335,
+            "B": 0.7590625000000001,
+            "C": 0.7314583333333333,
+            "D": 0.7624479166666668,
+            "H": 0.7624479166666668,
+            "M": 0.7564062500000001
+          },
+          "contrasts": {
+            "D-B": 0.0033854166666666663,
+            "D-M": 0.006041666666666665,
+            "B-A": 0.03557291666666667,
+            "D-C": 0.030989583333333334,
+            "C-A": 0.00796875,
+            "interaction": -0.004583333333333322,
+            "D-H": 0.0,
+            "B-M": 0.002656249999999999
+          }
+        },
+        "100113": {
+          "ordinary_family": "ssm",
+          "means": {
+            "A": 0.7145833333333332,
+            "B": 0.7739583333333334,
+            "C": 0.7314583333333333,
+            "D": 0.7624479166666668,
+            "H": 0.7624479166666668,
+            "M": 0.7853125000000002
+          },
+          "contrasts": {
+            "D-B": -0.01151041666666667,
+            "D-M": -0.022864583333333337,
+            "B-A": 0.05937500000000001,
+            "D-C": 0.030989583333333334,
+            "C-A": 0.016875,
+            "interaction": -0.028385416666666663,
+            "D-H": 0.0,
+            "B-M": -0.011354166666666665
+          }
+        }
+      },
+      "contrasts": {
+        "D-B": {
+          "mean": -0.004052083333333335,
+          "lower": -0.019906510416666665,
+          "upper": 0.011104427083333332,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": false
+        },
+        "D-M": {
+          "mean": -0.007145833333333336,
+          "lower": -0.023979166666666666,
+          "upper": 0.00871901041666666,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": false
+        },
+        "B-A": {
+          "mean": 0.054489583333333334,
+          "lower": 0.032801562500000006,
+          "upper": 0.07655208333333333,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": true
+        },
+        "D-C": {
+          "mean": 0.030989583333333338,
+          "lower": 0.005102864583333339,
+          "upper": 0.05744791666666667,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": true
+        },
+        "C-A": {
+          "mean": 0.01944791666666667,
+          "lower": 0.002864583333333332,
+          "upper": 0.036427343749999994,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": true
+        },
+        "interaction": {
+          "mean": -0.023499999999999997,
+          "lower": -0.04635468749999999,
+          "upper": -0.0006145833333333303,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": false
+        },
+        "D-H": {
+          "mean": 0.0,
+          "lower": 0.0,
+          "upper": 0.0,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": false
+        },
+        "B-M": {
+          "mean": -0.00309375,
+          "lower": -0.01286484375,
+          "upper": 0.006156249999999999,
+          "confidence_level": 0.95,
+          "primary": false,
+          "positive_at_declared_threshold": false
+        }
+      }
+    }
+  },
+  "real_AV_confirmation": false,
+  "architecture_acceptance": false,
+  "strong_ordinary_qualification": false,
+  "exact_history_probability_max_error": 0.0,
+  "exact_history_actions_identical": true,
+  "both_matched_primary_comparisons_positive": false,
+  "paired_sha256": "6737477044edb832a051a6398416b827a169c3c3cd8e4881018df76eb954a207",
+  "shard_manifest_sha256": "932ce825c82b91f452536ad2a7bd630499181e2fef60714abeaf599f94456dcb"
+}

@@ -1,0 +1,22 @@
+{
+  "study": "high_power_confirmation",
+  "stage": "execute",
+  "attempt": 2,
+  "command": [
+    "env",
+    "OPENBLAS_NUM_THREADS=1",
+    "OMP_NUM_THREADS=1",
+    "python",
+    "-m",
+    "experiments.hcsn_v10_closure_20261101.persistent_renewal.confirm",
+    "shard",
+    "--output",
+    "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+    "--shard",
+    "1"
+  ],
+  "timeout_seconds": 1800.0,
+  "inner_meter": "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v9_followup_20261101/economics/family_cost.py",
+  "inner_meter_sha256": "85f02df43788eebdd72058b80bce6d2e84e51d4d5816c9a894a107dfa066b80d",
+  "stage_meter_sha256": "21ba1770e0ca47b992ada4c5f0658d233dc49f5539ff29a99857b653fe1ee4a8"
+}

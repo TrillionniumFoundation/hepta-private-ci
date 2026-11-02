@@ -1,0 +1,175 @@
+{
+  "schema": "hcsn-v10-fixed-independent-confirmation.v1",
+  "created_unix": 1793581566.4945886,
+  "design_role": "Posthoc-designed fixed independent confirmation motivated by prior wide confidence intervals; not initial preregistration",
+  "base_directory": "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001",
+  "base_directory_repo_relative": "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001",
+  "base_plan_sha256": "e03c53558a5009f3c2df91a5f97864b7e8d17a54514e6e5498c9b948d7e6339a",
+  "base_fit_sha256": "6a09f34c402a54ec7c7bca13e0d9d1d54d72c3c2314d917860c8b87e9d87f883",
+  "base_frozen_models_sha256": "831943cbd570d39b22ad743afd67f04a613c4e607ff615149714bc285eb948fd",
+  "model_selection": {
+    "100101": {
+      "ordinary_family": "ssm",
+      "widths": {
+        "gru": 32,
+        "ssm": 16,
+        "mlp": 16
+      }
+    },
+    "100103": {
+      "ordinary_family": "ssm",
+      "widths": {
+        "gru": 16,
+        "ssm": 16,
+        "mlp": 16
+      }
+    },
+    "100107": {
+      "ordinary_family": "ssm",
+      "widths": {
+        "gru": 16,
+        "ssm": 16,
+        "mlp": 16
+      }
+    },
+    "100109": {
+      "ordinary_family": "ssm",
+      "widths": {
+        "gru": 16,
+        "ssm": 16,
+        "mlp": 16
+      }
+    },
+    "100113": {
+      "ordinary_family": "ssm",
+      "widths": {
+        "gru": 32,
+        "ssm": 32,
+        "mlp": 32
+      }
+    }
+  },
+  "all_checkpoints": {
+    "fits/ssm_100113_w32.npz": "501c85e800d6709f4363bdf7b506a1b6d19a8be6a859fadd2b4b6326a6230821",
+    "fits/gru_100107_w16.npz": "28624c67427fe90cd593cf57887a4494e4b47f3fb54cda84df2387e53471158f",
+    "fits/ssm_100109_w16.npz": "7092a1a43df6b9fbb70b7afa380b10d9e348262df3c128760a4efba9b8077bcc",
+    "fits/ssm_100107_w32.npz": "93a24b3727d2bb011100014f7be0b1c2d59104e6d1ae5792fa99035c9bdbaaa7",
+    "fits/ssm_100107_w16.npz": "7dbe3c96c7ae20307e95e6986600e387607930df557cd85ed35637210ea962ee",
+    "fits/gru_100109_w16.npz": "3b28c5f8e15043d3dd8394a7eecd528401751e70cccf9129fa6847639e52fa22",
+    "fits/gru_100113_w16.npz": "0a363896f530abd191da2fd9b8d0828d36452a6668f3262335ecccd30b93c011",
+    "fits/mlp_100107_w16.npz": "0e3f6523ed9b54f167a29465a9b7b72bc4dd39fcc99cfbf24477cd6ca7a3c721",
+    "fits/gru_100103_w16.npz": "72d48088cea9a1c27d1cb87b44569fdcd3789a9d6c4506a9ad545c7d8a6108cb",
+    "fits/gru_100107_w32.npz": "ee4477d9f6fe2ba041733b26b548cab2f105292ddeac7e5c40ef6066ee1ef796",
+    "fits/gru_100113_w32.npz": "bc93f8c6495d2605dc7f8f4c5d44cee5bc1b4c4f451d9d7af50042e25c7ad793",
+    "fits/mlp_100109_w16.npz": "440cd53a9bd826321ff8b7192c7fdae08d3bb1a67e3c306b1c5f3bd00ef69280",
+    "fits/ssm_100101_w32.npz": "3293833e7ca34a710ac9ea44f4edb87ff14657bde490c386ca2337ff732dd256",
+    "fits/mlp_100103_w16.npz": "f68740d82da28cb73bbba0277e5f0a0bacc07572a6b1b0878848c60e11010056",
+    "fits/mlp_100113_w32.npz": "3b971b7773d1645cf24b6d07e4b0905112f222e22435d3643fd09d6958404b4a",
+    "fits/gru_100101_w32.npz": "ca2022ff6e2f9a76d079dec7dc480c16852233bbf769b44fd51bc131abd1dfc3",
+    "fits/mlp_100113_w16.npz": "da4a3c45f4489db2e7160b0d2256ef6fc4561c8521cc21f46049e3f79084f477",
+    "fits/gru_100101_w16.npz": "cdaa02af22a896fb6a3e773bffb80ac3687de06ed35a6886c025182420ae3ee4",
+    "fits/mlp_100109_w32.npz": "a1a488986e8ba5203bfdd01aa05cf64589617705ce687dacb17f88b654978228",
+    "fits/ssm_100101_w16.npz": "b379b2937c3689d63ab61f4ad320f4e525dd074b49a17ab952dab057cc442c4c",
+    "fits/mlp_100107_w32.npz": "415c438cd65e588e16c553d7c611237c4b9bc85dff1ff96e3297b82c45786ebd",
+    "fits/mlp_100101_w32.npz": "d8bf769fad4d4f8c3622e27d274cd3c01d72d931c72635b0bd226be5c45586c9",
+    "fits/gru_100103_w32.npz": "e5cb84a273d2d283b9a45a786ad827a0b0331e9f6ecbe9a5b851990e6ad3795f",
+    "fits/ssm_100113_w16.npz": "32016ff56d042b46bd0bc9abfbcb294040d1a07860fab46f05b568d229d411b8",
+    "fits/mlp_100103_w32.npz": "c21c5b4765818bbb4de6853829efb134492fcf12c25a68b29c30d6c443d7d989",
+    "fits/mlp_100101_w16.npz": "e60a21fb59e6d5fdbc96ee5e107b0c6b33aeefe0dc781849cc8dd632d5203ed4",
+    "fits/ssm_100103_w32.npz": "90eae34684a55fbf96a56c56750ad6f811fbd83d3d06cb960f947bbdef2c29be",
+    "fits/ssm_100109_w32.npz": "381c4cb007ce87b8fe6e4d2d485329a513af7022464b214596f17da0c3453e3b",
+    "fits/gru_100109_w32.npz": "75994e38934b0276982fb2c062f5672a320f5d0fc3d3f13f1199ed3349d3a4d1",
+    "fits/ssm_100103_w16.npz": "f3c3720706181c11aa1d8baa556c1eee80c47ebc4792547a53f7fd99a38f6635"
+  },
+  "models_retrained": false,
+  "selection_changed": false,
+  "source_sha256": {
+    "models.py": "ceb3b31d77fe24a33b8d86474ff0306816460092d648697b64539f53f0206b4e",
+    "environment.py": "fbece49cf72e4884f52fe39ac62280a76c6fcd8ab8394dcf25b48061d721467e",
+    "campaign.py": "bd12dfc7ed7438fe9158ac879ef67a0f6ee8f9106e69f7eb0cfebd525d829929",
+    "tests.py": "c62c9a2074f04b65a3a35cd105768dbffb05f6819a9b362cfad01ff3457764eb"
+  },
+  "confirmation_source_sha256": "e1ba9ec689be6d396fb8943c3b3352379c6f8673926383cca14f1c99ccbb4ca3",
+  "physics_sha256": "7d59533aad821a1a22404101d3c02c7983d0d8b82fe4efd1d0d23eea3e825f08",
+  "world_seed_sha256": "5709f66afab988ea63d1b80ce8ef6ce705c17ebcfeab88331190d75baffc5969",
+  "exclusion_source_sha256": {
+    "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001/fits/data_100101.npz": "e0100d1df8949f70d041e7deb2ea6de28bf7858ec20a2dd87ecb80f01cfd4dc7",
+    "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001/fits/data_100103.npz": "da66da56218821565a273d7d83e664c9d63f37d6225a87a65042bde272b41bb1",
+    "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001/fits/data_100107.npz": "0dcd058ca2125d58dab6f5ef58301d8b37202910252279aafda7c943ea321194",
+    "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001/fits/data_100109.npz": "ac0ad489ec3d85cce9dd5de8e3e7d2fc0b42f56441a5c780d796091dc7681086",
+    "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001/fits/data_100113.npz": "448c1404f2d51fa2849f18d265888d4217468fd822da432ea7f8e78ddf1eb6c7",
+    "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/development002/evaluation/worlds.jsonl.gz": "ecce6a539f5f808cf8c1a8a3a7eb53f5aae7ccd7c0ee633c6f6f45266a5c0018",
+    "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001/evaluation/worlds.jsonl.gz": "b85a368ff6336c2c2b2c72f39857c098f22cbbfd3031b4cfa901faaa98360808"
+  },
+  "world_namespace": [
+    20261101,
+    102997
+  ],
+  "worlds_per_condition": 192,
+  "total_worlds": 384,
+  "shards": 8,
+  "worlds_per_condition_per_shard": 24,
+  "max_concurrent_shards": 6,
+  "fixed_stopping": "Execute all eight shards; no interim outcome-dependent stop or further sample extension",
+  "conditions": [
+    "matched",
+    "hidden_refractory_mismatch"
+  ],
+  "config": {
+    "dt": 0.15,
+    "ticks": 20,
+    "deadlines": [
+      5,
+      10,
+      15,
+      20
+    ],
+    "budget": 3,
+    "classes": 5,
+    "read_cost": 0.04,
+    "light_threshold": 0.28,
+    "particles": 4,
+    "condition": "matched"
+  },
+  "fit_seeds": [
+    100101,
+    100103,
+    100107,
+    100109,
+    100113
+  ],
+  "families": [
+    "gru",
+    "ssm",
+    "mlp"
+  ],
+  "ordinary_core_families": [
+    "gru",
+    "ssm"
+  ],
+  "primary_condition": "matched",
+  "primary_comparisons": [
+    "D-B",
+    "D-M"
+  ],
+  "primary_interval": "Two-sided 97.5% crossed world-by-fit percentile-bootstrap intervals for each of two comparisons; Bonferroni family-wise 95% descriptive coverage target",
+  "primary_positive_rule": "For each stated positive comparison require its adjusted lower interval endpoint >0; joint superiority requires both",
+  "secondary_condition": "hidden_refractory_mismatch",
+  "secondary_intervals": "Two-sided95%, descriptive",
+  "bootstrap": {
+    "replicates": 10000,
+    "seed": 103003,
+    "crossed_units": "Resample independent worlds and five fit seeds; all arms paired on same worlds"
+  },
+  "scope": "Original finite synthetic IG first-passage/reset/refractory process and five-class content Markov transitions; no new raw AV",
+  "limitations": [
+    "finite original perfect-READ synthetic task",
+    "known-law analytic prior",
+    "finite family/width search is not global strong-model certification",
+    "READ-fee utility excludes CPU monetization",
+    "H still uses analytic operator"
+  ],
+  "real_AV_confirmation": false,
+  "architecture_acceptance": false,
+  "device_energy_joules": null
+}

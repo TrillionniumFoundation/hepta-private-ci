@@ -1,0 +1,23 @@
+{
+  "baseline_commit": "8cc469fcb0e6527fac56e26b65baa3ae1c09c86b",
+  "reads": [
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "blob_sha": "bc0bb7a93bd97d422e6b9d9dd5d5e12294fbd6f1",
+      "pins": {
+        "checkout": "de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "setup_python": "a309ff8b426b58ec0e2a45f0f869d46889d02405",
+        "upload_artifact": "bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+      }
+    },
+    {
+      "path": ".github/workflows/hcsn-conservative-hosted.yml",
+      "blob_sha": "9b58382ad1154431c0734d843f94114f67af9931",
+      "numerical_pins": {
+        "numpy": "2.3.5",
+        "scipy": "1.17.0"
+      }
+    }
+  ],
+  "scope": "Pinned existing repository references read via GitHub connector; no new action version inferred"
+}

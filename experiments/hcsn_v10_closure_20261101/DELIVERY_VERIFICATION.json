@@ -1,0 +1,112 @@
+{
+  "schema": "hcsn-v10-remote-exact-delivery-verification.v1",
+  "candidate_commit": "184b8eced8bc8384520ef02eebc98194ba81cfe3",
+  "candidate_tree": "0d86687121423f42587bb7cb1a397b72f8170277",
+  "files_verified": 1329,
+  "total_bytes": 138899357,
+  "all_Git_blob_size_mode_type_checks_pass": true,
+  "extra_v10_files": false,
+  "baseline_commit": "8cc469fcb0e6527fac56e26b65baa3ae1c09c86b",
+  "baseline_root_tree": "15ef79d5f0382ce7ee131ef2059b25da3ba7567a",
+  "unchanged_other_root_entries": 51,
+  "unchanged_original_experiment_trees": 21,
+  "unchanged_other_github_entries": 11,
+  "unchanged_original_workflows": 79,
+  "only_new_workflow": ".github/workflows/hcsn-v10-memory-qualification.yml",
+  "frozen_CI_source_commit": "c555fcbcf0eb153be62c30c1ba405b2f9b24dfd5",
+  "frozen_CI_files_byte_identical_in_candidate": 76,
+  "all_checks_pass": true,
+  "manifest": {
+    "path": "experiments/hcsn_v10_closure_20261101/MANIFEST_DELIVERY.json",
+    "sha256": "1a5ca3800584760599d682d3520edc4549d092d196a3f75a5447b70d34421c3f",
+    "git_blob": "88981a34aa0d2ed40fb3b6659cd9376d4289bd11",
+    "bytes": 443407
+  },
+  "commit_groups": [
+    {
+      "group": "av-implementation",
+      "sha": "3d098c076aa67dfe38ffb5e6faa2c5ccfe411088",
+      "tree": "768cf3295a35ecd19a61f94e45c33a258e4b9996",
+      "files": 12
+    },
+    {
+      "group": "av-evidence",
+      "sha": "3d74b9522be20b63a154cf97e70dd56972c437f5",
+      "tree": "31a74c7e47a0921b4a68067835b564bd6a450a0e",
+      "files": 237
+    },
+    {
+      "group": "renewal-implementation",
+      "sha": "077c49a22b26346129531b93c7f39e9a04715b88",
+      "tree": "0f2b2c7ea9eb002bb383b765d8d48c243ee2fd1c",
+      "files": 11
+    },
+    {
+      "group": "renewal-evidence",
+      "sha": "8837ffeb0bc0aa95509079ef048641c635d120f1",
+      "tree": "5e70e958bf0ddb33bab7530582869a25a1706399",
+      "files": 174
+    },
+    {
+      "group": "acceptance-and-delivery",
+      "sha": "71a0a1661889b7c6ddc0b95e2bc02d6ffae3225f",
+      "tree": "4825b303e7c2124f45b4b81a1a8c82ab8589f0ad",
+      "files": 14
+    },
+    {
+      "group": "accounting-and-review",
+      "sha": "9a99bc744585673f7ae76b6146222ead9218e797",
+      "tree": "c1dcec303eba00e996172763ad77e6362ed00591",
+      "files": 135,
+      "inlineUTF8": 80
+    },
+    {
+      "group": "accounting-evidence",
+      "sha": "184b8eced8bc8384520ef02eebc98194ba81cfe3",
+      "tree": "0d86687121423f42587bb7cb1a397b72f8170277",
+      "files": 670,
+      "inlineUTF8": 97
+    }
+  ],
+  "CI_profiles": [
+    {
+      "run_id": 41371500148,
+      "source_commit": "4ccada8d893a5471a39fec998fb3d14fc9728116",
+      "artifact_id": 13108724314,
+      "artifact_SHA256": "cfed367a57c8af60332a5403b5db29d0cb33b28db6d660a4b8dce39f202f4b48",
+      "kernel_cgroup_charge_peak_bytes": 51634176,
+      "independently_reconstructed_probabilities": 30720,
+      "summary_numeric_fields": 142
+    },
+    {
+      "run_id": 41372584433,
+      "source_commit": "c555fcbcf0eb153be62c30c1ba405b2f9b24dfd5",
+      "artifact_id": 13109673051,
+      "artifact_SHA256": "af96db405f146f628940a534fb59224701f0957ee59520c0156dda8c750e61f4",
+      "kernel_cgroup_charge_peak_bytes": 51703808,
+      "independently_reconstructed_probabilities": 30720,
+      "summary_numeric_fields": 142,
+      "strict_wrapper_numeric_checks": 95
+    }
+  ],
+  "local_cost": {
+    "disjoint_formal_phase_receipts": 67,
+    "CPU_seconds": 2124.153532,
+    "remote_CI_CPU_and_setup_seconds": null,
+    "delivery_orchestration_CPU_seconds": null,
+    "device_joules": null,
+    "complete_economic_acceptance": false
+  },
+  "delivery_orchestration": {
+    "immutable_blob_uploads_and_UTF8_tree_content_both_used": true,
+    "unresolved_reused_blob_detected_by_candidate_tree_guard": true,
+    "dependent_text_content_recreated_from_SHA256_verified_local_bytes": true,
+    "subsequent_full_recursive_remote_verification_passed": true,
+    "scientific_outputs_changed": false
+  },
+  "scope": "This receipt verifies the complete candidate commit plus its byte-bound manifest. It is appended in a child commit and excludes its own digest to avoid self-reference. Root tree identity was obtained from the Git commit object's tree.sha, not from a commit-valued treeish alias. Exact profile qualification is cgroup charged memory including attributed kernel/cache, not RSS/PSS, full AV lifecycle memory, or energy.",
+  "strict_acceptance": "HOLD",
+  "all_blockers_closed": false,
+  "production_authorized": false,
+  "remaining_blockers": "See EXTERNAL_BLOCKERS.json and ACCEPTANCE.json. Missing original v6/strong heads, exhaustive historical exclusions, genuinely new eligible recordings, qualified positive scientific increment, full AV lifecycle memory/energy and historical cost evidence remain open."
+}

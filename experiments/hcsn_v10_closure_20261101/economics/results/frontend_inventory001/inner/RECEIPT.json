@@ -1,0 +1,126 @@
+{
+  "schema": "hcsn-v9-process-family-cost.v1",
+  "command": [
+    "env",
+    "PYTHONPATH=/tmp/hcsn-torch-runtime",
+    "OPENBLAS_NUM_THREADS=1",
+    "OMP_NUM_THREADS=1",
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v10_closure_20261101.frontend.inventory",
+    "--archive",
+    "/workspace/scratch/8da28d12955f/recovery-v10/HCSN_V9_20261101_source_evidence.zip",
+    "--remote-tree",
+    "/workspace/scratch/8da28d12955f/recovery-v10/REMOTE_V9_TREE.json",
+    "--repository",
+    "/workspace/scratch/8da28d12955f/hepta-research",
+    "--output",
+    "experiments/hcsn_v10_closure_20261101/frontend"
+  ],
+  "source_sha256": "85f02df43788eebdd72058b80bce6d2e84e51d4d5816c9a894a107dfa066b80d",
+  "observer_identity": {
+    "pid": 578694,
+    "state": "R",
+    "ppid": 578679,
+    "start_ticks": 5516818,
+    "getpid": 5
+  },
+  "boundary_begin_ns": 55168218739110,
+  "boundary_end_ns": 55168715516598,
+  "elapsed_seconds": 0.496777488,
+  "sample_interval_seconds": 0.1,
+  "task_cpu_seconds": 0.28801499999999997,
+  "measurement_cpu_seconds": 0.04064899999999999,
+  "enclosing_observed_cpu_seconds": 0.32866399999999996,
+  "cpu_scope": "Disjoint wait4 child subtrees, adopted children included; observer CPU delta added once",
+  "cpu_complete_for_ordinary_waitable_family": true,
+  "wait4_subtrees": [
+    {
+      "namespace_pid": 6,
+      "direct_worker": true,
+      "exit_code": 0,
+      "user_cpu_seconds": 0.24310099999999998,
+      "system_cpu_seconds": 0.044913999999999996,
+      "cpu_seconds": 0.28801499999999997,
+      "largest_process_hwm_bytes": 40153088
+    }
+  ],
+  "task_success": true,
+  "capabilities": {
+    "cgroup": {
+      "available": false,
+      "attributable_memory_peak_bytes": null,
+      "reason": "[Errno 30] Read-only file system: '/sys/fs/cgroup/hcsn-v9-capability-5'"
+    },
+    "energy": {
+      "joules": null,
+      "attributable": false,
+      "counters": {
+        "/sys/class/powercap": {
+          "exists": false,
+          "energy_files": []
+        },
+        "/sys/class/hwmon": {
+          "exists": false,
+          "energy_files": []
+        },
+        "/sys/class/drm": {
+          "exists": false,
+          "energy_files": []
+        }
+      },
+      "reason": "No configured attributable device-energy counter"
+    }
+  },
+  "errors": [],
+  "memory": {
+    "status": "sampled_partial",
+    "samples": 5,
+    "observed_peak_nonatomic_rss_sum_bytes": 51666944,
+    "observed_peak_nonatomic_pss_sum_bytes": 38860800,
+    "samples_with_all_enumerated_members_read": 4,
+    "continuous_complete_family_peak_bytes": null,
+    "complete": false,
+    "seen_processes": [
+      {
+        "identity": {
+          "pid": 578694,
+          "start_ticks": 5516818
+        },
+        "sample_count": 5,
+        "available_samples": 5,
+        "observed_ppids": [
+          578679
+        ],
+        "namespace_pids": [
+          578694,
+          5
+        ]
+      },
+      {
+        "identity": {
+          "pid": 578696,
+          "start_ticks": 5516821
+        },
+        "sample_count": 5,
+        "available_samples": 4,
+        "observed_ppids": [
+          578694
+        ],
+        "namespace_pids": [
+          578696,
+          6
+        ]
+      }
+    ],
+    "limits": [
+      "Enumeration and smaps reads are non-atomic",
+      "Processes born and exited between samples may be absent",
+      "RSS double-counts shared pages; PSS apportions pages shared outside the family",
+      "Observed sums are not a simultaneous physical memory measurement"
+    ]
+  },
+  "historical_preparation_cpu_seconds": null,
+  "economic_advantage_established": false,
+  "sample_sha256": "99505aef12ead0623ad488589cd9b8c55b5807698080c65508d49ae109bab15a"
+}

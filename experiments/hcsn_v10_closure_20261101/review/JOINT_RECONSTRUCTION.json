@@ -1,0 +1,330 @@
+{
+  "schema": "hcsn-v10-independent-review.v1",
+  "candidate_implementations_imported": false,
+  "audit_source_sha256": "d7bbfe17a26a3806f9ff131db94346e051d3d1c98356a78cecd9ddd5e8c2d2c9",
+  "audit_sources_snapshot": {
+    "independent_audit.py": "d7bbfe17a26a3806f9ff131db94346e051d3d1c98356a78cecd9ddd5e8c2d2c9",
+    "joint_reconstruction.py": "7ff0afaafefa0197122f68911ac7a859738844fef6cf964a243cfafb653eb7be"
+  },
+  "joint_retrain": {
+    "raw_predictions_reconstructed": 30720,
+    "maximum_probability_error": 1.1102230246251565e-16,
+    "validation_only_choices_reconstructed": [
+      {
+        "fit_seed": 101003,
+        "mode": "original",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101003,
+        "mode": "mean_two_point",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101003,
+        "mode": "single_transition",
+        "chosen_index": 1,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101009,
+        "mode": "original",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101009,
+        "mode": "mean_two_point",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101009,
+        "mode": "single_transition",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101019,
+        "mode": "original",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101019,
+        "mode": "mean_two_point",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101019,
+        "mode": "single_transition",
+        "chosen_index": 1,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101021,
+        "mode": "original",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101021,
+        "mode": "mean_two_point",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101021,
+        "mode": "single_transition",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101033,
+        "mode": "original",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101033,
+        "mode": "mean_two_point",
+        "chosen_index": 0,
+        "optimizer_success": true
+      },
+      {
+        "fit_seed": 101033,
+        "mode": "single_transition",
+        "chosen_index": 0,
+        "optimizer_success": true
+      }
+    ],
+    "joint_parameter_changes": [
+      {
+        "fit_seed": 101003,
+        "mode": "original",
+        "dynamics_parameter_change_norm": 0.17487645209755384,
+        "content_parameter_change_norm": 10.011497270578438
+      },
+      {
+        "fit_seed": 101003,
+        "mode": "mean_two_point",
+        "dynamics_parameter_change_norm": 0.293750522007209,
+        "content_parameter_change_norm": 5.386726945271263
+      },
+      {
+        "fit_seed": 101003,
+        "mode": "single_transition",
+        "dynamics_parameter_change_norm": 0.260841255973694,
+        "content_parameter_change_norm": 1.6253036087561716
+      },
+      {
+        "fit_seed": 101009,
+        "mode": "original",
+        "dynamics_parameter_change_norm": 0.05295136023881512,
+        "content_parameter_change_norm": 5.553809542983238
+      },
+      {
+        "fit_seed": 101009,
+        "mode": "mean_two_point",
+        "dynamics_parameter_change_norm": 0.16492437147687952,
+        "content_parameter_change_norm": 3.6412858399813217
+      },
+      {
+        "fit_seed": 101009,
+        "mode": "single_transition",
+        "dynamics_parameter_change_norm": 0.12348443869200951,
+        "content_parameter_change_norm": 1.2578514920846326
+      },
+      {
+        "fit_seed": 101019,
+        "mode": "original",
+        "dynamics_parameter_change_norm": 0.2501881881958018,
+        "content_parameter_change_norm": 8.971641454614955
+      },
+      {
+        "fit_seed": 101019,
+        "mode": "mean_two_point",
+        "dynamics_parameter_change_norm": 0.3488593953375204,
+        "content_parameter_change_norm": 4.536378821635959
+      },
+      {
+        "fit_seed": 101019,
+        "mode": "single_transition",
+        "dynamics_parameter_change_norm": 0.2843931040539361,
+        "content_parameter_change_norm": 1.6287372540604323
+      },
+      {
+        "fit_seed": 101021,
+        "mode": "original",
+        "dynamics_parameter_change_norm": 0.3194009452219028,
+        "content_parameter_change_norm": 9.52698011361853
+      },
+      {
+        "fit_seed": 101021,
+        "mode": "mean_two_point",
+        "dynamics_parameter_change_norm": 0.297595399682203,
+        "content_parameter_change_norm": 4.64219806563016
+      },
+      {
+        "fit_seed": 101021,
+        "mode": "single_transition",
+        "dynamics_parameter_change_norm": 0.31252751345970664,
+        "content_parameter_change_norm": 1.3875041637052217
+      },
+      {
+        "fit_seed": 101033,
+        "mode": "original",
+        "dynamics_parameter_change_norm": 0.03959562867008819,
+        "content_parameter_change_norm": 9.098826087654086
+      },
+      {
+        "fit_seed": 101033,
+        "mode": "mean_two_point",
+        "dynamics_parameter_change_norm": 0.07909306959424767,
+        "content_parameter_change_norm": 5.164900632891971
+      },
+      {
+        "fit_seed": 101033,
+        "mode": "single_transition",
+        "dynamics_parameter_change_norm": 0.06632128877784536,
+        "content_parameter_change_norm": 1.6983591935480977
+      }
+    ],
+    "finite_difference_and_bound_checks": [
+      {
+        "fit_seed": 101003,
+        "mode": "original",
+        "independent_finite_difference_gradient_max_abs": 6.0781379929153445e-06,
+        "reported_analytic_gradient_max_abs": 6.07802594414435e-06,
+        "physical_bound_corner_mass_error": 4.440892098500626e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101003,
+        "mode": "mean_two_point",
+        "independent_finite_difference_gradient_max_abs": 4.8503201455218914e-05,
+        "reported_analytic_gradient_max_abs": 0.00043288914119722936,
+        "physical_bound_corner_mass_error": 2.220446049250313e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101003,
+        "mode": "single_transition",
+        "independent_finite_difference_gradient_max_abs": 3.872457909892546e-07,
+        "reported_analytic_gradient_max_abs": 3.871368247267007e-07,
+        "physical_bound_corner_mass_error": 2.220446049250313e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101009,
+        "mode": "original",
+        "independent_finite_difference_gradient_max_abs": 2.4117374763932276e-06,
+        "reported_analytic_gradient_max_abs": 2.4118763649106167e-06,
+        "physical_bound_corner_mass_error": 3.3306690738754696e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101009,
+        "mode": "mean_two_point",
+        "independent_finite_difference_gradient_max_abs": 1.5171974787620002e-05,
+        "reported_analytic_gradient_max_abs": 1.5172041838749082e-05,
+        "physical_bound_corner_mass_error": 3.3306690738754696e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101009,
+        "mode": "single_transition",
+        "independent_finite_difference_gradient_max_abs": 5.548894677076532e-07,
+        "reported_analytic_gradient_max_abs": 5.548934639366334e-07,
+        "physical_bound_corner_mass_error": 3.3306690738754696e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101019,
+        "mode": "original",
+        "independent_finite_difference_gradient_max_abs": 3.5791369867865797e-06,
+        "reported_analytic_gradient_max_abs": 3.5792983372364535e-06,
+        "physical_bound_corner_mass_error": 4.440892098500626e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101019,
+        "mode": "mean_two_point",
+        "independent_finite_difference_gradient_max_abs": 3.135269821541442e-07,
+        "reported_analytic_gradient_max_abs": 3.13527800752209e-07,
+        "physical_bound_corner_mass_error": 8.881784197001252e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101019,
+        "mode": "single_transition",
+        "independent_finite_difference_gradient_max_abs": 8.133493878403897e-07,
+        "reported_analytic_gradient_max_abs": 8.131668380377229e-07,
+        "physical_bound_corner_mass_error": 2.220446049250313e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101021,
+        "mode": "original",
+        "independent_finite_difference_gradient_max_abs": 3.807620885254437e-06,
+        "reported_analytic_gradient_max_abs": 3.8077883927994187e-06,
+        "physical_bound_corner_mass_error": 4.440892098500626e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101021,
+        "mode": "mean_two_point",
+        "independent_finite_difference_gradient_max_abs": 6.254663453830744e-06,
+        "reported_analytic_gradient_max_abs": 6.254667697319958e-06,
+        "physical_bound_corner_mass_error": 2.220446049250313e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101021,
+        "mode": "single_transition",
+        "independent_finite_difference_gradient_max_abs": 3.33244543071487e-06,
+        "reported_analytic_gradient_max_abs": 3.3324516985115454e-06,
+        "physical_bound_corner_mass_error": 2.220446049250313e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101033,
+        "mode": "original",
+        "independent_finite_difference_gradient_max_abs": 9.171552406428418e-06,
+        "reported_analytic_gradient_max_abs": 9.171526508620777e-06,
+        "physical_bound_corner_mass_error": 4.440892098500626e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101033,
+        "mode": "mean_two_point",
+        "independent_finite_difference_gradient_max_abs": 9.942047185518277e-06,
+        "reported_analytic_gradient_max_abs": 9.941988731989801e-06,
+        "physical_bound_corner_mass_error": 4.440892098500626e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      },
+      {
+        "fit_seed": 101033,
+        "mode": "single_transition",
+        "independent_finite_difference_gradient_max_abs": 8.190670364172092e-06,
+        "reported_analytic_gradient_max_abs": 8.190535424991386e-06,
+        "physical_bound_corner_mass_error": 2.220446049250313e-16,
+        "scope": "Numerical likelihood gradient check, not an optimizer convergence or KKT certificate"
+      }
+    ],
+    "NLL_differences": {
+      "mean_retrained_minus_full": 0.007620491473510338,
+      "single_retrained_minus_full": 0.05892229218752858,
+      "mean_retrained_minus_same_weight": -0.041072969712852146,
+      "single_retrained_minus_same_weight": -0.4975897114640569,
+      "full_minus_ordinary": -0.030335806475139206
+    },
+    "candidate_implementations_imported": false,
+    "scope": "Finite shared renewal family with joint dynamics/content refit; no raw AV or control benefit",
+    "raw_sha256": "5533ec3c4cb105b5e24bc3cbdb70e75e985b0d7270e656bfe684f00963668204"
+  },
+  "scientific_adoption_asserted": false
+}

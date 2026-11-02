@@ -1,0 +1,28 @@
+{
+  "schema": "hcsn-v10-historical-recovery.v1",
+  "source_checkout": "/workspace/scratch/3511158fb83b/hepta",
+  "source_ref": "1dc975504276d9f7af3b28f0f7b1c2a79ef66d8d",
+  "destination": "/workspace/scratch/8da28d12955f/hepta-research/recovered/v3",
+  "verified_and_installed_files": 843,
+  "installed_bytes": 24599339,
+  "archives": [
+    {
+      "manifest": "experiments/hcsn_causal_execution_v3/artifacts/av_probe001/av_probe001.json",
+      "manifest_sha256": "34ee1b3a29e6c5a30675b46f1845e2f1dc8233618bdbc2df8f09e05ffc880a90",
+      "archive_sha256": "c10347a8c55983720133dd0d948b40a793990a951a43803d0a697efdc436aa80",
+      "retained_members_verified_from_existing_expansion": 743,
+      "transport_parts_replayed_in_this_recovery": false
+    },
+    {
+      "manifest": "experiments/hcsn_task_value_v1/artifacts/foundations001/foundations001.json",
+      "manifest_sha256": "79a43c6b4d0d9015caf710c773862b38ff5f3f5ef75187d117a43c1b5e3e0fe1",
+      "archive_sha256": "cfd7cd8a1f50635bfac30f1c32def69493b7c46a523f683d32f964a31a062adb",
+      "retained_members_verified_from_existing_expansion": 81,
+      "transport_parts_replayed_in_this_recovery": false
+    }
+  ],
+  "files_digest": "6ac65313ebb1489c0b3a0764cc383f0585d047c8aee20d106c0215546feb22f0",
+  "v6_recovered": false,
+  "new_recordings": false,
+  "raw_media_recovered": false
+}

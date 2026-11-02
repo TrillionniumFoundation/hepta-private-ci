@@ -1,0 +1,22 @@
+{
+  "plan_sha256": "5fe90f7f781bf9ef76308da6d0672f7c5ff6abd78ba3a438c0d4f27b6a611b09",
+  "fit_sha256": "f089a7158f71313a67fa99ce39545e2f986ee24fb22058e0e3a4a2e7d26c9aa2",
+  "selection": {
+    "async_av": {
+      "101001": "gru",
+      "101003": "history",
+      "101009": "gru",
+      "101021": "direct",
+      "101033": "history"
+    },
+    "av_binding": {
+      "101001": "gru",
+      "101003": "ssm",
+      "101009": "direct",
+      "101021": "ssm",
+      "101033": "ssm"
+    }
+  },
+  "before_historical_evaluation": true,
+  "fresh_confirmation": false
+}

@@ -1,0 +1,41 @@
+{
+  "source_sha256": "16231410d1623c1f0cfa38222c813407475e0281382fc3207a4d1085eaf1a47f",
+  "task": "v3 six-class emotion",
+  "feature_kinds": [
+    "moments",
+    "quantiles"
+  ],
+  "families": [
+    "linear",
+    "rbf_0.25",
+    "rbf_1",
+    "rbf_4"
+  ],
+  "alphas": [
+    0.01,
+    0.1,
+    1.0,
+    10.0
+  ],
+  "temperatures": [
+    0.1,
+    0.25,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "prefixes_seconds": [
+    1,
+    2,
+    3
+  ],
+  "candidate_count": 160,
+  "selection": "minimum historical-validation mean NLL over all three prefixes; first tie in declared order",
+  "training": "train-only normalization and kernel fit; 24 recordings, 72 correlated prefix rows",
+  "source_information": "Same causal 0.1-second emitted audio observations as original common head; no video/ID/actor/label/duration/count inputs",
+  "test_role": "Previously exposed old test actors; descriptive replay only; labels were visible during earlier source investigation",
+  "strong_audio_qualified": false,
+  "original_v6_recovered": false,
+  "fresh_confirmation": false,
+  "cost_scope": "Separate preparation, fit and execution workers; imports/load/writes counted in each actual worker; original feature preparation/pretraining/decoding and development excluded"
+}

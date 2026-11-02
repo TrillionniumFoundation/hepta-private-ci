@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-v10-posthoc-constant-reference.v1",
+  "source_sha256": "10cbb4cdf1e0003b0a60b982bdf233d5e54d4ee55cac3b3f59b8954605c142b5",
+  "candidate_plan_sha256": "5fe90f7f781bf9ef76308da6d0672f7c5ff6abd78ba3a438c0d4f27b6a611b09",
+  "probability": 0.5,
+  "fit_parameters": 0,
+  "tasks": [
+    "async_av",
+    "av_binding"
+  ],
+  "motivation": "Training/validation-only diagnostic: validation BCE of flat .5 beats many selected emotion models; expose a cheap ordinary reference",
+  "posthoc_to_original_experiment": true,
+  "original_B_selection_replaced": false,
+  "historical_recordings_are_new_confirmation": false,
+  "source_evaluation_may_already_have_run": true,
+  "candidate_test_results_used_to_select_constant": false,
+  "scope": "Additional descriptive historical reference, not a new pre-registered confirmation"
+}

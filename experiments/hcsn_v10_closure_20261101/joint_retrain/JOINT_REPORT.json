@@ -1,0 +1,205 @@
+{
+  "scope": "finite learned calibration and cyclic content-transition model, not full AV deep network",
+  "joint_parameters": 6,
+  "ordinary_parameters": 197,
+  "fit_seeds": 5,
+  "holdout_worlds": 1024,
+  "raw_rows": 30720,
+  "candidate_optimizer_success": 40,
+  "candidate_total": 40,
+  "optimizer_success_not_a_global_optimum_or_uniform_gtol_claim": true,
+  "selected_joint_models": 15,
+  "selected_dynamic_parameter_change_norm_range": [
+    0.03959562867008819,
+    0.3488593953375204
+  ],
+  "selected_content_parameter_change_norm_range": [
+    1.2578514920846326,
+    10.011497270578438
+  ],
+  "selected_initial_dynamic_gradient_norm_min": 0.0145426233401437,
+  "selected_initial_content_gradient_norm_min": 0.110352638427834,
+  "selected_dynamic_bound_active_count": 0,
+  "selected_content_logit_bound_active_count": 4,
+  "metric_means": {
+    "joint_original": {
+      "nll": 1.0195525107470593,
+      "accuracy": 0.52734375,
+      "brier": 0.5418143389442982
+    },
+    "same_weight_mean_two_point": {
+      "nll": 1.0682459719334219,
+      "accuracy": 0.5189453125,
+      "brier": 0.5594855240780178
+    },
+    "joint_mean_two_point": {
+      "nll": 1.0271730022205696,
+      "accuracy": 0.52109375,
+      "brier": 0.5440528543833516
+    },
+    "same_weight_single_transition": {
+      "nll": 1.5760645143986447,
+      "accuracy": 0.5234375,
+      "brier": 0.59375951891068
+    },
+    "joint_single_transition": {
+      "nll": 1.0784748029345879,
+      "accuracy": 0.5275390625,
+      "brier": 0.5543810392386368
+    },
+    "ordinary_mlp": {
+      "nll": 1.0498883172221984,
+      "accuracy": 0.523046875,
+      "brier": 0.550541359503071
+    }
+  },
+  "contrasts": {
+    "mean_retrained_minus_full": {
+      "NLL_difference": 0.007620491473510409,
+      "per_fit": [
+        0.0027223861475085273,
+        0.012321701409376799,
+        0.006779936854866526,
+        0.008924673773614274,
+        0.00735375918218592
+      ],
+      "lower95": -0.0013815986966760636,
+      "upper95": 0.01708909429673195,
+      "lower_NLL_better": true
+    },
+    "single_retrained_minus_full": {
+      "NLL_difference": 0.058922292187528605,
+      "per_fit": [
+        0.05981771639152484,
+        0.0575921342049004,
+        0.05838135237726974,
+        0.05979546517777506,
+        0.05902479278617295
+      ],
+      "lower95": 0.044603916361572134,
+      "upper95": 0.07467599151561409,
+      "lower_NLL_better": true
+    },
+    "mean_retrained_minus_same_weight": {
+      "NLL_difference": -0.041072969712852195,
+      "per_fit": [
+        -0.029786046594624936,
+        -0.032730865242982535,
+        -0.04430180670893535,
+        -0.0611848880069931,
+        -0.037361242010725056
+      ],
+      "lower95": -0.06588431319813871,
+      "upper95": -0.02110510660193052,
+      "lower_NLL_better": true
+    },
+    "single_retrained_minus_same_weight": {
+      "NLL_difference": -0.4975897114640569,
+      "per_fit": [
+        -0.6044097325556561,
+        -0.29682659516360393,
+        -0.5334762006096255,
+        -0.6229735396568126,
+        -0.4302624893345864
+      ],
+      "lower95": -0.653803002393929,
+      "upper95": -0.3527321025240246,
+      "lower_NLL_better": true
+    },
+    "full_minus_ordinary": {
+      "NLL_difference": -0.030335806475139244,
+      "per_fit": [
+        -0.032445403206031266,
+        -0.026380306278919623,
+        -0.0300847119086059,
+        -0.02638022752491947,
+        -0.03638838345721997
+      ],
+      "lower95": -0.04370223760686115,
+      "upper95": -0.016662719934642137,
+      "lower_NLL_better": true
+    }
+  },
+  "mean_retraining_difference_interval_contains_zero": true,
+  "single_accuracy_slightly_above_full": true,
+  "mechanism_necessity_proven": false,
+  "D_minus_B_or_control_net_gain_established": false,
+  "real_AV_confirmation": false,
+  "new_independent_recording": false,
+  "cost_scope": "separately metered validation/prepare/data/train/evaluate/independent audit; phase outer CPU only additive; code authoring/transfers and historical cost outside boundary",
+  "exact_continuous_family_memory_peak": null,
+  "device_energy_joules": null,
+  "limitations": [
+    "known finite renewal family",
+    "shared structurally correct stochastic model family",
+    "constant learned calibration map",
+    "fixed perfect initial observation, one mandatory output",
+    "no action/control net benefit",
+    "no real AV or deep multimodal content network",
+    "ordinary MLP strength remains empirically limited"
+  ],
+  "independent_audit": {
+    "path": "experiments/hcsn_v10_closure_20261101/review/JOINT_RECONSTRUCTION.json",
+    "candidate_implementations_imported": false,
+    "raw_predictions_reconstructed": 30720,
+    "maximum_probability_error": 1.1102230246251565e-16,
+    "validation_only_choices_reconstructed": 15,
+    "fitted_point_FD_not_uniform_smooth_convergence_certificate": true
+  },
+  "metered_phases": [
+    {
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_audit001/PHASE_RECEIPT.json",
+      "stage": "audit",
+      "attempt": 1,
+      "success": true,
+      "outer_wait4_cpu_seconds": 11.567483,
+      "wall_seconds": 18.290906068
+    },
+    {
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_data001/PHASE_RECEIPT.json",
+      "stage": "data",
+      "attempt": 1,
+      "success": true,
+      "outer_wait4_cpu_seconds": 1.245544,
+      "wall_seconds": 1.896475439
+    },
+    {
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_evaluate001/PHASE_RECEIPT.json",
+      "stage": "execute",
+      "attempt": 1,
+      "success": true,
+      "outer_wait4_cpu_seconds": 2.205019,
+      "wall_seconds": 3.21673988
+    },
+    {
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_prepare001/PHASE_RECEIPT.json",
+      "stage": "prepare",
+      "attempt": 1,
+      "success": true,
+      "outer_wait4_cpu_seconds": 0.672027,
+      "wall_seconds": 1.359673828
+    },
+    {
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_train001/PHASE_RECEIPT.json",
+      "stage": "train",
+      "attempt": 1,
+      "success": true,
+      "outer_wait4_cpu_seconds": 19.249147,
+      "wall_seconds": 29.883037073
+    },
+    {
+      "path": "experiments/hcsn_v10_closure_20261101/economics/results/joint_validation001/PHASE_RECEIPT.json",
+      "stage": "validation",
+      "attempt": 1,
+      "success": true,
+      "outer_wait4_cpu_seconds": 1.286827,
+      "wall_seconds": 2.479138822
+    }
+  ],
+  "disjoint_outer_CPU_seconds": 36.226047,
+  "outside_measurement_boundary": [
+    "code authoring/tool transfer",
+    "stage-launcher import and final receipt serialization",
+    "historical work and unspecified prior attempts"
+  ]
+}

@@ -1,0 +1,81 @@
+name: HCSN v10 isolated cgroup memory qualification
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hcsn-v10-memory-qualification.yml
+      - experiments/hcsn_v10_closure_20261101/economics/ci_cgroup.py
+      - experiments/hcsn_v10_closure_20261101/economics/ci_joint_replay.py
+      - experiments/hcsn_v10_closure_20261101/joint_retrain/*.py
+      - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/PLAN.json
+      - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/DATA.json
+      - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/TRAINING_COMPLETE.json
+      - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/SUMMARY.json
+      - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/test.npz
+      - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/fit_*/weights.npz
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-v10-memory-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  memory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      HCSN_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+    steps:
+      - name: Sparse checkout exact research head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # existing repository pin
+        with:
+          ref: ${{ env.HCSN_SOURCE_SHA }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/hcsn-v10-memory-qualification.yml
+            /experiments/hcsn_v10_closure_20261101/economics/ci_cgroup.py
+            /experiments/hcsn_v10_closure_20261101/economics/ci_joint_replay.py
+            /experiments/hcsn_v10_closure_20261101/joint_retrain/*.py
+            /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/PLAN.json
+            /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/DATA.json
+            /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/TRAINING_COMPLETE.json
+            /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/SUMMARY.json
+            /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/test.npz
+            /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/fit_*/weights.npz
+      - name: Python from existing repository action pin
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install existing HCSN numerical dependency pins
+        run: python -m pip install --no-cache-dir numpy==2.3.5 scipy==1.17.0
+      - name: Bind source and probe without modifying host controls
+        run: |
+          test "$(git rev-parse HEAD)" = "$HCSN_SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/hcsn-v10-memory"
+          python experiments/hcsn_v10_closure_20261101/economics/ci_cgroup.py probe --out "$RUNNER_TEMP/hcsn-v10-memory/probe"
+          git rev-parse HEAD > "$RUNNER_TEMP/hcsn-v10-memory/SOURCE_COMMIT.txt"
+      - name: Qualify gated private cgroup with concurrent touched allocations
+        run: |
+          hcsn_python="$(command -v python)"
+          sudo -n env HCSN_SOURCE_SHA="$HCSN_SOURCE_SHA" PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 "$hcsn_python" experiments/hcsn_v10_closure_20261101/economics/ci_cgroup.py run --uid "$(id -u)" --gid "$(id -g)" --out "$RUNNER_TEMP/hcsn-v10-memory/fixture" --timeout 30 -- "$hcsn_python" experiments/hcsn_v10_closure_20261101/economics/ci_cgroup.py fixture
+          python -c 'import json,os; from pathlib import Path; p=Path(os.environ["RUNNER_TEMP"])/"hcsn-v10-memory/fixture/RECEIPT.json"; r=json.loads(p.read_text()); assert r["status"] == "PASS" and r["gated_before_exec"] and r["memory_peak_bytes"] >= 48*1024**2, r'
+      - name: Replay frozen actual joint model evaluation in a fresh private cgroup
+        run: |
+          hcsn_python="$(command -v python)"
+          sudo -n env HCSN_SOURCE_SHA="$HCSN_SOURCE_SHA" PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 "$hcsn_python" experiments/hcsn_v10_closure_20261101/economics/ci_cgroup.py run --uid "$(id -u)" --gid "$(id -g)" --out "$RUNNER_TEMP/hcsn-v10-memory/joint-memory" --timeout 180 -- "$hcsn_python" -m experiments.hcsn_v10_closure_20261101.economics.ci_joint_replay --output "$RUNNER_TEMP/hcsn-v10-memory/joint-replay"
+      - name: Retain raw capability, failures and kernel receipts
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # existing repository pin
+        with:
+          name: hcsn-v10-memory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hcsn-v10-memory
+          if-no-files-found: error
+          retention-days: 7

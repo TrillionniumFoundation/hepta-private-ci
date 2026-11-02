@@ -1,0 +1,1500 @@
+{
+  "schema": "hcsn-v9-process-family-cost.v1",
+  "command": [
+    "env",
+    "OPENBLAS_NUM_THREADS=1",
+    "OMP_NUM_THREADS=1",
+    "python",
+    "-m",
+    "experiments.hcsn_v10_closure_20261101.risk.study",
+    "execute",
+    "--output",
+    "experiments/hcsn_v10_closure_20261101/risk/results/closure001"
+  ],
+  "source_sha256": "85f02df43788eebdd72058b80bce6d2e84e51d4d5816c9a894a107dfa066b80d",
+  "observer_identity": {
+    "pid": 558294,
+    "state": "R",
+    "ppid": 558289,
+    "start_ticks": 5500102,
+    "getpid": 5
+  },
+  "boundary_begin_ns": 55001120812605,
+  "boundary_end_ns": 55112905832926,
+  "elapsed_seconds": 111.785020321,
+  "sample_interval_seconds": 0.1,
+  "task_cpu_seconds": 7.857925,
+  "measurement_cpu_seconds": 7.848146,
+  "enclosing_observed_cpu_seconds": 15.706071,
+  "cpu_scope": "Disjoint wait4 child subtrees, adopted children included; observer CPU delta added once",
+  "cpu_complete_for_ordinary_waitable_family": true,
+  "wait4_subtrees": [
+    {
+      "namespace_pid": 6,
+      "direct_worker": true,
+      "exit_code": 0,
+      "user_cpu_seconds": 6.655068,
+      "system_cpu_seconds": 1.202857,
+      "cpu_seconds": 7.857925,
+      "largest_process_hwm_bytes": 14942208
+    }
+  ],
+  "task_success": true,
+  "capabilities": {
+    "cgroup": {
+      "available": false,
+      "attributable_memory_peak_bytes": null,
+      "reason": "[Errno 30] Read-only file system: '/sys/fs/cgroup/hcsn-v9-capability-5'"
+    },
+    "energy": {
+      "joules": null,
+      "attributable": false,
+      "counters": {
+        "/sys/class/powercap": {
+          "exists": false,
+          "energy_files": []
+        },
+        "/sys/class/hwmon": {
+          "exists": false,
+          "energy_files": []
+        },
+        "/sys/class/drm": {
+          "exists": false,
+          "energy_files": []
+        }
+      },
+      "reason": "No configured attributable device-energy counter"
+    }
+  },
+  "errors": [],
+  "memory": {
+    "status": "sampled_partial",
+    "samples": 907,
+    "observed_peak_nonatomic_rss_sum_bytes": 42078208,
+    "observed_peak_nonatomic_pss_sum_bytes": 28426240,
+    "samples_with_all_enumerated_members_read": 897,
+    "continuous_complete_family_peak_bytes": null,
+    "complete": false,
+    "seen_processes": [
+      {
+        "identity": {
+          "pid": 558294,
+          "start_ticks": 5500102
+        },
+        "sample_count": 907,
+        "available_samples": 907,
+        "observed_ppids": [
+          558289
+        ],
+        "namespace_pids": [
+          558294,
+          5
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558300,
+          "start_ticks": 5500112
+        },
+        "sample_count": 907,
+        "available_samples": 906,
+        "observed_ppids": [
+          558294
+        ],
+        "namespace_pids": [
+          558300,
+          6
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558308,
+          "start_ticks": 5500141
+        },
+        "sample_count": 10,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558308,
+          7
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558341,
+          "start_ticks": 5500258
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558341,
+          8
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558344,
+          "start_ticks": 5500288
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558344,
+          9
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558419,
+          "start_ticks": 5500403
+        },
+        "sample_count": 3,
+        "available_samples": 3,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558419,
+          10
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558462,
+          "start_ticks": 5500446
+        },
+        "sample_count": 11,
+        "available_samples": 11,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558462,
+          11
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558506,
+          "start_ticks": 5500568
+        },
+        "sample_count": 3,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558506,
+          12
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558509,
+          "start_ticks": 5500600
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558509,
+          13
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558570,
+          "start_ticks": 5500724
+        },
+        "sample_count": 2,
+        "available_samples": 1,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558570,
+          14
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558577,
+          "start_ticks": 5500752
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558577,
+          15
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558656,
+          "start_ticks": 5500879
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558656,
+          16
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558663,
+          "start_ticks": 5500909
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558663,
+          17
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558737,
+          "start_ticks": 5501038
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558737,
+          18
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558854,
+          "start_ticks": 5501166
+        },
+        "sample_count": 17,
+        "available_samples": 17,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558854,
+          19
+        ]
+      },
+      {
+        "identity": {
+          "pid": 558951,
+          "start_ticks": 5501370
+        },
+        "sample_count": 11,
+        "available_samples": 11,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          558951,
+          20
+        ]
+      },
+      {
+        "identity": {
+          "pid": 559004,
+          "start_ticks": 5501500
+        },
+        "sample_count": 16,
+        "available_samples": 16,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          559004,
+          21
+        ]
+      },
+      {
+        "identity": {
+          "pid": 559320,
+          "start_ticks": 5501689
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          559320,
+          22
+        ]
+      },
+      {
+        "identity": {
+          "pid": 559974,
+          "start_ticks": 5501809
+        },
+        "sample_count": 17,
+        "available_samples": 17,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          559974,
+          23
+        ]
+      },
+      {
+        "identity": {
+          "pid": 560318,
+          "start_ticks": 5502004
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          560318,
+          24
+        ]
+      },
+      {
+        "identity": {
+          "pid": 560387,
+          "start_ticks": 5502125
+        },
+        "sample_count": 17,
+        "available_samples": 17,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          560387,
+          25
+        ]
+      },
+      {
+        "identity": {
+          "pid": 560467,
+          "start_ticks": 5502324
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          560467,
+          26
+        ]
+      },
+      {
+        "identity": {
+          "pid": 560579,
+          "start_ticks": 5502445
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          560579,
+          27
+        ]
+      },
+      {
+        "identity": {
+          "pid": 560699,
+          "start_ticks": 5502563
+        },
+        "sample_count": 17,
+        "available_samples": 17,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          560699,
+          28
+        ]
+      },
+      {
+        "identity": {
+          "pid": 560841,
+          "start_ticks": 5502761
+        },
+        "sample_count": 11,
+        "available_samples": 11,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          560841,
+          29
+        ]
+      },
+      {
+        "identity": {
+          "pid": 560900,
+          "start_ticks": 5502877
+        },
+        "sample_count": 17,
+        "available_samples": 17,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          560900,
+          30
+        ]
+      },
+      {
+        "identity": {
+          "pid": 561056,
+          "start_ticks": 5503064
+        },
+        "sample_count": 11,
+        "available_samples": 11,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          561056,
+          31
+        ]
+      },
+      {
+        "identity": {
+          "pid": 561213,
+          "start_ticks": 5503180
+        },
+        "sample_count": 16,
+        "available_samples": 16,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          561213,
+          32
+        ]
+      },
+      {
+        "identity": {
+          "pid": 561455,
+          "start_ticks": 5503373
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          561455,
+          33
+        ]
+      },
+      {
+        "identity": {
+          "pid": 561640,
+          "start_ticks": 5503495
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          561640,
+          34
+        ]
+      },
+      {
+        "identity": {
+          "pid": 561908,
+          "start_ticks": 5503621
+        },
+        "sample_count": 16,
+        "available_samples": 16,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          561908,
+          35
+        ]
+      },
+      {
+        "identity": {
+          "pid": 562068,
+          "start_ticks": 5503819
+        },
+        "sample_count": 11,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          562068,
+          36
+        ]
+      },
+      {
+        "identity": {
+          "pid": 562157,
+          "start_ticks": 5503951
+        },
+        "sample_count": 16,
+        "available_samples": 16,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          562157,
+          37
+        ]
+      },
+      {
+        "identity": {
+          "pid": 562329,
+          "start_ticks": 5504159
+        },
+        "sample_count": 8,
+        "available_samples": 8,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          562329,
+          38
+        ]
+      },
+      {
+        "identity": {
+          "pid": 562605,
+          "start_ticks": 5504290
+        },
+        "sample_count": 15,
+        "available_samples": 15,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          562605,
+          39
+        ]
+      },
+      {
+        "identity": {
+          "pid": 562708,
+          "start_ticks": 5504498
+        },
+        "sample_count": 8,
+        "available_samples": 8,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          562708,
+          40
+        ]
+      },
+      {
+        "identity": {
+          "pid": 562898,
+          "start_ticks": 5504618
+        },
+        "sample_count": 1,
+        "available_samples": 1,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          562898,
+          41
+        ]
+      },
+      {
+        "identity": {
+          "pid": 562946,
+          "start_ticks": 5504641
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          562946,
+          42
+        ]
+      },
+      {
+        "identity": {
+          "pid": 563043,
+          "start_ticks": 5504768
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          563043,
+          43
+        ]
+      },
+      {
+        "identity": {
+          "pid": 563092,
+          "start_ticks": 5504791
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          563092,
+          44
+        ]
+      },
+      {
+        "identity": {
+          "pid": 563265,
+          "start_ticks": 5504921
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          563265,
+          45
+        ]
+      },
+      {
+        "identity": {
+          "pid": 563283,
+          "start_ticks": 5504960
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          563283,
+          46
+        ]
+      },
+      {
+        "identity": {
+          "pid": 563506,
+          "start_ticks": 5505085
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          563506,
+          47
+        ]
+      },
+      {
+        "identity": {
+          "pid": 563528,
+          "start_ticks": 5505118
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          563528,
+          48
+        ]
+      },
+      {
+        "identity": {
+          "pid": 563617,
+          "start_ticks": 5505241
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          563617,
+          49
+        ]
+      },
+      {
+        "identity": {
+          "pid": 563624,
+          "start_ticks": 5505275
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          563624,
+          50
+        ]
+      },
+      {
+        "identity": {
+          "pid": 563816,
+          "start_ticks": 5505408
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          563816,
+          51
+        ]
+      },
+      {
+        "identity": {
+          "pid": 563846,
+          "start_ticks": 5505535
+        },
+        "sample_count": 16,
+        "available_samples": 16,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          563846,
+          52
+        ]
+      },
+      {
+        "identity": {
+          "pid": 564063,
+          "start_ticks": 5505738
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          564063,
+          53
+        ]
+      },
+      {
+        "identity": {
+          "pid": 564178,
+          "start_ticks": 5505859
+        },
+        "sample_count": 17,
+        "available_samples": 17,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          564178,
+          54
+        ]
+      },
+      {
+        "identity": {
+          "pid": 564284,
+          "start_ticks": 5506055
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          564284,
+          55
+        ]
+      },
+      {
+        "identity": {
+          "pid": 564382,
+          "start_ticks": 5506178
+        },
+        "sample_count": 16,
+        "available_samples": 16,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          564382,
+          56
+        ]
+      },
+      {
+        "identity": {
+          "pid": 564554,
+          "start_ticks": 5506372
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          564554,
+          57
+        ]
+      },
+      {
+        "identity": {
+          "pid": 564601,
+          "start_ticks": 5506488
+        },
+        "sample_count": 16,
+        "available_samples": 16,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          564601,
+          58
+        ]
+      },
+      {
+        "identity": {
+          "pid": 564705,
+          "start_ticks": 5506684
+        },
+        "sample_count": 8,
+        "available_samples": 8,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          564705,
+          59
+        ]
+      },
+      {
+        "identity": {
+          "pid": 564896,
+          "start_ticks": 5506805
+        },
+        "sample_count": 8,
+        "available_samples": 8,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          564896,
+          60
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565010,
+          "start_ticks": 5506928
+        },
+        "sample_count": 17,
+        "available_samples": 17,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565010,
+          61
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565093,
+          "start_ticks": 5507126
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565093,
+          62
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565174,
+          "start_ticks": 5507244
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565174,
+          63
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565203,
+          "start_ticks": 5507274
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565203,
+          64
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565290,
+          "start_ticks": 5507396
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565290,
+          65
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565385,
+          "start_ticks": 5507530
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565385,
+          66
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565386,
+          "start_ticks": 5507555
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565386,
+          67
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565480,
+          "start_ticks": 5507680
+        },
+        "sample_count": 1,
+        "available_samples": 1,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565480,
+          68
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565519,
+          "start_ticks": 5507708
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565519,
+          69
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565645,
+          "start_ticks": 5507828
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565645,
+          70
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565647,
+          "start_ticks": 5507854
+        },
+        "sample_count": 10,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565647,
+          71
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565761,
+          "start_ticks": 5507974
+        },
+        "sample_count": 1,
+        "available_samples": 1,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565761,
+          72
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565806,
+          "start_ticks": 5508000
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565806,
+          73
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565960,
+          "start_ticks": 5508116
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565960,
+          74
+        ]
+      },
+      {
+        "identity": {
+          "pid": 565984,
+          "start_ticks": 5508143
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          565984,
+          75
+        ]
+      },
+      {
+        "identity": {
+          "pid": 566286,
+          "start_ticks": 5508263
+        },
+        "sample_count": 3,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          566286,
+          76
+        ]
+      },
+      {
+        "identity": {
+          "pid": 566348,
+          "start_ticks": 5508306
+        },
+        "sample_count": 10,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          566348,
+          77
+        ]
+      },
+      {
+        "identity": {
+          "pid": 566462,
+          "start_ticks": 5508435
+        },
+        "sample_count": 1,
+        "available_samples": 1,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          566462,
+          78
+        ]
+      },
+      {
+        "identity": {
+          "pid": 566493,
+          "start_ticks": 5508460
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          566493,
+          79
+        ]
+      },
+      {
+        "identity": {
+          "pid": 566644,
+          "start_ticks": 5508578
+        },
+        "sample_count": 3,
+        "available_samples": 3,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          566644,
+          80
+        ]
+      },
+      {
+        "identity": {
+          "pid": 566709,
+          "start_ticks": 5508620
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          566709,
+          81
+        ]
+      },
+      {
+        "identity": {
+          "pid": 566910,
+          "start_ticks": 5508740
+        },
+        "sample_count": 2,
+        "available_samples": 2,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          566910,
+          82
+        ]
+      },
+      {
+        "identity": {
+          "pid": 566940,
+          "start_ticks": 5508762
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          566940,
+          83
+        ]
+      },
+      {
+        "identity": {
+          "pid": 567053,
+          "start_ticks": 5508889
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          567053,
+          84
+        ]
+      },
+      {
+        "identity": {
+          "pid": 567148,
+          "start_ticks": 5509008
+        },
+        "sample_count": 16,
+        "available_samples": 16,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          567148,
+          85
+        ]
+      },
+      {
+        "identity": {
+          "pid": 567351,
+          "start_ticks": 5509208
+        },
+        "sample_count": 10,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          567351,
+          86
+        ]
+      },
+      {
+        "identity": {
+          "pid": 567482,
+          "start_ticks": 5509322
+        },
+        "sample_count": 16,
+        "available_samples": 16,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          567482,
+          87
+        ]
+      },
+      {
+        "identity": {
+          "pid": 567778,
+          "start_ticks": 5509524
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          567778,
+          88
+        ]
+      },
+      {
+        "identity": {
+          "pid": 567886,
+          "start_ticks": 5509643
+        },
+        "sample_count": 17,
+        "available_samples": 17,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          567886,
+          89
+        ]
+      },
+      {
+        "identity": {
+          "pid": 568144,
+          "start_ticks": 5509844
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          568144,
+          90
+        ]
+      },
+      {
+        "identity": {
+          "pid": 568309,
+          "start_ticks": 5509968
+        },
+        "sample_count": 15,
+        "available_samples": 15,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          568309,
+          91
+        ]
+      },
+      {
+        "identity": {
+          "pid": 568515,
+          "start_ticks": 5510162
+        },
+        "sample_count": 7,
+        "available_samples": 7,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          568515,
+          92
+        ]
+      },
+      {
+        "identity": {
+          "pid": 568666,
+          "start_ticks": 5510293
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          568666,
+          93
+        ]
+      },
+      {
+        "identity": {
+          "pid": 568831,
+          "start_ticks": 5510440
+        },
+        "sample_count": 16,
+        "available_samples": 16,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          568831,
+          94
+        ]
+      },
+      {
+        "identity": {
+          "pid": 569064,
+          "start_ticks": 5510638
+        },
+        "sample_count": 10,
+        "available_samples": 10,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          569064,
+          95
+        ]
+      },
+      {
+        "identity": {
+          "pid": 569192,
+          "start_ticks": 5510758
+        },
+        "sample_count": 17,
+        "available_samples": 17,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          569192,
+          96
+        ]
+      },
+      {
+        "identity": {
+          "pid": 569390,
+          "start_ticks": 5510962
+        },
+        "sample_count": 9,
+        "available_samples": 9,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          569390,
+          97
+        ]
+      },
+      {
+        "identity": {
+          "pid": 569474,
+          "start_ticks": 5511079
+        },
+        "sample_count": 17,
+        "available_samples": 16,
+        "observed_ppids": [
+          558300
+        ],
+        "namespace_pids": [
+          569474,
+          98
+        ]
+      }
+    ],
+    "limits": [
+      "Enumeration and smaps reads are non-atomic",
+      "Processes born and exited between samples may be absent",
+      "RSS double-counts shared pages; PSS apportions pages shared outside the family",
+      "Observed sums are not a simultaneous physical memory measurement"
+    ]
+  },
+  "historical_preparation_cpu_seconds": null,
+  "economic_advantage_established": false,
+  "sample_sha256": "cc3f81cd71236750753846fcbea17b1713fb3f7448f4997538ea3b0564dbc6e8"
+}
