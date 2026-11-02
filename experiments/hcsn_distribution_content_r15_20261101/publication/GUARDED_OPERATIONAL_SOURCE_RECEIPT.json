@@ -1,0 +1,26 @@
+{
+  "utc": "2026-11-01T19:26:47.212499+00:00",
+  "scope": "Scheduling and visible-space protection only; same 12+5 registered commands and no statistical/data/model changes",
+  "parent_remote_commit": "42ef5081ef1ff233abe26468a8d26ccbfb9e61f9",
+  "source_sha256": {
+    "guarded_continuation.py": "764ce586c8cbc679ee4e47cb7cbe8ea025e27ca412c13746c526be05ef8775df",
+    "guarded_continuation_checks.py": "1f9e05dd2926e292733592806395a18583bdd39ef12c1eb32eeea75c94cf6541",
+    "guarded_continuation_selfcheck_02.json": "3a4831fe60b3fdf0ac1d581675a0cf00ed85c835d7112ab44955d1b322a7e99f",
+    "GUARD_TIMING_SCOPE.md": "5d2a0c5024fb8f09f800807ccfad137b1d10105e8bfc2968f33f31586e80568c"
+  },
+  "independent_review_received_from": "/root/active_recovery",
+  "review_conclusion": "No material blocker in bounded command/ownership/resource/accounting review; artificial fixture not scientific confirmation or exhaustive race proof",
+  "artificial_checks_passed": 13,
+  "main_frozen_files": 36,
+  "main_frozen_files_unchanged": true,
+  "formal_npz_outputs_present": false,
+  "complete_training_groups_at_record": 28,
+  "old_waiting_helpers_stopped_before_any_stage": true,
+  "training_resumer_unchanged": true,
+  "phase_destinations": [
+    "operational_continuation_guarded_01",
+    "operational_addendum_guarded_01"
+  ],
+  "wall_scope": "Stage wall begins after launch and includes pauses; phase span additionally includes prerequisite and prestart-space waits; raw actor/group/worker wall may include pauses; no wrapperwall added to CPU",
+  "event_chronology_note": "For stage completion, use finished_utc; inherited payload utc identifies its original stage intent."
+}

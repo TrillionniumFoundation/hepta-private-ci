@@ -1,0 +1,818 @@
+{
+  "all_five_preflight_passed_before_staging": true,
+  "all_restored_bytes_equal_to_staging": true,
+  "backup_helper_sha256": "e3c9a4f5110de2e8b27fbef80b091e3989e91121d17e243d61944c542e93d0b6",
+  "backup_helper_source": "import hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport stat\nimport subprocess\nimport sys\nfrom datetime import datetime, timezone\n\ntask_root = Path('/workspace/scratch/e8334174d4c2')\nrepo = task_root / 'hepta'\nstudy = repo / 'experiments/hcsn_distribution_content_r15_20261101'\nsource_root = study / 'results/formal_03'\npublication = study / 'publication'\nlabel = 'checkpoint_recall_15135_15137light'\nstage = task_root / (label + '_staging')\nrestored = task_root / (label + '_fresh_restore')\nbundle = publication / 'archives' / label\nprefix = 'repository/experiments/hcsn_distribution_content_r15_20261101/results/formal_03'\ngroups = [(15135, 'light'), (15135, 'value'), (15136, 'light'), (15136, 'value'), (15137, 'light')]\nnames = [f'recall_s{seed}_{mode}' for seed, mode in groups]\nprior_bundles = [\n    ('checkpoint_recall_15131', 'c66f2643f2c2df64c7a0f2efc900568ab4bb43859573d74ad8768de48a64b73e'),\n    ('checkpoint_recall_15132_15134', '24eb5795d4ddb249659e904369a3135ef75d61e110651665370114e59c3a4ea7')]\nexpected_fit_files = {'selected.pt', 'final.pt', 'POSTERIOR_QUALIFICATION.json', 'TRACE.json', 'DATA.json', 'SUMMARY.json'}\nregistration_files = [Path(name) for name in ('PROTOCOL.json', 'SOURCE_FREEZE.json', 'TRAINING_DATA_CONTEXTS.json', 'RESTART_REGISTRATION.json')]\nregistration_files.append(Path('full_online_confirmation/SELF_REGISTRATION.json'))\n\ndef signature(info):\n    return (info.st_dev, info.st_ino, info.st_mode, info.st_size, info.st_mtime_ns, info.st_ctime_ns)\n\ndef stable_hash(path):\n    before = signature(path.lstat())\n    assert stat.S_ISREG(before[2]), 'Non-regular source: ' + str(path)\n    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)\n    digest = hashlib.sha256()\n    with os.fdopen(fd, 'rb') as reader:\n        assert signature(os.fstat(fd)) == before\n        while block := reader.read(1024 * 1024):\n            digest.update(block)\n        assert signature(os.fstat(fd)) == before\n    assert signature(path.lstat()) == before\n    return digest.hexdigest(), before\n\ndef emit(path, value):\n    with path.open('x') as output:\n        json.dump(value, output, indent=2, sort_keys=True)\n        output.write('\\n')\n\ndef available_bytes():\n    value = os.statvfs(task_root)\n    return value.f_bavail * value.f_frsize\n\nfree_before = available_bytes()\nprotocol = json.loads((source_root / 'PROTOCOL.json').read_text())\nassert protocol['updates'] == 768\nassert len(protocol['tasks']) * len(protocol['seeds']) * len(protocol['modes']) == 32\nprior_members, prior_evidence = {}, []\nfor previous_label, expected_hash in prior_bundles:\n    path = publication / 'archives' / previous_label / 'manifest.json'\n    assert stable_hash(path)[0] == expected_hash\n    previous = json.loads(path.read_text())\n    for member in previous['members']:\n        if member['path'] in prior_members:\n            assert (member['bytes'], member['sha256']) == (prior_members[member['path']]['bytes'], prior_members[member['path']]['sha256'])\n        prior_members[member['path']] = member\n    prior_evidence.append({'bundle': previous_label, 'manifest_sha256': expected_hash})\nprevious_group_names = sorted({path[len(prefix + '/fits/'):].split('/')[0] for path in prior_members if path.startswith(prefix + '/fits/')})\nassert len(previous_group_names) == 8 and not set(previous_group_names).intersection(names)\nassert len(set(previous_group_names + names)) == 13\n\npaths, metadata, preflight_signatures = list(registration_files), [], {}\n# Exact whitelist only. No fits-parent inventory or incomplete group access.\nfor seed, mode in groups:\n    name = f'recall_s{seed}_{mode}'\n    receipt_path = Path('receipts/train') / (name + '.json')\n    receipt = json.loads((source_root / receipt_path).read_text())\n    summary = json.loads((source_root / 'fits' / name / 'SUMMARY.json').read_text())\n    assert receipt['name'] == name and receipt['exit_code'] == 0, 'Incomplete process: ' + name\n    assert (summary['task'], summary['seed'], summary['train_mode'], summary['updates'], summary['heldout_opened']) == ('recall', seed, mode, 768, False)\n    fit = source_root / 'fits' / name\n    assert fit.is_dir() and not fit.is_symlink()\n    entries = list(fit.iterdir())\n    assert {entry.name for entry in entries} == expected_fit_files\n    assert all(stat.S_ISREG(entry.lstat().st_mode) for entry in entries)\n    hashes = {}\n    for filename, key in (('selected.pt', 'checkpoint_sha256'), ('final.pt', 'final_checkpoint_sha256')):\n        relative = Path('fits') / name / filename\n        digest, before = stable_hash(source_root / relative)\n        assert digest == summary[key], 'Checkpoint hash mismatch: ' + name + '/' + filename\n        hashes[filename] = digest\n        preflight_signatures[str(relative)] = before\n    metadata.append({'name': name, 'task': 'recall', 'seed': seed, 'train_mode': mode,\n                     'receipt_exit_code': 0, 'completed_updates': 768, 'heldout_opened': False,\n                     'checkpoint_hashes': hashes})\n    paths.extend(entry.relative_to(source_root) for entry in entries)\n    paths.extend([receipt_path, Path('receipts/train') / (name + '.stdout.log'),\n                  Path('receipts/train') / (name + '.stderr.log')])\nassert len(paths) == len(set(paths)) == 50\nregistration_hashes = {}\nfor relative in registration_files:\n    digest, before = stable_hash(source_root / relative)\n    archived = prior_members[prefix + '/' + str(relative)]\n    assert (digest, before[3]) == (archived['sha256'], archived['bytes']), 'Frozen registration changed: ' + str(relative)\n    registration_hashes[str(relative)] = digest\n    preflight_signatures[str(relative)] = before\n\nassert not stage.exists() and not restored.exists() and not bundle.exists()\nstage.mkdir()\ncopied = []\nfor relative in sorted(paths):\n    source, target = source_root / relative, stage / relative\n    before = signature(source.lstat())\n    assert stat.S_ISREG(before[2])\n    assert str(relative) not in preflight_signatures or before == preflight_signatures[str(relative)]\n    target.parent.mkdir(parents=True, exist_ok=True)\n    fd = os.open(source, os.O_RDONLY | os.O_NOFOLLOW)\n    digest, size = hashlib.sha256(), 0\n    with os.fdopen(fd, 'rb') as reader, target.open('xb') as writer:\n        assert signature(os.fstat(fd)) == before\n        while block := reader.read(1024 * 1024):\n            digest.update(block)\n            size += len(block)\n            writer.write(block)\n        assert signature(os.fstat(fd)) == before\n    assert signature(source.lstat()) == before\n    copied.append({'path': str(relative), 'bytes': size, 'sha256': digest.hexdigest(), 'source_signature': list(before)})\nby_path = {item['path']: item for item in copied}\nfor group in metadata:\n    for filename, digest in group['checkpoint_hashes'].items():\n        assert by_path['fits/' + group['name'] + '/' + filename]['sha256'] == digest\n\nstorage_observation = {\n    'source': 'Coordinator-reported operational incident; no incomplete fit/receipt inspected by this backup',\n    'event': 'Frozen launcher reported ENOSPC while writing the 14th receipt after 13 complete groups; original completed fits were retained.',\n    'cause': 'unknown', 'partial_campaign_only': True,\n    'current_available_bytes_before_this_backup': free_before,\n    'interpretation': 'Current free space is a later observation and does not disprove the earlier ENOSPC or establish that its cause is fixed.'}\nnote = {'schema': 'hcsn-intermediate-checkpoint-v1', 'partial': 'additional 5 groups; together with prior checkpoints 13/32',\n    'additional_completed_groups_in_this_backup': 5, 'registered_total_groups': 32,\n    'combined_completed_groups_backed_up': 13, 'combined_partial': '13/32',\n    'original_completed_13_preserved': True, 'selected_groups': metadata,\n    'no_confirmation': True, 'confirmation_performed_by_backup': False, 'test_data_accessed_by_backup': False,\n    'final_success_evidence': False, 'scientific_gain_claimed': False,\n    'purpose': 'Interruption-safe backup of five additional completed original training groups.',\n    'warning': 'Partial preservation only, not full campaign success, scientific confirmation, recovery evidence, or acceptance.',\n    'excluded_incomplete_groups_not_accessed': ['recall_s15137_value', 'recall_s15138_light'],\n    'source_root': str(source_root), 'archive_prefix': prefix, 'prior_checkpoints': prior_evidence,\n    'previously_backed_up_groups': previous_group_names,\n    'frozen_registration_sha256': registration_hashes,\n    'registrations_byte_identical_to_prior_checkpoints': True,\n    'source_code_not_duplicated_here': 'Use published source matching SOURCE_FREEZE; this partial bundle contains registrations, not another source snapshot.',\n    'operational_enospc_observation': storage_observation,\n    'created_at_utc': datetime.now(timezone.utc).isoformat()}\nemit(stage / 'CHECKPOINT_NOTE_recall_15135_15137light.json', note)\ntool = publication / 'pack_results.py'\npack_command = [sys.executable, '-B', str(tool), 'pack', '--root', prefix + '=' + str(stage),\n                '--output', str(bundle), '--dict-mib', '16', '--chunk-bytes', '49152']\npacked = subprocess.run(pack_command, capture_output=True, text=True, check=True)\npack_receipt = json.loads(packed.stdout)\nmanifest = json.loads((bundle / 'manifest.json').read_text())\nassert len(manifest['members']) == 51\noverlap = [item for item in manifest['members'] if item['path'] in prior_members]\nassert len(overlap) == 5\nassert all((item['bytes'], item['sha256']) == (prior_members[item['path']]['bytes'], prior_members[item['path']]['sha256']) for item in overlap)\nrestore_command = [sys.executable, '-B', str(tool), 'restore', '--bundle', str(bundle),\n                   '--destination', str(restored), '--manifest-sha256', pack_receipt['manifest_sha256']]\nrestoration = subprocess.run(restore_command, capture_output=True, text=True, check=True)\nrestore_receipt = json.loads(restoration.stdout)\nfor member in manifest['members']:\n    relative = Path(member['path']).relative_to(prefix)\n    with (stage / relative).open('rb') as first, (restored / member['path']).open('rb') as second:\n        while True:\n            left, right = first.read(1024 * 1024), second.read(1024 * 1024)\n            assert left == right\n            if not left:\n                break\nfor item in copied:\n    assert list(signature((source_root / item['path']).lstat())) == item['source_signature']\nverification = publication / 'CHECKPOINT_RECALL_15135_15137LIGHT_VERIFICATION.json'\nrecord = {'schema': 'hcsn-intermediate-checkpoint-verification-v1', 'partial': 'additional 5; combined 13/32',\n    'no_confirmation': True, 'final_success_evidence': False, 'all_five_preflight_passed_before_staging': True,\n    'selected_groups': metadata, 'copied_source_files': copied, 'prior_checkpoints': prior_evidence,\n    'pack_command': pack_command, 'pack_receipt': pack_receipt,\n    'restore_command': restore_command, 'restore_receipt': restore_receipt,\n    'fresh_restore_completed': True, 'all_restored_bytes_equal_to_staging': True,\n    'checkpoint_hashes_match_original_fit_summaries': True, 'original_sources_unchanged_during_backup': True,\n    'overlap_with_prior_checkpoints': {'members': 5, 'all_bytes_and_sha256_equal': True,\n        'scope': 'Registration files only; disjoint fit members and unique NOTE path'},\n    'frozen_sources_modified': False, 'canonical_fits_or_receipts_written': False,\n    'other_or_incomplete_fits_accessed': False, 'confirmation_or_test_accessed': False,\n    'remote_write_performed': False, 'preexisting_artifacts_deleted': False,\n    'operational_enospc_observation': storage_observation,\n    'staging_root': str(stage), 'restored_root': str(restored),\n    'staging_space': {'persistent_uncompressed_copies': 2, 'per_copy_member_bytes': pack_receipt['source_bytes'],\n        'scope': 'One whitelisted staging copy and one verified fresh restore; no additional persistent uncompressed archive.'},\n    'current_available_bytes_after_backup': available_bytes(),\n    'backup_helper_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),\n    'backup_helper_source': Path(__file__).read_text(), 'completed_at_utc': datetime.now(timezone.utc).isoformat()}\nemit(verification, record)\nprint(json.dumps({'bundle': str(bundle), 'manifest_sha256': pack_receipt['manifest_sha256'],\n    'parts': pack_receipt['parts'], 'archive_bytes': pack_receipt['archive_bytes'],\n    'member_bytes': pack_receipt['source_bytes'], 'members': pack_receipt['members'],\n    'verification': str(verification), 'fresh_restore_byte_equality': True,\n    'additional_groups': 5, 'combined_partial': '13/32'}))\n",
+  "canonical_fits_or_receipts_written": false,
+  "checkpoint_hashes_match_original_fit_summaries": true,
+  "completed_at_utc": "2026-11-01T18:47:00.946245+00:00",
+  "confirmation_or_test_accessed": false,
+  "copied_source_files": [
+    {
+      "bytes": 6408,
+      "path": "PROTOCOL.json",
+      "sha256": "22ac32d5eecf24dd90e6930368fa2ed7bc5459419adcccc75730c78826ce45c5",
+      "source_signature": [
+        27,
+        2963,
+        33188,
+        6408,
+        1793554359584621402,
+        1793555223106833571
+      ]
+    },
+    {
+      "bytes": 786,
+      "path": "RESTART_REGISTRATION.json",
+      "sha256": "a76af4270257492f82aa120b402918736b67209d93733d77e942f3c356d1a986",
+      "source_signature": [
+        27,
+        3014,
+        33188,
+        786,
+        1793555223140500199,
+        1793555223140500199
+      ]
+    },
+    {
+      "bytes": 5186,
+      "path": "SOURCE_FREEZE.json",
+      "sha256": "80d79ad880c275b43f51e4903ded904e21fa201be5919e04b5f816bf861665f1",
+      "source_signature": [
+        27,
+        2964,
+        33188,
+        5186,
+        1793554363003519831,
+        1793555223107096029
+      ]
+    },
+    {
+      "bytes": 223052,
+      "path": "TRAINING_DATA_CONTEXTS.json",
+      "sha256": "2804001af69bb7050a224a4b677b123865d41397b02ab0ee81c5eac6f8eddd86",
+      "source_signature": [
+        27,
+        2965,
+        33188,
+        223052,
+        1793554362979221225,
+        1793555223107321572
+      ]
+    },
+    {
+      "bytes": 183,
+      "path": "fits/recall_s15135_light/DATA.json",
+      "sha256": "7a13cf52993c8dd68c9f037925b7aaa317002d8bc457f9e7fbd22f77f2cfd14a",
+      "source_signature": [
+        27,
+        41361,
+        33188,
+        183,
+        1793557033432299799,
+        1793557033432299799
+      ]
+    },
+    {
+      "bytes": 2802,
+      "path": "fits/recall_s15135_light/POSTERIOR_QUALIFICATION.json",
+      "sha256": "60a1f161615a84fa94489962f96c6bc26f18ac2bbe7afd78f99edfc2e06bb49d",
+      "source_signature": [
+        27,
+        48394,
+        33188,
+        2802,
+        1793557342266215102,
+        1793557342266215102
+      ]
+    },
+    {
+      "bytes": 22224,
+      "path": "fits/recall_s15135_light/SUMMARY.json",
+      "sha256": "f1a0e9d01181bd4d2b738e3dd722052d17b20ed21842f7555772fabcd53badf6",
+      "source_signature": [
+        27,
+        48396,
+        33188,
+        22224,
+        1793557342597614856,
+        1793557342597614856
+      ]
+    },
+    {
+      "bytes": 842898,
+      "path": "fits/recall_s15135_light/TRACE.json",
+      "sha256": "82dadaa230a01330e2cce0fbfea2e790bae884ca9fa6a98e0c44674139d03011",
+      "source_signature": [
+        27,
+        48395,
+        33188,
+        842898,
+        1793557342596487509,
+        1793557342596487509
+      ]
+    },
+    {
+      "bytes": 2657635,
+      "path": "fits/recall_s15135_light/final.pt",
+      "sha256": "13f150f9c383ae01cc2b5cb822f26cbd45c8cc5e191f67e56dca8740c2c881d2",
+      "source_signature": [
+        27,
+        47947,
+        33188,
+        2657635,
+        1793557335740512249,
+        1793557335740512249
+      ]
+    },
+    {
+      "bytes": 2663057,
+      "path": "fits/recall_s15135_light/selected.pt",
+      "sha256": "ec02b70203c52825fa7d349d965ed80b10a1e3f77866f70ceef77528e5234d1f",
+      "source_signature": [
+        27,
+        47982,
+        33188,
+        2663057,
+        1793557335740512249,
+        1793557335740512249
+      ]
+    },
+    {
+      "bytes": 183,
+      "path": "fits/recall_s15135_value/DATA.json",
+      "sha256": "7a13cf52993c8dd68c9f037925b7aaa317002d8bc457f9e7fbd22f77f2cfd14a",
+      "source_signature": [
+        27,
+        41461,
+        33188,
+        183,
+        1793557049600736142,
+        1793557049600736142
+      ]
+    },
+    {
+      "bytes": 2798,
+      "path": "fits/recall_s15135_value/POSTERIOR_QUALIFICATION.json",
+      "sha256": "a6f5484b2f1a774eb40695a0204b5ddd391cd01117456d216852c65d2431f4c6",
+      "source_signature": [
+        27,
+        41479,
+        33188,
+        2798,
+        1793557368780118759,
+        1793557368780118759
+      ]
+    },
+    {
+      "bytes": 22372,
+      "path": "fits/recall_s15135_value/SUMMARY.json",
+      "sha256": "133b3a83c27949df008bae725e24a29970e831fb626ef037e87972a955306926",
+      "source_signature": [
+        27,
+        41532,
+        33188,
+        22372,
+        1793557369183122457,
+        1793557369183122457
+      ]
+    },
+    {
+      "bytes": 841376,
+      "path": "fits/recall_s15135_value/TRACE.json",
+      "sha256": "20f6ab478864c3c6a8106deabcafb69fc8c5ed80a003b66e80736ba59b3bf10a",
+      "source_signature": [
+        27,
+        41495,
+        33188,
+        841376,
+        1793557369180391880,
+        1793557369180391880
+      ]
+    },
+    {
+      "bytes": 2657635,
+      "path": "fits/recall_s15135_value/final.pt",
+      "sha256": "733a2cb942a796c4b857cd59ab3e7e4247e9caa7da427136db05d240b3f81384",
+      "source_signature": [
+        27,
+        48784,
+        33188,
+        2657635,
+        1793557362960414355,
+        1793557362960414355
+      ]
+    },
+    {
+      "bytes": 2663057,
+      "path": "fits/recall_s15135_value/selected.pt",
+      "sha256": "23adfaf859c641f5c5db7782d14a215e9ac47daa2bec856032582bc11772d510",
+      "source_signature": [
+        27,
+        48785,
+        33188,
+        2663057,
+        1793557362964414341,
+        1793557362964414341
+      ]
+    },
+    {
+      "bytes": 183,
+      "path": "fits/recall_s15136_light/DATA.json",
+      "sha256": "7a13cf52993c8dd68c9f037925b7aaa317002d8bc457f9e7fbd22f77f2cfd14a",
+      "source_signature": [
+        27,
+        48405,
+        33188,
+        183,
+        1793557347046075882,
+        1793557347046075882
+      ]
+    },
+    {
+      "bytes": 2800,
+      "path": "fits/recall_s15136_light/POSTERIOR_QUALIFICATION.json",
+      "sha256": "a500ce40283c8a2c676d6606b66ecd70b67328dbe8066fc4dfa45f4427f7a322",
+      "source_signature": [
+        27,
+        49417,
+        33188,
+        2800,
+        1793557666727571596,
+        1793557666727571596
+      ]
+    },
+    {
+      "bytes": 22213,
+      "path": "fits/recall_s15136_light/SUMMARY.json",
+      "sha256": "c3a687ad37831b8a1a55dd1499c1d8cef31e0d262b1b9bb4002b97b0aa02abd8",
+      "source_signature": [
+        27,
+        49419,
+        33188,
+        22213,
+        1793557666849386765,
+        1793557666849386765
+      ]
+    },
+    {
+      "bytes": 842511,
+      "path": "fits/recall_s15136_light/TRACE.json",
+      "sha256": "bb8a57cbaa0d54f3cc01ff4e406145ed22d784f14957b0da1d979438840919b1",
+      "source_signature": [
+        27,
+        49418,
+        33188,
+        842511,
+        1793557666847280282,
+        1793557666847280282
+      ]
+    },
+    {
+      "bytes": 2657635,
+      "path": "fits/recall_s15136_light/final.pt",
+      "sha256": "d63e5463ae919a4d63e0950490b3de9705472adc17a89e79e643398a36694f21",
+      "source_signature": [
+        27,
+        49401,
+        33188,
+        2657635,
+        1793557658659312039,
+        1793557658659312039
+      ]
+    },
+    {
+      "bytes": 2663057,
+      "path": "fits/recall_s15136_light/selected.pt",
+      "sha256": "1316d42f4c0f14eee0a3868645d34c3ce5f7cf20d5d5c85b258f18d1f138fa25",
+      "source_signature": [
+        27,
+        49402,
+        33188,
+        2663057,
+        1793557658665238240,
+        1793557658665238240
+      ]
+    },
+    {
+      "bytes": 183,
+      "path": "fits/recall_s15136_value/DATA.json",
+      "sha256": "7a13cf52993c8dd68c9f037925b7aaa317002d8bc457f9e7fbd22f77f2cfd14a",
+      "source_signature": [
+        27,
+        145662,
+        33188,
+        183,
+        1793557373322237579,
+        1793557373322237579
+      ]
+    },
+    {
+      "bytes": 2796,
+      "path": "fits/recall_s15136_value/POSTERIOR_QUALIFICATION.json",
+      "sha256": "3c965804b28194ea7493f7334b61919867579479d19248a93dc4c81a09c9bed0",
+      "source_signature": [
+        27,
+        175579,
+        33188,
+        2796,
+        1793557703849615472,
+        1793557703849615472
+      ]
+    },
+    {
+      "bytes": 22363,
+      "path": "fits/recall_s15136_value/SUMMARY.json",
+      "sha256": "c23b78075ce2ea649b7f726c9991f88a13cdbfc21a6a029275787e111c706b8f",
+      "source_signature": [
+        27,
+        175581,
+        33188,
+        22363,
+        1793557704399546934,
+        1793557704399546934
+      ]
+    },
+    {
+      "bytes": 840990,
+      "path": "fits/recall_s15136_value/TRACE.json",
+      "sha256": "278beb3af34bc69ea033ec4c97ad963a37082d99dc8dcb153adac8930ae85fd0",
+      "source_signature": [
+        27,
+        175580,
+        33188,
+        840990,
+        1793557704395148483,
+        1793557704395148483
+      ]
+    },
+    {
+      "bytes": 2657635,
+      "path": "fits/recall_s15136_value/final.pt",
+      "sha256": "55555a9efc4195845e271e159a735efec0acc02e96504836d225ecc792bbb2b1",
+      "source_signature": [
+        27,
+        170492,
+        33188,
+        2657635,
+        1793557696491178909,
+        1793557696491178909
+      ]
+    },
+    {
+      "bytes": 2663057,
+      "path": "fits/recall_s15136_value/selected.pt",
+      "sha256": "8e0ac06356201f8743bf2f17fae38a597c36f6ce5717208d098be9e1d77cd232",
+      "source_signature": [
+        27,
+        170489,
+        33188,
+        2663057,
+        1793557696495178894,
+        1793557696495178894
+      ]
+    },
+    {
+      "bytes": 183,
+      "path": "fits/recall_s15137_light/DATA.json",
+      "sha256": "7a13cf52993c8dd68c9f037925b7aaa317002d8bc457f9e7fbd22f77f2cfd14a",
+      "source_signature": [
+        27,
+        164108,
+        33188,
+        183,
+        1793557673726123521,
+        1793557673726123521
+      ]
+    },
+    {
+      "bytes": 2801,
+      "path": "fits/recall_s15137_light/POSTERIOR_QUALIFICATION.json",
+      "sha256": "36cda423ccc557974b74108fd4fa745c191b0476213f5fc0b2c853de1933bae8",
+      "source_signature": [
+        27,
+        181569,
+        33188,
+        2801,
+        1793557975278521793,
+        1793557975278521793
+      ]
+    },
+    {
+      "bytes": 22041,
+      "path": "fits/recall_s15137_light/SUMMARY.json",
+      "sha256": "96b2a6c50bbd140b294af05659bcd0d42baeba549cae183b19dd25b3a8afece3",
+      "source_signature": [
+        27,
+        181848,
+        33188,
+        22041,
+        1793557975820341637,
+        1793557975820341637
+      ]
+    },
+    {
+      "bytes": 842539,
+      "path": "fits/recall_s15137_light/TRACE.json",
+      "sha256": "46e9bb44075f429a7195b055cf020bb293e52efc42f4fc4d70072261ae5c5402",
+      "source_signature": [
+        27,
+        181847,
+        33188,
+        842539,
+        1793557975814106138,
+        1793557975814106138
+      ]
+    },
+    {
+      "bytes": 2657635,
+      "path": "fits/recall_s15137_light/final.pt",
+      "sha256": "4eddb8f3bd2d32b461e4cd7d032a9fddd268ec05de09b392b153d1e34dbf4c71",
+      "source_signature": [
+        27,
+        181836,
+        33188,
+        2657635,
+        1793557967658135950,
+        1793557967658135950
+      ]
+    },
+    {
+      "bytes": 2663057,
+      "path": "fits/recall_s15137_light/selected.pt",
+      "sha256": "d229945ddcc7bd842d69ead7a2258a11e39f5cba2e115d4d0de795bf98f94907",
+      "source_signature": [
+        27,
+        181837,
+        33188,
+        2663057,
+        1793557967665711440,
+        1793557967665711440
+      ]
+    },
+    {
+      "bytes": 254735,
+      "path": "full_online_confirmation/SELF_REGISTRATION.json",
+      "sha256": "9558c76568f0c009ece6411fc305c6183cb87153af673398263c39394404b4e8",
+      "source_signature": [
+        27,
+        3030,
+        33188,
+        254735,
+        1793555254023703495,
+        1793555254023703495
+      ]
+    },
+    {
+      "bytes": 650,
+      "path": "receipts/train/recall_s15135_light.json",
+      "sha256": "d490c03852e080afa1d33f4eb4142ba550a6549bb16023c57d90ff401e4b1686",
+      "source_signature": [
+        27,
+        48401,
+        33188,
+        650,
+        1793557343714260028,
+        1793557343714260028
+      ]
+    },
+    {
+      "bytes": 0,
+      "path": "receipts/train/recall_s15135_light.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_signature": [
+        27,
+        41359,
+        33188,
+        0,
+        1793557030893584864,
+        1793557030893584864
+      ]
+    },
+    {
+      "bytes": 118,
+      "path": "receipts/train/recall_s15135_light.stdout.log",
+      "sha256": "c3357fa711e2500a6a507e53e116147312a5fe652d541f04714911f918d1e377",
+      "source_signature": [
+        27,
+        41358,
+        33188,
+        118,
+        1793557342612487451,
+        1793557342612487451
+      ]
+    },
+    {
+      "bytes": 651,
+      "path": "receipts/train/recall_s15135_value.json",
+      "sha256": "a733a8f8268b6e9ebe40eb133c3df2b984461cb2313fd94650ba4553bb2f6638",
+      "source_signature": [
+        27,
+        44523,
+        33188,
+        651,
+        1793557370257947185,
+        1793557370257947185
+      ]
+    },
+    {
+      "bytes": 0,
+      "path": "receipts/train/recall_s15135_value.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_signature": [
+        27,
+        41455,
+        33188,
+        0,
+        1793557046905530981,
+        1793557046905530981
+      ]
+    },
+    {
+      "bytes": 118,
+      "path": "receipts/train/recall_s15135_value.stdout.log",
+      "sha256": "32dd3f11e5ba22182f790d508421feea5d019823528e12535d4a2d3ceb7d831e",
+      "source_signature": [
+        27,
+        41452,
+        33188,
+        118,
+        1793557369196391821,
+        1793557369196391821
+      ]
+    },
+    {
+      "bytes": 651,
+      "path": "receipts/train/recall_s15136_light.json",
+      "sha256": "91ca667e02c2187fb7622db357bf6e0f0f12fddec58c3e72e2cabd85e9de2eba",
+      "source_signature": [
+        27,
+        49420,
+        33188,
+        651,
+        1793557668778509354,
+        1793557668778509354
+      ]
+    },
+    {
+      "bytes": 0,
+      "path": "receipts/train/recall_s15136_light.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_signature": [
+        27,
+        48403,
+        33188,
+        0,
+        1793557343960482588,
+        1793557343960482588
+      ]
+    },
+    {
+      "bytes": 118,
+      "path": "receipts/train/recall_s15136_light.stdout.log",
+      "sha256": "b3a0e4ffdb3cdabf2baeb81b2d27921b2f22d8df12456d9907ed225d2a6fc97a",
+      "source_signature": [
+        27,
+        48402,
+        33188,
+        118,
+        1793557666855280257,
+        1793557666855280257
+      ]
+    },
+    {
+      "bytes": 652,
+      "path": "receipts/train/recall_s15136_value.json",
+      "sha256": "b90d199e0832c86ed41496e2c6d73011bbf9cb5bb1b16c0e69a899c2a893a2fd",
+      "source_signature": [
+        27,
+        49259,
+        33188,
+        652,
+        1793557705344838335,
+        1793557705344838335
+      ]
+    },
+    {
+      "bytes": 0,
+      "path": "receipts/train/recall_s15136_value.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_signature": [
+        27,
+        46204,
+        33188,
+        0,
+        1793557370504387054,
+        1793557370504387054
+      ]
+    },
+    {
+      "bytes": 118,
+      "path": "receipts/train/recall_s15136_value.stdout.log",
+      "sha256": "cd9ee954db45921fb111ece295eda539ca5ef9c2e7ac44fa6d7912fd547546a2",
+      "source_signature": [
+        27,
+        46174,
+        33188,
+        118,
+        1793557704411148422,
+        1793557704411148422
+      ]
+    },
+    {
+      "bytes": 652,
+      "path": "receipts/train/recall_s15137_light.json",
+      "sha256": "2b95a4e1c6fbcedd2392efe379ccafdb1fe13ba4fef494883d55802a5e0cc329",
+      "source_signature": [
+        27,
+        49835,
+        33188,
+        652,
+        1793557977096063242,
+        1793557977096063242
+      ]
+    },
+    {
+      "bytes": 0,
+      "path": "receipts/train/recall_s15137_light.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_signature": [
+        27,
+        49422,
+        33188,
+        0,
+        1793557669027273073,
+        1793557669027273073
+      ]
+    },
+    {
+      "bytes": 117,
+      "path": "receipts/train/recall_s15137_light.stdout.log",
+      "sha256": "00dcc3ffd45c97fc4b3e925a36f4ea148ab0feaa654f58bd21b3477c56cd17b0",
+      "source_signature": [
+        27,
+        49421,
+        33188,
+        117,
+        1793557975838106051,
+        1793557975838106051
+      ]
+    }
+  ],
+  "current_available_bytes_after_backup": 6245138432,
+  "final_success_evidence": false,
+  "fresh_restore_completed": true,
+  "frozen_sources_modified": false,
+  "no_confirmation": true,
+  "operational_enospc_observation": {
+    "cause": "unknown",
+    "current_available_bytes_before_this_backup": 6309445632,
+    "event": "Frozen launcher reported ENOSPC while writing the 14th receipt after 13 complete groups; original completed fits were retained.",
+    "interpretation": "Current free space is a later observation and does not disprove the earlier ENOSPC or establish that its cause is fixed.",
+    "partial_campaign_only": true,
+    "source": "Coordinator-reported operational incident; no incomplete fit/receipt inspected by this backup"
+  },
+  "original_sources_unchanged_during_backup": true,
+  "other_or_incomplete_fits_accessed": false,
+  "overlap_with_prior_checkpoints": {
+    "all_bytes_and_sha256_equal": true,
+    "members": 5,
+    "scope": "Registration files only; disjoint fit members and unique NOTE path"
+  },
+  "pack_command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/pack_results.py",
+    "pack",
+    "--root",
+    "repository/experiments/hcsn_distribution_content_r15_20261101/results/formal_03=/workspace/scratch/e8334174d4c2/checkpoint_recall_15135_15137light_staging",
+    "--output",
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15135_15137light",
+    "--dict-mib",
+    "16",
+    "--chunk-bytes",
+    "49152"
+  ],
+  "pack_receipt": {
+    "archive_bytes": 1054196,
+    "manifest_sha256": "464a3eae6e0cbf0d7e62f5e19fee9365b99d0f170a9b04713264cbd640a29512",
+    "members": 51,
+    "operation": "pack",
+    "output": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15135_15137light",
+    "parts": 22,
+    "source_bytes": 31439143,
+    "source_roots": {
+      "repository/experiments/hcsn_distribution_content_r15_20261101/results/formal_03": "/workspace/scratch/e8334174d4c2/checkpoint_recall_15135_15137light_staging"
+    },
+    "tool_sha256": "c2314d3157259037a0880b5bcd02508e81085d1378054327a722c18906ca3dcd"
+  },
+  "partial": "additional 5; combined 13/32",
+  "preexisting_artifacts_deleted": false,
+  "prior_checkpoints": [
+    {
+      "bundle": "checkpoint_recall_15131",
+      "manifest_sha256": "c66f2643f2c2df64c7a0f2efc900568ab4bb43859573d74ad8768de48a64b73e"
+    },
+    {
+      "bundle": "checkpoint_recall_15132_15134",
+      "manifest_sha256": "24eb5795d4ddb249659e904369a3135ef75d61e110651665370114e59c3a4ea7"
+    }
+  ],
+  "remote_write_performed": false,
+  "restore_command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/pack_results.py",
+    "restore",
+    "--bundle",
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15135_15137light",
+    "--destination",
+    "/workspace/scratch/e8334174d4c2/checkpoint_recall_15135_15137light_fresh_restore",
+    "--manifest-sha256",
+    "464a3eae6e0cbf0d7e62f5e19fee9365b99d0f170a9b04713264cbd640a29512"
+  ],
+  "restore_receipt": {
+    "already_identical_members": 0,
+    "destination": "/workspace/scratch/e8334174d4c2/checkpoint_recall_15135_15137light_fresh_restore",
+    "manifest_sha256": "464a3eae6e0cbf0d7e62f5e19fee9365b99d0f170a9b04713264cbd640a29512",
+    "operation": "restore",
+    "verified_member_bytes": 31439143,
+    "verified_members": 51,
+    "verified_parts": 22
+  },
+  "restored_root": "/workspace/scratch/e8334174d4c2/checkpoint_recall_15135_15137light_fresh_restore",
+  "schema": "hcsn-intermediate-checkpoint-verification-v1",
+  "selected_groups": [
+    {
+      "checkpoint_hashes": {
+        "final.pt": "13f150f9c383ae01cc2b5cb822f26cbd45c8cc5e191f67e56dca8740c2c881d2",
+        "selected.pt": "ec02b70203c52825fa7d349d965ed80b10a1e3f77866f70ceef77528e5234d1f"
+      },
+      "completed_updates": 768,
+      "heldout_opened": false,
+      "name": "recall_s15135_light",
+      "receipt_exit_code": 0,
+      "seed": 15135,
+      "task": "recall",
+      "train_mode": "light"
+    },
+    {
+      "checkpoint_hashes": {
+        "final.pt": "733a2cb942a796c4b857cd59ab3e7e4247e9caa7da427136db05d240b3f81384",
+        "selected.pt": "23adfaf859c641f5c5db7782d14a215e9ac47daa2bec856032582bc11772d510"
+      },
+      "completed_updates": 768,
+      "heldout_opened": false,
+      "name": "recall_s15135_value",
+      "receipt_exit_code": 0,
+      "seed": 15135,
+      "task": "recall",
+      "train_mode": "value"
+    },
+    {
+      "checkpoint_hashes": {
+        "final.pt": "d63e5463ae919a4d63e0950490b3de9705472adc17a89e79e643398a36694f21",
+        "selected.pt": "1316d42f4c0f14eee0a3868645d34c3ce5f7cf20d5d5c85b258f18d1f138fa25"
+      },
+      "completed_updates": 768,
+      "heldout_opened": false,
+      "name": "recall_s15136_light",
+      "receipt_exit_code": 0,
+      "seed": 15136,
+      "task": "recall",
+      "train_mode": "light"
+    },
+    {
+      "checkpoint_hashes": {
+        "final.pt": "55555a9efc4195845e271e159a735efec0acc02e96504836d225ecc792bbb2b1",
+        "selected.pt": "8e0ac06356201f8743bf2f17fae38a597c36f6ce5717208d098be9e1d77cd232"
+      },
+      "completed_updates": 768,
+      "heldout_opened": false,
+      "name": "recall_s15136_value",
+      "receipt_exit_code": 0,
+      "seed": 15136,
+      "task": "recall",
+      "train_mode": "value"
+    },
+    {
+      "checkpoint_hashes": {
+        "final.pt": "4eddb8f3bd2d32b461e4cd7d032a9fddd268ec05de09b392b153d1e34dbf4c71",
+        "selected.pt": "d229945ddcc7bd842d69ead7a2258a11e39f5cba2e115d4d0de795bf98f94907"
+      },
+      "completed_updates": 768,
+      "heldout_opened": false,
+      "name": "recall_s15137_light",
+      "receipt_exit_code": 0,
+      "seed": 15137,
+      "task": "recall",
+      "train_mode": "light"
+    }
+  ],
+  "staging_root": "/workspace/scratch/e8334174d4c2/checkpoint_recall_15135_15137light_staging",
+  "staging_space": {
+    "per_copy_member_bytes": 31439143,
+    "persistent_uncompressed_copies": 2,
+    "scope": "One whitelisted staging copy and one verified fresh restore; no additional persistent uncompressed archive."
+  }
+}

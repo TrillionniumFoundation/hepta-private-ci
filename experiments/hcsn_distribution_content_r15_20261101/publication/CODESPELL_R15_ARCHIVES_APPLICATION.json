@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn.r15.publication.codespell-shard-application.v1",
+  "utc": "2026-11-02T00:51:58.169201+00:00",
+  "parent_commit": "21edbe56f861989a4616c7d22e3eecc2d7cf6399",
+  "path": ".codespellrc",
+  "preimage_git_blob": "32ad02b993236edd9c54dbaba1664b8f2d650c00",
+  "postimage_git_blob": "68844f940db074aadd26a9f5f7496cee3618a196",
+  "postimage_sha256": "1df7a247b2eb737cbbbb63141355e324e3c99aa44c9df4a49728bcb3ddbbcaf0",
+  "candidate_byte_identical": true,
+  "change": "Append one R15 archive binary-shard pathname pattern to the existing skip list. Text, source, manifest, checksum and other experiment paths retain their checks.",
+  "scope_check_file": "publication/CODESPELL_R15_ARCHIVES_SCOPE_CHECK.json",
+  "scope_check_sha256": "863612b20045388b4a12dbbdb70516b188f1656258ecbaa9464d7534a48807f3",
+  "frozen_scientific_files_unchanged": 36,
+  "workflow_changed": false,
+  "scientific_checks_disabled": false,
+  "full_codespell_cli_run": false,
+  "ci_green_claim": false,
+  "inherited_format_instruction": {
+    "attempted": true,
+    "exit_code": null,
+    "status": "unavailable",
+    "error_type": "FileNotFoundError",
+    "reason": "The recovered study checkout has no codex-rs directory and no just executable. No Rust code was modified. This is not a formatter pass."
+  },
+  "prior_ci_failures_retained": "publication/CI_HEAD_REVIEW_02.json",
+  "publication_status": "Local change prepared; remote publication and subsequent CI must be recorded separately."
+}

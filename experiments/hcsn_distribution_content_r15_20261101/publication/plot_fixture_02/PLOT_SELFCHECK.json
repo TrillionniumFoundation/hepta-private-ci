@@ -1,0 +1,53 @@
+{
+  "artificial_fixture": true,
+  "passed": true,
+  "source_fixture": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/report_fixture_03/ACCEPTANCE_REVIEW.json",
+  "rendered": {
+    "output": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/plot_fixture_02/rendered",
+    "artificial_fixture": true,
+    "forest_estimates": 30,
+    "task_domain_rows": 15,
+    "cost_cells": 12,
+    "cost_condition_rows": 96
+  },
+  "stored_mean_and_interval_passthrough": true,
+  "negative_control_estimates_retained": 6,
+  "only_registered_primary_pressure_rows_get_reference": true,
+  "worker_cpu_sentinel_ignored": true,
+  "other_domain_and_train_exec_cost_sentinels_ignored": true,
+  "direct_online_summary_with_protocol_matches_review": true,
+  "widget_schema_shape_checked": true,
+  "rejection_checks": [
+    {
+      "case": "missing_cost_row",
+      "rejected": true,
+      "reason": "Missing any of the 96 IID value/value cost rows"
+    },
+    {
+      "case": "duplicate_cost_row",
+      "rejected": true,
+      "reason": "Unexpected/duplicate IID value/value cost row: ('recall', 'ordinary_distribution', 15131)"
+    },
+    {
+      "case": "wrong_object_count",
+      "rejected": true,
+      "reason": "Every cost row must execute all 512 objects"
+    },
+    {
+      "case": "different_cohort",
+      "rejected": true,
+      "reason": "Different IID object cohorts were mixed within a task"
+    },
+    {
+      "case": "changed_pressure_threshold",
+      "rejected": true,
+      "reason": "Pressure domains/reference differ from the registered contract"
+    },
+    {
+      "case": "omitted_effect_domain",
+      "rejected": true,
+      "reason": "Missing actual primary or selected-comparator domains"
+    }
+  ],
+  "scope": "Artificial publication mechanics and layout only. No formal run or test data opened."
+}

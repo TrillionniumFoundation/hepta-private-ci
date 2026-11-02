@@ -1,0 +1,1178 @@
+{
+  "checks": [
+    {
+      "name": "analytic_distribution.generator_mass_scaled_roundoff",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 4.0,
+      "value": 0.22145328719723026
+    },
+    {
+      "name": "analytic_distribution.generator_positive",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -1e-14,
+      "value": 0.0
+    },
+    {
+      "name": "analytic_distribution.0.0.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 0.0
+    },
+    {
+      "name": "analytic_distribution.0.0.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 0.0
+    },
+    {
+      "name": "analytic_distribution.0.0.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.220446049250313e-16
+    },
+    {
+      "name": "analytic_distribution.0.0.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 1.2676809671526479e-05
+    },
+    {
+      "name": "analytic_distribution.0.25.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 4.172009959724221e-16
+    },
+    {
+      "name": "analytic_distribution.0.25.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.437286483747414e-16
+    },
+    {
+      "name": "analytic_distribution.0.25.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 4.973799150320701e-14
+    },
+    {
+      "name": "analytic_distribution.0.25.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 0.0004932805458715167
+    },
+    {
+      "name": "analytic_distribution.0.7.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 5.143455106271233e-16
+    },
+    {
+      "name": "analytic_distribution.0.7.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.8171228410857054e-16
+    },
+    {
+      "name": "analytic_distribution.0.7.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 6.306066779870889e-14
+    },
+    {
+      "name": "analytic_distribution.0.7.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 0.00044710755309721926
+    },
+    {
+      "name": "analytic_distribution.1.0.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.6306400674181987e-15
+    },
+    {
+      "name": "analytic_distribution.1.0.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 6.31873026124552e-16
+    },
+    {
+      "name": "analytic_distribution.1.0.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.98507876802978e-13
+    },
+    {
+      "name": "analytic_distribution.1.0.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 0.000357890035931463
+    },
+    {
+      "name": "analytic_distribution.1.75.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 3.686287386450715e-16
+    },
+    {
+      "name": "analytic_distribution.1.75.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.216109240560371e-16
+    },
+    {
+      "name": "analytic_distribution.1.75.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.5210055437364645e-14
+    },
+    {
+      "name": "analytic_distribution.1.75.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 0.0002713306809370543
+    },
+    {
+      "name": "analytic_distribution.4.0.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 9.004949563795606e-15
+    },
+    {
+      "name": "analytic_distribution.4.0.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.5783815227043974e-15
+    },
+    {
+      "name": "analytic_distribution.4.0.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 7.936984403045244e-13
+    },
+    {
+      "name": "analytic_distribution.4.0.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 0.00015640658332956523
+    },
+    {
+      "name": "analytic_distribution.40.0.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.453351328173369e-14
+    },
+    {
+      "name": "analytic_distribution.40.0.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 4.306667869546921e-15
+    },
+    {
+      "name": "analytic_distribution.40.0.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.6011636461144008e-12
+    },
+    {
+      "name": "analytic_distribution.40.0.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 5.74568084900584e-06
+    },
+    {
+      "name": "analytic_distribution.partition.probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.2967057982926633e-15
+    },
+    {
+      "name": "analytic_distribution.partition.content_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 5.212844045310305e-16
+    },
+    {
+      "name": "analytic_distribution.observation_mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.986188991054405e-13
+    },
+    {
+      "name": "analytic_distribution.observation_loss_unchanged",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "analytic_distribution.conditional_content_bound",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 0.0
+    },
+    {
+      "name": "analytic_distribution.collapse_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "analytic_distribution.collapse_content_mean",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.7755575615628914e-17
+    },
+    {
+      "name": "analytic_distribution.collapse_position_mean",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.6645352591003757e-15
+    },
+    {
+      "name": "analytic_distribution.collapse_can_change_current_readout",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-07,
+      "value": 0.001676724335966744
+    },
+    {
+      "name": "analytic_distribution.readout_independence.current_feature",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.3877787807814457e-17
+    },
+    {
+      "name": "analytic_distribution.readout_independence.probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "analytic_distribution.readout_independence.cemetery_content",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "analytic_distribution.readout_independence.content_bound",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": -0.000331677144279835
+    },
+    {
+      "name": "ordinary_distribution.generator_mass_scaled_roundoff",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 4.0,
+      "value": 0.04396757436837893
+    },
+    {
+      "name": "ordinary_distribution.generator_positive",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -1e-14,
+      "value": 0.0
+    },
+    {
+      "name": "ordinary_distribution.0.0.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 0.0
+    },
+    {
+      "name": "ordinary_distribution.0.0.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 0.0
+    },
+    {
+      "name": "ordinary_distribution.0.0.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 0.0
+    },
+    {
+      "name": "ordinary_distribution.0.0.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 3.801502445650913e-06
+    },
+    {
+      "name": "ordinary_distribution.0.25.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.6479873021779667e-17
+    },
+    {
+      "name": "ordinary_distribution.0.25.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.474514954580286e-17
+    },
+    {
+      "name": "ordinary_distribution.0.25.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.220446049250313e-16
+    },
+    {
+      "name": "ordinary_distribution.0.25.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 1.4779177955031358e-06
+    },
+    {
+      "name": "ordinary_distribution.0.7.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 6.418476861114186e-17
+    },
+    {
+      "name": "ordinary_distribution.0.7.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 6.418476861114186e-17
+    },
+    {
+      "name": "ordinary_distribution.0.7.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 4.440892098500626e-16
+    },
+    {
+      "name": "ordinary_distribution.0.7.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 2.698368673946154e-07
+    },
+    {
+      "name": "ordinary_distribution.1.0.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 6.591949208711867e-17
+    },
+    {
+      "name": "ordinary_distribution.1.0.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 6.245004513516506e-17
+    },
+    {
+      "name": "ordinary_distribution.1.0.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.220446049250313e-16
+    },
+    {
+      "name": "ordinary_distribution.1.0.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 8.6843094875452e-08
+    },
+    {
+      "name": "ordinary_distribution.1.75.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.196959198423997e-16
+    },
+    {
+      "name": "ordinary_distribution.1.75.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.1275702593849246e-16
+    },
+    {
+      "name": "ordinary_distribution.1.75.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.6645352591003757e-15
+    },
+    {
+      "name": "ordinary_distribution.1.75.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 5.102938382971343e-09
+    },
+    {
+      "name": "ordinary_distribution.4.0.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.498001805406602e-16
+    },
+    {
+      "name": "ordinary_distribution.4.0.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.229119666630197e-16
+    },
+    {
+      "name": "ordinary_distribution.4.0.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 8.881784197001252e-16
+    },
+    {
+      "name": "ordinary_distribution.4.0.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 1.0355646325333816e-12
+    },
+    {
+      "name": "ordinary_distribution.40.0.scipy_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.8189256484623115e-15
+    },
+    {
+      "name": "ordinary_distribution.40.0.scipy_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.1613973671664723e-15
+    },
+    {
+      "name": "ordinary_distribution.40.0.mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 9.825473767932635e-14
+    },
+    {
+      "name": "ordinary_distribution.40.0.positivity",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": -2e-14,
+      "value": 2.4072150542232435e-16
+    },
+    {
+      "name": "ordinary_distribution.partition.probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 7.28583859910259e-17
+    },
+    {
+      "name": "ordinary_distribution.partition.content_moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 7.28583859910259e-17
+    },
+    {
+      "name": "ordinary_distribution.observation_mass",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 4.440892098500626e-16
+    },
+    {
+      "name": "ordinary_distribution.observation_loss_unchanged",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "ordinary_distribution.conditional_content_bound",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 0.0
+    },
+    {
+      "name": "ordinary_distribution.collapse_probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "ordinary_distribution.collapse_content_mean",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.7755575615628914e-17
+    },
+    {
+      "name": "ordinary_distribution.collapse_position_mean",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 8.881784197001252e-16
+    },
+    {
+      "name": "ordinary_distribution.collapse_can_change_current_readout",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-07,
+      "value": 0.0022407525519510148
+    },
+    {
+      "name": "ordinary_distribution.readout_independence.current_feature",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.3877787807814457e-17
+    },
+    {
+      "name": "ordinary_distribution.readout_independence.probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "ordinary_distribution.readout_independence.cemetery_content",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "ordinary_distribution.readout_independence.content_bound",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": -8.072916415144909e-08
+    },
+    {
+      "name": "marked.0.25.uniform_reference_aggregated_probability_l1",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.003,
+      "value": 6.081693379861089e-14
+    },
+    {
+      "name": "marked.0.25.original_R14_count_pmf",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.099120794378905e-14
+    },
+    {
+      "name": "marked.0.25.original_R14_expected_count",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 6.245004513516506e-17
+    },
+    {
+      "name": "continuous_initial.0.25.first_hit",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0005,
+      "value": 0.00046423927232006057
+    },
+    {
+      "name": "continuous_initial.0.25.expected_count",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.002,
+      "value": 0.0005229933124734631
+    },
+    {
+      "name": "continuous_initial.0.25.count_pmf_l1",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.002,
+      "value": 0.0009284785446506602
+    },
+    {
+      "name": "continuous_initial.0.25.upper_loss",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 1e-07,
+      "value": 0.0
+    },
+    {
+      "name": "marked.1.0.uniform_reference_aggregated_probability_l1",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.003,
+      "value": 2.3750112347526595e-13
+    },
+    {
+      "name": "marked.1.0.original_R14_count_pmf",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 3.4861002973229915e-14
+    },
+    {
+      "name": "marked.1.0.original_R14_expected_count",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 5.995204332975845e-15
+    },
+    {
+      "name": "continuous_initial.1.0.first_hit",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0005,
+      "value": 2.0745179771075595e-05
+    },
+    {
+      "name": "continuous_initial.1.0.expected_count",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.002,
+      "value": 0.0004861421393230758
+    },
+    {
+      "name": "continuous_initial.1.0.count_pmf_l1",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.002,
+      "value": 0.0005581614139169057
+    },
+    {
+      "name": "continuous_initial.1.0.upper_loss",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 1e-07,
+      "value": 5.348012277930352e-201
+    },
+    {
+      "name": "marked.1.75.uniform_reference_aggregated_probability_l1",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.003,
+      "value": 9.814686561909773e-14
+    },
+    {
+      "name": "marked.1.75.original_R14_count_pmf",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 4.1744385725905886e-14
+    },
+    {
+      "name": "marked.1.75.original_R14_expected_count",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 7.30526750203353e-14
+    },
+    {
+      "name": "continuous_initial.1.75.first_hit",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0005,
+      "value": 3.6035149103996744e-05
+    },
+    {
+      "name": "continuous_initial.1.75.expected_count",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.002,
+      "value": 0.0005453080223326578
+    },
+    {
+      "name": "continuous_initial.1.75.count_pmf_l1",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.002,
+      "value": 0.0005134264159179676
+    },
+    {
+      "name": "continuous_initial.1.75.upper_loss",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 1e-07,
+      "value": 9.713811711341199e-161
+    },
+    {
+      "name": "marked.4.0.uniform_reference_aggregated_probability_l1",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.003,
+      "value": 4.644437280998763e-08
+    },
+    {
+      "name": "marked.4.0.original_R14_count_pmf",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 1.0466627564653663e-13
+    },
+    {
+      "name": "marked.4.0.original_R14_expected_count",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 3.9013237085328e-13
+    },
+    {
+      "name": "continuous_initial.4.0.first_hit",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0005,
+      "value": 1.933411414167807e-05
+    },
+    {
+      "name": "continuous_initial.4.0.expected_count",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.002,
+      "value": 0.0006188441424133106
+    },
+    {
+      "name": "continuous_initial.4.0.count_pmf_l1",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.002,
+      "value": 0.00030450911015178495
+    },
+    {
+      "name": "continuous_initial.4.0.upper_loss",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 1e-07,
+      "value": 1.9435767732076427e-110
+    },
+    {
+      "name": "multiple_events_probability",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 0.1,
+      "value": 0.543198939879062
+    },
+    {
+      "name": "event_count_exceeds_first_hit",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 0.2,
+      "value": 1.2311953296001077
+    },
+    {
+      "name": "reject_reset_only_at_interval_end",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 0.1,
+      "value": 1.4094351223165984
+    },
+    {
+      "name": "causal_prefix",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "causal_future_payload",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "online_prefix_alignment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "content_state_is_position_dependent",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 0.0001,
+      "value": 0.0011772228428267688
+    },
+    {
+      "name": "gradient_nonzero.position_content",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-09,
+      "value": 1.4126294613836305
+    },
+    {
+      "name": "gradient_nonzero.position_write",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-09,
+      "value": 0.1952262733845046
+    },
+    {
+      "name": "gradient_nonzero.position_read",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-09,
+      "value": 0.18701013964366478
+    },
+    {
+      "name": "gradient_nonzero.candidate.weight",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-09,
+      "value": 4.807927802040961
+    },
+    {
+      "name": "gradient_nonzero.candidate.bias",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-09,
+      "value": 3.0567562506444856
+    },
+    {
+      "name": "gradient_nonzero.write.weight",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-09,
+      "value": 0.7727840742885268
+    },
+    {
+      "name": "gradient_nonzero.write.bias",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-09,
+      "value": 0.521515971378369
+    },
+    {
+      "name": "gradient_nonzero.evidence.weight",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-09,
+      "value": 0.09730715010413775
+    },
+    {
+      "name": "gradient_nonzero.evidence.bias",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-09,
+      "value": 0.09031958239399226
+    },
+    {
+      "name": "finite_difference.candidate.weight",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-07,
+      "value": 4.095912498058851e-11
+    },
+    {
+      "name": "finite_difference.write.weight",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-07,
+      "value": 6.3634097990927785e-12
+    },
+    {
+      "name": "finite_difference.evidence.weight",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-07,
+      "value": 4.012514799589528e-11
+    },
+    {
+      "name": "finite_difference.position_read",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-07,
+      "value": 2.8219038217258685e-11
+    },
+    {
+      "name": "physical_time_derivative",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 4.884981308350689e-15
+    },
+    {
+      "name": "time_not_rounded",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-09,
+      "value": 7.747227699639314e-09
+    },
+    {
+      "name": "python_scalar_time_not_downcast",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1e-12,
+      "value": 7.552534986299264e-12
+    },
+    {
+      "name": "same_parameter_count",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "same_initial_parameter.position_content",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "same_initial_parameter.position_write",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "same_initial_parameter.position_read",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "same_initial_parameter.candidate.weight",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "same_initial_parameter.candidate.bias",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "same_initial_parameter.write.weight",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "same_initial_parameter.write.bias",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "same_initial_parameter.evidence.weight",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "same_initial_parameter.evidence.bias",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "shared_matrix.torch.float32.probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 0.0
+    },
+    {
+      "name": "shared_matrix.torch.float32.moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-07,
+      "value": 0.0
+    },
+    {
+      "name": "shared_matrix.torch.float64.probability",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 0.0
+    },
+    {
+      "name": "shared_matrix.torch.float64.moment",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 2e-12,
+      "value": 2.220446049250313e-16
+    },
+    {
+      "name": "load_clears_transition_cache",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "loaded_generator_used",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "module_apply_clears_transition_cache",
+      "passed": true,
+      "relation": "le",
+      "tolerance": 0.0,
+      "value": 0.0
+    },
+    {
+      "name": "reject_interval.-1.0",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1,
+      "value": 1.0
+    },
+    {
+      "name": "reject_interval.nan",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1,
+      "value": 1.0
+    },
+    {
+      "name": "reject_interval.inf",
+      "passed": true,
+      "relation": "ge",
+      "tolerance": 1,
+      "value": 1.0
+    }
+  ],
+  "config": {
+    "ablation": "none",
+    "cache_size": 128,
+    "family": "analytic_distribution",
+    "mu": -0.25,
+    "n_anchors": 12,
+    "n_positions": 182,
+    "reset": 0.8,
+    "seed": 150903,
+    "sigma": 1.0,
+    "spacing": 0.058823529411764705,
+    "tail_spacing": 0.5,
+    "tail_upper": 60.0,
+    "width": 16,
+    "x": 1.0
+  },
+  "continuous_model_acceptance": false,
+  "continuum_diagnostic": [
+    {
+      "continuous_expected_count": 0.05857984793717785,
+      "continuous_first_hit": 0.058083843312204536,
+      "continuum_acceptance_claim": false,
+      "expected_count_absolute_error": 0.0005229933124734631,
+      "finite_expected_count": 0.05910284124965131,
+      "finite_first_hit": 0.0585480825845246,
+      "finite_upper_loss": 0.0,
+      "first_hit_absolute_error": 0.00046423927232006057,
+      "horizon": 0.25
+    },
+    {
+      "continuous_expected_count": 0.5300432314037723,
+      "continuous_first_hit": 0.4008143814660668,
+      "continuum_acceptance_claim": false,
+      "expected_count_absolute_error": 0.0004861421393230758,
+      "finite_expected_count": 0.5305293735430954,
+      "finite_first_hit": 0.4007936362862957,
+      "finite_upper_loss": 5.348012277930352e-201,
+      "first_hit_absolute_error": 2.0745179771075595e-05,
+      "horizon": 1.0
+    },
+    {
+      "continuous_expected_count": 0.9452007902467272,
+      "continuous_first_hit": 0.563848342425412,
+      "continuum_acceptance_claim": false,
+      "expected_count_absolute_error": 0.0005453080223326578,
+      "finite_expected_count": 0.9457460982690599,
+      "finite_first_hit": 0.563812307276308,
+      "finite_upper_loss": 9.713811711341199e-161,
+      "first_hit_absolute_error": 3.6035149103996744e-05,
+      "horizon": 1.75
+    },
+    {
+      "continuous_expected_count": 1.992135443208676,
+      "continuous_first_hit": 0.7615782918651234,
+      "continuum_acceptance_claim": false,
+      "expected_count_absolute_error": 0.0006188441424133106,
+      "finite_expected_count": 1.9927542873510893,
+      "finite_first_hit": 0.7615589577509817,
+      "finite_upper_loss": 1.9435767732076427e-110,
+      "first_hit_absolute_error": 1.933411414167807e-05,
+      "horizon": 4.0
+    }
+  ],
+  "count": 157,
+  "cpu_seconds": 11.334601314,
+  "failed": [],
+  "passed": true,
+  "runtime": {
+    "numpy": "2.3.5",
+    "torch": "2.15.0+cpu"
+  },
+  "schema": "hcsn-r15.finite-law-checks.v1",
+  "scope": "Finite fixed generator and explicit conditional-content-moment model only; no task confirmation data.",
+  "state_scalars_per_row": 4777,
+  "trainable_parameters": 2028
+}

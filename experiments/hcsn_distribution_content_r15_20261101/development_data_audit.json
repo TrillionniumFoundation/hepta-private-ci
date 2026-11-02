@@ -1,0 +1,365 @@
+{
+  "checks": [
+    {
+      "detail": null,
+      "name": "recall/train/unique_raw_inputs",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train/group_sizes",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train/context_hash_matches_raw",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train/assigned_bucket",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train/iid/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train/long_distractors/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train/blank_retention/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train/irregular_dt/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train/clock4x/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train/query_swap/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train/missing_payload/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/val/unique_raw_inputs",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/val/group_sizes",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/val/context_hash_matches_raw",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/val/assigned_bucket",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/val/iid/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/val/long_distractors/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/val/blank_retention/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/val/irregular_dt/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/val/clock4x/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/val/query_swap/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/val/missing_payload/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train_val_context_ids_disjoint",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train_val_partition_ids_disjoint",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "recall/train_val_raw_input_disjoint",
+      "passed": true
+    },
+    {
+      "detail": {
+        "overlapping_rows": 0
+      },
+      "name": "recall/train_query_swap_vs_val_iid_disjoint",
+      "passed": true
+    },
+    {
+      "detail": {
+        "overlapping_rows": 0
+      },
+      "name": "recall/val_query_swap_vs_train_iid_disjoint",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/unique_raw_inputs",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/group_sizes",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/context_hash_matches_raw",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/assigned_bucket",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/quartet_label_balance",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/iid/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/long_distractors/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/blank_retention/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/irregular_dt/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/clock4x/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/query_swap/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/missing_a/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/missing_a/label_balanced_identical_observations",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/missing_b/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train/missing_b/label_balanced_identical_observations",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/unique_raw_inputs",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/group_sizes",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/context_hash_matches_raw",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/assigned_bucket",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/quartet_label_balance",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/iid/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/long_distractors/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/blank_retention/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/irregular_dt/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/clock4x/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/query_swap/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/missing_a/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/missing_a/label_balanced_identical_observations",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/missing_b/base_identity_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/val/missing_b/label_balanced_identical_observations",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train_val_context_ids_disjoint",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train_val_partition_ids_disjoint",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binding/train_val_raw_input_disjoint",
+      "passed": true
+    },
+    {
+      "detail": {
+        "overlapping_rows": 0
+      },
+      "name": "binding/train_query_swap_vs_val_iid_disjoint",
+      "passed": true
+    },
+    {
+      "detail": {
+        "overlapping_rows": 0
+      },
+      "name": "binding/val_query_swap_vs_train_iid_disjoint",
+      "passed": true
+    }
+  ],
+  "confirmation_data_accessed": false,
+  "details": {
+    "binding": {
+      "train": {
+        "contexts": 256,
+        "dataset_sha256": "aceaee2c0bfe24f7f2ae422b04eb943e9eb640f79b7086a29543e8b2e408ec74",
+        "distinct_raw_inputs": 1024,
+        "objects": 1024,
+        "partition_units": 49
+      },
+      "val": {
+        "contexts": 64,
+        "dataset_sha256": "5b411414bcb817f2f6db0cff3d7a1267aedf5b4f72323a5d157fdc1145799673",
+        "distinct_raw_inputs": 256,
+        "objects": 256,
+        "partition_units": 16
+      }
+    },
+    "recall": {
+      "train": {
+        "contexts": 1024,
+        "dataset_sha256": "ce265c93674ca17d6fa1b297ee2cdaab514876481c86943f9375bfec46d58321",
+        "distinct_raw_inputs": 1024,
+        "objects": 1024,
+        "partition_units": 772
+      },
+      "val": {
+        "contexts": 256,
+        "dataset_sha256": "e936d2a2d94d371650e18dfca99f322ef88cd84595de859d4d130bf7f042d4c9",
+        "distinct_raw_inputs": 256,
+        "objects": 256,
+        "partition_units": 207
+      }
+    }
+  },
+  "inspected_splits": [
+    "train",
+    "val"
+  ],
+  "passed": true,
+  "process_cpu_seconds": 4.676073335,
+  "schema": "hcsn.r15.development-data-independent-audit.v2",
+  "source_sha256": "0de6cbde309503f8c6e9ac0bf5b76b230b0cf8f6d40f3534f9f8c184dcd6902c"
+}

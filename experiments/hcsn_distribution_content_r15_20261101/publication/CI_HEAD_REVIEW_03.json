@@ -1,0 +1,251 @@
+{
+  "schema": "hcsn_r15_read_only_ci_head_review_v1",
+  "review_id": "CI_HEAD_REVIEW_03",
+  "completed_at_utc": "2026-11-02 00:55:58 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4563,
+  "requested_head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+  "observed_pr_head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+  "head_matches_requested": true,
+  "observed_head_branch": "research/hcsn-distribution-content-r15-20261101",
+  "observed_base_sha": "c0949e9cde89a54609a5133c0fb7f9c65bc80f4a",
+  "observed_merge_commit_sha": "9dc29ebefaf0f8a0283758fed1162ef165f5fc6a",
+  "science_source_commit": {
+    "sha": "10e8b6e11a259bf6db14f93c1eae5f1ad7b2eff1",
+    "provenance": "coordinator statement; no science-source re-read in this CI review"
+  },
+  "intent": "One read-only follow-up snapshot after the narrow R15 archive binary-shard Codespell exclusion. Stop on pending; do not infer scientific validation.",
+  "query_policy": {
+    "one_prequery_delay_seconds": 45,
+    "workflow_run_listing_rounds": 1,
+    "jobs_listing_rounds_per_run": 1,
+    "busy_polling": false,
+    "workflow_dispatches": 0,
+    "workflow_reruns": 0,
+    "remote_writes": 0,
+    "scientific_confirmation_or_test_data_reads": 0,
+    "live_output_reads": 0
+  },
+  "evidence_queries": [
+    {
+      "kind": "exact_head_workflow_runs",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1&per_page=100",
+      "queried_at_utc": "2026-11-02 00:55:30 UTC",
+      "reported_total_count": 3,
+      "returned_count": 3,
+      "complete_for_snapshot": true
+    },
+    {
+      "kind": "pull_request",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4563",
+      "queried_at_utc": "2026-11-02 00:55:30 UTC"
+    },
+    {
+      "kind": "legacy_combined_commit_status",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1/status",
+      "queried_at_utc": "2026-11-02 00:55:30 UTC"
+    }
+  ],
+  "overall_status": "pending",
+  "all_runs_terminal": false,
+  "workflows": [
+    {
+      "run_id": 41369493987,
+      "name": "Hepta architecture convergence",
+      "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+      "event": "pull_request",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369493987",
+      "created_at": "2026-11-02T00:52:39Z",
+      "updated_at": "2026-11-02T00:53:16Z",
+      "run_queried_at_utc": "2026-11-02 00:55:30 UTC",
+      "jobs_query": {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41369493987/jobs?per_page=100",
+        "queried_at_utc": "2026-11-02 00:55:33 UTC",
+        "reported_total_count": 2,
+        "returned_count": 2,
+        "complete_for_snapshot": true
+      },
+      "jobs": [
+        {
+          "job_id": 125036793600,
+          "name": "Architecture convergence (source-head)",
+          "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369493987/job/125036793600",
+          "started_at": "2026-11-02T00:53:07Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "job_id": 125036793824,
+          "name": "Architecture convergence (base-merge)",
+          "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369493987/job/125036793824",
+          "started_at": "2026-11-02T00:53:07Z",
+          "completed_at": "2026-11-02T00:54:17Z",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 41369494042,
+      "name": "v8-canary",
+      "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494042",
+      "created_at": "2026-11-02T00:52:39Z",
+      "updated_at": "2026-11-02T00:54:06Z",
+      "run_queried_at_utc": "2026-11-02 00:55:30 UTC",
+      "jobs_query": {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494042/jobs?per_page=100",
+        "queried_at_utc": "2026-11-02 00:55:33 UTC",
+        "reported_total_count": 3,
+        "returned_count": 3,
+        "complete_for_snapshot": true
+      },
+      "jobs": [
+        {
+          "job_id": 125036696805,
+          "name": "metadata",
+          "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494042/job/125036696805",
+          "started_at": "2026-11-02T00:52:43Z",
+          "completed_at": "2026-11-02T00:54:05Z",
+          "failed_steps": []
+        },
+        {
+          "job_id": 125037080436,
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494042/job/125037080436",
+          "started_at": "2026-11-02T00:54:06Z",
+          "completed_at": "2026-11-02T00:54:05Z",
+          "failed_steps": []
+        },
+        {
+          "job_id": 125037080465,
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+          "status": "completed",
+          "conclusion": "skipped",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494042/job/125037080465",
+          "started_at": "2026-11-02T00:54:06Z",
+          "completed_at": "2026-11-02T00:54:05Z",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 41369494154,
+      "name": "blocking-ci",
+      "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+      "event": "pull_request",
+      "status": "in_progress",
+      "conclusion": null,
+      "run_attempt": 1,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154",
+      "created_at": "2026-11-02T00:52:39Z",
+      "updated_at": "2026-11-02T00:53:56Z",
+      "run_queried_at_utc": "2026-11-02 00:55:30 UTC",
+      "jobs_query": {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/jobs?per_page=100",
+        "queried_at_utc": "2026-11-02 00:55:33 UTC",
+        "reported_total_count": 3,
+        "returned_count": 3,
+        "complete_for_snapshot": true
+      },
+      "jobs": [
+        {
+          "job_id": 125037018947,
+          "name": "Select blocking CI scope",
+          "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125037018947",
+          "started_at": "2026-11-02T00:53:56Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "job_id": 125037019136,
+          "name": "Blob size policy / Blob size policy",
+          "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125037019136",
+          "started_at": "2026-11-02T00:53:55Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "job_id": 125037019157,
+          "name": "Codespell / Check for spelling errors",
+          "head_sha": "5c9141c81ba1fbdd85112ff2dbaf4d17f900deb1",
+          "status": "in_progress",
+          "conclusion": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125037019157",
+          "started_at": "2026-11-02T00:53:55Z",
+          "completed_at": null,
+          "failed_steps": []
+        }
+      ]
+    }
+  ],
+  "legacy_commit_status": {
+    "state": "pending",
+    "total_count": 0,
+    "statuses": [],
+    "note": "This empty legacy status collection does not establish the outcome of Actions checks."
+  },
+  "codespell": {
+    "run_id": 41369494154,
+    "job_id": 125037019157,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41369494154/job/125037019157",
+    "status": "in_progress",
+    "conclusion": null,
+    "logs_fetched": false,
+    "annotations_fetched": false,
+    "total_file_error_annotation_count": null,
+    "r15_error_annotation_count": null,
+    "r15_error_paths": null,
+    "genuine_r15_text_errors": null,
+    "binary_shard_errors_after_patch": null,
+    "reason": "The Codespell job was still running at the single requested snapshot; no terminal logs were fetched and no absence-of-errors claim is made.",
+    "previous_failure_evidence": "CI_HEAD_REVIEW_02.json retains 14 observed R15 annotations on four compressed archive shard paths at prior head 21edbe56f861989a4616c7d22e3eecc2d7cf6399. Those are historical observations, not results for this head.",
+    "applied_change_evidence": [
+      "CODESPELL_R15_ARCHIVES_APPLICATION.json",
+      "CODESPELL_R15_ARCHIVES_PUBLICATION.json"
+    ],
+    "no_full_codespell_cli_claim": true
+  },
+  "failure_review": {
+    "completed_failed_jobs_observed_in_snapshot": [],
+    "failed_job_log_fetches": 0,
+    "annotations_available": false,
+    "r15_failure_count": null,
+    "cause_assessment": null,
+    "base_only_comparison_performed": false,
+    "note": "No failed job had completed in the returned job snapshot. Pending checks may later fail; no assertion is made that other repository failures are unrelated."
+  },
+  "outcome": {
+    "conclusion": "Pending; stop after this snapshot.",
+    "ordinary_ci_pass_claim": false,
+    "scientific_validation_claim": false,
+    "further_poll_scheduled": false,
+    "full_archive_created": false,
+    "full_archive_gate_note": "The full archive remains gated on closure of all writers, including the coordinator-reported recovery-watch session 29040; this review did not inspect those sessions."
+  }
+}

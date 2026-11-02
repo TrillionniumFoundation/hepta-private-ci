@@ -1,0 +1,167 @@
+{
+  "source_sha256": "c33fe176592042f408c305d477817c81823be43534c0a950bd26cbe70b91265e",
+  "scope": "Artificial outcome arithmetic and inert subprocess fixture; no confirmation dataset accessed",
+  "confirmation_data_accessed": false,
+  "checks": [
+    {
+      "name": "B-A",
+      "passed": true,
+      "expected": 0.3,
+      "actual": {
+        "mean": 0.29999999999999993,
+        "fit_values": [
+          0.3035,
+          0.3025,
+          0.3014999999999999,
+          0.3005,
+          0.2995,
+          0.2985,
+          0.2975,
+          0.2965
+        ],
+        "fit_count": 8,
+        "fit_t95": [
+          0.29795217532771584,
+          0.302047824672284
+        ],
+        "fit_df": 7,
+        "positive_fit_count": 8,
+        "positive_fit_fraction": 1.0
+      }
+    },
+    {
+      "name": "D-C",
+      "passed": true,
+      "expected": 0.325,
+      "actual": {
+        "mean": 0.32499999999999996,
+        "fit_values": [
+          0.32499999999999996,
+          0.32499999999999996,
+          0.32499999999999996,
+          0.32499999999999996,
+          0.32499999999999996,
+          0.32499999999999996,
+          0.32499999999999996,
+          0.32499999999999996
+        ],
+        "fit_count": 8,
+        "fit_t95": [
+          0.32499999999999996,
+          0.32499999999999996
+        ],
+        "fit_df": 7,
+        "positive_fit_count": 8,
+        "positive_fit_fraction": 1.0
+      }
+    },
+    {
+      "name": "C-A",
+      "passed": true,
+      "expected": 0.25,
+      "actual": {
+        "mean": 0.25,
+        "fit_values": [
+          0.25,
+          0.25,
+          0.25,
+          0.25,
+          0.25,
+          0.25,
+          0.25,
+          0.25
+        ],
+        "fit_count": 8,
+        "fit_t95": [
+          0.25,
+          0.25
+        ],
+        "fit_df": 7,
+        "positive_fit_count": 8,
+        "positive_fit_fraction": 1.0
+      }
+    },
+    {
+      "name": "D-B",
+      "passed": true,
+      "expected": 0.275,
+      "actual": {
+        "mean": 0.275,
+        "fit_values": [
+          0.27149999999999996,
+          0.27249999999999996,
+          0.2735000000000001,
+          0.27449999999999997,
+          0.27549999999999997,
+          0.27649999999999997,
+          0.27749999999999997,
+          0.27849999999999997
+        ],
+        "fit_count": 8,
+        "fit_t95": [
+          0.27295217532771593,
+          0.2770478246722841
+        ],
+        "fit_df": 7,
+        "positive_fit_count": 8,
+        "positive_fit_fraction": 1.0
+      }
+    },
+    {
+      "name": "interaction",
+      "passed": true,
+      "expected": 0.025,
+      "actual": {
+        "mean": 0.02499999999999998,
+        "fit_values": [
+          0.021499999999999964,
+          0.022499999999999964,
+          0.023500000000000076,
+          0.024499999999999966,
+          0.025499999999999967,
+          0.026499999999999968,
+          0.02749999999999997,
+          0.02849999999999997
+        ],
+        "fit_count": 8,
+        "fit_t95": [
+          0.02295217532771587,
+          0.02704782467228409
+        ],
+        "fit_df": 7,
+        "positive_fit_count": 8,
+        "positive_fit_fraction": 1.0
+      }
+    },
+    {
+      "name": "validation_selected",
+      "passed": true
+    },
+    {
+      "name": "cell_A",
+      "passed": true
+    },
+    {
+      "name": "cell_B",
+      "passed": true
+    },
+    {
+      "name": "cell_C",
+      "passed": true
+    },
+    {
+      "name": "cell_D",
+      "passed": true
+    },
+    {
+      "name": "wait4_launcher",
+      "passed": true
+    },
+    {
+      "name": "receipts_include_rss",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "fixture_root": "/tmp/hcsn-online-summary-hfzrxfpw"
+}

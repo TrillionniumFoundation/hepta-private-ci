@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "name": "exact_81_files_and_16_processes",
+      "passed": true
+    },
+    {
+      "name": "wrong_pin_refuses_before_move",
+      "passed": true
+    },
+    {
+      "name": "changed_source_refuses_before_move",
+      "passed": true
+    },
+    {
+      "name": "all_81_bytes_and_hashes_preserved",
+      "passed": true
+    },
+    {
+      "name": "only_two_closed_directories_moved",
+      "passed": true
+    },
+    {
+      "name": "complete_record_last_and_total_not_double_counted",
+      "passed": true
+    },
+    {
+      "name": "repeat_refuses_existing_attempt",
+      "passed": true
+    },
+    {
+      "name": "partial_move_retains_every_byte_and_failure_record",
+      "passed": true
+    }
+  ],
+  "formal_data_read": false,
+  "formal_directories_moved": false,
+  "free_space_mocked": false,
+  "helper_sha256": "37e8f3d122c4a8abc5633620d7d163c57ea66797d4b1cf90d44f436b30aa9ddc",
+  "label": "TEST FIXTURE ONLY",
+  "note": "Only synthetic file bytes and registered-shape metadata; opaque fixture .npz names are not scientific arrays.",
+  "passed": true,
+  "prestart_space_threshold_used": false,
+  "schema": "hcsn.r15.cross-preservation.selfcheck.v1",
+  "selfcheck_source_sha256": "baa99619a163cf727b33b961ffe366ce7229efaea2c0c1b94d2da1484295a221",
+  "successful_fixture_cleaned": true,
+  "successful_fixture_root": "/tmp/hcsn-cross-preserve-fixture-14123_lp",
+  "visible_free_bytes_before": 0
+}

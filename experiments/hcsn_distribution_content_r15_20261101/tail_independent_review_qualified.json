@@ -1,0 +1,658 @@
+{
+  "schema": "hcsn.r15.independent-tail-review.v1",
+  "confirmation_data_accessed": false,
+  "passed": true,
+  "checks": [
+    {
+      "name": "local_drift_moment",
+      "absolute_error": 1.7763568394002505e-15,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "local_variance_moment",
+      "absolute_error": 2.220446049250313e-16,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "all_positive_rates",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "column_mass_sum",
+      "absolute_error": 2.842170943040401e-14,
+      "bound": 1e-10,
+      "passed": true
+    },
+    {
+      "name": "cemetery_absorbing",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "atom_mass_0.058823529411764705",
+      "absolute_error": 0.0,
+      "bound": 1e-14,
+      "passed": true
+    },
+    {
+      "name": "atom_mean_0.058823529411764705",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "atom_positive_0.058823529411764705",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "atom_mass_0.8",
+      "absolute_error": 0.0,
+      "bound": 1e-14,
+      "passed": true
+    },
+    {
+      "name": "atom_mean_0.8",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "atom_positive_0.8",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "atom_mass_1.0",
+      "absolute_error": 0.0,
+      "bound": 1e-14,
+      "passed": true
+    },
+    {
+      "name": "atom_mean_1.0",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "atom_positive_1.0",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "atom_mass_10.73",
+      "absolute_error": 0.0,
+      "bound": 1e-14,
+      "passed": true
+    },
+    {
+      "name": "atom_mean_10.73",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "atom_positive_10.73",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "atom_mass_14.17",
+      "absolute_error": 0.0,
+      "bound": 1e-14,
+      "passed": true
+    },
+    {
+      "name": "atom_mean_14.17",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "atom_positive_14.17",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "atom_mass_39.705882352941174",
+      "absolute_error": 0.0,
+      "bound": 1e-14,
+      "passed": true
+    },
+    {
+      "name": "atom_mean_39.705882352941174",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "atom_positive_39.705882352941174",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "marked_unmarked_exact_aggregation",
+      "absolute_error": 0.0,
+      "bound": 1e-10,
+      "passed": true
+    },
+    {
+      "name": "reset_reward_is_actual_lower_flux",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "fine_grid_physical_locations_preserved",
+      "absolute_error": 1.7763568394002505e-15,
+      "bound": 5e-14,
+      "passed": true,
+      "initial_exact_equality_bound": 0.0,
+      "initial_exact_equality_passed": false,
+      "review_reason": "R14 computes effective h as upper/intervals; nonuniform extension uses input spacing. Difference 1.776e-15 is floating-point roundoff, below 32 eps times maximum fine position. No model source changed in response."
+    },
+    {
+      "name": "fine_grid_anchor_basis_preserved",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "tail_anchor_constant_last",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "learned_parameters_identical",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "nonuniform_mean_collapse_mass",
+      "absolute_error": 1.1102230246251565e-16,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "nonuniform_mean_collapse_first_moment",
+      "absolute_error": 2.220446049250313e-15,
+      "bound": 1e-11,
+      "passed": true
+    },
+    {
+      "name": "nonuniform_mean_collapse_positive",
+      "absolute_error": 0.0,
+      "bound": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "load_clears_matrix_cache",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "loaded_generator_used_after_cache_invalidation",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_analytic_distribution_iid",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_analytic_distribution_iid",
+      "absolute_error": 3.091304989766286e-12,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_analytic_distribution_iid",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_analytic_distribution_long_distractors",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_analytic_distribution_long_distractors",
+      "absolute_error": 6.219025294740277e-12,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_analytic_distribution_long_distractors",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_analytic_distribution_blank_retention",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_analytic_distribution_blank_retention",
+      "absolute_error": 5.173306227845842e-12,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_analytic_distribution_blank_retention",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_analytic_distribution_irregular_dt",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_analytic_distribution_irregular_dt",
+      "absolute_error": 1.503241975342462e-13,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_analytic_distribution_irregular_dt",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_analytic_distribution_clock4x",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_analytic_distribution_clock4x",
+      "absolute_error": 1.2642997759826358e-11,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_analytic_distribution_clock4x",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_analytic_distribution_query_swap",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_analytic_distribution_query_swap",
+      "absolute_error": 3.091304989766286e-12,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_analytic_distribution_query_swap",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_ordinary_distribution_iid",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_ordinary_distribution_iid",
+      "absolute_error": 5.551115123125783e-15,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_ordinary_distribution_iid",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_ordinary_distribution_long_distractors",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_ordinary_distribution_long_distractors",
+      "absolute_error": 1.2545520178264269e-14,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_ordinary_distribution_long_distractors",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_ordinary_distribution_blank_retention",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_ordinary_distribution_blank_retention",
+      "absolute_error": 1.0658141036401503e-14,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_ordinary_distribution_blank_retention",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_ordinary_distribution_irregular_dt",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_ordinary_distribution_irregular_dt",
+      "absolute_error": 2.1094237467877974e-14,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_ordinary_distribution_irregular_dt",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_ordinary_distribution_clock4x",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_ordinary_distribution_clock4x",
+      "absolute_error": 3.9968028886505635e-15,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_ordinary_distribution_clock4x",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_recall_ordinary_distribution_query_swap",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_recall_ordinary_distribution_query_swap",
+      "absolute_error": 5.662137425588298e-15,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_recall_ordinary_distribution_query_swap",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_analytic_distribution_iid",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_analytic_distribution_iid",
+      "absolute_error": 2.327027459614328e-12,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_analytic_distribution_iid",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_analytic_distribution_long_distractors",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_analytic_distribution_long_distractors",
+      "absolute_error": 5.483391518623648e-12,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_analytic_distribution_long_distractors",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_analytic_distribution_blank_retention",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_analytic_distribution_blank_retention",
+      "absolute_error": 4.43045600206915e-12,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_analytic_distribution_blank_retention",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_analytic_distribution_irregular_dt",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_analytic_distribution_irregular_dt",
+      "absolute_error": 1.3378187446733136e-13,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_analytic_distribution_irregular_dt",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_analytic_distribution_clock4x",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_analytic_distribution_clock4x",
+      "absolute_error": 9.513945187222816e-12,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_analytic_distribution_clock4x",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_analytic_distribution_query_swap",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_analytic_distribution_query_swap",
+      "absolute_error": 2.327249504219253e-12,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_analytic_distribution_query_swap",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_ordinary_distribution_iid",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_ordinary_distribution_iid",
+      "absolute_error": 4.440892098500626e-15,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_ordinary_distribution_iid",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_ordinary_distribution_long_distractors",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_ordinary_distribution_long_distractors",
+      "absolute_error": 1.1435297153639112e-14,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_ordinary_distribution_long_distractors",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_ordinary_distribution_blank_retention",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_ordinary_distribution_blank_retention",
+      "absolute_error": 7.549516567451064e-15,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_ordinary_distribution_blank_retention",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_ordinary_distribution_irregular_dt",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_ordinary_distribution_irregular_dt",
+      "absolute_error": 1.176836406102666e-14,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_ordinary_distribution_irregular_dt",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_ordinary_distribution_clock4x",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_ordinary_distribution_clock4x",
+      "absolute_error": 2.220446049250313e-15,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_ordinary_distribution_clock4x",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "trace_logits_exact_binding_ordinary_distribution_query_swap",
+      "absolute_error": 0.0,
+      "bound": 0.0,
+      "passed": true
+    },
+    {
+      "name": "trace_mass_binding_ordinary_distribution_query_swap",
+      "absolute_error": 4.218847493575595e-15,
+      "bound": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "trace_upper_nondecreasing_binding_ordinary_distribution_query_swap",
+      "absolute_error": 0.0,
+      "bound": 1e-12,
+      "passed": true
+    }
+  ],
+  "source_sha256": {
+    "tail_grid.py": "57d8948163185234fd47a1cfbe882420c0d1ec699d2c2ad7c895773de4506440",
+    "law_core.py": "f2809406cde672575d9746712698bbb7172ac9cda2ce78f985b04514234a94c3",
+    "models.py": "aa58c7e7ee92d95a1353475ba6a69d65da3864cfb9ca0803801bf40707585db4"
+  },
+  "positions": 240,
+  "upper": 40.0,
+  "min_up_rate": 1.75,
+  "min_down_rate": 2.25,
+  "cpu_seconds": 6.435592463,
+  "scope": "Generator algebra, nonuniform interpolation, preserved learned physical anchor meanings, cache invalidation and development-only traced-logit equivalence. Not a uniform continuum certificate. The exact-zero coordinate comparison was reviewed with a machine-scale tolerance; original measured failure retained.",
+  "raw_run_evidence": "/tmp/hcsn-r15-independent-tail-review.json"
+}

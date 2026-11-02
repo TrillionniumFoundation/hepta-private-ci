@@ -1,0 +1,34 @@
+{
+  "checks": [
+    "four_actual_state_interventions_have_expected_distinct_predictions",
+    "reset_replay_reconstructs_original_prefix_and_actual_suffix",
+    "independent_reset_cache_processing_latency_and_shared_fee_accounting",
+    "real_encoder_core_frame_calls_are_counted",
+    "fault_changes_only_selected_content_and_never_shared_source_state",
+    "labels_change_only_evaluator_outcomes_not_actions_or_predictions",
+    "unpaid_future_payload_cannot_change_recovery_decision",
+    "no_fault_policy_still_pays_monitor_and_cache_overhead",
+    "both_real_distribution_cores_reconstruct_and_match_their_full_forward"
+  ],
+  "passed": 9,
+  "real_core_checks": {
+    "analytic_distribution": {
+      "experiment_cpu_seconds": 0.19069074799999974,
+      "reset_replay_matches_clean": true,
+      "streamed_matches_forward": true
+    },
+    "ordinary_distribution": {
+      "experiment_cpu_seconds": 0.16022572900000043,
+      "reset_replay_matches_clean": true,
+      "streamed_matches_forward": true
+    }
+  },
+  "scientific_recovery_benefit_established": false,
+  "scope": "behavioral checks; separate frozen heldout study required",
+  "source_sha256": {
+    "recovery.py": "75633e1a26e3edee486afae5125b2ef0bf957f92ace172623901edad4fe07107",
+    "recovery_checks.py": "0febf597d741a3149507249d8bf2bf630791941d279644fd00ba4a308c5ed60d",
+    "recovery_run.py": "149b1bcdfae03647df88f1863132d3acf01444b24aa737352a620cc50d553a24"
+  },
+  "structural_witness_is_task_quality_evidence": false
+}

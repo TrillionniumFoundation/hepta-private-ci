@@ -1,0 +1,199 @@
+{
+  "artifacts": {
+    "artificial_launch/receipts/train_execution_cross/TOTAL.json": {
+      "bytes": 283,
+      "sha256": "c8d22efe73ecb778b78d730972d32f147bd345e1deacabdf83adfb64a9db78ef"
+    },
+    "artificial_launch/receipts/train_execution_cross/binding_s15131_light.json": {
+      "bytes": 695,
+      "sha256": "33380a3b3941081f78dbc3687c655e9e125cb921c894e3211cecb6d1c32c2518"
+    },
+    "artificial_launch/receipts/train_execution_cross/binding_s15131_light.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "artificial_launch/receipts/train_execution_cross/binding_s15131_light.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "artificial_launch/receipts/train_execution_cross/recall_s15131_light.json": {
+      "bytes": 691,
+      "sha256": "067959f9a4cebaef9c9592210c155c0240ad3a1c3ac54ba2020e273e2bc34db3"
+    },
+    "artificial_launch/receipts/train_execution_cross/recall_s15131_light.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "artificial_launch/receipts/train_execution_cross/recall_s15131_light.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "child_install_fixture.py": {
+      "bytes": 323,
+      "sha256": "f6444d03e5eff7106d0b42e888636f7f2703887db27a1e0347b84795e0d8d890"
+    },
+    "child_output.json": {
+      "bytes": 305,
+      "sha256": "b5d4316af106b0aa57338c23ac2cae5b3554a5452a29bb66d6480f7843127861"
+    },
+    "full_row.json": {
+      "bytes": 6754,
+      "sha256": "d6b4f701f986e71643b350ca31b8b57f7bd5e59a1820de4cbcb7fa764dd4a21b"
+    },
+    "numpy_scalars.json": {
+      "bytes": 98,
+      "sha256": "94152a3cc448051a5d24425cffd30fa87b5f216504b8edcc9fb8ccd4a1c2c830"
+    },
+    "original_writer_partial.json": {
+      "bytes": 105,
+      "sha256": "3c7a034ac50af5a7c72b470caee549fb1b72f23ea268f97d8937547cc978ae1d"
+    },
+    "primitive_adapter.json": {
+      "bytes": 240,
+      "sha256": "c4124ef71077eb9a452b4b5a6e414e2a1cd0071acf07aa6574957a00d4eaac46"
+    },
+    "primitive_original.json": {
+      "bytes": 240,
+      "sha256": "c4124ef71077eb9a452b4b5a6e414e2a1cd0071acf07aa6574957a00d4eaac46"
+    },
+    "rejected_nonfinite_0.json": {
+      "bytes": 13,
+      "sha256": "cac248a7aeb4d6c31834b1a8f241bb08b99bb05663a1606e2fb22de391de12fe"
+    },
+    "rejected_nonfinite_1.json": {
+      "bytes": 13,
+      "sha256": "cac248a7aeb4d6c31834b1a8f241bb08b99bb05663a1606e2fb22de391de12fe"
+    },
+    "rejected_nonfinite_2.json": {
+      "bytes": 13,
+      "sha256": "cac248a7aeb4d6c31834b1a8f241bb08b99bb05663a1606e2fb22de391de12fe"
+    },
+    "rejected_nonfinite_3.json": {
+      "bytes": 13,
+      "sha256": "cac248a7aeb4d6c31834b1a8f241bb08b99bb05663a1606e2fb22de391de12fe"
+    },
+    "rejected_nonfinite_4.json": {
+      "bytes": 13,
+      "sha256": "cac248a7aeb4d6c31834b1a8f241bb08b99bb05663a1606e2fb22de391de12fe"
+    },
+    "rejected_type_0.json": {
+      "bytes": 13,
+      "sha256": "cac248a7aeb4d6c31834b1a8f241bb08b99bb05663a1606e2fb22de391de12fe"
+    },
+    "rejected_type_1.json": {
+      "bytes": 13,
+      "sha256": "cac248a7aeb4d6c31834b1a8f241bb08b99bb05663a1606e2fb22de391de12fe"
+    },
+    "rejected_type_2.json": {
+      "bytes": 13,
+      "sha256": "cac248a7aeb4d6c31834b1a8f241bb08b99bb05663a1606e2fb22de391de12fe"
+    },
+    "rejected_type_3.json": {
+      "bytes": 13,
+      "sha256": "cac248a7aeb4d6c31834b1a8f241bb08b99bb05663a1606e2fb22de391de12fe"
+    }
+  },
+  "checks": [
+    {
+      "name": "frozen_source_bytes",
+      "passed": true
+    },
+    {
+      "error": "Object of type float32 is not JSON serializable",
+      "name": "original_full_row_reproduces_numpy_scalar_failure",
+      "passed": true,
+      "scalar_type": "float32"
+    },
+    {
+      "changed_globals": [
+        "MODULE",
+        "write"
+      ],
+      "name": "only_cross_writer_and_child_route_replaced",
+      "passed": true
+    },
+    {
+      "name": "full_row_roundtrip_preserves_all_fields_and_values",
+      "passed": true
+    },
+    {
+      "name": "input_row_and_arrays_unchanged",
+      "passed": true
+    },
+    {
+      "name": "numpy_float_integer_boolean_item_values_preserved",
+      "passed": true
+    },
+    {
+      "name": "native_primitives_have_identical_serialized_bytes",
+      "passed": true
+    },
+    {
+      "name": "allow_nan_false_rejects_native_and_numpy_nonfinite",
+      "passed": true
+    },
+    {
+      "name": "arrays_complex_and_non_native_item_results_rejected",
+      "passed": true
+    },
+    {
+      "name": "exclusive_create_preserves_existing_file",
+      "passed": true
+    },
+    {
+      "artificial_process_receipts": true,
+      "commands": [
+        [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distribution_content_r15_20261101.publication.cross_serialization_adapter",
+          "group",
+          "--output",
+          "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/cross_serialization_fixture_01/artificial_launch",
+          "--task",
+          "recall",
+          "--seed",
+          "15131"
+        ],
+        [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distribution_content_r15_20261101.publication.cross_serialization_adapter",
+          "group",
+          "--output",
+          "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/cross_serialization_fixture_01/artificial_launch",
+          "--task",
+          "binding",
+          "--seed",
+          "15131"
+        ]
+      ],
+      "name": "frozen_launch_routes_every_child_to_adapter",
+      "passed": true
+    },
+    {
+      "child_exit_code": 0,
+      "module_help_exit_code": 0,
+      "name": "fresh_child_installs_same_writer_and_original_source",
+      "passed": true
+    },
+    {
+      "name": "all_scientific_functions_and_source_bytes_remain_unchanged",
+      "passed": true
+    }
+  ],
+  "checks_count": 13,
+  "confirmation_data_accessed": false,
+  "fixture_source_sha256": "3be6411c89ff382a14b69a9696b0e9cc2038481b3dd1e51679daebb527967e31",
+  "formal_files_modified": false,
+  "frozen_source_sha256": {
+    "online_confirm.py": "c33fe176592042f408c305d477817c81823be43534c0a950bd26cbe70b91265e",
+    "train_execution_cross.py": "59e21b69b977aee186f7e35d38fb3ff07dfce89274c22b2dcec103534ed6061a"
+  },
+  "models_executed": false,
+  "passed": true,
+  "schema": "hcsn.r15.cross-serialization-adapter.selfcheck.v1",
+  "scope": "Artificial full metadata row, scalar/write contracts, immutable science function identity, frozen launcher command routing, fresh child import. Expected failed JSON fragments are retained.",
+  "source_sha256": "fc0f764b8eb1bf7d2ed50352d5717347ece9cf93029fe2c2067abe6ca9c905d1",
+  "utc": "2026-11-02T01:53:58.477431+00:00"
+}

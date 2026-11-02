@@ -1,0 +1,149 @@
+{
+  "blocking_findings": [],
+  "conclusions": [
+    {
+      "detail": "Canonical successful receipt and byte-identical immutable workroot receipt are one process lifetime and are charged once. A missing later PROMOTION marker does not cause a second charge when receipt SHA is identical.",
+      "finding": "correct",
+      "id": "canonical_receipt_aliases"
+    },
+    {
+      "detail": "Different process_attempt_id values for the same task/seed/train_mode remain separate attempts. Measured unpromoted or failed attempts are added; later canonical success does not erase earlier cost.",
+      "finding": "correct",
+      "id": "distinct_attempts"
+    },
+    {
+      "detail": "Original or resumed attempts without a complete wait4 receipt remain cpu_seconds=null with not_measured status. Intent-only evidence remains explicitly unconfirmed and unknown. Unknown CPU is not converted to numeric zero.",
+      "finding": "correct",
+      "id": "unknown_cpu"
+    },
+    {
+      "detail": "Canonical six-stage worker CPU, the preserved formal_02 OOM lower bound, and measured distinct ENOSPC/resume attempts are added without duplicate receipts or nested actor/group timers. Unobserved termination tails and parent preparation/copy/validation CPU prevent a complete lifecycle-cost claim.",
+      "finding": "correct",
+      "id": "lower_bound_total"
+    },
+    {
+      "detail": "Consolidated training wall is explicitly the elapsed span from the original RESTART_REGISTRATION through recovery completion, including interruption and waiting. It is neither uninterrupted original-launcher wall nor a sum of parallel job wall times.",
+      "finding": "correct",
+      "id": "resumed_wall"
+    },
+    {
+      "detail": "The report limits success to every_canonical_formal_worker_successful, retains original_training_launcher_completed=false and all_process_attempts_successful=false, and separately discloses historical OOM/ENOSPC failures and unknown costs.",
+      "finding": "correct",
+      "id": "canonical_vs_history"
+    },
+    {
+      "detail": "The old zero-byte final.pt is described only as preserved incomplete bytes/SHA evidence, not a valid model or replacement for selected. Byte inequality does not establish different model states.",
+      "finding": "correct",
+      "id": "zero_byte_final"
+    },
+    {
+      "detail": "The exact previously passed resumer fixture helper is present in publication with SHA256 08b19c9518baada0056edba9aae57cfb56e20af6aeac6a18332e0439a5d9cef2. Its source-path provenance was added without changing the helper or original receipt and without rerunning it.",
+      "finding": "correct",
+      "id": "fixture_preservation"
+    }
+  ],
+  "created_utc": "2026-11-01T18:58:13.211359+00:00",
+  "existing_synthetic_fixture_receipts": {
+    "build_report": {
+      "bytes": 2304,
+      "checks_passed": 34,
+      "checks_total": 34,
+      "existing_receipt_read_only": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/report_fixture_08_enospc_v3/SELFCHECK.json",
+      "sha256": "22a848c297d494b476092f1bcd9f968ffd85525a39f2fa27cd1b7e4fdd7f1e93",
+      "source_sha256": "1189f3bc73336e6031716040d4a82133ce72f157417862f5b6d1c1fca71b3330",
+      "tests_rerun_for_this_review": false
+    },
+    "resume_training": {
+      "bytes": 1004,
+      "checks_passed": 15,
+      "checks_total": 15,
+      "existing_receipt_read_only": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/resume_training_selfcheck.json",
+      "sha256": "6b483a6f85f73fbb1d2a8e693fb4b789f8df2c38aa18b99a36316661c28b825c",
+      "source_sha256": "02bb4eaae7973df211f029e1317e105f514b25ed1f7af4dfb84be705e0d0a162",
+      "tests_rerun_for_this_review": false
+    },
+    "runtime_ledger_v3": {
+      "bytes": 1377,
+      "checks_passed": 17,
+      "checks_total": 17,
+      "existing_receipt_read_only": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/runtime_ledger_v3_selfcheck_03.json",
+      "sha256": "c8756b698a327509d9e8ec279bab331edb8450dd811eac0cf8d6911bf59b7e95",
+      "source_sha256": "b045c37c336a4c6636407a07ca0e134ae0169175b87c5c333d40dfacf3b555e5",
+      "tests_rerun_for_this_review": false
+    }
+  },
+  "limitations": [
+    "Source and artificial evidence review is not a verification of still-running formal training completion.",
+    "No formal confirmation outputs or scientific results were read or certified.",
+    "Unknown CPU, unobserved tails, launcher overhead, GPU/Joules and real provider/service bills remain outside complete measured cost."
+  ],
+  "review_conclusion": "No substantive blocker found in the reviewed operational accounting/report implementation and artificial evidence.",
+  "review_type": "Independent read-only operational accounting and report review",
+  "reviewed_sources": {
+    "build_report.py": {
+      "bytes": 121378,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/build_report.py",
+      "sha256": "1189f3bc73336e6031716040d4a82133ce72f157417862f5b6d1c1fca71b3330"
+    },
+    "resume_training.py": {
+      "bytes": 27678,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/resume_training.py",
+      "sha256": "02bb4eaae7973df211f029e1317e105f514b25ed1f7af4dfb84be705e0d0a162"
+    },
+    "runtime_ledger_v3.py": {
+      "bytes": 21016,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/runtime_ledger_v3.py",
+      "sha256": "b045c37c336a4c6636407a07ca0e134ae0169175b87c5c333d40dfacf3b555e5"
+    }
+  },
+  "reviewer": "/root/independent_audit",
+  "schema": "hcsn.r15.publication.enospc-independent-review.v1",
+  "scope": {
+    "active_training_records_read_during_this_review": false,
+    "actual_formal_training_completion_certified": false,
+    "existing_tests_rerun": false,
+    "formal_confirmation_data_read": false,
+    "formal_runtime_records_read_during_this_review": false,
+    "included": [
+      "runtime_ledger_v3 cost aggregation and process receipt provenance",
+      "build_report runtime validation and ENOSPC disclosure",
+      "resume_training immutable receipt and promotion schema compatibility",
+      "previously completed artificial ledger, report, and resumer fixture evidence"
+    ],
+    "new_tests_executed": false,
+    "raw_npz_or_model_checkpoints_loaded": false,
+    "resumer_scope_note": "The resumer implementation and its existing artificial integration evidence are identified here; the bounded ledger/report review did not revalidate active formal training outputs.",
+    "reviewed_sources_modified": false,
+    "scientific_outcomes_or_general_acceptance_certified": false
+  },
+  "supporting_artifacts": [
+    {
+      "bytes": 13536,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/runtime_ledger_v3_checks.py",
+      "sha256": "a5c633e770c713f479b35f11d432f21d4b36d84f923bb0cd444f9b2856e53a70"
+    },
+    {
+      "bytes": 96692,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/report_fixture_08_enospc_v3/REPORT_ZH.md",
+      "sha256": "fa1d2f04eeaa715cb7c3025db5d0da746c2b454b6ed675d52e698185d4c6e35c"
+    },
+    {
+      "bytes": 3433120,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/report_fixture_08_enospc_v3/ACCEPTANCE_REVIEW.json",
+      "sha256": "55629e9c37e6bfddc86eccc6e8532acd84326448e7b49732360e91c461004f75"
+    },
+    {
+      "bytes": 7545,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/resume_training_selfcheck.py",
+      "sha256": "08b19c9518baada0056edba9aae57cfb56e20af6aeac6a18332e0439a5d9cef2"
+    },
+    {
+      "bytes": 930,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/RESUME_TRAINING_FIXTURE_SOURCE.json",
+      "sha256": "1b48297d5025e1ef7206193c4e46c45d54b5d3ee2721ddaadc7789931fbf9376"
+    }
+  ]
+}

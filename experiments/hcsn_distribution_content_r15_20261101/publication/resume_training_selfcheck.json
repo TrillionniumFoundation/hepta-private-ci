@@ -1,0 +1,25 @@
+{
+  "checks": {
+    "byte_zero_receipt_preserved": true,
+    "canonical_receipts_exact_alias": true,
+    "checkpoint_hash_mismatch_rejected": true,
+    "complete_original_budget": true,
+    "consolidated_cpu_disjoint": true,
+    "disk_guard_only_owned_pid_and_hysteresis": true,
+    "incomplete_update_trace_rejected": true,
+    "interrupted_wall_label": true,
+    "original_classification": true,
+    "partial_final_comparison_only": true,
+    "partial_final_preserved": true,
+    "registrations_copied_exactly": true,
+    "retained_original_success_unchanged": true,
+    "unknown_attempts_not_zero": true,
+    "wait4_cpu_measured": true
+  },
+  "fixture_helper_sha256": "08b19c9518baada0056edba9aae57cfb56e20af6aeac6a18332e0439a5d9cef2",
+  "fixture_root": "/tmp/hcsn-r15-resume-fixture-e8334-_y1bw2eb",
+  "passed": true,
+  "real_training_or_test_accessed": false,
+  "schema": "hcsn.r15.training-resume.fixture.v1",
+  "source_sha256": "02bb4eaae7973df211f029e1317e105f514b25ed1f7af4dfb84be705e0d0a162"
+}

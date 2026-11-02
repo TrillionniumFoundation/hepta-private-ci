@@ -1,0 +1,257 @@
+{
+  "schema": "hcsn.r15.cross-serialization-independent-review.v1",
+  "recorded_at_utc": "2026-11-02 02:03:13 UTC",
+  "scope": "Operational serialization repair, immutable failure preservation, and source-only review of cost/report extensions. This is not a scientific benefit claim.",
+  "failure_observation": {
+    "observed_at_utc": "2026-11-02T01:52:04.792550+00:00",
+    "failed_workers": 16,
+    "receipt_exit_codes": [
+      1
+    ],
+    "identical_stderr_bytes_each": 2580,
+    "identical_stderr_sha256": "c2cfc0adc571dad34b414d50ea7425893c55384207f8f42c90a488361a079950",
+    "terminal_exception": "TypeError: Object of type float32 is not JSON serializable",
+    "failure_route": [
+      "train_execution_cross.execute_group:247",
+      "train_execution_cross.write:54",
+      "online_confirm.write:47"
+    ],
+    "source_of_scalar": "The registered elapsed-tolerance expression uses NumPy float32 machine epsilon. A resulting NumPy float32 scalar reaches the JSON writer through arithmetic_checks.elapsed.tolerance.",
+    "failed_files": {
+      "partial_npz": 16,
+      "incomplete_json": 16,
+      "incomplete_json_bytes_each": 105,
+      "incomplete_json_error_position": 105,
+      "group_indexes": 0
+    },
+    "failed_condition_for_each_task_seed": "ordinary_distribution / iid / LV",
+    "worker_wait4_cpu_seconds": 99.098883,
+    "launcher_total_matches_independent_sum": true,
+    "total_receipt_sha256": "20450ec3d33bf3ff981ab7e3427da4c382428fbf64ae2aef57dd2082e22dc658",
+    "frozen_original_source_files_verified": 36,
+    "linked_source_registration_checks": 6,
+    "registered_cross_source_sha256": "59e21b69b977aee186f7e35d38fb3ff07dfce89274c22b2dcec103534ed6061a",
+    "inherited_online_source_sha256": "c33fe176592042f408c305d477817c81823be43534c0a950bd26cbe70b91265e",
+    "cross_registration_sha256": "42ae972a779954f89c15350ae3d1d62e39fef4e48433c938766ff94a8857197a"
+  },
+  "adapter_review": {
+    "path": "publication/cross_serialization_adapter.py",
+    "sha256": "fc0f764b8eb1bf7d2ed50352d5717347ece9cf93029fe2c2067abe6ca9c905d1",
+    "static_review_passed": true,
+    "mutations": [
+      "cross.write",
+      "cross.MODULE"
+    ],
+    "module_route": "experiments.hcsn_distribution_content_r15_20261101.publication.cross_serialization_adapter",
+    "unchanged": [
+      "SOURCE",
+      "STAGE",
+      "main",
+      "execute_group",
+      "launch",
+      "combine",
+      "model and controller restoration",
+      "dataset and cohort selection",
+      "validation-selected policy",
+      "numeric formulas and tolerances",
+      "statistical functions"
+    ],
+    "writer_preserved": {
+      "exclusive_create": true,
+      "indent": 2,
+      "sort_keys": true,
+      "allow_nan": false,
+      "final_newline": true
+    },
+    "added_behavior": "At the JSON default boundary only, supported NumPy floating/integer/boolean scalars use item(); only native float/int/bool results are accepted.",
+    "unsupported_types_remain_errors": [
+      "arrays",
+      "complex values",
+      "non-native item results"
+    ],
+    "nonfinite_values_remain_errors": true,
+    "original_source_bytes_unchanged": true,
+    "artificial_selfcheck": {
+      "path": "publication/cross_serialization_fixture_01/SELFCHECK.json",
+      "sha256": "df204e5b6eede36a047dd14771c5337ed696d606b25ef5297eeae062cc1fe188",
+      "checks": 13,
+      "passed": 13,
+      "receipt_read_by_reviewer": true,
+      "coverage": "Failure reproduction, exact changed-global set, full-row scalar conversion, input immutability, native JSON byte identity, nonfinite/unsupported rejection, exclusive creation, original launch routing and fresh-child installation.",
+      "formal_models_or_test_data_executed": false
+    }
+  },
+  "preservation_helper": {
+    "path": "publication/preserve_cross_serialization_failure.py",
+    "sha256": "37e8f3d122c4a8abc5633620d7d163c57ea66797d4b1cf90d44f436b30aa9ddc",
+    "bytes": 14092,
+    "compile_passed": true,
+    "original_read_only_plan_sha256": "abdf36da34aee9277fd1e27dea2b941a7a6210de4394e9447f8be0c6ef4654f8",
+    "separate_source_review": "independent_audit agent reviewed this exact helper and reported no substantive blocker",
+    "reviewed_behavior": "Require a matching deterministic plan pin; save intent; rename exactly two closed directories on one filesystem; verify all 81 files and unchanged source/registration/guard evidence; write complete preservation last. Failure does not delete evidence.",
+    "artificial_selfcheck": {
+      "helper_path": "publication/cross_preservation_selfcheck.py",
+      "helper_sha256": "baa99619a163cf727b33b961ffe366ce7229efaea2c0c1b94d2da1484295a221",
+      "receipt_path": "publication/cross_preservation_fixture_01/SELFCHECK.json",
+      "receipt_sha256": "1366f96cc872052efb6eb6816cb30c83a9fd185d2ef9218d521651cf48376c64",
+      "checks": 8,
+      "passed": 8,
+      "visible_free_bytes_before": 0,
+      "free_space_mocked": false,
+      "prestart_space_threshold_used": false,
+      "prior_attempt": "An earlier invocation deferred at an optional 8 MiB prestart check and did not create a fixture. That defer was not a pass. The optional threshold was then removed at the coordinator's instruction.",
+      "exclusive_fixture_root": "/tmp/hcsn-cross-preserve-fixture-14123_lp",
+      "only_own_successful_fixture_cleaned": true,
+      "coverage": "81-file identity, bad-pin refusal, changed-source refusal, exact two-directory move, preservation completion, repeated-operation refusal, and injected second-rename failure with all original bytes retained.",
+      "actual_formal_paths_used_as_fixture": false,
+      "formal_guard_low_high_bytes_unchanged": true,
+      "space_limit": "Small artificial file writes succeeded despite a visible zero-space observation. This does not establish sufficient space for the scientific guard or identify the cause of prior ENOSPC."
+    }
+  },
+  "independent_post_preservation_check": {
+    "observed_at_utc": "2026-11-02T02:01:39.863451+00:00",
+    "preservation_path": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/results/formal_03/attempts/train_execution_cross_01_serialization/PRESERVATION.json",
+    "preservation_bytes": 60677,
+    "preservation_sha256": "d90223d355b34aa6fe44e97d273f22d8be2486b409cfa37d227b5133b59d883a",
+    "plan_sha256": "abdf36da34aee9277fd1e27dea2b941a7a6210de4394e9447f8be0c6ef4654f8",
+    "file_count": 81,
+    "member_bytes": 631391,
+    "all_preserved_file_bytes_sha_verified": true,
+    "extra_or_missing_files": false,
+    "original_canonical_directories_absent": {
+      "train_execution_cross/groups": true,
+      "receipts/train_execution_cross": true
+    },
+    "scientific_sources_verified": 38,
+    "registrations_verified": 6,
+    "old_operational_evidence_verified": 15,
+    "adapter_and_helper_verified": true,
+    "npz_arrays_loaded": false,
+    "formal_move_performed_by_reviewer": false,
+    "preserved_mapping_location": "The pinned PRESERVATION.json /files array contains all 81 exact original_path/archive_path/bytes/sha256 mappings.",
+    "matches_all_81_hashes_observed_before_coordinator_move": true,
+    "coordinator_performed_formal_preservation": true,
+    "reviewer_performed_formal_preservation": false,
+    "complete_preservation_schema": "hcsn.r15.cross-serialization-failure-preservation.v1"
+  },
+  "repair_runner_review": {
+    "path": "publication/continue_cross_repair_01.py",
+    "sha256": "bace0f09fd4a06ebd05f76d5f98f0df8d18218d61f10e51753fff68541982b80",
+    "static_review_passed": true,
+    "stages": [
+      "cross_launch",
+      "cross_index"
+    ],
+    "workers": 2,
+    "low_free_bytes": 1073741824,
+    "high_free_bytes": 2147483648,
+    "existing_outputs_refused": true,
+    "old_failed_guard_records_unchanged": true,
+    "science_operations_delegated_to_original_cross_through_adapter": true,
+    "read_only_check_repair": {
+      "check_repair_passed": true,
+      "repair_record_sha256": "6c59632f23a0a9a9e49dc5ec3d08aa2a426b4cc11172bf05043b24a65fc42ec9",
+      "runner_sha256": "bace0f09fd4a06ebd05f76d5f98f0df8d18218d61f10e51753fff68541982b80",
+      "source_file_pins": {
+        "experiments/hcsn_distribution_content_r15_20261101/publication/continue_cross_repair_01.py": "bace0f09fd4a06ebd05f76d5f98f0df8d18218d61f10e51753fff68541982b80",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/cross_serialization_adapter.py": "fc0f764b8eb1bf7d2ed50352d5717347ece9cf93029fe2c2067abe6ca9c905d1",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/cross_serialization_adapter_selfcheck.py": "3be6411c89ff382a14b69a9696b0e9cc2038481b3dd1e51679daebb527967e31",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/guarded_continuation.py": "764ce586c8cbc679ee4e47cb7cbe8ea025e27ca412c13746c526be05ef8775df",
+        "experiments/hcsn_distribution_content_r15_20261101/publication/preserve_cross_serialization_failure.py": "37e8f3d122c4a8abc5633620d7d163c57ea66797d4b1cf90d44f436b30aa9ddc"
+      },
+      "completed_scientific_output_pins": {
+        "EVALUATION_INDEX.json": "88fc3324b27e7bd6fdacd865df2edc0aec29d249cb48c04681237502884ca63b",
+        "FULL_ONLINE_CONFIRMATION_INDEX.json": "bd3fe2ca7e50c4529e96a7de007a5fa141b43bc7d1a0d2a7e58ffaf4fd9bb838",
+        "FULL_ONLINE_CONFIRMATION_SUMMARY.json": "7c63af8d448d10cbd45084e4a8de875df62e5a45550f7815ba30b6c8e7290e54",
+        "INDEPENDENT_AUDIT.json": "88b3443cc8488708c9cbe036b9a9fcca4c0dcc14dbbe7bdc53bad3e7b9553e4b",
+        "SUMMARY.json": "ce5ea6ad8c1a1138d4282a2828d4da272120e2a814091a6b5c2dea761094dc9b",
+        "TRAINING_INDEX.json": "392427ee74803e050bac6b454e93fd79c55ceb0f8da93fa9efa9cb4260883c57",
+        "recovery/ACTUAL_EXECUTION_INDEX.json": "0bb39991a6b8508acd12326dcc54185652de21e2ac93ce6326fdcfe0400082a3",
+        "recovery/CONFIRMATION_INDEX.json": "b03b2380b4d8b7c9d94c6215e0716597478341ed6c547ebceebd47c9c2b5b11c",
+        "recovery/POLICY_FREEZE.json": "ca9fc4ab5cb0f44cf5fbfc7c36bd3bc51bf02e57aa71f5540420468370e40c6c"
+      },
+      "preservation_sha256": "d90223d355b34aa6fe44e97d273f22d8be2486b409cfa37d227b5133b59d883a",
+      "primary_complete_sha256": "22a32984be3826991b505e4f3c3a9b85ab1b7ac979c63fe5c88175611d10be5e",
+      "post_confirmation_operational_repair": true,
+      "scientific_changes": false,
+      "stages_started": false,
+      "output_directories_created": false
+    }
+  },
+  "runtime_and_report_v4_source_review": {
+    "runtime_ledger": {
+      "path": "publication/runtime_ledger_v4.py",
+      "sha256": "4cdfd107b4ffe09a6c7e2bbb55e08da1c51b58b4350e540f31954a7d95f98bc9"
+    },
+    "report": {
+      "path": "publication/build_report_v4.py",
+      "sha256": "648e3dc96ee38ad4bfc2053239bf9beb3c7a19f8c8e38b19de192175fdc65bfa"
+    },
+    "static_review_no_substantive_blocker": true,
+    "schema_matches_preservation_helper": true,
+    "failed_wait4_processes_added_once": true,
+    "launcher_total_crosscheck_only": true,
+    "identical_canonical_receipt_aliases_not_added": true,
+    "retry_and_old_failed_attempts_have_separate_process_identity": true,
+    "nested_actor_group_and_wrapper_times_not_added": true,
+    "old_unknown_enospc_cpu_retained_as_null": true,
+    "failed_npz_arrays_not_opened_by_ledger": true,
+    "report_change_scope": "A private original report module retains its scientific functions. Only runtime validation is adapted to the V4 ledger; operational cost/failure prose is added.",
+    "statistical_thresholds_intervals_selection_acceptance_flags_not_modified": true,
+    "dynamic_fixture_status_at_review": "Not executed or claimed by this reviewer; separate author-owned V4 fixture evidence must be retained when available."
+  },
+  "future_npz_comparison": {
+    "status": "Not executed in this review; requires completed repaired cross.",
+    "fixed_pairs": 16,
+    "arrays_each": 11,
+    "total_array_comparisons": 176,
+    "expected_arrays": [
+      "context_ids",
+      "dt",
+      "elapsed",
+      "fee",
+      "group",
+      "ids",
+      "labels",
+      "partition_ids",
+      "prediction",
+      "read_count",
+      "utility"
+    ],
+    "old_npz_identity": "Preserved paths and exact original byte hashes must match PRESERVATION.files.",
+    "retry_npz_identity": "Canonical retry paths and exact byte hashes must match the completed cross index.",
+    "checks": [
+      "exact array-name set",
+      "exact dtype and shape",
+      "finite numeric values",
+      "exact array values without tolerance",
+      "separately recorded C-order representation hashes"
+    ],
+    "zip_container_hash_identity_required": false,
+    "other_224_lv_conditions": "No old completed outcome exists for them; do not extrapolate the 16-pair overlap check to all 240 conditions.",
+    "all_differences_retained": true,
+    "new_selection_or_acceptance_gate": false,
+    "supplemental_entry_source_review": {
+      "path": "publication/cross_repair_independent_01.py",
+      "sha256": "b90425d3da4c4f02cb4d4ccf0bf0c192f638b69b6f5fb6d3000fd954f7f739d9",
+      "source_only_review": true,
+      "scope": "Verified new two-stage completion is exposed to the unchanged auditor through one explicit completion-path view. The original failed gate must remain absent and its failure record retained. No scientific check function is replaced.",
+      "source_only_no_substantive_blocker": true,
+      "formal_execution_not_performed": true
+    }
+  },
+  "actions": {
+    "raw_failed_npz_bytes_hashed": true,
+    "failed_npz_zip_directory_names_inspected": true,
+    "npz_arrays_loaded": false,
+    "scientific_outcomes_analyzed": false,
+    "nine_completed_output_files_read_only_for_hash_check": true,
+    "models_executed": false,
+    "datasets_generated": false,
+    "formal_directories_moved_by_reviewer": false,
+    "scientific_sources_modified": false,
+    "retry_or_guard_stage_started_by_reviewer": false,
+    "remote_write_performed": false,
+    "scientific_gain_claimed": false
+  }
+}

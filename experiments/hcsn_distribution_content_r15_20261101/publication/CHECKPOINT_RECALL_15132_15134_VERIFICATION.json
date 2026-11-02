@@ -1,0 +1,923 @@
+{
+  "active_or_other_fits_traversed": false,
+  "all_restored_bytes_equal_to_staging": true,
+  "all_six_preflight_passed_before_staging": true,
+  "backup_helper_sha256": "f0985347db454564ed33368d3609ba200ddae8540310f5810ab3421d07f53151",
+  "backup_helper_source": "import hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport stat\nimport subprocess\nimport sys\nfrom datetime import datetime, timezone\n\nrepo = Path('/workspace/scratch/e8334174d4c2/hepta')\nstudy = repo / 'experiments/hcsn_distribution_content_r15_20261101'\nsource_root = study / 'results/formal_03'\npublication = study / 'publication'\nstage = Path('/workspace/scratch/e8334174d4c2/checkpoint_recall_15132_15134_staging')\nrestored = Path('/workspace/scratch/e8334174d4c2/checkpoint_recall_15132_15134_fresh_restore')\nbundle = publication / 'archives/checkpoint_recall_15132_15134'\nprefix = 'repository/experiments/hcsn_distribution_content_r15_20261101/results/formal_03'\nfirst_manifest_path = publication / 'archives/checkpoint_recall_15131/manifest.json'\nfirst_manifest_sha256 = 'c66f2643f2c2df64c7a0f2efc900568ab4bb43859573d74ad8768de48a64b73e'\npublished_source_commit = 'af3a7c779095e96210b9ef44e8ae44446c842f8c'\ngroups = [(seed, mode, f'recall_s{seed}_{mode}') for seed in (15132, 15133, 15134) for mode in ('light', 'value')]\nexpected_fit_files = {'selected.pt', 'final.pt', 'POSTERIOR_QUALIFICATION.json', 'TRACE.json', 'DATA.json', 'SUMMARY.json'}\nregistration_files = [Path(name) for name in ('PROTOCOL.json', 'SOURCE_FREEZE.json', 'TRAINING_DATA_CONTEXTS.json', 'RESTART_REGISTRATION.json')]\nregistration_files.append(Path('full_online_confirmation/SELF_REGISTRATION.json'))\n\ndef signature(info):\n    return (info.st_dev, info.st_ino, info.st_mode, info.st_size, info.st_mtime_ns, info.st_ctime_ns)\n\ndef stable_hash(path):\n    before = signature(path.lstat())\n    assert stat.S_ISREG(before[2]), 'Non-regular source: ' + str(path)\n    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)\n    digest = hashlib.sha256()\n    with os.fdopen(fd, 'rb') as reader:\n        assert signature(os.fstat(fd)) == before\n        while block := reader.read(1024 * 1024):\n            digest.update(block)\n        assert signature(os.fstat(fd)) == before\n    assert signature(path.lstat()) == before\n    return digest.hexdigest(), before\n\ndef emit(path, value):\n    with path.open('x') as output:\n        json.dump(value, output, indent=2, sort_keys=True)\n        output.write('\\n')\n\nprotocol = json.loads((source_root / 'PROTOCOL.json').read_text())\nassert protocol['updates'] == 768\nassert len(protocol['tasks']) * len(protocol['seeds']) * len(protocol['modes']) == 32\nassert stable_hash(first_manifest_path)[0] == first_manifest_sha256\nfirst_manifest = json.loads(first_manifest_path.read_text())\nfirst_members = {item['path']: item for item in first_manifest['members']}\npaths, selected_metadata, preflight_signatures = list(registration_files), [], {}\n\n# Preflight all six requested groups before creating staging or publishing bytes.\nfor seed, mode, name in groups:\n    receipt_path = Path('receipts/train') / (name + '.json')\n    receipt = json.loads((source_root / receipt_path).read_text())\n    summary = json.loads((source_root / 'fits' / name / 'SUMMARY.json').read_text())\n    assert receipt['name'] == name and receipt['exit_code'] == 0, 'Incomplete process: ' + name\n    assert (summary['task'], summary['seed'], summary['train_mode'], summary['updates'], summary['heldout_opened']) == ('recall', seed, mode, 768, False)\n    fit = source_root / 'fits' / name\n    assert not fit.is_symlink() and fit.is_dir()\n    entries = list(fit.iterdir())  # Never enumerate the fits parent or another group.\n    assert {entry.name for entry in entries} == expected_fit_files\n    assert all(stat.S_ISREG(entry.lstat().st_mode) for entry in entries)\n    checkpoint_hashes = {}\n    for filename, summary_key in (('selected.pt', 'checkpoint_sha256'), ('final.pt', 'final_checkpoint_sha256')):\n        relative = Path('fits') / name / filename\n        digest, before = stable_hash(source_root / relative)\n        assert digest == summary[summary_key], 'Checkpoint hash mismatch: ' + name + '/' + filename\n        checkpoint_hashes[filename] = digest\n        preflight_signatures[str(relative)] = before\n    selected_metadata.append({'name': name, 'task': 'recall', 'seed': seed, 'train_mode': mode,\n                              'receipt_exit_code': 0, 'completed_updates': 768, 'heldout_opened': False,\n                              'checkpoint_hashes': checkpoint_hashes})\n    paths.extend(entry.relative_to(source_root) for entry in entries)\n    paths.extend([receipt_path, Path('receipts/train') / (name + '.stdout.log'),\n                  Path('receipts/train') / (name + '.stderr.log')])\nassert len(paths) == len(set(paths)) == 59\nfor relative in registration_files:\n    digest, before = stable_hash(source_root / relative)\n    archived = first_members[prefix + '/' + str(relative)]\n    assert digest == archived['sha256'] and before[3] == archived['bytes'], 'Registration changed since first checkpoint: ' + str(relative)\n    preflight_signatures[str(relative)] = before\n\nassert not stage.exists() and not restored.exists() and not bundle.exists()\nstage.mkdir()\ncopied = []\nfor relative in sorted(paths):\n    source, target = source_root / relative, stage / relative\n    before = signature(source.lstat())\n    assert stat.S_ISREG(before[2])\n    if str(relative) in preflight_signatures:\n        assert before == preflight_signatures[str(relative)]\n    target.parent.mkdir(parents=True, exist_ok=True)\n    fd = os.open(source, os.O_RDONLY | os.O_NOFOLLOW)\n    digest, size = hashlib.sha256(), 0\n    with os.fdopen(fd, 'rb') as reader, target.open('xb') as writer:\n        assert signature(os.fstat(fd)) == before\n        while block := reader.read(1024 * 1024):\n            digest.update(block)\n            size += len(block)\n            writer.write(block)\n        assert signature(os.fstat(fd)) == before\n    assert signature(source.lstat()) == before\n    copied.append({'path': str(relative), 'bytes': size, 'sha256': digest.hexdigest(), 'source_signature': list(before)})\ncopied_by_path = {item['path']: item for item in copied}\nfor group in selected_metadata:\n    for filename, digest in group['checkpoint_hashes'].items():\n        assert copied_by_path['fits/' + group['name'] + '/' + filename]['sha256'] == digest\n\nnote = {'schema': 'hcsn-intermediate-checkpoint-v1', 'partial': 'additional 6 groups; together with first checkpoint 8/32',\n        'additional_completed_groups_in_this_backup': 6, 'registered_total_groups': 32,\n        'together_with_first_completed_groups': 8, 'combined_partial': '8/32',\n        'task': 'recall', 'seeds': [15132, 15133, 15134], 'no_confirmation': True,\n        'confirmation_performed_by_backup': False, 'test_data_accessed_by_backup': False,\n        'final_success_evidence': False, 'scientific_gain_claimed': False,\n        'purpose': 'Interruption-safe backup of exactly six additional completed training groups.',\n        'warning': 'Not a final success receipt. Does not establish full-cohort completion, confirmation, scientific gains, recovery gains, or acceptance. Other fits were not traversed or copied.',\n        'selected_groups': selected_metadata, 'source_root': str(source_root), 'archive_prefix': prefix,\n        'first_checkpoint_manifest_sha256': first_manifest_sha256,\n        'first_checkpoint_bundle': 'publication/archives/checkpoint_recall_15131',\n        'published_source_commit_reported_by_coordinator': published_source_commit,\n        'source_commit_scope': 'Coordinator-supplied publication identity; this backup performs no network lookup or scientific-source modification.',\n        'copied_registration_files': list(map(str, registration_files)),\n        'all_copied_registrations_byte_identical_to_first_checkpoint': True,\n        'source_code_not_duplicated_here': 'Use published source matching SOURCE_FREEZE; the partial bundle contains registrations, not another source snapshot.',\n        'note_path_is_distinct_from_first_checkpoint': True,\n        'created_at_utc': datetime.now(timezone.utc).isoformat()}\nemit(stage / 'CHECKPOINT_NOTE_recall_15132_15134.json', note)\ntool = publication / 'pack_results.py'\ncommand_pack = [sys.executable, '-B', str(tool), 'pack', '--root', prefix + '=' + str(stage),\n                '--output', str(bundle), '--dict-mib', '16', '--chunk-bytes', '49152']\npack_result = subprocess.run(command_pack, capture_output=True, text=True, check=True)\npack_receipt = json.loads(pack_result.stdout)\nmanifest = json.loads((bundle / 'manifest.json').read_text())\nassert len(manifest['members']) == 60\noverlaps = [item for item in manifest['members'] if item['path'] in first_members]\nassert len(overlaps) == len(registration_files) == 5\nassert all((item['bytes'], item['sha256']) == (first_members[item['path']]['bytes'], first_members[item['path']]['sha256']) for item in overlaps)\ncommand_restore = [sys.executable, '-B', str(tool), 'restore', '--bundle', str(bundle),\n                   '--destination', str(restored), '--manifest-sha256', pack_receipt['manifest_sha256']]\nrestore_result = subprocess.run(command_restore, capture_output=True, text=True, check=True)\nrestore_receipt = json.loads(restore_result.stdout)\nfor member in manifest['members']:\n    relative = Path(member['path']).relative_to(prefix)\n    with (stage / relative).open('rb') as first, (restored / member['path']).open('rb') as second:\n        while True:\n            left, right = first.read(1024 * 1024), second.read(1024 * 1024)\n            assert left == right\n            if not left:\n                break\nfor item in copied:\n    assert list(signature((source_root / item['path']).lstat())) == item['source_signature']\nreceipt = {'schema': 'hcsn-intermediate-checkpoint-verification-v1', 'partial': 'additional 6; combined 8/32',\n           'no_confirmation': True, 'final_success_evidence': False, 'all_six_preflight_passed_before_staging': True,\n           'selected_groups': selected_metadata, 'copied_source_files': copied,\n           'pack_command': command_pack, 'pack_receipt': pack_receipt,\n           'restore_command': command_restore, 'restore_receipt': restore_receipt,\n           'fresh_restore_completed': True, 'all_restored_bytes_equal_to_staging': True,\n           'selected_and_final_checkpoint_hashes_match_original_fit_summaries': True,\n           'original_selected_sources_unchanged_during_backup': True,\n           'first_checkpoint_manifest_sha256': first_manifest_sha256,\n           'overlap_with_first_checkpoint': {'members': 5, 'all_bytes_and_sha256_equal': True,\n                                           'scope': 'Registration files only; disjoint fit members and distinct NOTE path'},\n           'published_source_commit_reported_by_coordinator': published_source_commit,\n           'frozen_sources_modified': False, 'active_or_other_fits_traversed': False, 'test_data_accessed': False,\n           'staging_root': str(stage), 'restored_root': str(restored),\n           'backup_helper_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),\n           'backup_helper_source': Path(__file__).read_text(),\n           'completed_at_utc': datetime.now(timezone.utc).isoformat()}\nverification = publication / 'CHECKPOINT_RECALL_15132_15134_VERIFICATION.json'\nemit(verification, receipt)\nprint(json.dumps({'manifest_sha256': pack_receipt['manifest_sha256'], 'parts': pack_receipt['parts'],\n                  'archive_bytes': pack_receipt['archive_bytes'], 'member_bytes': pack_receipt['source_bytes'],\n                  'members': pack_receipt['members'], 'bundle': str(bundle), 'verification': str(verification),\n                  'fresh_restore_byte_equality': True, 'additional_groups': 6, 'combined_partial': '8/32'}))\n",
+  "completed_at_utc": "2026-11-01T18:24:53.895919+00:00",
+  "copied_source_files": [
+    {
+      "bytes": 6408,
+      "path": "PROTOCOL.json",
+      "sha256": "22ac32d5eecf24dd90e6930368fa2ed7bc5459419adcccc75730c78826ce45c5",
+      "source_signature": [
+        27,
+        2963,
+        33188,
+        6408,
+        1793554359584621402,
+        1793555223106833571
+      ]
+    },
+    {
+      "bytes": 786,
+      "path": "RESTART_REGISTRATION.json",
+      "sha256": "a76af4270257492f82aa120b402918736b67209d93733d77e942f3c356d1a986",
+      "source_signature": [
+        27,
+        3014,
+        33188,
+        786,
+        1793555223140500199,
+        1793555223140500199
+      ]
+    },
+    {
+      "bytes": 5186,
+      "path": "SOURCE_FREEZE.json",
+      "sha256": "80d79ad880c275b43f51e4903ded904e21fa201be5919e04b5f816bf861665f1",
+      "source_signature": [
+        27,
+        2964,
+        33188,
+        5186,
+        1793554363003519831,
+        1793555223107096029
+      ]
+    },
+    {
+      "bytes": 223052,
+      "path": "TRAINING_DATA_CONTEXTS.json",
+      "sha256": "2804001af69bb7050a224a4b677b123865d41397b02ab0ee81c5eac6f8eddd86",
+      "source_signature": [
+        27,
+        2965,
+        33188,
+        223052,
+        1793554362979221225,
+        1793555223107321572
+      ]
+    },
+    {
+      "bytes": 183,
+      "path": "fits/recall_s15132_light/DATA.json",
+      "sha256": "7a13cf52993c8dd68c9f037925b7aaa317002d8bc457f9e7fbd22f77f2cfd14a",
+      "source_signature": [
+        27,
+        2893,
+        33188,
+        183,
+        1793555812032703468,
+        1793555812032703468
+      ]
+    },
+    {
+      "bytes": 2800,
+      "path": "fits/recall_s15132_light/POSTERIOR_QUALIFICATION.json",
+      "sha256": "8eb51ead404151bc85318c5f84d01d02fea2519c30983efaedd6876531cb345e",
+      "source_signature": [
+        27,
+        5743,
+        33188,
+        2800,
+        1793556409727218485,
+        1793556409727218485
+      ]
+    },
+    {
+      "bytes": 22199,
+      "path": "fits/recall_s15132_light/SUMMARY.json",
+      "sha256": "95b5d73cee33f28726655d50f7d66976c494cc3a47da2c5944c67d5db4a80217",
+      "source_signature": [
+        27,
+        5746,
+        33188,
+        22199,
+        1793556410291878099,
+        1793556410291878099
+      ]
+    },
+    {
+      "bytes": 842077,
+      "path": "fits/recall_s15132_light/TRACE.json",
+      "sha256": "309ef536d698c86cd58531d101500b7c05ba540c3dc5cddd143a98f37f3ac8a9",
+      "source_signature": [
+        27,
+        5745,
+        33188,
+        842077,
+        1793556410287491095,
+        1793556410287491095
+      ]
+    },
+    {
+      "bytes": 2657635,
+      "path": "fits/recall_s15132_light/final.pt",
+      "sha256": "e1ca21433a69e69cc5072a2d6838abf8c782f1990ea0e7b415b28c3fd1ca7678",
+      "source_signature": [
+        27,
+        5734,
+        33188,
+        2657635,
+        1793556401871517052,
+        1793556401871517052
+      ]
+    },
+    {
+      "bytes": 2663057,
+      "path": "fits/recall_s15132_light/selected.pt",
+      "sha256": "f46cd0e9fb208abadb328980b47ff4fcc3584e04dc1220f100816f3ee6a99b6b",
+      "source_signature": [
+        27,
+        5735,
+        33188,
+        2663057,
+        1793556401871517052,
+        1793556401871517052
+      ]
+    },
+    {
+      "bytes": 183,
+      "path": "fits/recall_s15132_value/DATA.json",
+      "sha256": "7a13cf52993c8dd68c9f037925b7aaa317002d8bc457f9e7fbd22f77f2cfd14a",
+      "source_signature": [
+        27,
+        2904,
+        33188,
+        183,
+        1793555850952198487,
+        1793555850952198487
+      ]
+    },
+    {
+      "bytes": 2798,
+      "path": "fits/recall_s15132_value/POSTERIOR_QUALIFICATION.json",
+      "sha256": "c4b58c9e105c1fa3b719ab4250f24239c9a10935a616f117d7b8e4a634989670",
+      "source_signature": [
+        27,
+        5736,
+        33188,
+        2798,
+        1793556403766749940,
+        1793556403766749940
+      ]
+    },
+    {
+      "bytes": 22377,
+      "path": "fits/recall_s15132_value/SUMMARY.json",
+      "sha256": "026c1ef7b4715de462b43abd70cb2bb62d2fa99a7fc33df69ee8938e0bc275fc",
+      "source_signature": [
+        27,
+        5738,
+        33188,
+        22377,
+        1793556404450155436,
+        1793556404450155436
+      ]
+    },
+    {
+      "bytes": 841065,
+      "path": "fits/recall_s15132_value/TRACE.json",
+      "sha256": "198d72bb89ce41c83a1357a7336ce22938cdf81e4889962cae89025f951886a6",
+      "source_signature": [
+        27,
+        5737,
+        33188,
+        841065,
+        1793556404447507098,
+        1793556404447507098
+      ]
+    },
+    {
+      "bytes": 2657635,
+      "path": "fits/recall_s15132_value/final.pt",
+      "sha256": "23c033aba4e05a143bc3b95e0eb4a766590546db9443789a761eac28e093d25b",
+      "source_signature": [
+        27,
+        5666,
+        33188,
+        2657635,
+        1793556394359546028,
+        1793556394359546028
+      ]
+    },
+    {
+      "bytes": 2663057,
+      "path": "fits/recall_s15132_value/selected.pt",
+      "sha256": "65509464960bd9b7040afa05534060bedd2d62074e72a52280b2a4bf851b1e9d",
+      "source_signature": [
+        27,
+        5714,
+        33188,
+        2663057,
+        1793556394371545971,
+        1793556394371545971
+      ]
+    },
+    {
+      "bytes": 183,
+      "path": "fits/recall_s15133_light/DATA.json",
+      "sha256": "7a13cf52993c8dd68c9f037925b7aaa317002d8bc457f9e7fbd22f77f2cfd14a",
+      "source_signature": [
+        27,
+        5747,
+        33188,
+        183,
+        1793556414961296570,
+        1793556414961296570
+      ]
+    },
+    {
+      "bytes": 2798,
+      "path": "fits/recall_s15133_light/POSTERIOR_QUALIFICATION.json",
+      "sha256": "796d49487e1925c4f0af0ec9ab306ab0d5c5748cdfc3a1b63f4cb3efe5740b42",
+      "source_signature": [
+        27,
+        35860,
+        33188,
+        2798,
+        1793556731281953432,
+        1793556731281953432
+      ]
+    },
+    {
+      "bytes": 22267,
+      "path": "fits/recall_s15133_light/SUMMARY.json",
+      "sha256": "45db3651bf622989d4097625d11cbc89e4694ed98953f4fd28a0ae7a6108883e",
+      "source_signature": [
+        27,
+        35862,
+        33188,
+        22267,
+        1793556731578366577,
+        1793556731578366577
+      ]
+    },
+    {
+      "bytes": 842361,
+      "path": "fits/recall_s15133_light/TRACE.json",
+      "sha256": "74a377d40650ce18aa33b9f1f119036c68cb0d8780f03074ded283b760d09b5e",
+      "source_signature": [
+        27,
+        35861,
+        33188,
+        842361,
+        1793556731574538597,
+        1793556731574538597
+      ]
+    },
+    {
+      "bytes": 2657635,
+      "path": "fits/recall_s15133_light/final.pt",
+      "sha256": "c8991dfa6c16b2b9d00b035e85d8b70a2e629253fc9d5b5e2630e22b68c9934d",
+      "source_signature": [
+        27,
+        35852,
+        33188,
+        2657635,
+        1793556725723999372,
+        1793556725723999372
+      ]
+    },
+    {
+      "bytes": 2663057,
+      "path": "fits/recall_s15133_light/selected.pt",
+      "sha256": "f21cb20b1713357d758d70d30b18ec092e8911342cd5001b1e6c3aa0b852c96e",
+      "source_signature": [
+        27,
+        35853,
+        33188,
+        2663057,
+        1793556725726557061,
+        1793556725726557061
+      ]
+    },
+    {
+      "bytes": 183,
+      "path": "fits/recall_s15133_value/DATA.json",
+      "sha256": "7a13cf52993c8dd68c9f037925b7aaa317002d8bc457f9e7fbd22f77f2cfd14a",
+      "source_signature": [
+        27,
+        5752,
+        33188,
+        183,
+        1793556418496633507,
+        1793556418496633507
+      ]
+    },
+    {
+      "bytes": 2800,
+      "path": "fits/recall_s15133_value/POSTERIOR_QUALIFICATION.json",
+      "sha256": "fd7af7709053db1a3106ee830f6de340c51aee6e65ff0ac33b65c38a367b0dc8",
+      "source_signature": [
+        27,
+        35877,
+        33188,
+        2800,
+        1793556745059164929,
+        1793556745059164929
+      ]
+    },
+    {
+      "bytes": 22382,
+      "path": "fits/recall_s15133_value/SUMMARY.json",
+      "sha256": "494642e07ad8a6497122d5be4d7d7da0f70814cb1d6697054d2e4a1908aaae5c",
+      "source_signature": [
+        27,
+        35880,
+        33188,
+        22382,
+        1793556745555447220,
+        1793556745555447220
+      ]
+    },
+    {
+      "bytes": 841493,
+      "path": "fits/recall_s15133_value/TRACE.json",
+      "sha256": "b245c733fc45d87b01a92ab175569adee8e498aafd36eefa778b50a550f70d1c",
+      "source_signature": [
+        27,
+        35879,
+        33188,
+        841493,
+        1793556745550499726,
+        1793556745550499726
+      ]
+    },
+    {
+      "bytes": 2657635,
+      "path": "fits/recall_s15133_value/final.pt",
+      "sha256": "e7e0f435f26372a7554b19b48b1f8f3442fd0080ba7a5b5e68fa499eaef8f7f1",
+      "source_signature": [
+        27,
+        35873,
+        33188,
+        2657635,
+        1793556739182516380,
+        1793556739182516380
+      ]
+    },
+    {
+      "bytes": 2663057,
+      "path": "fits/recall_s15133_value/selected.pt",
+      "sha256": "baa53d0f25327c2ab4619520544253ba74ae7255b250e48f42b885b4401f74a3",
+      "source_signature": [
+        27,
+        35874,
+        33188,
+        2663057,
+        1793556739186516368,
+        1793556739186516368
+      ]
+    },
+    {
+      "bytes": 183,
+      "path": "fits/recall_s15134_light/DATA.json",
+      "sha256": "7a13cf52993c8dd68c9f037925b7aaa317002d8bc457f9e7fbd22f77f2cfd14a",
+      "source_signature": [
+        27,
+        35871,
+        33188,
+        183,
+        1793556735876442612,
+        1793556735876442612
+      ]
+    },
+    {
+      "bytes": 2796,
+      "path": "fits/recall_s15134_light/POSTERIOR_QUALIFICATION.json",
+      "sha256": "6c82f17c0804befee781eb7a5ee8a155346907f7d39f56afead2e6fe17278570",
+      "source_signature": [
+        27,
+        41354,
+        33188,
+        2796,
+        1793557029388034043,
+        1793557029388034043
+      ]
+    },
+    {
+      "bytes": 21672,
+      "path": "fits/recall_s15134_light/SUMMARY.json",
+      "sha256": "2d5ac1dcfebb888d236aa36edb07f631a18df5b028e1d497900ca2dbf48923b4",
+      "source_signature": [
+        27,
+        41356,
+        33188,
+        21672,
+        1793557029488785967,
+        1793557029488785967
+      ]
+    },
+    {
+      "bytes": 842611,
+      "path": "fits/recall_s15134_light/TRACE.json",
+      "sha256": "af53340810c9a95bffee4fec5109ad9299f2f23846176dac64cc710553cf47e9",
+      "source_signature": [
+        27,
+        41355,
+        33188,
+        842611,
+        1793557029481589576,
+        1793557029481589576
+      ]
+    },
+    {
+      "bytes": 2657635,
+      "path": "fits/recall_s15134_light/final.pt",
+      "sha256": "9df66d03c7f347e984133efe731935cda168bea21ce2b91050f19c5b41d866d2",
+      "source_signature": [
+        27,
+        40611,
+        33188,
+        2657635,
+        1793557022605612516,
+        1793557022605612516
+      ]
+    },
+    {
+      "bytes": 2663057,
+      "path": "fits/recall_s15134_light/selected.pt",
+      "sha256": "02e3eb5f36cc47125132c42432ff421bd367cba77790826357bb232184accbf2",
+      "source_signature": [
+        27,
+        40612,
+        33188,
+        2663057,
+        1793557022609612503,
+        1793557022609612503
+      ]
+    },
+    {
+      "bytes": 183,
+      "path": "fits/recall_s15134_value/DATA.json",
+      "sha256": "7a13cf52993c8dd68c9f037925b7aaa317002d8bc457f9e7fbd22f77f2cfd14a",
+      "source_signature": [
+        27,
+        35890,
+        33188,
+        183,
+        1793556749589455656,
+        1793556749589455656
+      ]
+    },
+    {
+      "bytes": 2804,
+      "path": "fits/recall_s15134_value/POSTERIOR_QUALIFICATION.json",
+      "sha256": "48535d6b3d5e65096deae97318661414e71165015c47f783cf36d7794d34ca7b",
+      "source_signature": [
+        27,
+        41445,
+        33188,
+        2804,
+        1793557045183290387,
+        1793557045183290387
+      ]
+    },
+    {
+      "bytes": 22294,
+      "path": "fits/recall_s15134_value/SUMMARY.json",
+      "sha256": "108802a22b455677bfff6c7050308424470401fe81435df69c112212051c4881",
+      "source_signature": [
+        27,
+        41448,
+        33188,
+        22294,
+        1793557045694298995,
+        1793557045694298995
+      ]
+    },
+    {
+      "bytes": 840622,
+      "path": "fits/recall_s15134_value/TRACE.json",
+      "sha256": "1fd50fe8e63466dc33461660a1b8ca45c9917baeea85433e6600f85290451bc8",
+      "source_signature": [
+        27,
+        41446,
+        33188,
+        840622,
+        1793557045689535065,
+        1793557045689535065
+      ]
+    },
+    {
+      "bytes": 2657635,
+      "path": "fits/recall_s15134_value/final.pt",
+      "sha256": "266cf6aa580680a7dca0d24f77afbe49f0dd7571e03cb075a1d4cb7509f8a6c1",
+      "source_signature": [
+        27,
+        41362,
+        33188,
+        2657635,
+        1793557038177560272,
+        1793557038177560272
+      ]
+    },
+    {
+      "bytes": 2663057,
+      "path": "fits/recall_s15134_value/selected.pt",
+      "sha256": "963e57a23f47a4d412a6d99a59a1506c393518709b7739db7a5cc1bb267aebb8",
+      "source_signature": [
+        27,
+        41363,
+        33188,
+        2663057,
+        1793557038181560259,
+        1793557038181560259
+      ]
+    },
+    {
+      "bytes": 254735,
+      "path": "full_online_confirmation/SELF_REGISTRATION.json",
+      "sha256": "9558c76568f0c009ece6411fc305c6183cb87153af673398263c39394404b4e8",
+      "source_signature": [
+        27,
+        3030,
+        33188,
+        254735,
+        1793555254023703495,
+        1793555254023703495
+      ]
+    },
+    {
+      "bytes": 651,
+      "path": "receipts/train/recall_s15132_light.json",
+      "sha256": "eaefa56a170484e35b20d8ae7b5634eb55b06be0ec2bbbbbbfbb288ea557747b",
+      "source_signature": [
+        27,
+        5748,
+        33188,
+        651,
+        1793556411657007476,
+        1793556411657007476
+      ]
+    },
+    {
+      "bytes": 0,
+      "path": "receipts/train/recall_s15132_light.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_signature": [
+        27,
+        2891,
+        33188,
+        0,
+        1793555800701938207,
+        1793555800701938207
+      ]
+    },
+    {
+      "bytes": 118,
+      "path": "receipts/train/recall_s15132_light.stdout.log",
+      "sha256": "194891413163b96e47af56fcc38770bff534051068012abeb6e16f94be9bb32a",
+      "source_signature": [
+        27,
+        2890,
+        33188,
+        118,
+        1793556410327490957,
+        1793556410327490957
+      ]
+    },
+    {
+      "bytes": 651,
+      "path": "receipts/train/recall_s15132_value.json",
+      "sha256": "f34df54f68f7c27161ce8c1e2a2dbc029e568b749c1c2550c5da74cfb6056f3e",
+      "source_signature": [
+        27,
+        5739,
+        33188,
+        651,
+        1793556405639725454,
+        1793556405639725454
+      ]
+    },
+    {
+      "bytes": 0,
+      "path": "receipts/train/recall_s15132_value.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_signature": [
+        27,
+        2902,
+        33188,
+        0,
+        1793555840753275178,
+        1793555840753275178
+      ]
+    },
+    {
+      "bytes": 118,
+      "path": "receipts/train/recall_s15132_value.stdout.log",
+      "sha256": "6fa1867112ac8f7916f5a385863df8fee73a41c2937da29bad8a5dfba7afafcd",
+      "source_signature": [
+        27,
+        2901,
+        33188,
+        118,
+        1793556404467507020,
+        1793556404467507020
+      ]
+    },
+    {
+      "bytes": 650,
+      "path": "receipts/train/recall_s15133_light.json",
+      "sha256": "b35e9052bbe2a6b22154678e634ba280f77e240ba2e579761c6385881e9236e7",
+      "source_signature": [
+        27,
+        35865,
+        33188,
+        650,
+        1793556732514760222,
+        1793556732514760222
+      ]
+    },
+    {
+      "bytes": 0,
+      "path": "receipts/train/recall_s15133_light.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_signature": [
+        27,
+        5741,
+        33188,
+        0,
+        1793556405887501794,
+        1793556405887501794
+      ]
+    },
+    {
+      "bytes": 118,
+      "path": "receipts/train/recall_s15133_light.stdout.log",
+      "sha256": "4ad68c70607120cd6cbefa6b2ed40d6c10d1d35c8dd86ce5f6f9093b669efc14",
+      "source_signature": [
+        27,
+        5740,
+        33188,
+        118,
+        1793556731590538546,
+        1793556731590538546
+      ]
+    },
+    {
+      "bytes": 651,
+      "path": "receipts/train/recall_s15133_value.json",
+      "sha256": "89e0c47312825409bda0a7b6bcc782f24d495259b96f96029597e5eb765d5331",
+      "source_signature": [
+        27,
+        35885,
+        33188,
+        651,
+        1793556746791421488,
+        1793556746791421488
+      ]
+    },
+    {
+      "bytes": 0,
+      "path": "receipts/train/recall_s15133_value.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_signature": [
+        27,
+        5750,
+        33188,
+        0,
+        1793556411903485533,
+        1793556411903485533
+      ]
+    },
+    {
+      "bytes": 117,
+      "path": "receipts/train/recall_s15133_value.stdout.log",
+      "sha256": "a781949546c78a980b7ed3880f8fb600fca5ab738e05391219a25954ceb234d3",
+      "source_signature": [
+        27,
+        5749,
+        33188,
+        117,
+        1793556745566499681,
+        1793556745566499681
+      ]
+    },
+    {
+      "bytes": 651,
+      "path": "receipts/train/recall_s15134_light.json",
+      "sha256": "122636ade6505823464161185fbc19a8afce194af226de9b04339b649a23e57d",
+      "source_signature": [
+        27,
+        41357,
+        33188,
+        651,
+        1793557030647380968,
+        1793557030647380968
+      ]
+    },
+    {
+      "bytes": 0,
+      "path": "receipts/train/recall_s15134_light.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_signature": [
+        27,
+        35867,
+        33188,
+        0,
+        1793556732762534986,
+        1793556732762534986
+      ]
+    },
+    {
+      "bytes": 118,
+      "path": "receipts/train/recall_s15134_light.stdout.log",
+      "sha256": "ea6b39801cf59c7b8995c6cd8c9d1ca92219dbdef703a131da8955cb52f64d9c",
+      "source_signature": [
+        27,
+        35866,
+        33188,
+        118,
+        1793557029501589508,
+        1793557029501589508
+      ]
+    },
+    {
+      "bytes": 652,
+      "path": "receipts/train/recall_s15134_value.json",
+      "sha256": "261964f491ca659d8864ac2ee8c10838347d52f5f130149dca9b675eaf3b7199",
+      "source_signature": [
+        27,
+        41454,
+        33188,
+        652,
+        1793557046659703712,
+        1793557046659703712
+      ]
+    },
+    {
+      "bytes": 0,
+      "path": "receipts/train/recall_s15134_value.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_signature": [
+        27,
+        35887,
+        33188,
+        0,
+        1793556747038495525,
+        1793556747038495525
+      ]
+    },
+    {
+      "bytes": 118,
+      "path": "receipts/train/recall_s15134_value.stdout.log",
+      "sha256": "beaa57bf1c6fa5437b2d8731f86cd328f87be13beeb239501df1eadeaeee221d",
+      "source_signature": [
+        27,
+        35886,
+        33188,
+        118,
+        1793557045701535023,
+        1793557045701535023
+      ]
+    }
+  ],
+  "final_success_evidence": false,
+  "first_checkpoint_manifest_sha256": "c66f2643f2c2df64c7a0f2efc900568ab4bb43859573d74ad8768de48a64b73e",
+  "fresh_restore_completed": true,
+  "frozen_sources_modified": false,
+  "no_confirmation": true,
+  "original_selected_sources_unchanged_during_backup": true,
+  "overlap_with_first_checkpoint": {
+    "all_bytes_and_sha256_equal": true,
+    "members": 5,
+    "scope": "Registration files only; disjoint fit members and distinct NOTE path"
+  },
+  "pack_command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/pack_results.py",
+    "pack",
+    "--root",
+    "repository/experiments/hcsn_distribution_content_r15_20261101/results/formal_03=/workspace/scratch/e8334174d4c2/checkpoint_recall_15132_15134_staging",
+    "--output",
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134",
+    "--dict-mib",
+    "16",
+    "--chunk-bytes",
+    "49152"
+  ],
+  "pack_receipt": {
+    "archive_bytes": 1162396,
+    "manifest_sha256": "24eb5795d4ddb249659e904369a3135ef75d61e110651665370114e59c3a4ea7",
+    "members": 60,
+    "operation": "pack",
+    "output": "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134",
+    "parts": 24,
+    "source_bytes": 37624888,
+    "source_roots": {
+      "repository/experiments/hcsn_distribution_content_r15_20261101/results/formal_03": "/workspace/scratch/e8334174d4c2/checkpoint_recall_15132_15134_staging"
+    },
+    "tool_sha256": "c2314d3157259037a0880b5bcd02508e81085d1378054327a722c18906ca3dcd"
+  },
+  "partial": "additional 6; combined 8/32",
+  "published_source_commit_reported_by_coordinator": "af3a7c779095e96210b9ef44e8ae44446c842f8c",
+  "restore_command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/pack_results.py",
+    "restore",
+    "--bundle",
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134",
+    "--destination",
+    "/workspace/scratch/e8334174d4c2/checkpoint_recall_15132_15134_fresh_restore",
+    "--manifest-sha256",
+    "24eb5795d4ddb249659e904369a3135ef75d61e110651665370114e59c3a4ea7"
+  ],
+  "restore_receipt": {
+    "already_identical_members": 0,
+    "destination": "/workspace/scratch/e8334174d4c2/checkpoint_recall_15132_15134_fresh_restore",
+    "manifest_sha256": "24eb5795d4ddb249659e904369a3135ef75d61e110651665370114e59c3a4ea7",
+    "operation": "restore",
+    "verified_member_bytes": 37624888,
+    "verified_members": 60,
+    "verified_parts": 24
+  },
+  "restored_root": "/workspace/scratch/e8334174d4c2/checkpoint_recall_15132_15134_fresh_restore",
+  "schema": "hcsn-intermediate-checkpoint-verification-v1",
+  "selected_and_final_checkpoint_hashes_match_original_fit_summaries": true,
+  "selected_groups": [
+    {
+      "checkpoint_hashes": {
+        "final.pt": "e1ca21433a69e69cc5072a2d6838abf8c782f1990ea0e7b415b28c3fd1ca7678",
+        "selected.pt": "f46cd0e9fb208abadb328980b47ff4fcc3584e04dc1220f100816f3ee6a99b6b"
+      },
+      "completed_updates": 768,
+      "heldout_opened": false,
+      "name": "recall_s15132_light",
+      "receipt_exit_code": 0,
+      "seed": 15132,
+      "task": "recall",
+      "train_mode": "light"
+    },
+    {
+      "checkpoint_hashes": {
+        "final.pt": "23c033aba4e05a143bc3b95e0eb4a766590546db9443789a761eac28e093d25b",
+        "selected.pt": "65509464960bd9b7040afa05534060bedd2d62074e72a52280b2a4bf851b1e9d"
+      },
+      "completed_updates": 768,
+      "heldout_opened": false,
+      "name": "recall_s15132_value",
+      "receipt_exit_code": 0,
+      "seed": 15132,
+      "task": "recall",
+      "train_mode": "value"
+    },
+    {
+      "checkpoint_hashes": {
+        "final.pt": "c8991dfa6c16b2b9d00b035e85d8b70a2e629253fc9d5b5e2630e22b68c9934d",
+        "selected.pt": "f21cb20b1713357d758d70d30b18ec092e8911342cd5001b1e6c3aa0b852c96e"
+      },
+      "completed_updates": 768,
+      "heldout_opened": false,
+      "name": "recall_s15133_light",
+      "receipt_exit_code": 0,
+      "seed": 15133,
+      "task": "recall",
+      "train_mode": "light"
+    },
+    {
+      "checkpoint_hashes": {
+        "final.pt": "e7e0f435f26372a7554b19b48b1f8f3442fd0080ba7a5b5e68fa499eaef8f7f1",
+        "selected.pt": "baa53d0f25327c2ab4619520544253ba74ae7255b250e48f42b885b4401f74a3"
+      },
+      "completed_updates": 768,
+      "heldout_opened": false,
+      "name": "recall_s15133_value",
+      "receipt_exit_code": 0,
+      "seed": 15133,
+      "task": "recall",
+      "train_mode": "value"
+    },
+    {
+      "checkpoint_hashes": {
+        "final.pt": "9df66d03c7f347e984133efe731935cda168bea21ce2b91050f19c5b41d866d2",
+        "selected.pt": "02e3eb5f36cc47125132c42432ff421bd367cba77790826357bb232184accbf2"
+      },
+      "completed_updates": 768,
+      "heldout_opened": false,
+      "name": "recall_s15134_light",
+      "receipt_exit_code": 0,
+      "seed": 15134,
+      "task": "recall",
+      "train_mode": "light"
+    },
+    {
+      "checkpoint_hashes": {
+        "final.pt": "266cf6aa580680a7dca0d24f77afbe49f0dd7571e03cb075a1d4cb7509f8a6c1",
+        "selected.pt": "963e57a23f47a4d412a6d99a59a1506c393518709b7739db7a5cc1bb267aebb8"
+      },
+      "completed_updates": 768,
+      "heldout_opened": false,
+      "name": "recall_s15134_value",
+      "receipt_exit_code": 0,
+      "seed": 15134,
+      "task": "recall",
+      "train_mode": "value"
+    }
+  ],
+  "staging_root": "/workspace/scratch/e8334174d4c2/checkpoint_recall_15132_15134_staging",
+  "test_data_accessed": false
+}

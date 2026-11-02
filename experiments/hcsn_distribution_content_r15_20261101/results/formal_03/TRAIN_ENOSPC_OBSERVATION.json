@@ -1,0 +1,31 @@
+{
+  "schema": "hcsn.r15.operational-enospc-observation.v1",
+  "recorded_utc": "2026-11-01T18:42:40.723849+00:00",
+  "error_observed_in_exec_session": 59505,
+  "parent_exit_code": 1,
+  "last_successful_worker_print": {
+    "completed": 13,
+    "name": "recall_s15137_light",
+    "exit_code": 0,
+    "cpu_seconds": 301.29635199999996
+  },
+  "error": "OSError: [Errno 28] No space left on device",
+  "failing_source": "experiments/hcsn_distribution_content_r15_20261101/launch.py:48",
+  "failing_operation": "write_text of wait4 receipt for recall_s15137_value",
+  "receipt_observed_bytes": 0,
+  "inspection_utc": "2026-11-01T18:34:43.374528+00:00",
+  "completed_summaries_at_inspection": 13,
+  "completed_valid_wait4_at_inspection": 13,
+  "remaining_training_processes_at_inspection": 0,
+  "current_df_snapshot": "overlay 63G total, 53G used, 7.4G available, 88% used",
+  "cause": "not_determined; current free space does not negate the prior ENOSPC event",
+  "known_incomplete_original_jobs": [
+    "recall_s15137_value",
+    "recall_s15138_light"
+  ],
+  "incomplete_job_cpu_seconds": null,
+  "incomplete_cpu_status": "not_measured; do not substitute zero or later successful retry CPU",
+  "confirmation_opened": false,
+  "scientific_sources_changed": false,
+  "response": "Preserve all original bytes and 13 complete groups; re-run only missing/incomplete groups with the same frozen campaign. Record the resumed stage and unknown failed-attempt CPU explicitly."
+}

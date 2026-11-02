@@ -1,0 +1,161 @@
+{
+  "schema": "hcsn.r15.publication.ci-head-review.v1",
+  "recorded_at_utc": "2026-11-01T19:03:18.968Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4563,
+  "requested_head_sha": "5fac50a59a33b30e3110ea0334508d949de73984",
+  "observed_pr_head_sha": "5fac50a59a33b30e3110ea0334508d949de73984",
+  "reported_pr_base_sha": "c0949e9cde89a54609a5133c0fb7f9c65bc80f4a",
+  "reported_pr_merge_commit_sha": "f68cb21728990dfe9d3bb1a243ad04bd132defbf",
+  "merge_commit_execution_verified": false,
+  "pr_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4563",
+  "observation": "Pending ordinary CI snapshot. A single read of run listings and each run's job listing was performed; no wait/poll loop.",
+  "runs": [
+    {
+      "id": 41339575281,
+      "name": "blocking-ci",
+      "head_sha": "5fac50a59a33b30e3110ea0334508d949de73984",
+      "event": "pull_request",
+      "status_when_read": "pending",
+      "conclusion_when_read": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41339575281",
+      "created_at": "2026-11-01T19:01:20Z",
+      "updated_at": "2026-11-01T19:01:21Z",
+      "run_attempt": 1,
+      "jobs_queried_at_utc": "2026-11-01T19:02:46.027Z",
+      "jobs_total_count": 0,
+      "jobs": []
+    },
+    {
+      "id": 41339575248,
+      "name": "v8-canary",
+      "head_sha": "5fac50a59a33b30e3110ea0334508d949de73984",
+      "event": "pull_request",
+      "status_when_read": "in_progress",
+      "conclusion_when_read": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41339575248",
+      "created_at": "2026-11-01T19:01:20Z",
+      "updated_at": "2026-11-01T19:01:24Z",
+      "run_attempt": 1,
+      "jobs_queried_at_utc": "2026-11-01T19:02:46.021Z",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 124946519312,
+          "name": "metadata",
+          "status_when_read": "in_progress",
+          "conclusion_when_read": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41339575248/job/124946519312",
+          "started_at": "2026-11-01T19:01:23Z",
+          "completed_at": null
+        }
+      ]
+    },
+    {
+      "id": 41339575193,
+      "name": "Hepta architecture convergence",
+      "head_sha": "5fac50a59a33b30e3110ea0334508d949de73984",
+      "event": "pull_request",
+      "status_when_read": "in_progress",
+      "conclusion_when_read": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41339575193",
+      "created_at": "2026-11-01T19:01:20Z",
+      "updated_at": "2026-11-01T19:02:04Z",
+      "run_attempt": 1,
+      "jobs_queried_at_utc": "2026-11-01T19:02:45.993Z",
+      "jobs_total_count": 2,
+      "jobs": [
+        {
+          "id": 124946686638,
+          "name": "Architecture convergence (source-head)",
+          "status_when_read": "in_progress",
+          "conclusion_when_read": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41339575193/job/124946686638",
+          "started_at": "2026-11-01T19:02:04Z",
+          "completed_at": null
+        },
+        {
+          "id": 124946686772,
+          "name": "Architecture convergence (base-merge)",
+          "status_when_read": "in_progress",
+          "conclusion_when_read": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41339575193/job/124946686772",
+          "started_at": "2026-11-01T19:02:04Z",
+          "completed_at": null
+        }
+      ]
+    }
+  ],
+  "combined_commit_status": {
+    "sha": "5fac50a59a33b30e3110ea0334508d949de73984",
+    "state": "pending",
+    "status_context_count": 0,
+    "note": "The legacy combined-status endpoint has zero status contexts and reports pending. It is not evidence that GitHub Actions checks passed."
+  },
+  "annotation_review": {
+    "study_path": "experiments/hcsn_distribution_content_r15_20261101/",
+    "operational_sources_path": "experiments/hcsn_distribution_content_r15_20261101/publication/",
+    "completed_failed_jobs_observed": 0,
+    "failure_annotations_inspected": false,
+    "failure_annotation_count": null,
+    "r15_failure_annotation_count": null,
+    "new_operational_source_failure_annotation_count": null,
+    "reason": "No completed failed job was available in the returned job listings; blocking-ci had not created any jobs yet. Counts are unknown rather than asserted zero. Stop at pending as requested.",
+    "prior_receipt": "publication/CI_FEASIBILITY.json",
+    "prior_head_sha": "fb02cde1b8b2463a3fd566b3b8d93cf39f7fbe3d",
+    "prior_zero_r15_annotation_result_reused_for_new_head": false,
+    "base_only_run_compared": false,
+    "attribution_limit": "No conclusion that all repository failures are unrelated to this PR. A later failure, including a new R15 failure, remains possible."
+  },
+  "evidence_queries": [
+    {
+      "kind": "pr",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4563",
+      "queried_at_utc": "2026-11-01T19:02:22.334Z"
+    },
+    {
+      "kind": "runs",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=5fac50a59a33b30e3110ea0334508d949de73984&per_page=100",
+      "queried_at_utc": "2026-11-01T19:02:22.179Z"
+    },
+    {
+      "kind": "statuses",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5fac50a59a33b30e3110ea0334508d949de73984/status",
+      "queried_at_utc": "2026-11-01T19:02:22.097Z"
+    },
+    {
+      "kind": "workflow_run_jobs",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41339575281/jobs?per_page=100",
+      "queried_at_utc": "2026-11-01T19:02:46.027Z"
+    },
+    {
+      "kind": "workflow_run_jobs",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41339575248/jobs?per_page=100",
+      "queried_at_utc": "2026-11-01T19:02:46.021Z"
+    },
+    {
+      "kind": "workflow_run_jobs",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41339575193/jobs?per_page=100",
+      "queried_at_utc": "2026-11-01T19:02:45.993Z"
+    }
+  ],
+  "conclusions": {
+    "ordinary_ci_complete": false,
+    "ordinary_ci_passed": false,
+    "status": "pending",
+    "new_r15_failure_established": false,
+    "new_r15_failure_excluded": false,
+    "scientific_validation_performed_by_this_review": false,
+    "scientific_validation_boundary": "These are repository workflow observations. No frozen HCSN training, confirmation, posterior qualification, or acceptance claim is inferred from these runs."
+  },
+  "actions": {
+    "github_get_only": true,
+    "workflow_dispatch": false,
+    "rerun": false,
+    "workflow_edit": false,
+    "remote_compute_triggered": false,
+    "secrets_or_admin_endpoint": false,
+    "formal_run_or_confirmation_outputs_read": false,
+    "local_frozen_sources_modified": false
+  }
+}

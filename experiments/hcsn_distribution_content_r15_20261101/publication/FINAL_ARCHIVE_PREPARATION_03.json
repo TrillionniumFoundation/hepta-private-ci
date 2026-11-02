@@ -1,0 +1,38 @@
+{
+  "checkpoint_remote_commit_reported_by_coordinator": "8a3ff71b390d08bb8c885863c5e722ac2a272dff",
+  "coordinator_reports_all_40_blob_readbacks_passed": true,
+  "copied_bytes": 25384,
+  "copied_file_count": 2,
+  "files": [
+    {
+      "already_identical": false,
+      "byte_identical": true,
+      "bytes": 25304,
+      "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_binding_15132_15135light/manifest.json",
+      "sha256": "4d2975b0a26678772db945b691a597917607d4a47ef71f7d941c91d9a98f27df",
+      "source": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_binding_15132_15135light/manifest.json"
+    },
+    {
+      "already_identical": false,
+      "byte_identical": true,
+      "bytes": 80,
+      "destination": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_binding_15132_15135light/manifest.sha256",
+      "sha256": "5d39554543b4e022fc807b156a661c70989af2ba2f0eb9e7eb6ea6c15eade1a9",
+      "source": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_binding_15132_15135light/manifest.sha256"
+    }
+  ],
+  "full_archive_started": false,
+  "independent_remote_readback_performed_here": false,
+  "pre_existing_evidence_deleted": false,
+  "prior_files_unchanged": true,
+  "protected_prior_files_sha256": {
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/FINAL_ARCHIVE_PLAN.json": "ecd043a8f6e6769ff6b5e5fb19061bf3969fa162f9036d09fa67e7a4f201af1e",
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/FINAL_ARCHIVE_PREPARATION.json": "8f6f4c9228867f61d3ad57b36adf07262d844ba9e8fcef5b2b0d5ad988279c03",
+    "/workspace/scratch/e8334174d4c2/hepta/experiments/hcsn_distribution_content_r15_20261101/publication/FINAL_ARCHIVE_PREPARATION_02.json": "c76f35aeca4ff5e91019d621a7cb46cf662379c2fa807a714d25265416241486"
+  },
+  "purpose": "Preserve fifth partial-checkpoint manifest/checksum outside default archives exclusion; prior plan and records unchanged.",
+  "raw_fit_checkpoint_or_confirmation_contents_read": false,
+  "remote_writes_performed": false,
+  "schema": "hcsn.r15.publication.final-archive-preparation.v1",
+  "utc": "2026-11-02T00:25:00.929872+00:00"
+}
