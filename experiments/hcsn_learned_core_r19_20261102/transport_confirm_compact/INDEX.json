@@ -1,0 +1,11 @@
+{
+  "compressed_bytes": 7884007,
+  "logical_bytes": 31098310,
+  "manifest_sha256": "51523fa4c2df4b68f887dc697607e578f5cd4cb70b6201283f723287df4d8c8e",
+  "manifest_transport_sha256": "0c2a0d8ef5276aaf05519dde78de69d823cdf641fc6285d8aa86cfb4faec8510",
+  "original_files": 248,
+  "parts": 132,
+  "raw_traces": 240,
+  "restore": "python compact_transport.py restore --source transport_confirm_compact --destination FRESH_DIRECTORY",
+  "schema": "hcsn-lossless-column-transport-v1"
+}
