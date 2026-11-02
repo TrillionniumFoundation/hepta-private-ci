@@ -1,0 +1,32 @@
+{
+  "codespell_version": "2.4.3",
+  "local_checkout_scan_exit_code": 0,
+  "checkout_scope": "Current reconstructed research files only; hosted whole-repository check still required.",
+  "binary_false_positive_and_text_sentinel_controls": [
+    {
+      "file": "payload.part",
+      "exit_code": 0,
+      "stderr": "",
+      "expected": 0,
+      "passed": true,
+      "stdout_base64": ""
+    },
+    {
+      "file": "math.md",
+      "exit_code": 0,
+      "stderr": "",
+      "expected": 0,
+      "passed": true,
+      "stdout_base64": ""
+    },
+    {
+      "file": "ordinary.md",
+      "exit_code": 65,
+      "stderr": "",
+      "expected": 65,
+      "passed": true,
+      "stdout_base64": "L3RtcC9oY3NuLXIyMi1zcGVsbGluZy1pMHIxaGlkNS9vcmRpbmFyeS5tZDoxOiB0ZWggPT0+IHRoZQo="
+    }
+  ],
+  "source_or_evidence_rewritten": false
+}
