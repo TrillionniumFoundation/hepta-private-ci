@@ -1,0 +1,42 @@
+{
+  "schema": "hcsn.r19.remote-readback.v1",
+  "commit": "97d85fa87c7be90ea290c74ec23e75573d174112",
+  "tree": "ee6a2755575f838299642830cfe93a3cd6d64dd7",
+  "passed": true,
+  "checks": [
+    {
+      "prefix": "tools/hcsn/continuous_task_r19_20261101",
+      "tree_sha": "ce1e6bdb5dc0d471d26898406b392a7c08074066",
+      "files_verified": 40
+    },
+    {
+      "prefix": "tools/hcsn/native_kernel_r19_20261101",
+      "tree_sha": "db61fbc531132a31fefd811c952ca955b748be60",
+      "files_verified": 27
+    },
+    {
+      "prefix": "tools/hcsn/native_owner_r19_20261101",
+      "tree_sha": "29708450d5d417b0ebf1b0022d85047219f11753",
+      "files_verified": 28
+    },
+    {
+      "prefix": "experiments/hcsn_unknown_generator_r19_20261101",
+      "tree_sha": "7cdbff3ad3a33b1633f95b6235f4fbed16718583",
+      "files_verified": 67
+    },
+    {
+      "prefix": "tools/hcsn/planner_r19_20261101",
+      "tree_sha": "cf804ce3a08c05179209aa44f3d9aefed7170b37",
+      "files_verified": 42
+    },
+    {
+      "prefix": "tools/hcsn/four_stage_r19_20261101",
+      "tree_sha": "c7f25bb2f897a3403996e67669a667588b50778d",
+      "files_verified": 17
+    }
+  ],
+  "total_verified": 221,
+  "scope": "All published scoped source, metadata and transport blob identities, sizes and modes. Content-addressed evidence transport was separately restored byte-for-byte before publication.",
+  "production_activation": false,
+  "all_blockers_closed": false
+}
