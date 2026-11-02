@@ -1,0 +1,350 @@
+{
+  "schema": "hcsn-r22-certified-control-direction-report-v2",
+  "baseline_commit": "ff611d62793c2829cab85b38d6ab246691b3ba1d",
+  "publications": {
+    "v1": {
+      "checkpoint": "a921ff5622e1aee3a22e08d9325d453f2952aa9c",
+      "source_commit": "a921ff5622e1aee3a22e08d9325d453f2952aa9c",
+      "readback_verified": true,
+      "source_freeze_sha256": "7b7e7afee08f7da2a040970a8a617fb0a9401b73470c7cb7b5c983c7a006694c",
+      "source_tree": "b8fdc428821d9b963eb231a3c60838cf614a7261",
+      "prior_to_fresh_profiles": true
+    },
+    "v2": {
+      "readback_verified": true,
+      "checkpoint": "c21de56597fc60857b179c8422b0108d5ef7c61b",
+      "source_commit": "c21de56597fc60857b179c8422b0108d5ef7c61b",
+      "source_tree": "5c001127360b63ec17ecf8a38d28060fdedc224a",
+      "source_freeze_sha256": "1265f45f19932c6c5e2a2d8cbb9fc9f386e699a006c60ad5ad3cad47ed061488",
+      "prior_to_fresh_profiles": true
+    }
+  },
+  "gates": {
+    "v2_registered_local_confirmation": true,
+    "old_r20_finite_step": false,
+    "v1_verifier_adversarial_input": false,
+    "arbitrary_true_tie_qualification": false,
+    "full_neural_gradient": false,
+    "moving_recovery_horizon_domain": false,
+    "continuum_free_boundary_gradient": false,
+    "production_activation": false,
+    "all_blockers_closed": false
+  },
+  "retrospective": {
+    "attempts": 78,
+    "passed": 78,
+    "max_primal_enclosure_error": 1.4533038977306372e-14,
+    "max_derivative_enclosure_error": 1.1001899792012489e-12,
+    "max_independent_analytic_error": 1.3322676295501878e-15,
+    "policy_corrections": 0,
+    "known_true_tie_positions": 0,
+    "unresolved_positions": 0,
+    "original_both_step_pass": 30,
+    "original_individual_step_pass": 71,
+    "original_individual_steps": 156,
+    "max_original_finite_discrepancy": 1.2711191807740496,
+    "max_decomposition_residual": 2.960594732339136e-16,
+    "switch_components_above_old_tolerance": 34,
+    "frozen_policy_components_above_old_tolerance": 58,
+    "worst_case_index": 36,
+    "worst_case_affine_radius": 6.903163921431289e-06,
+    "qualification": "All78 executed builder-local derivatives independently agree; V1 adversarial input verifier hole preserved, fixed only in separate V2."
+  },
+  "engineering": {
+    "attempts": 3,
+    "passed": 3,
+    "max_primal_enclosure_error": 1.1703532911793354e-14,
+    "max_derivative_enclosure_error": 2.3701854078301477e-13,
+    "max_independent_analytic_error": 1.3322676295501878e-15,
+    "policy_corrections": 0,
+    "known_true_tie_positions": 0,
+    "unresolved_positions": 0
+  },
+  "fresh_generic": {
+    "attempts": 156,
+    "passed": 156,
+    "max_primal_enclosure_error": 1.9473465540335798e-14,
+    "max_derivative_enclosure_error": 1.6161926705702406e-12,
+    "max_independent_analytic_error": 1.2490009027033011e-15,
+    "policy_corrections": 0,
+    "known_true_tie_positions": 0,
+    "unresolved_positions": 0
+  },
+  "binary_controls": {
+    "attempts": 20,
+    "passed": 20,
+    "max_primal_enclosure_error": 1.3690865669778021e-16,
+    "max_derivative_enclosure_error": 0.0,
+    "max_independent_analytic_error": 0,
+    "policy_corrections": 10,
+    "known_true_tie_positions": 4,
+    "unresolved_positions": 0
+  },
+  "negative_controls": [
+    {
+      "name": "corrupted_derivative",
+      "passed": true
+    },
+    {
+      "name": "corrupted_initial_left_values",
+      "passed": true,
+      "injected_error": 0.5,
+      "before_hex": "0x1.4000000000000p-1",
+      "after_hex": "0x1.2000000000000p+0",
+      "reported_bound": 0.5000000000000001,
+      "certificate_rejected": true
+    },
+    {
+      "name": "corrupted_initial_left_tangent",
+      "passed": true,
+      "injected_error": 0.5,
+      "before_hex": "0x0.0p+0",
+      "after_hex": "0x1.0000000000000p-1",
+      "reported_bound": 0.5000000000000001,
+      "certificate_rejected": true
+    },
+    {
+      "name": "changed_geometry",
+      "passed": true
+    },
+    {
+      "name": "unrecognized_true_tie",
+      "passed": true
+    },
+    {
+      "name": "invalid_update_nan",
+      "passed": true
+    },
+    {
+      "name": "invalid_update_inf",
+      "passed": true
+    },
+    {
+      "name": "invalid_update_-1.0",
+      "passed": true
+    }
+  ],
+  "coordinate_norms": {
+    "sigma": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 0.03869957516970566,
+      "maximum_sup_norm": 0.05605521667183162
+    },
+    "wait_cost": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 0.28574230577092213,
+      "maximum_sup_norm": 0.5275004937379499
+    },
+    "recovery_cost": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 0.5308642482466508,
+      "maximum_sup_norm": 0.7729210838109561
+    },
+    "reset_x": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 0.130417218523032,
+      "maximum_sup_norm": 0.17542247099219116
+    },
+    "reset_fee_0": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 1.1078436128221834,
+      "maximum_sup_norm": 1.3566787318648514
+    },
+    "reset_fee_1": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 2.542485080490204,
+      "maximum_sup_norm": 3.678313487250544
+    },
+    "retention_0": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 0.1784769247393373,
+      "maximum_sup_norm": 0.2951864354898713
+    },
+    "retention_1": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 0.34889397743635275,
+      "maximum_sup_norm": 0.6925815828961166
+    },
+    "reward_base_0": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 1.0,
+      "maximum_sup_norm": 1.0000000000000009
+    },
+    "reward_base_1": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 1.0,
+      "maximum_sup_norm": 1.0
+    },
+    "reward_amplitude_0": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 0.966389330336427,
+      "maximum_sup_norm": 0.993197543268903
+    },
+    "reward_amplitude_1": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 0.966389330336427,
+      "maximum_sup_norm": 0.993197543268903
+    },
+    "reward_slope": {
+      "attempts": 12,
+      "nonzero_attempts": 12,
+      "minimum_sup_norm": 0.10315412313613742,
+      "maximum_sup_norm": 0.18463484857217602
+    }
+  },
+  "replays": {
+    "v1_diagnosis": {
+      "schema": "hcsn-r22-independent-array-replay-v1",
+      "integrity_passed": true,
+      "scientific_passed": true,
+      "phase": "diagnosis",
+      "cases": 78,
+      "scalar_derivative_positions": 780312,
+      "maxima": {
+        "local": 1.3322676295501878e-15,
+        "decomposition": 2.960594732339136e-16,
+        "old": 1.2711191807740496
+      },
+      "scope": "Complete saved arithmetic and rational oracle replay; not independent re-execution of interval enclosures/LAPACK or control summaries. Original finite-step gate remains failed."
+    },
+    "v2_engineering": {
+      "schema": "hcsn-r22-independent-array-replay-v1",
+      "integrity_passed": true,
+      "scientific_passed": true,
+      "phase": "engineering",
+      "cases": 3,
+      "scalar_derivative_positions": 30012,
+      "maxima": {
+        "local": 1.3322676295501878e-15,
+        "decomposition": 2.960594732339136e-16,
+        "old": 1.2711191807740496
+      },
+      "scope": "Complete saved arithmetic and rational oracle replay; not independent re-execution of interval enclosures/LAPACK or control summaries. Original finite-step gate remains failed."
+    },
+    "v2_confirm": {
+      "schema": "hcsn-r22-independent-array-replay-v1",
+      "integrity_passed": true,
+      "scientific_passed": true,
+      "phase": "confirm",
+      "cases": 176,
+      "scalar_derivative_positions": 1564944,
+      "maxima": {
+        "local": 1.2490009027033011e-15,
+        "decomposition": 0.0,
+        "old": 0.0
+      },
+      "scope": "Complete saved arithmetic and rational oracle replay; not independent re-execution of interval enclosures/LAPACK or control summaries. Original finite-step gate remains failed."
+    }
+  },
+  "cost": {
+    "tracked_full_child_cpu_seconds": 346.537482,
+    "receipts": [
+      {
+        "path": "tools/hcsn/continuous_task_r22_20261102/DIAGNOSIS_CHECK_PROCESS.json",
+        "cpu_seconds": 2.344241,
+        "wall_seconds": 2.3451091520037153,
+        "exit_code": 0
+      },
+      {
+        "path": "tools/hcsn/continuous_task_r22_20261102/DIAGNOSIS_PROCESS.json",
+        "cpu_seconds": 111.01051100000001,
+        "wall_seconds": 191.30985650700313,
+        "exit_code": 0
+      },
+      {
+        "path": "tools/hcsn/continuous_task_r22_20261102/development03/PROCESS.json",
+        "cpu_seconds": 4.74287,
+        "wall_seconds": 4.7459326129974215,
+        "exit_code": 0
+      },
+      {
+        "path": "tools/hcsn/continuous_task_r22_20261102/development04/PROCESS.json",
+        "cpu_seconds": 1.996608,
+        "wall_seconds": 1.9987700729980133,
+        "exit_code": 0
+      },
+      {
+        "path": "tools/hcsn/continuous_task_r22_20261102/development05/PROCESS.json",
+        "cpu_seconds": 0.7131899999999999,
+        "wall_seconds": 0.7140997440001229,
+        "exit_code": 0
+      },
+      {
+        "path": "tools/hcsn/continuous_task_v2_r22_20261102/CONFIRM_CHECK_PROCESS.json",
+        "cpu_seconds": 2.053433,
+        "wall_seconds": 2.0541767300019274,
+        "exit_code": 0
+      },
+      {
+        "path": "tools/hcsn/continuous_task_v2_r22_20261102/CONFIRM_PROCESS.json",
+        "cpu_seconds": 217.446056,
+        "wall_seconds": 217.7273096179997,
+        "exit_code": 0
+      },
+      {
+        "path": "tools/hcsn/continuous_task_v2_r22_20261102/ENGINEERING_CHECK_PROCESS.json",
+        "cpu_seconds": 0.15442,
+        "wall_seconds": 0.312837880999723,
+        "exit_code": 0
+      },
+      {
+        "path": "tools/hcsn/continuous_task_v2_r22_20261102/ENGINEERING_PROCESS.json",
+        "cpu_seconds": 4.832106,
+        "wall_seconds": 4.836927147000097,
+        "exit_code": 0
+      },
+      {
+        "path": "tools/hcsn/continuous_task_v2_r22_20261102/development01/PROCESS.json",
+        "cpu_seconds": 0.6319440000000001,
+        "wall_seconds": 0.6327397909990395,
+        "exit_code": 1
+      },
+      {
+        "path": "tools/hcsn/continuous_task_v2_r22_20261102/development02/PROCESS.json",
+        "cpu_seconds": 0.612103,
+        "wall_seconds": 0.612852860998828,
+        "exit_code": 0
+      }
+    ],
+    "full_investment_cpu_seconds": null,
+    "simultaneous_family_peak_rss_kib": null,
+    "gpu_energy_service_cost": null,
+    "scope": "11 outer child-family receipts including failed development probe; startup/import/hash checks/output included. Nested inner CPU excluded from sum. Other earlier/manual engineering, report generation, remote transport, peer reasoning and wrapper receipt serialization not fully metered; tracked sum is a lower bound, not all-in cost."
+  },
+  "delivery_history": {
+    "source_protocol_and_dependency_zip_readback_before_fresh": true,
+    "input_hash_identities_committed_before_fresh": 184,
+    "local_input_hashes_verified_at_v2_startup": true,
+    "historical_complete_fresh_checkout_availability": false,
+    "historical_complete_all_input_byte_readback": false,
+    "late_bytes": "V1 new retrospective diagnosis archives/receipts were hash-committed at c21de before fresh launch but not yet remotely delivered; only18 V1 source/freeze files had a921 readback.",
+    "scientific_effect": "Old diagnostic bytes are identity prerequisites; fresh numerical draws/reference do not consume them beyond startup hashing. No scientific input changed. This is historical delivery/replay availability gap; final transport does not retroactively change it.",
+    "required_restore_order": [
+      "Original baseline R20 inputs if represented by transport",
+      "R22 V1 full artifacts",
+      "R22 V2 full artifacts"
+    ],
+    "current_remote_all_artifact_readback_at_local_handoff": null
+  },
+  "target": "Fixed 41-node/61-time/two-mode grid real equations with supplied binary64 coefficients/nodes; six nonconstant profiles, all13 signed directions. Trusted frozen interval runtime and independently coded analytic primal replay, not machine verification of dependencies.",
+  "open": [
+    "arbitrary unrecognized genuine ties",
+    "moving recovery/horizon/domain",
+    "continuum gradient convergence/free-boundary theorem",
+    "full neural/model parameter gradients",
+    "analytic-core D-B independent contribution",
+    "production ownership and GPU/latency/throughput/energy/cost adoption"
+  ]
+}

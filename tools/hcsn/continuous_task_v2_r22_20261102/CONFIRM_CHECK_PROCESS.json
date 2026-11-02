@@ -1,0 +1,21 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "tools.hcsn.continuous_task_v2_r22_20261102.record_check",
+    "--run",
+    "tools/hcsn/continuous_task_v2_r22_20261102/confirm_run",
+    "--out",
+    "tools/hcsn/continuous_task_v2_r22_20261102/CONFIRM_REPLAY.json"
+  ],
+  "exit_code": 0,
+  "cpu_user_seconds": 2.049734,
+  "cpu_system_seconds": 0.003699,
+  "cpu_seconds": 2.053433,
+  "wall_seconds": 2.0541767300019274,
+  "maximum_single_process_rss_kib": 18344,
+  "wrapper_cpu_before_receipt_seconds": 0.0006970119999999969,
+  "simultaneous_family_peak_rss_kib": null,
+  "scope": "Complete scientific child and waited descendants, includes interpreter/imports/input checks/numerics/archive and final JSON writes. Wrapper and transport excluded; inner CPU is nested and must not be added. No GPU or energy measurement."
+}

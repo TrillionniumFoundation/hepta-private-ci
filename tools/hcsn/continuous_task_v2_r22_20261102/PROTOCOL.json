@@ -1,0 +1,174 @@
+{
+  "schema": "hcsn-r22-certified-control-directions-v2",
+  "baseline_commit": "ff611d62793c2829cab85b38d6ab246691b3ba1d",
+  "target": "Local one-sided derivatives of declared fixed-mesh real equations with exact binary64 inputs and nodes; not the discontinuous map of rounded FP64 instructions",
+  "parameters": [
+    "sigma",
+    "wait_cost",
+    "recovery_cost",
+    "reset_x",
+    "reset_fee_0",
+    "reset_fee_1",
+    "retention_0",
+    "retention_1",
+    "reward_base_0",
+    "reward_base_1",
+    "reward_amplitude_0",
+    "reward_amplitude_1",
+    "reward_slope"
+  ],
+  "mesh": [
+    0.2,
+    0.02
+  ],
+  "interval_digits": 50,
+  "local_tolerance": 1e-10,
+  "complex_increment": 1e-30,
+  "original_real_steps": [
+    0.0001,
+    3e-05
+  ],
+  "original_finite_step_tolerance": 1e-06,
+  "decomposition_tolerance": 1e-08,
+  "fresh_seed": 2026110213,
+  "fresh_profiles": 6,
+  "fresh_ranges": {
+    "sigma": [
+      0.6,
+      1.6
+    ],
+    "wait_cost": [
+      0.02,
+      0.06
+    ],
+    "recovery_cost": [
+      0.01,
+      0.04
+    ],
+    "reset_x": [
+      0.45,
+      1.05
+    ],
+    "fee0": [
+      0.02,
+      0.05
+    ],
+    "fee1": [
+      0.015,
+      0.04
+    ],
+    "retention0": [
+      0.8,
+      0.95
+    ],
+    "retention1": [
+      0.6,
+      0.85
+    ],
+    "base0": [
+      0.18,
+      0.25
+    ],
+    "base1": [
+      0.08,
+      0.15
+    ],
+    "amplitude0": [
+      0.55,
+      0.7
+    ],
+    "amplitude1": [
+      0.3,
+      0.45
+    ],
+    "reward_slope": [
+      0.8,
+      1.5
+    ]
+  },
+  "fresh_roster": "Six seeded nonconstant profiles, both signed unit directions for all13 coordinates:156 attempts. Every attempt retained; uncertified branches fail local admission rather than silently being labeled exact ties.",
+  "tie_config": {
+    "sigma": 1.0,
+    "reset_x": 0.0,
+    "wait_cost": 2.0,
+    "recovery_cost": 0.0,
+    "recovery": 0.25,
+    "horizon": 0.25,
+    "reward_base": [
+      0.25,
+      0.125
+    ],
+    "reward_amplitude": [
+      0.75,
+      0.5
+    ],
+    "reward_slope": 1.0,
+    "reset_fee": [
+      0.125,
+      0.0625
+    ],
+    "content_transition": [
+      [
+        0.75,
+        0.25
+      ],
+      [
+        0.25,
+        0.75
+      ]
+    ]
+  },
+  "tie_meshes": [
+    [
+      0.5,
+      0.125
+    ],
+    [
+      0.25,
+      0.0625
+    ]
+  ],
+  "fee_ulps": [
+    -4,
+    -1,
+    0,
+    1,
+    4
+  ],
+  "tie_roster": "Five exact binary fee offsets, both fee directions, two meshes:20 cases. Independent rational oracle includes near-tie values rounded together by old FP64 max.",
+  "controls": [
+    "corrupted_derivative",
+    "corrupted_initial_left_values",
+    "corrupted_initial_left_tangent",
+    "changed_geometry",
+    "unrecognized_true_tie",
+    "invalid_update_nan",
+    "invalid_update_inf",
+    "invalid_update_-1.0"
+  ],
+  "retrospective_roster": "All78 old R20 signed directions. Keep old30/78 both-step result. Decompose every stored finite-step error into frozen-policy truncation plus policy-switch component; independently compare both left/right local tangents to complex analytic replay.",
+  "qualification": [
+    "Positive strict-slack interval enclosures or structurally identical expression witnesses select policies; unresolved genuine ties reject unless the explicit binary oracle applies",
+    "M-matrix row-sum-one residual comparison bounds both primal and linearized values; interval package and complete project import closure are frozen",
+    "Both outward primal and derivative error upper bounds must be at most1e-10; complete left/right values include initial rows. Independent analytic complex replay must agree at most1e-10 on all left/right derivatives.",
+    "The complex increment is fixed beforehand and is not real finite-difference step shrinking",
+    "Affine update radii apply only to eight affine coordinates and certified locally fixed policies, not general nonlinear parameter steps",
+    "No original R20 tolerance, sample or failure is changed; successful local qualification does not turn the original finite-step gate into a pass"
+  ],
+  "open": [
+    "arbitrary unresolved true ties",
+    "moving recovery/horizon/domain",
+    "continuum gradients",
+    "full neural gradients",
+    "production cost/GPU/energy",
+    "analytic-core D-B"
+  ],
+  "all_blockers_closed": false,
+  "production_activation": false,
+  "engineering_old_indices": [
+    0,
+    36,
+    50
+  ],
+  "history": "V1 initial-left verifier omission discovered by corruption probes before any fresh draw. V1 all78 retrospective diagnosis/source/results retained separately. V2 adds initial-left maxima and strengthens admission with the same primal tolerance; source/protocol refrozen before unchanged future seed/roster is opened. Three old fixed cases are explicitly engineering revalidation, not new independent worlds."
+}
