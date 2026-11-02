@@ -1,0 +1,8 @@
+{
+  "attempt": 1,
+  "result": "reviewer assertion failure",
+  "assertion": "assert 'provider' in str(directory)",
+  "location": "independent_record_audit.py:85, tcp_relay_after_effect case",
+  "reason": "The directory name is tcp_relay_after_effect and has no provider substring. This assertion did not describe a runtime contract.",
+  "correction": "Removed only this unrelated directory-name assertion; retained actual relay marker, durable states, effect/fee and process-record validation. No candidate or raw runtime bytes changed."
+}

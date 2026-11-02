@@ -1,0 +1,26 @@
+{
+  "diagnostic_01_source_summary": "Preserved development_01 outputs from before summary-count naming correction; 144 timed plus144 memory executions, not only144 total.",
+  "initial_smoke": {
+    "block_values_equal": true,
+    "full_values_equal": true,
+    "loop_cpu_seconds": [
+      0.14241100199999995,
+      0.11081966700000001,
+      0.11899230700000007,
+      0.12445964800000009
+    ],
+    "peak_bytes": [
+      247848,
+      179952,
+      318280,
+      204568
+    ],
+    "scope": "Two projections,50 repeated values each of R18 and R19; original console output retained below; whole child CPU not metered."
+  },
+  "schema": "hcsn-r19-development-v1",
+  "unmetered_costs": [
+    "initial smoke interpreter/imports/owner construction",
+    "source retrieval/publication, planning and bookkeeping",
+    "whole-process independent review if not separately measured"
+  ]
+}

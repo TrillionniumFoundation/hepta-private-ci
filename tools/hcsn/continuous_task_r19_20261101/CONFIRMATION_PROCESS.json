@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-r19-task-gradient-process-v1",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "tools.hcsn.continuous_task_r19_20261101.audit",
+    "--mode",
+    "confirmation",
+    "--out",
+    "tools/hcsn/continuous_task_r19_20261101/CONFIRMATION.json"
+  ],
+  "started_utc": "2026-11-02T00:42:17.677237+00:00",
+  "completed_utc": "2026-11-02T00:42:40.777012+00:00",
+  "exit_code": 1,
+  "wall_seconds": 23.099772857996868,
+  "child_user_cpu_seconds": 19.22613,
+  "child_system_cpu_seconds": 0.224287,
+  "wrapper_cpu_seconds": 0.00044724299999999995,
+  "child_maximum_rss_linux_kib": 56048,
+  "compilation_development_included": false,
+  "energy_joules": null
+}

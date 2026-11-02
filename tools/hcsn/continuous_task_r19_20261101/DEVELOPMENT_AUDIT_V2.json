@@ -1,0 +1,392 @@
+{
+  "schema": "hcsn-r19-independent-task-gradient-audit-v1",
+  "mode": "development",
+  "candidate_parameters": [
+    "sigma",
+    "wait_cost",
+    "recovery_cost",
+    "reset_x",
+    "reset_fee_0",
+    "reset_fee_1",
+    "retention_0",
+    "retention_1",
+    "reward_base_0",
+    "reward_base_1",
+    "reward_amplitude_0",
+    "reward_amplitude_1",
+    "reward_slope"
+  ],
+  "cases": [
+    {
+      "profile": 0,
+      "config": {
+        "lower": -4.0,
+        "upper": 4.0,
+        "sigma": 0.65,
+        "horizon": 1.2,
+        "recovery": 0.2,
+        "reset_x": 0.63,
+        "wait_cost": 0.03,
+        "recovery_cost": 0.02,
+        "reset_fee": [
+          0.035,
+          0.025
+        ],
+        "content_transition": [
+          [
+            0.9,
+            0.1
+          ],
+          [
+            0.25,
+            0.75
+          ]
+        ],
+        "reward_base": [
+          0.2,
+          0.1
+        ],
+        "reward_amplitude": [
+          0.75,
+          0.4
+        ],
+        "reward_slope": 1.3
+      },
+      "dx": 0.2,
+      "dt": 0.02,
+      "primal_maximum_absolute_error": 3.3306690738754696e-16,
+      "derivatives_finite": true,
+      "branch_counts": {
+        "0": 192,
+        "1": 1938,
+        "2": 2872
+      },
+      "jump_records": [
+        {
+          "time": 0.2,
+          "maximum_jump": 0.4428490282239215,
+          "derivative_jump_norm": 1.0
+        },
+        {
+          "time": 0.4,
+          "maximum_jump": 0.04252114860301004,
+          "derivative_jump_norm": 1.75
+        },
+        {
+          "time": 0.6,
+          "maximum_jump": 0.0318908614522575,
+          "derivative_jump_norm": 2.3125
+        },
+        {
+          "time": 0.8,
+          "maximum_jump": 0.023918146089193182,
+          "derivative_jump_norm": 0.421875
+        },
+        {
+          "time": 1.0,
+          "maximum_jump": 0.01793860956689497,
+          "derivative_jump_norm": 0.31640625000000044
+        },
+        {
+          "time": 1.2,
+          "maximum_jump": 0.013453957175171172,
+          "derivative_jump_norm": 0.23730468750000044
+        }
+      ]
+    }
+  ],
+  "records": [
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "sigma",
+      "step": 1e-05,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 5.231509669911816e-11,
+      "admission_maximum_scaled_error": 4.931212382874861e-11,
+      "derivative_maximum_absolute": 0.07253102906547727,
+      "branch_changes_plus_minus": [
+        {
+          "right": 0,
+          "left": 0
+        },
+        {
+          "right": 0,
+          "left": 0
+        }
+      ],
+      "stable": true,
+      "passed": true
+    },
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "sigma",
+      "step": 3e-06,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 3.333768816560223e-10,
+      "admission_maximum_scaled_error": 3.2686787998503775e-10,
+      "derivative_maximum_absolute": 0.07253102906547727,
+      "branch_changes_plus_minus": [
+        {
+          "right": 0,
+          "left": 0
+        },
+        {
+          "right": 0,
+          "left": 0
+        }
+      ],
+      "stable": true,
+      "passed": true,
+      "fd_step_maximum_difference": 2.9050835348432e-10
+    },
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "reset_x",
+      "step": 1e-05,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 1.653407966095699e-11,
+      "admission_maximum_scaled_error": 1.497171830955324e-11,
+      "derivative_maximum_absolute": 0.21033506042016611,
+      "branch_changes_plus_minus": [
+        {
+          "right": 0,
+          "left": 0
+        },
+        {
+          "right": 0,
+          "left": 0
+        }
+      ],
+      "stable": true,
+      "passed": true
+    },
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "reset_x",
+      "step": 3e-06,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 7.223657783050896e-11,
+      "admission_maximum_scaled_error": 3.4331461284953235e-11,
+      "derivative_maximum_absolute": 0.21033506042016611,
+      "branch_changes_plus_minus": [
+        {
+          "right": 0,
+          "left": 0
+        },
+        {
+          "right": 0,
+          "left": 0
+        }
+      ],
+      "stable": true,
+      "passed": true,
+      "fd_step_maximum_difference": 6.476300051794226e-11
+    },
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "retention_1",
+      "step": 1e-05,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 3.2922575776694885e-10,
+      "admission_maximum_scaled_error": 3.2922575776694885e-10,
+      "derivative_maximum_absolute": 0.7213881739741301,
+      "branch_changes_plus_minus": [
+        {
+          "right": 0,
+          "left": 0
+        },
+        {
+          "right": 0,
+          "left": 0
+        }
+      ],
+      "stable": true,
+      "passed": true
+    },
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "retention_1",
+      "step": 3e-06,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 4.422836923090312e-11,
+      "admission_maximum_scaled_error": 3.871747367156786e-11,
+      "derivative_maximum_absolute": 0.7213881739741301,
+      "branch_changes_plus_minus": [
+        {
+          "right": 0,
+          "left": 0
+        },
+        {
+          "right": 0,
+          "left": 0
+        }
+      ],
+      "stable": true,
+      "passed": true,
+      "fd_step_maximum_difference": 2.90508284095381e-10
+    }
+  ],
+  "protocol": {
+    "schema": "hcsn-r19-jump-tangent-protocol-v1",
+    "classification": "Deterministic verification of a fixed-grid active-branch derivative, not a utility/adoption confirmation",
+    "base_commit": "b25601c9bae257ffb651c8f9354fc380d8333f38",
+    "profiles": [
+      {
+        "name": "low_diffusion",
+        "sigma": 0.65,
+        "reset_x": 0.63
+      },
+      {
+        "name": "default_diffusion",
+        "sigma": 1.0,
+        "reset_x": 0.63
+      },
+      {
+        "name": "high_diffusion",
+        "sigma": 1.4,
+        "reset_x": 0.67
+      }
+    ],
+    "meshes": [
+      [
+        0.2,
+        0.02
+      ],
+      [
+        0.1,
+        0.01
+      ]
+    ],
+    "fd_steps": [
+      1e-05,
+      3e-06
+    ],
+    "primal_absolute_tolerance": 2e-12,
+    "whole_array_scaled_fd_tolerance": 1e-06,
+    "requirements": [
+      "All thirteen declared coordinates are attempted in every profile and mesh",
+      "All whole-array discrepancies and branch switches remain recorded",
+      "Whole-array error bound applies to every attempted coordinate at both steps, including all changed branches",
+      "No switched coordinate is silently counted as passing or removed from raw results",
+      "A fixed-branch derivative gate needs every coordinate stable and passing in at least one declared profile/mesh",
+      "Every mesh must produce a nonzero admission jump and nonzero tangent jump",
+      "Reset interpolation knots and unsupported moving-duration/domain coordinates must reject",
+      "Original R18 source Git blob identities must match INPUT_IDENTITIES.json"
+    ],
+    "retained_open": [
+      "continuous full financial/neural gradient",
+      "moving recovery/horizon/domain gradient",
+      "global differentiability",
+      "continuum gradient convergence",
+      "exclusive analytic-core gain",
+      "real multimodal binding",
+      "GPU/energy",
+      "production qualification"
+    ],
+    "production_activation": false,
+    "all_blockers_closed": false
+  },
+  "verified_inputs": [
+    {
+      "path": "tools/hcsn/continuous_task_r18_20261101/BLOCKERS.json",
+      "git_blob": "1dfee865c1561eca4d93278f82ae892f9090a61a",
+      "size": 2543
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r18_20261101/REPORT_ZH.md",
+      "git_blob": "462a8422e6b7b7d4c9ce4c470f6a1e0e6ce42120",
+      "size": 8914
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r18_20261101/TASK_DERIVATION.md",
+      "git_blob": "51229a014a5b18f3ad0eb49ae83f68d04c58b36a",
+      "size": 5877
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r18_20261101/followup.py",
+      "git_blob": "01469308d0edf1d0d54d50ff436bd0d821bd5270",
+      "size": 9510
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r18_20261101/gradients.py",
+      "git_blob": "879238595eff0927f3cf0d972af95535514058b1",
+      "size": 2649
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r18_20261101/jump_solver.py",
+      "git_blob": "8a9b9bf74b9256f07da24e6c93fefdd315c3943d",
+      "size": 4351
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r18_20261101/meter.py",
+      "git_blob": "43ce0e559100871fb31e299669588d4282ad7925",
+      "size": 1642
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r18_20261101/positive_reference.py",
+      "git_blob": "14f38e633907b431c9bb440607b2fd76de37868a",
+      "size": 3246
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r18_20261101/solver.py",
+      "git_blob": "43123e6ee6944ec58bac83f4b27b8801d341b7ca",
+      "size": 4006
+    },
+    {
+      "path": "tools/hcsn/continuous_task_r18_20261101/task.py",
+      "git_blob": "56c33a16754e6dc5c4f4a093767c5d8d68ffdf1a",
+      "size": 3279
+    }
+  ],
+  "freeze_verified": [],
+  "stable_passing_coordinate_coverage": {
+    "sigma": true,
+    "reset_x": true,
+    "retention_1": true
+  },
+  "nonzero_jump_mesh_coverage": {
+    "[0.2, 0.02]": true
+  },
+  "rejections": [
+    "recovery",
+    "horizon",
+    "lower",
+    "upper",
+    "dx",
+    "dt",
+    "unknown",
+    "reset_x=0.6",
+    "reset_x=-4.0",
+    "reset_x=4.0"
+  ],
+  "passed": true,
+  "source_sha256": {
+    "audit.py": "5c6bf0a836a1999a5eca1772cac8d367a23f08bd1bd8f38cc9e650066706f3d1",
+    "tangent_solver.py": "172a3895685b9222864dd15b6f4344fa292ca930aa912c0405d8b303f25184e7"
+  },
+  "process": {
+    "pid": 5,
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "numpy": "2.3.5",
+    "cpu_seconds": 0.5095529679999999,
+    "wall_seconds": 1.169046636998246,
+    "maximum_rss_linux_kib": 50260
+  },
+  "limitations": [
+    "fixed-grid active-branch task derivatives only",
+    "no moving recovery/horizon/domain or continuum derivative",
+    "no full financial/neural gradient or quality adoption claim"
+  ]
+}

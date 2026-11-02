@@ -1,0 +1,235 @@
+{
+  "schema": "hcsn-r19-independent-task-gradient-audit-v1",
+  "mode": "development",
+  "candidate_parameters": [
+    "sigma",
+    "wait_cost",
+    "recovery_cost",
+    "reset_x",
+    "reset_fee_0",
+    "reset_fee_1",
+    "retention_0",
+    "retention_1",
+    "reward_base_0",
+    "reward_base_1",
+    "reward_amplitude_0",
+    "reward_amplitude_1",
+    "reward_slope"
+  ],
+  "cases": [
+    {
+      "profile": 0,
+      "config": {
+        "lower": -4.0,
+        "upper": 4.0,
+        "sigma": 1.0,
+        "horizon": 1.2,
+        "recovery": 0.2,
+        "reset_x": 0.63,
+        "wait_cost": 0.03,
+        "recovery_cost": 0.02,
+        "reset_fee": [
+          0.035,
+          0.025
+        ],
+        "content_transition": [
+          [
+            0.9,
+            0.1
+          ],
+          [
+            0.25,
+            0.75
+          ]
+        ],
+        "reward_base": [
+          0.2,
+          0.1
+        ],
+        "reward_amplitude": [
+          0.75,
+          0.4
+        ],
+        "reward_slope": 1.3
+      },
+      "dx": 0.2,
+      "dt": 0.02,
+      "primal_maximum_absolute_error": 5.551115123125783e-16,
+      "derivatives_finite": true,
+      "branch_counts": {
+        "0": 461,
+        "1": 1728,
+        "2": 2813
+      },
+      "jump_records": [
+        {
+          "time": 0.2,
+          "maximum_jump": 0.4428361493853673,
+          "derivative_jump_norm": 1.0
+        },
+        {
+          "time": 0.4,
+          "maximum_jump": 0.04252114860301004,
+          "derivative_jump_norm": 1.75
+        },
+        {
+          "time": 0.6,
+          "maximum_jump": 0.0318908614522575,
+          "derivative_jump_norm": 2.3125
+        },
+        {
+          "time": 0.8,
+          "maximum_jump": 0.023918146089193182,
+          "derivative_jump_norm": 0.421875
+        },
+        {
+          "time": 1.0,
+          "maximum_jump": 0.01793860956689497,
+          "derivative_jump_norm": 0.31640625
+        },
+        {
+          "time": 1.2,
+          "maximum_jump": 0.013453957175171283,
+          "derivative_jump_norm": 0.23730468750000044
+        }
+      ]
+    }
+  ],
+  "records": [
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "sigma",
+      "step": 2e-05,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 4.835067762831713e-11,
+      "admission_maximum_scaled_error": 4.805363745807867e-11,
+      "derivative_maximum_absolute": 0.06672901861252169,
+      "passed": true
+    },
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "sigma",
+      "step": 1e-05,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 7.049107131340548e-11,
+      "admission_maximum_scaled_error": 6.842339195234359e-11,
+      "derivative_maximum_absolute": 0.06672901861252169,
+      "passed": true,
+      "branch_changes_plus_minus": [
+        {
+          "right": 0,
+          "left": 0
+        },
+        {
+          "right": 0,
+          "left": 0
+        }
+      ],
+      "fd_step_maximum_difference": 1.0547118733938987e-10
+    },
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "reset_x",
+      "step": 2e-05,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 2.8036212240678537e-11,
+      "admission_maximum_scaled_error": 2.8036212240678537e-11,
+      "derivative_maximum_absolute": 0.20165173928296992,
+      "passed": true
+    },
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "reset_x",
+      "step": 1e-05,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 2.4686558353081978e-11,
+      "admission_maximum_scaled_error": 1.8889875774696918e-11,
+      "derivative_maximum_absolute": 0.20165173928296992,
+      "passed": true,
+      "branch_changes_plus_minus": [
+        {
+          "right": 0,
+          "left": 0
+        },
+        {
+          "right": 0,
+          "left": 0
+        }
+      ],
+      "fd_step_maximum_difference": 2.220446049250313e-11
+    },
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "retention_1",
+      "step": 2e-05,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 1.2693750495174072e-09,
+      "admission_maximum_scaled_error": 1.2693750495174072e-09,
+      "derivative_maximum_absolute": 0.7438710562033524,
+      "passed": true
+    },
+    {
+      "profile": 0,
+      "dx": 0.2,
+      "dt": 0.02,
+      "parameter": "retention_1",
+      "step": 1e-05,
+      "scalar_checks": 5002,
+      "maximum_scaled_error": 3.3123659370914993e-10,
+      "admission_maximum_scaled_error": 3.3123659370914993e-10,
+      "derivative_maximum_absolute": 0.7438710562033524,
+      "passed": true,
+      "branch_changes_plus_minus": [
+        {
+          "right": 0,
+          "left": 0
+        },
+        {
+          "right": 0,
+          "left": 0
+        }
+      ],
+      "fd_step_maximum_difference": 9.381384558082573e-10
+    }
+  ],
+  "rejections": [
+    "recovery",
+    "horizon",
+    "lower",
+    "upper",
+    "dx",
+    "dt",
+    "unknown",
+    "reset_x=0.6",
+    "reset_x=-4.0",
+    "reset_x=4.0"
+  ],
+  "passed": true,
+  "source_sha256": {
+    "audit.py": "4062bbe5f51e0cd3375d9a7e5f9c4bd3f254524cfd90a462f6b6e193f7073a9a",
+    "tangent_solver.py": "172a3895685b9222864dd15b6f4344fa292ca930aa912c0405d8b303f25184e7"
+  },
+  "process": {
+    "pid": 5,
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "numpy": "2.3.5",
+    "cpu_seconds": 0.62515509,
+    "wall_seconds": 0.8002173589993617,
+    "maximum_rss_linux_kib": 50244
+  },
+  "limitations": [
+    "fixed-grid active-branch task derivatives only",
+    "no moving recovery/horizon/domain or continuum derivative",
+    "no full financial/neural gradient or quality adoption claim"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "baseline_commit": "b25601c9bae257ffb651c8f9354fc380d8333f38",
+  "scope": "trusted single-host durable mailbox plus unauthenticated IPv4 loopback TCP relay; opaque frozen replay states",
+  "cases": [
+    "baseline historical PID alias reproduces stale lease recovery failure",
+    "candidate same alias finishes exactly two effects",
+    "bounded TCP rejects four malformed frames and one bad request; owner completes",
+    "relay SIGKILL after committed effect before delivery; owner restart completes with exactly two effects",
+    "corrupt allocation state fails closed without effects",
+    "u64 allocation exhaustion fails closed without effects"
+  ],
+  "required_cases": 6,
+  "historical_pid_alias": "fork a gated future owner; inject exactly its PID/counter-zero LEASE as historical durable cache, then acquire generation2 before exec; simulates PID reuse, does not claim actual OS PID recycling",
+  "gates": "all six cases pass; baseline must fail stale generation; candidate final cursor5 clock70 fee95 count2 providerfee95, retry no duplicate charge",
+  "limits": [
+    "loopback only and no network authentication",
+    "no power-loss or hostile filesystem writers",
+    "provider 1024 reply capacity remains bounded",
+    "no native numerical updates in this owner",
+    "no full production lifecycle or model admission"
+  ],
+  "production_activation": false
+}

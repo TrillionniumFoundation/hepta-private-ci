@@ -1,0 +1,14 @@
+{
+  "actual_scope": "Inherited R16/R18 executors fsync and restore only at query==2, after the third of six queries. Everyquery produces an in-memory checkpoint hash, which is not a disk fsync.",
+  "correction_discovered": "Independent source reviewer before final report; formal source and data unchanged",
+  "fit_scope": "Onefrozenfit151101; sixgroup engineering replay doesnot qualify all8fit population",
+  "frozen_protocol_unmodified": true,
+  "incorrect_frozen_phrase": "all query boundaries fsynced",
+  "literal_all_query_fsync_requirement_met": false,
+  "measured_cpu_scope": "Actual inheritedquery2checkpoint profile only; same code boundary for all3variants",
+  "memory_scope": "8 warmed executor calls pervariant/group:144memoryreplays, not everytimedcall and not per-arm processRSS",
+  "production_activation": false,
+  "schema": "hcsn-r19-scope-errata-v1",
+  "source_commit": "6d6b75efa8a72dd02500447c1dc84f885a5aeef8",
+  "wall_throughput_scope": "Serialactor episodes/actorwall; excludes separate lawcopy preparation and common world generation"
+}

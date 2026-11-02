@@ -1,0 +1,109 @@
+{
+  "passed": true,
+  "source_review": "no hidden owner target enters infer/choose; only selected paid indexed token enters acquire before scoring; family labels absent from fitting/inference",
+  "risk_limit": 0.1,
+  "panel_units": "256 distinct generators x4 worlds independently for each panel; no pooling",
+  "frozen_remote_model_readbacks": 10,
+  "exact_preparation_replay_files": 38,
+  "calibration_worlds": 2048,
+  "confirmation_worlds": 3072,
+  "checked_prediction_records": 22528,
+  "checks": 315865,
+  "all_prediction_fees_sum": 721.3199999999895,
+  "all_prediction_reads": 4614,
+  "panels": {
+    "confirm": {
+      "full_transition": {
+        "accepted": 896,
+        "before_brier": 0.11212265160801559,
+        "errors": 4,
+        "fractional": 101,
+        "fractional_errors": 4,
+        "gate": true,
+        "payoff": 0.8221875000000001,
+        "read_net_effect": 0.1141796875000001,
+        "reads": 251,
+        "support_losses": 0,
+        "upper95_fractional": 0.07446808510638298,
+        "upper95_overall": 0.008791208791208791
+      },
+      "restricted_markov": {
+        "accepted": 872,
+        "before_brier": 0.1253885016485087,
+        "errors": 4,
+        "fractional": 79,
+        "fractional_errors": 4,
+        "gate": true,
+        "payoff": 0.8027148437500001,
+        "read_net_effect": 0.10251953125000009,
+        "reads": 238,
+        "support_losses": 0,
+        "upper95_fractional": 0.09578111337802389,
+        "upper95_overall": 0.009011548188549316
+      }
+    },
+    "reverse": {
+      "full_transition": {
+        "accepted": 632,
+        "before_brier": 0.19371899513683555,
+        "errors": 2,
+        "fractional": 8,
+        "fractional_errors": 2,
+        "gate": false,
+        "payoff": 0.5782812500000002,
+        "read_net_effect": 0.0890234375,
+        "reads": 183,
+        "support_losses": 0,
+        "upper95_fractional": 0.5,
+        "upper95_overall": 0.006919140970047378
+      },
+      "restricted_markov": {
+        "accepted": 840,
+        "before_brier": 0.18538646630122202,
+        "errors": 2,
+        "fractional": 11,
+        "fractional_errors": 2,
+        "gate": false,
+        "payoff": 0.7616015624999998,
+        "read_net_effect": 0.13171875000000008,
+        "reads": 287,
+        "support_losses": 0,
+        "upper95_fractional": 0.4,
+        "upper95_overall": 0.004965865461773021
+      }
+    },
+    "lag2": {
+      "full_transition": {
+        "accepted": 720,
+        "before_brier": 0.17438059531292133,
+        "errors": 3,
+        "fractional": 10,
+        "fractional_errors": 3,
+        "gate": false,
+        "payoff": 0.6504882812499999,
+        "read_net_effect": 0.10947265625000008,
+        "reads": 246,
+        "support_losses": 0,
+        "upper95_fractional": 0.5714285714285714,
+        "upper95_overall": 0.008344923504867872
+      },
+      "restricted_markov": {
+        "accepted": 846,
+        "before_brier": 0.17053973965625538,
+        "errors": 2,
+        "fractional": 9,
+        "fractional_errors": 2,
+        "gate": false,
+        "payoff": 0.7692187499999998,
+        "read_net_effect": 0.1422656250000001,
+        "reads": 284,
+        "support_losses": 0,
+        "upper95_fractional": 0.5,
+        "upper95_overall": 0.00580046403712297
+      }
+    }
+  },
+  "unseen_family_gate": false,
+  "caveat": "Cluster bootstrap intervals are empirical; no finite-sample coverage guarantee. Both models ordinary finite references; no analytic D-B or production claim.",
+  "process_cpu_seconds": 2.374040205
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "hcsn-r19-prospective-small-step-protocol-v1",
+  "classification": "Post-outcome prospective local-branch numerical followup. Original whole-array gate at larger perturbations remains failed.",
+  "reason": "All twelve original failed records had detected active-branch switches. Test smaller perturbations separately without changing source, tolerance, profiles, meshes or removing any original record.",
+  "original_frozen_checkpoint": "d9bfd93d86a985dc603cce8b0c4ade6102cb7696",
+  "profiles": [
+    {"name": "low_diffusion", "sigma": 0.65, "reset_x": 0.63},
+    {"name": "default_diffusion", "sigma": 1.0, "reset_x": 0.63},
+    {"name": "high_diffusion", "sigma": 1.4, "reset_x": 0.67}
+  ],
+  "meshes": [[0.2, 0.02], [0.1, 0.01]],
+  "fd_steps": [0.0000001, 0.00000003],
+  "primal_absolute_tolerance": 0.000000000002,
+  "whole_array_scaled_fd_tolerance": 0.000001,
+  "requirements": [
+    "All thirteen coordinates in every profile and mesh at both predeclared steps; all arrays contribute",
+    "Retain all failed attempts and all branch signatures",
+    "Require every whole-array bound and original primal tolerance, and stable passing coverage for each coordinate",
+    "Store worst-cell operands and complete-array hashes to permit numerical witness verification",
+    "No original failed record is removed, reclassified or pooled into a new passed original gate"
+  ],
+  "not_qualified": ["derivative through action changes", "moving recovery/horizon/domain", "continuum derivative", "full financial/neural gradient", "core utility or production adoption"],
+  "all_blockers_closed": false,
+  "production_activation": false
+}
