@@ -1,0 +1,427 @@
+{
+  "schema": "hcsn.r16.exact-head-remote-regression.v1",
+  "source_head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "source_tree": "1437e365efb2e45e887d4a7835706bdd01b4b3a9",
+  "merge_commit": "0758e6c2efd3009bcceb13536f60075581467d39",
+  "merge_tree_verified_equal": true,
+  "run": {
+    "id": 41366558836,
+    "name": "HCSN financial BP and recurrent BPTT R16",
+    "node_id": "WFR_kwLOTrgxoM8AAAAJoaOYdA",
+    "head_branch": "research/hcsn-continuation-r15-20261101",
+    "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+    "path": ".github/workflows/hcsn-financial-autograd-r16.yml",
+    "display_title": "research(hcsn): verify trainable two-layer continuous boundary flow",
+    "run_number": 5,
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "workflow_id": 403761908,
+    "check_suite_id": 112107230927,
+    "check_suite_node_id": "CS_kwDOTrgxoM8AAAAaGhyWzw",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558836",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558836",
+    "pull_requests": [
+      {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4550",
+        "id": 5105736363,
+        "number": 4550,
+        "head": {
+          "ref": "research/hcsn-continuation-r15-20261101",
+          "sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+          "repo": {
+            "id": 1320694176,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+            "name": "hepta-private-ci"
+          }
+        },
+        "base": {
+          "ref": "research/hcsn-task-aligned-qpi-r14-20261101",
+          "sha": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+          "repo": {
+            "id": 1320694176,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+            "name": "hepta-private-ci"
+          }
+        }
+      }
+    ],
+    "created_at": "2026-11-02T00:19:49Z",
+    "updated_at": "2026-11-02T00:20:52Z",
+    "actor": {
+      "login": "Franksudoman",
+      "id": 273670192,
+      "node_id": "U_kgDOEE_gMA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Franksudoman",
+      "html_url": "https://github.com/Franksudoman",
+      "followers_url": "https://api.github.com/users/Franksudoman/followers",
+      "following_url": "https://api.github.com/users/Franksudoman/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Franksudoman/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Franksudoman/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Franksudoman/subscriptions",
+      "organizations_url": "https://api.github.com/users/Franksudoman/orgs",
+      "repos_url": "https://api.github.com/users/Franksudoman/repos",
+      "events_url": "https://api.github.com/users/Franksudoman/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Franksudoman/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "run_attempt": 1,
+    "referenced_workflows": [],
+    "run_started_at": "2026-11-02T00:19:49Z",
+    "triggering_actor": {
+      "login": "Franksudoman",
+      "id": 273670192,
+      "node_id": "U_kgDOEE_gMA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Franksudoman",
+      "html_url": "https://github.com/Franksudoman",
+      "followers_url": "https://api.github.com/users/Franksudoman/followers",
+      "following_url": "https://api.github.com/users/Franksudoman/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Franksudoman/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Franksudoman/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Franksudoman/subscriptions",
+      "organizations_url": "https://api.github.com/users/Franksudoman/orgs",
+      "repos_url": "https://api.github.com/users/Franksudoman/repos",
+      "events_url": "https://api.github.com/users/Franksudoman/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Franksudoman/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558836/jobs",
+    "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558836/logs",
+    "check_suite_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-suites/112107230927",
+    "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558836/artifacts",
+    "cancel_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558836/cancel",
+    "rerun_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558836/rerun",
+    "previous_attempt_url": null,
+    "workflow_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/403761908",
+    "head_commit": {
+      "id": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+      "tree_id": "1437e365efb2e45e887d4a7835706bdd01b4b3a9",
+      "message": "docs(hcsn): retain native platform and resource blockers alongside functional results",
+      "timestamp": "2026-11-02T00:19:20Z",
+      "author": {
+        "name": "Franksudoman",
+        "email": "sunfocapital@gmail.com"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "sunfocapital@gmail.com"
+      }
+    },
+    "repository": {
+      "id": 1320694176,
+      "node_id": "R_kgDOTrgxoA",
+      "name": "hepta-private-ci",
+      "full_name": "TrillionniumFoundation/hepta-private-ci",
+      "private": false,
+      "owner": {
+        "login": "TrillionniumFoundation",
+        "id": 262513357,
+        "node_id": "O_kgDOD6WizQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/262513357?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/TrillionniumFoundation",
+        "html_url": "https://github.com/TrillionniumFoundation",
+        "followers_url": "https://api.github.com/users/TrillionniumFoundation/followers",
+        "following_url": "https://api.github.com/users/TrillionniumFoundation/following{/other_user}",
+        "gists_url": "https://api.github.com/users/TrillionniumFoundation/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/TrillionniumFoundation/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/TrillionniumFoundation/subscriptions",
+        "organizations_url": "https://api.github.com/users/TrillionniumFoundation/orgs",
+        "repos_url": "https://api.github.com/users/TrillionniumFoundation/repos",
+        "events_url": "https://api.github.com/users/TrillionniumFoundation/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/TrillionniumFoundation/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+      "description": "Private verification-only mirror for Hepta hosted CI",
+      "fork": false,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+      "forks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/forks",
+      "keys_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/teams",
+      "hooks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/hooks",
+      "issue_events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/events",
+      "assignees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/tags",
+      "blobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/languages",
+      "stargazers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/stargazers",
+      "contributors_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contributors",
+      "subscribers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscribers",
+      "subscription_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscription",
+      "commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/merges",
+      "archive_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/downloads",
+      "issues_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/labels{/name}",
+      "releases_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/deployments"
+    },
+    "head_repository": {
+      "id": 1320694176,
+      "node_id": "R_kgDOTrgxoA",
+      "name": "hepta-private-ci",
+      "full_name": "TrillionniumFoundation/hepta-private-ci",
+      "private": false,
+      "owner": {
+        "login": "TrillionniumFoundation",
+        "id": 262513357,
+        "node_id": "O_kgDOD6WizQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/262513357?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/TrillionniumFoundation",
+        "html_url": "https://github.com/TrillionniumFoundation",
+        "followers_url": "https://api.github.com/users/TrillionniumFoundation/followers",
+        "following_url": "https://api.github.com/users/TrillionniumFoundation/following{/other_user}",
+        "gists_url": "https://api.github.com/users/TrillionniumFoundation/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/TrillionniumFoundation/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/TrillionniumFoundation/subscriptions",
+        "organizations_url": "https://api.github.com/users/TrillionniumFoundation/orgs",
+        "repos_url": "https://api.github.com/users/TrillionniumFoundation/repos",
+        "events_url": "https://api.github.com/users/TrillionniumFoundation/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/TrillionniumFoundation/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+      "description": "Private verification-only mirror for Hepta hosted CI",
+      "fork": false,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+      "forks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/forks",
+      "keys_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/teams",
+      "hooks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/hooks",
+      "issue_events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/events",
+      "assignees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/tags",
+      "blobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/languages",
+      "stargazers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/stargazers",
+      "contributors_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contributors",
+      "subscribers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscribers",
+      "subscription_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscription",
+      "commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/merges",
+      "archive_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/downloads",
+      "issues_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/labels{/name}",
+      "releases_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/deployments"
+    }
+  },
+  "jobs": {
+    "jobs": [
+      {
+        "id": 125027835819,
+        "name": "financial-bp-and-bptt",
+        "status": "completed",
+        "conclusion": "success",
+        "run_id": 41366558836,
+        "logs_url": null,
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1
+          },
+          {
+            "name": "Check out exact source candidate",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2
+          },
+          {
+            "name": "Initialize runner-local paths",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3
+          },
+          {
+            "name": "Verify frozen inputs and install the CPU runtime",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4
+          },
+          {
+            "name": "Audit the actual financial autograd interface",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5
+          },
+          {
+            "name": "Train through the actual financial autograd interface",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6
+          },
+          {
+            "name": "Audit the recurrent temporal gradient",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7
+          },
+          {
+            "name": "Train through the recurrent temporal gradient",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8
+          },
+          {
+            "name": "Independently check the recurrent result records",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9
+          },
+          {
+            "name": "Audit gradients at fixed physical potential",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10
+          },
+          {
+            "name": "Train with the fixed physical potential and moving boundary",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11
+          },
+          {
+            "name": "Check fixed-potential records and raw boundary branches",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12
+          },
+          {
+            "name": "Audit the two-layer boundary-gradient routes",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13
+          },
+          {
+            "name": "Train both layers through their continuous boundary links",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14
+          },
+          {
+            "name": "Independently check both routes and the full update history",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15
+          },
+          {
+            "name": "Preserve complete BP and BPTT outputs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16
+          },
+          {
+            "name": "Verify checkout remains unchanged",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17
+          },
+          {
+            "name": "Post Check out exact source candidate",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 34
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 35
+          }
+        ]
+      }
+    ]
+  },
+  "artifacts": {
+    "artifacts": [
+      {
+        "id": 13107591722,
+        "name": "hcsn-financial-bp-bptt-r16-f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+        "size_in_bytes": 1551454,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13107591722",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13107591722/zip",
+        "expired": false,
+        "created_at": "2026-11-02T00:20:47Z",
+        "expires_at": "2027-01-31T00:19:49Z",
+        "updated_at": "2026-11-02T00:20:47Z",
+        "digest": "sha256:7e45f10d267648e88db09a8b5d2b40dcfd606b2f065c894691695c18993897c3",
+        "workflow_run": {
+          "id": 41366558836,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "research/hcsn-continuation-r15-20261101",
+          "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629"
+        }
+      }
+    ]
+  },
+  "downloaded_artifact_verified": true,
+  "scope": "Actual exact-head replay of all11 V3,signed-V1,fixed-physical-state,two-layer producers/checkers,output archival and source cleanliness. Same frozen inputs are regressions, not new holdout; no global native,quality,energy or production admission.",
+  "raw_log": {
+    "bytes": 82203,
+    "sha256": "5570d30426e196d016c79cd11f087063b5f7e3ad23e62112ed431b9a7f817fb4",
+    "gzip_bytes": 15431,
+    "gzip_sha256": "c2860e6dce92e36ca963b609afe1f1e64ae822c0c4ce7d801c3d485e49e2cf99"
+  },
+  "download_identity": "REMOTE_DOWNLOAD_IDENTITY.json",
+  "original_remote_artifact_archive": "REMOTE_ARTIFACT_ARCHIVE.json",
+  "reconstruction_verified_sha256": "7e45f10d267648e88db09a8b5d2b40dcfd606b2f065c894691695c18993897c3",
+  "independent_remote_record_review": {
+    "report_repo_path": "tools/hcsn/hx_two_layer_boundary_r16_20261101/remote_f52_independent_review/REVIEW.json",
+    "review_sha256": "96f0ed6c57aaf96838fdf80225782718f9265700ef3268b3e7e0853588973d05",
+    "actual_returncode": 0,
+    "comparisons": 69,
+    "maximum_error_over_original_allowance": 0.01330064,
+    "new_financial_calls": 0,
+    "pytorch_calls": 0,
+    "numeric_canonical_json_matches_original_after_excluding_top_level_runtime": true
+  }
+}
