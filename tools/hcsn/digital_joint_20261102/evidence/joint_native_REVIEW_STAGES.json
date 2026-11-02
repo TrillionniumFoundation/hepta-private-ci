@@ -1,0 +1,87 @@
+{
+  "schema": "joint-native-nine-stacked-review-stages-v1",
+  "stages": [
+    {
+      "stage": "01_real_nextest_gate",
+      "head": "c348bf1b9a515131556ed8c01ca10f798e929da7",
+      "tree": "3a3c73db7a3b36fe281829ba03a03693d5526465",
+      "branch": "research/digital-joint-native-01-20261102",
+      "base": "research/digital-joint-training-20261102",
+      "pr": 4621,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4621"
+    },
+    {
+      "stage": "02_generation_transaction_recovery",
+      "head": "dbafb11ec9b057560c71f139b3a141d82be23ad0",
+      "tree": "77bcd03cd968a47c95872f7b910b5c7fbbbffb25",
+      "branch": "research/digital-joint-native-02-20261102",
+      "base": "research/digital-joint-native-01-20261102",
+      "pr": 4622,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4622"
+    },
+    {
+      "stage": "03_joint_task_core",
+      "head": "082d7adef2ff9fb3dfbb067bcc9e80a0c65b66be",
+      "tree": "49181955093bed4f31c00be672b2e608050ca22e",
+      "branch": "research/digital-joint-native-03-20261102",
+      "base": "research/digital-joint-native-02-20261102",
+      "pr": 4623,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4623"
+    },
+    {
+      "stage": "04_joint_task_pairing",
+      "head": "e80463ace4bca1f6fee5621e0719fcfc707b376c",
+      "tree": "11c0b0ad64798eca0a761259db098a5d306b92ef",
+      "branch": "research/digital-joint-native-04-20261102",
+      "base": "research/digital-joint-native-03-20261102",
+      "pr": 4624,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4624"
+    },
+    {
+      "stage": "05_joint_policy_core",
+      "head": "0639d72bcd29f51db5f748b58bcf56590484dbf6",
+      "tree": "89ccba2633a7ac81d71723ffbffc7fed227c35ca",
+      "branch": "research/digital-joint-native-05-20261102",
+      "base": "research/digital-joint-native-04-20261102",
+      "pr": 4625,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4625"
+    },
+    {
+      "stage": "06_real_joint_owner_port",
+      "head": "f1b5ae0f04df6357b345b80e7413e2ef483bbcdf",
+      "tree": "1f5e994e13f7e00777e1fbf1a73f6a29beb410b4",
+      "branch": "research/digital-joint-native-06-20261102",
+      "base": "research/digital-joint-native-05-20261102",
+      "pr": 4626,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4626"
+    },
+    {
+      "stage": "07_joint_owner_qualification",
+      "head": "e8df3c2bf95d3b091e426d2cc2d1730a2a2ba16c",
+      "tree": "f39840d6cb8797e87ce7abd0fc2a76e6196c0d75",
+      "branch": "research/digital-joint-native-07-20261102",
+      "base": "research/digital-joint-native-06-20261102",
+      "pr": 4627,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4627"
+    },
+    {
+      "stage": "08_independent_owner_audits",
+      "head": "d1e31c72ff558869c8b817e04d5ac79666b49bc8",
+      "tree": "0fe1981ecd5acf7a205e1dd6dc225333c84eb4ba",
+      "branch": "research/digital-joint-native-08-20261102",
+      "base": "research/digital-joint-native-07-20261102",
+      "pr": 4628,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4628"
+    },
+    {
+      "stage": "09_actual_twenty_weight_qualification",
+      "head": "82b08a0cf6eee24605812abeae7f72ae0ae57c8d",
+      "tree": "8c10d83d7b75c6b5f61e6896968e16017b4ffe9d",
+      "branch": "research/digital-joint-native-09-20261102",
+      "base": "research/digital-joint-native-08-20261102",
+      "pr": 4629,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4629"
+    }
+  ],
+  "all_complex_stages_under_500_lines": true
+}

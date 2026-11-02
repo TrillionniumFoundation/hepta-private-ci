@@ -1,0 +1,1078 @@
+{
+  "schema": "joint-native-frozen-artifact-generator-audit-v1",
+  "models": [
+    {
+      "path": "fit_11_affine_markov.json",
+      "sha256": "18945a192089b98a85570fe0e1337458d73ebc1754684bc3e9b1ea09fd7c245d",
+      "family": "affine_markov",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 2.886579864025407e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 2.5868196473766147e-14
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 1.5654144647214707e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 4.551914400963142e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 4.030109579389318e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 2.4202861936828413e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 1.454392162258955e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 8.1601392309949e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 1.3655743202889425e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 1.5265566588595902e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 8.326672684688674e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 1.6431300764452317e-14
+        }
+      ]
+    },
+    {
+      "path": "fit_11_full_markov.json",
+      "sha256": "0514c2ba04ca714006b8cdee59dbec19db310b733180a952160a029999222ed1",
+      "family": "full_markov",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 2.7755575615628914e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 2.9976021664879227e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 4.218847493575595e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 4.3298697960381105e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 4.773959005888173e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 6.661338147750939e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 9.992007221626409e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 6.994405055138486e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 6.5503158452884236e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 1.0602629885170245e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 8.659739592076221e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 7.438494264988549e-15
+        }
+      ]
+    },
+    {
+      "path": "fit_11_gru.json",
+      "sha256": "28e80db7e4d27910ca08f6d5e8b17b308766ecb30aca3a8c974f78cfb9a10746",
+      "family": "gru",
+      "scope": "GRU artifact; no CTMC generator/table claim",
+      "contexts": 0
+    },
+    {
+      "path": "fit_11_renewal.json",
+      "sha256": "84c4386d0c8725959da10862cdfaad73b654b80e908f3de8d2383530767a38ac",
+      "family": "renewal",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 8.326672684688674e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 6.994405055138486e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 9.103828801926284e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 1.2878587085651816e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 1.0880185641326534e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 1.4099832412739488e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 1.7763568394002505e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 6.106226635438361e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 1.1046719095020308e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 1.8818280267396403e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 7.66053886991358e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 1.4210854715202004e-14
+        }
+      ]
+    },
+    {
+      "path": "fit_23_affine_markov.json",
+      "sha256": "0dcad0a65db5a561611ca1a74c33306b2e170eb5a07ff667c0ec8938c62424f7",
+      "family": "affine_markov",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 2.2870594307278225e-14
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 3.885780586188048e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 3.3306690738754696e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 3.6637359812630166e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 5.995204332975845e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 4.9960036108132044e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 1.7930101847696278e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 9.048317650695026e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 6.328271240363392e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 1.887379141862766e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 1.0158540675320182e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 6.661338147750939e-15
+        }
+      ]
+    },
+    {
+      "path": "fit_23_full_markov.json",
+      "sha256": "4243a57597d1dafe2202f5a81979c4f13921eb49e9b1db477bc0ebd6e0b474f4",
+      "family": "full_markov",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 8.215650382226158e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 8.881784197001252e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 1.8207657603852567e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 1.2878587085651816e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 1.4210854715202004e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 2.7644553313166398e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 2.2093438190040615e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 3.164135620181696e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 4.9404924595819466e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 2.5701663020072374e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 3.0531133177191805e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 4.218847493575595e-15
+        }
+      ]
+    },
+    {
+      "path": "fit_23_gru.json",
+      "sha256": "ee8f008cef00a4e29610027ed187d5778125dcd7354a831c13b877af747d6e61",
+      "family": "gru",
+      "scope": "GRU artifact; no CTMC generator/table claim",
+      "contexts": 0
+    },
+    {
+      "path": "fit_23_renewal.json",
+      "sha256": "db58500626d4fc89161e4e4ce0ea89b75a70b92794c178cd679c56e60c7ac9ee",
+      "family": "renewal",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 1.1213252548714081e-14
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 3.774758283725532e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 6.217248937900877e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 1.7430501486614958e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 5.773159728050814e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 9.658940314238862e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 6.5503158452884236e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 1.0602629885170245e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 1.0824674490095276e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 7.216449660063518e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 1.0935696792557792e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 1.1324274851176597e-14
+        }
+      ]
+    },
+    {
+      "path": "fit_37_affine_markov.json",
+      "sha256": "ba46ab32d5dfa75dcb13b2eb18feeb3a37fbee2fd9d56dbde9a6cbed69cd88f3",
+      "family": "affine_markov",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 1.2434497875801753e-14
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 3.6637359812630166e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 1.1324274851176597e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 1.9095836023552692e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 5.662137425588298e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 1.7541523789077473e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 7.216449660063518e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 1.6764367671839864e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 9.43689570931383e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 7.16093850883226e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 1.887379141862766e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 1.2045919817182948e-14
+        }
+      ]
+    },
+    {
+      "path": "fit_37_full_markov.json",
+      "sha256": "d4ccf145a0fc6231a97b9f226284b630716cda5dfe6dbba0892b9fa0f51ed1ac",
+      "family": "full_markov",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 1.0658141036401503e-14
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 1.021405182655144e-14
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 1.6653345369377348e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 1.6653345369377348e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 1.609823385706477e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 2.220446049250313e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 4.440892098500626e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 9.547918011776346e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 8.104628079763643e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 4.496403249731884e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 1.099120794378905e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 9.880984919163893e-15
+        }
+      ]
+    },
+    {
+      "path": "fit_37_gru.json",
+      "sha256": "c28a81aa3feb6c66904cc8aecb07a6042a0741d024583ddfe2e5db7034a8407d",
+      "family": "gru",
+      "scope": "GRU artifact; no CTMC generator/table claim",
+      "contexts": 0
+    },
+    {
+      "path": "fit_37_renewal.json",
+      "sha256": "cc4f66a63b0af1c90fb31764ee4a724b7837eab081abac94a50ccac7b882dd71",
+      "family": "renewal",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 4.9960036108132044e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 8.43769498715119e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 9.658940314238862e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 7.771561172376096e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 1.3100631690576847e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 1.4988010832439613e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 1.27675647831893e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 4.551914400963142e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 8.1601392309949e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 1.4377388168895777e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 5.495603971894525e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 9.2148511043888e-15
+        }
+      ]
+    },
+    {
+      "path": "fit_53_affine_markov.json",
+      "sha256": "edf9818b162954857d9a84f8e5dd031ad0fa9c94cafd74103b6735606dc65641",
+      "family": "affine_markov",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 4.3298697960381105e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 8.104628079763643e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 1.3100631690576847e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 6.8833827526759706e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 1.2878587085651816e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 2.1649348980190553e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 1.1879386363489175e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 4.107825191113079e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 7.549516567451064e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 1.27675647831893e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 5.051514762044462e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 8.493206138382448e-15
+        }
+      ]
+    },
+    {
+      "path": "fit_53_full_markov.json",
+      "sha256": "47053f3d54e8e97a4e10a5202cb11a6e5050d090406481cccda8a5501206e5d4",
+      "family": "full_markov",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 1.63202784619898e-14
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 8.43769498715119e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 9.769962616701378e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 2.5868196473766147e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 1.3322676295501878e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 1.587618925213974e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 7.327471962526033e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 9.2148511043888e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 1.6764367671839864e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 7.993605777301127e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 1.0769163338864018e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 1.8984813721090177e-14
+        }
+      ]
+    },
+    {
+      "path": "fit_53_gru.json",
+      "sha256": "eece5a50729550be79dcd337313b1abc89501da236d98227157ad45849c11a04",
+      "family": "gru",
+      "scope": "GRU artifact; no CTMC generator/table claim",
+      "contexts": 0
+    },
+    {
+      "path": "fit_53_renewal.json",
+      "sha256": "608e4f54ebf89d85f9778a26034144c6c7cc3f5f8e0b988cbcd9a5ac57dcb937",
+      "family": "renewal",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 8.659739592076221e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 1.0103029524088925e-14
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 1.5765166949677223e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 1.3655743202889425e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 1.5765166949677223e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 2.4646951146678475e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 9.492406860545088e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 5.773159728050814e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 9.603429163007604e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 1.7541523789077473e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 6.106226635438361e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 9.992007221626409e-15
+        }
+      ]
+    },
+    {
+      "path": "fit_71_affine_markov.json",
+      "sha256": "383c157c38ae2356fe72bcb353f17ae92a4b637a3856bcd50d76a5ff3ec9825a",
+      "family": "affine_markov",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 1.709743457922741e-14
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 1.1324274851176597e-14
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 7.66053886991358e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 2.7200464103316335e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 1.7763568394002505e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 1.1879386363489175e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 2.248201624865942e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 8.326672684688674e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 5.10702591327572e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 2.2815083156046967e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 9.103828801926284e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 6.050715484207103e-15
+        }
+      ]
+    },
+    {
+      "path": "fit_71_full_markov.json",
+      "sha256": "da952f3a2cfd63f2f7a373b6bc6984f3d3243e4abd73b4eedcb9293ec8a4a8d5",
+      "family": "full_markov",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 7.549516567451064e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 1.1324274851176597e-14
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 1.5210055437364645e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 1.2434497875801753e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 1.7985612998927536e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 2.4091839634365897e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 9.71445146547012e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 6.994405055138486e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 1.2656542480726785e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 1.0325074129013956e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 7.16093850883226e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 1.4155343563970746e-14
+        }
+      ]
+    },
+    {
+      "path": "fit_71_gru.json",
+      "sha256": "beed7244f479fb75316c5b15cbbbed04cdd93b32c8c6d00fe5c9daac670e5232",
+      "family": "gru",
+      "scope": "GRU artifact; no CTMC generator/table claim",
+      "contexts": 0
+    },
+    {
+      "path": "fit_71_renewal.json",
+      "sha256": "4d3c1124e4309b8124f98e2586f91fcc3022be5c733f29b04f2338fb6aa02d2c",
+      "family": "renewal",
+      "scope": "each actual stored table versus independent scipy.linalg.expm(dt*Q)",
+      "contexts": 12,
+      "errors": [
+        {
+          "dt": 0.25,
+          "drive": -1,
+          "maximum_error": 9.992007221626409e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 0,
+          "maximum_error": 9.2148511043888e-15
+        },
+        {
+          "dt": 0.25,
+          "drive": 1,
+          "maximum_error": 9.769962616701378e-15
+        },
+        {
+          "dt": 0.5,
+          "drive": -1,
+          "maximum_error": 1.554312234475219e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 0,
+          "maximum_error": 1.4432899320127035e-14
+        },
+        {
+          "dt": 0.5,
+          "drive": 1,
+          "maximum_error": 1.5210055437364645e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": -1,
+          "maximum_error": 7.049916206369744e-15
+        },
+        {
+          "dt": 0.75,
+          "drive": 0,
+          "maximum_error": 1.2156942119645464e-14
+        },
+        {
+          "dt": 0.75,
+          "drive": 1,
+          "maximum_error": 4.6629367034256575e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": -1,
+          "maximum_error": 7.327471962526033e-15
+        },
+        {
+          "dt": 1.5,
+          "drive": 0,
+          "maximum_error": 1.3822276656583199e-14
+        },
+        {
+          "dt": 1.5,
+          "drive": 1,
+          "maximum_error": 1.049160758270773e-14
+        }
+      ]
+    }
+  ],
+  "passed": true,
+  "maximum_error": 4.030109579389318e-14,
+  "rust_validator_scope": "shape, finite entries, stochastic tables and valid generators separately; does not generally prove their exponential relationship"
+}
