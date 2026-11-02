@@ -1,0 +1,51 @@
+{
+  "ambient": "Paired randomly ordered arms use CPU8/BLAS1. Other project jobs may concurrently use CPU0-7; shared disk/cache/package interference remains possible. Process CPU avoids counting descheduling, wall latency records ambient effects; no dedicated-machine claim.",
+  "baseline_source_commit": "df35a6d3869cbcafce8e15b9e40d4bcdd1164439",
+  "blas_threads": 1,
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "fits": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "historical_recorded_cpu_floor": 941.053004113,
+  "joint_resource_r20_over_r18_cpu_maximum": 1.0,
+  "joint_resource_r20_over_r18_peak_maximum": 0.9,
+  "measurement_cpu": 8,
+  "memory_uses": 4,
+  "models": [
+    "free",
+    "hmm_same_matrix",
+    "hx"
+  ],
+  "namespace": 22001102,
+  "order_seed": 2200110201,
+  "original_cpu_ratio_maximum": 0.9,
+  "preparation_order": "Each eight-arm preparation order is a fresh draw from the frozen seeded RNG; runtime variant and pair orders also draw from that RNG. Independent caches are charged to their own arm.",
+  "production_activation": false,
+  "quality_guard": "Every complete semantic field, per-query memory checksum, receipt/history and final durable wire SHA must be exactly equal across old/new and all four variants on each world. No changed tolerance, action budget, cache information or fee/validation charge.",
+  "representations": [
+    "full",
+    "anchored"
+  ],
+  "require_each_fit_group": true,
+  "schema": "hcsn-r22-shared-validation-resource-v1",
+  "scope": "Fresh finite Linux single-writer all-six-query durable actors, every file+directory fsync, rename, two readbacks, typed checksum restore and final equality retained. Eight original frozen fits, 32 actual fresh worlds per group; not historical query2 or 1000-use qualification. All four planner implementations and all ordinary/analytic cores share the new validation. The additional 192-group shared-software .90 CPU/1.0 peak gate is separate from the inherited 48-group <=.90 CPU and r18 CPU<=1.0/peak<=.90 adoption gates. Every failure retained; no pooled mean override. Actor throughput/latency at complete six-query episode scope; complete serial process CPU includes all arms/probes. No GPU/energy/power-loss/concurrent-owner/production or analytic-exclusive gain claim.",
+  "shared_software_new_old_cpu_maximum": 0.9,
+  "shared_software_new_old_peak_maximum": 1.0,
+  "uses_per_fit_group": 32,
+  "variants": [
+    "baseline",
+    "r18",
+    "r19",
+    "r20"
+  ]
+}

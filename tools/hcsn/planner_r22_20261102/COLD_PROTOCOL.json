@@ -1,0 +1,27 @@
+{
+  "fit": 151101,
+  "lost_reply_queries": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "old_semantic_references": 9,
+  "patterns": [
+    "value",
+    "wait_read",
+    "refresh_stop"
+  ],
+  "planned_cold_lost_reply_cases": 54,
+  "planned_processes": 117,
+  "representations": [
+    "full",
+    "block",
+    "anchored"
+  ],
+  "schema": "r22-shared-validation-cold-protocol-v1",
+  "scope": "Deterministic correctness only after remote freeze, typed generated counter states; candidate BlockLaw and all three new memory classes, 3 public policies x 6 query cuts. Six file+directory fsyncs and inherited roundtrip/restore guards retained. No performance or efficacy pooling.",
+  "seed": 2200999102
+}

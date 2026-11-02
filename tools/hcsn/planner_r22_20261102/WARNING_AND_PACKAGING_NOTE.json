@@ -1,0 +1,211 @@
+{
+  "cold_stderr_empty": true,
+  "formal_resource_stderr_empty": true,
+  "independent_exit_code": 0,
+  "independent_stderr_retained": true,
+  "independent_stderr_sha256": "8eafa639a781beb0c968c6ebf3eb32967fa6196bb31473de86ec6deb669b9df0",
+  "preliminary_manifest_attempt": {
+    "completed": false,
+    "reason": "Bookkeeping assertion incorrectly assumed independent negative controls produced empty stderr; all formal/cold/raw stderr were empty. Original nonempty stderr inspected, all18 declared overflow controls reject, assumption removed. No source/data changes or re-execution."
+  },
+  "raw_audit_stderr_empty": true,
+  "retained_named_controls": [
+    {
+      "input_dtype": "float64",
+      "input_sha256": "df947c920ae5d4660b894a040c17243f83d4c17ae9b176f2c14796f9ec6bff54",
+      "input_shape": [
+        8
+      ],
+      "layout": "original",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "probability"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "8a6a2328fd2bb1a7ca8257113deb048ce82b4ba9d701f60bf638fc2cdb7476ce",
+      "input_shape": [
+        4,
+        8
+      ],
+      "layout": "batch",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "probability"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "184f42a9464123a420ce7c4fc6d3d361f16655994c87e5c6a82de59413aedae9",
+      "input_shape": [
+        2,
+        3,
+        8
+      ],
+      "layout": "tensor",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "probability"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "8a6a2328fd2bb1a7ca8257113deb048ce82b4ba9d701f60bf638fc2cdb7476ce",
+      "input_shape": [
+        4,
+        8
+      ],
+      "layout": "fortran",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "probability"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "df947c920ae5d4660b894a040c17243f83d4c17ae9b176f2c14796f9ec6bff54",
+      "input_shape": [
+        8
+      ],
+      "layout": "noncontiguous",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "probability"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "343e4e778f9c7ad8694ef9b80a40529499c0b0d398de66ac0c16d8a1f02aff24",
+      "input_shape": [
+        40
+      ],
+      "layout": "original",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "probability"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "343e4e778f9c7ad8694ef9b80a40529499c0b0d398de66ac0c16d8a1f02aff24",
+      "input_shape": [
+        40
+      ],
+      "layout": "original",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "belief"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "a70a92aeea453ad8d0ccc59ec577b7f1c05629d8064303d1a753ce7b4e8e2aa7",
+      "input_shape": [
+        4,
+        40
+      ],
+      "layout": "batch",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "probability"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "a70a92aeea453ad8d0ccc59ec577b7f1c05629d8064303d1a753ce7b4e8e2aa7",
+      "input_shape": [
+        4,
+        40
+      ],
+      "layout": "batch",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "belief"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "971babadf62afb04e59ee1f2ac4687c5e8431155e2b77aa4ecec183701dacaf0",
+      "input_shape": [
+        2,
+        3,
+        40
+      ],
+      "layout": "tensor",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "probability"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "971babadf62afb04e59ee1f2ac4687c5e8431155e2b77aa4ecec183701dacaf0",
+      "input_shape": [
+        2,
+        3,
+        40
+      ],
+      "layout": "tensor",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "belief"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "a70a92aeea453ad8d0ccc59ec577b7f1c05629d8064303d1a753ce7b4e8e2aa7",
+      "input_shape": [
+        4,
+        40
+      ],
+      "layout": "fortran",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "probability"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "a70a92aeea453ad8d0ccc59ec577b7f1c05629d8064303d1a753ce7b4e8e2aa7",
+      "input_shape": [
+        4,
+        40
+      ],
+      "layout": "fortran",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "belief"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "343e4e778f9c7ad8694ef9b80a40529499c0b0d398de66ac0c16d8a1f02aff24",
+      "input_shape": [
+        40
+      ],
+      "layout": "noncontiguous",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "probability"
+    },
+    {
+      "input_dtype": "float64",
+      "input_sha256": "343e4e778f9c7ad8694ef9b80a40529499c0b0d398de66ac0c16d8a1f02aff24",
+      "input_shape": [
+        40
+      ],
+      "layout": "noncontiguous",
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "belief"
+    },
+    {
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "restore_full"
+    },
+    {
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "restore_packed"
+    },
+    {
+      "name": "sum_overflow",
+      "outcome": "ValueError",
+      "section": "restore_anchored"
+    }
+  ],
+  "reviewer_confirmed_expected_invalid_restore_warning": true,
+  "reviewer_message": "Second actual-restore section runs inherited finite-row1e308 sum outside np.errstate; old/new both reject with ValueError. Direct-validator section locally suppresses expected overflow. No rerun or source/record edit.",
+  "schema": "r22-retained-warning-and-packaging-note-v1",
+  "scope": "Warning accounting only; all registered outcomes and frozen sources unchanged. The rejected bookkeeping attempt wrote no artifact manifest.",
+  "warning": "NumPy overflow encountered in reduce on declared invalid sum_overflow controls."
+}

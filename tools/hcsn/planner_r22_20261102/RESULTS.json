@@ -1,0 +1,132 @@
+{
+  "actual_worlds_per_fit": 32,
+  "cold_process": {
+    "complete_child_family_cpu_seconds": 39.466213999999994,
+    "exit_code": 0,
+    "linux_max_rss_kib": 62520,
+    "scope": "Completecoldcontroller+reapedchildren+legacyreferences; notperformanceconfirmation",
+    "wall_seconds": 39.994081245000416
+  },
+  "failed_joint_groups": 17,
+  "failed_original_groups": 27,
+  "failed_shared_groups": 134,
+  "groups": 48,
+  "main_child_process": {
+    "affinity": [
+      8
+    ],
+    "blas_environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "complete_child_cpu_seconds": 278.758955,
+    "exit_code": 0,
+    "linux_max_rss_kib": 82492,
+    "numpy_version": "2.3.5",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "scipy_version": "1.17.0",
+    "scope": "Complete serial child including imports, all arms, worlds, storage, probes and archives; peak RSS combined, nested timers not added again.",
+    "system": [
+      "Linux",
+      "2e2145b2a411",
+      "6.18.57",
+      "#1 SMP Tue Oct 20 21:56:04 UTC 2026",
+      "x86_64"
+    ],
+    "wall_seconds": 341.3443432950007
+  },
+  "mem_probe_actors": 1536,
+  "per_variant": {
+    "baseline": {
+      "failed_software_cpu_groups": 1,
+      "failed_software_joint_groups": 2,
+      "failed_software_peak_groups": 1,
+      "new_cpu": 25.21018012000015,
+      "new_episodes_per_second": 47.42649356571015,
+      "new_old_cpu_ratio": 0.8115780448076741,
+      "new_wall": 32.38696105314739,
+      "old_cpu": 31.06316180100017,
+      "old_episodes_per_second": 40.83609775276622,
+      "old_wall": 37.613780075153045,
+      "slower_cpu_groups": 0
+    },
+    "r18": {
+      "failed_software_cpu_groups": 43,
+      "failed_software_joint_groups": 43,
+      "failed_software_peak_groups": 5,
+      "new_cpu": 23.373834434000486,
+      "new_episodes_per_second": 50.557535555343115,
+      "new_old_cpu_ratio": 0.9529181712435959,
+      "new_wall": 30.381227706770005,
+      "old_cpu": 24.52869001699979,
+      "old_episodes_per_second": 49.253031065160926,
+      "old_wall": 31.1858979393146,
+      "slower_cpu_groups": 5
+    },
+    "r19": {
+      "failed_software_cpu_groups": 44,
+      "failed_software_joint_groups": 45,
+      "failed_software_peak_groups": 7,
+      "new_cpu": 24.127295830999415,
+      "new_episodes_per_second": 49.01633683645739,
+      "new_old_cpu_ratio": 0.947101423748882,
+      "new_wall": 31.336491038178792,
+      "old_cpu": 25.474880753000132,
+      "old_episodes_per_second": 48.054590379648324,
+      "old_wall": 31.96364775695838,
+      "slower_cpu_groups": 2
+    },
+    "r20": {
+      "failed_software_cpu_groups": 40,
+      "failed_software_joint_groups": 44,
+      "failed_software_peak_groups": 8,
+      "new_cpu": 22.846784186000335,
+      "new_episodes_per_second": 50.84707316183636,
+      "new_old_cpu_ratio": 0.9413511281113034,
+      "new_wall": 30.208228408962896,
+      "old_cpu": 24.270204287999725,
+      "old_episodes_per_second": 49.81632186185477,
+      "old_wall": 30.833267944981344,
+      "slower_cpu_groups": 1
+    }
+  },
+  "ratio_ranges": {
+    "joint_cpu": [
+      0.8631092655350788,
+      1.0686021552818619
+    ],
+    "joint_peak": [
+      0.6830852519036286,
+      0.8558626413094267
+    ],
+    "original_cpu": [
+      0.8141450179319893,
+      1.0033750537079402
+    ],
+    "shared_cpu": [
+      0.7555077087050341,
+      1.1343378166189093
+    ],
+    "shared_peak": [
+      0.9887946976216196,
+      1.0019320119853132
+    ]
+  },
+  "raw_audit": {
+    "body_cpu_seconds": 0.49550630799999995,
+    "checks": 124733,
+    "failed_joint_groups": 17,
+    "failed_original_groups": 27,
+    "failed_shared_software_groups": 134,
+    "passed": true,
+    "scope": "Stdlib raw reconstruction only; source and counters checked, no new actor or performance observations.",
+    "timed_actors": 12288,
+    "unique_worlds": 256
+  },
+  "schema": "r22-resource-result-summary-v1",
+  "shared_cpu_ratio": 0.9071660655835375,
+  "shared_software_groups": 192,
+  "timed_actors": 12288,
+  "unique_worlds": 256
+}

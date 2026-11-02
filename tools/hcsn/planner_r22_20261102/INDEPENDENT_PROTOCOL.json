@@ -1,0 +1,35 @@
+{
+  "schema": "hcsn.r22.independent-validation-contract.v1",
+  "classification": "Deterministic mathematical and inherited restore admission checks, not statistical task confirmation.",
+  "source": "independent_r22_validation.py",
+  "execution_before_root_remote_freeze": false,
+  "roster": {
+    "widths": [
+      8,
+      40
+    ],
+    "mass_tolerances": [
+      1e-11,
+      2e-11
+    ],
+    "mass_boundary": "Three adjacent representable values around each 1 plus/minus tolerance, tested as original/batch/tensor/Fortran/noncontiguous rows.",
+    "other_arrays": "Negative 1e-13 thresholds, subnormals, signed zero, NaN, infinities, overflow, uniform, FP32/FP64/int/bool/numeric-string/object dtype, scalar/wrong width/empty dimensions.",
+    "actual_restore_schemas": [
+      "full",
+      "packed",
+      "anchored"
+    ],
+    "restore_mutations": "Same arrays and inherited clock conversions; malformed/huge counters; missing/extra/null counter maps; wrong model/schema/checksum; legacy extra field; full mode/method; invalid anchored times.",
+    "ownership": "Accepted old/new return equal checkpoint bytes and detach mutable payload arrays/maps; probability inputs remain byte-identical and preserve old alias/writeability behavior.",
+    "support": "Active and recovery positive subnormal support must retain old underflow rejection.",
+    "static_contracts": "execute function body AST equal; persist/load/R21 restore_owned are the same imported function objects; packed/anchored method AST equal; all three altered validators differ only in mass predicate."
+  },
+  "proof": "After identical coercion to FP64 and identical short-circuit shape/finite/negative checks, NumPy2.3.5 allclose(s,1,rtol=0,atol=t) is all((abs(s-1)<=t & True) | (s==1)). Positive finite t makes the equality term redundant. NaN/infinite/overflow sums fail identically. Full restore's prior shape (4,40) makes axis1 and axis-1 the same reduction. No sum is re-associated, no dtype, tolerance or comparison boundary changes.",
+  "required": "Every old/new outcome, accepted array/checkpoint bytes, alias/custody property and static contract must match; no tolerance repair after execution.",
+  "resource_or_analytic_core_claim": false,
+  "numpy_version": "2.3.5",
+  "numpy_python_predicates_sha256": {
+    "isclose": "8ff754327a8adcec72c463de6ed1d4d9f7093bb1df5579edd5b8bad724f4b257",
+    "allclose": "b465040f50ce22cd18f0fbbea2640bf0227a0420464ee87693d386a2dab373f3"
+  }
+}
