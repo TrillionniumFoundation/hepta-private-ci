@@ -14,14 +14,16 @@ _UNIT_TEST_DEPENDENCIES = {
 codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
+    # The legacy fixture writes serialized bytes to a separate Agentd process.
+    # Never inject a second ledger crate identity into other integration tests:
+    # they pass LedgerWriter, signed evidence and receipts to product APIs.
+    integration_test_dependency_replacements = {
+        "plasticity_process_e2e": {
+            "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+        },
+    },
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
-    # Cargo's dev-dependency enables this legacy write API only for test crates.
-    # The Bazel-generated integration tests need the same testonly variant;
-    # the production agentd library/binaries must retain the default ledger.
-    integration_test_dependency_replacements = {
-        "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
-    },
 )
 
 # Compile the local writer qualification separately from the default product
