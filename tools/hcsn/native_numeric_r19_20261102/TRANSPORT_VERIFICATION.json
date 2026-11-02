@@ -1,0 +1,23 @@
+{
+  "all_passed": true,
+  "restore_script_sha256": "4fea3469d2f35fdf1ed2f8fb4fd5cd102e31dfa43a2b8754a52c7d2274900abe",
+  "restore_stdout": "Verified 2470 files in /tmp/n19-restore-vyn87rp0/raw; archive SHA256 38477ed3facd5c16d66c578e0b028e3d3112742126ab8168d388038eecc348b0",
+  "restored_raw_audit": {
+    "actions": 302,
+    "actual_cold_recoveries": 16,
+    "all_passed": true,
+    "cases": 80,
+    "dense_operator_max_error": 7.194245199571014e-14,
+    "distinct_owner_worlds": 4,
+    "operator_checks": 56,
+    "process_receipts": 237,
+    "queries": 480,
+    "rare_checks": 8,
+    "schema": "hcsn-native-r19-independent-record-audit-v1",
+    "scope": "Raw native numerical state/actual scorer/fee/effect/lease and independently recalculated dense operator parity; no executor/planner imports, no production or learned-head claim",
+    "source_commit": "13a8c2596a4c1955619d352b02f6ce0113849f0f",
+    "source_files": 32,
+    "state_max_error": 3.3029134982598407e-15
+  },
+  "transport_manifest_sha256": "1c27f7801a4ced0a71c10d13c0de0f46301e0cd756be1f531e52a8712625dfef"
+}
