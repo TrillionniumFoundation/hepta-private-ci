@@ -1,0 +1,79 @@
+{
+  "schema": "native-repair-archive-index-v1",
+  "authoritative": "NATIVE_QUALIFICATION_EXACT_FIXTURE.json",
+  "baseline_commit": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
+  "model_freeze_commit": "bd8e8a4ff5adf63d7a246d4aaba04491f7ddd39d",
+  "archives": [
+    {
+      "name": "native_qualification_final.tar.gz",
+      "bytes": 3493366,
+      "sha256": "1c12755335cc60b2cff68114dd921767c4826cd3370042ff99464ccf3133cdce",
+      "status": "development_superseded",
+      "parts": [
+        {
+          "path": "native_qualification_final.tar.gz.part-000",
+          "bytes": 1440000,
+          "git_blob_sha": "3ad57bf09c6fa4057acddb1569308ed414e61639"
+        },
+        {
+          "path": "native_qualification_final.tar.gz.part-001",
+          "bytes": 1440000,
+          "git_blob_sha": "70162682b03092c7e5a2a8955ee6a20c6a91c528"
+        },
+        {
+          "path": "native_qualification_final.tar.gz.part-002",
+          "bytes": 613366,
+          "git_blob_sha": "b525fd1314d7d9a7a9624d223637540c057d4ed7"
+        }
+      ]
+    },
+    {
+      "name": "native_qualification_initial_development.tar.gz",
+      "bytes": 3486128,
+      "sha256": "10f7ce2157e3b4a0ef2ae330b6f26fdd1ded696d505dfc833d417e960241fefa",
+      "status": "development_superseded",
+      "parts": [
+        {
+          "path": "native_qualification_initial_development.tar.gz.part-000",
+          "bytes": 1440000,
+          "git_blob_sha": "5d3f0d5abdac016d229c8d55260acf7d1ded3b0c"
+        },
+        {
+          "path": "native_qualification_initial_development.tar.gz.part-001",
+          "bytes": 1440000,
+          "git_blob_sha": "5e48e2e8d36c542f14122204691bfec7048e50cc"
+        },
+        {
+          "path": "native_qualification_initial_development.tar.gz.part-002",
+          "bytes": 606128,
+          "git_blob_sha": "2c732114a839c3c2c4b47af6347780ef77c9d251"
+        }
+      ]
+    },
+    {
+      "name": "native_qualification_final_exact_fixture.tar.gz",
+      "bytes": 3489128,
+      "sha256": "61c4ef1c88a8aa5a0777f7e71690e554dac87e3584940d540a290a522ac6dcdb",
+      "status": "final_exact_original_fixture",
+      "parts": [
+        {
+          "path": "native_qualification_final_exact_fixture.tar.gz.part-000",
+          "bytes": 1440000,
+          "git_blob_sha": "33eec88bf6da358431e346742db8221bbc2cf8c6"
+        },
+        {
+          "path": "native_qualification_final_exact_fixture.tar.gz.part-001",
+          "bytes": 1440000,
+          "git_blob_sha": "c3f7591dae5dcd824d2fa857f326ffd600151c4a"
+        },
+        {
+          "path": "native_qualification_final_exact_fixture.tar.gz.part-002",
+          "bytes": 609128,
+          "git_blob_sha": "fd35ceeaa64bf8515d70d96037553e73414721ae"
+        }
+      ]
+    }
+  ],
+  "restore": "Concatenate each archive's listed parts in order; verify bytes and SHA256 before safe extraction. The first two archives remain development records; cite only the exact original fixture record for final qualification.",
+  "gate": "Original just test failed because cargo-nextest is absent. Directly executed test binaries passed 178 tests with one inherited ignored test."
+}
