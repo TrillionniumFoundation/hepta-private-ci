@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn.gzip-envelope-transport.v1",
+  "original_file": "JOB_125028471631.log.gz",
+  "original": {
+    "job_id": 125028471631,
+    "decoded_utf8_sha256": "ed7e55eddee8436ec2cb621cb95636db01fab8769b132ddc74ccf90ec39cdb33",
+    "decoded_utf8_bytes": 4312002,
+    "gzip_sha256": "344942b74ed24c42fabac14aee45fa6f73d2726ddf0ce9a91af56d7c1bc2e675",
+    "gzip_bytes": 606058
+  },
+  "chunks": [
+    {
+      "file": "JOB_125028471631.log.gz.part000.gz",
+      "index": 0,
+      "offset": 0,
+      "raw_bytes": 450000,
+      "raw_sha256": "78a8edda6d3d3e53c8629117475c175abc9b74d7cb2c947123233db61fc6b805",
+      "bytes": 447153,
+      "sha256": "ae08c07fc00583449fea1cfc0d467238d948af6212f6ac800d2a7300db5ce477"
+    },
+    {
+      "file": "JOB_125028471631.log.gz.part001.gz",
+      "index": 1,
+      "offset": 450000,
+      "raw_bytes": 156058,
+      "raw_sha256": "62d090ecadcacbc879d52e40c98994985e714fc60b7cda855d88e142a8b4a978",
+      "bytes": 154092,
+      "sha256": "e167596e659cb3e622ae356898ccf9512a0999743510f5fa4a287ca5bb1be701"
+    }
+  ],
+  "restore": "python -B restore_exact_job_log.py --manifest JOB_125028471631_LOG_TRANSPORT_V1.json --output NEW.log.gz",
+  "verified_bitwise_roundtrip": true
+}

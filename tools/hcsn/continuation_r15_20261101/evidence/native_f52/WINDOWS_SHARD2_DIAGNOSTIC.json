@@ -1,0 +1,717 @@
+{
+  "schema": "hcsn.current-head-windows-shard2-diagnostic.v1",
+  "source_head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "executed_merge_sha": "0758e6c2efd3009bcceb13536f60075581467d39",
+  "tree_sha": "1437e365efb2e45e887d4a7835706bdd01b4b3a9",
+  "job_id": 125028471631,
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471631",
+  "recorded_at_utc": "2026-11-02T00:55:06.916Z",
+  "conclusion": "failure",
+  "failed_step": [
+    {
+      "name": "bazel test shard",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 6
+    }
+  ],
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1
+    },
+    {
+      "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2
+    },
+    {
+      "name": "Test BuildBuddy Bazel wrapper",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 3
+    },
+    {
+      "name": "Prepare Bazel CI",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4
+    },
+    {
+      "name": "Smoke test the native MSVC header parser",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 5
+    },
+    {
+      "name": "bazel test shard",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 6
+    },
+    {
+      "name": "Upload Bazel execution logs",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7
+    },
+    {
+      "name": "Check for a clean worktree",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8
+    },
+    {
+      "name": "Post Prepare Bazel CI",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 15
+    },
+    {
+      "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 16
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 17
+    }
+  ],
+  "top_level_failed_target_count": 15,
+  "top_level_failed_targets": [
+    "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+    "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+    "//codex-rs/hepta-authbus:hepta-authbus-unit-tests",
+    "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test",
+    "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests",
+    "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+    "//codex-rs/app-server:app-server-unit-tests",
+    "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+    "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+    "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "//codex-rs/exec:exec-all-test",
+    "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test",
+    "//codex-rs/app-server:app-server-all-test",
+    "//codex-rs/core:core-responses_headers-test",
+    "//codex-rs/cli:cli-sandbox_cloud_config-test"
+  ],
+  "summary_lines": [
+    {
+      "line": 15055,
+      "text": "2026-11-02T00:48:58.3653279Z //codex-rs/cli:cli-sandbox_cloud_config-test                             FAILED in 0.5s"
+    },
+    {
+      "line": 15057,
+      "text": "2026-11-02T00:48:58.3655014Z //codex-rs/core:core-responses_headers-test                              FAILED in 13.6s"
+    },
+    {
+      "line": 15059,
+      "text": "2026-11-02T00:48:58.3656405Z //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test  FAILED in 0.3s"
+    },
+    {
+      "line": 15061,
+      "text": "2026-11-02T00:48:58.3658363Z //codex-rs/hepta-authbus:hepta-authbus-unit-tests                        FAILED in 118.1s"
+    },
+    {
+      "line": 15063,
+      "text": "2026-11-02T00:48:58.3659808Z //codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests                FAILED in 91.1s"
+    },
+    {
+      "line": 15065,
+      "text": "2026-11-02T00:48:58.3661438Z //codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests            FAILED in 2.7s"
+    },
+    {
+      "line": 15067,
+      "text": "2026-11-02T00:48:58.3663151Z //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests    FAILED in 3.5s"
+    },
+    {
+      "line": 15069,
+      "text": "2026-11-02T00:48:58.3664758Z //codex-rs/hepta-intelligence:hepta-intelligence-unit-tests              FAILED in 105.4s"
+    },
+    {
+      "line": 15071,
+      "text": "2026-11-02T00:48:58.3666444Z //codex-rs/hepta-memory:hepta-memory-unit-tests                          FAILED in 228.6s"
+    },
+    {
+      "line": 15073,
+      "text": "2026-11-02T00:48:58.3669402Z //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test FAILED in 1.5s"
+    },
+    {
+      "line": 15075,
+      "text": "2026-11-02T00:48:58.3673600Z //codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test    FAILED in 0.2s"
+    },
+    {
+      "line": 15077,
+      "text": "2026-11-02T00:48:58.3676653Z //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 9.7s"
+    },
+    {
+      "line": 15079,
+      "text": "2026-11-02T00:48:58.3680157Z //codex-rs/app-server:app-server-unit-tests                              FAILED in 3 out of 10 in 7.5s"
+    },
+    {
+      "line": 15091,
+      "text": "2026-11-02T00:48:58.3706538Z //codex-rs/exec:exec-all-test                                            FAILED in 3 out of 10 in 121.9s"
+    },
+    {
+      "line": 15098,
+      "text": "2026-11-02T00:48:58.3718961Z //codex-rs/app-server:app-server-all-test                                FAILED in 45 out of 46 in 83.1s"
+    },
+    {
+      "line": 15147,
+      "text": "2026-11-02T00:48:58.3789726Z Executed 69 out of 142 tests: 89 tests pass, 15 fail locally, and 38 were skipped."
+    },
+    {
+      "line": 16366,
+      "text": "2026-11-02T00:49:16.5435798Z ##[error]Process completed with exit code 3."
+    }
+  ],
+  "representative_error_groups": [
+    {
+      "target": "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+      "test_output_starts_at_line": 2858,
+      "representative_errors": [
+        {
+          "line": 2884,
+          "text": "2026-11-02T00:32:06.3971362Z thread 'lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue' (7096) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:31:10:",
+          "next": [
+            "2026-11-02T00:32:06.4255922Z called `Result::unwrap()` on an `Err` value: Unavailable",
+            "2026-11-02T00:32:06.4592752Z ",
+            "2026-11-02T00:32:06.4931980Z ---- lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown stdout ----"
+          ]
+        },
+        {
+          "line": 2889,
+          "text": "2026-11-02T00:32:06.5504250Z thread 'lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown' (10140) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:190:10:",
+          "next": [
+            "2026-11-02T00:32:06.5697112Z called `Result::unwrap()` on an `Err` value: Unavailable",
+            "2026-11-02T00:32:06.6026944Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-11-02T00:32:06.6105842Z "
+          ]
+        },
+        {
+          "line": 2895,
+          "text": "2026-11-02T00:32:06.7063965Z thread 'lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation' (816) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:84:14:",
+          "next": [
+            "2026-11-02T00:32:06.7323363Z called `Result::unwrap()` on an `Err` value: Unavailable",
+            "2026-11-02T00:32:06.7451781Z ",
+            "2026-11-02T00:32:06.7763614Z ---- lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal stdout ----"
+          ]
+        },
+        {
+          "line": 2900,
+          "text": "2026-11-02T00:32:06.8240702Z thread 'lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal' (4256) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:217:10:",
+          "next": [
+            "2026-11-02T00:32:06.8414429Z called `Result::unwrap()` on an `Err` value: Unavailable",
+            "2026-11-02T00:32:06.8819243Z ",
+            "2026-11-02T00:32:06.9167172Z ---- lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation stdout ----"
+          ]
+        },
+        {
+          "line": 2905,
+          "text": "2026-11-02T00:32:06.9877742Z thread 'lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation' (5752) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:150:10:",
+          "next": [
+            "2026-11-02T00:32:07.0061795Z called `Result::unwrap()` on an `Err` value: Unavailable",
+            "2026-11-02T00:32:07.0330164Z ",
+            "2026-11-02T00:32:07.0600615Z ---- lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts stdout ----"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+      "test_output_starts_at_line": 2934,
+      "representative_errors": [
+        {
+          "line": 3020,
+          "text": "2026-11-02T00:32:09.8223824Z thread 'evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port' (7452) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:261:38:",
+          "next": [
+            "2026-11-02T00:32:09.8296946Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+            "2026-11-02T00:32:09.8332254Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-11-02T00:32:09.8617293Z "
+          ]
+        },
+        {
+          "line": 3026,
+          "text": "2026-11-02T00:32:09.8775584Z thread 'evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes' (7144) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:171:42:",
+          "next": [
+            "2026-11-02T00:32:09.8958795Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+            "2026-11-02T00:32:09.8969149Z ",
+            "2026-11-02T00:32:09.8991005Z ---- evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded stdout ----"
+          ]
+        },
+        {
+          "line": 3031,
+          "text": "2026-11-02T00:32:09.9120999Z thread 'evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded' (6432) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:366:34:",
+          "next": [
+            "2026-11-02T00:32:09.9297395Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+            "2026-11-02T00:32:09.9302727Z ",
+            "2026-11-02T00:32:09.9308606Z ---- evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch stdout ----"
+          ]
+        },
+        {
+          "line": 3036,
+          "text": "2026-11-02T00:32:09.9502377Z thread 'evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch' (5952) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:283:34:",
+          "next": [
+            "2026-11-02T00:32:09.9634067Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+            "2026-11-02T00:32:09.9639585Z ",
+            "2026-11-02T00:32:09.9648144Z ---- prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift stdout ----"
+          ]
+        },
+        {
+          "line": 3041,
+          "text": "2026-11-02T00:32:09.9955037Z thread 'prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift' (6760) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:",
+          "next": [
+            "2026-11-02T00:32:09.9977228Z open durable registry: UnsafeStateDirectory",
+            "2026-11-02T00:32:10.0199274Z ",
+            "2026-11-02T00:32:10.0206397Z ---- prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input stdout ----"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/hepta-authbus:hepta-authbus-unit-tests",
+      "test_output_starts_at_line": 3126,
+      "representative_errors": [
+        {
+          "line": 3162,
+          "text": "2026-11-02T00:32:27.3973933Z thread 'authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen' (3140) panicked at hepta-authbus/src\\authority_schema_tests.rs:29:60:",
+          "next": [
+            "2026-11-02T00:32:27.4042181Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-11-02T00:32:27.4094259Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-11-02T00:32:27.4192953Z "
+          ]
+        },
+        {
+          "line": 3170,
+          "text": "2026-11-02T00:32:27.4742329Z test result: FAILED. 27 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.56s",
+          "next": [
+            "2026-11-02T00:32:27.4803028Z ",
+            "2026-11-02T00:32:27.4849059Z ================================================================================",
+            "2026-11-02T00:32:27.8227208Z [3,508 / 3,596] 43 / 142 tests, 3 failed; Testing //codex-rs/hepta-memory:hepta-memory-unit-tests; 182s local, remote-cache ... (30 actions, 8 running)"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test",
+      "test_output_starts_at_line": 3204,
+      "representative_errors": [
+        {
+          "line": 3212,
+          "text": "2026-11-02T00:33:06.5075389Z Error: find setup helper _main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe",
+          "next": [
+            "2026-11-02T00:33:06.5077396Z ",
+            "2026-11-02T00:33:06.5079376Z Caused by:",
+            "2026-11-02T00:33:06.5082964Z     The system cannot find the path specified. (os error 3)"
+          ]
+        },
+        {
+          "line": 3221,
+          "text": "2026-11-02T00:33:06.5114926Z test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+          "next": [
+            "2026-11-02T00:33:06.5120214Z ",
+            "2026-11-02T00:33:06.5125522Z ================================================================================",
+            "2026-11-02T00:33:07.4320827Z [3,538 / 3,622] 54 / 142 tests, 4 failed; Testing //codex-rs/hepta-memory:hepta-memory-unit-tests; 221s local, remote-cache ... (30 actions, 14 running)"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests",
+      "test_output_starts_at_line": 3243,
+      "representative_errors": [
+        {
+          "line": 3272,
+          "text": "2026-11-02T00:33:56.3143215Z thread 'tests::thread_read_recovery_keeps_in_progress_indeterminate' (7072) panicked at hepta-codex-adapter/src\\lib_tests.rs:133:6:",
+          "next": [
+            "2026-11-02T00:33:56.3151885Z called `Result::unwrap()` on an `Err` value: Error(\"AbsolutePathBuf deserialized without a base path\", line: 0, column: 0)",
+            "2026-11-02T00:33:56.3154742Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-11-02T00:33:56.3159153Z "
+          ]
+        },
+        {
+          "line": 3278,
+          "text": "2026-11-02T00:33:56.3164162Z thread 'tests::thread_read_recovery_requires_exact_stable_message_and_input' (7592) panicked at hepta-codex-adapter/src\\lib_tests.rs:133:6:",
+          "next": [
+            "2026-11-02T00:33:56.3166176Z called `Result::unwrap()` on an `Err` value: Error(\"AbsolutePathBuf deserialized without a base path\", line: 0, column: 0)",
+            "2026-11-02T00:33:56.3166976Z ",
+            "2026-11-02T00:33:56.3168177Z ---- tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns stdout ----"
+          ]
+        },
+        {
+          "line": 3283,
+          "text": "2026-11-02T00:33:56.3174531Z thread 'tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns' (8560) panicked at hepta-codex-adapter/src\\lib_tests.rs:133:6:",
+          "next": [
+            "2026-11-02T00:33:56.3179434Z called `Result::unwrap()` on an `Err` value: Error(\"AbsolutePathBuf deserialized without a base path\", line: 0, column: 0)",
+            "2026-11-02T00:33:56.3182257Z ",
+            "2026-11-02T00:33:56.3182263Z "
+          ]
+        },
+        {
+          "line": 3292,
+          "text": "2026-11-02T00:33:56.3187266Z test result: FAILED. 18 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s",
+          "next": [
+            "2026-11-02T00:33:56.3187989Z ",
+            "2026-11-02T00:33:56.3188185Z ================================================================================",
+            "2026-11-02T00:33:58.2078125Z [3,544 / 3,622] 57 / 142 tests, 5 failed; Testing //codex-rs/hepta-memory:hepta-memory-unit-tests; 272s local, remote-cache ... (29 actions, 15 running)"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "test_output_starts_at_line": 3305,
+      "representative_errors": [
+        {
+          "line": 3341,
+          "text": "2026-11-02T00:34:07.8015043Z thread 'native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start' (7976) panicked at hepta-infer-worker-host/src\\native_app_server_tests.rs:411:10:",
+          "next": [
+            "2026-11-02T00:34:07.8033573Z physical turn start",
+            "2026-11-02T00:34:07.8049580Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-11-02T00:34:07.8057642Z "
+          ]
+        },
+        {
+          "line": 3349,
+          "text": "2026-11-02T00:34:07.8103914Z test result: FAILED. 27 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s",
+          "next": [
+            "2026-11-02T00:34:07.8115122Z ",
+            "2026-11-02T00:34:07.8115798Z ================================================================================",
+            "2026-11-02T00:34:08.2550879Z [3,564 / 3,637] 62 / 142 tests, 6 failed; Testing //codex-rs/hepta-memory:hepta-memory-unit-tests; 282s local, remote-cache ... (30 actions, 15 running)"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/app-server:app-server-unit-tests",
+      "test_output_starts_at_line": 4122,
+      "representative_errors": [
+        {
+          "line": 4158,
+          "text": "2026-11-02T00:40:46.4856414Z thread 'tests::embedding_runtime_sqlite_home_constraint_is_exact' (6200) panicked at app-server/src/lib.rs:1841:9:",
+          "next": [
+            "2026-11-02T00:40:46.4858578Z assertion failed: `(left == right)`",
+            "2026-11-02T00:40:46.4858889Z ",
+            "2026-11-02T00:40:46.4859102Z Diff < left / right > :"
+          ]
+        },
+        {
+          "line": 4172,
+          "text": "2026-11-02T00:40:46.4868710Z test result: FAILED. 27 passed; 1 failed; 0 ignored; 0 measured; 274 filtered out; finished in 1.72s",
+          "next": [
+            "2026-11-02T00:40:46.4870874Z ",
+            "2026-11-02T00:40:46.4871129Z ================================================================================",
+            "2026-11-02T00:40:46.4871982Z ==================== Test output for //codex-rs/app-server:app-server-unit-tests (shard 3 of 8):"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+      "test_output_starts_at_line": 3363,
+      "representative_errors": [
+        {
+          "line": 3443,
+          "text": "2026-11-02T00:34:21.5066761Z thread 'cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation' (4624) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:163:6:",
+          "next": [
+            "2026-11-02T00:34:21.5110301Z descriptor-bound writable recovery: Indeterminate(\"cognitive recovery root is redirected\")",
+            "2026-11-02T00:34:21.5123801Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-11-02T00:34:21.5155977Z "
+          ]
+        },
+        {
+          "line": 3449,
+          "text": "2026-11-02T00:34:21.5187615Z thread 'cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate' (8016) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:214:48:",
+          "next": [
+            "2026-11-02T00:34:21.5193104Z pointer rename: Unavailable(\"Access is denied. (os error 5)\")",
+            "2026-11-02T00:34:21.5202778Z ",
+            "2026-11-02T00:34:21.5297101Z ---- cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission stdout ----"
+          ]
+        },
+        {
+          "line": 3454,
+          "text": "2026-11-02T00:34:21.5417168Z thread 'cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission' (3116) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:365:5:",
+          "next": [
+            "2026-11-02T00:34:21.5423917Z assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+            "2026-11-02T00:34:21.5444845Z     CognitiveRecoveryRequirement::ExactCurrentCut(&tampered), &authority,",
+            "2026-11-02T00:34:21.5517641Z     &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))"
+          ]
+        },
+        {
+          "line": 3461,
+          "text": "2026-11-02T00:34:21.6086365Z thread 'cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers' (1464) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:291:5:",
+          "next": [
+            "2026-11-02T00:34:21.6138802Z assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+            "2026-11-02T00:34:21.6160298Z     CognitiveRecoveryRequirement::ExactCurrentCut(&predecessor), &authority,",
+            "2026-11-02T00:34:21.6268358Z     &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))"
+          ]
+        },
+        {
+          "line": 3468,
+          "text": "2026-11-02T00:34:21.7127916Z thread 'cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence' (7624) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:248:5:",
+          "next": [
+            "2026-11-02T00:34:21.7162220Z assertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),",
+            "2026-11-02T00:34:21.7520535Z     CognitiveRecoveryRequirement::ExactCurrentCut(&anchor), &authority,",
+            "2026-11-02T00:34:21.7540778Z     &RecoveryVerifier,).await, Err(CognitiveRecoveryError::Unavailable(_)))"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+      "test_output_starts_at_line": 3698,
+      "representative_errors": [
+        {
+          "line": 3709,
+          "text": "2026-11-02T00:34:24.8342456Z thread 'runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once' (8908) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+          "next": [
+            "2026-11-02T00:34:24.8344921Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-11-02T00:34:24.8346384Z ",
+            "2026-11-02T00:34:24.8347531Z ---- runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence stdout ----"
+          ]
+        },
+        {
+          "line": 3714,
+          "text": "2026-11-02T00:34:24.8349545Z thread 'runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence' (9636) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+          "next": [
+            "2026-11-02T00:34:24.8351689Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-11-02T00:34:24.8353034Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-11-02T00:34:24.8353689Z "
+          ]
+        },
+        {
+          "line": 3720,
+          "text": "2026-11-02T00:34:24.8356401Z thread 'runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence' (8660) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+          "next": [
+            "2026-11-02T00:34:24.8358316Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-11-02T00:34:24.8359198Z ",
+            "2026-11-02T00:34:24.8359270Z "
+          ]
+        },
+        {
+          "line": 3729,
+          "text": "2026-11-02T00:34:24.8364445Z test result: FAILED. 0 passed; 3 failed; 0 ignored; 0 measured; 161 filtered out; finished in 0.17s",
+          "next": [
+            "2026-11-02T00:34:24.8365242Z ",
+            "2026-11-02T00:34:24.8365549Z ================================================================================",
+            "2026-11-02T00:34:26.4164446Z [3,570 / 3,637] 65 / 142 tests, 8 failed; Testing //codex-rs/app-server:app-server-unit-tests (shard 3 of 8); 83s local, remote-cache ... (30 actions, 15 running)"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+      "test_output_starts_at_line": 3736,
+      "representative_errors": [
+        {
+          "line": 3898,
+          "text": "2026-11-02T00:34:28.4395968Z thread 'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes' (7684) panicked at windows-sandbox-rs/src\\token_tests.rs:213:5:",
+          "next": [
+            "2026-11-02T00:34:28.4402132Z assertion failed: `(left == right)`",
+            "2026-11-02T00:34:28.4403531Z ",
+            "2026-11-02T00:34:28.4423687Z Diff < left / right > :"
+          ]
+        },
+        {
+          "line": 3915,
+          "text": "2026-11-02T00:34:28.4567465Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (3456) panicked at windows-sandbox-rs/src\\token_tests.rs:280:5:",
+          "next": [
+            "2026-11-02T00:34:28.4569107Z assertion failed: `(left == right)`",
+            "2026-11-02T00:34:28.4572154Z ",
+            "2026-11-02T00:34:28.4572648Z Diff < left / right > :"
+          ]
+        },
+        {
+          "line": 3940,
+          "text": "2026-11-02T00:34:28.4610449Z thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (2360) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:775:9:",
+          "next": [
+            "2026-11-02T00:34:28.4618143Z assertion failed: `(left == right)`: stdout=\"\"",
+            "2026-11-02T00:34:28.4621726Z [2026-11-02 00:33:23.265 windows-sandbox-rs-unit-tests-bin.exe] START: C:\\Windows\\System32\\cmd.exe /d /c D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpWh0xrI\\workspace\\delete-fixtures.cmd",
+            "2026-11-02T00:34:28.4633225Z "
+          ]
+        },
+        {
+          "line": 3967,
+          "text": "2026-11-02T00:34:28.5424645Z test result: FAILED. 52 passed; 3 failed; 2 ignored; 0 measured; 92 filtered out; finished in 6.76s",
+          "next": [
+            "2026-11-02T00:34:28.5532326Z ",
+            "2026-11-02T00:34:28.5709802Z ================================================================================",
+            "2026-11-02T00:34:29.4114360Z [3,571 / 3,637] 66 / 142 tests, 9 failed; Testing //codex-rs/app-server:app-server-unit-tests (shard 3 of 8); 86s local, remote-cache ... (30 actions, 16 running)"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/exec:exec-all-test",
+      "test_output_starts_at_line": 4364,
+      "representative_errors": [
+        {
+          "line": 4381,
+          "text": "2026-11-02T00:45:35.0608375Z thread 'suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db' (5604) panicked at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\core\\src\\ops\\function.rs:250:5:",
+          "next": [
+            "2026-11-02T00:45:35.0616286Z Unexpected failure.",
+            "2026-11-02T00:45:35.0616866Z code=1",
+            "2026-11-02T00:45:35.0622372Z stderr=```\"Error: thread/resume: thread/resume failed: thread 01a199ac-9dc5-7f30-b82f-31c5a8dd49aa is sealed for hard deletion and cannot be resumed (code -32600)\\n\"```"
+          ]
+        },
+        {
+          "line": 4396,
+          "text": "2026-11-02T00:45:35.0958060Z test result: FAILED. 8 passed; 1 failed; 0 ignored; 0 measured; 39 filtered out; finished in 51.76s",
+          "next": [
+            "2026-11-02T00:45:35.0958860Z ",
+            "2026-11-02T00:45:35.0959159Z ================================================================================",
+            "2026-11-02T00:45:35.0960012Z ==================== Test output for //codex-rs/exec:exec-all-test (shard 1 of 8):"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test",
+      "test_output_starts_at_line": 4007,
+      "representative_errors": [
+        {
+          "line": 4016,
+          "text": "2026-11-02T00:37:12.7084561Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+          "next": [
+            "2026-11-02T00:37:12.7343836Z ",
+            "2026-11-02T00:37:12.7578444Z ---- robrix_control_v2_generated_projection_and_cross_parser_corpus stdout ----",
+            "2026-11-02T00:37:12.7764031Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT"
+          ]
+        },
+        {
+          "line": 4019,
+          "text": "2026-11-02T00:37:12.7764031Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+          "next": [
+            "2026-11-02T00:37:12.7792273Z ",
+            "2026-11-02T00:37:12.7907410Z ",
+            "2026-11-02T00:37:12.7935989Z failures:"
+          ]
+        },
+        {
+          "line": 4026,
+          "text": "2026-11-02T00:37:12.7986996Z test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.95s",
+          "next": [
+            "2026-11-02T00:37:12.7991403Z ",
+            "2026-11-02T00:37:12.7992863Z ================================================================================",
+            "2026-11-02T00:37:12.7995703Z [3,600 / 3,642] 78 / 142 tests, 10 failed; Testing //codex-rs/app-server:app-server-unit-tests (shard 3 of 8); 250s local, remote-cache ... (30 actions, 13 running)"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/app-server:app-server-all-test",
+      "test_output_starts_at_line": 4477,
+      "representative_errors": [
+        {
+          "line": 4568,
+          "text": "2026-11-02T00:45:36.0163016Z thread 'suite::v2::client_metadata::turn_start_forwards_client_metadata_to_responses_request_v2' (4652) panicked at app-server/tests\\suite\\v2\\client_metadata.rs:116:5:",
+          "next": [
+            "2026-11-02T00:45:36.0179339Z assertion failed: metadata[\"context_window_id\"].as_str().is_some_and(|window_id|",
+            "2026-11-02T00:45:36.0204879Z         uuid::Uuid::parse_str(window_id).is_ok())",
+            "2026-11-02T00:45:36.0205858Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        {
+          "line": 4614,
+          "text": "2026-11-02T00:45:36.6140839Z thread 'suite::v2::git_attribution::git_attribution_follows_authenticated_workspace_policy' (680) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "next": [
+            "2026-11-02T00:45:36.6161147Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+            "2026-11-02T00:45:36.6237597Z ",
+            "2026-11-02T00:45:36.6297751Z ---- suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::approved stdout ----"
+          ]
+        },
+        {
+          "line": 4655,
+          "text": "2026-11-02T00:45:36.7079667Z thread 'suite::v2::mcp_server_elicitation::mcp_server_strict_auto_review::approved' (3136) panicked at codex-rs/app-server/tests/common\\test_app_server.rs:1660:13:",
+          "next": [
+            "2026-11-02T00:45:36.7083704Z internal error: entered unreachable code: expected JSONRPCMessage::Response, got Error(JSONRPCError { error: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" }, id: Integer(3) })",
+            "2026-11-02T00:45:36.7085739Z ",
+            "2026-11-02T00:45:36.7085768Z "
+          ]
+        },
+        {
+          "line": 4664,
+          "text": "2026-11-02T00:45:36.7090713Z test result: FAILED. 51 passed; 3 failed; 2 ignored; 0 measured; 892 filtered out; finished in 33.14s",
+          "next": [
+            "2026-11-02T00:45:36.7092903Z ",
+            "2026-11-02T00:45:36.7093151Z ================================================================================",
+            "2026-11-02T00:45:36.7093944Z ==================== Test output for //codex-rs/app-server:app-server-all-test (shard 4 of 16):"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/core:core-responses_headers-test",
+      "test_output_starts_at_line": 4079,
+      "representative_errors": [
+        {
+          "line": 4091,
+          "text": "2026-11-02T00:39:30.9992420Z thread 'responses_stream_includes_turn_metadata_header_for_git_workspace_e2e' (10324) panicked at codex-rs/core/tests/common/lib.rs:353:14:",
+          "next": [
+            "2026-11-02T00:39:31.0003527Z timeout waiting for event: Elapsed(())",
+            "2026-11-02T00:39:31.0059315Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-11-02T00:39:31.0063777Z "
+          ]
+        },
+        {
+          "line": 4099,
+          "text": "2026-11-02T00:39:31.0248376Z test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.10s",
+          "next": [
+            "2026-11-02T00:39:31.0263610Z ",
+            "2026-11-02T00:39:31.0280142Z ================================================================================",
+            "2026-11-02T00:39:31.6162415Z [3,619 / 3,642] 95 / 142 tests, 11 failed; Testing //codex-rs/app-server:app-server-unit-tests (shard 3 of 8); 389s local, remote-cache ... (23 actions, 18 running)"
+          ]
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/cli:cli-sandbox_cloud_config-test",
+      "test_output_starts_at_line": 4285,
+      "representative_errors": [
+        {
+          "line": 4294,
+          "text": "2026-11-02T00:40:49.9693390Z thread 'sandbox_fetches_and_enforces_cloud_managed_permission_profile' (5656) panicked at cli/tests/sandbox_cloud_config.rs:134:5:",
+          "next": [
+            "2026-11-02T00:40:49.9992086Z cloud-managed sandbox profile was not enforced: status=Some(1); stdout=; stderr=windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found",
+            "2026-11-02T00:40:50.0286839Z ; cloud bundle requests=[\"/backend-api/wham/config/bundle\"]",
+            "2026-11-02T00:40:50.0724744Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        {
+          "line": 4303,
+          "text": "2026-11-02T00:40:50.2114033Z test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s",
+          "next": [
+            "2026-11-02T00:40:50.2171813Z ",
+            "2026-11-02T00:40:50.2199980Z ================================================================================",
+            "2026-11-02T00:40:51.2028741Z [3,624 / 3,642] 100 / 142 tests, 13 failed; Testing //codex-rs/exec:exec-all-test (shard 1 of 8); 465s local, remote-cache ... (18 actions running)"
+          ]
+        }
+      ]
+    }
+  ],
+  "coverage": "All 15 top-level failed targets are retained. The bounded per-target examples are representative only; full primary log is preserved by exact-byte transport.",
+  "confirmed_new_regression": {
+    "target": "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test",
+    "error": "Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+    "source_path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+    "source_git_blob": "69343b055da5c2db8efcdac07db5ef55a8448951",
+    "status": "Root notified; original repair owner is preparing a minimal cross-platform runfiles fix. No fix or rerun is claimed here."
+  },
+  "other_attribution": "The remaining symptoms include Unavailable, UnsafeStateDirectory, locked-file and PermissionDenied errors, missing Windows helper binaries, path deserialization/recovery issues, request/state assertions and timeouts. No common root cause or blanket inherited/new attribution is asserted.",
+  "source_cleanliness": {
+    "name": "Check for a clean worktree",
+    "status": "completed",
+    "conclusion": "success",
+    "number": 8
+  },
+  "log_transport_manifest": "JOB_125028471631_LOG_TRANSPORT_V1.json",
+  "log_gzip_sha256": "344942b74ed24c42fabac14aee45fa6f73d2726ddf0ce9a91af56d7c1bc2e675",
+  "decoded_utf8_sha256": "ed7e55eddee8436ec2cb621cb95636db01fab8769b132ddc74ccf90ec39cdb33"
+}
+

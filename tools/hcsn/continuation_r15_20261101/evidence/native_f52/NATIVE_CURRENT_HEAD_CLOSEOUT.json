@@ -1,0 +1,432 @@
+{
+  "schema": "hcsn.native-current-head-closeout.v1",
+  "source_head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "tree_sha": "1437e365efb2e45e887d4a7835706bdd01b4b3a9",
+  "executed_merge_sha": "0758e6c2efd3009bcceb13536f60075581467d39",
+  "latest_observed_at_utc": "2026-11-02T00:56:05.719Z",
+  "scope": "Read-only current-head acceptance evidence. This bundle is separate from the already published Windows Clippy success bundle.",
+  "latest_check_counts": {
+    "success": 42,
+    "failure": 4,
+    "cancelled": 2,
+    "skipped": 4,
+    "pending": 5
+  },
+  "latest_native_counts": {
+    "success": 21,
+    "failure": 3,
+    "cancelled": 2,
+    "skipped": 1,
+    "pending": 5
+  },
+  "latest_workflow_counts": {
+    "success": 5,
+    "failure": 0,
+    "cancelled": 1,
+    "skipped": 0,
+    "pending": 1
+  },
+  "global_ci_green": false,
+  "accepted_specific_fix": {
+    "job_id": 125028471616,
+    "conclusion": "success",
+    "change": "Windows/MSVC Clippy filters targets according to their existing declared platform compatibility.",
+    "existing_receipt": "WINDOWS_CLIPPY_SUCCESS.json",
+    "existing_receipt_sha256": "e85f9e75e5f18e2f291b27592e5440098e2e98f8ae5ba6675f9bd23e1efbaf7a",
+    "no_aggregate_or_cross_head_substitution": true
+  },
+  "current_failures": [
+    {
+      "job_id": 125028471376,
+      "name": "cargo-deny",
+      "failed_step": "Run cargo-deny",
+      "evidence": "Existing CARGO_DENY_CURRENT_READ.json; one current log retrieval returned Transport closed.",
+      "attribution": "Actual current gate failure. Old advisory list is not asserted as the unread current log."
+    },
+    {
+      "job_id": 125028471660,
+      "name": "Windows native shard 1/4",
+      "failed_step": "bazel test shard",
+      "top_level_failed_targets": 4,
+      "receipt": "WINDOWS_SHARDS_1_3_DIAGNOSTIC.json"
+    },
+    {
+      "job_id": 125028471795,
+      "name": "Windows native shard 3/4",
+      "failed_step": "bazel test shard",
+      "top_level_failed_targets": 6,
+      "receipt": "WINDOWS_SHARDS_1_3_DIAGNOSTIC.json"
+    },
+    {
+      "job_id": 125028471631,
+      "name": "Windows native shard 2/4",
+      "failed_step": "bazel test shard",
+      "top_level_failed_targets": 15,
+      "receipt": "WINDOWS_SHARD2_DIAGNOSTIC.json"
+    }
+  ],
+  "confirmed_new_regression": {
+    "job_id": 125028471631,
+    "target": "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test",
+    "failure": "New loader requires INSTA_WORKSPACE_ROOT, absent under actual Windows launcher.",
+    "receipt": "ROBRIX_CURRENT_FAILURE.json",
+    "status": "Not closed in this snapshot. Root and original repair owner notified; no candidate, rerun or fix acceptance is asserted here."
+  },
+  "cancelled_not_passed": [
+    {
+      "id": 125028947023,
+      "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+      "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-02T00:24:00Z",
+      "completed_at": "2026-11-02T00:54:32Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558876/job/125028947023"
+    },
+    {
+      "id": 125028946994,
+      "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+      "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-02T00:23:59Z",
+      "completed_at": "2026-11-02T00:54:34Z",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558876/job/125028946994"
+    }
+  ],
+  "pending_not_passed": [
+    {
+      "id": 125028471783,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-11-02T00:22:14Z",
+      "completed_at": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471783"
+    },
+    {
+      "id": 125028471770,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-11-02T00:22:14Z",
+      "completed_at": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471770"
+    },
+    {
+      "id": 125028471701,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-11-02T00:22:13Z",
+      "completed_at": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471701"
+    },
+    {
+      "id": 125028471687,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-11-02T00:22:13Z",
+      "completed_at": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471687"
+    },
+    {
+      "id": 125028471674,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-11-02T00:22:15Z",
+      "completed_at": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471674"
+    }
+  ],
+  "pending_step_evidence": {
+    "file": "PENDING_STEPS_0048UTC.json",
+    "scope": "Historical 00:48 step observation, before subsequent V8 cancellation and architecture success. The latest snapshot supersedes its status counts."
+  },
+  "log_transport": {
+    "job_id": 125028471631,
+    "manifest": "JOB_125028471631_LOG_TRANSPORT_V1.json",
+    "reconstructor": "restore_exact_job_log.py",
+    "original_gzip_preserved": true,
+    "no_log_clipping": true,
+    "no_original_gzip_recompression": true,
+    "actual_validation": "LOG_RECONSTRUCTION_CHECK.json covers exact-byte restore, overwrite rejection and damaged-envelope rejection."
+  },
+  "attribution_limits": "Other failures are reported as their actual separate symptoms. Blanket inherited/new attribution is not made. Automation production store is byte-identical at base and current head, but the Windows canonical-path explanation remains a source-based inference without a Windows reproduction.",
+  "retained_monitor_observations": [
+    {
+      "at": "2026-11-02T00:21:57.484Z",
+      "total": 10,
+      "counts": {
+        "success": 6,
+        "failure": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "pending": 4
+      }
+    },
+    {
+      "at": "2026-11-02T00:23:00.859Z",
+      "total": 40,
+      "counts": {
+        "success": 8,
+        "failure": 0,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 28
+      }
+    },
+    {
+      "at": "2026-11-02T00:26:23.077Z",
+      "total": 56,
+      "counts": {
+        "success": 21,
+        "failure": 1,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 30
+      }
+    },
+    {
+      "at": "2026-11-02T00:27:31.240Z",
+      "total": 56,
+      "counts": {
+        "success": 24,
+        "failure": 1,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 27
+      }
+    },
+    {
+      "at": "2026-11-02T00:28:16.962Z",
+      "total": 56,
+      "counts": {
+        "success": 30,
+        "failure": 1,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 21
+      }
+    },
+    {
+      "at": "2026-11-02T00:29:03.085Z",
+      "total": 56,
+      "counts": {
+        "success": 30,
+        "failure": 1,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 21
+      }
+    },
+    {
+      "at": "2026-11-02T00:29:48.798Z",
+      "total": 56,
+      "counts": {
+        "success": 31,
+        "failure": 1,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 20
+      }
+    },
+    {
+      "at": "2026-11-02T00:30:56.918Z",
+      "total": 56,
+      "counts": {
+        "success": 38,
+        "failure": 1,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 13
+      }
+    },
+    {
+      "at": "2026-11-02T00:32:49.921Z",
+      "total": 56,
+      "counts": {
+        "success": 39,
+        "failure": 1,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 12
+      }
+    },
+    {
+      "at": "2026-11-02T00:34:44.936Z",
+      "total": 56,
+      "counts": {
+        "success": 39,
+        "failure": 1,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 12
+      }
+    },
+    {
+      "at": "2026-11-02T00:35:30.635Z",
+      "total": 56,
+      "counts": {
+        "success": 39,
+        "failure": 1,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 12
+      }
+    },
+    {
+      "at": "2026-11-02T00:36:16.417Z",
+      "total": 56,
+      "counts": {
+        "success": 39,
+        "failure": 3,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 10
+      }
+    },
+    {
+      "at": "2026-11-02T00:39:43.763Z",
+      "total": 56,
+      "counts": {
+        "success": 40,
+        "failure": 3,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 9
+      }
+    },
+    {
+      "at": "2026-11-02T00:40:51.536Z",
+      "total": 56,
+      "counts": {
+        "success": 40,
+        "failure": 3,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 9
+      }
+    },
+    {
+      "at": "2026-11-02T00:41:37.264Z",
+      "total": 56,
+      "counts": {
+        "success": 40,
+        "failure": 3,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 9
+      }
+    },
+    {
+      "at": "2026-11-02T00:42:23.131Z",
+      "total": 56,
+      "counts": {
+        "success": 40,
+        "failure": 3,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 9
+      }
+    },
+    {
+      "at": "2026-11-02T00:43:08.818Z",
+      "total": 56,
+      "counts": {
+        "success": 40,
+        "failure": 3,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 9
+      }
+    },
+    {
+      "at": "2026-11-02T00:44:39.336Z",
+      "total": 56,
+      "counts": {
+        "success": 40,
+        "failure": 3,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 9
+      }
+    },
+    {
+      "at": "2026-11-02T00:45:48.225Z",
+      "total": 56,
+      "counts": {
+        "success": 40,
+        "failure": 3,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 9
+      }
+    },
+    {
+      "at": "2026-11-02T00:46:33.953Z",
+      "total": 56,
+      "counts": {
+        "success": 40,
+        "failure": 3,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 9
+      }
+    },
+    {
+      "at": "2026-11-02T00:47:19.853Z",
+      "total": 56,
+      "counts": {
+        "success": 40,
+        "failure": 3,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 9
+      }
+    },
+    {
+      "at": "2026-11-02T00:48:05.600Z",
+      "total": 56,
+      "counts": {
+        "success": 40,
+        "failure": 3,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 9
+      }
+    },
+    {
+      "at": "2026-11-02T00:50:07.026Z",
+      "total": 56,
+      "counts": {
+        "success": 40,
+        "failure": 4,
+        "cancelled": 0,
+        "skipped": 4,
+        "pending": 8
+      }
+    },
+    {
+      "at": "2026-11-02T00:56:05.719Z",
+      "total": 57,
+      "counts": {
+        "success": 42,
+        "failure": 4,
+        "cancelled": 2,
+        "skipped": 4,
+        "pending": 5
+      }
+    }
+  ],
+  "monitor_note": "Retained observations are point-in-time reads, not a continuous trace. Runtime length or unchanged status is not treated as proof of a hang.",
+  "new_source_changes_in_this_bundle": "Only an offline exact-log reconstruction utility is added; no production, frozen scientific, dependency, target constraint, timeout, lint, safety gate or test assertion changes."
+}
+

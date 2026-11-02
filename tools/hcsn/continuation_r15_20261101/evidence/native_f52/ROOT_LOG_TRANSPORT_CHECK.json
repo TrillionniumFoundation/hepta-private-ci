@@ -1,0 +1,34 @@
+{
+  "schema": "hcsn.root-log-transport-check.v1",
+  "source_head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "job_id": 125028471631,
+  "gzip_bytes": 606058,
+  "gzip_sha256": "344942b74ed24c42fabac14aee45fa6f73d2726ddf0ce9a91af56d7c1bc2e675",
+  "decoded_bytes": 4312002,
+  "decoded_sha256": "ed7e55eddee8436ec2cb621cb95636db01fab8769b132ddc74ccf90ec39cdb33",
+  "full_identity_matches": true,
+  "observed_error_occurrences": [
+    {
+      "line": 4016,
+      "error": "2026-11-02T00:37:12.7084561Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+      "test": "writer_reproduces_the_tracked_artifact_set_byte_for_byte"
+    },
+    {
+      "line": 4019,
+      "error": "2026-11-02T00:37:12.7764031Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+      "test": "robrix_control_v2_generated_projection_and_cross_parser_corpus"
+    },
+    {
+      "line": 16129,
+      "error": "2026-11-02T00:49:16.3364475Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+      "test": "writer_reproduces_the_tracked_artifact_set_byte_for_byte"
+    },
+    {
+      "line": 16132,
+      "error": "2026-11-02T00:49:16.3366100Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+      "test": "robrix_control_v2_generated_projection_and_cross_parser_corpus"
+    }
+  ],
+  "distinct_test_cases": 2,
+  "earlier_integration_attempt": "Root transport check first assumed two textual error occurrences and stopped on four. Full contexts show the same two named cases printed twice; no log or source bytes were changed. This transport assertion was corrected to distinguish cases from duplicate log printing."
+}

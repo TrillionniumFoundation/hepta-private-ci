@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn.archived-record-figure.v1",
+  "source_head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "source_job": 125027835819,
+  "source_sha256": {
+    "two-layer-audit.json.gz": "8b9b02b39e55ec60e4ad79787862c03510c247aae354d4b8e3bdfc86d91b28f8",
+    "two-layer-training.json.gz": "4685ce7b0deac4d006e469565cd758238f6ef8d550af4f6fa060a9789038d7c1"
+  },
+  "used_time_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "boundary_panel_definition": "Each sequence minus its own initial boundary; no interpolation or selected sequence exclusion.",
+  "loss_history": [
+    0.017321569845080376,
+    0.017277954146265984,
+    0.017234569415450096,
+    0.017191503196954727,
+    0.017148645594716072,
+    0.017106197774410248,
+    0.017064016312360764,
+    0.017022356390953064,
+    0.016981063410639763,
+    0.016940293833613396,
+    0.016900090500712395,
+    0.016860486939549446,
+    0.016821451485157013
+  ],
+  "gradient_modes": {
+    "full": 0.00044444966042335215,
+    "drive_only": 0.0004406123843813935,
+    "conditioning_only": 3.837308693746183e-06,
+    "both_detached": 0.0
+  },
+  "new_financial_calls": 0,
+  "new_network_rollouts": 0,
+  "new_optimizer_updates": 0,
+  "limits": "Descriptive frozen functional records, not held-out quality, causal benefit, sparse spiking or scaling evidence.",
+  "outputs": {
+    "FUNCTIONAL_EVIDENCE.png": {
+      "bytes": 318607,
+      "sha256": "941de4271704f8020c92cbdef17225aac16fdc3faf448fcaafd1079091a8e872"
+    },
+    "FUNCTIONAL_EVIDENCE.svg": {
+      "bytes": 172731,
+      "sha256": "89104816ab33c4b8e784fe8acdc6cb138cca00b3633ceb3904567a7557a41322"
+    }
+  }
+}

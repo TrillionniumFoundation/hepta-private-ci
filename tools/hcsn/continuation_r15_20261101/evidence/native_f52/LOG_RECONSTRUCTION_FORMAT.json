@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn.log-restorer-format-check.v1",
+  "script_sha256": "51788b640debad9341340fb59478dbde92404bed88df2a221eba2805c4edb1a2",
+  "command": "env PATH=/tmp/hcsn-r15-runtime-tools/cargo/bin:/tmp/hcsn-r15-yaml-alias-tools:$PATH CARGO_HOME=/tmp/hcsn-r15-runtime-tools/cargo RUSTUP_HOME=/tmp/hcsn-r15-runtime-tools/rustup RUSTUP_TOOLCHAIN=1.95.0 /tmp/hcsn-r15-yaml-alias-tools/just fmt",
+  "cwd": "/tmp/hcsn-8df6-native-diagnostics/candidate/codex-rs",
+  "result": {
+    "chunk_id": "8c4858",
+    "wall_time_seconds": 0.010259936,
+    "exit_code": 0,
+    "original_token_count": 19,
+    "output": "No changed files need formatting. Use --all for a full repository check.\n"
+  },
+  "scope": "Actual repository formatter in the existing isolated exact-policy fixture. The tools/hcsn evidence Python path is outside the formatter's Python scripts/.github/sdk selectors; this is not a Ruff formatting claim. The restorer itself has actual roundtrip and rejection CLI validation."
+}
+

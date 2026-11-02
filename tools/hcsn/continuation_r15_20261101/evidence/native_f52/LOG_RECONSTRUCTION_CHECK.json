@@ -1,0 +1,32 @@
+{
+  "schema": "hcsn.exact-log-reconstruction-check.v1",
+  "script_sha256": "51788b640debad9341340fb59478dbde92404bed88df2a221eba2805c4edb1a2",
+  "manifest_sha256": "98ea860f91a8ea589bcfd10baffdf3c314a45ff5dc2a68762d037a41ff38cff0",
+  "original_gzip_sha256": "344942b74ed24c42fabac14aee45fa6f73d2726ddf0ce9a91af56d7c1bc2e675",
+  "roundtrip": {
+    "command": [
+      "python",
+      "-B",
+      "/tmp/hcsn-f52-native-status/restore_exact_job_log.py",
+      "--manifest",
+      "/tmp/hcsn-f52-native-status/JOB_125028471631_LOG_TRANSPORT_V1.json",
+      "--output",
+      "/tmp/hcsn-f52-native-status/RESTORED_VERIFY_125028471631.log.gz"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"output\": \"/tmp/hcsn-f52-native-status/RESTORED_VERIFY_125028471631.log.gz\",\n  \"job_id\": 125028471631,\n  \"decoded_utf8_sha256\": \"ed7e55eddee8436ec2cb621cb95636db01fab8769b132ddc74ccf90ec39cdb33\",\n  \"decoded_utf8_bytes\": 4312002,\n  \"gzip_sha256\": \"344942b74ed24c42fabac14aee45fa6f73d2726ddf0ce9a91af56d7c1bc2e675\",\n  \"gzip_bytes\": 606058\n}\n",
+    "stderr": "",
+    "bitwise_equal": true
+  },
+  "overwrite_rejected": {
+    "exit_code": 1,
+    "diagnostic": "FileExistsError",
+    "original_output_unchanged": true
+  },
+  "corrupted_envelope_rejected": {
+    "exit_code": 1,
+    "diagnostic": "gzip envelope identity mismatch",
+    "no_output_created": true
+  },
+  "scope": "Only transport restoration. No original gzip recompression, log truncation, CI rerun, or native code execution."
+}

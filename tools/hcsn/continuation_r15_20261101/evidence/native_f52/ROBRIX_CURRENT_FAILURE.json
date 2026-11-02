@@ -1,0 +1,179 @@
+{
+  "schema": "hcsn.current-head-robrix-regression.v1",
+  "source_head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "executed_merge_sha": "0758e6c2efd3009bcceb13536f60075581467d39",
+  "tree_sha": "1437e365efb2e45e887d4a7835706bdd01b4b3a9",
+  "job_id": 125028471631,
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471631",
+  "target": "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test",
+  "source_path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+  "failed_step": 6,
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1
+    },
+    {
+      "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2
+    },
+    {
+      "name": "Test BuildBuddy Bazel wrapper",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 3
+    },
+    {
+      "name": "Prepare Bazel CI",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4
+    },
+    {
+      "name": "Smoke test the native MSVC header parser",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 5
+    },
+    {
+      "name": "bazel test shard",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 6
+    },
+    {
+      "name": "Upload Bazel execution logs",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7
+    },
+    {
+      "name": "Check for a clean worktree",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8
+    },
+    {
+      "name": "Post Prepare Bazel CI",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 15
+    },
+    {
+      "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 16
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 17
+    }
+  ],
+  "excerpt": [
+    {
+      "line": 4005,
+      "text": "2026-11-02T00:37:12.3320983Z FAIL: //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-supervisor/hepta-supervisor-robrix_control_projection-test/test.log)"
+    },
+    {
+      "line": 4006,
+      "text": "2026-11-02T00:37:12.3411542Z INFO: From Testing //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test:"
+    },
+    {
+      "line": 4007,
+      "text": "2026-11-02T00:37:12.3412961Z ==================== Test output for //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test:"
+    },
+    {
+      "line": 4008,
+      "text": "2026-11-02T00:37:12.3644490Z "
+    },
+    {
+      "line": 4009,
+      "text": "2026-11-02T00:37:12.3864727Z running 2 tests"
+    },
+    {
+      "line": 4010,
+      "text": "2026-11-02T00:37:12.4056047Z test writer_reproduces_the_tracked_artifact_set_byte_for_byte ... FAILED"
+    },
+    {
+      "line": 4011,
+      "text": "2026-11-02T00:37:12.4437606Z test robrix_control_v2_generated_projection_and_cross_parser_corpus ... FAILED"
+    },
+    {
+      "line": 4012,
+      "text": "2026-11-02T00:37:12.4860860Z "
+    },
+    {
+      "line": 4013,
+      "text": "2026-11-02T00:37:12.4863504Z failures:"
+    },
+    {
+      "line": 4014,
+      "text": "2026-11-02T00:37:12.6656455Z "
+    },
+    {
+      "line": 4015,
+      "text": "2026-11-02T00:37:12.6672289Z ---- writer_reproduces_the_tracked_artifact_set_byte_for_byte stdout ----"
+    },
+    {
+      "line": 4016,
+      "text": "2026-11-02T00:37:12.7084561Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT"
+    },
+    {
+      "line": 4017,
+      "text": "2026-11-02T00:37:12.7343836Z "
+    },
+    {
+      "line": 4018,
+      "text": "2026-11-02T00:37:12.7578444Z ---- robrix_control_v2_generated_projection_and_cross_parser_corpus stdout ----"
+    },
+    {
+      "line": 4019,
+      "text": "2026-11-02T00:37:12.7764031Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT"
+    },
+    {
+      "line": 4020,
+      "text": "2026-11-02T00:37:12.7792273Z "
+    },
+    {
+      "line": 4021,
+      "text": "2026-11-02T00:37:12.7907410Z "
+    },
+    {
+      "line": 4022,
+      "text": "2026-11-02T00:37:12.7935989Z failures:"
+    },
+    {
+      "line": 4023,
+      "text": "2026-11-02T00:37:12.7947186Z     robrix_control_v2_generated_projection_and_cross_parser_corpus"
+    },
+    {
+      "line": 4024,
+      "text": "2026-11-02T00:37:12.7973868Z     writer_reproduces_the_tracked_artifact_set_byte_for_byte"
+    },
+    {
+      "line": 4025,
+      "text": "2026-11-02T00:37:12.7982374Z "
+    },
+    {
+      "line": 4026,
+      "text": "2026-11-02T00:37:12.7986996Z test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.95s"
+    },
+    {
+      "line": 4027,
+      "text": "2026-11-02T00:37:12.7991403Z "
+    },
+    {
+      "line": 4028,
+      "text": "2026-11-02T00:37:12.7992863Z ================================================================================"
+    }
+  ],
+  "classification": "The newly added Robrix Bazel fixture loader's required INSTA_WORKSPACE_ROOT was absent in the actual Windows launcher. This requires a correct cross-platform runfiles fix; it is not classified as an inherited secure-storage failure."
+}
+
