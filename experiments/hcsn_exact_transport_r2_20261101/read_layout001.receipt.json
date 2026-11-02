@@ -1,0 +1,49 @@
+{
+  "schema": "hcsn.complete-child-meter.v1",
+  "status": "completed",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_exact_transport_r2_20261101.debug_read_layout"
+  ],
+  "cwd": "/workspace/scratch/65d0df4e0cbd/repo",
+  "environment": "inherited unchanged",
+  "started_utc": "2026-11-02T01:31:39.136761+00:00",
+  "meter_source_sha256": "4750c538389a9c04df7c395f67b241a547ad2144deb35db8f2160c5f9f0b409a",
+  "stdout_path": "experiments/hcsn_exact_transport_r2_20261101/read_layout001.stdout.log",
+  "stderr_path": "experiments/hcsn_exact_transport_r2_20261101/read_layout001.stderr.log",
+  "pid": 5,
+  "finished_utc": "2026-11-02T01:31:48.732270+00:00",
+  "returncode": 0,
+  "wrapper_exit_code": 0,
+  "wall_seconds": 9.591242728994985,
+  "launch_error": null,
+  "forwarded_signals": [],
+  "user_cpu_seconds": 2.855514,
+  "system_cpu_seconds": 0.207802,
+  "total_cpu_seconds": 3.063316,
+  "peak_rss_bytes": 284139520,
+  "peak_rss_native_units": 277480,
+  "accounting": "os.wait4 on direct child, including interpreter startup, imports and writes; no separate live descendant enumeration",
+  "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory",
+  "wall_scope": "wrapper before Popen through child wait and log close; artifact hashing follows",
+  "cpu_additivity": "Inner process timers are contained in this measurement; do not add them again",
+  "logs": [
+    {
+      "path": "experiments/hcsn_exact_transport_r2_20261101/read_layout001.stdout.log",
+      "is_file": true,
+      "bytes": 576,
+      "sha256": "fe60b0837c1e63d3557cd80de2ce2d7d193e9b061d8bfc6417fe0e08ec646010"
+    },
+    {
+      "path": "experiments/hcsn_exact_transport_r2_20261101/read_layout001.stderr.log",
+      "is_file": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "artifacts": [],
+  "meter_source_unchanged": true,
+  "wrapper_cpu_seconds": 0.0009770890000000004,
+  "wrapper_cpu_scope": "After initial receipt, through optional hashing; final receipt write excluded"
+}

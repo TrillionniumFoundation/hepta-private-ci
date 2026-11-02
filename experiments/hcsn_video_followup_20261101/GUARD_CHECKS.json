@@ -1,0 +1,19 @@
+{
+  "checks": [
+    {
+      "rejected_before_loader": true,
+      "tamper": "training"
+    },
+    {
+      "rejected_before_loader": true,
+      "tamper": "input_identity"
+    },
+    {
+      "rejected_before_loader": true,
+      "tamper": "checkpoint"
+    }
+  ],
+  "passed": true,
+  "source_sha256": "36ecee8bc7b3357890aaa3ddd0ff79732a49ce4601dcc319c1c0f4b0cc170e76",
+  "validation_loaded": false
+}
