@@ -1,6 +1,6 @@
 # Exact evidence restoration
 
-Before running existing audits, restore the bundled `development01, development02, confirmation01, independent_network01` trees from the component directory:
+Before running existing audits, restore the bundled `development01, development02, confirmation01, independent_network01, after_transport_replay01, after_transport_replay02` trees from the component directory:
 
 ```sh
 python tools/hcsn/auth_recovery_v2_r22_20261102/restore_evidence.py
