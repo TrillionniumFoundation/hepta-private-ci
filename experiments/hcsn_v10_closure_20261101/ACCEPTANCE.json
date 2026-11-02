@@ -1,0 +1,89 @@
+{
+  "schema": "hcsn-v10-strict-acceptance.v1",
+  "baseline_commit": "8cc469fcb0e6527fac56e26b65baa3ae1c09c86b",
+  "overall": "HOLD",
+  "all_blockers_closed": false,
+  "production_authorized": false,
+  "gates": {
+    "frontend": {
+      "status": "HOLD",
+      "historical_recovery_verified": true,
+      "original_v6_recovered": false,
+      "historical_exclusions_complete": false,
+      "new_independent_recordings": false,
+      "strong_audio_qualified": false
+    },
+    "analytic_increment": {
+      "status": "HOLD",
+      "persistent_ordinary_implementation_verified": true,
+      "registered_validation_plateau_candidates": 30,
+      "fixed_new_worlds": 384,
+      "matched_primary_D_minus_B": {
+        "mean": 0.006093749999999999,
+        "lower": -0.013270963541666665,
+        "upper": 0.024864843750000018,
+        "confidence_level": 0.975,
+        "primary": true,
+        "positive_at_declared_threshold": false
+      },
+      "matched_primary_D_minus_MLP": {
+        "mean": 0.0017395833333333334,
+        "lower": -0.01647942708333333,
+        "upper": 0.01929205729166669,
+        "confidence_level": 0.975,
+        "primary": true,
+        "positive_at_declared_threshold": false
+      },
+      "both_primary_positive": false,
+      "historical_AV_D_minus_B": {
+        "async_av": -0.002499749999999956,
+        "av_binding": -0.012623708333333327
+      },
+      "strongest_reference_qualification": false,
+      "exact_history_reference_also_uses_analytic_operator": true
+    },
+    "mechanisms": {
+      "status": "PARTIAL",
+      "bounded_output_reserve_repair": "VERIFIED_REGISTERED_PROFILE",
+      "fixed_old_actions_content_and_request_fees_identical": true,
+      "joint_finite_dynamics_content_retraining": true,
+      "universal_mechanism_necessity": false,
+      "full_AV_encoder_head_joint_training": false,
+      "emotion_selected_renewal_models_learned": false
+    },
+    "economics": {
+      "status": "HOLD",
+      "local_formal_phase_CPU_verified": true,
+      "measured_local_CPU_seconds": 2124.1535320000003,
+      "local_phase_receipts": 67,
+      "kernel_peak_CI": "VERIFIED_FROZEN_JOINT_PROFILE_ONLY",
+      "complete_production_family_memory_peak_bytes": null,
+      "attributable_device_energy_joules": null,
+      "unmeasured_history_and_preparation_cost": null,
+      "complete_quality_cost_adoption_gate": false,
+      "frozen_joint_CI_charge_peak_bytes": 51703808,
+      "CI_run_ids": [
+        41371500148,
+        41372584433
+      ],
+      "metric_scope": "Dedicated inherited cgroup charge including attributed kernel/cache; not RSS/PSS, complete AV lifecycle, or energy."
+    }
+  },
+  "independence": "Historical AV repeats and seeds are not new recordings; synthetic confirmation is a different object and not real AV qualification.",
+  "evidence_sha256": {
+    "SOURCE_CONVERGENCE.json": "8abb628c88a983a6c7d4b5f9b87621b8fdefae3afe34e24a95304431e1db9cbb",
+    "frontend/RECOVERED_PACKAGE.json": "7848f14185cd5c47ec04e112d89d4fba09a5611c556b4f6277eaf5d6599c36a1",
+    "frontend/HISTORICAL_EXCLUSIONS_PARTIAL.json": "629e98854fd8b4f8e608227ef63dd327f84c5a65e2d05f5852f2c7fdecb4b576",
+    "risk/results/closure001/AUDIT_SUMMARY.json": "62a7557a7a8b0bd3569953e1fdf1fee7f1c31e31b7d3c3b75d659c2a6ce963ee",
+    "joint_retrain/JOINT_REPORT.json": "3eb9936feccdacf2b3c43596499ecb8ebd2ac962608318d1df4a70ff31adc954",
+    "persistent_renewal/results/confirmation001/SUMMARY.json": "650c8b4ca46b27eed1f023e88f8cebff111b1f9e0f62510492c5b639c2756030",
+    "av_analytic/results/development001/SUMMARY.json": "503929a58a8ed1dc9b8a3340dc7035ce6fc5accdb5c786ece1b6d5d289db6289",
+    "av_analytic/results/constant001/SUMMARY.json": "54866a14242d6ccb4861131d597acb48aae4726e4670baf497814dd576b44ce7",
+    "economics/SUMMARY.json": "a06c407f0b524901a40d5c8680c662f6d6a0a43f4a2a1a4d193fc538beca45ac",
+    "review/INDEPENDENT_REVIEW.md": "6677cdc5173b3d54286538925b62b3354fa1646e43e9efce6c5e97342e6c606e",
+    "CI_STATUS.json": "37546bcd42760506ff2c256d920a93a790863eea31ee2c6fbf0f8027b021148b",
+    "review/CI_RECONSTRUCTION_41371500148.json": "e57c67385c83334181030b6966b7c3e9f72bf0cf30a40fd428832018fa21009a",
+    "review/CI_RECONSTRUCTION_41372584433.json": "5d92432879d09b059a9ef86a2ebd329cf4097969e63081d981a823832bb38b7e",
+    "economics/LEDGER006.json": "252a285bf2626fe1aa5a2b24e502a06918385270b752766fe5e2f980530b0b0a"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "hcsn-v10-delivery-attempts.v1",
+  "events": [
+    {
+      "path": "experiments/hcsn_v10_closure_20261101/av_analytic/results/development001/av_binding/fits/direct-101033-final.pt",
+      "index": 150,
+      "message": "Local base64 read length check rejected incomplete command output before blob creation; uploader now waits for yielded exec sessions and keeps exact-length/hash checks."
+    }
+  ],
+  "correction": "Wait for every yielded exec command session before checking complete base64 length. Preserve exact length and Git blob checks; files before the failure boundary were verified successful uploads, and the rejected file was retried. No scientific file bytes changed.",
+  "remote_verification": "This attempt log is historical; final verification is recorded separately in DELIVERY_VERIFICATION.json."
+}

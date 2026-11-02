@@ -1,0 +1,173 @@
+{
+  "schema": "hcsn-v10-external-and-scientific-blockers.v1",
+  "status": "OPEN",
+  "all_blockers_closed": false,
+  "production_activation": false,
+  "scope": "Current completion requirements after the fixed 384-world confirmation and independent reconstruction. CI and external assets remain separately tracked; no intermediate-effect stopping was used.",
+  "blockers": [
+    {
+      "id": "FRONTEND_ORIGINAL_V6_ASSETS",
+      "kind": "external_source_and_asset_recovery",
+      "status": "OPEN",
+      "missing": [
+        "original v6 source and frozen protocol",
+        "original v6 strong AV content head",
+        "original v6 strong audio reference and their source/input identities"
+      ],
+      "expected_v6_commit": "febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+      "available_material": "Byte-verified historical v3 sources/features/heads and ordinary models in the additional v9 package; these instantiate different historical tasks.",
+      "completion_evidence": "Obtain the original source, protocol, inputs and weights; verify their exact declared hashes and task contracts, then execute the recovered pipeline.",
+      "invalid_substitutes": [
+        "renaming v3 or an ordinary v9 predictor as v6",
+        "substituting six-class emotion/source binding for original five-class/statement relations",
+        "hash strings without original bytes"
+      ],
+      "evidence": [
+        "frontend/RECOVERY_LOOKUPS.json",
+        "frontend/RECOVERED_PACKAGE.json",
+        "frontend/HISTORICAL_RECOVERY.json"
+      ]
+    },
+    {
+      "id": "COMPLETE_HISTORICAL_EXCLUSIONS",
+      "kind": "external_history_and_provenance",
+      "status": "OPEN",
+      "missing": [
+        "complete v5/v6 recording-use exclusions",
+        "reconciled development, training, calibration, selection, failed/exploratory and confirmation usage history"
+      ],
+      "available_material": "Partial list of 48 known historical v3 recordings reused in v8 and the recovered v9; complete=false.",
+      "completion_evidence": "Recover and independently reconcile source-recording and acquisition ancestry across all relevant prior uses. Bind the resulting exhaustive ledger to source/input identities.",
+      "invalid_substitutes": [
+        "empty exclusion lists",
+        "only the known v3 cohort",
+        "filenames or new split names as proof of nonoverlap"
+      ],
+      "evidence": [
+        "frontend/HISTORICAL_EXCLUSIONS_PARTIAL.json"
+      ]
+    },
+    {
+      "id": "NEW_INDEPENDENT_REAL_AV",
+      "kind": "external_recording_acquisition_and_validation",
+      "status": "OPEN",
+      "missing": [
+        "genuinely new independently recorded AV objects",
+        "source/acquisition identities demonstrating historical exclusion",
+        "appropriate strong audio and content/binding reference qualification on the actual task"
+      ],
+      "completion_evidence": "After the historical exclusions and protocol are fixed, acquire or resolve an eligible independently recorded cohort; verify original media/recording ancestry and execute the frozen exact-content, binding and audio comparisons.",
+      "invalid_substitutes": [
+        "refitting a model on old recordings",
+        "repeated prefixes or requests",
+        "renaming, recoding, cropping or resplitting an old capture",
+        "synthetic worlds relabelled as real AV"
+      ],
+      "evidence": [
+        "frontend/REPORT_ZH.md",
+        "frontend/audio001/PROTOCOL.json"
+      ]
+    },
+    {
+      "id": "EXACT_PROCESS_FAMILY_MEMORY",
+      "kind": "measurement_environment_capability",
+      "status": "PARTIAL_VERIFIED_CI_JOINT_PROFILE",
+      "current_container_observation": "Private cgroup creation returned EROFS on the read-only cgroup mount; shared cgroup counters, RSS/PSS sampling and per-process highwater are insufficient to assert an exact attributable process-family peak.",
+      "next_evidence_path": "Both dedicated GitHub CI runs succeeded and their digest-bound artifacts were independently reconstructed. The strict frozen joint profile kernel charged peak is 51703808 bytes.",
+      "completion_evidence": "Successful actual isolated process-family cgroup execution, including child/grandchild/adopted and short-lived processes, with verified membership, counter scope, reset boundaries and durable receipts for the measured workload.",
+      "interpretation_limit": "A successful CI measurement applies to its identified host/workload and does not retroactively measure prior runs or establish device energy.",
+      "evidence": [
+        "economics/CAPABILITIES.json",
+        "economics/MEMORY_BOUND_SCOPE.md",
+        "CI_STATUS.json",
+        "review/CI_RECONSTRUCTION_41372584433.json"
+      ],
+      "verified_profile": {
+        "CI_run": 41372584433,
+        "peak_bytes": 51703808,
+        "metrics": "isolated cgroup accounted memory charge, includes attributed cache/kernel",
+        "cold_cache_qualified": false,
+        "complete_AV_lifecycle_memory_qualified": false
+      }
+    },
+    {
+      "id": "ATTRIBUTABLE_DEVICE_ENERGY",
+      "kind": "measurement_environment_capability",
+      "status": "UNKNOWN_EXTERNAL_CAPABILITY",
+      "current_value_joules": null,
+      "current_container_observation": "No qualifying attributable device-energy counter was established in this container.",
+      "integration_search_scope": "Two plugin-management searches did not establish an attributable-energy measurement runner. A separately executed GitHub runner qualified only the frozen joint cgroup charge profile. This is not an exhaustive service-directory search and does not rule out other services or user-owned machines.",
+      "completion_evidence": "Identify an authorized usable measurement runner; record direct energy-counter identity, workload attribution, interval boundaries, shared-device treatment and actual execution receipts.",
+      "invalid_substitutes": [
+        "CPU seconds converted to joules without a measured model",
+        "TDP multiplied by wall time",
+        "unattributed shared-device totals"
+      ],
+      "evidence": [
+        "economics/CAPABILITIES.json",
+        "RUNTIME_INTEGRATION_SEARCH.json"
+      ]
+    },
+    {
+      "id": "COMPLETE_HISTORICAL_PREPARATION_COST",
+      "kind": "missing_historical_execution_evidence",
+      "status": "OPEN",
+      "missing": [
+        "complete historical acquisition/decoding/feature preparation and pretraining costs",
+        "some early current recovery/development costs"
+      ],
+      "completion_evidence": "Recover attributable original execution receipts or transparently retain the historical gap; new formal stages can be measured prospectively but cannot reconstruct an unobserved past cost.",
+      "invalid_substitutes": [
+        "zero-filled missing costs",
+        "new replay timing substituted for original preparation",
+        "adding nested component timers to enclosing worker CPU"
+      ],
+      "economic_gate_with_missing_required_costs": "HOLD",
+      "evidence": [
+        "economics/LIFECYCLE_SCOPE.json"
+      ]
+    },
+    {
+      "id": "SCIENTIFIC_CORE_AND_MECHANISM_GAIN",
+      "kind": "scientific_evidence_not_a_software_defect",
+      "status": "NOT_ESTABLISHED_BY_COMPLETED_CONFIRMATION",
+      "requirements": [
+        "qualified persistent AV and strong ordinary/no-core comparisons under the same information and task control",
+        "positive or otherwise predeclared acceptable D-B with the required uncertainty and independent evaluation",
+        "mechanism interventions and retraining with the claimed scope",
+        "quality and complete execution-economics qualification"
+      ],
+      "completion_evidence": "Final frozen independent results satisfy the original scientific and cost criteria in their declared domain. Negative or inconclusive effects remain failures/inconclusive evidence even when implementation tests pass.",
+      "invalid_substitutes": [
+        "software tests as proof of net benefit",
+        "changing the threshold or endpoint after observing results",
+        "counting repeated requests as independent worlds or recordings",
+        "forcing a PASS because the implementation runs"
+      ],
+      "software_only_resolution_promised": false,
+      "completed_confirmation": {
+        "worlds": 384,
+        "runs": 13056,
+        "matched_D_minus_B": 0.00609375,
+        "matched_D_minus_B_adjusted_interval": [
+          -0.013270963541666665,
+          0.024864843750000018
+        ],
+        "matched_D_minus_MLP": 0.0017395833333333334,
+        "matched_D_minus_MLP_adjusted_interval": [
+          -0.01647942708333333,
+          0.01929205729166669
+        ],
+        "both_primary_comparisons_pass": false,
+        "independent_audit_complete": true
+      },
+      "historical_AV": {
+        "emotion_D_minus_B": -0.002499749999999956,
+        "binding_D_minus_B": -0.012623708333333327,
+        "emotion_selected_epoch_zero": 34,
+        "emotion_candidate_count": 35,
+        "new_independent_recordings": false
+      }
+    }
+  ]
+}

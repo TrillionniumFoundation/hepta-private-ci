@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-v10-source-convergence.v1",
+  "base_repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "8cc469fcb0e6527fac56e26b65baa3ae1c09c86b",
+  "base_git_root_tree": "15ef79d5f0382ce7ee131ef2059b25da3ba7567a",
+  "base_PR": 4579,
+  "additional_read_only_source": {
+    "remote_commit": "03f338eb44bf585bfe9d4f87e4f5ef7af98884ad",
+    "remote_directory_tree": "dcfc600b44c6dfa2698969558a56b9df6dc753f3",
+    "matched_files": 250,
+    "library_file_id": "libfile_7b0ea4bcecd88191ac9ee31765d67012",
+    "archive_sha256": "b9bc77d41716de8e2babec5899f3e2c80f2ebacc9ced6553ce6d7ccd2a764518",
+    "archive_local_commit_is_not_remote_commit": true
+  },
+  "integration": "Only required historical interfaces and AV input assets are attributed/copied into v10; do not replace or conflate the two existing v9 directories. Their scientific results are not pooled.",
+  "source_quality": "Historical v3 recordings and old heads, not v6 or new independent capture.",
+  "v9_delivery_treeish_clarification": "V9 DELIVERY_VERIFICATION.root_tree used a tree endpoint addressed by the candidate commit (a treeish alias). V10 records the actual root tree object resolved from the Git commit tree field; file-blob and unchanged-subtree checks remain the authoritative byte identity."
+}

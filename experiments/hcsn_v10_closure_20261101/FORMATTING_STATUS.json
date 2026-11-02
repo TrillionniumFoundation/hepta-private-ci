@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn-v10-final-formatting-attempt.v1",
+  "command": [
+    "bash",
+    "-c",
+    "cd codex-rs && just fmt"
+  ],
+  "cwd": "/workspace/scratch/8da28d12955f/hepta-research",
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "bash: line 1: cd: codex-rs: No such file or directory\n",
+  "codex_rs_present": false,
+  "scope": "No Rust changed. All behavior and scientific audits completed before this final required formatting attempt; this partial recovered research checkout cannot execute the full codex-rs formatter.",
+  "full_workspace_format_pass": false
+}
