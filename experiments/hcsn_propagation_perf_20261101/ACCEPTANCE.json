@@ -1,0 +1,23 @@
+{
+  "schema": "hcsn.addressed-preparation.acceptance.v1",
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "preconfirmation_remote_source_commit": "5ed625e9bf1328261be468b19ce859bfe5bb06bc",
+  "preconfirmation_identity_record_precedes_run": true,
+  "contract_checks": 19,
+  "contract_pass": true,
+  "independent_scipy_matrix_checks": 336,
+  "independent_scipy_matrices_pass": true,
+  "independent_physical_gradient_checks": 10,
+  "independent_physical_gradients_pass": true,
+  "development_numerical_pass": true,
+  "confirmation_numerical_pass": true,
+  "frozen_source_unchanged": true,
+  "development_all_workload_speed_gate": false,
+  "confirmation_all_workload_speed_gate": false,
+  "literal_five_percent_latency_gate": false,
+  "analytical_vs_ordinary_core_advantage_tested": false,
+  "complete_training_cost_tested": false,
+  "all_blockers_closed": false,
+  "default_modified": false,
+  "production_activation": false
+}
