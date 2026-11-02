@@ -1,0 +1,271 @@
+{
+  "schema": "hcsn-v12-root-ci-source-membership.v1",
+  "remote_head": "87d0a3325b9e57b5736b9c93e1e6d35e057e91ff",
+  "equivalent_local_source_tree_commit": "47843d8e6f4c4dacb18389adf98ba05cedb3cd82",
+  "source_tree": "b36e18af0e7d881c2abb9a91238c43da9e9f19cf",
+  "files": [
+    {
+      "path": ".github/workflows/hcsn-v12-model-economics.yml",
+      "git_blob": "5431f23fe888baccb3f29a61c847bbbbafb5d298",
+      "bytes": 3736
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/economics/audit.py",
+      "git_blob": "c4e2f351e056cc55a314ea625ed1ae160f0f107b",
+      "bytes": 7482
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/economics/campaign.py",
+      "git_blob": "2a29168c0a18fe44056dc18b625c755a5b39b57b",
+      "bytes": 7299
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/economics/identity.py",
+      "git_blob": "279cc494b3d2e8ca876af0a19fc3f24fc0cabffb",
+      "bytes": 4059
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/economics/profile.py",
+      "git_blob": "2535efdd9034e12a54db763aa927ae78d252fe24",
+      "bytes": 5459
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/economics/test_fail_closed.py",
+      "git_blob": "302108493f04c65ac80e9ff827375c2626dcd4a0",
+      "bytes": 2740
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/CI_MANIFEST.json",
+      "git_blob": "b53c6fb3761630b0ad58d6afeccc6efbfc431e47",
+      "bytes": 16700
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/FROZEN_REFERENCE.json.gz",
+      "git_blob": "76177cff05b4116ffab62967797f98d2d43dd4dc",
+      "bytes": 354191
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/MANIFEST.json",
+      "git_blob": "f5ec99b9e7a222c1df5b11b0417a423a069a56d5",
+      "bytes": 16083
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/PROTOCOL.json",
+      "git_blob": "032a0e1552cac8f2650a808725095323f1f7713a",
+      "bytes": 1044
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/SOURCE_V10_FROZEN.json",
+      "git_blob": "4f57983a173cfa92eeadbef58869873c54194b6b",
+      "bytes": 6982
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/VALIDATION.json",
+      "git_blob": "63f3b696018fb47c75865c07dc69c027f3fa1e82",
+      "bytes": 1326
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/INPUT_IDENTITY.json",
+      "git_blob": "c91b8a37d2eeb4b92cd3b9f935ce22da10148e21",
+      "bytes": 475
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/filter-91101.npz",
+      "git_blob": "11136be25e7fda1c38292eff532a8d049dc574e2",
+      "bytes": 172983
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/filter-91103.npz",
+      "git_blob": "814594037a3b7a8166fd3c779e0a40a577f53e3d",
+      "bytes": 172985
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/gru-91101.npz",
+      "git_blob": "ee6f5d85fe3e5c0452cfaa14d3f38da2abdaa12f",
+      "bytes": 172035
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/gru-91103.npz",
+      "git_blob": "f77316382b33a5f3dd6f19b82b7b90f068302aaf",
+      "bytes": 172118
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/head.json",
+      "git_blob": "acf714b6820c62fd95438f78b9695e4e21de6a81",
+      "bytes": 623
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/head.npz",
+      "git_blob": "ebeef9c47da3dabd40490d680cac0b549eff2168",
+      "bytes": 7526
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/history-91101.npz",
+      "git_blob": "f5a24a02c5b2a49a2d0375c262fa639015eec129",
+      "bytes": 173110
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/history-91103.npz",
+      "git_blob": "09e3a3e2223aeefef2bff3709a286465b8b3f9c9",
+      "bytes": 173224
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/law-91101.json",
+      "git_blob": "a65eaa42f3f52d3318d5da68a8be0c62fcd1c3ac",
+      "bytes": 37964
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/law-91103.json",
+      "git_blob": "cc83bf4b0ec345e13c2eb540c745fac470af4330",
+      "bytes": 37995
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/ssm-91101.npz",
+      "git_blob": "058eb9e9e0b8c96832e95478471d6b623a85487b",
+      "bytes": 175820
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/ssm-91103.npz",
+      "git_blob": "fdbcd92913a7a6709ba076694f26f55f0ddb8350",
+      "bytes": 175783
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/async_av/test-packets.npz",
+      "git_blob": "6748ceac1bf0e62a3a1af8571387dc5a2fcdd524",
+      "bytes": 65955
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/INPUT_IDENTITY.json",
+      "git_blob": "d8474bf6b1009ade39dbf9bcc0c3e9b89db40040",
+      "bytes": 1423
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/filter-91101.npz",
+      "git_blob": "15c89dc5127f5d54b83a8a315726fc526c420ce2",
+      "bytes": 308491
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/filter-91103.npz",
+      "git_blob": "7939c4879e9a01a3b5beb8f39536a85053d66963",
+      "bytes": 308348
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/gru-91101.npz",
+      "git_blob": "9724e0536820b4a5488126f9201606b4641e44c0",
+      "bytes": 310794
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/gru-91103.npz",
+      "git_blob": "f932340969b1bbbec61d3e5ee71cc3eadb59df6e",
+      "bytes": 310787
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/head.json",
+      "git_blob": "1761d37318e802bb69d74724e7306fdd3a9f2911",
+      "bytes": 653
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/head.npz",
+      "git_blob": "985a3d57a86a3e7477bc58f6e7c59ff469f954d8",
+      "bytes": 90272
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/history-91101.npz",
+      "git_blob": "9ff4f192e1dc60a3b3493316d18b511269ec1cb0",
+      "bytes": 308120
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/history-91103.npz",
+      "git_blob": "c5d18afa58fc88a6a4eff416dec34a36d2f33427",
+      "bytes": 307947
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/law-91101.json",
+      "git_blob": "2f735243e9f8016f05ff15fdcd67fc75dd67954e",
+      "bytes": 43832
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/law-91103.json",
+      "git_blob": "987f458a5b34076243ca6f4639a0b0aec2b8f285",
+      "bytes": 39488
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/ssm-91101.npz",
+      "git_blob": "c377dab0d91b6fd47a99ff6df9b242aacfec3e64",
+      "bytes": 309102
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/ssm-91103.npz",
+      "git_blob": "760c138c3044166734d16e7d809129cb548fedce",
+      "bytes": 309054
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export002/av_binding/test-packets.npz",
+      "git_blob": "80f02ec72dd5ce2ed0242baba853cb6f77db9ad7",
+      "bytes": 89443
+    },
+    {
+      "path": "experiments/hcsn_causal_execution_v3/av_probe.py",
+      "git_blob": "78e185d107cb034a749224014385de0b837fb4eb",
+      "bytes": 13700
+    },
+    {
+      "path": "experiments/hcsn_v10_followup_20261101/economics/cgroup_meter.py",
+      "git_blob": "b38bf2fa7397ff4a4c26fabc3d5862b16bf0fb4d",
+      "bytes": 12100
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/economics/PROTOCOL.json",
+      "git_blob": "ceb631284c91750196b7ee54048e4875d0ef7808",
+      "bytes": 1376
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/export_validate.py",
+      "git_blob": "92c095c02e28ea0556c16e1a5be596a2a4bd7e2a",
+      "bytes": 16283
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/local_check.py",
+      "git_blob": "c6946ba2a6f96c775c656a85d60b59c7bc77c3f5",
+      "bytes": 4462
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/numpy_runtime.py",
+      "git_blob": "a205f5f454a310343e541b3b0fcd8e375e49c389",
+      "bytes": 14510
+    },
+    {
+      "path": "experiments/hcsn_v12_followup_20261101/model_runtime/verify_runtime.py",
+      "git_blob": "9dc40fc3a4cfc85df9e30767a947fda67b847458",
+      "bytes": 7809
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/content_interface/content_interface.py",
+      "git_blob": "48cadf733fa120131d9427dbbd6d19c8f4cea333",
+      "bytes": 16898
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py",
+      "git_blob": "e1a1fa85fafbbe9e167cda318aa0efe9f08863ee",
+      "bytes": 7679
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/execution.py",
+      "git_blob": "28dfaebcc2ea85b1a2f670b5513a79fc316c8d5d",
+      "bytes": 10902
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/historical_service.py",
+      "git_blob": "a367b4c02fa11fde0940e869613d8558a8ac211b",
+      "bytes": 2858
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/planning.py",
+      "git_blob": "218e5f49e07d16f0ce845bee42aa8c85df31cc2b",
+      "bytes": 8365
+    }
+  ],
+  "all_snapshots_are_exact_committed_blobs": true,
+  "frozen_source_and_bundle_seals_passed": true,
+  "hidden_workflow_snapshot_present": true
+}

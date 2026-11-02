@@ -1,0 +1,68 @@
+{
+  "workers": [
+    {
+      "receipt": "receipts/common001/RECEIPT.json",
+      "cpu_seconds": 1.260991,
+      "task_success": true
+    },
+    {
+      "receipt": "receipts/common002/RECEIPT.json",
+      "cpu_seconds": 1.034381,
+      "task_success": true
+    },
+    {
+      "receipt": "receipts/forward001/RECEIPT.json",
+      "cpu_seconds": 6.553293,
+      "task_success": true
+    },
+    {
+      "receipt": "receipts/gate001/RECEIPT.json",
+      "cpu_seconds": 3.443987,
+      "task_success": true
+    },
+    {
+      "receipt": "receipts/gate002/RECEIPT.json",
+      "cpu_seconds": 3.380957,
+      "task_success": true
+    },
+    {
+      "receipt": "receipts/live_gate001/RECEIPT.json",
+      "cpu_seconds": 6.644769999999999,
+      "task_success": true
+    },
+    {
+      "receipt": "receipts/raw001/RECEIPT.json",
+      "cpu_seconds": 2.9767909999999995,
+      "task_success": true
+    },
+    {
+      "receipt": "receipts/scalar001/RECEIPT.json",
+      "cpu_seconds": 9.632009,
+      "task_success": false
+    },
+    {
+      "receipt": "receipts/scalar002/RECEIPT.json",
+      "cpu_seconds": 11.560666,
+      "task_success": true
+    },
+    {
+      "receipt": "receipts/scalar003/RECEIPT.json",
+      "cpu_seconds": 0.102764,
+      "task_success": false
+    },
+    {
+      "receipt": "receipts/scalar004/RECEIPT.json",
+      "cpu_seconds": 11.422952,
+      "task_success": true
+    }
+  ],
+  "measured_disjoint_worker_CPU_lower_bound": 58.013560999999996,
+  "includes_failures_and_repeats": true,
+  "scope": "review workers only; main campaign/prepare/common-action execution separate",
+  "unknown_additional_cost": [
+    "source development",
+    "review writing",
+    "pre-wrapper launch overhead"
+  ],
+  "project_complete_cost": null
+}

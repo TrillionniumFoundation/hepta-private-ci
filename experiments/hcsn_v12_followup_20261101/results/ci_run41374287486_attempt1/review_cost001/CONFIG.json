@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.review.audit_ci_singleton",
+    "--run",
+    "experiments/hcsn_v12_followup_20261101/results/ci_run41374287486_attempt1/artifact/model-costs",
+    "--expected-head",
+    "87d0a3325b9e57b5736b9c93e1e6d35e057e91ff",
+    "--out",
+    "experiments/hcsn_v12_followup_20261101/results/ci_run41374287486_attempt1/INDEPENDENT_SINGLETON_AUDIT.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/results/ci_run41374287486_attempt1/review_cost001",
+  "timeout": 1800.0,
+  "sample_interval": 0.2
+}

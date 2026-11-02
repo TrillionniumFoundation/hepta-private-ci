@@ -1,0 +1,45 @@
+{
+  "status": "passed",
+  "executions": 720,
+  "per_forward_checks": {
+    "one_forward_hidden": 3350,
+    "whole_trajectory_hidden": 3346,
+    "whole_trajectory_path": 3346,
+    "one_forward_logit": 3640,
+    "candidate_probability_score": 3640
+  },
+  "largest_absolute_errors": {
+    "one_forward_hidden": 4.440892098500626e-16,
+    "whole_trajectory_hidden": 4.996003610813204e-16,
+    "whole_trajectory_path": 0.0,
+    "one_forward_logit": 8.881784197001252e-16,
+    "candidate_probability_score": 2.220446049250313e-16
+  },
+  "gru_gate_swap_negative_controls": [
+    {
+      "task": "async_av",
+      "seed": 91101,
+      "gate_swap_difference": 0.033848435087086265
+    },
+    {
+      "task": "async_av",
+      "seed": 91103,
+      "gate_swap_difference": 0.03980912213874524
+    },
+    {
+      "task": "av_binding",
+      "seed": 91101,
+      "gate_swap_difference": 0.09438036184141069
+    },
+    {
+      "task": "av_binding",
+      "seed": 91103,
+      "gate_swap_difference": 0.13437513535423906
+    }
+  ],
+  "rtol": 1e-10,
+  "atol": 1e-12,
+  "all_actions_outputs_requests_fees_exact": true,
+  "scope": "All 16 actual frozen models and historical objects, both policies; NumPy and fresh Torch forwards",
+  "not_claimed": "production, new scientific confirmation, GPU, physical energy or full deployment economics"
+}

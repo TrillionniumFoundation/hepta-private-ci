@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.control.review.check_live_gate",
+    "--out",
+    "experiments/hcsn_v12_followup_20261101/control/review/LIVE_GATE_AUDIT.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/control/review/receipts/live_gate001",
+  "timeout": 300.0,
+  "sample_interval": 0.5
+}

@@ -1,0 +1,1426 @@
+{
+  "schema": "hcsn-v12-existing-raw-media-availability.v1",
+  "source_sha256": "97f3981a2a6c6e2d6f32fc457ab988fd6fc034634b6739a38d2d1f7093aba744",
+  "cohort_sha256": "b65adcd877528b7cb5b81962ff3662c59ee1e144c26034b8a4e1d5e6426cf37a",
+  "upstream_sha": "1658cd342dff90010aa843eaeebd53610a08b1dc",
+  "media_directory": "/workspace/scratch/65d0df4e0cbd/video_raw_r2_media",
+  "verified_media": [
+    {
+      "actor": "1002",
+      "bytes": 342981,
+      "clip": "1002_DFA_ANG_XX",
+      "emotion": "ANG",
+      "label": 0,
+      "sentence": "DFA",
+      "sha256": "a52ffd181bdba96805956fb627960fe47cade90988cdb1688d1f86be1e71e366",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_DFA_ANG_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 115200,
+      "native_pcm_float32_sha256": "66952e97df20ff2ec55f725baccf67f37ab00410f0a6a9f3a6327da522254992",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "1a3748434085bfb29f7b86fb4fd7930997c27a47edb5373f47228763603d61f7",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "d4ddf0382f00b3e0fed4244b130269a17a6ff26bc756a2b7e564d33ee8bd430f",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1002",
+      "bytes": 339192,
+      "clip": "1002_DFA_DIS_XX",
+      "emotion": "DIS",
+      "label": 1,
+      "sentence": "DFA",
+      "sha256": "288bf3670fb82572692f75b23b03a5b97a6c74ea562f37a58fd7fbb6ff8603ce",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_DFA_DIS_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 114048,
+      "native_pcm_float32_sha256": "4f4c5b74132abfbced8ddfc8f7b0db6b5eab62f52f481f95fd013d7b4d8aa4f6",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "9005b8dbd8f8a8f27873c40a23122c616d19845e49b7e04761b30613b3fc7d1b",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "ee354f68bad97c512028d22d618f04aeff95490c568a359088b0fb381e575f63",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1002",
+      "bytes": 362054,
+      "clip": "1002_DFA_FEA_XX",
+      "emotion": "FEA",
+      "label": 2,
+      "sentence": "DFA",
+      "sha256": "f532a9a49af4c86137cfc678c0a6a5cc65015717e74d94a85d4787a5f6d9bfd2",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_DFA_FEA_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 122112,
+      "native_pcm_float32_sha256": "6a7da741201575afb6ab3344c35d4a85f9f780aa9fb93a3fa46c473c92ad5774",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "1aab4c8a6001dfaccc55c7e992572392b8aa63841eb4d08f95b9681cbc287f5b",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "c39e5ec8a33452bc5bf6e0e5ada82654b29d12b44bf3a9650f79b89eb4dcc955",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1002",
+      "bytes": 287510,
+      "clip": "1002_DFA_HAP_XX",
+      "emotion": "HAP",
+      "label": 3,
+      "sentence": "DFA",
+      "sha256": "e280e690d4c299e243ae45275fca0f3437d032900818042e09fcca5a29ca54b8",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_DFA_HAP_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 99072,
+      "native_pcm_float32_sha256": "af51b4c130e3109228a431a1149e18b382eba96409f36be97f24e718f09d692f",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "d4818fd26ef835ddbfdaab277e242e5b1566756592d40765adcc00932c9965f7",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "4fc24b7c379350fc4652c780f899cf092363caecccfcdd97c487794e8b4207f2",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1002",
+      "bytes": 327201,
+      "clip": "1002_DFA_NEU_XX",
+      "emotion": "NEU",
+      "label": 4,
+      "sentence": "DFA",
+      "sha256": "1dcc7dd3a460f4bdecedbcff5d026bd99f72f3ff0e05f41298c093759c0fd220",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_DFA_NEU_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 111744,
+      "native_pcm_float32_sha256": "4b5d975ea7f29b88005b4aa2d377cc88d69072fbac6fa926ffa059c0c08d7e8a",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "2a84f27706d98a4a42cc361787d907c5f8316f65b9eb951075f994ce1e157998",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "eb04610e516ae5d370c76bdb95d1b4cc9a95ae563d4ccdc7a5d45d59f5648afe",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1002",
+      "bytes": 301381,
+      "clip": "1002_DFA_SAD_XX",
+      "emotion": "SAD",
+      "label": 5,
+      "sentence": "DFA",
+      "sha256": "81ae5fb6d2fb7967d212baf769b3ccfeaa4042a2b279c145073756f175335d1c",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_DFA_SAD_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 105984,
+      "native_pcm_float32_sha256": "2d924a64be497bf2cd1480e38975fb1b3df56cf5ef835fd6beccf9ff736f97da",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "cfcf0cbcea6e88fb7278939f08ab7a75b6e4f54472ddf7920b0010f2d2c28275",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "5ebb7be517ec23b672f46ae1d9f9b87692a42eb21c538f5a9b0f3836e3b3a85e",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1002",
+      "bytes": 372460,
+      "clip": "1002_IOM_ANG_XX",
+      "emotion": "ANG",
+      "label": 0,
+      "sentence": "IOM",
+      "sha256": "407c95a32c7b888288b1b4391220eddc5b469281903c1d8309b5bf1ef4747c8f",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_IOM_ANG_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 126720,
+      "native_pcm_float32_sha256": "53e80298446623f577e0b97c955721aa02fa8b00de330b0470aef77f68d399ba",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "92a7be0424c6ac5355dff03eff8f9632298a2e14e5dabb1fd93adb509b1ccde3",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "9a68e4cf3577a5e9efafa34fa06c1c7ca0ca2ae9f80125d35629e7b8ed45b3f9",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1002",
+      "bytes": 364528,
+      "clip": "1002_IOM_DIS_XX",
+      "emotion": "DIS",
+      "label": 1,
+      "sentence": "IOM",
+      "sha256": "292304756f240e8786e2702135182f4dd2324787036db7b96e6b739076729a05",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_IOM_DIS_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 124416,
+      "native_pcm_float32_sha256": "52d279a3121170c8739d5910f7bb8cafe4ccc5838ddd933b1f38a04140690499",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "86531e42b1c62fa3a74f65f2dee652a66cd3b8e0a0070ff98c0fbff2877ef125",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "76e5ac4dc7f6d136a3547eca5f2b87f9851d61c1a0c66f88345e31654bb87bc2",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1002",
+      "bytes": 350471,
+      "clip": "1002_IOM_FEA_XX",
+      "emotion": "FEA",
+      "label": 2,
+      "sentence": "IOM",
+      "sha256": "af951542e46662b35eb181535b4d26bb57a607120c0a2a90bf8707a88977a418",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_IOM_FEA_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 116352,
+      "native_pcm_float32_sha256": "3d680ad5051a8f255bd85d630971b8c01108fb33d5fab725628ee848a2a892c3",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "f1ef9e412b0fdb1952d2e36fb91e99dc876642695b55b2198349a55c4e4fecf4",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "1e47144ae3442dbbc08980e74ebd93cf1c72d7b8dc4cab95101cd30fd9727347",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1002",
+      "bytes": 304978,
+      "clip": "1002_IOM_HAP_XX",
+      "emotion": "HAP",
+      "label": 3,
+      "sentence": "IOM",
+      "sha256": "cb93f205cc711f86b9785eaf43e006027ba49bd3b3fe79e30a51381c3ac648ec",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_IOM_HAP_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 104832,
+      "native_pcm_float32_sha256": "f5def3e4206b0dcc47dac3fe1bd8bb59967ab7b11aeaf90f9e4991b17dc4507a",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "a15b8d0e9314f8aeb78efe4094ec09d0f3311591d8e596275b26f9a9e9e2ace8",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "917c0c849b4287a5e8f3552169ff9893a5468fce440dacc8868d676f8ad36388",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1002",
+      "bytes": 294060,
+      "clip": "1002_IOM_NEU_XX",
+      "emotion": "NEU",
+      "label": 4,
+      "sentence": "IOM",
+      "sha256": "6286c7253aa45ed91984a7ae405704bafac4aa148aa7d3287d767194a5812abd",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_IOM_NEU_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 104832,
+      "native_pcm_float32_sha256": "7a4e2a9dd913f873842284aa8608d8a26471dfd7e1659440a5cdf6879df9164e",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "da610ad2ce159ca7c97bf4e7f1a40c134cfd0131c2123895b03462ba4a494800",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "9e92853e6670f219a99b6b7dde9c48630b6c2a816fa2fcd533cf67434762571e",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1002",
+      "bytes": 351738,
+      "clip": "1002_IOM_SAD_XX",
+      "emotion": "SAD",
+      "label": 5,
+      "sentence": "IOM",
+      "sha256": "e461cf64cc9f3af37c2218920c02800f03d5cfc7b3fe1c99d5454ba2dde833b0",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1002_IOM_SAD_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 119808,
+      "native_pcm_float32_sha256": "19d01493134e16980480936f2166f39f7c64662ce176dfde2d40a7fa6676614a",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "8704feb7b77a54e221590e423eae5445782765ef1941df02a97aeb5f069914dc",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "e55397326f5029ff1e7a11300f373c5e236db23d206c469b387fecd86b9b8608",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 330327,
+      "clip": "1007_DFA_ANG_XX",
+      "emotion": "ANG",
+      "label": 0,
+      "sentence": "DFA",
+      "sha256": "7b0edbf76adb0f9bf4e547eb2c688edd2ab6ad319b8b80696dd0fcd42645ae2f",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_DFA_ANG_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 111744,
+      "native_pcm_float32_sha256": "d14c684e55d3b450013dd8f2942616b56f66abb4767f398c1ce1c05b0072d378",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "345a2344e21bddc2bc872febcbc44dcb9842cc39812fd8a9dff491232c69facc",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "28ceda0f5b9c099ad7972fa113458cd4ee0235ddc0ba5433a0b51c33c878f883",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 373452,
+      "clip": "1007_DFA_DIS_XX",
+      "emotion": "DIS",
+      "label": 1,
+      "sentence": "DFA",
+      "sha256": "c8bc35a139cc7b0acea763a45ef3f5497a9e39129ca2f366cd932ed83413454c",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_DFA_DIS_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 127872,
+      "native_pcm_float32_sha256": "92e11891f790f57d6d434d518a5cefca39937f71520462cbe65404dcbd6374b9",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "ca02257177512f5f440dee43f47749070a83ef5af913043398cc3edb29e1f879",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "27fb4e057bfa9526f30ab406eb0381932d822cd8715182ba6afec15dc3fc1938",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 359968,
+      "clip": "1007_DFA_FEA_XX",
+      "emotion": "FEA",
+      "label": 2,
+      "sentence": "DFA",
+      "sha256": "089ec806af136748abb6e07a8be3da23650b9fa1019f4cae43519bf2ea931ad7",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_DFA_FEA_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 122112,
+      "native_pcm_float32_sha256": "e5836cbc709a0352bbaa93892806f59fee53a3af34a64bbe8b568f166e828702",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "d488d8bd9ba88571eb0cf4b93e2c6db9f4d38319cccab73491e3a4c329dfcfb8",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "aa2530728d01b7011f5f91e77bccd7ac85d731c9efed5d5b39ecd1743001f80a",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 285638,
+      "clip": "1007_DFA_HAP_XX",
+      "emotion": "HAP",
+      "label": 3,
+      "sentence": "DFA",
+      "sha256": "8ccb96a0ad5c8e07c8271403f26549b421dac55952f7a6da835986bc8c1dc181",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_DFA_HAP_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 99072,
+      "native_pcm_float32_sha256": "f1d47b4300d3f7c8247a25bca9a276487d81517968dd916682e36a38984f26f9",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "f6d03f7d0327096aac730b454c03c6bc484667520caad22e8656e310ed89012e",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "1d8d9c1e24caedf760ef7c094a885689e9c06e2492a81c49b081ef53dd4a6263",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 352868,
+      "clip": "1007_DFA_NEU_XX",
+      "emotion": "NEU",
+      "label": 4,
+      "sentence": "DFA",
+      "sha256": "ad3ac375cd41cc8e5faf6edb8ed435010a13e6e405f0897a7ae64f0ceaf720a1",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_DFA_NEU_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 117504,
+      "native_pcm_float32_sha256": "7ff3e7cdd10e1d35ce5df9b615d27e3be7d9abe33f40912fb5266d6e73d98935",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "3b4da2e84a44164acf4d4f3673fdb1aebd2d29f13bc217463d0fe6871bed39f6",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "7c6335fcbd5ea5fa3a9751644bac30bf293e72cad5cfe7283cecc346475a8b9c",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 272134,
+      "clip": "1007_DFA_SAD_XX",
+      "emotion": "SAD",
+      "label": 5,
+      "sentence": "DFA",
+      "sha256": "c15657959b17845fad399e9d7b2daa2ffb01e15ee894a92946e5eaa8d7b4f198",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_DFA_SAD_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 97920,
+      "native_pcm_float32_sha256": "b99d57539ec238bb4b2c20b1e3d3703ca77c06d9171045c1804d585eead17739",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "3f497387e23873e094c00dc1db651120dbac8957bbc112e5e0fdb81d27aa159f",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "51f752a6e1ad708d883c6b8dad8ac2fcaf1bef4bf86a67863084cc7f5cd5cbca",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 459911,
+      "clip": "1007_IOM_ANG_XX",
+      "emotion": "ANG",
+      "label": 0,
+      "sentence": "IOM",
+      "sha256": "55caf7e7ed02008176cd694223bc276693364a74de7edef369384d8b720a1d51",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_IOM_ANG_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 157824,
+      "native_pcm_float32_sha256": "418371ed04bd0f2fe39fca545635aafdb97c4e8e429433976d43931b997852b9",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "52e1eecead1cd8b46076473d9581e202a6b22d7a8181d546d403bd04597db407",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "704fc8226b5f68da56440e386abb2f84177495f866f095efc1458dc7d1eff448",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": true,
+          "sample_count": 48000,
+          "float32_sha256": "5d8ec85112a152e5ca1ff928e2b2d00c5254f1521ac2b1c02151c231b9f7debb",
+          "native_accepted_samples": 132300
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 462918,
+      "clip": "1007_IOM_DIS_XX",
+      "emotion": "DIS",
+      "label": 1,
+      "sentence": "IOM",
+      "sha256": "089a76a2ca6100f8bc4b23ba4534973c99b1874592f3b898ad207f5fc1c49deb",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_IOM_DIS_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 164736,
+      "native_pcm_float32_sha256": "3899400a642d14adbfc151127d71c58d07b0eefb8ffacc2109d94f71c2a51d41",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "b6b16c9d890d4b40ce3ba886abe13995ac552e1f7ad9e5e8106b328675685b22",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "64883572f54e5cd2da677a533c46ea469f3856a080c18bbfa7d44aa048ec821b",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": true,
+          "sample_count": 48000,
+          "float32_sha256": "574f1d524d84bcdf76b43db0670c5170900d103e5aca4e6ff69c7fb546b6ed91",
+          "native_accepted_samples": 132300
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 430604,
+      "clip": "1007_IOM_FEA_XX",
+      "emotion": "FEA",
+      "label": 2,
+      "sentence": "IOM",
+      "sha256": "4224365443d62254df8f564e527ede7f4904a3c92d040dcb9f2d59d575d58e6c",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_IOM_FEA_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 150912,
+      "native_pcm_float32_sha256": "47c54f5d4bd617c33c63f1d16dd702fdd2fd536f467d806e78c1e5e8d5afc1f4",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "14243bdc4cc69f74c68306bf6c4c8ea5d6bcfe04f23c1b9b73c34b0a2c2b54c5",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "741819f466c65875351cc35c653594c1c48abe5e468c9b7cd6a1a7b7ff097ad1",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": true,
+          "sample_count": 48000,
+          "float32_sha256": "56bdb8c0d122f7948b4618b610f7b6c66197fad4d63fd61cf68c02461c88f777",
+          "native_accepted_samples": 132300
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 491560,
+      "clip": "1007_IOM_HAP_XX",
+      "emotion": "HAP",
+      "label": 3,
+      "sentence": "IOM",
+      "sha256": "af904bb17dfe0524310c11b4fbc35ff29991d9098f438a1b442e919297d5b329",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_IOM_HAP_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 169344,
+      "native_pcm_float32_sha256": "8d7338de44a333849b482b264287672f2196763e60cb0229548cd529e502b031",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "509d43e8fedf0e218b48c0e587970527684213af3dd32d34eab57a4126ce30a0",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "270758416b7c2f7292c078148618c686167977c210caefd474b231720859f72b",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": true,
+          "sample_count": 48000,
+          "float32_sha256": "c09b8afa83af0643c5e2ce366aec89a95684b2516b044d9afde307f543e39520",
+          "native_accepted_samples": 132300
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 420126,
+      "clip": "1007_IOM_NEU_XX",
+      "emotion": "NEU",
+      "label": 4,
+      "sentence": "IOM",
+      "sha256": "94210b079f449ad36ca873348aebf491e2a8a818668429ce7ab63549c75b4db1",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_IOM_NEU_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 144000,
+      "native_pcm_float32_sha256": "00daf79a7d66b9baf99dad5ab03b510331988ec5b2e354f080772ac795509f92",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "ec76c35c40eeb3c98fef23ba2e696edd2087ca3ca14aaa7ca0be901d7e0e7310",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "e47946987c34cfae99432cde29d187f4ca3a1f5fd66c4523fda343e493cde46f",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": true,
+          "sample_count": 48000,
+          "float32_sha256": "39bd4d61e8d02b9a6f55372cd1f8b7fe8fdd3ed12ccd8b7f6836d5e2ebe60bf2",
+          "native_accepted_samples": 132300
+        }
+      ]
+    },
+    {
+      "actor": "1007",
+      "bytes": 358101,
+      "clip": "1007_IOM_SAD_XX",
+      "emotion": "SAD",
+      "label": 5,
+      "sentence": "IOM",
+      "sha256": "f5b718a3adc98954842ac640f9ada5e9312a3a5a021380aab74d2f2ff5df2c44",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1007_IOM_SAD_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 120960,
+      "native_pcm_float32_sha256": "0c6ef0b93d22b61a2e5feb256b9be34e729034a27bf6cffde4cd720ef5ef3fbd",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "1a599d3f8daf617cb5a8feb6af4d91df04ad81d3f7763f0c9479cdf7f44ff5e4",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "1e4a32abdfbcce3322e6fbd17930bff851a27ddd246035f14f2637038c904842",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1009",
+      "bytes": 266115,
+      "clip": "1009_DFA_ANG_XX",
+      "emotion": "ANG",
+      "label": 0,
+      "sentence": "DFA",
+      "sha256": "c1de08b986fc58f257eae136c448df5d98f7e5616d61a3ba0a46ea2fbd703d99",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1009_DFA_ANG_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 91008,
+      "native_pcm_float32_sha256": "f3ddfd3cb298e969bed497b2b0d064d51d90801d4d6dd1a9f768c82386fe1c15",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "07d7eb2df59bc47cb51a220b63aeb954ba4a9c09b03ef466b0921fe611be3641",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "52f8a7dbc8194545e01a176afa5ba68efbed4abfc217b70fc0889b815f1a5863",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1009",
+      "bytes": 333114,
+      "clip": "1009_DFA_DIS_XX",
+      "emotion": "DIS",
+      "label": 1,
+      "sentence": "DFA",
+      "sha256": "a84e8bce21895be7b3b1db44f58bf56421e4c5aa138c4d9d4d9e1214e6f7d1cd",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1009_DFA_DIS_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 115200,
+      "native_pcm_float32_sha256": "97a4b15f0cc1849d06bd9f19c5535c64bbcc3235b8f3615f5085daccc1343517",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "85a4d6961eb25f2afb945609a94f8e19f315ac919940771a58ddcd24fcc81d76",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "8e8bc29b58a1e5d59c42370ebb0dc77bea5c153d6687819b96f1e51c8f03e1bc",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1009",
+      "bytes": 264438,
+      "clip": "1009_IOM_NEU_XX",
+      "emotion": "NEU",
+      "label": 4,
+      "sentence": "IOM",
+      "sha256": "db9de82657acf0ce6756430f495591c72f5038e538e849f8ed9f9b28eec91599",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1009_IOM_NEU_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 97920,
+      "native_pcm_float32_sha256": "2812ee6b996444929645b22ff77b975acaf41ba5c0295bdc0da992f0096acc21",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "e09f442a0b1402594b870f6b16a6d8bf71d5d5e5833bc79a296037c69c09ed40",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "82176eccd4c5cdc546677a33e8744e6dd0aa76b9879c1b4f60ca3a3a655a8bad",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1009",
+      "bytes": 377472,
+      "clip": "1009_IOM_SAD_XX",
+      "emotion": "SAD",
+      "label": 5,
+      "sentence": "IOM",
+      "sha256": "a35303aebba061751f6dc0a0363719ea6903e38228601f3cb8b97e9dec185052",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1009_IOM_SAD_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 134784,
+      "native_pcm_float32_sha256": "38e8472a3594b5ea2f70a4ed7f0dbac441484aa3efb8c6a13caeff64bf1efba4",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "f33668a90e18a6e9e7b4020cd1a019ec346966e73097270db1e7612e31e11217",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "97b39ae3be619de144b011388038499facab725c09f97e4d27147d9df5f15bbf",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": true,
+          "sample_count": 48000,
+          "float32_sha256": "f45e31b5d70e553de43610688877cd652af5822d57b7ff7408ac66528636d71a",
+          "native_accepted_samples": 132300
+        }
+      ]
+    },
+    {
+      "actor": "1010",
+      "bytes": 272065,
+      "clip": "1010_DFA_ANG_XX",
+      "emotion": "ANG",
+      "label": 0,
+      "sentence": "DFA",
+      "sha256": "706b86504371648ba32ab705bcea2c2d1f3b1b36aeaa0d248e7c34e4e811f315",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1010_DFA_ANG_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 99072,
+      "native_pcm_float32_sha256": "1626a9c5306c2bf3d31923510e34b63cdcc6422555199a927d88b89493b08a76",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "74866c9d70da71e4c3e21cada01a7da3bc8ede987b2473bf4a28f590e6c6bf7d",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "9750e26c666a10044375ad92d652abf91e23aef06f1803a9217f7ee63dffbfae",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1010",
+      "bytes": 338805,
+      "clip": "1010_DFA_DIS_XX",
+      "emotion": "DIS",
+      "label": 1,
+      "sentence": "DFA",
+      "sha256": "f1415815060bda15e135c15a3c7ee0bb537a3d83e1b71d65e203a4d32796b7ac",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1010_DFA_DIS_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 117504,
+      "native_pcm_float32_sha256": "dc54988505b3abf19c3c21ddf13fad3cecdc9261a873fd3ecb458a072be13f82",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "86c0bb4f4e8510076f2526df5c714654150d2491fd21c077d09c68b86aa96843",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "1921f2b2f1fdaa7fd662e64d0deea9b1a1737918ba986c67d023b64a5b82b6a7",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    },
+    {
+      "actor": "1010",
+      "bytes": 278227,
+      "clip": "1010_DFA_FEA_XX",
+      "emotion": "FEA",
+      "label": 2,
+      "sentence": "DFA",
+      "sha256": "75031ffebd95b38d77bc2d6639fc08af7156b0a966c59a679d31eeb75979fea4",
+      "split": "train",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1010_DFA_FEA_XX.flv",
+      "native_sample_rate": 44100,
+      "native_sample_count": 101376,
+      "native_pcm_float32_sha256": "04fd43e63b735088bd3f3f70e033f590e8b6841683a92cabdb989ebd28669800",
+      "audio_start_seconds": 0.0,
+      "streams": {
+        "audio_codec": "mp3",
+        "video_codec": "vp6f",
+        "video_width": 480,
+        "video_height": 360,
+        "video_start_seconds": 0.027
+      },
+      "prefixes": [
+        {
+          "seconds": 1.0,
+          "available": true,
+          "sample_count": 16000,
+          "float32_sha256": "3e4f83d9fb9190479dc9ed314e3f13acee78dff721d232de1bb25c932411e95c",
+          "native_accepted_samples": 44100
+        },
+        {
+          "seconds": 2.0,
+          "available": true,
+          "sample_count": 32000,
+          "float32_sha256": "c1950857d3cd71b860b7ab53795a7de2f81cd1043bbfefe14d821a720bbf28f0",
+          "native_accepted_samples": 88200
+        },
+        {
+          "seconds": 3.0,
+          "available": false,
+          "reason": "source shorter than declared prefix; rejected without padding"
+        }
+      ]
+    }
+  ],
+  "rejected_paths": [
+    {
+      "file": "1009_DFA_FEA_XX.flv",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Missing cohort identity or source byte mismatch"
+    },
+    {
+      "file": "1009_DFA_HAP_XX.flv",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Missing cohort identity or source byte mismatch"
+    },
+    {
+      "file": "1009_DFA_NEU_XX.flv",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Missing cohort identity or source byte mismatch"
+    },
+    {
+      "file": "1009_DFA_SAD_XX.flv",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Missing cohort identity or source byte mismatch"
+    },
+    {
+      "file": "1009_IOM_ANG_XX.flv",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Missing cohort identity or source byte mismatch"
+    },
+    {
+      "file": "1009_IOM_DIS_XX.flv",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Missing cohort identity or source byte mismatch"
+    },
+    {
+      "file": "1009_IOM_FEA_XX.flv",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Missing cohort identity or source byte mismatch"
+    },
+    {
+      "file": "1009_IOM_HAP_XX.flv",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason": "Missing cohort identity or source byte mismatch"
+    }
+  ],
+  "existing_media_count": 31,
+  "actors": [
+    "1002",
+    "1007",
+    "1009",
+    "1010"
+  ],
+  "all_existing_media_are_historical_training": true,
+  "fresh_confirmation": false,
+  "future_sample_controls": [
+    {
+      "clip": "1002_DFA_ANG_XX",
+      "seconds": 1.0,
+      "future_nan_prefix_bitwise_equal": true
+    }
+  ],
+  "strong_audio_inference_completed": false,
+  "external_v6_full_exclusions_recovered": false,
+  "production_activation": false,
+  "cpu_seconds_self_plus_waited_children": 4.325319,
+  "wall_seconds": 5.4560529430018505,
+  "cost_scope": "Task process plus waited ffprobe/ffmpeg, excluding startup/import and report final serialization; outer worker receipt is complete enclosing CPU and contains this once."
+}

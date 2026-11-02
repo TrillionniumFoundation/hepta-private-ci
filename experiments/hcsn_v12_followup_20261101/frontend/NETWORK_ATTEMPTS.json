@@ -1,0 +1,26 @@
+{
+  "schema": "hcsn-v12-bounded-source-transfer-attempts.v1",
+  "method": "HEAD; urllib Request/urlopen with timeout20; inherited network/proxy configuration unchanged",
+  "observations": [
+    {
+      "source": "original_v3_media",
+      "url": "https://media.githubusercontent.com/media/CheyneyComputerScience/CREMA-D/1658cd342dff90010aa843eaeebd53610a08b1dc/VideoFlash/1051_DFA_ANG_XX.flv",
+      "error_type": "URLError",
+      "reason": "<urlopen error timed out>",
+      "elapsed_seconds": 20.020535964999
+    },
+    {
+      "source": "official_audio_safetensors",
+      "url": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/resolve/6eba34a2485ea31cb03600241787c3a5edab8626/model.safetensors",
+      "error_type": "URLError",
+      "reason": "<urlopen error timed out>",
+      "elapsed_seconds": 20.019843991001835
+    }
+  ],
+  "http_policy_denial_observed": false,
+  "http_status_received": false,
+  "model_or_media_bytes_downloaded": 0,
+  "retries_or_mirror_attempts": 0,
+  "policy_override_attempted": false,
+  "interpretation": "Both local source probes timed out. This establishes transfer unavailability in the observed attempt, not an HTTP policy denial or proof that the public source is absent."
+}

@@ -1,0 +1,105 @@
+{
+  "worker_count": 14,
+  "measured_disjoint_full_worker_cpu_seconds": "620.406604",
+  "failed_attempt_cpu_seconds_included": "9.734773",
+  "all_listed_workers_have_complete_CPU_coverage": true,
+  "workers": [
+    {
+      "path": "receipts/campaign001/RECEIPT.json",
+      "cpu_seconds": "554.426242",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "receipts/common_actions001/RECEIPT.json",
+      "cpu_seconds": "4.506393",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "receipts/prepare001/RECEIPT.json",
+      "cpu_seconds": "3.460408",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "review/receipts/common001/RECEIPT.json",
+      "cpu_seconds": "1.260991",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "review/receipts/common002/RECEIPT.json",
+      "cpu_seconds": "1.034381",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "review/receipts/forward001/RECEIPT.json",
+      "cpu_seconds": "6.553293",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "review/receipts/gate001/RECEIPT.json",
+      "cpu_seconds": "3.443987",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "review/receipts/gate002/RECEIPT.json",
+      "cpu_seconds": "3.380957",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "review/receipts/live_gate001/RECEIPT.json",
+      "cpu_seconds": "6.644770",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "review/receipts/raw001/RECEIPT.json",
+      "cpu_seconds": "2.976791",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "review/receipts/scalar001/RECEIPT.json",
+      "cpu_seconds": "9.632009",
+      "task_success": false,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "review/receipts/scalar002/RECEIPT.json",
+      "cpu_seconds": "11.560666",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "review/receipts/scalar003/RECEIPT.json",
+      "cpu_seconds": "0.102764",
+      "task_success": false,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "review/receipts/scalar004/RECEIPT.json",
+      "cpu_seconds": "11.422952",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    }
+  ],
+  "nested_rule": "Per-arm/core/fixed replay timing already included in enclosing worker; never add twice",
+  "unknown_additional_cost": [
+    "source development and report writing",
+    "first smoke full bootstrap/worker cost",
+    "historical preparation and pretraining"
+  ],
+  "known_first_smoke_inner_CPU_seconds_separate_scope": 0.40182935099999995,
+  "complete_project_cost": null,
+  "complete_process_family_peak_memory_bytes": null,
+  "attributable_energy_joules": null,
+  "control_utility_increment_established": false,
+  "architecture_acceptance": false,
+  "production_activation": false
+}

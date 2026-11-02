@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.frontend.probe_local_media",
+    "--cohort",
+    "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_four_stage_flow_20261031/data/COHORT.json",
+    "--media",
+    "/workspace/scratch/65d0df4e0cbd/video_raw_r2_media",
+    "--out",
+    "experiments/hcsn_v12_followup_20261101/frontend/local_raw001"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/frontend/cost001",
+  "timeout": 180.0,
+  "sample_interval": 0.5
+}

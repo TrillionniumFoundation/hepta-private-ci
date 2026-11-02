@@ -1,0 +1,39 @@
+{
+  "case": {
+    "task": "av_binding",
+    "family": "filter",
+    "seed": 91103,
+    "implementation": "uniformization"
+  },
+  "profile_before": {
+    "pids_max": 1,
+    "pids_current": 0,
+    "pids_peak": 1,
+    "pids_events": {
+      "max": 0
+    },
+    "swap_max": 0,
+    "swap_current": 0,
+    "inode": 6880
+  },
+  "profile_after": {
+    "pids_max": 1,
+    "pids_current": 0,
+    "pids_peak": 1,
+    "pids_events": {
+      "max": 0
+    },
+    "swap_max": 0,
+    "swap_current": 0,
+    "inode": 6880
+  },
+  "singleton_profile_verified": true,
+  "worker_family_rss_peak_bytes": 73998336,
+  "whole_worker_cpu_seconds": 1.167325,
+  "cgroup_cpu_seconds": 1.161023,
+  "cgroup_charge_peak_bytes": 34656256,
+  "enclosing_meter_wall_seconds": 1.174261807,
+  "device_energy_joules": null,
+  "rss_scope": "Only this kernel-enforced one-TID worker family; birth through exit includes pre-join gate/exec bootstrap. Meter and verifier excluded.",
+  "timing_scope": "Worker loads sealed prepared AV packets/weights, executes both actual policies and serializes all traces. Media preparation and fitting excluded."
+}

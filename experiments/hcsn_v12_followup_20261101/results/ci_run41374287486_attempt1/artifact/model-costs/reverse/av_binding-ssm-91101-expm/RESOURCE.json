@@ -1,0 +1,39 @@
+{
+  "case": {
+    "task": "av_binding",
+    "family": "ssm",
+    "seed": 91101,
+    "implementation": "expm"
+  },
+  "profile_before": {
+    "pids_max": 1,
+    "pids_current": 0,
+    "pids_peak": 1,
+    "pids_events": {
+      "max": 0
+    },
+    "swap_max": 0,
+    "swap_current": 0,
+    "inode": 6880
+  },
+  "profile_after": {
+    "pids_max": 1,
+    "pids_current": 0,
+    "pids_peak": 1,
+    "pids_events": {
+      "max": 0
+    },
+    "swap_max": 0,
+    "swap_current": 0,
+    "inode": 6880
+  },
+  "singleton_profile_verified": true,
+  "worker_family_rss_peak_bytes": 74563584,
+  "whole_worker_cpu_seconds": 1.373703,
+  "cgroup_cpu_seconds": 1.368287,
+  "cgroup_charge_peak_bytes": 35053568,
+  "enclosing_meter_wall_seconds": 1.377533556,
+  "device_energy_joules": null,
+  "rss_scope": "Only this kernel-enforced one-TID worker family; birth through exit includes pre-join gate/exec bootstrap. Meter and verifier excluded.",
+  "timing_scope": "Worker loads sealed prepared AV packets/weights, executes both actual policies and serializes all traces. Media preparation and fitting excluded."
+}

@@ -1,0 +1,55 @@
+{
+  "status": "passed",
+  "model": {
+    "task": "av_binding",
+    "seed": 91103,
+    "family": "gru",
+    "numpy_path": "av_binding/gru-91103.npz",
+    "source_pt_sha256": "f4945c8eb294730942d0c47baec1b888cb9e1650d77d78ff6622c55ab94fabbc",
+    "source_pt_path": "av_binding/gru-91103-selected.pt",
+    "shapes": {
+      "update.weight_ih": [
+        192,
+        58
+      ],
+      "update.weight_hh": [
+        192,
+        64
+      ],
+      "update.bias_ih": [
+        192
+      ],
+      "update.bias_hh": [
+        192
+      ],
+      "reader.0.weight": [
+        38,
+        418
+      ],
+      "reader.0.bias": [
+        38
+      ],
+      "reader.2.weight": [
+        16,
+        38
+      ],
+      "reader.2.bias": [
+        16
+      ]
+    },
+    "parameters": 40354
+  },
+  "implementation": "expm",
+  "executions": 48,
+  "checks": 1178,
+  "maximum_numeric_difference": 2.220446049250313e-16,
+  "rtol": 1e-10,
+  "atol": 1e-12,
+  "actions_classes_requests_fees_exact": true,
+  "bundle_manifest_sha256": "65dc110d8dae3fca4b18fdfb71faa5627a81bc9891edadc474c8a00e04995b60",
+  "reference_sha256": "add5b9201f97c90ed5c354131f9845675d962d9aa5e54661b37210591b2e4fd4",
+  "ci_manifest_sha256": "95b6a2300e584014ed5333394d8c6361e50bf80532694759ad529b749570afbc",
+  "verifier_source_sha256": "b1d94f08be151204d96fd7c19db386992a0806cd60a0ff09dfb837bbbaddca7e",
+  "worker_trace_sha256": "7629d5fc62b43569971d021c1418b92702ff4082f8d34d92039986391210475e",
+  "scope": "Post-exit standard-library correctness audit, outside measured model worker"
+}

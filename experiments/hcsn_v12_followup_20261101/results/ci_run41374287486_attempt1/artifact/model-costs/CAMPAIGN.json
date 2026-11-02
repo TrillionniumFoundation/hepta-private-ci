@@ -1,0 +1,466 @@
+{
+  "status": "PASS",
+  "scientific_adoption_passed": false,
+  "frontend_quality_gate_passed": false,
+  "analytic_core_increment_passed": false,
+  "device_energy_joules": null,
+  "unavailable_historical_preparation_cpu_seconds": null,
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "BLIS_NUM_THREADS": "1",
+    "VECLIB_MAXIMUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "GOTO_NUM_THREADS": "1"
+  },
+  "independent_audit_exit_code": 0,
+  "all_model_resource_and_conformance_passed": true,
+  "results": [
+    {
+      "round": "forward",
+      "case": {
+        "task": "async_av",
+        "family": "filter",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "forward/async_av-filter-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "async_av",
+        "family": "filter",
+        "seed": 91101,
+        "implementation": "uniformization"
+      },
+      "directory": "forward/async_av-filter-91101-uniformization",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "async_av",
+        "family": "filter",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "forward/async_av-filter-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "async_av",
+        "family": "filter",
+        "seed": 91103,
+        "implementation": "uniformization"
+      },
+      "directory": "forward/async_av-filter-91103-uniformization",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "async_av",
+        "family": "gru",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "forward/async_av-gru-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "async_av",
+        "family": "gru",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "forward/async_av-gru-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "async_av",
+        "family": "history",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "forward/async_av-history-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "async_av",
+        "family": "history",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "forward/async_av-history-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "async_av",
+        "family": "ssm",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "forward/async_av-ssm-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "async_av",
+        "family": "ssm",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "forward/async_av-ssm-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "av_binding",
+        "family": "filter",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "forward/av_binding-filter-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "av_binding",
+        "family": "filter",
+        "seed": 91101,
+        "implementation": "uniformization"
+      },
+      "directory": "forward/av_binding-filter-91101-uniformization",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "av_binding",
+        "family": "filter",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "forward/av_binding-filter-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "av_binding",
+        "family": "filter",
+        "seed": 91103,
+        "implementation": "uniformization"
+      },
+      "directory": "forward/av_binding-filter-91103-uniformization",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "av_binding",
+        "family": "gru",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "forward/av_binding-gru-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "av_binding",
+        "family": "gru",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "forward/av_binding-gru-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "av_binding",
+        "family": "history",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "forward/av_binding-history-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "av_binding",
+        "family": "history",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "forward/av_binding-history-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "av_binding",
+        "family": "ssm",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "forward/av_binding-ssm-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "forward",
+      "case": {
+        "task": "av_binding",
+        "family": "ssm",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "forward/av_binding-ssm-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "av_binding",
+        "family": "ssm",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "reverse/av_binding-ssm-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "av_binding",
+        "family": "ssm",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "reverse/av_binding-ssm-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "av_binding",
+        "family": "history",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "reverse/av_binding-history-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "av_binding",
+        "family": "history",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "reverse/av_binding-history-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "av_binding",
+        "family": "gru",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "reverse/av_binding-gru-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "av_binding",
+        "family": "gru",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "reverse/av_binding-gru-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "av_binding",
+        "family": "filter",
+        "seed": 91103,
+        "implementation": "uniformization"
+      },
+      "directory": "reverse/av_binding-filter-91103-uniformization",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "av_binding",
+        "family": "filter",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "reverse/av_binding-filter-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "av_binding",
+        "family": "filter",
+        "seed": 91101,
+        "implementation": "uniformization"
+      },
+      "directory": "reverse/av_binding-filter-91101-uniformization",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "av_binding",
+        "family": "filter",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "reverse/av_binding-filter-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "async_av",
+        "family": "ssm",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "reverse/async_av-ssm-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "async_av",
+        "family": "ssm",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "reverse/async_av-ssm-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "async_av",
+        "family": "history",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "reverse/async_av-history-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "async_av",
+        "family": "history",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "reverse/async_av-history-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "async_av",
+        "family": "gru",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "reverse/async_av-gru-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "async_av",
+        "family": "gru",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "reverse/async_av-gru-91101-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "async_av",
+        "family": "filter",
+        "seed": 91103,
+        "implementation": "uniformization"
+      },
+      "directory": "reverse/async_av-filter-91103-uniformization",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "async_av",
+        "family": "filter",
+        "seed": 91103,
+        "implementation": "expm"
+      },
+      "directory": "reverse/async_av-filter-91103-expm",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "async_av",
+        "family": "filter",
+        "seed": 91101,
+        "implementation": "uniformization"
+      },
+      "directory": "reverse/async_av-filter-91101-uniformization",
+      "semantic_conformance_passed": true
+    },
+    {
+      "round": "reverse",
+      "case": {
+        "task": "async_av",
+        "family": "filter",
+        "seed": 91101,
+        "implementation": "expm"
+      },
+      "directory": "reverse/async_av-filter-91101-expm",
+      "semantic_conformance_passed": true
+    }
+  ],
+  "parent_cleanup_verified": true,
+  "enclosing_cpu_seconds_lower_bound": 50.522797999999995,
+  "enclosing_wall_seconds": 50.444873679000004,
+  "enclosing_cost_scope": "This driver and waited workers/verifiers/auditor from main boundary; initial interpreter imports/setup and final receipt serialization excluded. Nested worker costs already included.",
+  "identity_sha256": "de734e1f1032c4160e062350102a488b5dfff92a3073776e921c26e00ba60784"
+}

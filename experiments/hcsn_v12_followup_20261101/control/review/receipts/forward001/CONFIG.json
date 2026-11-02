@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.control.review.replay_campaign_forward",
+    "--run",
+    "experiments/hcsn_v12_followup_20261101/control/results/development001",
+    "--out",
+    "experiments/hcsn_v12_followup_20261101/control/review/CAMPAIGN_FORWARD_AUDIT.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/control/review/receipts/forward001",
+  "timeout": 300.0,
+  "sample_interval": 0.5
+}
