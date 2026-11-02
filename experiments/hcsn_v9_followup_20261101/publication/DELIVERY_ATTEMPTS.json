@@ -1,0 +1,17 @@
+{
+  "schema": "hcsn-v9-delivery-attempts.v1",
+  "failed_attempts": [
+    {
+      "action": "Read 1 MiB raw evidence chunk as base64 through exec output",
+      "result": "Output length failed the exact expected-length check; content was not uploaded",
+      "correction": "Read 720000-byte aligned chunks, with strict base64 length checks"
+    },
+    {
+      "action": "Create one Git blob for the 18371753-byte original gzip",
+      "result": "MCP HTTP 400: request body exceeds 16 MiB limit; no branch or commit changed",
+      "correction": "Preserve original compressed bytes in three ordered binary Git parts"
+    }
+  ],
+  "successful_transport": "TRANSPORT.json",
+  "original_compressed_bytes_changed": false
+}

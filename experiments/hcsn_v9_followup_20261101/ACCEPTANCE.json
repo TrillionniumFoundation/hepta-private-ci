@@ -1,0 +1,69 @@
+{
+  "schema": "hcsn-v9-strict-acceptance.v1",
+  "baseline_commit": "059b43a0b20ad07654880c155cc49799e0bb8858",
+  "overall": "HOLD",
+  "all_strict_scientific_gates_pass": false,
+  "production_authorized": false,
+  "gates": {
+    "frontend": {
+      "status": "HOLD",
+      "observed_admission": "FAIL",
+      "missing_checks": 27,
+      "missing": [
+        "original v6 source/protocol/head",
+        "qualified strong audio head",
+        "complete historical exclusion evidence",
+        "genuinely independent new recordings"
+      ],
+      "offline_contract_cannot_prove_external_authenticity": true
+    },
+    "analytic_increment": {
+      "status": "HOLD",
+      "scope": "Synthetic finite CTMC task with noisy A/V sensors, not real audio/video and not renewal/first-passage propagation",
+      "D_minus_B_mean": 0.005523437500000001,
+      "D_minus_B_95": [
+        -0.0026886718749999945,
+        0.014935205078124994
+      ],
+      "D_minus_exact_history": 0.0,
+      "positive_increment_established": false,
+      "old_v8_renewal_negative_results_superseded": false,
+      "missing": [
+        "persistent raw AV comparison",
+        "qualified strong ordinary baseline",
+        "equal-cost deployment comparison"
+      ]
+    },
+    "mechanisms": {
+      "status": "PARTIAL",
+      "risk_logical_full_minus_zero": 0.3982249999999999,
+      "risk_logical_without_deadline_penalty": -0.10177500000000006,
+      "frozen_kernel_head_refitting_complete": true,
+      "full_analytic_AV_network_retraining": false,
+      "necessity_or_net_control_advantage_proven": false,
+      "missing": [
+        "full dynamic/content network retraining",
+        "real AV reachable mechanism effects",
+        "robust service contract including flush reserve"
+      ]
+    },
+    "economics": {
+      "status": "HOLD",
+      "process_family_CPU_and_partial_sampling_implemented": true,
+      "complete_continuous_family_memory_bytes": null,
+      "attributable_device_energy_joules": null,
+      "missing_preparation_CPU_seconds": null,
+      "complete_equal_cost_adoption_gate_pass": false
+    }
+  },
+  "evidence_sha256": {
+    "frontend/OBSERVED_RESULT.json": "5f201e1a43ba13094d68d7c0143495e50586d9e5d87438fd5db2ca586eaab4da",
+    "persistent_core/results/development001/SUMMARY.json": "59380899d24dee74fea99d6496bfc6d2f1b5fd1a9aa027101103d63ba5560c77",
+    "refit_ablation/REFIT_REPORT.json": "e27cd41069fe4682df1e3121aa9874d69f80ab4721be247d53e03f768cf1dd83",
+    "economics/SUMMARY.json": "700071680be99ced610c3d547abc06d675cabcd48a857fc9584c0e133c7b5206",
+    "risk/results/development001/SUMMARY.json": "af93ced3ee06f7a9d059e97a73776861e9746b75fb82d0aff61f91f7382c5ccc",
+    "risk/results/development001/SENSITIVITY.json": "632bffbd16dce53a1164e8a71d1c561d95f037ea51805076881b35dfcc9ace54"
+  },
+  "readout_refit_scope": "frozen analytic renewal kernel with independently refitted 30-parameter content head",
+  "cost_scope": "Observer resource delta starts after interpreter import, subreaper/capability checks, own identity and source hash; includes command creation, all waitable ordinary descendants, sampling and raw sample writing. Final receipt/report serialization is outside."
+}

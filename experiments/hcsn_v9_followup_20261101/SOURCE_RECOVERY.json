@@ -1,0 +1,320 @@
+{
+  "schema": "hcsn-v9-source-recovery.v1",
+  "baseline_commit": "059b43a0b20ad07654880c155cc49799e0bb8858",
+  "baseline_root_tree": "059b43a0b20ad07654880c155cc49799e0bb8858",
+  "route": "GitHub connector fetched UTF8 files; raw Git blob hashes verified locally; partial working tree only",
+  "files": [
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/ACCEPTANCE.json",
+      "sha": "cdfdc24349c9d5e1e9b7bed49c2320e227bb763a"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/FORMATTING_STATUS.json",
+      "sha": "8ceaf627583500acc914d360bdd122c82553360c"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/README.md",
+      "sha": "20a5502cc27bdd8dc85fed1ebc7652aca8f27f98"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/REPORT_ZH.md",
+      "sha": "3470935f74b34efc6f65d7795bbaae7480d94b5d"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/REPRODUCE.md",
+      "sha": "18fdb7d978ec5404055d5131abc6c09cf2e90ac3"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/SOURCE_PROVENANCE.json",
+      "sha": "68341260961afbed9c759c126955ada107426608"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/EVIDENCE_AUDIT.json",
+      "sha": "1aaa43f68e48f3fd7f03b38a2b58acba296682c7"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/INDEPENDENT_REVIEW.md",
+      "sha": "1a5f112e1fce34422fe59d9321dd0720f773562a"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/README.md",
+      "sha": "2ce7a331199453dbf7c0a15f69a060f9323f598f"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/SOURCE_FREEZE.json",
+      "sha": "71e1e8432eecfd691c6eb134ba19e43ff05cc061"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/SOURCE_FREEZE_PRE_REVIEW.json",
+      "sha": "7b7ec90d9afa8c63d3b44e76fee4c0619a638089"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/__init__.py",
+      "sha": "1eeb192debcb6266d253851456e1e45d1e83fda3"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/audit_mechanism_records.py",
+      "sha": "435b8c75e87f8934664875f826ba2791d21b6c66"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/process_tree_probe.py",
+      "sha": "ef21d292e80ef9514e04038ed41d5203040aa5d7"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/test_worker_cost.py",
+      "sha": "056d180448d49671ef36db3eafd2ef6087e86616"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/worker_cost.py",
+      "sha": "373fcf5d8d7d783b7bd5c04456362f274e44bb61"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/economics/worker_entry.py",
+      "sha": "8ce68d9f80f502158c15a90f425e382f67afc6a8"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/README.md",
+      "sha": "7a94646baf6d4a45ff4ac103fed682a21c8c6c77"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/RECOVERY_SPEC.json",
+      "sha": "419bb1dd8c6b7fa33a91c69e20786f372e2da0fc"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/__init__.py",
+      "sha": "5a5e1c1187da11d965fa747ed55bb702e5f15a0c"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/causality_check.py",
+      "sha": "b33c2b33e62556a456cbd944f14ef053e2437f25"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py",
+      "sha": "e1a1fa85fafbbe9e167cda318aa0efe9f08863ee"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/recover_local.py",
+      "sha": "31ed32d0df891a818e712f3ddda5922337fbdc8f"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/replay.py",
+      "sha": "242383c2be2ade232f7c1996078956dbeb69f7ce"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/test_legacy_v3.py",
+      "sha": "3b2e25fcbb13368bde306816defd155e940d6bf2"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/INITIAL_ENVIRONMENT_FAILURE.json",
+      "sha": "a8b5d9ea7f4c93145746e3005835a156a88b678b"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/campaign.py",
+      "sha": "7de6325e05b81202c97448edafa4907b4213be85"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/count_interventions.py",
+      "sha": "5237d0ccbf977b663a115bde3e168bcf6d08d5a4"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/recurrent_counts.py",
+      "sha": "72cef439e3a44a580cd7deddd7e6bec5fe0f6719"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/mechanisms/test_mechanisms.py",
+      "sha": "9d64831aa9ac2384b5fd19e3eeda845bef8af0a3"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/INDEPENDENT_REVIEW.md",
+      "sha": "2a76bba3902877f12f47b533feec124ac8b8fbdc"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/README.md",
+      "sha": "986aa10245d52f17887242a133d0304d271f3902"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/balanced_binding_replay.py",
+      "sha": "160e7c6a5e2bf4b650e35ec374ef7d71980736d9"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/execution.py",
+      "sha": "28dfaebcc2ea85b1a2f670b5513a79fc316c8d5d"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/historical_probe.py",
+      "sha": "387ae2fac6e7c7a711407d1dac3431bc4321e1d1"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/historical_service.py",
+      "sha": "a367b4c02fa11fde0940e869613d8558a8ac211b"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/live_probe.py",
+      "sha": "a491746638a7fc2a69b951fdf4886e57a4dfcd40"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/planning.py",
+      "sha": "218e5f49e07d16f0ce845bee42aa8c85df31cc2b"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/service.py",
+      "sha": "f71ba64d9926d94946ae0780011ba85af1f6e1ee"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/scheduler/test_scheduler.py",
+      "sha": "a9bd9efc45327dd9dc65ba6c8c95c4bd4c37508b"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/BASELINE_RECOVERY.json",
+      "sha": "f6b0549b76594b699b0097aca12ac4b29e126c1d"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/BASELINE_RECOVERY_FINAL.json",
+      "sha": "f6b0549b76594b699b0097aca12ac4b29e126c1d"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/FORMATTING_STATUS.json",
+      "sha": "9245848314f7cc69bd12758f573ab7bee9b1c14b"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/MANIFEST.json",
+      "sha": "212957143e6d7e9392819a8e163fc88f2f2666e1"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/README.md",
+      "sha": "21111917d7e98e41f4249a7de77260845ed114f6"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/REMOTE_BASELINE_READS.json",
+      "sha": "afbe607210df0e323789e03782818855a9b1ecf9"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/REVIEW_STAGES.json",
+      "sha": "811646f0e3472312c1e08f1c24addf40b7929aa4"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/content_interface/CONTRACT_TESTS.json",
+      "sha": "e2ec7e9f40751b87a03eecee0ee7d91bf468f54b"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/content_interface/MANIFEST.json",
+      "sha": "064e46ea2c537d56d5b61be2aebf385801362231"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/content_interface/README.md",
+      "sha": "2ed9525628ca1588d885c6313c5fdce7ab18a430"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/content_interface/content_interface.py",
+      "sha": "48cadf733fa120131d9427dbbd6d19c8f4cea333"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/content_interface/test_content_interface.py",
+      "sha": "b2bce51797f8d1761a5547a7389a29edea02e4d7"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/DELIVERY_003.json",
+      "sha": "11361925a6e47ec157b6ce59232097a9ff0ff395"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/HANDOFF.json",
+      "sha": "95ee601a42e3988ed089e0d84d2dcef25e2077d0"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/INITIAL_INSPECTION.json",
+      "sha": "26cfe55e88896f348b92819f7caaffa8b6e23e8c"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/MANIFEST.json",
+      "sha": "0b16a554e7afcb49443e9fd0062df19f4f6c414b"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/MANIFEST_003.json",
+      "sha": "93e03eec4abc63c539b7a74d2f9e8130008e65bd"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/PROBE_REPORT.json",
+      "sha": "d850fc4c0546dad4716a03f8f6ec28042b80d25a"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/PROBE_REPORT_002.json",
+      "sha": "a86ad9f1ade1bb56ea86b3fd2dc103f7028c380f"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/PROBE_REPORT_003.json",
+      "sha": "1eff5b88eed75f31e2b0c8c2b7a9acc704b9163a"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/REPORT_ZH.md",
+      "sha": "4e073ae53bc47cf60cd5ac3fab8016c17f5aad99"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/probe_memory.py",
+      "sha": "56ab618d0a51123eb9db581644c4763264029e9d"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py",
+      "sha": "e0c20aa17d7147eab3580184354cc72c85cb6ed4"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/memory_observer/test_process_memory.py",
+      "sha": "b351b92b87668aad2affb87da54a2230bd74312b"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/protocol/MEMORY_OBSERVER_REVIEW.md",
+      "sha": "411f3953df2db0f5e380eff4d03557b0e397d6fd"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/protocol/MEMORY_OBSERVER_REVIEW_FOLLOWUP.md",
+      "sha": "988cc4dab7e903ba19acef137f569cc49c919869"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/protocol/PROTOCOL_DRAFT.json",
+      "sha": "ceeee128803b0061ad5cc18d04ff2633e5940ea6"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/protocol/README.md",
+      "sha": "13d24dcd63772b4f198083cca0c6755944faa28e"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/restore_check.py",
+      "sha": "a020ab1509dff0dab8e006b2885f8fdf8196b639"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/run_checks.py",
+      "sha": "5ead5066dd31ddae6c1409b9e6febd93aa4f38ab"
+    },
+    {
+      "path": "experiments/hcsn_v7_support_20261101/test_restore_check.py",
+      "sha": "6372a228cc9b0d4ec9e6d04ac36da5388cbd4581"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/renewal.py",
+      "sha": "76d83a27103d32d3559e4d1143596d16c28adbd2"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/mechanism.py",
+      "sha": "bb521a89155b5054bab607f5b03410d3fda6719e"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/data.py",
+      "sha": "a94725c38467b4e16e4ac94c8c0d74fcf89a2c12"
+    },
+    {
+      "path": "experiments/hcsn_mechanism_content_v2/__init__.py",
+      "sha": "bd75689ecd3c25e334810c14049d103b0d8ae266"
+    },
+    {
+      "path": "experiments/hcsn_causal_execution_v3/mechanism_followup.py",
+      "sha": "8fcc2711cd49fa0feb6aa594be66149a1bf47ef0"
+    },
+    {
+      "path": "experiments/hcsn_causal_execution_v3/__init__.py",
+      "sha": "72bab0b2b21797e8ad72e64d23a14092c9421c7f"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+test_absolute_path_and_path_escape_rejected (test_admission.AdmissionTests.test_absolute_path_and_path_escape_rejected) ... ok
+test_changed_bytes_rejected_even_with_unchanged_metadata (test_admission.AdmissionTests.test_changed_bytes_rejected_even_with_unchanged_metadata) ... ok
+test_cropped_resplit_history_ancestor_rejected (test_admission.AdmissionTests.test_cropped_resplit_history_ancestor_rejected) ... ok
+test_duplicate_confirmation_captures_rejected (test_admission.AdmissionTests.test_duplicate_confirmation_captures_rejected) ... ok
+test_empty_historical_exclusion_list_rejected (test_admission.AdmissionTests.test_empty_historical_exclusion_list_rejected) ... ok
+test_failed_strong_audio_quality_cannot_hide_behind_av (test_admission.AdmissionTests.test_failed_strong_audio_quality_cannot_hide_behind_av) ... ok
+test_fully_bound_synthetic_fixture_passes_contract_only (test_admission.AdmissionTests.test_fully_bound_synthetic_fixture_passes_contract_only) ... ok
+test_invalid_predictions_never_raise_or_pass (test_admission.AdmissionTests.test_invalid_predictions_never_raise_or_pass) ... ok
+test_json_nan_and_duplicate_keys_rejected (test_admission.AdmissionTests.test_json_nan_and_duplicate_keys_rejected) ... ok
+test_missing_assets_and_null_metadata_fail_closed (test_admission.AdmissionTests.test_missing_assets_and_null_metadata_fail_closed) ... ok
+test_missing_or_zero_original_threshold_rejected (test_admission.AdmissionTests.test_missing_or_zero_original_threshold_rejected) ... ok
+test_missing_strong_audio_head_is_not_silently_waived (test_admission.AdmissionTests.test_missing_strong_audio_head_is_not_silently_waived) ... ok
+test_no_ancestry_or_acquisition_metadata_does_not_pass (test_admission.AdmissionTests.test_no_ancestry_or_acquisition_metadata_does_not_pass) ... ok
+test_omitted_easy_subset_or_changed_cross_head_labels_rejected (test_admission.AdmissionTests.test_omitted_easy_subset_or_changed_cross_head_labels_rejected) ... ok
+test_omitted_exploration_or_stale_reconciliation_rejected (test_admission.AdmissionTests.test_omitted_exploration_or_stale_reconciliation_rejected) ... ok
+test_original_v3_head_cannot_substitute_for_original_v6 (test_admission.AdmissionTests.test_original_v3_head_cannot_substitute_for_original_v6) ... ok
+test_quality_results_bound_to_exact_index (test_admission.AdmissionTests.test_quality_results_bound_to_exact_index) ... ok
+test_renamed_or_recoded_original_recording_is_not_new (test_admission.AdmissionTests.test_renamed_or_recoded_original_recording_is_not_new) ... ok
+test_same_acquisition_session_is_not_independent (test_admission.AdmissionTests.test_same_acquisition_session_is_not_independent) ... ok
+test_v3_only_catalog_cannot_claim_complete_history (test_admission.AdmissionTests.test_v3_only_catalog_cannot_claim_complete_history) ... ok
+test_wrong_git_blob_rejected (test_admission.AdmissionTests.test_wrong_git_blob_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.107s
+
+OK
