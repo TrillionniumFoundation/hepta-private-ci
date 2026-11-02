@@ -1,0 +1,264 @@
+{
+  "schema": "hcsn.exact-head-native-failure-diagnosis.v1",
+  "head_sha": "8df6e272e3a31a3fae0491dd2d511825e212290c",
+  "executed_merge_sha": "3a00c6d4d0cbbbbde5266a5a4a253afdccd139a4",
+  "identical_head_and_merge_tree": "9195cb03d814b85e42bf37b0abcf5f583481e5d6",
+  "retrieved_at_utc": "2026-11-01T18:44:14Z",
+  "windows_clippy": {
+    "job_id": 124935497125,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41335687847/job/124935497125",
+    "failed_step": {
+      "number": 4,
+      "name": "bazel build --config=clippy lint targets"
+    },
+    "root_failure": "Explicitly requested manual Rust test targets are incompatible with the selected Windows MSVC target platform. The target-discovery query is pre-analysis and includes those labels.",
+    "incompatible_total": 157,
+    "gnullvm_only_cross_bins": 156,
+    "unix_only_qualification_targets": 1,
+    "unix_only_target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin",
+    "top_level_targets": 1424,
+    "targets_analyzed_and_built": 1267,
+    "rust_hard_compiler_or_clippy_error_diagnostic_observed": false,
+    "aggregate_exit_code": 1,
+    "source_contracts": [
+      {
+        "path": "defs.bzl",
+        "git_blob": "5e8d392b960e0a3a7e0f173f5c96948c10d0bf71",
+        "lines": "32–35,706–723",
+        "contract": "WINDOWS_GNULLVM_ONLY rejects the default/MSVC case; every generated cross-bin uses this constraint."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/BUILD.bazel",
+        "git_blob": "525f955870a1ef3b6dc83660763922b7a61b044c",
+        "lines": "65–70,93–114",
+        "contract": "The process qualification harness uses UnixProcessDriver/Unix sockets and is declared compatible only with Linux/macOS."
+      },
+      {
+        "path": "scripts/list-bazel-clippy-targets.sh",
+        "git_blob": "d12a256d00673350b1a10fd8070f7001840e65c4",
+        "contract": "Manual-target query is intentionally pre-analysis; current Windows native branch does not remove GNULLVM-only helpers."
+      },
+      {
+        "path": ".github/workflows/bazel.yml",
+        "git_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c",
+        "lines": "214–216,377–409",
+        "contract": "Windows test shards already honor platform constraints for explicit targets. Windows Clippy selects MSVC but lacked the equivalent compatibility option."
+      }
+    ],
+    "baseline_identity": "The workflow and manual-target helper have identical blobs at base ad32ceac6972e811ce74802ab5c44dc63b40bd4b and this head. This proves inherited selector behavior, not that every target or failure existed at the base.",
+    "bounded_excerpts": {
+      "first_incompatible": [
+        {
+          "line": 6216,
+          "text": "2026-11-01T18:40:10.3815551Z WARNING: errors encountered while analyzing target '//codex-rs/hepta-agentd:hepta-agentd-optional_module_restart-test-windows-cross-bin', it will not be built."
+        },
+        {
+          "line": 6217,
+          "text": "2026-11-01T18:40:10.3851315Z Target //codex-rs/hepta-agentd:hepta-agentd-optional_module_restart-test-windows-cross-bin is incompatible and cannot be built, but was explicitly requested."
+        },
+        {
+          "line": 6218,
+          "text": "2026-11-01T18:40:10.3852243Z Dependency chain:"
+        },
+        {
+          "line": 6219,
+          "text": "2026-11-01T18:40:10.3884196Z     //codex-rs/hepta-agentd:hepta-agentd-optional_module_restart-test-windows-cross-bin (07f9db)   <-- target platform (//:windows_x86_64_msvc) didn't satisfy constraint @@platforms//:incompatible"
+        },
+        {
+          "line": 6220,
+          "text": "2026-11-01T18:40:10.3885609Z WARNING: errors encountered while analyzing target '//codex-rs/hepta-automation:hepta-automation-authorized_effect-test-windows-cross-bin', it will not be built."
+        },
+        {
+          "line": 6221,
+          "text": "2026-11-01T18:40:10.3886720Z Target //codex-rs/hepta-automation:hepta-automation-authorized_effect-test-windows-cross-bin is incompatible and cannot be built, but was explicitly requested."
+        },
+        {
+          "line": 6222,
+          "text": "2026-11-01T18:40:10.3887344Z Dependency chain:"
+        },
+        {
+          "line": 6223,
+          "text": "2026-11-01T18:40:10.3887984Z     //codex-rs/hepta-automation:hepta-automation-authorized_effect-test-windows-cross-bin (07f9db)   <-- target platform (//:windows_x86_64_msvc) didn't satisfy constraint @@platforms//:incompatible"
+        }
+      ],
+      "unix_qualification": [
+        {
+          "line": 6300,
+          "text": "2026-11-01T18:40:10.4016094Z WARNING: errors encountered while analyzing target '//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin', it will not be built."
+        },
+        {
+          "line": 6301,
+          "text": "2026-11-01T18:40:10.4017071Z Target //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin is incompatible and cannot be built, but was explicitly requested."
+        },
+        {
+          "line": 6302,
+          "text": "2026-11-01T18:40:10.4017667Z Dependency chain:"
+        },
+        {
+          "line": 6303,
+          "text": "2026-11-01T18:40:10.4019517Z     //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin (07f9db)   <-- target platform (//:windows_x86_64_msvc) didn't satisfy constraint @@platforms//:incompatible"
+        },
+        {
+          "line": 6304,
+          "text": "2026-11-01T18:40:10.4020568Z WARNING: errors encountered while analyzing target '//codex-rs/codex-api:codex-api-models_integration-test-windows-cross-bin', it will not be built."
+        }
+      ],
+      "final_summary": [
+        {
+          "line": 6844,
+          "text": "2026-11-01T18:40:10.5074523Z INFO: Build succeeded for only 1267 of 1424 top-level targets"
+        },
+        {
+          "line": 6845,
+          "text": "2026-11-01T18:40:10.5728096Z INFO: Found 1424 targets..."
+        },
+        {
+          "line": 6846,
+          "text": "2026-11-01T18:40:10.7275061Z ERROR: command succeeded, but not all targets were analyzed"
+        },
+        {
+          "line": 6847,
+          "text": "2026-11-01T18:40:11.1258232Z INFO: Elapsed time: 1201.219s, Critical Path: 580.58s"
+        },
+        {
+          "line": 6848,
+          "text": "2026-11-01T18:40:11.1258931Z INFO: 6572 processes: 2737 remote cache hit, 3165 internal, 670 local."
+        },
+        {
+          "line": 6849,
+          "text": "2026-11-01T18:40:11.1259398Z ERROR: Build did NOT complete successfully"
+        },
+        {
+          "line": 6850,
+          "text": "2026-11-01T18:40:11.1259982Z FAILED: "
+        },
+        {
+          "line": 6851,
+          "text": "2026-11-01T18:40:14.6481256Z FAILED: "
+        },
+        {
+          "line": 6852,
+          "text": "2026-11-01T18:40:16.4485581Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/f3e3b405-35d6-496e-ad37-38d3648642d8"
+        }
+      ]
+    },
+    "candidate": "Add the existing --skip_incompatible_explicit_targets platform-selection option only to Windows/MSVC Clippy. Preserve the complete target roster, constraints, Clippy levels and failure propagation.",
+    "qualification": "A small real Bazel 9 graph separately confirms incompatibility filtering and compatible-action failure propagation. Full native Windows Clippy on the new commit remains required."
+  },
+  "macos_arm_test": {
+    "job_id": 124935497136,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41335687847/job/124935497136",
+    "failed_step": {
+      "number": 6,
+      "name": "bazel test //..."
+    },
+    "first_fatal": "Bazel JVM could not create a native thread: OutOfMemoryError, possibly memory or process/resource limits.",
+    "failure_stack": "AsynchronousTreeDeleter.deleteTree -> SandboxStash.stashSandboxInternal -> SymlinkedSandboxedSpawn.delete -> test action execution",
+    "exit_code": 33,
+    "progress_before_crash": "27 / 198 tests reported immediately before the fatal JVM failure; 151933 targets configured.",
+    "failed_test_target_reported": false,
+    "configuration": {
+      "authenticated_remote_mode_observed": true,
+      "ordinary_common_jobs": 30,
+      "remote_config_jobs": 800,
+      "macos_test_strategy": "darwin-sandbox,local",
+      "v8_only_client_budget": 30,
+      "v8_only_budget_is_used_by_this_native_test_job": false,
+      "inference": "The authenticated ci-macos path selects the remote configuration that permits 800 jobs. The log does not measure actual JVM native thread count, resident memory or process limits; the precise exhausted resource remains undetermined."
+    },
+    "bounded_excerpts": {
+      "progress_and_fatal": [
+        {
+          "line": 1203,
+          "text": "2026-11-01T18:23:05.5942500Z Analyzing: 1034 targets (1582 packages loaded, 151907 targets configured, 639 aspect applications)"
+        },
+        {
+          "line": 1204,
+          "text": "2026-11-01T18:23:05.6047670Z [5,218 / 5,248] 14 / 184 tests; Compiling Rust bin //codex-rs/shell-escalation:codex-execve-wrapper (10 files); 2s remote, remote-cache ... (18 actions, 12 running)"
+        },
+        {
+          "line": 1205,
+          "text": "2026-11-01T18:23:06.5907120Z Analyzing: 1034 targets (1582 packages loaded, 151933 targets configured, 668 aspect applications)"
+        },
+        {
+          "line": 1206,
+          "text": "2026-11-01T18:23:06.6002730Z [5,307 / 5,331] 27 / 198 tests; Compiling Rust bin //codex-rs/shell-escalation:codex-execve-wrapper (10 files); 3s remote, remote-cache ... (16 actions, 9 running)"
+        },
+        {
+          "line": 1207,
+          "text": "2026-11-01T18:23:07.5314750Z FATAL: bazel ran out of memory and crashed. Printing stack trace:"
+        },
+        {
+          "line": 1208,
+          "text": "2026-11-01T18:23:07.5416530Z java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached"
+        },
+        {
+          "line": 1209,
+          "text": "2026-11-01T18:23:07.5519490Z \tat java.base/java.lang.Thread.start0(Native Method)"
+        },
+        {
+          "line": 1210,
+          "text": "2026-11-01T18:23:07.5621000Z \tat java.base/java.lang.Thread.start(Unknown Source)"
+        },
+        {
+          "line": 1211,
+          "text": "2026-11-01T18:23:07.5722760Z \tat java.base/java.lang.System$1.start(Unknown Source)"
+        },
+        {
+          "line": 1212,
+          "text": "2026-11-01T18:23:07.5824520Z \tat java.base/jdk.internal.vm.SharedThreadContainer.start(Unknown Source)"
+        },
+        {
+          "line": 1213,
+          "text": "2026-11-01T18:23:07.5825860Z \tat java.base/java.util.concurrent.ThreadPoolExecutor.addWorker(Unknown Source)"
+        },
+        {
+          "line": 1214,
+          "text": "2026-11-01T18:23:07.5929410Z \tat java.base/java.util.concurrent.ThreadPoolExecutor.execute(Unknown Source)"
+        },
+        {
+          "line": 1215,
+          "text": "2026-11-01T18:23:07.6031620Z \tat com.google.devtools.build.lib.sandbox.AsynchronousTreeDeleter.deleteTree(AsynchronousTreeDeleter.java:110)"
+        },
+        {
+          "line": 1216,
+          "text": "2026-11-01T18:23:07.6131920Z \tat com.google.devtools.build.lib.sandbox.SandboxStash.stashSandboxInternal(SandboxStash.java:272)"
+        },
+        {
+          "line": 1217,
+          "text": "2026-11-01T18:23:07.6233700Z \tat com.google.devtools.build.lib.sandbox.SandboxStash.stashSandbox(SandboxStash.java:205)"
+        },
+        {
+          "line": 1218,
+          "text": "2026-11-01T18:23:07.6613450Z \tat com.google.devtools.build.lib.sandbox.SymlinkedSandboxedSpawn.delete(SymlinkedSandboxedSpawn.java:134)"
+        },
+        {
+          "line": 1219,
+          "text": "2026-11-01T18:23:07.6617470Z \tat com.google.devtools.build.lib.sandbox.AbstractSandboxSpawnRunner.runSpawn(AbstractSandboxSpawnRunner.java:175)"
+        }
+      ],
+      "collector_and_exit": [
+        {
+          "line": 1247,
+          "text": "2026-11-01T18:23:11.4067250Z No Bazel action failures were found in the captured console output."
+        },
+        {
+          "line": 1248,
+          "text": "2026-11-01T18:23:15.1366810Z No failed Bazel test targets were found in console output."
+        },
+        {
+          "line": 1249,
+          "text": "2026-11-01T18:23:15.1473600Z ##[error]Process completed with exit code 33."
+        }
+      ]
+    },
+    "action": "Evidence only. No concurrency, heap, test-scope or backend change was made.",
+    "scope": "This job failed in Bazel infrastructure, not an observed Rust source compilation error or an identified test assertion."
+  },
+  "preservation": {
+    "full_decoded_logs": "JOB_124935497125.log.gz and JOB_124935497136.log.gz; lossless compressed UTF-8 connector content, with identities in SOURCE_AND_LOG_IDENTITY.json",
+    "source_context": "23 files verified against their Git blob identities; exact current head and executed merge trees match.",
+    "no_remote_rerun": true,
+    "no_frozen_scientific_source_change": true
+  }
+}

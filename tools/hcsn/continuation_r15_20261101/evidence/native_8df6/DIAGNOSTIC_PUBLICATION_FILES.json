@@ -1,0 +1,51 @@
+{
+  "schema": "hcsn.publication-files.v1",
+  "evidence_head_sha": "8df6e272e3a31a3fae0491dd2d511825e212290c",
+  "publication_preconditions": [
+    "Retain this exact-head observation and both primary logs unchanged. No macOS resource repair or new-head native success is asserted."
+  ],
+  "files": [
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/NATIVE_FAILURE_DIAGNOSIS.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/NATIVE_FAILURE_DIAGNOSIS.json",
+      "bytes": 13169,
+      "sha256": "3c374b934f435ccd9745b9f16cad651d9160ac8190574734065b49f42c295df2",
+      "git_blob": "d6447e06e4274fc26fe26af81239098df91c9804"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/SOURCE_AND_LOG_IDENTITY.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/SOURCE_AND_LOG_IDENTITY.json",
+      "bytes": 11297,
+      "sha256": "cab1ff2c728896dac63d0f1d12d6d94da1569551a95d4dcbd2e60e32919c7b5a",
+      "git_blob": "fcfa3cae3426acf63c3fb791bbba5855c22202f5"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/EXACT_SOURCE_CONTEXT.zip",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/EXACT_SOURCE_CONTEXT.zip",
+      "bytes": 70858,
+      "sha256": "701490f21198d376e4b36d5a73f157f8664eaed98df1b4ac213567d3f5fe218f",
+      "git_blob": "beb78c3eb60c6ffdf0d81b700498cc54321436ac"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/INCOMPATIBLE_TARGETS.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/INCOMPATIBLE_TARGETS.json",
+      "bytes": 12612,
+      "sha256": "ae90c130bf673714ba7639b8400f5f4d4365a2b20737031c8a4a16b0c1cebc52",
+      "git_blob": "05fd23b98fc892ab2405d59129843f8098a60abd"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/JOB_124935497125.log.gz",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/JOB_124935497125.log.gz",
+      "bytes": 90074,
+      "sha256": "64ed0635a857d431e2525bc184f77eacc389a54f1c51b87ffa31216f3fc09942",
+      "git_blob": "f0e63140308a5a43d532ddaaaf52a3d543bc5fa7"
+    },
+    {
+      "source": "/tmp/hcsn-8df6-native-diagnostics/JOB_124935497136.log.gz",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/native_8df6/JOB_124935497136.log.gz",
+      "bytes": 22064,
+      "sha256": "92e736c12669b76175162026fa9536d8885478bcfbf30a37074beda774ca093b",
+      "git_blob": "e0336251e71c7653a620950a29132b68a371e3eb"
+    }
+  ]
+}
