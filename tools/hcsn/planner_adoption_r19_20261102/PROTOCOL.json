@@ -1,0 +1,74 @@
+{
+  "actual_candidate_attempts": 96000,
+  "actual_worlds": 16000,
+  "additional_known_preuse_cpu": 0.7300790000000461,
+  "all_known_preuse_cpu_lower_bound": 642.903506,
+  "allocation": "Perarm outerregion includesexecute, readback, canonicalserialization/interning; armpreparationcountedonce. RestworkerCPU(inputgeneration,imports,compile,rawgzip/output,etc) equallyallocated6arms; disjointsupervisor/launcheroverhead equally12arm-domaingroups. All fullwait4workers and inclusivepipelineCPUretained; nestedworkerCPU not added again toinclusivepipeline. Currentrunexpense and strictfuture-reuseview separatelylabelled beforeoutcomes.",
+  "arms": {
+    "B": "validation-selected ordinary, full, boundedworkspace",
+    "B_ref": "same frozen selectedordinary/full/R18cachedoptimizer",
+    "D": "HXfull,boundedworkspace",
+    "D_ref": "same HXfull/R18cachedoptimizer",
+    "anchored": "HXanchored,boundedworkspace",
+    "anchored_ref": "same HXanchored/R18cachedoptimizer"
+  },
+  "common_control": "All six use exact original valuecontroller, same perworld paths/observations/prices, everybranch retained and originalargmax/ties. Same strong ordinary comparator gets shared optimizations. No weak old unoptimized substitution.",
+  "compile_check_paths": [
+    "tools/hcsn/planner_adoption_r19_20261102/bounded.py",
+    "tools/hcsn/planner_adoption_r19_20261102/campaign.py",
+    "tools/hcsn/planner_adoption_r19_20261102/development.py",
+    "tools/hcsn/planner_adoption_r19_20261102/execution.py",
+    "tools/hcsn/planner_adoption_r19_20261102/meter_sanity.py",
+    "tools/hcsn/planner_adoption_r19_20261102/planner.py"
+  ],
+  "development_retained": "attempt01failed786valuebits/37zerocosttiechanges; finalV3passes3072bitwisevalues/192executionpairs/512LRUstress with1441transition/1008event/504kernelevictions. FinalboundedprojectionreusesownedK-orderphysicalbufferthroughCviewafterpacking; borrowedunsupportedarraysfallbackoldcopy.",
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "exact_gate": "Every paired B/B_ref,D/D_ref,anchored/anchored_ref semantic output, all query hashes and actualquery2 snapshot must be canonicalbyte-identical; only timing fields excluded. One invalid attempt => global bothdomain quality null for affectedarm; all costs/failures retained.",
+  "fits": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "historical_snapshot_cpu_lower_bound": 642.173427,
+  "limits": [
+    "standalonefiniteCPUresearch,notGPU/joules/fullmedia/network/productionownership",
+    "historicalunmeasuredcostsexplicitunknown; fullhistorynotclaimedcomplete",
+    "pointCPUratiosdescriptivecurrentmachine; no posthocN/threshold/comparatorchanges"
+  ],
+  "namespace": 190821,
+  "original_cost_gate": "Bothdomains original onlineanchored/D<=.90 AND strict I+actual1000-usecost anchored/D<=.90. N1000 fixedperfitperdomain, actual sums not mean-times-N. CommonI includes all known originaltraining/confirmation and R17/R18/R19 attempts inclfailures; currentqualification investment included in strictoriginalsearch-then-reuse view. Unknown costs explicit; positivefullhistoryclosure requiresreconciledhistory.",
+  "original_quality_gate": "anchored-Dutility/reward bothdomains:4one-sided98.75percentStudentt lowerbounds across8fits strictly>-.01, unchangedoriginalmargin. Noepisodecountasindependentfit.",
+  "production_activation": false,
+  "raw_chunk_uses": 16,
+  "resource_contract": {
+    "description": "Countphysicalndarraybases including41x41eventviewbase13448B; no logicalvectorundercharge. All internalkeys/profilearrays fixed; scalarcounterssaturating64bit and saturationfailsqualification. Thisis cache/workspaceownedarrayscap, nottotalRSS/nativeallocatorcap.",
+    "kernel_entries": 8,
+    "law_event_entries": 16,
+    "law_transition_entries": 96,
+    "max_terminal_rows": 125,
+    "persistent_physical_array_cap_bytes": 2097152,
+    "terminal_workspace_entries": 1,
+    "worst_conservative_array_bound_bytes": 1964064
+  },
+  "resource_sample_every": 125,
+  "schema": "hcsn-r19-actual1000-bounded-planner-v1",
+  "transport": "RawcanonicalJSONlosslessobjectreferences+gzip. Finaldeterministictar/gzip and60000bytebinaryparts encodedbase64<=80000ASCIIcharacters; alloriginal/member/partSHA retained andfreshroundtrip required. No stateprecisionreduction.",
+  "two_views": {
+    "single_actual_use_run": "KnownhistoricalIbeforecurrentuses plusactualperarm1000completeallocatedcost once. Sumall6allocations equals measuredwholepipeline; not allworkersearch chargedtwice.",
+    "strict_original_qualification_plus_reuse": "CommonI additionallycharges currentwholequalification/searchpipeline thenadds themeasured1000-use referencecost, peroriginalI+Nformula. Thisisqualification-plus-later-reuse accounting, not aclaim these servingcyclesalreadyran twice."
+  },
+  "uses_per_fit_domain": 1000,
+  "workers": 2,
+  "world_theta": [
+    0.3,
+    0.018
+  ]
+}

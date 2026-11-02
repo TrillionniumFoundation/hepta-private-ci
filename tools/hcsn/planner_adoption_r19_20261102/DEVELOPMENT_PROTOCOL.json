@@ -1,0 +1,41 @@
+{
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "fits": [
+    151101,
+    151103,
+    151107,
+    151109,
+    151113,
+    151117,
+    151119,
+    151123
+  ],
+  "intervals": [
+    0.25,
+    0.95
+  ],
+  "models": [
+    "hx",
+    "free",
+    "hmm_same_matrix"
+  ],
+  "namespace": 190811,
+  "prices": [
+    0.0,
+    0.025
+  ],
+  "prior_exact": "attempt_02 preservesall3072exactvalues/192executionpairsand512stresssteps; anchoredpeakdown6.7percentbutfullpeakupabout1percent. V3usesonesinglefixed125x4terminalbuffer, saturating64bitcounters andcompleteLRUmetadata traversal.",
+  "prior_failure": "attempt_01 retains786valuebitdifferences/37zero-costtiechanges; fullnocopykeptnon-Cposteriorstrides. V2preservesshapesANDstrides, anchoredownedphysicalbufferreinterpretedCafterpacking, recursiveallocationwalkersreplacediterative.",
+  "representations": [
+    "full",
+    "anchored"
+  ],
+  "revision": 3,
+  "schema": "hcsn-r19-development-v1",
+  "scope": "Predeclared deterministic development; allvalue/tie/inputownership comparisons, same old/new actualepisodes and traced allocations, explicitmanydt LRUeviction. NoformalN1000outcomesopened.",
+  "seed": 190811,
+  "stress_intervals": 512
+}
