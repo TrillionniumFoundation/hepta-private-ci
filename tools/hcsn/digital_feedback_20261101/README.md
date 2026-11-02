@@ -41,9 +41,9 @@ persistence and diagnostics remain in whole-worker process receipts; nested
 timings are not added twice. No measured energy or deployment throughput claim
 is made.
 
-Final-policy quality requires separate belief calibration, selected-action Q,
-pairwise ranking, margin, teacher regret and empirical support checks, alongside
-actual utility. Full numerical-state identity and the finite diagnostic strata
+Final-policy quality requires separate teacher-belief error, selected-action Q,
+pairwise ranking, margin, teacher regret, empirical support, actual-label Brier
+and actual-label calibration checks, alongside actual utility. Full numerical-state identity and the finite diagnostic strata
 are reported separately. Collected rows enter supervised coverage only after a
 complete optimizer update actually used them.
 
@@ -67,3 +67,8 @@ loss or a counterfactual reset effect across different policies.
 The source/protocol, formal fitted models and confirmation evidence are published
 in separate stages. Formal conclusions are given in `REPORT_ZH.md` and
 `evidence/ANALYSIS.json` only after the corresponding frozen run completes.
+
+The final plan uses 32 new fits, 3003 through 3065 in steps of two. Development
+variance planning requested 122 to 632 fits across the four primary comparisons.
+The prospectively fixed cap of 32 therefore binds: target 80% modeled power is
+not claimed. Increasing the number of worlds does not replace independent fits.

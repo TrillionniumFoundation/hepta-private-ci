@@ -1,0 +1,212 @@
+{
+  "schema": "digital-multiround-feedback-frozen-v1",
+  "baseline_commit": "72917c2a32d79a63071a074b6a57d98d331f7fb8",
+  "analytic_reference_commit": "74cf5f30a4e87a2666c57b3f8fba38f8d09fdfd3",
+  "fits": [
+    3003,
+    3005,
+    3007,
+    3009,
+    3011,
+    3013,
+    3015,
+    3017,
+    3019,
+    3021,
+    3023,
+    3025,
+    3027,
+    3029,
+    3031,
+    3033,
+    3035,
+    3037,
+    3039,
+    3041,
+    3043,
+    3045,
+    3047,
+    3049,
+    3051,
+    3053,
+    3055,
+    3057,
+    3059,
+    3061,
+    3063,
+    3065
+  ],
+  "families": [
+    "ordinary_bank",
+    "first_passage_bank",
+    "evidence_accumulator"
+  ],
+  "controllers": [
+    "value"
+  ],
+  "reference_family": "bayes",
+  "deadline": 6,
+  "read_budget": 3,
+  "packet_length": 32,
+  "calibration_count": 64,
+  "train_worlds": 48,
+  "validation_worlds": 32,
+  "iid_worlds": 64,
+  "ood_worlds": 64,
+  "data_seed_base": 970000000000,
+  "confirmation_seed_base": 980000000000,
+  "train_domain": {
+    "durations": [
+      0.5,
+      1.0
+    ],
+    "reliabilities": [
+      0.65,
+      0.85
+    ],
+    "prices": [
+      0.03,
+      0.12
+    ],
+    "delays": [
+      1,
+      2
+    ],
+    "latency_price": 0.025,
+    "repair_price": 0.03,
+    "failure_probability": 0.08
+  },
+  "ood_domain": {
+    "durations": [
+      0.25,
+      1.5
+    ],
+    "reliabilities": [
+      0.55,
+      0.95
+    ],
+    "prices": [
+      0.01,
+      0.18
+    ],
+    "delays": [
+      1,
+      2
+    ],
+    "latency_price": 0.04,
+    "repair_price": 0.05,
+    "failure_probability": 0.16
+  },
+  "behavior_action_weights": [
+    0.025,
+    0.2,
+    0.6,
+    0.5,
+    0.025,
+    0.025
+  ],
+  "hidden_width": 32,
+  "optimizer": "AdamW",
+  "batch_states": 64,
+  "learning_rate": 0.006,
+  "weight_decay": 0.0001,
+  "belief_loss_weight": 1.0,
+  "gradient_clip": 5.0,
+  "dtype": "float64",
+  "cpu_threads": 1,
+  "selection_rule": "All declared candidates retained. Final complete optimizer update, never best validation checkpoint. Development choices are frozen before new formal fits.",
+  "training_objective": "Fixed per-fit physical dynamics; train shared hidden head, belief and continuation Q with BCE/MSE/ranking. Fixed behavior conditional mass and detached realized visit supervision. No policy-gradient claim.",
+  "primary_contrasts": [
+    {
+      "name": "fpt_feedback",
+      "positive": "fpt_base_multi",
+      "negative": "fpt_base_single"
+    },
+    {
+      "name": "ordinary_feedback",
+      "positive": "ordinary_multi",
+      "negative": "ordinary_single"
+    }
+  ],
+  "statistics": {
+    "unit": "independent fit paired means",
+    "familywise_alpha": 0.05,
+    "primary_intervals": 4,
+    "practical_utility_margin": 0.02,
+    "method": "paired Student t, Bonferroni4 two-sided intervals; independent approximately normal fit differences assumption",
+    "planning_true_effect": 0.08,
+    "target_power": 0.8,
+    "sd_upper_confidence": 0.9,
+    "resource_cap_fits": 32,
+    "minimum_fits": 32,
+    "failure_rule": "all attempted fits retained; any missing or invalid required arm blocks its contrast, no complete-case deletion"
+  },
+  "freeze_rule": "Complete development then publish source/protocol; publish all formal model/decoder artifacts and receipts before generating independent confirmation worlds.",
+  "limits": [
+    "Inherits finite interval law with at most one fresh event per interval, not CTMC task integration or Brownian limit.",
+    "Physical dynamics held fixed to focus on readout and feedback, not joint physical training.",
+    "Sign pooling only erases explicit refractory readout channel; signed reset/public observation can still preserve sign information.",
+    "Quality and CPU matching are distinct gates. Full worker CPU includes shared preparation and diagnostics; matched candidate budget includes setup/encoding/collection/optimization/export but not shared cohort generation or persistence.",
+    "Final-state exact coverage is relative to the declared numerical information representation, not universal reachable-support proof.",
+    "Readout recovery uses independently trained ridge decoders on paired populations, not information-theoretic irreversibility."
+  ],
+  "development_fits": [
+    1103,
+    1109,
+    1117,
+    1123,
+    1129,
+    1151
+  ],
+  "batch_seed_base": 18000000000000,
+  "occupancy_seed_base": 12000000000000,
+  "execution_seed_base": 14000000000000,
+  "training_cpu_seconds": 8.0,
+  "development_ood_seed_base": 975000000000,
+  "probe_seed_base": 16000000000000,
+  "candidate_order_seed_base": 20000000000000,
+  "cpu_tolerance_seconds": 0.16,
+  "feedback_round_fractions": [
+    0.2,
+    0.45,
+    0.7
+  ],
+  "feedback_worlds_total": 12,
+  "continuation_q_weight": 1.0,
+  "ranking_loss_weight": 0.2,
+  "ranking_margin": 0.02,
+  "offpolicy_fraction": 0.5,
+  "max_visits": 512,
+  "decoder_ridge": 0.001,
+  "train_physics": false,
+  "cpu_finalize_reserve_seconds": 0.12,
+  "terminal_q_weight": 1.0,
+  "between_arm_cpu_tolerance_seconds": 0.32,
+  "quality_thresholds": {
+    "belief_teacher_rmse_max": 0.1,
+    "selected_q_rmse_max": 0.1,
+    "pairwise_ranking_error_max": 0.1,
+    "margin_absolute_error_mean_max": 0.1,
+    "teacher_regret_mean_max": 0.05,
+    "coarse_seen_fraction_min": 0.95,
+    "required_candidates": [
+      "fpt_base_multi",
+      "fpt_base_single",
+      "ordinary_multi",
+      "ordinary_single"
+    ],
+    "actual_label_brier_max": 0.25,
+    "actual_label_ece_max": 0.1
+  },
+  "rng_namespace_contract": "Registered fits below10000, worlds below10000. Execution role bases separated by2e12, per-fit stride100000, per-split stride10000; TRAIN probe differs from IID/OOD probe. Candidate pairing within a fit intentionally shares its role stream. Development_001 is retained failed development and is not used as new confirmation.",
+  "development_results": "development_002",
+  "fit_planning": "evidence/FIT_PLANNING_DEV002.json",
+  "fit_plan_decision": {
+    "selected": 32,
+    "required_maximum": 632,
+    "resource_cap_binds": true,
+    "planned_power_claim": false,
+    "reason": "Prospective cap was32 before DEV. Confirmation retains the declared precision shortfall and every fit; no additional-episode substitution for independent fits."
+  },
+  "artifact_storage_rule": "All raw observations/models/attempts/update records retained. Duplicate final-policy diagnostic tables may be reconstructed from frozen raw inputs with original byte SHA256 checks; complete quality summaries remain verbatim."
+}

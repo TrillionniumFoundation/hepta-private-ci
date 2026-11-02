@@ -19,9 +19,16 @@ overwritten or silently pooled.
 ```bash
 python -m tools.hcsn.digital_feedback_20261101.study development \
   --root /absolute/new_development \
-  --protocol tools/hcsn/digital_feedback_20261101/protocol_development.json \
+  --protocol tools/hcsn/digital_feedback_20261101/protocol.json \
   --workers 3
 ```
+
+This runs a new development attempt with the final eight-gate implementation.
+It is not a replay of DEV001 or DEV002. Those historical attempts used the
+six-gate development protocol and their corresponding archived source snapshots;
+restore each source snapshot with its original protocol to reproduce that
+historical implementation. Keep such reruns in new destinations and label them
+as reruns, not independent confirmation.
 
 Development results determine the new independent-fit plan by the registered
 noncentral-t calculation, using the marginal one-sided 90% variance bound and
@@ -70,6 +77,22 @@ the original absolute world paths as provenance. The confirmation entry point
 loads sealed confusion/model/support artifacts and generates its own fresh
 world folders; it does not replay unread training packet paths. Raw recorded
 confirmation can be audited without generating any new worlds.
+
+Some confirmation archives defer duplicate `*_audits.json.gz` tables. Their
+`DERIVED_DIAGNOSTICS.json` records the exact original size and SHA256. All raw
+decisions, trained support records, actual outcomes and quality summaries remain
+verbatim. Recreate these derived tables before running the full numerical audit:
+
+```bash
+python -m tools.hcsn.digital_feedback_20261101.orchestration.rebuild_diagnostics \
+  --fit /absolute/restored_confirmation/fit_3003 \
+  --training-fit /absolute/restored_training/fit_3003 \
+  --output /absolute/restored_confirmation/fit_3003
+```
+
+The command rejects any mismatch with the original derived table hashes. A
+same-runtime cold reconstruction was checked against the original byte stream;
+cross-runtime gzip/NumPy byte identity is not assumed.
 
 `audit/independent.py` recomputes numerical outcomes/statistics from raw records
 without importing the project summarizer. Authorship and the separate code

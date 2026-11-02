@@ -1,0 +1,39 @@
+{
+  "factor_checks": {
+    "schema": "digital-feedback-factor-checks-v1",
+    "passed": true,
+    "transition_cases": 270,
+    "maximum_mass_error": 6.661338147750939e-16,
+    "maximum_runtime_error": 2.220446049250313e-16,
+    "isolated_factors": [
+      "drift",
+      "bank_driver",
+      "event_sign_readout",
+      "reset"
+    ],
+    "scope": "factor invariance, finite mass, checkpoint and numerical head agreement; not efficacy"
+  },
+  "statistic_checks": {
+    "schema": "digital-feedback-statistics-checks-v1",
+    "passed": true,
+    "checked": [
+      "independent mean/SD/interval formula",
+      "missing-fit null inference",
+      "invalid-fit null inference",
+      "duplicate rejection",
+      "variance monotonicity",
+      "cap shortfall",
+      "missing planning fit",
+      "search-limit shortfall"
+    ],
+    "narrow_required_fits": 32,
+    "wide_required_fits": 638
+  },
+  "archive_checks": {
+    "files_verified": 1,
+    "archive_sha256": "155b82b9b70106ade7ed2db973f35aa9efcbe6d627803de47ce5956a8f283748",
+    "tamper_and_overwrite_rejected": true
+  },
+  "cpu_seconds": 0.44604523799999996,
+  "prior_wrapper_note": "DEVELOPMENT_CHECKS.json wrapper imported factor/statistic modules but did not invoke run_checks; this receipt explicitly invokes them. Earlier agent direct CLI checks were separate."
+}
