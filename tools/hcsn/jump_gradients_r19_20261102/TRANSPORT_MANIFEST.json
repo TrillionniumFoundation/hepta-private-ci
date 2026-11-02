@@ -1,0 +1,14 @@
+{
+  "schema": "hcsn-r19-gzip-transport-v1",
+  "entries": [
+    {
+      "path": "run_01/RESULTS.json",
+      "sha256": "797af23986615cda6734b957cb75847229c08ce0402e251c120c58d13bc52eeb",
+      "bytes": 221493,
+      "transport_path": "run_01/RESULTS.json.gz",
+      "transport_sha256": "9237f58266f497025ebe165465f5dd51e0068103682605f7ef8bf34096c938fd",
+      "transport_bytes": 31367
+    }
+  ],
+  "restore": "gzip -dk run_01/RESULTS.json.gz (to a fresh destination); logical bytes preserved exactly"
+}

@@ -1,0 +1,140 @@
+{
+  "schema": "hcsn-r19-actual-jump-gradient-protocol-v2",
+  "base_r18_commit": "b25601c9bae257ffb651c8f9354fc380d8333f38",
+  "question": "Does an analytic full-coordinate derivative follow the actual causal jump-aware finite-grid task value, including delayed left/right successors, and drive a real fixed-target parameter update?",
+  "scope": "Bounded finite-grid research derivative qualification for15declared trainable task coordinates plus continuous query input inside interpolation cells. Not full financial He-Xiong, continuum free-boundary derivatives, neural quality, exact continuous stopping, native production, GPU or energy adoption.",
+  "coordinates": [
+    "log_sigma",
+    "log_wait_cost",
+    "log_recovery_cost",
+    "log_fee_0",
+    "log_fee_1",
+    "reset_x",
+    "mode_logit_00",
+    "mode_logit_01",
+    "mode_logit_10",
+    "mode_logit_11",
+    "base_logit_0",
+    "base_logit_1",
+    "amplitude_share_logit_0",
+    "amplitude_share_logit_1",
+    "log_reward_slope"
+  ],
+  "chart": "Costs/risk/slope use positive exponential; M rows softmax; reward base=sigmoid(beta), amplitude=(1-base)*sigmoid(share). Strictly representable interior required, no clipping/floors. Both row logits retained, with explicit gauge-null derivative tests.",
+  "fixed_not_differentiated": [
+    "domain endpoints",
+    "space grid dx",
+    "time grid dt",
+    "horizon T",
+    "recovery delay rho",
+    "discrete content mode"
+  ],
+  "time_contract": "Actual R18 API is a time lattice. T/rho changes off that lattice reject; changes of integer lag are topology/model changes, not a zero ordinary gradient. Admission left/right values are exposed, ordinary derivatives at these jumps are not fabricated.",
+  "canonical_primal": "Call the unchanged actual R18 jump_solver.solve. Scoped sys.setprofile return callback binds its exact code object, captures required left-limit locals, checks shapes/first-left/output-array identity and restores prior profiler in finally. No alternative copied primal generates qualification values.",
+  "jump_tangent": "Analytic chart and payoff partials; solve active linear equations for every coordinate with actual left limit. Reset derivative includes M, fee, carry, interpolation position and delayed value Jacobian. At k*rho use separate left/right derivative and new-reset max.",
+  "positive_reference_tangent": "Differentiate actual positive Gaussian-image/hat integral analytically via density*(z^2-1) for log_sigma; propagate all other payoff/cost/reset/chart coordinates through the actual reference max program.",
+  "independent_references": [
+    "Centered parameter finite differences of actual unchanged primal/reference, both registered step sizes retained",
+    "Independently assembled global all-time sparse equations and independent coordinate RHS, including auxiliary left-limit unknowns and right-jump equations",
+    "Independent Fourier heat/tangent ODE of linear-hat alias modes versus Gaussian density tangent"
+  ],
+  "sigma_profiles": [
+    0.7,
+    1.0,
+    1.3
+  ],
+  "meshes": [
+    [
+      0.125,
+      0.02
+    ],
+    [
+      0.0625,
+      0.01
+    ]
+  ],
+  "fd_steps": [
+    1e-05,
+    5e-06
+  ],
+  "coverage": "All15coordinates in all6registered profiles attempted for both engines; per-coordinate nonvacuous stable-branch coverage required, all changed branches/errors retained. Independent global sparse check on all3coarse profiles; every actual left/right admission and time-state covered by each aggregate comparison.",
+  "heat_modes": [
+    1,
+    3,
+    11
+  ],
+  "heat_ode": "DOP853 rtol2e-12/atol2e-14,7alias modes -3..3 with linear-hat sinc-squared initial coefficients; omitted-mode log decay recorded, no project density tangent used in ODE RHS",
+  "nonsmooth_cases": [
+    "Construct exact first-admission KEEP/new-RESET tie from actual fee-independent no-reset left value at fixed x=.25; ordinary Jacobian rejects and critical-cone directions checked.",
+    "Set WAITcost=max finite reflected Lg to construct biactive left-LCP row; solve directional complementarity, no straight-through hard-action derivative",
+    "Reset quality exactly on interpolation knot: ordinary rejects and one-sided moving-interpolation tangents checked",
+    "Query state on interpolation knot exposes left/right slopes and Clarke interval instead of a unique state gradient",
+    "Off-lattice horizon/recovery changes reject and profiler restoration is verified on errors"
+  ],
+  "training": {
+    "classification": "Fixed-physical-input/fixed-teacher-value-target calibration smoke, not neural quality or independent learning gain",
+    "mesh": [
+      0.125,
+      0.02
+    ],
+    "teacher_raw_delta": [
+      0.15,
+      0.2,
+      0.15,
+      0.15,
+      -0.1,
+      -0.11,
+      0.15,
+      -0.15,
+      -0.1,
+      0.1,
+      0.15,
+      -0.1,
+      0.1,
+      0.1,
+      0.15
+    ],
+    "input_times": [
+      0.3,
+      0.5,
+      0.9,
+      1.1
+    ],
+    "input_states": [
+      -0.43,
+      0.17,
+      0.83
+    ],
+    "input_modes": [
+      0,
+      1
+    ],
+    "target_rule": "Actual canonical teacher values generated once, then bytes/hash fixed for all20student steps; actor/model updates never change physical inputs or teacher targets",
+    "updates": 20,
+    "learning_rate": 3.0,
+    "line_search_scales": [
+      1.0,
+      0.5,
+      0.25,
+      0.125
+    ],
+    "acceptance": "Reevaluate actual canonical objective after every candidate; accept only nonincreasing loss. Keep all attempted costs/steps. No derivative of actions.",
+    "smoke_gates": [
+      "at least1actual nonzero analytic-gradient step",
+      "final loss below95%of initial loss",
+      "actual canonical action/boundary cells change"
+    ]
+  },
+  "tolerances": {
+    "fd": 2e-05,
+    "global": 2e-09,
+    "heat_ode": 2e-08,
+    "state": 1e-07,
+    "directional": 3e-05
+  },
+  "failure_policy": "Create-only output, preserve failures/logs, no result-driven tolerance/case adjustment; source/protocol published before registered checks. Early unmetered development is recorded separately and not assigned zero cost.",
+  "production_activation": false,
+  "all_scientific_blockers_closed": false,
+  "binding": "Every raw chart must decode to the actual primal physical fields, allowing logit gauge equivalence. Reject mismatchedraw/timeindex. Positive derivative uses actual8or16node kernel quadrature, not an assumed8node factory.",
+  "preoutcome_review": "After source2613eaad7d3844cb6259a51ad44d03533764e4eb published, before any registered check/training, review added primal binding/query-index/actual-quadrature guards and tests. Exact right-jump tie constructor now uses actual no-reset left value (fee-independent), guaranteeing a true tie without searching outcomes. No numerical tolerance, profile or training target changed."
+}
