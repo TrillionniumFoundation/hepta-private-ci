@@ -1,0 +1,480 @@
+{
+  "all_blockers_closed": false,
+  "analytic_core_advantage_established": false,
+  "arbitrary_generator_confidence_certificate_established": false,
+  "candidate_sha256": "8db46c0d207452815a76e48442ff0421c77f7884c3ba67d50e028b84123a0ae5",
+  "conditional_accuracy_min": 1.0,
+  "conditional_coverage_min": 1.0,
+  "confirmation_sha256": "4cfe20b9f5264a947f76cc0f861cf60fba61e747948f868e3c87e7ad7ce5a5fc",
+  "economic_superiority_over_simple_threshold": false,
+  "episodes_per_cohort": 64,
+  "execution": {
+    "actual_neural_forward_calls": 2292,
+    "actual_neural_replay_frames": 2412840,
+    "actual_neural_replay_sequences": 49506,
+    "actual_paid_read_requests": 2493,
+    "actual_provider_world_sessions": 4608,
+    "query_prefix_checks": 18432,
+    "record_checks": 504
+  },
+  "full_cost_adoption": false,
+  "high_price_examples": [
+    {
+      "condition": "missing",
+      "episodes_at_price": 11,
+      "max_arm_utility": 0.35999999999999993,
+      "mean_total_fee": 0.6399999999999999,
+      "min_arm_utility": 0.35999999999999993,
+      "neural_arms": 6,
+      "neural_mean_utility": 0.35999999999999993,
+      "per_slot_price": 0.64,
+      "policy": "confidence_read",
+      "task": "mqar"
+    },
+    {
+      "condition": "missing",
+      "episodes_at_price": 11,
+      "max_arm_utility": 0.8636363636363636,
+      "mean_total_fee": 0.0,
+      "min_arm_utility": 0.7727272727272727,
+      "neural_arms": 6,
+      "neural_mean_utility": 0.803030303030303,
+      "per_slot_price": 0.64,
+      "policy": "never_read",
+      "task": "mqar"
+    },
+    {
+      "condition": "two_erased",
+      "episodes_at_price": 11,
+      "max_arm_utility": -0.2800000000000001,
+      "mean_total_fee": 1.2799999999999998,
+      "min_arm_utility": -0.2800000000000001,
+      "neural_arms": 6,
+      "neural_mean_utility": -0.2800000000000001,
+      "per_slot_price": 0.64,
+      "policy": "always_read",
+      "task": "mqar"
+    }
+  ],
+  "independent_audit": {
+    "preflight_negative_checks": 17,
+    "preflight_query_replays": 2304,
+    "preflight_sessions": 576,
+    "preflight_source_slot_checks": 116352,
+    "provider_preflight_passed": true,
+    "provider_preflight_sha256": "421130950d8e23c7f7ade2015cb93f47cdc85f0a05d38a403026cf63da19d24e",
+    "record_review_passed": true,
+    "record_review_sha256": "11106500b1647505b3fb6126a4b69249cfa702d4de36c86e7d69646307ea3398"
+  },
+  "mixed_price_missing_utility": [
+    {
+      "condition": "missing",
+      "neural_arms": 6,
+      "neural_mean": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.22781250000000003,
+          "utility": 0.7721875
+        },
+        "confidence_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.22781250000000003,
+          "utility": 0.7721875
+        },
+        "never_read": {
+          "accuracy": 0.7981770833333334,
+          "all4": 0.19270833333333334,
+          "coverage": 1.0,
+          "mean_fee": 0.0,
+          "utility": 0.7981770833333334
+        },
+        "simple_threshold": {
+          "accuracy": 0.919921875,
+          "all4": 0.6796875,
+          "coverage": 1.0,
+          "mean_fee": 0.0478125,
+          "utility": 0.872109375
+        }
+      },
+      "ordinary": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.22781250000000003,
+          "utility": 0.7721875
+        },
+        "confidence_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.22781250000000003,
+          "utility": 0.7721875
+        },
+        "never_read": {
+          "accuracy": 0.81640625,
+          "all4": 0.265625,
+          "coverage": 1.0,
+          "mean_fee": 0.0,
+          "utility": 0.81640625
+        },
+        "simple_threshold": {
+          "accuracy": 0.93359375,
+          "all4": 0.734375,
+          "coverage": 1.0,
+          "mean_fee": 0.0478125,
+          "utility": 0.88578125
+        }
+      },
+      "sampling_unit": "Shared 64 registered worlds; six core/seed fits are matched repeated model views, not six new samples",
+      "task": "mqar"
+    },
+    {
+      "condition": "missing",
+      "neural_arms": 6,
+      "neural_mean": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.2271875,
+          "utility": 0.7728124999999999
+        },
+        "confidence_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.1621875,
+          "utility": 0.8378125000000001
+        },
+        "never_read": {
+          "accuracy": 0.828125,
+          "all4": 0.3125,
+          "coverage": 1.0,
+          "mean_fee": 0.0,
+          "utility": 0.828125
+        },
+        "simple_threshold": {
+          "accuracy": 0.94140625,
+          "all4": 0.765625,
+          "coverage": 1.0,
+          "mean_fee": 0.0421875,
+          "utility": 0.89921875
+        }
+      },
+      "ordinary": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.2271875,
+          "utility": 0.7728124999999999
+        },
+        "confidence_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.1621875,
+          "utility": 0.8378125000000001
+        },
+        "never_read": {
+          "accuracy": 0.84375,
+          "all4": 0.375,
+          "coverage": 1.0,
+          "mean_fee": 0.0,
+          "utility": 0.84375
+        },
+        "simple_threshold": {
+          "accuracy": 0.94921875,
+          "all4": 0.796875,
+          "coverage": 1.0,
+          "mean_fee": 0.0421875,
+          "utility": 0.90703125
+        }
+      },
+      "sampling_unit": "Shared 64 registered worlds; six core/seed fits are matched repeated model views, not six new samples",
+      "task": "selective"
+    },
+    {
+      "condition": "missing",
+      "neural_arms": 6,
+      "neural_mean": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.22125,
+          "utility": 0.7787499999999998
+        },
+        "confidence_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.22125,
+          "utility": 0.7787499999999998
+        },
+        "never_read": {
+          "accuracy": 0.7923177083333334,
+          "all4": 0.16927083333333334,
+          "coverage": 1.0,
+          "mean_fee": 0.0,
+          "utility": 0.7923177083333334
+        },
+        "simple_threshold": {
+          "accuracy": 0.9388020833333334,
+          "all4": 0.7552083333333334,
+          "coverage": 1.0,
+          "mean_fee": 0.07625,
+          "utility": 0.8625520833333333
+        }
+      },
+      "ordinary": {
+        "always_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.22125,
+          "utility": 0.7787499999999998
+        },
+        "confidence_read": {
+          "accuracy": 1.0,
+          "all4": 1.0,
+          "coverage": 1.0,
+          "mean_fee": 0.22125,
+          "utility": 0.7787499999999998
+        },
+        "never_read": {
+          "accuracy": 0.80859375,
+          "all4": 0.234375,
+          "coverage": 1.0,
+          "mean_fee": 0.0,
+          "utility": 0.80859375
+        },
+        "simple_threshold": {
+          "accuracy": 0.9375,
+          "all4": 0.75,
+          "coverage": 1.0,
+          "mean_fee": 0.07625,
+          "utility": 0.86125
+        }
+      },
+      "sampling_unit": "Shared 64 registered worlds; six core/seed fits are matched repeated model views, not six new samples",
+      "task": "binding"
+    }
+  ],
+  "neural_and_ordinary_successful_read_quality_match": true,
+  "nonmissing_all4_min": 1.0,
+  "ordinary_matches_controller_requested_slots": true,
+  "price_thresholds": {
+    "binding": 0.16,
+    "mqar": 0.16,
+    "selective": 0.16
+  },
+  "primary_confidence_read_rows_pass": 84,
+  "primary_gate_checks": [
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": null,
+      "arms": 7,
+      "condition": "base",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": 1.0,
+      "arms": 7,
+      "condition": "missing",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": null,
+      "arms": 7,
+      "condition": "long_tokens_128",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": 1.0,
+      "arms": 7,
+      "condition": "missing_tokens_128",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "mqar"
+    },
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": null,
+      "arms": 7,
+      "condition": "base",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "selective"
+    },
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": 1.0,
+      "arms": 7,
+      "condition": "missing",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "selective"
+    },
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": null,
+      "arms": 7,
+      "condition": "long_tokens_128",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "selective"
+    },
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": 1.0,
+      "arms": 7,
+      "condition": "missing_tokens_128",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "selective"
+    },
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": null,
+      "arms": 7,
+      "condition": "base",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "binding"
+    },
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": 1.0,
+      "arms": 7,
+      "condition": "missing",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "binding"
+    },
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": null,
+      "arms": 7,
+      "condition": "long_tokens_128",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "binding"
+    },
+    {
+      "accuracy_min": 1.0,
+      "all4_min": 1.0,
+      "all_nonempty_branch_accuracy_min": 1.0,
+      "arms": 7,
+      "condition": "missing_tokens_128",
+      "coverage_min": 1.0,
+      "known_accuracy_min": 1.0,
+      "passed": true,
+      "task": "binding"
+    }
+  ],
+  "production_activation": false,
+  "protocol_sha256": "e40bee32da4b114b90aae37ba34269f5592b2752f126ebe8f1b0f6f29d207b0c",
+  "provider_contract": {
+    "actual_raw_write_and_original_timestamp": true,
+    "charge_and_wait_once_per_slot": true,
+    "external_provider_ownership_qualified": false,
+    "labels_or_teacher_posteriors_in_service_reply": false,
+    "logical_time_is_network_wall_latency": false,
+    "wait_per_paid_slot": 0.1
+  },
+  "publication_commit": "ae554e7d074497c460c950585fe61a5fa8225d69",
+  "records": 504,
+  "registered_cohorts": 18,
+  "sampling_limits": [
+    "Four policies share executed world/service traces across six frozen core/seed arms and ordinary reference; rows are not independent service executions",
+    "Long-token cohorts retain paired underlying worlds; no doubling of independent ambiguity queries",
+    "Finite registered synthetic law and raw-read contract; no broad population or natural-content generalization claim",
+    "Successful acquired-information reconstruction does not imply reliability when refusing or unable to acquire missing information"
+  ],
+  "schema": "hcsn.read-repair.r2.acceptance.v1",
+  "secondary_always_read_rows_pass": 42,
+  "secondary_confidence_policy_qualification": false,
+  "secondary_qualified_policy": "always_read applied to every cohort, without generator-ID routing",
+  "selective_final_ambiguous_branch": [
+    {
+      "accuracy": 1.0,
+      "all_seven_arms_identical": true,
+      "correct": 63,
+      "coverage": 1.0,
+      "long_tokens_variant": "Same underlying 63 branch queries; not counted as additional independent data",
+      "policy": "confidence_read",
+      "queries": 63,
+      "unique_query_count": 63
+    },
+    {
+      "accuracy": 1.0,
+      "all_seven_arms_identical": true,
+      "correct": 63,
+      "coverage": 1.0,
+      "long_tokens_variant": "Same underlying 63 branch queries; not counted as additional independent data",
+      "policy": "always_read",
+      "queries": 63,
+      "unique_query_count": 63
+    },
+    {
+      "accuracy": 0.6666666666666666,
+      "all_seven_arms_identical": true,
+      "correct": 42,
+      "coverage": 1.0,
+      "long_tokens_variant": "Same underlying 63 branch queries; not counted as additional independent data",
+      "policy": "never_read",
+      "queries": 63,
+      "unique_query_count": 63
+    },
+    {
+      "accuracy": 0.9047619047619048,
+      "all_seven_arms_identical": true,
+      "correct": 57,
+      "coverage": 1.0,
+      "long_tokens_variant": "Same underlying 63 branch queries; not counted as additional independent data",
+      "policy": "simple_threshold",
+      "queries": 63,
+      "unique_query_count": 63
+    }
+  ],
+  "source_unchanged": true,
+  "status": "registered_paid_raw_information_recovery_pass_with_economic_limits",
+  "unread_inference_repair_established": false
+}
