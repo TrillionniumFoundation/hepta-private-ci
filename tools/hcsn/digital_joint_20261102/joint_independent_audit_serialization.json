@@ -1,0 +1,16 @@
+{
+  "audit_source_sha256": "7b4f4004e5dc8bff1c27063af6bfb959ec184588e7b5944aa7c5ec862fe1e297",
+  "boolean_only_normalization_roundtrip": true,
+  "candidate_campaign_sha256": "5a2b07e299aeed7a5dba8ac670012c1bae6bbae19ef227e144924e43fc742e48",
+  "error": "Object of type bool is not JSON serializable",
+  "gate_types": {
+    "cpu_saving": "numpy.bool",
+    "quality_noninferior": "builtins.bool",
+    "throughput_not_degraded": "numpy.bool",
+    "wall_latency_not_degraded": "numpy.bool"
+  },
+  "no_confirmation_worlds_generated": true,
+  "original_standard_json_writable": false,
+  "schema": "joint-preconfirmation-serialization-audit-v1",
+  "scope": "engineering output defect; dummy five-fit aggregates, no efficacy observation or candidate source mutation"
+}

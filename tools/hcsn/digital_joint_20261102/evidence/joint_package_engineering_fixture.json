@@ -1,0 +1,97 @@
+{
+  "cpu_seconds": 0.3676764779999999,
+  "families": {
+    "affine_markov": {
+      "original_sha256": "ed8280047464eb149adbb1af3a662ec06c629f3e7cf1571ac6ca6207993c2b80",
+      "package": {
+        "bytes": 430172,
+        "sha256": "f42e039ea7f0ed417e4f6c721de2f0c245889f672acef3cd3543a02312893f7d"
+      },
+      "sidecar": {
+        "bytes": 22091,
+        "sha256": "9cc5fa2db441039bc6596adef2fc83c7deb965e920406b2a7513ac5aeab00c3e"
+      },
+      "validation": {
+        "exact": true,
+        "fields": [
+          "q",
+          "belief",
+          "mass",
+          "bank",
+          "logit"
+        ],
+        "rows": 14
+      }
+    },
+    "full_markov": {
+      "original_sha256": "b711d7194d7a08fd3892713a87db27e0cd251edd059236fa22f0896932abdbc1",
+      "package": {
+        "bytes": 430229,
+        "sha256": "0917df5d6f56860f6a22ea23a3f9f087a64232b03755b547ac7b460f2c0dff32"
+      },
+      "sidecar": {
+        "bytes": 22029,
+        "sha256": "1abd67f407a2b0c6f0237babd81804806c22ae83d92435cff88c6f3ff310d981"
+      },
+      "validation": {
+        "exact": true,
+        "fields": [
+          "q",
+          "belief",
+          "mass",
+          "bank",
+          "logit"
+        ],
+        "rows": 14
+      }
+    },
+    "gru": {
+      "original_sha256": "46cc4df10cfb1c1afb6a17ce385a518a35a03a974cd3011ce0b15e7559a7647a",
+      "package": {
+        "bytes": 542936,
+        "sha256": "f54ce576ba53bc53fad93b1d516f4b8551ba0d6a2a9fa31e396e819cf3441f8f"
+      },
+      "sidecar": {
+        "bytes": 1317,
+        "sha256": "239db39490e6cfd0e816928e618c43bfd186462ccc739587b298e99bd8bb22b7"
+      },
+      "validation": {
+        "exact": true,
+        "fields": [
+          "q",
+          "belief",
+          "mass",
+          "bank",
+          "logit"
+        ],
+        "rows": 14
+      }
+    },
+    "renewal": {
+      "original_sha256": "7a08c0b9c8d891a8315472f7e3d2ccc88e8c50fe13ad75478465376a9c965648",
+      "package": {
+        "bytes": 430225,
+        "sha256": "0e7e5cf5dc66016240a16ec27b6a34894f17f079cd124f8164eac571f8e10633"
+      },
+      "sidecar": {
+        "bytes": 22435,
+        "sha256": "78aa6626a94a78d90d67aaacca8b2bd1f76a41b6f6078201e216a28bf37eb7c7"
+      },
+      "validation": {
+        "exact": true,
+        "fields": [
+          "q",
+          "belief",
+          "mass",
+          "bank",
+          "logit"
+        ],
+        "rows": 14
+      }
+    }
+  },
+  "schema": "joint-package-engineering-fixture-v1",
+  "scope": "fresh initialized engineering models only; no formal weights,fit,world or confirmation read",
+  "source_sha256": "d3314a8fd13a1363afc39413ea81d4f01c71ea4a7b2268cdef499777c957958c",
+  "wall_seconds": 0.3680270920012845
+}

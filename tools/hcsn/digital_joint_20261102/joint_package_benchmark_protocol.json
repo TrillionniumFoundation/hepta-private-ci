@@ -1,0 +1,86 @@
+{
+  "arms": {
+    "controller": "value",
+    "families": [
+      "renewal",
+      "full_markov",
+      "affine_markov",
+      "gru"
+    ],
+    "formats": [
+      "raw",
+      "slim"
+    ],
+    "order": "per world fixed RNG permutation of all 8 arms",
+    "order_seed": 202611180000,
+    "requests": 3200,
+    "sidecars": "not parsed in timed inference; include original/package/source SHA and full removed provenance"
+  },
+  "data": {
+    "fits": [
+      11,
+      23,
+      37,
+      53,
+      71
+    ],
+    "models": "exact 20 final models in published MODEL_FREEZE.json; derive only after model publication",
+    "new_fits": 0,
+    "new_independent_worlds": 0,
+    "original_confirmation_episodes": 4800,
+    "splits": [
+      "iid",
+      "ood"
+    ],
+    "unique_worlds": 400,
+    "worlds": "exact original confirmation cohort manifests and SHA files; no new worlds",
+    "worlds_per_fit_split": 40
+  },
+  "helper_source_sha256": "d3314a8fd13a1363afc39413ea81d4f01c71ea4a7b2268cdef499777c957958c",
+  "inference": {
+    "alpha": 0.05,
+    "endpoint_family_count": 48,
+    "endpoints": {
+      "cpu": "log ratio of fit mean complete CPU renewal/ordinary; upper < log(.90)",
+      "latency": "log ratio of within-fit complete wall p95 renewal/ordinary; upper < log(1.05)",
+      "quality": "renewal minus ordinary mean utility; lower > -0.02",
+      "throughput": "log ratio of serial service throughput renewal/ordinary; lower > log(.95)"
+    },
+    "independent_unit": "five independent fits; first aggregate 40 paired worlds per fit and split",
+    "interval": "paired Student t df4: mean +/- t.ppf(1-.05/(2*48),4)*sampleSD/sqrt(5)",
+    "original_gates": "primary14 and secondary24 untouched; this auxiliary family cannot rescue original failure",
+    "robustness": "all four endpoint gates must pass for both formats within a split/comparator; report all 48 intervals regardless of pass",
+    "two_sided": true
+  },
+  "integrity": {
+    "failure": "no overwrite; retain failed runs; reject mutation or invalid package; no tuning from confirmation outcomes",
+    "preconditions": [
+      "all20 final weights published and immutable",
+      "original400 cohort manifest file hashes verified",
+      "raw and slim weights and predictions exact before timing",
+      "original frozen20 source hashes verified before and after"
+    ],
+    "runner": "separate auxiliary runner may call frozen execute without editing candidate source; protocol and helper published before confirmation generation"
+  },
+  "package": {
+    "native": "NumPy only; no native parser or production qualification claimed",
+    "numbers": "retain all inference JSON numbers exactly; no quantization",
+    "required_fields": "NumpyPolicy actual consumption, symmetric projection for every family",
+    "validation": "every retained leaf type and float64 bytes exact after JSON roundtrip; q/belief/mass/bank/logit exact on 14 public-only fixture states per model"
+  },
+  "schema": "joint-package-benchmark-protocol-v1",
+  "scope": "Representation robustness only; original primary14 and secondary24 unchanged and not replaced",
+  "source_commit": "36e9ddd099e09688593bccf2c32d1dfabc39ac99",
+  "source_freeze": "FORMAL_SOURCE_FREEZE_ATTEMPT2.json",
+  "status": "preregistered_before_confirmation",
+  "timing": {
+    "comparisons": "same-format renewal/value versus each of full_markov,affine_markov,gru/value on paired identical worlds; raw and slim separately",
+    "decoder_setup": "fresh fit decoder setup charged once; full setup recorded and divided by 640 actual requests per fit (2 formats*4 families*2 splits*40)",
+    "endpoint_cpu": "mean full_execution_cpu_seconds plus per-request actual decoder setup CPU share",
+    "endpoint_latency": "within-fit np.percentile(40 complete request wall times,95) including decoder setup share",
+    "endpoint_throughput": "40 / sum(40 complete request wall times); serial service only",
+    "exclusions": "teacher/evaluator diagnostics after execution timers; archive writes, package derivation, imports and supervisor costs recorded separately in whole-process ledger; no network service claim",
+    "measured": "frozen joint_campaign.execute: model JSON load and NumpyPolicy construction, public JSON load, Owner initialization and every actual action, all forecasts/heads, actual due READ content open/decode, pre-audit wire JSON serialization",
+    "nonadditive": "model_load and control+Owner sub-timers are nested within full_execution; never sum them twice"
+  }
+}
