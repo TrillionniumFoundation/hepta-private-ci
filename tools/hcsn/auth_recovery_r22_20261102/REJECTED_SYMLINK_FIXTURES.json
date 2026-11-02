@@ -1,0 +1,29 @@
+{
+  "links": [
+    {
+      "path": "confirmation01/linked-pair-folder",
+      "target": "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/auth_recovery_r22_20261102/confirmation01/native-envelope-16",
+      "lstat_mode": 41471,
+      "scope": "Intentional rejected input fixture; stored as link metadata, never dereferenced or treated as admitted state."
+    },
+    {
+      "path": "confirmation01/symlink-fixture.key",
+      "target": "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/auth_recovery_r22_20261102/confirmation01/public-test-fixture.key",
+      "lstat_mode": 41471,
+      "scope": "Intentional rejected input fixture; stored as link metadata, never dereferenced or treated as admitted state."
+    },
+    {
+      "path": "development01/symlink-fixture.key",
+      "target": "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/auth_recovery_r22_20261102/development01/public-test-fixture.key",
+      "lstat_mode": 41471,
+      "scope": "Intentional rejected input fixture; stored as link metadata, never dereferenced or treated as admitted state."
+    },
+    {
+      "path": "development02/symlink-fixture.key",
+      "target": "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/auth_recovery_r22_20261102/development02/public-test-fixture.key",
+      "lstat_mode": 41471,
+      "scope": "Intentional rejected input fixture; stored as link metadata, never dereferenced or treated as admitted state."
+    }
+  ],
+  "after_test_export": "Removed only rejected fixture links after recording their literal targets; all regular scientific source/state/output bytes unchanged. Fresh verifier runs regenerate them; transport does not restore symlinks."
+}

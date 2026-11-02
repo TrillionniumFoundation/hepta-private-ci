@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn-evidence-transport-v2",
+  "component": "tools/hcsn/auth_recovery_r22_20261102",
+  "included_directories": [
+    "development01",
+    "development02",
+    "confirmation01"
+  ],
+  "included_files": [],
+  "file_count_cap": 65536,
+  "logical_bytes_cap": 536870912,
+  "archive": {
+    "gzip_bytes": 87748,
+    "gzip_sha256": "9d16d4783970872e98074e3e35c3694c4db97021166e8957feb15aa566eba3a5",
+    "raw_bytes": 389120,
+    "raw_sha256": "7ce0531232710bcf3904c095bb3239c1f5cb90067ae175b73ffec0e0a0dc3fb3",
+    "parts": [
+      {
+        "path": "transport/0000.part",
+        "size": 87748,
+        "sha256": "9d16d4783970872e98074e3e35c3694c4db97021166e8957feb15aa566eba3a5"
+      }
+    ]
+  },
+  "file_map": {
+    "gzip_bytes": 12956,
+    "gzip_sha256": "0121fd6757eead4234e2b11639eff7788f467f9ca715fc30d37057ecd6432573",
+    "raw_bytes": 56957,
+    "raw_sha256": "be371a150a8fd2eff780d50b131caaf58d02a96e587361dccaedda958fcc903a",
+    "parts": [
+      {
+        "path": "map_transport/0000.part",
+        "size": 12956,
+        "sha256": "0121fd6757eead4234e2b11639eff7788f467f9ca715fc30d37057ecd6432573"
+      }
+    ]
+  }
+}
