@@ -1,0 +1,4223 @@
+{
+  "schema": "hcsn-v13-content-evaluation.v1",
+  "condition_records": 96,
+  "input_identities": {
+    "async_av/val": {
+      "task": "async_av",
+      "split": "val",
+      "ids": [
+        "1011_DFA_ANG_XX",
+        "1011_DFA_DIS_XX",
+        "1011_DFA_FEA_XX",
+        "1011_DFA_HAP_XX",
+        "1011_DFA_NEU_XX",
+        "1011_DFA_SAD_XX",
+        "1082_DFA_ANG_XX",
+        "1082_DFA_DIS_XX",
+        "1082_DFA_FEA_XX",
+        "1082_DFA_HAP_XX",
+        "1082_DFA_NEU_XX",
+        "1082_DFA_SAD_XX"
+      ],
+      "objects": 12,
+      "sequences": 120,
+      "x_shape": [
+        120,
+        6,
+        55
+      ],
+      "x_sha256": "2055dc6d86bf933c5a9305e09ae833211480568ee133d9192678d691646b71bd",
+      "y_sha256": "1633d9aa92620a7943b73ac76e93c220af28664b627ad39c0f00a7f17d7cf472",
+      "source_array_sha256": "a139f90b65b6a29f875e84372fce691b039f6436a120fae9a86162b1d07d5798",
+      "scope": "Historical exposed V3 records; no independent confirmation qualification"
+    },
+    "av_binding/val": {
+      "task": "av_binding",
+      "split": "val",
+      "ids": [
+        "audio:1011_DFA_ANG_XX|video:1011_DFA_ANG_XX",
+        "audio:1011_DFA_DIS_XX|video:1011_DFA_DIS_XX",
+        "audio:1011_DFA_FEA_XX|video:1011_DFA_FEA_XX",
+        "audio:1011_DFA_HAP_XX|video:1011_DFA_HAP_XX",
+        "audio:1011_DFA_NEU_XX|video:1011_DFA_NEU_XX",
+        "audio:1011_DFA_SAD_XX|video:1011_DFA_SAD_XX",
+        "audio:1082_DFA_ANG_XX|video:1082_DFA_ANG_XX",
+        "audio:1082_DFA_DIS_XX|video:1082_DFA_DIS_XX",
+        "audio:1082_DFA_FEA_XX|video:1082_DFA_FEA_XX",
+        "audio:1082_DFA_HAP_XX|video:1082_DFA_HAP_XX",
+        "audio:1082_DFA_NEU_XX|video:1082_DFA_NEU_XX",
+        "audio:1082_DFA_SAD_XX|video:1082_DFA_SAD_XX",
+        "audio:1011_DFA_ANG_XX|video:1011_DFA_NEU_XX",
+        "audio:1011_DFA_DIS_XX|video:1011_DFA_ANG_XX",
+        "audio:1011_DFA_FEA_XX|video:1011_DFA_SAD_XX",
+        "audio:1011_DFA_HAP_XX|video:1011_DFA_DIS_XX",
+        "audio:1011_DFA_NEU_XX|video:1011_DFA_HAP_XX",
+        "audio:1011_DFA_SAD_XX|video:1011_DFA_FEA_XX",
+        "audio:1082_DFA_ANG_XX|video:1082_DFA_FEA_XX",
+        "audio:1082_DFA_DIS_XX|video:1082_DFA_HAP_XX",
+        "audio:1082_DFA_FEA_XX|video:1082_DFA_SAD_XX",
+        "audio:1082_DFA_HAP_XX|video:1082_DFA_NEU_XX",
+        "audio:1082_DFA_NEU_XX|video:1082_DFA_ANG_XX",
+        "audio:1082_DFA_SAD_XX|video:1082_DFA_DIS_XX"
+      ],
+      "objects": 24,
+      "sequences": 240,
+      "x_shape": [
+        240,
+        6,
+        55
+      ],
+      "x_sha256": "a1f75b46d14fc941bba567a72d225489380d0042df5df8c458c657ab57858778",
+      "y_sha256": "1de486c7c71444291e68f796bdc12f11c8666e8f6e16046e769255385b65a1a5",
+      "source_array_sha256": "2b9ea67693bfb23c1b1716233e6f94e983039118183a2ac055a9a9b11fd4b060",
+      "scope": "Historical exposed V3 records; no independent confirmation qualification"
+    },
+    "async_av/test": {
+      "task": "async_av",
+      "split": "test",
+      "ids": [
+        "1040_DFA_ANG_XX",
+        "1040_DFA_DIS_XX",
+        "1040_DFA_FEA_XX",
+        "1040_DFA_HAP_XX",
+        "1040_DFA_NEU_XX",
+        "1040_DFA_SAD_XX",
+        "1023_DFA_ANG_XX",
+        "1023_DFA_DIS_XX",
+        "1023_DFA_FEA_XX",
+        "1023_DFA_HAP_XX",
+        "1023_DFA_NEU_XX",
+        "1023_DFA_SAD_XX"
+      ],
+      "objects": 12,
+      "sequences": 120,
+      "x_shape": [
+        120,
+        6,
+        55
+      ],
+      "x_sha256": "1da9ab9b04d80cc50f03f167bc3c093890da9d22d1fa18c65fa7853e41966352",
+      "y_sha256": "1633d9aa92620a7943b73ac76e93c220af28664b627ad39c0f00a7f17d7cf472",
+      "source_array_sha256": "dc72127c7e58c9efa3b5d1c2fbf422c0273d7d4ce0f7626678642f4280833850",
+      "scope": "Historical exposed V3 records; no independent confirmation qualification"
+    },
+    "av_binding/test": {
+      "task": "av_binding",
+      "split": "test",
+      "ids": [
+        "audio:1040_DFA_ANG_XX|video:1040_DFA_ANG_XX",
+        "audio:1040_DFA_DIS_XX|video:1040_DFA_DIS_XX",
+        "audio:1040_DFA_FEA_XX|video:1040_DFA_FEA_XX",
+        "audio:1040_DFA_HAP_XX|video:1040_DFA_HAP_XX",
+        "audio:1040_DFA_NEU_XX|video:1040_DFA_NEU_XX",
+        "audio:1040_DFA_SAD_XX|video:1040_DFA_SAD_XX",
+        "audio:1023_DFA_ANG_XX|video:1023_DFA_ANG_XX",
+        "audio:1023_DFA_DIS_XX|video:1023_DFA_DIS_XX",
+        "audio:1023_DFA_FEA_XX|video:1023_DFA_FEA_XX",
+        "audio:1023_DFA_HAP_XX|video:1023_DFA_HAP_XX",
+        "audio:1023_DFA_NEU_XX|video:1023_DFA_NEU_XX",
+        "audio:1023_DFA_SAD_XX|video:1023_DFA_SAD_XX",
+        "audio:1040_DFA_ANG_XX|video:1040_DFA_FEA_XX",
+        "audio:1040_DFA_DIS_XX|video:1040_DFA_HAP_XX",
+        "audio:1040_DFA_FEA_XX|video:1040_DFA_SAD_XX",
+        "audio:1040_DFA_HAP_XX|video:1040_DFA_NEU_XX",
+        "audio:1040_DFA_NEU_XX|video:1040_DFA_ANG_XX",
+        "audio:1040_DFA_SAD_XX|video:1040_DFA_DIS_XX",
+        "audio:1023_DFA_ANG_XX|video:1023_DFA_NEU_XX",
+        "audio:1023_DFA_DIS_XX|video:1023_DFA_ANG_XX",
+        "audio:1023_DFA_FEA_XX|video:1023_DFA_SAD_XX",
+        "audio:1023_DFA_HAP_XX|video:1023_DFA_DIS_XX",
+        "audio:1023_DFA_NEU_XX|video:1023_DFA_HAP_XX",
+        "audio:1023_DFA_SAD_XX|video:1023_DFA_FEA_XX"
+      ],
+      "objects": 24,
+      "sequences": 240,
+      "x_shape": [
+        240,
+        6,
+        55
+      ],
+      "x_sha256": "973c6128ca3f3dd41b8986099bc48a7747a89ead8cd4001bbcd54b3b1479442f",
+      "y_sha256": "1de486c7c71444291e68f796bdc12f11c8666e8f6e16046e769255385b65a1a5",
+      "source_array_sha256": "3ad2aca8b2ae5aeabefa6279083e96191ae31d9de081cc84e81136a306351d32",
+      "scope": "Historical exposed V3 records; no independent confirmation qualification"
+    }
+  },
+  "rows": [
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13301,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.225,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.855394593577363,
+      "final_prefix_nll": 6.165171180241878,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.16666666666666666,
+        0.20833333333333334,
+        0.24166666666666667,
+        0.25
+      ],
+      "prefix_nll": [
+        4.459393534351536,
+        5.585429057514889,
+        6.21777947965785,
+        6.354902923200061,
+        6.349691386497976,
+        6.165171180241879
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 794,
+      "restoration_cell_events": 622,
+      "raw_file": "async_av-val-hx_full-13301-execute-hx_full.npz",
+      "raw_sha256": "7e58c4e74a69c821f021458385f6eb16bc38daceefc56c1c98447b7585437c78",
+      "weights_sha256": "38415f642984e5c850fa8d0c5fbdaf1a8a116d140074b434a0a9dee7dc0b59b1"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13301,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.23055555555555557,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.838062209756739,
+      "final_prefix_nll": 6.164476032187164,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.175,
+        0.225,
+        0.25,
+        0.25
+      ],
+      "prefix_nll": [
+        4.423996492784822,
+        5.583673773608892,
+        6.173975855250855,
+        6.3453609085630935,
+        6.3368901961456086,
+        6.164476032187164
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 794,
+      "restoration_cell_events": 622,
+      "raw_file": "async_av-val-hx_full-13301-execute-hx_margin.npz",
+      "raw_sha256": "28467834f8b3414ad1b11bb8ddac0ff353ac3697ad77e5699ed67d61210a1f71",
+      "weights_sha256": "38415f642984e5c850fa8d0c5fbdaf1a8a116d140074b434a0a9dee7dc0b59b1"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13301,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.22777777777777777,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.83905545644822,
+      "final_prefix_nll": 6.050188840005338,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.175,
+        0.20833333333333334,
+        0.25,
+        0.25
+      ],
+      "prefix_nll": [
+        4.768501812397782,
+        5.6112775617444965,
+        6.111568592279817,
+        6.257528978221532,
+        6.235266954040355,
+        6.050188840005338
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 700,
+      "restoration_cell_events": 516,
+      "raw_file": "async_av-val-hx_margin-13301-execute-hx_full.npz",
+      "raw_sha256": "adde536db150b6ad9f90b641f101de3810e9c211e1be04eb9655d8e9b16efd1f",
+      "weights_sha256": "48318db35ca262327954710356dedb10ff0cfbecba6f33e4770b80fd21a68cfe"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13301,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.22777777777777777,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.842718411253371,
+      "final_prefix_nll": 6.051802420343406,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.175,
+        0.20833333333333334,
+        0.25,
+        0.25
+      ],
+      "prefix_nll": [
+        4.7734268897202545,
+        5.6171499352234235,
+        6.1157813531832685,
+        6.26075916998602,
+        6.237390699063861,
+        6.051802420343405
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 700,
+      "restoration_cell_events": 516,
+      "raw_file": "async_av-val-hx_margin-13301-execute-hx_margin.npz",
+      "raw_sha256": "77d2476f18de012584f930326d1c98a692004cdb5fff7036dddef93941febca5",
+      "weights_sha256": "48318db35ca262327954710356dedb10ff0cfbecba6f33e4770b80fd21a68cfe"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "ordinary_gate",
+      "seed": 13301,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.22361111111111112,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.855730358512892,
+      "final_prefix_nll": 6.102669301879259,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.16666666666666666,
+        0.19166666666666668,
+        0.25,
+        0.25
+      ],
+      "prefix_nll": [
+        4.760652128878864,
+        5.649756174769594,
+        6.1758604346962125,
+        6.229815117006214,
+        6.215628993847223,
+        6.102669301879261
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 936,
+      "restoration_cell_events": 652,
+      "raw_file": "async_av-val-ordinary_gate-13301-execute-ordinary_gate.npz",
+      "raw_sha256": "d0596eb644588d335eb8aaaf9cd572a808c0c75da1cd58b7dbc7b8e96867ac31",
+      "weights_sha256": "27f06bbb1296b4377f628bba210d7a15a6da2a0620cd5ee466e67083c7d7b1e5"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "gru",
+      "seed": 13301,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.23194444444444445,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.323772165361358,
+      "final_prefix_nll": 5.403531504169581,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.16666666666666666,
+        0.24166666666666667,
+        0.25,
+        0.25
+      ],
+      "prefix_nll": [
+        4.875456807663025,
+        5.492106978396705,
+        5.456007295338273,
+        5.372381934148207,
+        5.343148472452372,
+        5.403531504169578
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-val-gru-13301-execute-gru.npz",
+      "raw_sha256": "d40eaaa8d1019a6be0e4be9d05916dc1065df0273b86b05c4cd07f0385c00156",
+      "weights_sha256": "6457203522b4e2ca6383442711f3ef9d35892e7c7455775c74a1754af4a1d6fb"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "ssm",
+      "seed": 13301,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.25,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.608937684436814,
+      "final_prefix_nll": 5.978754862045024,
+      "prefix_accuracy": [
+        0.25,
+        0.2833333333333333,
+        0.225,
+        0.24166666666666667,
+        0.25,
+        0.25
+      ],
+      "prefix_nll": [
+        5.079306919584746,
+        5.269651455713186,
+        5.606454589826454,
+        5.815032995153488,
+        5.904425284298002,
+        5.978754862045023
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-val-ssm-13301-execute-ssm.npz",
+      "raw_sha256": "5e88a9c2b94360d9f7d3c4a15f745e7fbfc12da9a9ede8dc50cfe4297ce9457d",
+      "weights_sha256": "742baacf03b6bade5a9f863d1e837dbdd0d3e9317dc30c3e3080584bc019d4d8"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "history",
+      "seed": 13301,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.25833333333333336,
+      "final_prefix_accuracy": 0.25833333333333336,
+      "all_prefix_nll": 4.890591008820959,
+      "final_prefix_nll": 5.427776655221023,
+      "prefix_accuracy": [
+        0.25,
+        0.2833333333333333,
+        0.24166666666666667,
+        0.25833333333333336,
+        0.25833333333333336,
+        0.25833333333333336
+      ],
+      "prefix_nll": [
+        3.9858715056946092,
+        4.585879936210509,
+        4.9575932726637095,
+        5.081272808290763,
+        5.305151874845139,
+        5.427776655221021
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-val-history-13301-execute-history.npz",
+      "raw_sha256": "ea8b7d58e2223ef0603e97ed2387e260a86c99d9acdc5cdca5e7ed0b3dc4d60d",
+      "weights_sha256": "cdbd9eb94596c68df2172d9ddd226def20d9a4ebdd5aa887c09ba3509025880b"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13303,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.24444444444444444,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.487574242373884,
+      "final_prefix_nll": 5.371778281377304,
+      "prefix_accuracy": [
+        0.25,
+        0.25,
+        0.24166666666666667,
+        0.225,
+        0.25,
+        0.25
+      ],
+      "prefix_nll": [
+        5.085836246906007,
+        5.4913534910351745,
+        5.777810918526695,
+        5.646908831697778,
+        5.5517576847003385,
+        5.3717782813773045
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 1147,
+      "restoration_cell_events": 812,
+      "raw_file": "async_av-val-hx_full-13303-execute-hx_full.npz",
+      "raw_sha256": "920b1168dd89cf89672567def5705caf6f286bc8de9607850b7f9ce033d00414",
+      "weights_sha256": "546ef5d84f3abff0625291cd799517b11eae41cfca1b6e2b8798ce5457eb5a4a"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13303,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.24722222222222223,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.4594979028338,
+      "final_prefix_nll": 5.415564534411499,
+      "prefix_accuracy": [
+        0.25,
+        0.25,
+        0.23333333333333334,
+        0.25,
+        0.25,
+        0.25
+      ],
+      "prefix_nll": [
+        4.889615990592406,
+        5.440566929928729,
+        5.775126650034044,
+        5.663352079886747,
+        5.572761232149388,
+        5.4155645344115
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 1147,
+      "restoration_cell_events": 812,
+      "raw_file": "async_av-val-hx_full-13303-execute-hx_margin.npz",
+      "raw_sha256": "3c33cf91ebcc53230f0b720716004b4ca6e495df8c1a33bb360346b6e9d0f4ed",
+      "weights_sha256": "546ef5d84f3abff0625291cd799517b11eae41cfca1b6e2b8798ce5457eb5a4a"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13303,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.22083333333333333,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 6.012262749691335,
+      "final_prefix_nll": 5.9549824512384815,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.18333333333333332,
+        0.19166666666666668,
+        0.21666666666666667,
+        0.25
+      ],
+      "prefix_nll": [
+        5.1155361549677645,
+        6.030029175704171,
+        6.390434096950176,
+        6.3748502963310205,
+        6.20774432295639,
+        5.9549824512384815
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 574,
+      "restoration_cell_events": 410,
+      "raw_file": "async_av-val-hx_margin-13303-execute-hx_full.npz",
+      "raw_sha256": "0b28e2627d54f86ff970aa725f6af580a07ed80d6401e2de0909db22720522c8",
+      "weights_sha256": "a28b312868fb9aa33a6ac863ce5ece336178eff3b19c216aa6f4324f0992f43d"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13303,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.22083333333333333,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 6.0130749098463765,
+      "final_prefix_nll": 5.955533732033124,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.18333333333333332,
+        0.19166666666666668,
+        0.21666666666666667,
+        0.25
+      ],
+      "prefix_nll": [
+        5.114149755127285,
+        6.033635615109408,
+        6.39134293406058,
+        6.3755100053618605,
+        6.208277417385997,
+        5.955533732033126
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 574,
+      "restoration_cell_events": 410,
+      "raw_file": "async_av-val-hx_margin-13303-execute-hx_margin.npz",
+      "raw_sha256": "9aac9daf4505fa0a677626ceac21fb1c1b1570ddcdf36eee902eba4bc7573439",
+      "weights_sha256": "a28b312868fb9aa33a6ac863ce5ece336178eff3b19c216aa6f4324f0992f43d"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "ordinary_gate",
+      "seed": 13303,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.22083333333333333,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.923582348821143,
+      "final_prefix_nll": 5.804679730236683,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.19166666666666668,
+        0.18333333333333332,
+        0.21666666666666667,
+        0.25
+      ],
+      "prefix_nll": [
+        5.081588234054643,
+        6.0623072263817575,
+        6.300205160728639,
+        6.227424145099419,
+        6.065289596425709,
+        5.804679730236682
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 735,
+      "restoration_cell_events": 480,
+      "raw_file": "async_av-val-ordinary_gate-13303-execute-ordinary_gate.npz",
+      "raw_sha256": "fb570b872326e2ad7a02d3d0e122b38b4cb9112bb45c97dca2c91828f3610083",
+      "weights_sha256": "aee7dc1a35bbfc1072f2c1374f44843c4a60f57d28ce673d4c0a4df8e57e39da"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "gru",
+      "seed": 13303,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.21388888888888888,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.986188991847626,
+      "final_prefix_nll": 6.271903152791891,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.18333333333333332,
+        0.16666666666666666,
+        0.2,
+        0.25
+      ],
+      "prefix_nll": [
+        4.930557613338546,
+        5.8019060476371465,
+        6.243486620362505,
+        6.341460643168584,
+        6.32781987378707,
+        6.271903152791892
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-val-gru-13303-execute-gru.npz",
+      "raw_sha256": "f6b6e79b55694e131a4b227362a02d7f131330bc3c314ed680d266b67757e363",
+      "weights_sha256": "4841537ce8b23639e1881b9ad88dcf8b0f35e401b117b5714377340d5cd7490a"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "ssm",
+      "seed": 13303,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.22916666666666666,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.578501394034958,
+      "final_prefix_nll": 5.778445526090526,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.20833333333333334,
+        0.20833333333333334,
+        0.225,
+        0.25
+      ],
+      "prefix_nll": [
+        4.825981826698511,
+        5.490852330497531,
+        5.717555524942475,
+        5.904236570570047,
+        5.7539365854106626,
+        5.778445526090528
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-val-ssm-13303-execute-ssm.npz",
+      "raw_sha256": "943f4d0142854e9124d5c920d5e96065c0b8cb0f187f2472a302788010d72552",
+      "weights_sha256": "8a0b6021f6261d6f4b5e8bfac9b4ddcbde50bf776d52ea43e86ddbed7baed33e"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "history",
+      "seed": 13303,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.25277777777777777,
+      "final_prefix_accuracy": 0.26666666666666666,
+      "all_prefix_nll": 4.725019863958059,
+      "final_prefix_nll": 4.968196070701132,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.24166666666666667,
+        0.25833333333333336,
+        0.26666666666666666,
+        0.26666666666666666
+      ],
+      "prefix_nll": [
+        4.078087202718499,
+        4.537154378602538,
+        4.882041842982951,
+        4.939955893468079,
+        4.944683795275155,
+        4.968196070701131
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-val-history-13303-execute-history.npz",
+      "raw_sha256": "794a892bdd041571a6d83187504f87bac37ad26521fec0f3027a9e5249de5c49",
+      "weights_sha256": "30eee41b2570e6bb01185af6c156609f3c11ac2597149c4d2a36c41a87d9d8c3"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13307,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.21944444444444444,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.711157468672968,
+      "final_prefix_nll": 5.774290953602521,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.19166666666666668,
+        0.175,
+        0.21666666666666667,
+        0.25
+      ],
+      "prefix_nll": [
+        5.365290259886567,
+        5.672551814412724,
+        5.769814703419556,
+        5.852757676826881,
+        5.83223940388956,
+        5.774290953602522
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 764,
+      "restoration_cell_events": 541,
+      "raw_file": "async_av-val-hx_full-13307-execute-hx_full.npz",
+      "raw_sha256": "7cba7adeed39a5a012eca5daf1c3dbbd3a6fd729fe362cb48e9b9d63cc6f9673",
+      "weights_sha256": "e6639eec1437e95335b556320680e3e93538b5f627a1f94368398d50a92409b3"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13307,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.22083333333333333,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.669773096039422,
+      "final_prefix_nll": 5.791859357509121,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.19166666666666668,
+        0.18333333333333332,
+        0.21666666666666667,
+        0.25
+      ],
+      "prefix_nll": [
+        5.141346815712569,
+        5.60947360933407,
+        5.755322299165297,
+        5.871031650633498,
+        5.849604843881969,
+        5.791859357509121
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 764,
+      "restoration_cell_events": 541,
+      "raw_file": "async_av-val-hx_full-13307-execute-hx_margin.npz",
+      "raw_sha256": "1201d9be0c172ed323892400e00e798b0e4d0dd040ba4e5657001a301cebde3c",
+      "weights_sha256": "e6639eec1437e95335b556320680e3e93538b5f627a1f94368398d50a92409b3"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13307,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.22083333333333333,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.7314809750793465,
+      "final_prefix_nll": 5.844764584148915,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.19166666666666668,
+        0.18333333333333332,
+        0.21666666666666667,
+        0.25
+      ],
+      "prefix_nll": [
+        5.181118854243302,
+        5.633579704210159,
+        5.900629366746196,
+        5.920727820076376,
+        5.908065521051133,
+        5.8447645841489155
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 621,
+      "restoration_cell_events": 390,
+      "raw_file": "async_av-val-hx_margin-13307-execute-hx_full.npz",
+      "raw_sha256": "38d229db31657290c5d0122f6b4ca60e043cb026288e1f61963bcb60a1d0a5f4",
+      "weights_sha256": "75cbb10c135f64659e2adbe06aa1d9d5f922cc8329c310a0f2d8d1f9e1c162b7"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13307,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.22083333333333333,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.730814429271956,
+      "final_prefix_nll": 5.845100887954155,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.19166666666666668,
+        0.18333333333333332,
+        0.21666666666666667,
+        0.25
+      ],
+      "prefix_nll": [
+        5.179193667559592,
+        5.633583780083423,
+        5.899609694134267,
+        5.919512476246961,
+        5.907886069653346,
+        5.845100887954151
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 621,
+      "restoration_cell_events": 390,
+      "raw_file": "async_av-val-hx_margin-13307-execute-hx_margin.npz",
+      "raw_sha256": "fc6595b72e404390b91847a027fd5b907cc7b8fc88c5e4d3a9de187bbc30cc8c",
+      "weights_sha256": "75cbb10c135f64659e2adbe06aa1d9d5f922cc8329c310a0f2d8d1f9e1c162b7"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "ordinary_gate",
+      "seed": 13307,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.225,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.746267469903615,
+      "final_prefix_nll": 5.807553825685892,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.18333333333333332,
+        0.2,
+        0.23333333333333334,
+        0.25
+      ],
+      "prefix_nll": [
+        5.262184666449518,
+        5.712469113934211,
+        5.910664769965758,
+        5.90557836130266,
+        5.879154082083641,
+        5.807553825685892
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 901,
+      "restoration_cell_events": 575,
+      "raw_file": "async_av-val-ordinary_gate-13307-execute-ordinary_gate.npz",
+      "raw_sha256": "8b000c95e5bf65d7c19363e0c29d517b93a51b8e54b8073cbaad761a1d7215bf",
+      "weights_sha256": "0068ad8681d46faf18ea57e95692e90b506c77df3ce7be572fae46ffec609828"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "gru",
+      "seed": 13307,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.22083333333333333,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.353710048445469,
+      "final_prefix_nll": 5.5103814225151115,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.18333333333333332,
+        0.19166666666666668,
+        0.21666666666666667,
+        0.25
+      ],
+      "prefix_nll": [
+        4.429750777624666,
+        5.278549028832368,
+        5.613209327626793,
+        5.659726826823553,
+        5.630642907250328,
+        5.510381422515111
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-val-gru-13307-execute-gru.npz",
+      "raw_sha256": "bd3912f94646fbe2177cbef93e3fc4e18fc2ee7ffa24b6611635c4b20775d6aa",
+      "weights_sha256": "ddf6e30c77ba1cc3d1a8574811a5512d1fae53efc6ada72bc1248748562b93a8"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "ssm",
+      "seed": 13307,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.23333333333333334,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 5.423842404235781,
+      "final_prefix_nll": 5.7120482754590265,
+      "prefix_accuracy": [
+        0.25,
+        0.23333333333333334,
+        0.225,
+        0.20833333333333334,
+        0.23333333333333334,
+        0.25
+      ],
+      "prefix_nll": [
+        4.947169370781778,
+        5.253171585061205,
+        5.347340210628984,
+        5.620149380043825,
+        5.663175603439866,
+        5.7120482754590265
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-val-ssm-13307-execute-ssm.npz",
+      "raw_sha256": "b0c0b8dd391bf4041094f092268587cc6466b2094166fda2261dd1671b032c62",
+      "weights_sha256": "1d9f2f0f5478a54fe03da221fb5871b47ddaac96dc324390dcd65d2dc4745677"
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "training_family": "history",
+      "seed": 13307,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.2222222222222222,
+      "final_prefix_accuracy": 0.25,
+      "all_prefix_nll": 4.8910238169549425,
+      "final_prefix_nll": 5.386195793140532,
+      "prefix_accuracy": [
+        0.25,
+        0.2,
+        0.19166666666666668,
+        0.21666666666666667,
+        0.225,
+        0.25
+      ],
+      "prefix_nll": [
+        3.981692128407014,
+        4.619106912496582,
+        4.9491738727996895,
+        5.071537598047873,
+        5.33843659683797,
+        5.386195793140531
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-val-history-13307-execute-history.npz",
+      "raw_sha256": "5854af11e34a3df46114a8f0dea9d290d2ba1fe0dd5e922dc7869cafbc23d77f",
+      "weights_sha256": "b51815bd6eadaa1a404c72e6d6e5882136e3dcf701158a9ef34756bdb47c1a52"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13301,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.5152777777777777,
+      "final_prefix_accuracy": 0.5166666666666667,
+      "all_prefix_nll": 0.733754850307875,
+      "final_prefix_nll": 0.745235050913656,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.525,
+        0.5333333333333333,
+        0.5166666666666667,
+        0.5166666666666667
+      ],
+      "prefix_nll": [
+        0.7042188387930791,
+        0.721850241110888,
+        0.7310949400535282,
+        0.742221169134776,
+        0.7579088618413236,
+        0.7452350509136563
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 1961,
+      "restoration_cell_events": 1380,
+      "raw_file": "av_binding-val-hx_full-13301-execute-hx_full.npz",
+      "raw_sha256": "44bd9f86cd2c16f34677a75386db7ff365148ea7f3f8cad9f3d6f76d83dd8653",
+      "weights_sha256": "f5667597987652260f14c0d0b3418429f01daba933408d0d4f3bb7b61cab1df5"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13301,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.5152777777777777,
+      "final_prefix_accuracy": 0.5166666666666667,
+      "all_prefix_nll": 0.7336431763066729,
+      "final_prefix_nll": 0.7451482626655882,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.525,
+        0.5333333333333333,
+        0.5166666666666667,
+        0.5166666666666667
+      ],
+      "prefix_nll": [
+        0.7046207638628081,
+        0.7219751027646686,
+        0.7307378115250339,
+        0.7417571449647665,
+        0.7576199720571724,
+        0.7451482626655882
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 1961,
+      "restoration_cell_events": 1380,
+      "raw_file": "av_binding-val-hx_full-13301-execute-hx_margin.npz",
+      "raw_sha256": "488372a9acba59847bad1345712c0701b733975528d006399429a2e99a909a0a",
+      "weights_sha256": "f5667597987652260f14c0d0b3418429f01daba933408d0d4f3bb7b61cab1df5"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13301,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.5125,
+      "final_prefix_accuracy": 0.5166666666666667,
+      "all_prefix_nll": 0.7315376596687139,
+      "final_prefix_nll": 0.7421775633303043,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5125,
+        0.5166666666666667,
+        0.5291666666666667,
+        0.5166666666666667
+      ],
+      "prefix_nll": [
+        0.7008815931408877,
+        0.7261292538202889,
+        0.7270144087663601,
+        0.7410655790658035,
+        0.7519575598886374,
+        0.7421775633303038
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 1789,
+      "restoration_cell_events": 1367,
+      "raw_file": "av_binding-val-hx_margin-13301-execute-hx_full.npz",
+      "raw_sha256": "a9f37168b795bd5b43e679987e2118aa9292031828b7bd446d1b69f963ea0aea",
+      "weights_sha256": "c8a19381ac55c6a0fdf481853b11a1ee749b0b0163fbfb52a84a8e982d355347"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13301,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.5131944444444444,
+      "final_prefix_accuracy": 0.5166666666666667,
+      "all_prefix_nll": 0.7313337261299964,
+      "final_prefix_nll": 0.7420026224067174,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5125,
+        0.5208333333333334,
+        0.5291666666666667,
+        0.5166666666666667
+      ],
+      "prefix_nll": [
+        0.7009456302674535,
+        0.7260923450588547,
+        0.7266146611362286,
+        0.7406394926201469,
+        0.7517076052905757,
+        0.7420026224067182
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 1789,
+      "restoration_cell_events": 1367,
+      "raw_file": "av_binding-val-hx_margin-13301-execute-hx_margin.npz",
+      "raw_sha256": "0ab7e3982ebf2e19334e3f7f47a589754854194417f0f918896b705b87df6c28",
+      "weights_sha256": "c8a19381ac55c6a0fdf481853b11a1ee749b0b0163fbfb52a84a8e982d355347"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "ordinary_gate",
+      "seed": 13301,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.5138888888888888,
+      "final_prefix_accuracy": 0.5,
+      "all_prefix_nll": 0.7303008109521758,
+      "final_prefix_nll": 0.7438858358297112,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.525,
+        0.5333333333333333,
+        0.525,
+        0.5
+      ],
+      "prefix_nll": [
+        0.7005884691478449,
+        0.720458987302567,
+        0.7269365016113947,
+        0.7395023369158484,
+        0.7504327349056903,
+        0.7438858358297112
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 1801,
+      "restoration_cell_events": 1191,
+      "raw_file": "av_binding-val-ordinary_gate-13301-execute-ordinary_gate.npz",
+      "raw_sha256": "f9861c4dfe6f9f6919d5a574262e096d6ff3b83ca6ebfadcb609293a613a723e",
+      "weights_sha256": "bc5ff54619202facc38e1f072dfd867970e76a49170290bff92319cb2daf0223"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "gru",
+      "seed": 13301,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.5166666666666667,
+      "final_prefix_accuracy": 0.5291666666666667,
+      "all_prefix_nll": 0.70717849292573,
+      "final_prefix_nll": 0.7029075006434697,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5125,
+        0.5333333333333333,
+        0.525,
+        0.5291666666666667
+      ],
+      "prefix_nll": [
+        0.7047130845058374,
+        0.7148101789579001,
+        0.713185656183266,
+        0.7020069256907149,
+        0.7054476115731908,
+        0.70290750064347
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-val-gru-13301-execute-gru.npz",
+      "raw_sha256": "47572ab9f6e898f0dcc24756776ecf07ca0bf475d726ed8884d2bf59e990b301",
+      "weights_sha256": "a5d3e2c5ef62f18f289ba17888089a3ad51c609719c0eae2320d370441f99871"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "ssm",
+      "seed": 13301,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.5041666666666667,
+      "final_prefix_accuracy": 0.4666666666666667,
+      "all_prefix_nll": 0.7283158815845758,
+      "final_prefix_nll": 0.7334604516298601,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5,
+        0.5375,
+        0.5208333333333334,
+        0.4666666666666667
+      ],
+      "prefix_nll": [
+        0.6995661474983623,
+        0.7271792308455232,
+        0.7368055839853871,
+        0.7385245966236833,
+        0.7343592789246387,
+        0.7334604516298596
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-val-ssm-13301-execute-ssm.npz",
+      "raw_sha256": "606b9ff315900efe6a74502a263d108ac2fec0be20b80ea2121380bbfed02023",
+      "weights_sha256": "78fa2da1e5bc6aff10b09b6997af427247ac7787f06806e19de1a7d769a5bab3"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "history",
+      "seed": 13301,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.5194444444444445,
+      "final_prefix_accuracy": 0.5458333333333333,
+      "all_prefix_nll": 0.691940401630272,
+      "final_prefix_nll": 0.6838233021790707,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5125,
+        0.5166666666666667,
+        0.5416666666666666,
+        0.5458333333333333
+      ],
+      "prefix_nll": [
+        0.6945891024869116,
+        0.6987488055883248,
+        0.6961549031098202,
+        0.6931032444287847,
+        0.6852230519887194,
+        0.6838233021790706
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-val-history-13301-execute-history.npz",
+      "raw_sha256": "3a32e2b67b6a65bae6234f7e6d811c93dfae87609c8b982cab7df4ec7af2eec3",
+      "weights_sha256": "3aa07c4d949c82043fc8e0c7142c8b026e6317617cb85ce894daba86effbedad"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13303,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.5013888888888889,
+      "final_prefix_accuracy": 0.49166666666666664,
+      "all_prefix_nll": 0.7368369716066316,
+      "final_prefix_nll": 0.7499401275771365,
+      "prefix_accuracy": [
+        0.5,
+        0.475,
+        0.5125,
+        0.5166666666666667,
+        0.5125,
+        0.49166666666666664
+      ],
+      "prefix_nll": [
+        0.7016806553355633,
+        0.7388435598894242,
+        0.7446337556171618,
+        0.7443675292314557,
+        0.7415562019890498,
+        0.7499401275771361
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2579,
+      "restoration_cell_events": 1716,
+      "raw_file": "av_binding-val-hx_full-13303-execute-hx_full.npz",
+      "raw_sha256": "ec8b405d5a43a55cf1b095cc3192dacd280f8e383f1154694801636e9e9e5614",
+      "weights_sha256": "45fc31f508f931777b2c6715da98cf3156bfdf74c78005e2d290ae2c5f8e88a8"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13303,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.5020833333333333,
+      "final_prefix_accuracy": 0.49166666666666664,
+      "all_prefix_nll": 0.73673021811529,
+      "final_prefix_nll": 0.7501947870567005,
+      "prefix_accuracy": [
+        0.5,
+        0.475,
+        0.5125,
+        0.5208333333333334,
+        0.5125,
+        0.49166666666666664
+      ],
+      "prefix_nll": [
+        0.7015508027260943,
+        0.7377760781335739,
+        0.7447884855494019,
+        0.7444149496078363,
+        0.7416562056181341,
+        0.7501947870567007
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2579,
+      "restoration_cell_events": 1716,
+      "raw_file": "av_binding-val-hx_full-13303-execute-hx_margin.npz",
+      "raw_sha256": "33ad4071f9365259dda23f8d9058d33d56acfe65a12e99aea5fa7b43c91cee33",
+      "weights_sha256": "45fc31f508f931777b2c6715da98cf3156bfdf74c78005e2d290ae2c5f8e88a8"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13303,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.5111111111111111,
+      "final_prefix_accuracy": 0.5041666666666667,
+      "all_prefix_nll": 0.7263433571383611,
+      "final_prefix_nll": 0.7433107480493722,
+      "prefix_accuracy": [
+        0.5,
+        0.525,
+        0.5125,
+        0.5208333333333334,
+        0.5041666666666667,
+        0.5041666666666667
+      ],
+      "prefix_nll": [
+        0.7049164653913678,
+        0.7231572022761876,
+        0.7229264330425293,
+        0.7245486334347847,
+        0.7392006606359217,
+        0.7433107480493718
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2830,
+      "restoration_cell_events": 1794,
+      "raw_file": "av_binding-val-hx_margin-13303-execute-hx_full.npz",
+      "raw_sha256": "167f708ddaf1b6bba462d26ad82e560ae2daf43185ca60202ab41e9a31877bb4",
+      "weights_sha256": "c206f917699dba02d3d0cc4222d52bca202cd1535f5abc9188cbece0f58c8f86"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13303,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.5055555555555555,
+      "final_prefix_accuracy": 0.5041666666666667,
+      "all_prefix_nll": 0.7264101938912663,
+      "final_prefix_nll": 0.7434760449407477,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5125,
+        0.5125,
+        0.5041666666666667,
+        0.5041666666666667
+      ],
+      "prefix_nll": [
+        0.7050491540905285,
+        0.7232857886768137,
+        0.7229435111449859,
+        0.7245304036836245,
+        0.7391762608108962,
+        0.7434760449407475
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2830,
+      "restoration_cell_events": 1794,
+      "raw_file": "av_binding-val-hx_margin-13303-execute-hx_margin.npz",
+      "raw_sha256": "262805ddcf842581b82a5ac629b8fdd818c2b28eab5142a46a9d55b00d34624a",
+      "weights_sha256": "c206f917699dba02d3d0cc4222d52bca202cd1535f5abc9188cbece0f58c8f86"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "ordinary_gate",
+      "seed": 13303,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.4979166666666667,
+      "final_prefix_accuracy": 0.5083333333333333,
+      "all_prefix_nll": 0.736123248916398,
+      "final_prefix_nll": 0.7458304805159938,
+      "prefix_accuracy": [
+        0.5,
+        0.45,
+        0.5,
+        0.5083333333333333,
+        0.5208333333333334,
+        0.5083333333333333
+      ],
+      "prefix_nll": [
+        0.7016917075409458,
+        0.7402173527362282,
+        0.740947182496122,
+        0.7389510613046518,
+        0.7491017089044457,
+        0.7458304805159944
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2610,
+      "restoration_cell_events": 1787,
+      "raw_file": "av_binding-val-ordinary_gate-13303-execute-ordinary_gate.npz",
+      "raw_sha256": "c0fc3d40184104b4f637768bb32a578a04a49d7cba3991a0bb3d2577eef70fc5",
+      "weights_sha256": "e17cdb5e53cde86b3029e0c2eb8e5dc48f988fb1c7f2b732645273f6e0743e40"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "gru",
+      "seed": 13303,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.5159722222222223,
+      "final_prefix_accuracy": 0.5166666666666667,
+      "all_prefix_nll": 0.7037751286254895,
+      "final_prefix_nll": 0.7049559719073493,
+      "prefix_accuracy": [
+        0.5,
+        0.525,
+        0.525,
+        0.5125,
+        0.5166666666666667,
+        0.5166666666666667
+      ],
+      "prefix_nll": [
+        0.6993959652999236,
+        0.7012063180020413,
+        0.6988349716005248,
+        0.7115860031873917,
+        0.7066715417557087,
+        0.7049559719073489
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-val-gru-13303-execute-gru.npz",
+      "raw_sha256": "f8416c674d8d1c85f78cb909748e0fc39999fd71650d4a99e17cfab7cec0f6e5",
+      "weights_sha256": "71b68a4a4056aa37a78449bbfac5ce6ec37ca155e257a7296b6dca7d3409be20"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "ssm",
+      "seed": 13303,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.50625,
+      "final_prefix_accuracy": 0.5083333333333333,
+      "all_prefix_nll": 0.7157990595618704,
+      "final_prefix_nll": 0.7306397064798527,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.525,
+        0.5041666666666667,
+        0.5,
+        0.5083333333333333
+      ],
+      "prefix_nll": [
+        0.6980377102113257,
+        0.7010790175847953,
+        0.7089174710025682,
+        0.7265351320955111,
+        0.7295853199971691,
+        0.7306397064798529
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-val-ssm-13303-execute-ssm.npz",
+      "raw_sha256": "85ab1c5aec72a828751efdb4d3a80344944abcb7c361d28139875f03785818c7",
+      "weights_sha256": "0eb65295a1b6f7d55b665620aef0564bbfaafd59a7beaa0e724b711b753f02d2"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "history",
+      "seed": 13303,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.5034722222222222,
+      "final_prefix_accuracy": 0.49166666666666664,
+      "all_prefix_nll": 0.7100359972022022,
+      "final_prefix_nll": 0.7184788318731766,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.525,
+        0.5041666666666667,
+        0.5,
+        0.49166666666666664
+      ],
+      "prefix_nll": [
+        0.6988633892573909,
+        0.7026345165005988,
+        0.7136529930905298,
+        0.7110085188534011,
+        0.7155777336381158,
+        0.718478831873177
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-val-history-13303-execute-history.npz",
+      "raw_sha256": "4a403af9e144f344193e01071f4a2ad15f4a267213c89d54ce3fd6a67f2c759d",
+      "weights_sha256": "9784dc8df98e4012cd3d42b3a45833bceb5b2b1b0574c14c121b79422117c086"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13307,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.5090277777777777,
+      "final_prefix_accuracy": 0.5125,
+      "all_prefix_nll": 0.701919482565931,
+      "final_prefix_nll": 0.6995670546911387,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5,
+        0.5208333333333334,
+        0.5208333333333334,
+        0.5125
+      ],
+      "prefix_nll": [
+        0.6958942763263695,
+        0.7075706828714668,
+        0.7109127249791986,
+        0.698577377191084,
+        0.6989947793363289,
+        0.6995670546911378
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2920,
+      "restoration_cell_events": 1684,
+      "raw_file": "av_binding-val-hx_full-13307-execute-hx_full.npz",
+      "raw_sha256": "a1b02214618a35c8cba86b6511c86d2b85abf04cbedda4337b8e84a47773818d",
+      "weights_sha256": "698d0bdc13ba2b513431822fafd87f028ef15e140050b6d4bfd7fc084a7a954c"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_full",
+      "seed": 13307,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.5083333333333333,
+      "final_prefix_accuracy": 0.5125,
+      "all_prefix_nll": 0.701849293238154,
+      "final_prefix_nll": 0.6995915328209894,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5,
+        0.5208333333333334,
+        0.5166666666666667,
+        0.5125
+      ],
+      "prefix_nll": [
+        0.6959784417199388,
+        0.7069163505522978,
+        0.7110447350221508,
+        0.6988573984030033,
+        0.6987073009105471,
+        0.6995915328209895
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2920,
+      "restoration_cell_events": 1684,
+      "raw_file": "av_binding-val-hx_full-13307-execute-hx_margin.npz",
+      "raw_sha256": "c2217deeb32c5881369626ac1c84ac752b5c0f1a169c96ceef01426fd0919087",
+      "weights_sha256": "698d0bdc13ba2b513431822fafd87f028ef15e140050b6d4bfd7fc084a7a954c"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13307,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.5104166666666666,
+      "final_prefix_accuracy": 0.525,
+      "all_prefix_nll": 0.7040011319746433,
+      "final_prefix_nll": 0.7005500954254938,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5,
+        0.5166666666666667,
+        0.5208333333333334,
+        0.525
+      ],
+      "prefix_nll": [
+        0.6957579144374008,
+        0.7089977585237693,
+        0.7206954805605503,
+        0.6996272741550199,
+        0.698378268745626,
+        0.7005500954254938
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 1328,
+      "restoration_cell_events": 832,
+      "raw_file": "av_binding-val-hx_margin-13307-execute-hx_full.npz",
+      "raw_sha256": "e52eedc54aa21ce320122afdc7ecd56d53ff4166a9d67ec3964d1273efa48262",
+      "weights_sha256": "6e67d487f64a1575756ca23a95d14895d239a3ff8a087df30b0a7ffc9181bcbf"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "hx_margin",
+      "seed": 13307,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.5104166666666666,
+      "final_prefix_accuracy": 0.5291666666666667,
+      "all_prefix_nll": 0.7040350401603898,
+      "final_prefix_nll": 0.7006413213294811,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5,
+        0.5166666666666667,
+        0.5166666666666667,
+        0.5291666666666667
+      ],
+      "prefix_nll": [
+        0.695731680725292,
+        0.7090024656016277,
+        0.7207820636701897,
+        0.699665138679467,
+        0.6983875709562816,
+        0.7006413213294808
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 1328,
+      "restoration_cell_events": 832,
+      "raw_file": "av_binding-val-hx_margin-13307-execute-hx_margin.npz",
+      "raw_sha256": "501c2cdbb59c1520b2ca70ae7035ff7a1a288ad769c29d539059628f07ee2554",
+      "weights_sha256": "6e67d487f64a1575756ca23a95d14895d239a3ff8a087df30b0a7ffc9181bcbf"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "ordinary_gate",
+      "seed": 13307,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.5076388888888889,
+      "final_prefix_accuracy": 0.49583333333333335,
+      "all_prefix_nll": 0.7029079470432689,
+      "final_prefix_nll": 0.7028543730039971,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5,
+        0.5125,
+        0.5375,
+        0.49583333333333335
+      ],
+      "prefix_nll": [
+        0.6965997199369898,
+        0.7061587035819976,
+        0.7097692060349611,
+        0.7029308106717036,
+        0.6991348690299632,
+        0.7028543730039972
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2548,
+      "restoration_cell_events": 1484,
+      "raw_file": "av_binding-val-ordinary_gate-13307-execute-ordinary_gate.npz",
+      "raw_sha256": "4b77d0aa49892f98ac336671f91d2cb59f46055e235331d813bd575a719cacce",
+      "weights_sha256": "db68342090cefde106319b84f6b163bce548d7ddc4bb994ca54aef0ccd1eca6f"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "gru",
+      "seed": 13307,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.5277777777777778,
+      "final_prefix_accuracy": 0.5583333333333333,
+      "all_prefix_nll": 0.7013652765198829,
+      "final_prefix_nll": 0.6912802671794777,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5125,
+        0.5375,
+        0.5583333333333333,
+        0.5583333333333333
+      ],
+      "prefix_nll": [
+        0.6978695300086922,
+        0.7177462312935228,
+        0.7133137951602139,
+        0.6960937700239261,
+        0.691888065453465,
+        0.6912802671794775
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-val-gru-13307-execute-gru.npz",
+      "raw_sha256": "5de58714e15a6549d68391f813a2713848e39a09c76677228085cbd5733c1990",
+      "weights_sha256": "66a43384a723a8789cb24ce48af58cc81d2e394be11178fb3392fd11666a5512"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "ssm",
+      "seed": 13307,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.5159722222222223,
+      "final_prefix_accuracy": 0.5208333333333334,
+      "all_prefix_nll": 0.6977891866106944,
+      "final_prefix_nll": 0.6904946792827974,
+      "prefix_accuracy": [
+        0.5,
+        0.525,
+        0.525,
+        0.5083333333333333,
+        0.5166666666666667,
+        0.5208333333333334
+      ],
+      "prefix_nll": [
+        0.6976269893101814,
+        0.7042330710073752,
+        0.7065652692765594,
+        0.6953618313213491,
+        0.6924532794659041,
+        0.6904946792827972
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-val-ssm-13307-execute-ssm.npz",
+      "raw_sha256": "6d45f3418e1058bb5ede2071227790a844115e5ea7f9353cbc57de1cb7b6d240",
+      "weights_sha256": "aa194c4830f9852626c9e9947409da41418105c8446a4c31cb7b60afb350a81b"
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "training_family": "history",
+      "seed": 13307,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.5166666666666667,
+      "final_prefix_accuracy": 0.5208333333333334,
+      "all_prefix_nll": 0.7004741811827706,
+      "final_prefix_nll": 0.7012949449909919,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.525,
+        0.5375,
+        0.5166666666666667,
+        0.5208333333333334
+      ],
+      "prefix_nll": [
+        0.6971689594297075,
+        0.7028706518554473,
+        0.7035721291395837,
+        0.6982186980615449,
+        0.6997197036193479,
+        0.7012949449909917
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-val-history-13307-execute-history.npz",
+      "raw_sha256": "9a905c7abc954f3ce19ea34d1495a65875967eb06675bcbbacfec1cd83a83351",
+      "weights_sha256": "11dade98691cd9bd5ae271194dc6079e6b46c915a9a00c2a6af15b9da93e0c05"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13301,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.30972222222222223,
+      "final_prefix_accuracy": 0.21666666666666667,
+      "all_prefix_nll": 3.676965486511077,
+      "final_prefix_nll": 4.059903740616045,
+      "prefix_accuracy": [
+        0.5,
+        0.31666666666666665,
+        0.26666666666666666,
+        0.3,
+        0.25833333333333336,
+        0.21666666666666667
+      ],
+      "prefix_nll": [
+        3.0377681594838504,
+        3.4969074073021145,
+        3.616186553213207,
+        3.807476716793362,
+        4.043550341657884,
+        4.059903740616044
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 1045,
+      "restoration_cell_events": 701,
+      "raw_file": "async_av-test-hx_full-13301-execute-hx_full.npz",
+      "raw_sha256": "f0ac210cd5b5cc9de11e6dab51816d6a1076469ac0ec9e7e65e522659b16c5ce",
+      "weights_sha256": "38415f642984e5c850fa8d0c5fbdaf1a8a116d140074b434a0a9dee7dc0b59b1"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13301,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.2861111111111111,
+      "final_prefix_accuracy": 0.20833333333333334,
+      "all_prefix_nll": 3.6679811000317524,
+      "final_prefix_nll": 4.095141430269038,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.26666666666666666,
+        0.26666666666666666,
+        0.3,
+        0.25833333333333336,
+        0.20833333333333334
+      ],
+      "prefix_nll": [
+        2.9063951980208698,
+        3.424641170483658,
+        3.6554281433773377,
+        3.856419615550355,
+        4.0698610424892525,
+        4.095141430269039
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 1045,
+      "restoration_cell_events": 701,
+      "raw_file": "async_av-test-hx_full-13301-execute-hx_margin.npz",
+      "raw_sha256": "f78a29e790f2e10c7b9bb1abd52d0951fc351e003ded5f44595be32377d5d9ad",
+      "weights_sha256": "38415f642984e5c850fa8d0c5fbdaf1a8a116d140074b434a0a9dee7dc0b59b1"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13301,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.2875,
+      "final_prefix_accuracy": 0.24166666666666667,
+      "all_prefix_nll": 3.5815297618777273,
+      "final_prefix_nll": 3.747672213151017,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.21666666666666667,
+        0.26666666666666666,
+        0.30833333333333335,
+        0.275,
+        0.24166666666666667
+      ],
+      "prefix_nll": [
+        3.1217488428846325,
+        3.5201568437289983,
+        3.6835425618986326,
+        3.648391410718139,
+        3.7676666988849425,
+        3.7476722131510174
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 653,
+      "restoration_cell_events": 423,
+      "raw_file": "async_av-test-hx_margin-13301-execute-hx_full.npz",
+      "raw_sha256": "ebd74a521c93fa0798fee1845449c522db21e51d8a50b2a4d05c3094d12181f3",
+      "weights_sha256": "48318db35ca262327954710356dedb10ff0cfbecba6f33e4770b80fd21a68cfe"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13301,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.2875,
+      "final_prefix_accuracy": 0.24166666666666667,
+      "all_prefix_nll": 3.5854761321532136,
+      "final_prefix_nll": 3.7466440486741144,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.21666666666666667,
+        0.26666666666666666,
+        0.30833333333333335,
+        0.275,
+        0.24166666666666667
+      ],
+      "prefix_nll": [
+        3.1266958935035785,
+        3.5233635432561075,
+        3.6907060673475356,
+        3.6562330724675034,
+        3.769214167670437,
+        3.746644048674114
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 653,
+      "restoration_cell_events": 423,
+      "raw_file": "async_av-test-hx_margin-13301-execute-hx_margin.npz",
+      "raw_sha256": "aabf6c4d3961fdbd2770b152fbbf91cb1d8e571caafbb955fc91b5addc8f5ceb",
+      "weights_sha256": "48318db35ca262327954710356dedb10ff0cfbecba6f33e4770b80fd21a68cfe"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "ordinary_gate",
+      "seed": 13301,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.2722222222222222,
+      "final_prefix_accuracy": 0.2,
+      "all_prefix_nll": 3.694565670338055,
+      "final_prefix_nll": 3.799287911493676,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.26666666666666666,
+        0.25833333333333336,
+        0.2833333333333333,
+        0.20833333333333334,
+        0.2
+      ],
+      "prefix_nll": [
+        3.17456300429195,
+        3.6488584370391934,
+        3.696243213191198,
+        3.8562836799182123,
+        3.9921577760941047,
+        3.7992879114936726
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 776,
+      "restoration_cell_events": 526,
+      "raw_file": "async_av-test-ordinary_gate-13301-execute-ordinary_gate.npz",
+      "raw_sha256": "a2a33e17c5844a445f8a8623f3bdfbd130cb1736277edbf5407f7ae7edd86f5b",
+      "weights_sha256": "27f06bbb1296b4377f628bba210d7a15a6da2a0620cd5ee466e67083c7d7b1e5"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "gru",
+      "seed": 13301,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.23055555555555557,
+      "final_prefix_accuracy": 0.075,
+      "all_prefix_nll": 3.9126085282382594,
+      "final_prefix_nll": 4.2377188787557705,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.26666666666666666,
+        0.2833333333333333,
+        0.225,
+        0.11666666666666667,
+        0.075
+      ],
+      "prefix_nll": [
+        3.2185273275939172,
+        3.757424912437405,
+        3.9050097043507908,
+        4.124157928938446,
+        4.232812417353221,
+        4.2377188787557705
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-test-gru-13301-execute-gru.npz",
+      "raw_sha256": "229b43801f6f37829b8b8fd77b6b6073181e89eb8a3b9971cefcfc4bc0f31754",
+      "weights_sha256": "6457203522b4e2ca6383442711f3ef9d35892e7c7455775c74a1754af4a1d6fb"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "ssm",
+      "seed": 13301,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.25,
+      "final_prefix_accuracy": 0.16666666666666666,
+      "all_prefix_nll": 3.80703864157764,
+      "final_prefix_nll": 4.334358924512367,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.3,
+        0.21666666666666667,
+        0.21666666666666667,
+        0.18333333333333332,
+        0.16666666666666666
+      ],
+      "prefix_nll": [
+        3.303343101224265,
+        3.396612254962305,
+        3.5823857146614126,
+        3.9558029824908485,
+        4.269728871614647,
+        4.334358924512366
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-test-ssm-13301-execute-ssm.npz",
+      "raw_sha256": "b1ab50f61d887cc68afaae0282acba8b30adfe692b2d4d6709e3d5cd292f4639",
+      "weights_sha256": "742baacf03b6bade5a9f863d1e837dbdd0d3e9317dc30c3e3080584bc019d4d8"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "history",
+      "seed": 13301,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.25555555555555554,
+      "final_prefix_accuracy": 0.09166666666666666,
+      "all_prefix_nll": 3.417175462590551,
+      "final_prefix_nll": 4.23715042496285,
+      "prefix_accuracy": [
+        0.5,
+        0.4,
+        0.26666666666666666,
+        0.15833333333333333,
+        0.11666666666666667,
+        0.09166666666666666
+      ],
+      "prefix_nll": [
+        2.5131213848855887,
+        3.0203647189322567,
+        3.262109591093994,
+        3.5214637287481647,
+        3.9488429269204532,
+        4.23715042496285
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-test-history-13301-execute-history.npz",
+      "raw_sha256": "a2a9d3575f7d02e1c1654cc79c04dff863338934307f5a1e389ab6222954fe25",
+      "weights_sha256": "cdbd9eb94596c68df2172d9ddd226def20d9a4ebdd5aa887c09ba3509025880b"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13303,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.1986111111111111,
+      "final_prefix_accuracy": 0.025,
+      "all_prefix_nll": 3.99247687747513,
+      "final_prefix_nll": 4.504289796228159,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.26666666666666666,
+        0.26666666666666666,
+        0.125,
+        0.09166666666666666,
+        0.025
+      ],
+      "prefix_nll": [
+        3.4481698758221446,
+        3.605476097158133,
+        3.823895024908208,
+        4.191426953626398,
+        4.381603517107735,
+        4.504289796228156
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 993,
+      "restoration_cell_events": 775,
+      "raw_file": "async_av-test-hx_full-13303-execute-hx_full.npz",
+      "raw_sha256": "11944c812dd7791f8433e2072eee8706c7bbe367e20fc1305cde6148d080a16d",
+      "weights_sha256": "546ef5d84f3abff0625291cd799517b11eae41cfca1b6e2b8798ce5457eb5a4a"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13303,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.15694444444444444,
+      "final_prefix_accuracy": 0.0,
+      "all_prefix_nll": 3.931817998096469,
+      "final_prefix_nll": 4.563210237983592,
+      "prefix_accuracy": [
+        0.3333333333333333,
+        0.21666666666666667,
+        0.24166666666666667,
+        0.1,
+        0.05,
+        0.0
+      ],
+      "prefix_nll": [
+        3.18727293992527,
+        3.4472861322266515,
+        3.792946104467975,
+        4.1855978667995295,
+        4.414594707175796,
+        4.563210237983591
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 993,
+      "restoration_cell_events": 775,
+      "raw_file": "async_av-test-hx_full-13303-execute-hx_margin.npz",
+      "raw_sha256": "233cec13145e6af957558a62fd5a605d8a8591a7bc67b7dfcb2b807b3eee86f8",
+      "weights_sha256": "546ef5d84f3abff0625291cd799517b11eae41cfca1b6e2b8798ce5457eb5a4a"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13303,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.21805555555555556,
+      "final_prefix_accuracy": 0.10833333333333334,
+      "all_prefix_nll": 4.341851332908303,
+      "final_prefix_nll": 4.7806380616441935,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.26666666666666666,
+        0.24166666666666667,
+        0.15833333333333333,
+        0.11666666666666667,
+        0.10833333333333334
+      ],
+      "prefix_nll": [
+        3.3907577121047425,
+        3.902484947050947,
+        4.300144722126148,
+        4.77267829214889,
+        4.904404262374899,
+        4.780638061644196
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 540,
+      "restoration_cell_events": 368,
+      "raw_file": "async_av-test-hx_margin-13303-execute-hx_full.npz",
+      "raw_sha256": "cadf31b54f13461363ec4f70eb965123a0793a269b94aa8b49e8c6a7103ea84c",
+      "weights_sha256": "a28b312868fb9aa33a6ac863ce5ece336178eff3b19c216aa6f4324f0992f43d"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13303,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.21805555555555556,
+      "final_prefix_accuracy": 0.10833333333333334,
+      "all_prefix_nll": 4.342282707938336,
+      "final_prefix_nll": 4.784811161664535,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.26666666666666666,
+        0.24166666666666667,
+        0.15833333333333333,
+        0.11666666666666667,
+        0.10833333333333334
+      ],
+      "prefix_nll": [
+        3.384434006078521,
+        3.900248095484836,
+        4.299544351821146,
+        4.775449178054076,
+        4.90920945452691,
+        4.784811161664536
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 540,
+      "restoration_cell_events": 368,
+      "raw_file": "async_av-test-hx_margin-13303-execute-hx_margin.npz",
+      "raw_sha256": "8d79de091603d0272198dbd334be0193c22d00e2dd47d9a116ae40fede506578",
+      "weights_sha256": "a28b312868fb9aa33a6ac863ce5ece336178eff3b19c216aa6f4324f0992f43d"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "ordinary_gate",
+      "seed": 13303,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.2013888888888889,
+      "final_prefix_accuracy": 0.09166666666666666,
+      "all_prefix_nll": 4.152111023472938,
+      "final_prefix_nll": 4.5279520751056115,
+      "prefix_accuracy": [
+        0.3333333333333333,
+        0.26666666666666666,
+        0.20833333333333334,
+        0.18333333333333332,
+        0.125,
+        0.09166666666666666
+      ],
+      "prefix_nll": [
+        3.4415792758719568,
+        3.9300096716932758,
+        4.022882928891495,
+        4.3980782494326744,
+        4.592163939842622,
+        4.527952075105613
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 640,
+      "restoration_cell_events": 442,
+      "raw_file": "async_av-test-ordinary_gate-13303-execute-ordinary_gate.npz",
+      "raw_sha256": "bc0d1487a325de55479d3eed174cc0db9765cc46e47c8c34f8a593055a0b7e79",
+      "weights_sha256": "aee7dc1a35bbfc1072f2c1374f44843c4a60f57d28ce673d4c0a4df8e57e39da"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "gru",
+      "seed": 13303,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.2861111111111111,
+      "final_prefix_accuracy": 0.25833333333333336,
+      "all_prefix_nll": 3.9397379537382675,
+      "final_prefix_nll": 4.537723366927033,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.26666666666666666,
+        0.26666666666666666,
+        0.25,
+        0.25833333333333336,
+        0.25833333333333336
+      ],
+      "prefix_nll": [
+        3.071952443743645,
+        3.59995688360843,
+        3.8010257402300978,
+        4.17772284340177,
+        4.4500464445186285,
+        4.537723366927034
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-test-gru-13303-execute-gru.npz",
+      "raw_sha256": "588803cc5a0f8b4eb49f707f2fda3b0a9f11d362e391be578a6da3f30778bfb8",
+      "weights_sha256": "4841537ce8b23639e1881b9ad88dcf8b0f35e401b117b5714377340d5cd7490a"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "ssm",
+      "seed": 13303,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.19444444444444445,
+      "final_prefix_accuracy": 0.08333333333333333,
+      "all_prefix_nll": 3.6602520714640923,
+      "final_prefix_nll": 3.887170513976983,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.23333333333333334,
+        0.19166666666666668,
+        0.13333333333333333,
+        0.10833333333333334,
+        0.08333333333333333
+      ],
+      "prefix_nll": [
+        3.224460132218399,
+        3.548700963134588,
+        3.6656559314084864,
+        3.7692212611295255,
+        3.866303626916575,
+        3.8871705139769817
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-test-ssm-13303-execute-ssm.npz",
+      "raw_sha256": "6ca641d2906134a172598edc02347f4be6319323eb1bfe8c95bcccdbdce4f271",
+      "weights_sha256": "8a0b6021f6261d6f4b5e8bfac9b4ddcbde50bf776d52ea43e86ddbed7baed33e"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "history",
+      "seed": 13303,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.24305555555555555,
+      "final_prefix_accuracy": 0.2,
+      "all_prefix_nll": 3.237354025853941,
+      "final_prefix_nll": 3.765907091027342,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.26666666666666666,
+        0.24166666666666667,
+        0.175,
+        0.15833333333333333,
+        0.2
+      ],
+      "prefix_nll": [
+        2.419206202480225,
+        2.9923490335369363,
+        3.1875091541693577,
+        3.439129162917708,
+        3.6200235109920746,
+        3.765907091027341
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-test-history-13303-execute-history.npz",
+      "raw_sha256": "e94ab3b8d42a40e807aebb7696310a272f3a68a72c69c9f21671de7155fa4d47",
+      "weights_sha256": "30eee41b2570e6bb01185af6c156609f3c11ac2597149c4d2a36c41a87d9d8c3"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13307,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.25,
+      "final_prefix_accuracy": 0.175,
+      "all_prefix_nll": 4.0578046436028705,
+      "final_prefix_nll": 4.479021052823379,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.31666666666666665,
+        0.24166666666666667,
+        0.20833333333333334,
+        0.14166666666666666,
+        0.175
+      ],
+      "prefix_nll": [
+        3.059281008706851,
+        3.846660961037051,
+        4.0411305199711745,
+        4.353776093026538,
+        4.566958226052232,
+        4.479021052823379
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 1059,
+      "restoration_cell_events": 762,
+      "raw_file": "async_av-test-hx_full-13307-execute-hx_full.npz",
+      "raw_sha256": "9777b1098d70ceb9e2a8d5f3be181a536173bdf4d2c55e1747911f345d4688bf",
+      "weights_sha256": "e6639eec1437e95335b556320680e3e93538b5f627a1f94368398d50a92409b3"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13307,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.25277777777777777,
+      "final_prefix_accuracy": 0.18333333333333332,
+      "all_prefix_nll": 4.046181899909222,
+      "final_prefix_nll": 4.533606181953156,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.31666666666666665,
+        0.24166666666666667,
+        0.2,
+        0.15833333333333333,
+        0.18333333333333332
+      ],
+      "prefix_nll": [
+        2.9072121060827283,
+        3.755807205760036,
+        4.049535669684337,
+        4.397607948616612,
+        4.633322287358462,
+        4.533606181953158
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 1059,
+      "restoration_cell_events": 762,
+      "raw_file": "async_av-test-hx_full-13307-execute-hx_margin.npz",
+      "raw_sha256": "efa8031d9915dfa959c4c61ec1aeade6e759cb09f8ebf354e8206af9e77de71d",
+      "weights_sha256": "e6639eec1437e95335b556320680e3e93538b5f627a1f94368398d50a92409b3"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13307,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.24166666666666667,
+      "final_prefix_accuracy": 0.11666666666666667,
+      "all_prefix_nll": 4.001977660386502,
+      "final_prefix_nll": 4.448868840914177,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.31666666666666665,
+        0.25833333333333336,
+        0.2,
+        0.14166666666666666,
+        0.11666666666666667
+      ],
+      "prefix_nll": [
+        3.3329928604874035,
+        3.7741027026239213,
+        3.8606884155173087,
+        4.190123828944055,
+        4.405089313832148,
+        4.448868840914176
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 174,
+      "restoration_cell_events": 138,
+      "raw_file": "async_av-test-hx_margin-13307-execute-hx_full.npz",
+      "raw_sha256": "a66704e2ff98349909a9859bca550e352c0cf5333c86885c143f6e08d547ff07",
+      "weights_sha256": "75cbb10c135f64659e2adbe06aa1d9d5f922cc8329c310a0f2d8d1f9e1c162b7"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13307,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.24166666666666667,
+      "final_prefix_accuracy": 0.11666666666666667,
+      "all_prefix_nll": 4.001740727343004,
+      "final_prefix_nll": 4.455180007107054,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.31666666666666665,
+        0.25833333333333336,
+        0.2,
+        0.14166666666666666,
+        0.11666666666666667
+      ],
+      "prefix_nll": [
+        3.327274118124575,
+        3.77217696755718,
+        3.8573911193603787,
+        4.18944134970061,
+        4.408980802208242,
+        4.45518000710705
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 174,
+      "restoration_cell_events": 138,
+      "raw_file": "async_av-test-hx_margin-13307-execute-hx_margin.npz",
+      "raw_sha256": "7aeaee209d76f69975d57dbce0aa3eaa4394f3cad2ec5f5a40fbe808a2cda2f3",
+      "weights_sha256": "75cbb10c135f64659e2adbe06aa1d9d5f922cc8329c310a0f2d8d1f9e1c162b7"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "ordinary_gate",
+      "seed": 13307,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.2361111111111111,
+      "final_prefix_accuracy": 0.11666666666666667,
+      "all_prefix_nll": 4.003447632564006,
+      "final_prefix_nll": 4.362246652521338,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.26666666666666666,
+        0.25833333333333336,
+        0.19166666666666668,
+        0.16666666666666666,
+        0.11666666666666667
+      ],
+      "prefix_nll": [
+        3.3060758409487265,
+        3.8508519874114215,
+        3.9011643636337117,
+        4.238775471941361,
+        4.361571478927473,
+        4.362246652521337
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 404,
+      "restoration_cell_events": 313,
+      "raw_file": "async_av-test-ordinary_gate-13307-execute-ordinary_gate.npz",
+      "raw_sha256": "ad5e496651bda78718446deeddda8263987cc4651276ddc8c7d9bfe56c60aa3f",
+      "weights_sha256": "0068ad8681d46faf18ea57e95692e90b506c77df3ce7be572fae46ffec609828"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "gru",
+      "seed": 13307,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.24722222222222223,
+      "final_prefix_accuracy": 0.20833333333333334,
+      "all_prefix_nll": 3.7327560488550344,
+      "final_prefix_nll": 4.052586663725124,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.21666666666666667,
+        0.25833333333333336,
+        0.21666666666666667,
+        0.16666666666666666,
+        0.20833333333333334
+      ],
+      "prefix_nll": [
+        3.058265460492267,
+        3.522547197393696,
+        3.6766017227899903,
+        3.981785373404225,
+        4.10474987532491,
+        4.052586663725126
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-test-gru-13307-execute-gru.npz",
+      "raw_sha256": "fed77d7e895098ec684d9a3f77026d046134e535d00edd6f8e61cb25180d6cd2",
+      "weights_sha256": "ddf6e30c77ba1cc3d1a8574811a5512d1fae53efc6ada72bc1248748562b93a8"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "ssm",
+      "seed": 13307,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.19027777777777777,
+      "final_prefix_accuracy": 0.03333333333333333,
+      "all_prefix_nll": 3.7941777895323967,
+      "final_prefix_nll": 4.4585390085685175,
+      "prefix_accuracy": [
+        0.4166666666666667,
+        0.23333333333333334,
+        0.21666666666666667,
+        0.16666666666666666,
+        0.075,
+        0.03333333333333333
+      ],
+      "prefix_nll": [
+        3.1226994805772703,
+        3.250404870312771,
+        3.6606482134333946,
+        4.054074945179648,
+        4.218700219122783,
+        4.4585390085685175
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-test-ssm-13307-execute-ssm.npz",
+      "raw_sha256": "528fb80633dd906851972456f8af270cdbd5038d213968a1caab14064570b7ef",
+      "weights_sha256": "1d9f2f0f5478a54fe03da221fb5871b47ddaac96dc324390dcd65d2dc4745677"
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "training_family": "history",
+      "seed": 13307,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.19166666666666668,
+      "final_prefix_accuracy": 0.08333333333333333,
+      "all_prefix_nll": 3.447320756062717,
+      "final_prefix_nll": 4.255196206319978,
+      "prefix_accuracy": [
+        0.3333333333333333,
+        0.3,
+        0.21666666666666667,
+        0.14166666666666666,
+        0.075,
+        0.08333333333333333
+      ],
+      "prefix_nll": [
+        2.5037345108972775,
+        3.068858739008926,
+        3.3053317296257227,
+        3.570539278708375,
+        3.980264071816021,
+        4.255196206319978
+      ],
+      "recording_or_pair_objects": 12,
+      "dependent_sequences": 120,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "async_av-test-history-13307-execute-history.npz",
+      "raw_sha256": "f00caec7fb44818c22c4784afc2fb2cc8de094771d497811e9c6ef78ca156534",
+      "weights_sha256": "b51815bd6eadaa1a404c72e6d6e5882136e3dcf701158a9ef34756bdb47c1a52"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13301,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.5236111111111111,
+      "final_prefix_accuracy": 0.5625,
+      "all_prefix_nll": 0.731635758459803,
+      "final_prefix_nll": 0.7416071709488298,
+      "prefix_accuracy": [
+        0.5,
+        0.475,
+        0.525,
+        0.5208333333333334,
+        0.5583333333333333,
+        0.5625
+      ],
+      "prefix_nll": [
+        0.7004110522646012,
+        0.7182396853377356,
+        0.7400211601985082,
+        0.7442884902738016,
+        0.7452469917353437,
+        0.7416071709488297
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2158,
+      "restoration_cell_events": 1488,
+      "raw_file": "av_binding-test-hx_full-13301-execute-hx_full.npz",
+      "raw_sha256": "384f58f5597954735d038b6f7526f1d7de21d0fcaebabf44802a6590da91e0b2",
+      "weights_sha256": "f5667597987652260f14c0d0b3418429f01daba933408d0d4f3bb7b61cab1df5"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13301,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.5256944444444445,
+      "final_prefix_accuracy": 0.5625,
+      "all_prefix_nll": 0.7308451893317016,
+      "final_prefix_nll": 0.740354793065414,
+      "prefix_accuracy": [
+        0.5,
+        0.475,
+        0.525,
+        0.5291666666666667,
+        0.5625,
+        0.5625
+      ],
+      "prefix_nll": [
+        0.7005722273775781,
+        0.7179257757713267,
+        0.7393505403672347,
+        0.7430673146994853,
+        0.7438004847091723,
+        0.7403547930654136
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2158,
+      "restoration_cell_events": 1488,
+      "raw_file": "av_binding-test-hx_full-13301-execute-hx_margin.npz",
+      "raw_sha256": "88ea539426e1d037c81dffd30c95898da542d18db668ee8931a002bb69d4b020",
+      "weights_sha256": "f5667597987652260f14c0d0b3418429f01daba933408d0d4f3bb7b61cab1df5"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13301,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.5048611111111111,
+      "final_prefix_accuracy": 0.5083333333333333,
+      "all_prefix_nll": 0.7255959660942033,
+      "final_prefix_nll": 0.7329990591265673,
+      "prefix_accuracy": [
+        0.5,
+        0.475,
+        0.5125,
+        0.5208333333333334,
+        0.5125,
+        0.5083333333333333
+      ],
+      "prefix_nll": [
+        0.6999963746557195,
+        0.716916533182084,
+        0.7337127928413146,
+        0.7334086494333334,
+        0.7365423873262007,
+        0.7329990591265676
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2044,
+      "restoration_cell_events": 1506,
+      "raw_file": "av_binding-test-hx_margin-13301-execute-hx_full.npz",
+      "raw_sha256": "523304cdcca0134d5a3a994df635ceb3714956f2fa9575a84463fcf563d395cb",
+      "weights_sha256": "c8a19381ac55c6a0fdf481853b11a1ee749b0b0163fbfb52a84a8e982d355347"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13301,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.5034722222222222,
+      "final_prefix_accuracy": 0.5083333333333333,
+      "all_prefix_nll": 0.7254347884049047,
+      "final_prefix_nll": 0.7328679915767637,
+      "prefix_accuracy": [
+        0.5,
+        0.475,
+        0.5125,
+        0.5125,
+        0.5125,
+        0.5083333333333333
+      ],
+      "prefix_nll": [
+        0.7001077661985814,
+        0.71687873461076,
+        0.7333492480408978,
+        0.7331335420249875,
+        0.7362714479774362,
+        0.7328679915767639
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2044,
+      "restoration_cell_events": 1506,
+      "raw_file": "av_binding-test-hx_margin-13301-execute-hx_margin.npz",
+      "raw_sha256": "1083fbaa43f94336ce98506540b651e72cff110b74efa03af01b381f12adb74a",
+      "weights_sha256": "c8a19381ac55c6a0fdf481853b11a1ee749b0b0163fbfb52a84a8e982d355347"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "ordinary_gate",
+      "seed": 13301,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.5152777777777777,
+      "final_prefix_accuracy": 0.5416666666666666,
+      "all_prefix_nll": 0.7261392772394507,
+      "final_prefix_nll": 0.7332461156566119,
+      "prefix_accuracy": [
+        0.5,
+        0.475,
+        0.5,
+        0.525,
+        0.55,
+        0.5416666666666666
+      ],
+      "prefix_nll": [
+        0.6989191702130847,
+        0.7176918563052156,
+        0.7341885170673265,
+        0.7378114246612401,
+        0.7349785795332284,
+        0.733246115656612
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 1947,
+      "restoration_cell_events": 1435,
+      "raw_file": "av_binding-test-ordinary_gate-13301-execute-ordinary_gate.npz",
+      "raw_sha256": "d644d075e7be7280a24434190db519a153f2600e9ab19ec6c24f8d3c73ff3f0b",
+      "weights_sha256": "bc5ff54619202facc38e1f072dfd867970e76a49170290bff92319cb2daf0223"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "gru",
+      "seed": 13301,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.49722222222222223,
+      "final_prefix_accuracy": 0.4583333333333333,
+      "all_prefix_nll": 0.7102970969576845,
+      "final_prefix_nll": 0.7083674781557091,
+      "prefix_accuracy": [
+        0.5,
+        0.525,
+        0.5,
+        0.5041666666666667,
+        0.49583333333333335,
+        0.4583333333333333
+      ],
+      "prefix_nll": [
+        0.706472752536106,
+        0.7177977356058259,
+        0.7110547186066565,
+        0.708818172525288,
+        0.7092717243165177,
+        0.7083674781557094
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-test-gru-13301-execute-gru.npz",
+      "raw_sha256": "9e594503e09900c5507ffd2fd1b4d650a5822403727c305d627c08bfa498d404",
+      "weights_sha256": "a5d3e2c5ef62f18f289ba17888089a3ad51c609719c0eae2320d370441f99871"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "ssm",
+      "seed": 13301,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.5,
+      "final_prefix_accuracy": 0.5041666666666667,
+      "all_prefix_nll": 0.7086964943058244,
+      "final_prefix_nll": 0.7135204801189823,
+      "prefix_accuracy": [
+        0.5,
+        0.525,
+        0.4875,
+        0.4875,
+        0.49583333333333335,
+        0.5041666666666667
+      ],
+      "prefix_nll": [
+        0.7036896883880108,
+        0.7094242971204682,
+        0.7079911985496591,
+        0.7081631875159532,
+        0.7093901141418725,
+        0.7135204801189825
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-test-ssm-13301-execute-ssm.npz",
+      "raw_sha256": "8188e7af5991f27f3029296a7958519f8eb42ce43a02dde66a21ff0cbbe92a1c",
+      "weights_sha256": "78fa2da1e5bc6aff10b09b6997af427247ac7787f06806e19de1a7d769a5bab3"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "history",
+      "seed": 13301,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.48055555555555557,
+      "final_prefix_accuracy": 0.44166666666666665,
+      "all_prefix_nll": 0.7059954955552806,
+      "final_prefix_nll": 0.7030363027745661,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5,
+        0.475,
+        0.4666666666666667,
+        0.44166666666666665
+      ],
+      "prefix_nll": [
+        0.7003347127007505,
+        0.7069770925798436,
+        0.7153958574238938,
+        0.7071963502059841,
+        0.7030326576466464,
+        0.7030363027745664
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-test-history-13301-execute-history.npz",
+      "raw_sha256": "3ce0a5a153d8146142ac1b6c66ccf8d4ab63dd5a7d283ed3bc78389aaa587bdf",
+      "weights_sha256": "3aa07c4d949c82043fc8e0c7142c8b026e6317617cb85ce894daba86effbedad"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13303,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.5277777777777778,
+      "final_prefix_accuracy": 0.5541666666666667,
+      "all_prefix_nll": 0.7249916372562082,
+      "final_prefix_nll": 0.7208750811265427,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.525,
+        0.5375,
+        0.55,
+        0.5541666666666667
+      ],
+      "prefix_nll": [
+        0.705772477281112,
+        0.7184170935640741,
+        0.7480725880505771,
+        0.7321715105688472,
+        0.7246410729460948,
+        0.7208750811265429
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2452,
+      "restoration_cell_events": 1617,
+      "raw_file": "av_binding-test-hx_full-13303-execute-hx_full.npz",
+      "raw_sha256": "820ec1fd26e526d8bfa2a4bd42e0103f3bce7b12f0408bf87e70727e29a9fa1d",
+      "weights_sha256": "45fc31f508f931777b2c6715da98cf3156bfdf74c78005e2d290ae2c5f8e88a8"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13303,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.5291666666666667,
+      "final_prefix_accuracy": 0.5541666666666667,
+      "all_prefix_nll": 0.7256979545009188,
+      "final_prefix_nll": 0.72068402169981,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.525,
+        0.5375,
+        0.5583333333333333,
+        0.5541666666666667
+      ],
+      "prefix_nll": [
+        0.7102191956026632,
+        0.7206378300639055,
+        0.747302711030524,
+        0.73132013508367,
+        0.7240238335249376,
+        0.7206840216998103
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2452,
+      "restoration_cell_events": 1617,
+      "raw_file": "av_binding-test-hx_full-13303-execute-hx_margin.npz",
+      "raw_sha256": "af17128e4373118432799ac10a7c9d93a5103d0798d4ff2883de9ae47d79234e",
+      "weights_sha256": "45fc31f508f931777b2c6715da98cf3156bfdf74c78005e2d290ae2c5f8e88a8"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13303,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.49027777777777776,
+      "final_prefix_accuracy": 0.4791666666666667,
+      "all_prefix_nll": 0.7202408086041572,
+      "final_prefix_nll": 0.7139731848595386,
+      "prefix_accuracy": [
+        0.5,
+        0.475,
+        0.525,
+        0.48333333333333334,
+        0.4791666666666667,
+        0.4791666666666667
+      ],
+      "prefix_nll": [
+        0.7075025939823016,
+        0.7180684154853155,
+        0.7412396352276074,
+        0.7253715780361324,
+        0.7152894440340466,
+        0.7139731848595382
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2385,
+      "restoration_cell_events": 1578,
+      "raw_file": "av_binding-test-hx_margin-13303-execute-hx_full.npz",
+      "raw_sha256": "4337c9263541e0c93fa52afe7caf2f01a07cc887ff08b6548842652af475f8ab",
+      "weights_sha256": "c206f917699dba02d3d0cc4222d52bca202cd1535f5abc9188cbece0f58c8f86"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13303,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.4909722222222222,
+      "final_prefix_accuracy": 0.4791666666666667,
+      "all_prefix_nll": 0.7202573692897718,
+      "final_prefix_nll": 0.7137596731517006,
+      "prefix_accuracy": [
+        0.5,
+        0.475,
+        0.525,
+        0.48333333333333334,
+        0.48333333333333334,
+        0.4791666666666667
+      ],
+      "prefix_nll": [
+        0.7079000119272699,
+        0.7182208063883102,
+        0.741321201485153,
+        0.7252524989627872,
+        0.7150900238234086,
+        0.7137596731517004
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2385,
+      "restoration_cell_events": 1578,
+      "raw_file": "av_binding-test-hx_margin-13303-execute-hx_margin.npz",
+      "raw_sha256": "56762f8c0dce0bf73f7d8660fde55b230987f4f6e0757ca1cd4f6ddae41844ed",
+      "weights_sha256": "c206f917699dba02d3d0cc4222d52bca202cd1535f5abc9188cbece0f58c8f86"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "ordinary_gate",
+      "seed": 13303,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.5215277777777778,
+      "final_prefix_accuracy": 0.5541666666666667,
+      "all_prefix_nll": 0.7235040316389489,
+      "final_prefix_nll": 0.7205146309930479,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5,
+        0.5333333333333333,
+        0.5416666666666666,
+        0.5541666666666667
+      ],
+      "prefix_nll": [
+        0.7047072608690734,
+        0.7159149627934619,
+        0.7508029638420514,
+        0.7276624245597766,
+        0.7214219467762794,
+        0.7205146309930477
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2446,
+      "restoration_cell_events": 1703,
+      "raw_file": "av_binding-test-ordinary_gate-13303-execute-ordinary_gate.npz",
+      "raw_sha256": "8769f46082af599ef27eaf57a3017f3d2b60b5d4890a8bbc2a21b22ad6442e91",
+      "weights_sha256": "e17cdb5e53cde86b3029e0c2eb8e5dc48f988fb1c7f2b732645273f6e0743e40"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "gru",
+      "seed": 13303,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.5118055555555555,
+      "final_prefix_accuracy": 0.5125,
+      "all_prefix_nll": 0.6984591056425965,
+      "final_prefix_nll": 0.6872364987114284,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5125,
+        0.5375,
+        0.5083333333333333,
+        0.5125
+      ],
+      "prefix_nll": [
+        0.697391446389977,
+        0.7056641478804011,
+        0.7067867555966493,
+        0.7005805329597139,
+        0.6930952523174091,
+        0.6872364987114284
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-test-gru-13303-execute-gru.npz",
+      "raw_sha256": "e7accd21500ffdbb58dc07138cd7fb4ed0578ea7e16c029f09dbdc48efab573f",
+      "weights_sha256": "71b68a4a4056aa37a78449bbfac5ce6ec37ca155e257a7296b6dca7d3409be20"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "ssm",
+      "seed": 13303,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.5354166666666667,
+      "final_prefix_accuracy": 0.5791666666666667,
+      "all_prefix_nll": 0.6925860788420474,
+      "final_prefix_nll": 0.6802364362851319,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.525,
+        0.5291666666666667,
+        0.5791666666666667,
+        0.5791666666666667
+      ],
+      "prefix_nll": [
+        0.6973926803629851,
+        0.7043623436469821,
+        0.6975905098765882,
+        0.6917594413595466,
+        0.6841750615210511,
+        0.6802364362851318
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-test-ssm-13303-execute-ssm.npz",
+      "raw_sha256": "e8899168519679dfc059c254633425fddb97c58ae5cf6da59efb6b805fada918",
+      "weights_sha256": "0eb65295a1b6f7d55b665620aef0564bbfaafd59a7beaa0e724b711b753f02d2"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "history",
+      "seed": 13303,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.5006944444444444,
+      "final_prefix_accuracy": 0.4875,
+      "all_prefix_nll": 0.7143830975725921,
+      "final_prefix_nll": 0.7312988489036857,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5,
+        0.5166666666666667,
+        0.5,
+        0.4875
+      ],
+      "prefix_nll": [
+        0.6947370976185056,
+        0.7059498082913851,
+        0.7137421308389402,
+        0.7165829237273066,
+        0.723987776055732,
+        0.731298848903686
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-test-history-13303-execute-history.npz",
+      "raw_sha256": "f7eedb0e8acbe228fdfb689b88e7a03fe31f2348f8a52156b990f655d56184e9",
+      "weights_sha256": "9784dc8df98e4012cd3d42b3a45833bceb5b2b1b0574c14c121b79422117c086"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13307,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.5041666666666667,
+      "final_prefix_accuracy": 0.4875,
+      "all_prefix_nll": 0.7194695321219762,
+      "final_prefix_nll": 0.7230109188309876,
+      "prefix_accuracy": [
+        0.5,
+        0.525,
+        0.5125,
+        0.5083333333333333,
+        0.49166666666666664,
+        0.4875
+      ],
+      "prefix_nll": [
+        0.6989181500695097,
+        0.7149825075884068,
+        0.7288838579682909,
+        0.7265040445201141,
+        0.72451771375455,
+        0.7230109188309874
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2554,
+      "restoration_cell_events": 1580,
+      "raw_file": "av_binding-test-hx_full-13307-execute-hx_full.npz",
+      "raw_sha256": "2f693fd87e1f489a8203c0c0fa60b9b5b9992818b997f7fe65807d2882b20c80",
+      "weights_sha256": "698d0bdc13ba2b513431822fafd87f028ef15e140050b6d4bfd7fc084a7a954c"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_full",
+      "seed": 13307,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.5034722222222222,
+      "final_prefix_accuracy": 0.49166666666666664,
+      "all_prefix_nll": 0.71966759912347,
+      "final_prefix_nll": 0.7230309251273094,
+      "prefix_accuracy": [
+        0.5,
+        0.525,
+        0.5125,
+        0.5,
+        0.49166666666666664,
+        0.49166666666666664
+      ],
+      "prefix_nll": [
+        0.6989936047774348,
+        0.7149857880560933,
+        0.7296457107353206,
+        0.726791483030249,
+        0.7245580830144116,
+        0.7230309251273093
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2554,
+      "restoration_cell_events": 1580,
+      "raw_file": "av_binding-test-hx_full-13307-execute-hx_margin.npz",
+      "raw_sha256": "1445dfdb14b7a3685c6bcbf81643dccd48f5430cd8fb5ad50b8eeba2c9086515",
+      "weights_sha256": "698d0bdc13ba2b513431822fafd87f028ef15e140050b6d4bfd7fc084a7a954c"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13307,
+      "execution_mode": "hx_full",
+      "all_prefix_accuracy": 0.5131944444444444,
+      "final_prefix_accuracy": 0.525,
+      "all_prefix_nll": 0.7208088334518228,
+      "final_prefix_nll": 0.7229773719808582,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5125,
+        0.5208333333333334,
+        0.5208333333333334,
+        0.525
+      ],
+      "prefix_nll": [
+        0.6999544363400557,
+        0.726525395799874,
+        0.7315031983289619,
+        0.7212383185585692,
+        0.7226542797026169,
+        0.7229773719808583
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2081,
+      "restoration_cell_events": 1365,
+      "raw_file": "av_binding-test-hx_margin-13307-execute-hx_full.npz",
+      "raw_sha256": "c991ea4581baf137942fde0a9e9bfc507dad80f4d05057d7351c75ca3908400d",
+      "weights_sha256": "6e67d487f64a1575756ca23a95d14895d239a3ff8a087df30b0a7ffc9181bcbf"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "hx_margin",
+      "seed": 13307,
+      "execution_mode": "hx_margin",
+      "all_prefix_accuracy": 0.5090277777777777,
+      "final_prefix_accuracy": 0.525,
+      "all_prefix_nll": 0.7209088806263265,
+      "final_prefix_nll": 0.7232031341654676,
+      "prefix_accuracy": [
+        0.5,
+        0.475,
+        0.5125,
+        0.5208333333333334,
+        0.5208333333333334,
+        0.525
+      ],
+      "prefix_nll": [
+        0.6998396799050599,
+        0.7264553764410632,
+        0.731655822521243,
+        0.721432291210075,
+        0.7228669795150517,
+        0.7232031341654672
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2081,
+      "restoration_cell_events": 1365,
+      "raw_file": "av_binding-test-hx_margin-13307-execute-hx_margin.npz",
+      "raw_sha256": "1cf523b57010fd2cd2ccd0ffc3683dd89029d31527a80981d65393f9f252199d",
+      "weights_sha256": "6e67d487f64a1575756ca23a95d14895d239a3ff8a087df30b0a7ffc9181bcbf"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "ordinary_gate",
+      "seed": 13307,
+      "execution_mode": "ordinary_gate",
+      "all_prefix_accuracy": 0.5104166666666666,
+      "final_prefix_accuracy": 0.4875,
+      "all_prefix_nll": 0.7213451466825112,
+      "final_prefix_nll": 0.7236803540425912,
+      "prefix_accuracy": [
+        0.5,
+        0.55,
+        0.5125,
+        0.5166666666666667,
+        0.49583333333333335,
+        0.4875
+      ],
+      "prefix_nll": [
+        0.7002404835948693,
+        0.7181580767579967,
+        0.7332253128168992,
+        0.7274201478754047,
+        0.7253465050073065,
+        0.7236803540425908
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 2459,
+      "restoration_cell_events": 1530,
+      "raw_file": "av_binding-test-ordinary_gate-13307-execute-ordinary_gate.npz",
+      "raw_sha256": "90cbe40f5d8ca676ecedeed11d1b418219614aacb70e31c6e593b15a2ff967c2",
+      "weights_sha256": "db68342090cefde106319b84f6b163bce548d7ddc4bb994ca54aef0ccd1eca6f"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "gru",
+      "seed": 13307,
+      "execution_mode": "gru",
+      "all_prefix_accuracy": 0.50625,
+      "final_prefix_accuracy": 0.5208333333333334,
+      "all_prefix_nll": 0.7122584095401616,
+      "final_prefix_nll": 0.7049930317132447,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.4875,
+        0.5125,
+        0.5166666666666667,
+        0.5208333333333334
+      ],
+      "prefix_nll": [
+        0.6957398214143159,
+        0.7284600837700187,
+        0.7294526518994591,
+        0.7097639443615066,
+        0.7051409240824225,
+        0.7049930317132448
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-test-gru-13307-execute-gru.npz",
+      "raw_sha256": "f84dc9ce77b4fb67f758b36887ba2bd90efb91703b5e509d3100fe36d5a8362c",
+      "weights_sha256": "66a43384a723a8789cb24ce48af58cc81d2e394be11178fb3392fd11666a5512"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "ssm",
+      "seed": 13307,
+      "execution_mode": "ssm",
+      "all_prefix_accuracy": 0.49930555555555556,
+      "final_prefix_accuracy": 0.49583333333333335,
+      "all_prefix_nll": 0.7097737170127193,
+      "final_prefix_nll": 0.7205967652631272,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.49583333333333335
+      ],
+      "prefix_nll": [
+        0.6953075155899365,
+        0.7039229275691772,
+        0.7085595784967359,
+        0.7139326293366921,
+        0.7163228858206456,
+        0.7205967652631272
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-test-ssm-13307-execute-ssm.npz",
+      "raw_sha256": "fcd628f3cebe9132216c12c26ecfa007e583c4a13577341b323af8d357d2381b",
+      "weights_sha256": "aa194c4830f9852626c9e9947409da41418105c8446a4c31cb7b60afb350a81b"
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "training_family": "history",
+      "seed": 13307,
+      "execution_mode": "history",
+      "all_prefix_accuracy": 0.5041666666666667,
+      "final_prefix_accuracy": 0.5166666666666667,
+      "all_prefix_nll": 0.7023235298953578,
+      "final_prefix_nll": 0.7027933744642387,
+      "prefix_accuracy": [
+        0.5,
+        0.5,
+        0.5125,
+        0.5,
+        0.49583333333333335,
+        0.5166666666666667
+      ],
+      "prefix_nll": [
+        0.6971837153579155,
+        0.7018538166832973,
+        0.703936216023597,
+        0.704213337904241,
+        0.7039607189388571,
+        0.7027933744642388
+      ],
+      "recording_or_pair_objects": 24,
+      "dependent_sequences": 240,
+      "reset_cell_events": 0,
+      "restoration_cell_events": 0,
+      "raw_file": "av_binding-test-history-13307-execute-history.npz",
+      "raw_sha256": "b1c8d188e32c4fa0ed0981305c17a9639d44b188b47383ba25f09cdbcfd28294",
+      "weights_sha256": "11dade98691cd9bd5ae271194dc6079e6b46c915a9a00c2a6af15b9da93e0c05"
+    }
+  ],
+  "contrasts": [
+    {
+      "task": "async_av",
+      "split": "val",
+      "seed": 13301,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": -0.005555555555555564,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.017332383820623853,
+          "final_prefix_nll": 0.0006951480547146005
+        },
+        "C-D": {
+          "all_prefix_accuracy": 0.0,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.0036629548051516636,
+          "final_prefix_nll": -0.0016135803380681324
+        },
+        "A-C": {
+          "all_prefix_accuracy": -0.002777777777777768,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.016339137129143033,
+          "final_prefix_nll": 0.11498234023654064
+        },
+        "B-D": {
+          "all_prefix_accuracy": 0.0027777777777777957,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.004656201496632484,
+          "final_prefix_nll": 0.1126736118437579
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": -0.005555555555555564,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.020995338625775517,
+          "final_prefix_nll": 0.002308728392782733
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": -0.002777777777777768,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.01267618232399137,
+          "final_prefix_nll": 0.1133687598984725
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": 0.001388888888888884,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.00033576493552889275,
+          "final_prefix_nll": 0.06250187836261922
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": -0.0069444444444444475,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.5316224282160045,
+          "final_prefix_nll": 0.7616396760722974
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": -0.024999999999999994,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.24645690914054885,
+          "final_prefix_nll": 0.1864163181968541
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": -0.033333333333333354,
+          "final_prefix_accuracy": -0.00833333333333336,
+          "all_prefix_nll": 0.964803584756404,
+          "final_prefix_nll": 0.7373945250208553
+        }
+      }
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "seed": 13303,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": -0.0027777777777777957,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.028076339540083595,
+          "final_prefix_nll": -0.043786253034195255
+        },
+        "C-D": {
+          "all_prefix_accuracy": 0.0,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.00081216015504193,
+          "final_prefix_nll": -0.0005512807946423948
+        },
+        "A-C": {
+          "all_prefix_accuracy": 0.02361111111111111,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.5246885073174505,
+          "final_prefix_nll": -0.5832041698611778
+        },
+        "B-D": {
+          "all_prefix_accuracy": 0.026388888888888906,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.5535770070125761,
+          "final_prefix_nll": -0.539969197621625
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": -0.0027777777777777957,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.028888499695125525,
+          "final_prefix_nll": -0.04323497223955286
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": 0.02361111111111111,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.5255006674724925,
+          "final_prefix_nll": -0.5837554506558202
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": 0.02361111111111111,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.4360081064472592,
+          "final_prefix_nll": -0.4329014488593792
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": 0.030555555555555558,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.4986147494737416,
+          "final_prefix_nll": -0.9001248714145875
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": 0.015277777777777779,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.09092715166107368,
+          "final_prefix_nll": -0.4066672447132227
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": -0.008333333333333331,
+          "final_prefix_accuracy": -0.016666666666666663,
+          "all_prefix_nll": 0.7625543784158246,
+          "final_prefix_nll": 0.4035822106761717
+        }
+      }
+    },
+    {
+      "task": "async_av",
+      "split": "val",
+      "seed": 13307,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": -0.001388888888888884,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.04138437263354611,
+          "final_prefix_nll": -0.017568403906599528
+        },
+        "C-D": {
+          "all_prefix_accuracy": 0.0,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.0006665458073902286,
+          "final_prefix_nll": -0.00033630380524041215
+        },
+        "A-C": {
+          "all_prefix_accuracy": -0.001388888888888884,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.020323506406378478,
+          "final_prefix_nll": -0.07047363054639355
+        },
+        "B-D": {
+          "all_prefix_accuracy": 0.0,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.061041333232534356,
+          "final_prefix_nll": -0.053241530445034435
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": -0.001388888888888884,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.04071782682615588,
+          "final_prefix_nll": -0.017232100101359116
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": -0.001388888888888884,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.01965696059898825,
+          "final_prefix_nll": -0.07080993435163396
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": -0.005555555555555564,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.035110001230647114,
+          "final_prefix_nll": -0.03326287208337053
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": -0.001388888888888884,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.35744742022749865,
+          "final_prefix_nll": 0.26390953108740955
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": -0.013888888888888895,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.2873150644371867,
+          "final_prefix_nll": 0.0622426781434946
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": -0.002777777777777768,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.8201336517180255,
+          "final_prefix_nll": 0.38809516046198933
+        }
+      }
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "seed": 13301,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": 0.0,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.00011167400120215554,
+          "final_prefix_nll": 8.678824806784835e-05
+        },
+        "C-D": {
+          "all_prefix_accuracy": -0.000694444444444442,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.00020393353871750453,
+          "final_prefix_nll": 0.00017494092358683044
+        },
+        "A-C": {
+          "all_prefix_accuracy": 0.002777777777777768,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.0022171906391611484,
+          "final_prefix_nll": 0.003057487583351781
+        },
+        "B-D": {
+          "all_prefix_accuracy": 0.002083333333333326,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.0023094501766764974,
+          "final_prefix_nll": 0.0031456402588707633
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": 0.000694444444444442,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -9.225953751534899e-05,
+          "final_prefix_nll": -8.815267551898209e-05
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": 0.002083333333333326,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.002421124177878653,
+          "final_prefix_nll": 0.0032324285069386116
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": 0.001388888888888884,
+          "final_prefix_accuracy": 0.01666666666666672,
+          "all_prefix_nll": 0.003454039355699212,
+          "final_prefix_nll": 0.0013492150839448103
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": -0.001388888888888995,
+          "final_prefix_accuracy": -0.012499999999999956,
+          "all_prefix_nll": 0.026576357382145033,
+          "final_prefix_nll": 0.04232755027018631
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": 0.011111111111111072,
+          "final_prefix_accuracy": 0.050000000000000044,
+          "all_prefix_nll": 0.005438968723299187,
+          "final_prefix_nll": 0.011774599283795983
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": -0.004166666666666763,
+          "final_prefix_accuracy": -0.029166666666666563,
+          "all_prefix_nll": 0.04181444867760298,
+          "final_prefix_nll": 0.061411748734585325
+        }
+      }
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "seed": 13303,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": -0.000694444444444442,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.00010675349134159351,
+          "final_prefix_nll": -0.00025465947956404555
+        },
+        "C-D": {
+          "all_prefix_accuracy": 0.005555555555555536,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -6.68367529051972e-05,
+          "final_prefix_nll": -0.0001652968913754549
+        },
+        "A-C": {
+          "all_prefix_accuracy": -0.009722222222222188,
+          "final_prefix_accuracy": -0.012500000000000011,
+          "all_prefix_nll": 0.010493614468270573,
+          "final_prefix_nll": 0.006629379527764212
+        },
+        "B-D": {
+          "all_prefix_accuracy": -0.00347222222222221,
+          "final_prefix_accuracy": -0.012500000000000011,
+          "all_prefix_nll": 0.010320024224023783,
+          "final_prefix_nll": 0.006718742115952803
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": -0.006249999999999978,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.0001735902442467907,
+          "final_prefix_nll": -8.936258818859066e-05
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": -0.004166666666666652,
+          "final_prefix_accuracy": -0.012500000000000011,
+          "all_prefix_nll": 0.010426777715365376,
+          "final_prefix_nll": 0.006464082636388757
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": 0.00347222222222221,
+          "final_prefix_accuracy": -0.016666666666666663,
+          "all_prefix_nll": 0.0007137226902336202,
+          "final_prefix_nll": 0.004109647061142696
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": -0.014583333333333393,
+          "final_prefix_accuracy": -0.025000000000000078,
+          "all_prefix_nll": 0.03306184298114212,
+          "final_prefix_nll": 0.044984155669787196
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": -0.004861111111111094,
+          "final_prefix_accuracy": -0.016666666666666663,
+          "all_prefix_nll": 0.021037912044761242,
+          "final_prefix_nll": 0.019300421097283804
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": -0.002083333333333326,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.026800974404429412,
+          "final_prefix_nll": 0.031461295703959835
+        }
+      }
+    },
+    {
+      "task": "av_binding",
+      "split": "val",
+      "seed": 13307,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": 0.000694444444444442,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 7.0189327776915e-05,
+          "final_prefix_nll": -2.447812985073572e-05
+        },
+        "C-D": {
+          "all_prefix_accuracy": 0.0,
+          "final_prefix_accuracy": -0.004166666666666652,
+          "all_prefix_nll": -3.390818574644516e-05,
+          "final_prefix_nll": -9.12259039872465e-05
+        },
+        "A-C": {
+          "all_prefix_accuracy": -0.001388888888888884,
+          "final_prefix_accuracy": -0.012500000000000067,
+          "all_prefix_nll": -0.0020816494087123605,
+          "final_prefix_nll": -0.0009830407343551784
+        },
+        "B-D": {
+          "all_prefix_accuracy": -0.002083333333333326,
+          "final_prefix_accuracy": -0.01666666666666672,
+          "all_prefix_nll": -0.0021857469222357206,
+          "final_prefix_nll": -0.0010497885084916891
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": 0.000694444444444442,
+          "final_prefix_accuracy": 0.004166666666666652,
+          "all_prefix_nll": 0.00010409751352336016,
+          "final_prefix_nll": 6.674777413651078e-05
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": -0.001388888888888884,
+          "final_prefix_accuracy": -0.01666666666666672,
+          "all_prefix_nll": -0.0021155575944588056,
+          "final_prefix_nll": -0.0010742666383424249
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": 0.001388888888888884,
+          "final_prefix_accuracy": 0.016666666666666607,
+          "all_prefix_nll": -0.0009884644773379136,
+          "final_prefix_nll": -0.003287318312858445
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": -0.018750000000000044,
+          "final_prefix_accuracy": -0.04583333333333339,
+          "all_prefix_nll": 0.0005542060460480558,
+          "final_prefix_nll": 0.008286787511661009
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": -0.006944444444444531,
+          "final_prefix_accuracy": -0.008333333333333415,
+          "all_prefix_nll": 0.004130295955236507,
+          "final_prefix_nll": 0.009072375408341271
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": -0.007638888888888973,
+          "final_prefix_accuracy": -0.008333333333333415,
+          "all_prefix_nll": 0.0014453013831603467,
+          "final_prefix_nll": -0.0017278902998532075
+        }
+      }
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "seed": 13301,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": 0.023611111111111138,
+          "final_prefix_accuracy": 0.008333333333333331,
+          "all_prefix_nll": 0.008984386479324424,
+          "final_prefix_nll": -0.0352376896529929
+        },
+        "C-D": {
+          "all_prefix_accuracy": 0.0,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.003946370275486277,
+          "final_prefix_nll": 0.001028164476902571
+        },
+        "A-C": {
+          "all_prefix_accuracy": 0.022222222222222254,
+          "final_prefix_accuracy": -0.024999999999999994,
+          "all_prefix_nll": 0.09543572463334948,
+          "final_prefix_nll": 0.31223152746502825
+        },
+        "B-D": {
+          "all_prefix_accuracy": -0.001388888888888884,
+          "final_prefix_accuracy": -0.033333333333333326,
+          "all_prefix_nll": 0.08250496787853878,
+          "final_prefix_nll": 0.3484973815949237
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": 0.023611111111111138,
+          "final_prefix_accuracy": 0.008333333333333331,
+          "all_prefix_nll": 0.012930756754810702,
+          "final_prefix_nll": -0.03626585412989547
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": 0.022222222222222254,
+          "final_prefix_accuracy": -0.024999999999999994,
+          "all_prefix_nll": 0.0914893543578632,
+          "final_prefix_nll": 0.3132596919419308
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": 0.03750000000000003,
+          "final_prefix_accuracy": 0.016666666666666663,
+          "all_prefix_nll": -0.017600183826978366,
+          "final_prefix_nll": 0.260615829122369
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": 0.07916666666666666,
+          "final_prefix_accuracy": 0.14166666666666666,
+          "all_prefix_nll": -0.23564304172718264,
+          "final_prefix_nll": -0.17781513813972527
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": 0.05972222222222223,
+          "final_prefix_accuracy": 0.05000000000000002,
+          "all_prefix_nll": -0.13007315506656303,
+          "final_prefix_nll": -0.27445518389632184
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": 0.054166666666666696,
+          "final_prefix_accuracy": 0.125,
+          "all_prefix_nll": 0.25979002392052575,
+          "final_prefix_nll": -0.17724668434680524
+        }
+      }
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "seed": 13303,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": 0.04166666666666666,
+          "final_prefix_accuracy": 0.025,
+          "all_prefix_nll": 0.06065887937866066,
+          "final_prefix_nll": -0.05892044175543276
+        },
+        "C-D": {
+          "all_prefix_accuracy": 0.0,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.00043137503003354283,
+          "final_prefix_nll": -0.004173100020341103
+        },
+        "A-C": {
+          "all_prefix_accuracy": -0.01944444444444446,
+          "final_prefix_accuracy": -0.08333333333333334,
+          "all_prefix_nll": -0.349374455433173,
+          "final_prefix_nll": -0.2763482654160345
+        },
+        "B-D": {
+          "all_prefix_accuracy": -0.061111111111111116,
+          "final_prefix_accuracy": -0.10833333333333334,
+          "all_prefix_nll": -0.4104647098418672,
+          "final_prefix_nll": -0.22160092368094286
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": 0.04166666666666666,
+          "final_prefix_accuracy": 0.025,
+          "all_prefix_nll": 0.0610902544086942,
+          "final_prefix_nll": -0.05474734173509166
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": -0.01944444444444446,
+          "final_prefix_accuracy": -0.08333333333333334,
+          "all_prefix_nll": -0.34980583046320657,
+          "final_prefix_nll": -0.2805213654363756
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": -0.0027777777777777957,
+          "final_prefix_accuracy": -0.06666666666666665,
+          "all_prefix_nll": -0.15963414599780812,
+          "final_prefix_nll": -0.023662278877452536
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": -0.0875,
+          "final_prefix_accuracy": -0.23333333333333336,
+          "all_prefix_nll": 0.052738923736862287,
+          "final_prefix_nll": -0.033433570698874426
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": 0.004166666666666652,
+          "final_prefix_accuracy": -0.05833333333333333,
+          "all_prefix_nll": 0.33222480601103754,
+          "final_prefix_nll": 0.617119282251176
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": -0.04444444444444445,
+          "final_prefix_accuracy": -0.17500000000000002,
+          "all_prefix_nll": 0.7551228516211888,
+          "final_prefix_nll": 0.738382705200817
+        }
+      }
+    },
+    {
+      "task": "async_av",
+      "split": "test",
+      "seed": 13307,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": -0.002777777777777768,
+          "final_prefix_accuracy": -0.008333333333333331,
+          "all_prefix_nll": 0.011622743693648907,
+          "final_prefix_nll": -0.05458512912977742
+        },
+        "C-D": {
+          "all_prefix_accuracy": 0.0,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.00023693304349770017,
+          "final_prefix_nll": -0.006311166192877415
+        },
+        "A-C": {
+          "all_prefix_accuracy": 0.008333333333333331,
+          "final_prefix_accuracy": 0.05833333333333332,
+          "all_prefix_nll": 0.055826983216368475,
+          "final_prefix_nll": 0.030152211909202364
+        },
+        "B-D": {
+          "all_prefix_accuracy": 0.0111111111111111,
+          "final_prefix_accuracy": 0.06666666666666665,
+          "all_prefix_nll": 0.04444117256621727,
+          "final_prefix_nll": 0.07842617484610237
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": -0.002777777777777768,
+          "final_prefix_accuracy": -0.008333333333333331,
+          "all_prefix_nll": 0.011385810650151207,
+          "final_prefix_nll": -0.048273962936900006
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": 0.008333333333333331,
+          "final_prefix_accuracy": 0.05833333333333332,
+          "all_prefix_nll": 0.056063916259866176,
+          "final_prefix_nll": 0.02384104571632495
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": 0.013888888888888895,
+          "final_prefix_accuracy": 0.05833333333333332,
+          "all_prefix_nll": 0.05435701103886448,
+          "final_prefix_nll": 0.11677440030204078
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": 0.002777777777777768,
+          "final_prefix_accuracy": -0.033333333333333354,
+          "all_prefix_nll": 0.3250485947478361,
+          "final_prefix_nll": 0.4264343890982545
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": 0.05972222222222223,
+          "final_prefix_accuracy": 0.14166666666666666,
+          "all_prefix_nll": 0.2636268540704738,
+          "final_prefix_nll": 0.020482044254861442
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": 0.05833333333333332,
+          "final_prefix_accuracy": 0.09166666666666666,
+          "all_prefix_nll": 0.6104838875401537,
+          "final_prefix_nll": 0.22382484650340118
+        }
+      }
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "seed": 13301,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": -0.002083333333333326,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.0007905691281013816,
+          "final_prefix_nll": 0.0012523778834158117
+        },
+        "C-D": {
+          "all_prefix_accuracy": 0.001388888888888884,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.000161177689298575,
+          "final_prefix_nll": 0.00013106754980352076
+        },
+        "A-C": {
+          "all_prefix_accuracy": 0.018750000000000044,
+          "final_prefix_accuracy": 0.054166666666666696,
+          "all_prefix_nll": 0.0060397923655997054,
+          "final_prefix_nll": 0.00860811182226251
+        },
+        "B-D": {
+          "all_prefix_accuracy": 0.022222222222222254,
+          "final_prefix_accuracy": 0.054166666666666696,
+          "all_prefix_nll": 0.005410400926796899,
+          "final_prefix_nll": 0.007486801488650219
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": -0.00347222222222221,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.0006293914388028066,
+          "final_prefix_nll": 0.001121310333612291
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": 0.02013888888888893,
+          "final_prefix_accuracy": 0.054166666666666696,
+          "all_prefix_nll": 0.0062009700548982805,
+          "final_prefix_nll": 0.00873917937206603
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": 0.008333333333333415,
+          "final_prefix_accuracy": 0.02083333333333337,
+          "all_prefix_nll": 0.0054964812203522895,
+          "final_prefix_nll": 0.008361055292217867
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": 0.026388888888888906,
+          "final_prefix_accuracy": 0.10416666666666669,
+          "all_prefix_nll": 0.021338661502118494,
+          "final_prefix_nll": 0.03323969279312067
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": 0.023611111111111138,
+          "final_prefix_accuracy": 0.05833333333333335,
+          "all_prefix_nll": 0.022939264153978622,
+          "final_prefix_nll": 0.028086690829847494
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": 0.04305555555555557,
+          "final_prefix_accuracy": 0.12083333333333335,
+          "all_prefix_nll": 0.02564026290452237,
+          "final_prefix_nll": 0.038570868174263695
+        }
+      }
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "seed": 13303,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": -0.001388888888888884,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.000706317244710597,
+          "final_prefix_nll": 0.00019105942673269816
+        },
+        "C-D": {
+          "all_prefix_accuracy": -0.000694444444444442,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -1.656068561461943e-05,
+          "final_prefix_nll": 0.00021351170783801
+        },
+        "A-C": {
+          "all_prefix_accuracy": 0.03750000000000003,
+          "final_prefix_accuracy": 0.07500000000000001,
+          "all_prefix_nll": 0.004750828652051009,
+          "final_prefix_nll": 0.006901896267004104
+        },
+        "B-D": {
+          "all_prefix_accuracy": 0.038194444444444475,
+          "final_prefix_accuracy": 0.07500000000000001,
+          "all_prefix_nll": 0.0054405852111469866,
+          "final_prefix_nll": 0.006924348548109416
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": -0.000694444444444442,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.0006897565590959776,
+          "final_prefix_nll": -2.2452281105311833e-05
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": 0.03680555555555559,
+          "final_prefix_accuracy": 0.07500000000000001,
+          "all_prefix_nll": 0.00473426796643639,
+          "final_prefix_nll": 0.007115407974842114
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": 0.006249999999999978,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": 0.0014876056172592467,
+          "final_prefix_nll": 0.00036045013349483845
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": 0.015972222222222276,
+          "final_prefix_accuracy": 0.04166666666666674,
+          "all_prefix_nll": 0.026532531613611687,
+          "final_prefix_nll": 0.033638582415114304
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": -0.007638888888888862,
+          "final_prefix_accuracy": -0.025000000000000022,
+          "all_prefix_nll": 0.03240555841416082,
+          "final_prefix_nll": 0.04063864484141089
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": 0.027083333333333348,
+          "final_prefix_accuracy": 0.06666666666666671,
+          "all_prefix_nll": 0.01060853968361608,
+          "final_prefix_nll": -0.010423767777142934
+        }
+      }
+    },
+    {
+      "task": "av_binding",
+      "split": "test",
+      "seed": 13307,
+      "descriptive_only": {
+        "A-B": {
+          "all_prefix_accuracy": 0.000694444444444442,
+          "final_prefix_accuracy": -0.004166666666666652,
+          "all_prefix_nll": -0.00019806700149382905,
+          "final_prefix_nll": -2.0006296321817274e-05
+        },
+        "C-D": {
+          "all_prefix_accuracy": 0.004166666666666652,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.00010004717450373679,
+          "final_prefix_nll": -0.00022576218460934605
+        },
+        "A-C": {
+          "all_prefix_accuracy": -0.009027777777777746,
+          "final_prefix_accuracy": -0.03750000000000003,
+          "all_prefix_nll": -0.0013393013298466094,
+          "final_prefix_nll": 3.354685012935121e-05
+        },
+        "B-D": {
+          "all_prefix_accuracy": -0.005555555555555536,
+          "final_prefix_accuracy": -0.03333333333333338,
+          "all_prefix_nll": -0.0012412815028565172,
+          "final_prefix_nll": -0.00017220903815817756
+        },
+        "(A-B)-(C-D)": {
+          "all_prefix_accuracy": -0.00347222222222221,
+          "final_prefix_accuracy": -0.004166666666666652,
+          "all_prefix_nll": -9.801982699009226e-05,
+          "final_prefix_nll": 0.00020575588828752878
+        },
+        "A-versus-hx_margin": {
+          "all_prefix_accuracy": -0.004861111111111094,
+          "final_prefix_accuracy": -0.03750000000000003,
+          "all_prefix_nll": -0.0014393485043503462,
+          "final_prefix_nll": -0.00019221533447999484
+        },
+        "A-versus-ordinary_gate": {
+          "all_prefix_accuracy": -0.006249999999999978,
+          "final_prefix_accuracy": 0.0,
+          "all_prefix_nll": -0.0018756145605349772,
+          "final_prefix_nll": -0.000669435211603675
+        },
+        "A-versus-gru": {
+          "all_prefix_accuracy": -0.002083333333333326,
+          "final_prefix_accuracy": -0.03333333333333338,
+          "all_prefix_nll": 0.007211122581814555,
+          "final_prefix_nll": 0.01801788711774288
+        },
+        "A-versus-ssm": {
+          "all_prefix_accuracy": 0.004861111111111094,
+          "final_prefix_accuracy": -0.00833333333333336,
+          "all_prefix_nll": 0.009695815109256878,
+          "final_prefix_nll": 0.0024141535678603443
+        },
+        "A-versus-history": {
+          "all_prefix_accuracy": 0.0,
+          "final_prefix_accuracy": -0.02916666666666673,
+          "all_prefix_nll": 0.01714600222661833,
+          "final_prefix_nll": 0.02021754436674883
+        }
+      }
+    }
+  ],
+  "all_declared_conditions_executed": true,
+  "quality_admission_passed": false,
+  "all_blockers_closed": false,
+  "production_activation": false,
+  "scope": "Historical fixed-candidate descriptive replay. No best-family selection or independent confirmation claim."
+}

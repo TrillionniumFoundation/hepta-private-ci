@@ -1,0 +1,121 @@
+{
+  "schema": "hcsn-v8-task-supervision.v1",
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.control.value_fit",
+    "prepare",
+    "--run",
+    "experiments/hcsn_v13_followup_20261102/control/results/run001",
+    "--models",
+    "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+    "--publication",
+    "/workspace/scratch/3511158fb83b/v13_candidate_publication_result.json"
+  ],
+  "boundary_begin_monotonic_ns": 61244182332631,
+  "boundary_end_monotonic_ns": 61247901753186,
+  "command_to_collection_seconds": 3.719420555,
+  "first_stdout_receive_monotonic_ns": 61244212941874,
+  "root_exit_code": 1,
+  "timed_out": false,
+  "all_waitable_children_collected": true,
+  "subreaper": {
+    "enabled": true,
+    "scope": "Dedicated supervisor and its ordinary spawned descendants"
+  },
+  "disjoint_wait4_subtrees": [
+    {
+      "pid_in_supervisor_namespace": 6,
+      "is_direct_worker": true,
+      "exit_code": 1,
+      "wait4": {
+        "cpu_seconds": 3.718109,
+        "user_cpu_seconds": 3.378787,
+        "system_cpu_seconds": 0.33932199999999996,
+        "largest_single_process_highwater_bytes": 321974272
+      }
+    }
+  ],
+  "observed_task_subtree_cpu_seconds": 3.718109,
+  "complete_task_cpu_coverage": true,
+  "task_success": false,
+  "episode_outputs": [],
+  "protocol_errors": [],
+  "owned_identity_error": null,
+  "memory": {
+    "family_sampled_peak_rss_sum_bytes": null,
+    "all_family_samples_available": false,
+    "successful_family_samples": 0,
+    "family_errors": [
+      "Direct live child has not completed identity handshake",
+      "Cannot read required owned-process metadata: /proc/868432/task/868432/children: [Errno 2] No such file or directory: '/proc/868432/task/868432/children'",
+      "Cannot read required owned-process metadata: /proc/868432/task/868432/children: [Errno 2] No such file or directory: '/proc/868432/task/868432/children'"
+    ],
+    "registered_subset_peak_rss_sum_bytes": 335687680,
+    "successful_registered_samples": 8,
+    "retained_raw_sample_limit_per_kind": 2048,
+    "raw_samples_truncated": false,
+    "registered_subset_samples": [
+      {
+        "at_ns": 61244189737480,
+        "rss_bytes": 13246464,
+        "known_processes": 1
+      },
+      {
+        "at_ns": 61244694031179,
+        "rss_bytes": 186855424,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 61245199335558,
+        "rss_bytes": 220631040,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 61245703154481,
+        "rss_bytes": 256765952,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 61246206915572,
+        "rss_bytes": 290357248,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 61246707941505,
+        "rss_bytes": 319672320,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 61247209389030,
+        "rss_bytes": 335687680,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 61247710763529,
+        "rss_bytes": 327532544,
+        "known_processes": 2
+      }
+    ],
+    "family_samples": [],
+    "continuous_peak_proved": false,
+    "physical_unique_memory": false,
+    "scope": "Includes supervisor. Registered subset can omit descendants; RSS sums double-count shared pages."
+  },
+  "energy": {
+    "joules": null,
+    "attributable_to_task": false,
+    "visible_counter_directories": {
+      "/sys/class/powercap": false,
+      "/sys/class/hwmon": false,
+      "/sys/class/drm": false
+    },
+    "reason": "No configured directly observed, attributable device-energy counter"
+  },
+  "accounting": "Inner waited subtrees are disjoint diagnostics. Outer supervisor wait4 includes these once; never add inner waits again.",
+  "limits": [
+    "Dedicated Linux supervisor, ordinary fork/exec children; arbitrary malicious clone/reparent behavior is not qualified.",
+    "Timeout cleanup kills only an unreaped direct task. Uncollected descendants make coverage fail; no whole-tree fault recovery claim.",
+    "Sampled family RSS is not an atomic or continuous peak even where enumeration is available."
+  ]
+}

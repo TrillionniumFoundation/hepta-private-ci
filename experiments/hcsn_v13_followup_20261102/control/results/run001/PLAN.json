@@ -1,0 +1,143 @@
+{
+  "schema": "hcsn-v13-new-head-value-fit-plan.v1",
+  "created_unix": 1793587044.7359452,
+  "models_directory": "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+  "candidates_sha256": "9dbb8423c54e902a509ea85331c3b617eb97971f429c10a684169c251fc57215",
+  "content_publication_remote_head": "f810ee199755d139f5b8c08187efc41cbd7839c9",
+  "content_publication_receipt_sha256": "13241332337a6d5966a24ace6186b3716a4370e39ba61180f0ab85e70cf7e318",
+  "protocol": {
+    "schema": "hcsn-v13-joint-content-dynamic-control.v1",
+    "tasks": {
+      "async_av": 6,
+      "av_binding": 2
+    },
+    "families": [
+      "hx_full",
+      "hx_margin",
+      "ordinary_gate",
+      "gru",
+      "ssm",
+      "history"
+    ],
+    "seeds": [
+      13301,
+      13303,
+      13307
+    ],
+    "reader_fits": 36,
+    "reader_target": "Actual future correctness of this exact new joint content checkpoint, not old frozen-head correctness",
+    "future_target_builder": "TRAIN-only complete legal accepted-prefix tree beginning with mandatory A1. Compute each actual model step/classification once per unique tree node. Exact one/two-READ descendants are explicit target references, not independent forward calls or new objects.",
+    "value_features": "Full six-slot accepted normalized row55 history and mask; current joint-head probabilities padded to six classes; exact next two READ identities in their actual order. No IDs, labels, unrequested observations, teacher posteriors or future states.",
+    "read_order": "Two ordered six-way one-hots: modality x source endpoint. Order-sensitive recurrence forbids collapsing to endpoint level pair.",
+    "wait_semantics": "Logical wall-clock wait never changes accepted content or source-clock state. A shared pure public release/latency simulation first truncates the plan to actually accepted READs before deadline. Late issued READs are charged but omitted from content targets; READs after WAIT reaches deadline are not issued. If no READ is accepted, future correctness equals STOP. Only the accepted ordered READ subpath enters value features.",
+    "reader_architecture": "Common 354->32->1 tanh MLP, BCE-with-logits; fixed FP64 parameters and optimizer shape for every content family",
+    "updates_per_reader": 128,
+    "batch_size": 64,
+    "optimizer": "AdamW",
+    "learning_rate": 0.003,
+    "weight_decay": 0.0001,
+    "value_normalization": "TRAIN reader-example mean/std, std floor1e-5",
+    "common_reader_randomness": "Every family of a task/seed receives identical reader initialization from seed+500000 and identical minibatch index stream from seed+600000; both SHA256 identities are retained and checked before candidate freeze.",
+    "calibration": "Historical VAL only. Five fixed bins floor(5*p), cap4, Laplace(1,1), empty bins use global smoothed rate. STOP bins use max raw class probability with actual correctness; future bins use raw value sigmoid with actual descendant correctness.",
+    "initial_failure": "No accepted prefix returns smoothed TRAIN class prior; its STOP correctness is calibrated with VAL empty-history prior predictions. No random model fallback or hidden future lookup.",
+    "policies": [
+      "fixed",
+      "light",
+      "value"
+    ],
+    "primary_2x2": "Ordinary family versus hx_full, each under common fixed schedule and common value controller; report B-A,D-C,C-A,D-B and interaction for each predeclared ordinary family. Light is an additional descriptive baseline.",
+    "fixed_schedule": [
+      "A1 mandatory",
+      "V1",
+      "A2",
+      "V2",
+      "A3",
+      "V3"
+    ],
+    "light": "Fixed threshold0.8 on calibrated current correctness, else one earliest next source prefix, modality value lexical tie; no future forecasts",
+    "value_horizon": 2,
+    "public_wait_seconds": [
+      0.25
+    ],
+    "deadline_seconds": 4,
+    "max_requested_observations": 6,
+    "costs": {
+      "per_request": 0.02,
+      "per_elapsed_second": 0.005,
+      "deadline_miss": 1.0
+    },
+    "service": "Frozen V8 PreparedPrefixService, real array selection/copy; LogicalClock deterministic source release plus0.001second/read. Primary service has no injected failure; separate contract controls cover charged errors/timeouts. No live media latency claim.",
+    "evaluation": "Historical TEST development replay only after exact new content candidates, value weights/calibration and source publication. Previously exposed cohort is not independent confirmation.",
+    "pre_VAL_gate": "Verify original content PLAN source/input hashes, all36 untouched-TEST checkpoints/norms, current control source, and their membership in the root-verified published equivalent local Git tree. All tasks' TRAIN warehouse hashes must match original content-training identities before any VAL loader runs.",
+    "per_fit_outer_timeout_seconds": 180,
+    "threads": 1,
+    "limits": [
+      "Fixed update count is not CPU matching",
+      "Correlated prefix/descendant rows are not independent calibration samples",
+      "No validation-selected hyperparameters or post-test threshold adjustment",
+      "Native-family readers do not qualify new execution-channel interventions",
+      "This does not close qualified strong-frontend, full financial-parameter learning, continuous-reset or net-adoption gates"
+    ],
+    "all_blockers_closed": false,
+    "production_activation": false
+  },
+  "packets": {
+    "async_av-train.npz": {
+      "sha256": "d5eca3997d44632e380bbbcf881fb169345a4a7d2c797268673627c6bac02211",
+      "source_array_sha256": "01ffc02e803cfcd35733dc6b689d57baaacc6b46d10541c2f3f463ab79b1dd29",
+      "objects": 24,
+      "role": "train"
+    },
+    "av_binding-train.npz": {
+      "sha256": "3097ae4382b4f4a639046e04fe1ab0a8f6287a196075e00e27cd0b3901cffd7a",
+      "source_array_sha256": "aa547e167f14c23cc0a7345adf527215d50b2aab1a0dffe0089b777e4180cc3c",
+      "objects": 48,
+      "role": "train"
+    },
+    "async_av-val.npz": {
+      "sha256": "79a86b181014f0c7321600be3679c9f278ab7db1775e2bc1a703726f2d7afd10",
+      "source_array_sha256": "a139f90b65b6a29f875e84372fce691b039f6436a120fae9a86162b1d07d5798",
+      "objects": 12,
+      "role": "val"
+    },
+    "av_binding-val.npz": {
+      "sha256": "03f2ded2eefb45e5c31e5ba23fc33b4fc27561bc66bdbfd5ebc5e7170d7ece7f",
+      "source_array_sha256": "2b9ea67693bfb23c1b1716233e6f94e983039118183a2ac055a9a9b11fd4b060",
+      "objects": 24,
+      "role": "val"
+    }
+  },
+  "source_sha256": {
+    "experiments/continuous_spiking_network/__init__.py": "192d1f289893035488c967e19332d164c1b2687c127c627ae88ad24ac9db07bc",
+    "experiments/continuous_spiking_network/data.py": "b8a84e49451001ee3448dd3e22bbdc0f9e153a6864056c77069052c7d048829b",
+    "experiments/hcsn_causal_execution_v3/__init__.py": "4d77d70d4f664e21e538b23f5f0bf845f0c5efa02ac670d37ef13a699c37feaa",
+    "experiments/hcsn_causal_execution_v3/av_probe.py": "890001592133a414e22863e903d10f62c927558938f6fcc0afa30a36d63ea127",
+    "experiments/hcsn_hx_unified_v3/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "experiments/hcsn_hx_unified_v3/hx.py": "f7089527461983ebfd53ce82d95a124314a797fc57ed40386ad2e8d4b75e1d19",
+    "experiments/hcsn_mechanism_content_v2/__init__.py": "9d7409cd830465f83202846e2d68976fb1cc33bf619e40115287555f38ead365",
+    "experiments/hcsn_mechanism_content_v2/binding_data.py": "0b496b552a9686da23381640015acf43120eb5737ff895b022c32f3edf20e00c",
+    "experiments/hcsn_mechanism_content_v2/data.py": "ca866b1dee8977255bedd8655b247bc8212db9c000ab221cd6b84d0c5721277e",
+    "experiments/hcsn_task_value_v1/__init__.py": "39d9c6a49be667f172380147c8b8ecf844c0f8d542c8acd72dfd5f6deafa39b6",
+    "experiments/hcsn_task_value_v1/async_av.py": "82650e912388cfe5e7534676024e3133841061324537ee2fbe36cd04fc06788c",
+    "experiments/hcsn_v13_followup_20261102/control/PROTOCOL.json": "cc41c33ee314cd850cd8aafe11767d29dc3b81176d4c988148d995e9a4374909",
+    "experiments/hcsn_v13_followup_20261102/control/campaign.py": "691ad09ff13d1c53e6fc37d87be531a9a7ac0471a655af8ff81f97f2af1797f7",
+    "experiments/hcsn_v13_followup_20261102/control/check_runtime.py": "70c6f184c45cfeb09693d5ade9634ffa470bb0b2ff014c21086db16e30fb78b2",
+    "experiments/hcsn_v13_followup_20261102/control/check_targets.py": "c65ebe9a2ffed3f983992a75a657b49a2e3163b5ca54ed8a5d56063ee6af6887",
+    "experiments/hcsn_v13_followup_20261102/control/runtime.py": "42d8e1fec026ddbabc393a32218d6a895f49ca7f0b1b54a91bcdf1f283875217",
+    "experiments/hcsn_v13_followup_20261102/control/value_fit.py": "3adce752dfcef9fd97f43f88f75073728f27bd6c004db71e17931baba3f653c3",
+    "experiments/hcsn_v13_followup_20261102/joint_core/campaign.py": "3760db42f332cac14134b2f98af8d8d0c2a506c9c0e5cede085b93928ee25be6",
+    "experiments/hcsn_v13_followup_20261102/joint_core/data.py": "97dd9fb11e32257f183084a75de103125a9adbd43ef956b6600ae78f9d38d445",
+    "experiments/hcsn_v13_followup_20261102/joint_core/hx_torch.py": "3a14bd9afb403848427d6c77d936445da7ddd72f18cbdb45cc10de4a31493f49",
+    "experiments/hcsn_v13_followup_20261102/joint_core/model.py": "cd8666ebcbfb23e9d3d7b283c1814ead4246cb91f8f5ee76705fd38b25c1f7e4",
+    "experiments/hcsn_v7_support_20261101/content_interface/content_interface.py": "2dd6f4cc0204f5d77a7a5ab993d0710088d47848e2977bc44351519fc6d50c92",
+    "experiments/hcsn_v8_execution_20261101/frontend/__init__.py": "b1ba835e26e080f34adfabab53734560ce38f083e9e361430c0623487f3db700",
+    "experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py": "1b5efffde74c64f2e1f0f7ca1ed4e7b4d10f0de80cc23a9294c483d7cc7177c5",
+    "experiments/hcsn_v8_execution_20261101/frontend/replay.py": "4a813a54eaa0d115c62e3f9538e9db549edb5eb3c1f4a882cc80dc5d0c862518",
+    "experiments/hcsn_v8_execution_20261101/scheduler/execution.py": "f38d0ea01ba71d7c128da9ddd86597e41b83b79cbba428eaade0f33e4177243b",
+    "experiments/hcsn_v8_execution_20261101/scheduler/historical_service.py": "82af46b00edabd63a19cbe6e169b4a321502b600e5212753d67060ebfacb0eb9",
+    "experiments/hcsn_v8_execution_20261101/scheduler/planning.py": "3b616986599fb242d715c5a8b92fb73a68be01858723c6c6cc3111cda773ed61",
+    "recovered/v3/experiments/hcsn_free_boundary_v1/datasets.py": "f87e8f8531483313013d64a413b207c26ab14c09f82500088b506b5a682bc794"
+  },
+  "test_opened": false,
+  "calibration_role": "historical VAL; correlated prefixes, no independent qualification"
+}

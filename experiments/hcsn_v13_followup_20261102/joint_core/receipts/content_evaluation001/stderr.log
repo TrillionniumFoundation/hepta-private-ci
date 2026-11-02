@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/joint_core/operations/evaluate_content.py", line 119, in <module>
+    evaluate(args.run, args.out, args.source_remote_head, args.candidate_remote_head, args.publication)
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/joint_core/operations/evaluate_content.py", line 32, in evaluate
+    gate = require_publication(run, publication, source_head, candidate_head)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/joint_core/operations/publication_gate.py", line 57, in require_publication
+    raise RuntimeError("Current byte is not its published Git blob: "+name)
+RuntimeError: Current byte is not its published Git blob: recovered/v3/experiments/hcsn_free_boundary_v1/datasets.py
