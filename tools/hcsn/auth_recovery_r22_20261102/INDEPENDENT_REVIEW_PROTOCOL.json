@@ -1,0 +1,12 @@
+{
+  "schema": "hcsn.r22.auth-independent-source-review.v1",
+  "candidate_source_commit": "6bf394ba09633a250d0cb4521dd3285515361c1d",
+  "classification": "Postconfirmation independent source review and new bounded engineering counterexample; not part of original 80 controls or a new model-world confirmation.",
+  "checker": "independent_slow_peer.py",
+  "source_imports": "Python standard library only; no candidate imports. Candidate witness is a real separately spawned module process.",
+  "schedule": "First valid authenticated tip query, then unauthenticated connection sending an opening brace plus one blank every0.2 seconds for4.4 seconds; after0.1 seconds attempt a second valid query with3-second socket timeout; close attacker and retry valid query.",
+  "prediction": "The victim times out while the serial witness waits for the slow incomplete request; service resumes when the unauthenticated peer closes.",
+  "claim_boundary": "Demonstrates no absolute bounded service under untrusted localhost peers; does not invalidate prior MAC integrity/retained-witness antirollback safety under its stated custody assumptions.",
+  "candidate_repairs_or_threshold_changes": false,
+  "live_credentials": false
+}
