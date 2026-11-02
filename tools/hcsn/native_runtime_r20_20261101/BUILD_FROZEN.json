@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/tmp/hcsn-r15-runtime-tools/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "--edition=2024",
+    "-D",
+    "warnings",
+    "tools/hcsn/native_runtime_r20_20261101/main.rs",
+    "-o",
+    "/tmp/hcsn-r20-runtime-frozen-d0ac"
+  ],
+  "exit_code": 0,
+  "binary_path": "/tmp/hcsn-r20-runtime-frozen-d0ac",
+  "binary_sha256": "b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798",
+  "binary_bytes": 4952336,
+  "child_cpu_seconds": 0.8557899999999999,
+  "wall_seconds": 1.5235958699995535,
+  "freeze_sha256": "95bd6c53f304cf05c088aee78ca45013df625c242ae950a240d122aabe863118",
+  "source_publication": {
+    "readback_verified": true,
+    "commit_sha": "d0acb8d41a9b7682d22f606998c4e04fe4093e6c",
+    "freeze_sha256": "95bd6c53f304cf05c088aee78ca45013df625c242ae950a240d122aabe863118"
+  },
+  "scope": "Full rustc and waited linker compile; separate from campaign, version-query metadata not included."
+}

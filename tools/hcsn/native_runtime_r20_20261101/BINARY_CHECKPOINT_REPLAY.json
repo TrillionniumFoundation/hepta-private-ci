@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "binary_sha256": "b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798",
+  "checkpoint": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/16_02",
+  "expected_uninterrupted": "tools/hcsn/native_runtime_r20_20261101/confirmation01/cases/16_00",
+  "provider_command": [
+    "/tmp/hcsn-r20-binary-roundtrip/b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798",
+    "provider",
+    "/tmp/hcsn-r20-delivery-native-resume/MODEL",
+    "/tmp/hcsn-r20-delivery-native-resume/PLAN",
+    "/tmp/hcsn-r20-delivery-native-resume/CATALOG",
+    "/tmp/hcsn-r20-delivery-native-resume/provider.state",
+    "/tmp/hcsn-r20-delivery-native-resume/ENDPOINT",
+    "none",
+    "/tmp/hcsn-r20-delivery-native-resume/provider.marker"
+  ],
+  "owner_command": [
+    "/tmp/hcsn-r20-binary-roundtrip/b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798",
+    "owner",
+    "/tmp/hcsn-r20-delivery-native-resume/MODEL",
+    "/tmp/hcsn-r20-delivery-native-resume/PLAN",
+    "/tmp/hcsn-r20-delivery-native-resume/owner.state",
+    "/tmp/hcsn-r20-delivery-native-resume/ENDPOINT",
+    "none",
+    "/tmp/hcsn-r20-delivery-native-resume/owner.marker"
+  ],
+  "state_sha256": {
+    "owner.state": "7f8f5d48139a7fc30cb3989cf05b735b83f1dd7b71dfad09b1286e464c609268",
+    "provider.state": "7cf2bb504136cf6775f1bb1489ca80785fb75ba07559403830a1591d53f6834a"
+  },
+  "native_child_cpu_seconds": 0.070324,
+  "scope": "Delivery engineering replay of an existing formal world, not fresh confirmation or production qualification."
+}

@@ -1,0 +1,129 @@
+{
+  "schema": "hcsn-fixed-binary-artifacts-v1",
+  "formal_binary_sha256": "b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798",
+  "formal_source_freeze": "d0acb8d41a9b7682d22f606998c4e04fe4093e6c",
+  "binaries": [
+    {
+      "sha256": "3f408dfdeb30fd53b593235461b0fbaeb6a3b34b0956200b55c7773fb184de76",
+      "bytes": 4952379,
+      "gzip_bytes": 1324391,
+      "gzip_sha256": "d493da609fe25c71ede0e8d86c78c7e547b78b5930034843e2c2a355cff762ad",
+      "parts": [
+        {
+          "path": "binary_transport/3f408dfdeb30fd53b593235461b0fbaeb6a3b34b0956200b55c7773fb184de76/0000.part",
+          "bytes": 450000,
+          "sha256": "700d3f293d75717c4e3f3211675baf88f9ceeeba861aac879eeb30f940d4319c"
+        },
+        {
+          "path": "binary_transport/3f408dfdeb30fd53b593235461b0fbaeb6a3b34b0956200b55c7773fb184de76/0001.part",
+          "bytes": 450000,
+          "sha256": "e0372d3a0de6adc40682da1984a71694af06042cf67dc19826251922c59572ab"
+        },
+        {
+          "path": "binary_transport/3f408dfdeb30fd53b593235461b0fbaeb6a3b34b0956200b55c7773fb184de76/0002.part",
+          "bytes": 424391,
+          "sha256": "4f2c5c18e9311956bf7b94ff8c6d6187290fc37f665a4a26453757f444013362"
+        }
+      ],
+      "origin_paths": [
+        "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/native_runtime_r20_20261101/confirmation01/negative/alternate_artifact",
+        "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/native_runtime_r20_20261101/development05/negative/alternate_artifact",
+        "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/native_runtime_r20_20261101/development06/negative/alternate_artifact"
+      ],
+      "evidence_aliases": [
+        "confirmation01/negative/alternate_artifact",
+        "development05/negative/alternate_artifact",
+        "development06/negative/alternate_artifact"
+      ]
+    },
+    {
+      "sha256": "b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798",
+      "bytes": 4952336,
+      "gzip_bytes": 1324356,
+      "gzip_sha256": "4f05303c2b825b7a0fc3e4d62f1e05306cb91bbee4ce8270414600376ac45eab",
+      "parts": [
+        {
+          "path": "binary_transport/b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798/0000.part",
+          "bytes": 450000,
+          "sha256": "700d3f293d75717c4e3f3211675baf88f9ceeeba861aac879eeb30f940d4319c"
+        },
+        {
+          "path": "binary_transport/b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798/0001.part",
+          "bytes": 450000,
+          "sha256": "e0372d3a0de6adc40682da1984a71694af06042cf67dc19826251922c59572ab"
+        },
+        {
+          "path": "binary_transport/b30befcb76f00533029c60ce7a430a2b057bc152107625d7a5a4be3cd16f2798/0002.part",
+          "bytes": 424356,
+          "sha256": "f6250891ec09c863056f8616ce851d362bd59c57d2aab9b586145345a185bdc2"
+        }
+      ],
+      "origin_paths": [
+        "/tmp/hcsn-r20-runtime-frozen-d0ac",
+        "/tmp/hcsn-r20-runtime-identity-engineering",
+        "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/native_runtime_r20_20261101/confirmation01/negative/identical_artifact",
+        "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/native_runtime_r20_20261101/development06/negative/identical_artifact"
+      ],
+      "evidence_aliases": [
+        "confirmation01/negative/identical_artifact",
+        "development06/negative/identical_artifact"
+      ]
+    },
+    {
+      "sha256": "eb867321a0d3c1f69776ae4641908c6b24b6b519f2dc7a1409bb38db292e2aa9",
+      "bytes": 4883080,
+      "gzip_bytes": 1302195,
+      "gzip_sha256": "4bb9468de25dfdeff77e5902ef58a0da25b4444e01ca1c9a642cad20d92acd82",
+      "parts": [
+        {
+          "path": "binary_transport/eb867321a0d3c1f69776ae4641908c6b24b6b519f2dc7a1409bb38db292e2aa9/0000.part",
+          "bytes": 450000,
+          "sha256": "7844c505f0a12fd7449fa90e0093f66ac8bbcded5c4a5493e9ce27515962434d"
+        },
+        {
+          "path": "binary_transport/eb867321a0d3c1f69776ae4641908c6b24b6b519f2dc7a1409bb38db292e2aa9/0001.part",
+          "bytes": 450000,
+          "sha256": "9a072f52ff1d8d5c5b1b9c6956b39740655b894bced47db14cf85b9b7e8b2e7d"
+        },
+        {
+          "path": "binary_transport/eb867321a0d3c1f69776ae4641908c6b24b6b519f2dc7a1409bb38db292e2aa9/0002.part",
+          "bytes": 402195,
+          "sha256": "6fc378cb30b0a001c3c6cdd941322f3d28a5e67d2e4989a64b46e5aee0442aa9"
+        }
+      ],
+      "origin_paths": [
+        "/tmp/hcsn-r20-runtime-engineering"
+      ],
+      "evidence_aliases": []
+    },
+    {
+      "sha256": "f8f6e662d802e9468c9f4932e2db0ff5c3bb04dd341891fd1ce6a8122b2bd25a",
+      "bytes": 4935480,
+      "gzip_bytes": 1318160,
+      "gzip_sha256": "a2dc1305f727de4bc05c5edc474c2878d0d7f7ce5d7be550dced83aaf97aaf30",
+      "parts": [
+        {
+          "path": "binary_transport/f8f6e662d802e9468c9f4932e2db0ff5c3bb04dd341891fd1ce6a8122b2bd25a/0000.part",
+          "bytes": 450000,
+          "sha256": "7bec332ab26581e2efb1a0a77cb400037467071ff6a540a4278d18d05c56e802"
+        },
+        {
+          "path": "binary_transport/f8f6e662d802e9468c9f4932e2db0ff5c3bb04dd341891fd1ce6a8122b2bd25a/0001.part",
+          "bytes": 450000,
+          "sha256": "29340353d47ec6b68662f7104c65fb446cb22b84d8f6f94d956a18df690a1375"
+        },
+        {
+          "path": "binary_transport/f8f6e662d802e9468c9f4932e2db0ff5c3bb04dd341891fd1ce6a8122b2bd25a/0002.part",
+          "bytes": 418160,
+          "sha256": "883cccec549f051ffb3474f7d8b84405d84805d1a0b9783670d628e3adf11f15"
+        }
+      ],
+      "origin_paths": [
+        "/tmp/hcsn-r20-runtime-engineering-financial"
+      ],
+      "evidence_aliases": []
+    }
+  ],
+  "missing_original_paths": [],
+  "scope": "Retained exact research artifacts; SHA256 integrity does not grant production authorization or peer authentication."
+}
