@@ -1,0 +1,37 @@
+{
+  "rustc_version": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "records": [
+    {
+      "command": [
+        "/tmp/hcsn-r15-runtime-tools/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--edition=2024",
+        "-D",
+        "warnings",
+        "repo/tools/hcsn/native_owner_r18_20261101/main.rs",
+        "-o",
+        "/tmp/hcsn-r19-baseline"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "wall_seconds": 0.8065306650023558,
+      "binary_sha256": "267fc6faa841243590e92fc609b6caa930473a608f6edf6a3ceceaa04fbe4037"
+    },
+    {
+      "command": [
+        "/tmp/hcsn-r15-runtime-tools/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--edition=2024",
+        "-D",
+        "warnings",
+        "repo/tools/hcsn/native_owner_r19_20261101/main.rs",
+        "-o",
+        "/tmp/hcsn-r19-candidate"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "wall_seconds": 0.8180589629992028,
+      "binary_sha256": "7ca45568c67d7c5ad467490592c6594d922716a52a2c8af65797df0f7d1c1fb7"
+    }
+  ]
+}
