@@ -1,0 +1,65 @@
+{
+  "schema": "hcsn-v10-independent-review.v1",
+  "candidate_implementations_imported": false,
+  "audit_source_sha256": "9f14831aaa066ac07ee191cfbe6e5235f9a08df912fb1f36ab73fc28d8bf24b5",
+  "audit_sources_snapshot": {
+    "av_reconstruction.py": "38dde8e972d2d3285eea34829660b9976395f3a60c19540797b4ff5a2a6ef56d",
+    "constant_reconstruction.py": "913fd719e80dac102f348587f00f7e41dd2c2ada26d07e179aa56daf5b8351f4",
+    "frontend_reconstruction.py": "de2e7e66706402b67ae22b464bc0aaa638dc5609c1bd5cf27d033a972c749f08",
+    "independent_audit.py": "9f14831aaa066ac07ee191cfbe6e5235f9a08df912fb1f36ab73fc28d8bf24b5",
+    "joint_knot_diagnostic.py": "2636781f87b496981700b9cea51f4d4bed86c74955a003d25d22b274772d313f",
+    "joint_reconstruction.py": "7ff0afaafefa0197122f68911ac7a859738844fef6cf964a243cfafb653eb7be",
+    "renewal_reconstruction.py": "cc36e785fadacfc2d1830575f55b6ec26225f0a37e59260080ef4d1201e74dcc"
+  },
+  "constant": {
+    "runs_reconstructed": 72,
+    "final_head_outputs_cross_checked_with_main_AV": 66,
+    "final_endpoints_not_covered_by_main_AV_runs": [
+      [
+        "av_binding",
+        1,
+        1,
+        0
+      ],
+      [
+        "av_binding",
+        2,
+        1,
+        0
+      ],
+      [
+        "av_binding",
+        5,
+        1,
+        0
+      ],
+      [
+        "av_binding",
+        13,
+        1,
+        0
+      ],
+      [
+        "av_binding",
+        14,
+        1,
+        0
+      ],
+      [
+        "av_binding",
+        17,
+        1,
+        0
+      ]
+    ],
+    "D_minus_constant_half_descriptive_mean": {
+      "async_av": 0.00883049999999999,
+      "av_binding": -0.06329491666666666
+    },
+    "original_B_selection_retained": true,
+    "posthoc": true,
+    "fresh_confirmation": false,
+    "scope": "Additional validation-motivated historical logical-service reference; no replacement of original B or physical deployment timing claim"
+  },
+  "scientific_adoption_asserted": false
+}

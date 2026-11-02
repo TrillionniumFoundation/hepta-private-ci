@@ -1,0 +1,33 @@
+test_count_gradient_independent_finite_difference (experiments.hcsn_v10_closure_20261101.av_analytic.test_models.AVChecks.test_count_gradient_independent_finite_difference) ... ok
+test_independent_count_law_and_support (experiments.hcsn_v10_closure_20261101.av_analytic.test_models.AVChecks.test_independent_count_law_and_support) ... ok
+test_joint_gradients_and_zero_time_assimilation (experiments.hcsn_v10_closure_20261101.av_analytic.test_models.AVChecks.test_joint_gradients_and_zero_time_assimilation) ... ok
+test_mean_preservation_and_single_support (experiments.hcsn_v10_closure_20261101.av_analytic.test_models.AVChecks.test_mean_preservation_and_single_support) ... ok
+test_prefix_and_readout_causality (experiments.hcsn_v10_closure_20261101.av_analytic.test_models.AVChecks.test_prefix_and_readout_causality) ... ERROR
+
+======================================================================
+ERROR: test_prefix_and_readout_causality (experiments.hcsn_v10_closure_20261101.av_analytic.test_models.AVChecks.test_prefix_and_readout_causality)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v10_closure_20261101/av_analytic/test_models.py", line 58, in test_prefix_and_readout_causality
+    torch.testing.assert_close(before[:, t], model(changed)[:, t], atol=0, rtol=0)
+                                             ^^^^^^^^^^^^^^
+  File "/tmp/hcsn-torch-runtime/torch/nn/modules/module.py", line 1787, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/hcsn-torch-runtime/torch/nn/modules/module.py", line 1798, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v10_closure_20261101/av_analytic/models.py", line 98, in forward
+    state = self.step(x[:, t], state)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v10_closure_20261101/av_analytic/models.py", line 81, in step
+    probabilities = count_bank(self.physics(state), raw[:, -1:], self.mode)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v10_closure_20261101/av_analytic/models.py", line 40, in count_bank
+    result.scatter_add_(1, lower, 1 - (mean - lower))
+RuntimeError: index -9223372036854775808 is out of bounds for dimension 1 with size 10
+
+----------------------------------------------------------------------
+Ran 5 tests in 2.126s
+
+FAILED (errors=1)

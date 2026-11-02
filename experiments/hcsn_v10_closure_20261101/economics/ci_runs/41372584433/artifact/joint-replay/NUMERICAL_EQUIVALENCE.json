@@ -1,0 +1,680 @@
+{
+  "schema": "hcsn-v10-ci-joint-numerical-equivalence.v1",
+  "expected_summary_sha256": "e731a0b22480110ca1616920c5d7e5c73d1a50c6179b69d66399f49174ef91f5",
+  "absolute_tolerance": 1e-08,
+  "relative_tolerance": 0.0,
+  "comparison_count": 95,
+  "passed": true,
+  "comparisons": [
+    {
+      "item": "fit/101003/joint_original/nll",
+      "actual": 1.0199137984678184,
+      "expected": 1.0199137984678184,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/joint_original/accuracy",
+      "actual": 0.5205078125,
+      "expected": 0.5205078125,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/joint_original/brier",
+      "actual": 0.5417217216700376,
+      "expected": 0.5417217216700376,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/same_weight_mean_two_point/nll",
+      "actual": 1.0524222312099518,
+      "expected": 1.0524222312099518,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/same_weight_mean_two_point/accuracy",
+      "actual": 0.517578125,
+      "expected": 0.517578125,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/same_weight_mean_two_point/brier",
+      "actual": 0.5573934042740424,
+      "expected": 0.5573934042740424,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/joint_mean_two_point/nll",
+      "actual": 1.022636184615327,
+      "expected": 1.022636184615327,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/joint_mean_two_point/accuracy",
+      "actual": 0.521484375,
+      "expected": 0.521484375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/joint_mean_two_point/brier",
+      "actual": 0.5425789862972311,
+      "expected": 0.5425789862972311,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/same_weight_single_transition/nll",
+      "actual": 1.6841412474149993,
+      "expected": 1.6841412474149993,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/same_weight_single_transition/accuracy",
+      "actual": 0.5234375,
+      "expected": 0.5234375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/same_weight_single_transition/brier",
+      "actual": 0.5899245911794436,
+      "expected": 0.5899245911794436,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/joint_single_transition/nll",
+      "actual": 1.0797315148593434,
+      "expected": 1.0797315148593434,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/joint_single_transition/accuracy",
+      "actual": 0.5244140625,
+      "expected": 0.5244140625,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/joint_single_transition/brier",
+      "actual": 0.5552410273645532,
+      "expected": 0.5552410273645532,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/ordinary_mlp/nll",
+      "actual": 1.0523592016738494,
+      "expected": 1.0523592016738494,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/ordinary_mlp/accuracy",
+      "actual": 0.5205078125,
+      "expected": 0.5205078125,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101003/ordinary_mlp/brier",
+      "actual": 0.5516229375706311,
+      "expected": 0.5516229375706311,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/joint_original/nll",
+      "actual": 1.02182822139333,
+      "expected": 1.02182822139333,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/joint_original/accuracy",
+      "actual": 0.533203125,
+      "expected": 0.533203125,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/joint_original/brier",
+      "actual": 0.5419987440998488,
+      "expected": 0.5419987440998488,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/same_weight_mean_two_point/nll",
+      "actual": 1.0668807880456894,
+      "expected": 1.0668807880456894,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/same_weight_mean_two_point/accuracy",
+      "actual": 0.513671875,
+      "expected": 0.513671875,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/same_weight_mean_two_point/brier",
+      "actual": 0.5630335228960696,
+      "expected": 0.5630335228960696,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/joint_mean_two_point/nll",
+      "actual": 1.034149922802707,
+      "expected": 1.034149922802707,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/joint_mean_two_point/accuracy",
+      "actual": 0.51953125,
+      "expected": 0.51953125,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/joint_mean_two_point/brier",
+      "actual": 0.5463282802594029,
+      "expected": 0.5463282802594029,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/same_weight_single_transition/nll",
+      "actual": 1.3762469507618347,
+      "expected": 1.3762469507618347,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/same_weight_single_transition/accuracy",
+      "actual": 0.5244140625,
+      "expected": 0.5244140625,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/same_weight_single_transition/brier",
+      "actual": 0.5985047472611325,
+      "expected": 0.5985047472611325,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/joint_single_transition/nll",
+      "actual": 1.0794203555982305,
+      "expected": 1.0794203555982305,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/joint_single_transition/accuracy",
+      "actual": 0.5341796875,
+      "expected": 0.5341796875,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/joint_single_transition/brier",
+      "actual": 0.5529811883150763,
+      "expected": 0.5529811883150763,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/ordinary_mlp/nll",
+      "actual": 1.04820852767225,
+      "expected": 1.04820852767225,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/ordinary_mlp/accuracy",
+      "actual": 0.5205078125,
+      "expected": 0.5205078125,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101009/ordinary_mlp/brier",
+      "actual": 0.5481207224886415,
+      "expected": 0.5481207224886415,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/joint_original/nll",
+      "actual": 1.0186914616214424,
+      "expected": 1.0186914616214424,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/joint_original/accuracy",
+      "actual": 0.52734375,
+      "expected": 0.52734375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/joint_original/brier",
+      "actual": 0.5414973418631173,
+      "expected": 0.5414973418631173,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/same_weight_mean_two_point/nll",
+      "actual": 1.0697732051852442,
+      "expected": 1.069773205185244,
+      "absolute_difference": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/same_weight_mean_two_point/accuracy",
+      "actual": 0.5224609375,
+      "expected": 0.5224609375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/same_weight_mean_two_point/brier",
+      "actual": 0.5571597155063936,
+      "expected": 0.5571597155063936,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/joint_mean_two_point/nll",
+      "actual": 1.0254713984763089,
+      "expected": 1.0254713984763089,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/joint_mean_two_point/accuracy",
+      "actual": 0.521484375,
+      "expected": 0.521484375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/joint_mean_two_point/brier",
+      "actual": 0.5434404381646109,
+      "expected": 0.5434404381646109,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/same_weight_single_transition/nll",
+      "actual": 1.6105490146083374,
+      "expected": 1.6105490146083374,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/same_weight_single_transition/accuracy",
+      "actual": 0.5234375,
+      "expected": 0.5234375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/same_weight_single_transition/brier",
+      "actual": 0.5902528448869974,
+      "expected": 0.5902528448869973,
+      "absolute_difference": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/joint_single_transition/nll",
+      "actual": 1.0770728139987122,
+      "expected": 1.0770728139987122,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/joint_single_transition/accuracy",
+      "actual": 0.5244140625,
+      "expected": 0.5244140625,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/joint_single_transition/brier",
+      "actual": 0.5542480639790821,
+      "expected": 0.5542480639790821,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/ordinary_mlp/nll",
+      "actual": 1.0487761735300483,
+      "expected": 1.0487761735300483,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/ordinary_mlp/accuracy",
+      "actual": 0.525390625,
+      "expected": 0.525390625,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101019/ordinary_mlp/brier",
+      "actual": 0.5495801275821344,
+      "expected": 0.5495801275821344,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/joint_original/nll",
+      "actual": 1.0181846890232948,
+      "expected": 1.0181846890232948,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/joint_original/accuracy",
+      "actual": 0.529296875,
+      "expected": 0.529296875,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/joint_original/brier",
+      "actual": 0.5417240049770478,
+      "expected": 0.5417240049770478,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/same_weight_mean_two_point/nll",
+      "actual": 1.0882942508039024,
+      "expected": 1.0882942508039022,
+      "absolute_difference": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/same_weight_mean_two_point/accuracy",
+      "actual": 0.5185546875,
+      "expected": 0.5185546875,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/same_weight_mean_two_point/brier",
+      "actual": 0.5612377317313519,
+      "expected": 0.5612377317313519,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/joint_mean_two_point/nll",
+      "actual": 1.027109362796909,
+      "expected": 1.027109362796909,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/joint_mean_two_point/accuracy",
+      "actual": 0.5224609375,
+      "expected": 0.5224609375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/joint_mean_two_point/brier",
+      "actual": 0.5442802583433013,
+      "expected": 0.5442802583433013,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/same_weight_single_transition/nll",
+      "actual": 1.7009536938578824,
+      "expected": 1.7009536938578824,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/same_weight_single_transition/accuracy",
+      "actual": 0.5224609375,
+      "expected": 0.5224609375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/same_weight_single_transition/brier",
+      "actual": 0.5976024156115516,
+      "expected": 0.5976024156115516,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/joint_single_transition/nll",
+      "actual": 1.0779801542010696,
+      "expected": 1.0779801542010696,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/joint_single_transition/accuracy",
+      "actual": 0.52734375,
+      "expected": 0.52734375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/joint_single_transition/brier",
+      "actual": 0.5543210250074319,
+      "expected": 0.5543210250074319,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/ordinary_mlp/nll",
+      "actual": 1.0445649165482143,
+      "expected": 1.0445649165482143,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/ordinary_mlp/accuracy",
+      "actual": 0.525390625,
+      "expected": 0.525390625,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101021/ordinary_mlp/brier",
+      "actual": 0.5494274774580177,
+      "expected": 0.5494274774580177,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/joint_original/nll",
+      "actual": 1.019144383229411,
+      "expected": 1.019144383229411,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/joint_original/accuracy",
+      "actual": 0.5263671875,
+      "expected": 0.5263671875,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/joint_original/brier",
+      "actual": 0.5421298821114395,
+      "expected": 0.5421298821114395,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/same_weight_mean_two_point/nll",
+      "actual": 1.0638593844223216,
+      "expected": 1.0638593844223216,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/same_weight_mean_two_point/accuracy",
+      "actual": 0.5224609375,
+      "expected": 0.5224609375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/same_weight_mean_two_point/brier",
+      "actual": 0.5586032459822315,
+      "expected": 0.5586032459822315,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/joint_mean_two_point/nll",
+      "actual": 1.0264981424115966,
+      "expected": 1.0264981424115966,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/joint_mean_two_point/accuracy",
+      "actual": 0.5205078125,
+      "expected": 0.5205078125,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/joint_mean_two_point/brier",
+      "actual": 0.5436363088522121,
+      "expected": 0.5436363088522121,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/same_weight_single_transition/nll",
+      "actual": 1.5084316653501701,
+      "expected": 1.5084316653501701,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/same_weight_single_transition/accuracy",
+      "actual": 0.5234375,
+      "expected": 0.5234375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/same_weight_single_transition/brier",
+      "actual": 0.5925129956142754,
+      "expected": 0.5925129956142754,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/joint_single_transition/nll",
+      "actual": 1.0781691760155838,
+      "expected": 1.0781691760155838,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/joint_single_transition/accuracy",
+      "actual": 0.52734375,
+      "expected": 0.52734375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/joint_single_transition/brier",
+      "actual": 0.5551138915270403,
+      "expected": 0.5551138915270403,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/ordinary_mlp/nll",
+      "actual": 1.0555327666866308,
+      "expected": 1.0555327666866308,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/ordinary_mlp/accuracy",
+      "actual": 0.5234375,
+      "expected": 0.5234375,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "fit/101033/ordinary_mlp/brier",
+      "actual": 0.5539555324159305,
+      "expected": 0.5539555324159305,
+      "absolute_difference": 0.0,
+      "passed": true
+    },
+    {
+      "item": "contrast/full_minus_ordinary/NLL_difference",
+      "actual": -0.030335806475139237,
+      "expected": -0.030335806475139244,
+      "absolute_difference": 6.938893903907228e-18,
+      "passed": true
+    },
+    {
+      "item": "contrast/mean_retrained_minus_full/NLL_difference",
+      "actual": 0.007620491473510399,
+      "expected": 0.007620491473510409,
+      "absolute_difference": 9.540979117872439e-18,
+      "passed": true
+    },
+    {
+      "item": "contrast/mean_retrained_minus_same_weight/NLL_difference",
+      "actual": -0.041072969712852216,
+      "expected": -0.041072969712852195,
+      "absolute_difference": 2.0816681711721685e-17,
+      "passed": true
+    },
+    {
+      "item": "contrast/single_retrained_minus_full/NLL_difference",
+      "actual": 0.05892229218752859,
+      "expected": 0.058922292187528605,
+      "absolute_difference": 1.3877787807814457e-17,
+      "passed": true
+    },
+    {
+      "item": "contrast/single_retrained_minus_same_weight/NLL_difference",
+      "actual": -0.4975897114640569,
+      "expected": -0.4975897114640569,
+      "absolute_difference": 0.0,
+      "passed": true
+    }
+  ],
+  "excluded": [
+    "execution timing",
+    "host identity",
+    "gzip bytes and metadata"
+  ]
+}

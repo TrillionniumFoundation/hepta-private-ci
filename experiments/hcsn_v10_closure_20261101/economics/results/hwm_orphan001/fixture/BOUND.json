@@ -1,0 +1,133 @@
+{
+  "schema": "hcsn-v10-conservative-memory-bound-fixture.v1",
+  "fixture_not_model": true,
+  "expected_roles": [
+    "root",
+    "child",
+    "grandchild",
+    "short"
+  ],
+  "per_process_records": [
+    {
+      "role": "root",
+      "identity": {
+        "proc_pid": 549085,
+        "start_ticks": 5495366,
+        "namespace_pid": 7
+      },
+      "shared_inherited_bytes": 33554432,
+      "private_bytes": 0,
+      "children_namespace_pids": [
+        8,
+        9
+      ],
+      "waited_children": [],
+      "orphaning_root": true,
+      "self_ru_maxrss_diagnostic_bytes": 44695552
+    },
+    {
+      "role": "child",
+      "identity": {
+        "proc_pid": 549089,
+        "start_ticks": 5495380,
+        "namespace_pid": 8
+      },
+      "shared_inherited_bytes": 33554432,
+      "private_bytes": 8388608,
+      "children_namespace_pids": [
+        10
+      ],
+      "waited_children": [
+        {
+          "namespace_pid": 10,
+          "exit_code": 0,
+          "maxrss_upper_bytes": 66863104,
+          "cpu_seconds_nested_diagnostic_not_additive": 0.017411
+        }
+      ],
+      "orphaning_root": false,
+      "self_ru_maxrss_diagnostic_bytes": 50081792
+    },
+    {
+      "role": "grandchild",
+      "identity": {
+        "proc_pid": 549091,
+        "start_ticks": 5495381,
+        "namespace_pid": 10
+      },
+      "shared_inherited_bytes": 33554432,
+      "private_bytes": 16777216,
+      "children_namespace_pids": [],
+      "waited_children": [],
+      "orphaning_root": false,
+      "self_ru_maxrss_diagnostic_bytes": 66732032
+    },
+    {
+      "role": "short",
+      "identity": {
+        "proc_pid": 549090,
+        "start_ticks": 5495380,
+        "namespace_pid": 9
+      },
+      "shared_inherited_bytes": 33554432,
+      "private_bytes": 50331648,
+      "children_namespace_pids": [],
+      "waited_children": [],
+      "orphaning_root": false,
+      "self_ru_maxrss_diagnostic_bytes": 91893760
+    }
+  ],
+  "external_waits": [
+    {
+      "namespace_pid": 7,
+      "exit_code": 0,
+      "maxrss_upper_bytes": 44695552,
+      "cpu_seconds_nested_diagnostic_not_additive": 0.071047
+    },
+    {
+      "namespace_pid": 9,
+      "exit_code": 0,
+      "maxrss_upper_bytes": 92024832,
+      "cpu_seconds_nested_diagnostic_not_additive": 0.035829
+    },
+    {
+      "namespace_pid": 8,
+      "exit_code": 0,
+      "maxrss_upper_bytes": 66863104,
+      "cpu_seconds_nested_diagnostic_not_additive": 0.029397
+    }
+  ],
+  "per_process_waits": [
+    {
+      "namespace_pid": 7,
+      "exit_code": 0,
+      "maxrss_upper_bytes": 44695552,
+      "cpu_seconds_nested_diagnostic_not_additive": 0.071047
+    },
+    {
+      "namespace_pid": 9,
+      "exit_code": 0,
+      "maxrss_upper_bytes": 92024832,
+      "cpu_seconds_nested_diagnostic_not_additive": 0.035829
+    },
+    {
+      "namespace_pid": 8,
+      "exit_code": 0,
+      "maxrss_upper_bytes": 66863104,
+      "cpu_seconds_nested_diagnostic_not_additive": 0.029397
+    },
+    {
+      "namespace_pid": 10,
+      "exit_code": 0,
+      "maxrss_upper_bytes": 66863104,
+      "cpu_seconds_nested_diagnostic_not_additive": 0.017411
+    }
+  ],
+  "complete_unique_wait_inventory": true,
+  "conservative_upper_bound_rss_sum_bytes": 270446592,
+  "exact_simultaneous_family_peak_bytes": null,
+  "memory_metric": "Sum of per-process final wait4 maxrss upper bounds; shared pages and inherited maxima may be counted repeatedly",
+  "mathematical_inequality": "For a complete fixed process family, sup_t sum_i RSS_i(t) <= sum_i sup_t RSS_i(t) <= sum_i H_i",
+  "applicability": "Only this closed controlled fork tree with every creation and final wait receipt reconciled; not arbitrary unobserved processes or production research commands",
+  "cpu_rule": "Per-process wait CPU is nested and not additive. Use enclosing stage meter CPU once."
+}

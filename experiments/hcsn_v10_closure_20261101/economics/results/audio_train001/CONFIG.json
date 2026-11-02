@@ -1,0 +1,24 @@
+{
+  "study": "historical_audio",
+  "stage": "train",
+  "attempt": 1,
+  "command": [
+    "env",
+    "PYTHONPATH=/tmp/hcsn-torch-runtime",
+    "OPENBLAS_NUM_THREADS=1",
+    "OMP_NUM_THREADS=1",
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v10_closure_20261101.frontend.historical_audio_reference",
+    "--stage",
+    "train",
+    "--output",
+    "experiments/hcsn_v10_closure_20261101/frontend/audio001",
+    "--v9-evidence",
+    "/workspace/scratch/8da28d12955f/recovery-v10/extracted/experiments/hcsn_v9_followup_20261101"
+  ],
+  "timeout_seconds": 300.0,
+  "inner_meter": "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v9_followup_20261101/economics/family_cost.py",
+  "inner_meter_sha256": "85f02df43788eebdd72058b80bce6d2e84e51d4d5816c9a894a107dfa066b80d",
+  "stage_meter_sha256": "d74963bd9260a65f648a63c4d524f166935f884db78294df7ee14fbf887a1231"
+}

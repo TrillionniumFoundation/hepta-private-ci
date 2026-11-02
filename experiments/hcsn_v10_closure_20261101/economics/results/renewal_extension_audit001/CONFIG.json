@@ -1,0 +1,22 @@
+{
+  "study": "persistent_renewal_extension",
+  "stage": "audit",
+  "attempt": 1,
+  "command": [
+    "env",
+    "OPENBLAS_NUM_THREADS=1",
+    "OMP_NUM_THREADS=1",
+    "python",
+    "-m",
+    "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+    "persistent_renewal",
+    "--input",
+    "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001",
+    "--output",
+    "experiments/hcsn_v10_closure_20261101/review/RENEWAL_EXTENSION_RECONSTRUCTION.json"
+  ],
+  "timeout_seconds": 600.0,
+  "inner_meter": "/workspace/scratch/8da28d12955f/hepta-research/experiments/hcsn_v9_followup_20261101/economics/family_cost.py",
+  "inner_meter_sha256": "85f02df43788eebdd72058b80bce6d2e84e51d4d5816c9a894a107dfa066b80d",
+  "stage_meter_sha256": "d74963bd9260a65f648a63c4d524f166935f884db78294df7ee14fbf887a1231"
+}

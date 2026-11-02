@@ -1,0 +1,28 @@
+{
+  "schema": "hcsn-v10-ci-frozen-joint-replay.v1",
+  "passed": true,
+  "inputs_sha256": {
+    "PLAN.json": "cb3ef1333bf4acb8d970324832d5bdaf10966d890519f814d4f1fa2fec6d21cf",
+    "TRAINING_COMPLETE.json": "ad37bd4d04e7c80a8ba5c93937f374141d0e172dd083e4d60681c4f979eb2641",
+    "DATA.json": "6d5b04a7e4e30cfff91fcf9a286ff46b3da9469b0cbee460ade056268e746b56",
+    "test.npz": "cea76d54b9a4e7c7a6678194b6a6a6c5407300cc0d6baaa2b7b069f50c5ac9fc",
+    "fit_101003/weights.npz": "b14a090ecf5eda1f658e63ef180b6d3a0e561afd0b0e4e78302a931537bad01d",
+    "fit_101009/weights.npz": "3fbdadec4789c52ee20aea39f52dbe54b821e659af5221f486c5498196748bc3",
+    "fit_101019/weights.npz": "f1fc29b62609f7f01a7b3e2b618c6020eccbb16ce71b00ed86b7c33228a9a03c",
+    "fit_101021/weights.npz": "f999793d802e455f79d67682742a24636ad44798a16e50a3ca37f3c09979148e",
+    "fit_101033/weights.npz": "9553f90c83c668af96eca4c7905b5d75b5ef8c38e9a13c4846f30e0413412608"
+  },
+  "source_sha256": {
+    "campaign.py": "4f31a5278dabc3baddfe268537c44a39a3a9bcb141a0d0149af126d04491ea16",
+    "joint_model.py": "8497e1692a8543ca1091c526981b8eb182a9674d18d93caa2190f0fd6fa27c73",
+    "ordinary.py": "4f40578e94a3013742eb1d66f78f9e53c015698ece7c340cb6e0d7af510c02e9",
+    "simulator.py": "271403a5dd46bf8412947ca6713b92d9a4bac388cda31b5a07e5a41cd010d142",
+    "test_joint.py": "1ba51337d06d302e102dfecb83837153bfb81e71e4387dba8062fc887931d35e"
+  },
+  "prediction_rows": 30720,
+  "expected_summary_sha256": "e731a0b22480110ca1616920c5d7e5c73d1a50c6179b69d66399f49174ef91f5",
+  "numerical_comparison_count": 95,
+  "numerical_equivalence_passed": true,
+  "scope": "new-host replay of frozen finite-model evaluation; no retraining, no AV qualification",
+  "output_summary_sha256": "2518eb7bab4e41ea069aef6e0ba62d2c7682d3d830645a48946ffeeafa86972b"
+}

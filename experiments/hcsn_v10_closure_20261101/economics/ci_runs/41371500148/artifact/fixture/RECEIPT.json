@@ -1,0 +1,35 @@
+{
+  "schema": "hcsn-v10-private-cgroup-memory.v1",
+  "status": "PASS",
+  "command": [
+    "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+    "experiments/hcsn_v10_closure_20261101/economics/ci_cgroup.py",
+    "fixture"
+  ],
+  "source_commit": "4ccada8d893a5471a39fec998fb3d14fc9728116",
+  "memory_peak_bytes": 62148608,
+  "scope": "dedicated cgroup v2 memory.peak: task plus descendants, kernel memory and charged page cache; not RSS",
+  "device_energy_joules": null,
+  "capability": {
+    "schema": "hcsn-v10-cgroup-capability.v1",
+    "read_only": true,
+    "root": "/sys/fs/cgroup",
+    "unified": true,
+    "controllers": "cpuset cpu io memory hugetlb pids rdma misc dmem",
+    "subtree_control": "cpuset cpu io memory pids",
+    "creation_attempted": false,
+    "exact_family_memory_peak_bytes": null
+  },
+  "gated_before_exec": true,
+  "cleanup_own_group_only": true,
+  "source_interpreter": "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+  "cgroup": "/sys/fs/cgroup/codex-hcsn-v10-2250-84988455e39040ada1ffef1f525829cb",
+  "memory_limit_bytes": 1073741824,
+  "initial_peak_bytes": 0,
+  "final_memory_current_bytes": 368640,
+  "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+  "family_empty_after_exit": true,
+  "command_exit_code": 0,
+  "own_group_removed": true,
+  "wall_seconds": 0.23148092899999995
+}

@@ -1,0 +1,269 @@
+{
+  "schema": "hcsn-v10-independent-review.v1",
+  "candidate_implementations_imported": false,
+  "audit_source_sha256": "a7225f2b367d64b9638bc73b6e44e7b7ef917696f226688f7cd31a5340d1e357",
+  "audit_sources_snapshot": {
+    "av_reconstruction.py": "38dde8e972d2d3285eea34829660b9976395f3a60c19540797b4ff5a2a6ef56d",
+    "frontend_reconstruction.py": "de2e7e66706402b67ae22b464bc0aaa638dc5609c1bd5cf27d033a972c749f08",
+    "independent_audit.py": "a7225f2b367d64b9638bc73b6e44e7b7ef917696f226688f7cd31a5340d1e357",
+    "joint_knot_diagnostic.py": "2636781f87b496981700b9cea51f4d4bed86c74955a003d25d22b274772d313f",
+    "joint_reconstruction.py": "7ff0afaafefa0197122f68911ac7a859738844fef6cf964a243cfafb653eb7be",
+    "renewal_reconstruction.py": "cc36e785fadacfc2d1830575f55b6ec26225f0a37e59260080ef4d1201e74dcc"
+  },
+  "persistent_renewal": {
+    "runs_reconstructed": 1632,
+    "tick_states_reconstructed": 34272,
+    "maximum_hidden_state_error": 0.0,
+    "effects": {
+      "matched": {
+        "D_minus_B": 0.022666666666666665,
+        "D_minus_MLP": 0.02333333333333333,
+        "D_minus_exact_history": 0.0
+      },
+      "hidden_refractory_mismatch": {
+        "D_minus_B": 0.0265,
+        "D_minus_MLP": 0.032749999999999994,
+        "D_minus_exact_history": 0.0
+      }
+    },
+    "candidate_status": [
+      {
+        "seed": 100101,
+        "family": "gru",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100101,
+        "family": "gru",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100101,
+        "family": "ssm",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100101,
+        "family": "ssm",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100101,
+        "family": "mlp",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100101,
+        "family": "mlp",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "gru",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "gru",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "ssm",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "ssm",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "mlp",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "mlp",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100107,
+        "family": "gru",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100107,
+        "family": "gru",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100107,
+        "family": "ssm",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100107,
+        "family": "ssm",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100107,
+        "family": "mlp",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100107,
+        "family": "mlp",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "gru",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "gru",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "ssm",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "ssm",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "mlp",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "mlp",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100113,
+        "family": "gru",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100113,
+        "family": "gru",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100113,
+        "family": "ssm",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100113,
+        "family": "ssm",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100113,
+        "family": "mlp",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100113,
+        "family": "mlp",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      }
+    ],
+    "validation_only_extension_checks": {
+      "only_predeclared_exhausted_candidates_extended": [
+        [
+          100107,
+          "ssm",
+          16
+        ],
+        [
+          100113,
+          "ssm",
+          16
+        ],
+        [
+          100113,
+          "ssm",
+          32
+        ]
+      ],
+      "unchanged_candidate_checkpoint_hashes": 27,
+      "all_training_data_hashes_unchanged": true,
+      "first321_validation_values_exact": true,
+      "new_world_seeds_disjoint": true,
+      "scope": "Additional validation-only budget rule, not the initial registered maximum; repeated prefix CPU charged anew"
+    },
+    "planner_scope": "Actual access chronology and state/probability/head/score replay; saved candidate values checked for decision consistency, full stochastic hypothetical planner not rerun",
+    "scope": "Original finite synthetic perfect-READ renewal process; not raw AV or strong-baseline qualification"
+  },
+  "scientific_adoption_asserted": false
+}

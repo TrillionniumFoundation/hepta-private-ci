@@ -1,0 +1,122 @@
+{
+  "schema": "hcsn-v9-process-family-cost.v1",
+  "command": [
+    "env",
+    "OPENBLAS_NUM_THREADS=1",
+    "OMP_NUM_THREADS=1",
+    "python",
+    "-m",
+    "experiments.hcsn_v10_closure_20261101.review.independent_audit",
+    "confirmation",
+    "--input",
+    "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/confirmation001",
+    "--output",
+    "experiments/hcsn_v10_closure_20261101/review/CONFIRMATION_RECONSTRUCTION.json"
+  ],
+  "source_sha256": "85f02df43788eebdd72058b80bce6d2e84e51d4d5816c9a894a107dfa066b80d",
+  "observer_identity": {
+    "pid": 661165,
+    "state": "R",
+    "ppid": 661130,
+    "start_ticks": 5667741,
+    "getpid": 5
+  },
+  "boundary_begin_ns": 56677464800585,
+  "boundary_end_ns": 56717786936708,
+  "elapsed_seconds": 40.322136123,
+  "sample_interval_seconds": 0.1,
+  "task_cpu_seconds": 33.349700000000006,
+  "measurement_cpu_seconds": 2.992969,
+  "enclosing_observed_cpu_seconds": 36.34266900000001,
+  "cpu_scope": "Disjoint wait4 child subtrees, adopted children included; observer CPU delta added once",
+  "cpu_complete_for_ordinary_waitable_family": true,
+  "wait4_subtrees": [
+    {
+      "namespace_pid": 6,
+      "direct_worker": true,
+      "exit_code": 0,
+      "user_cpu_seconds": 33.104612,
+      "system_cpu_seconds": 0.245088,
+      "cpu_seconds": 33.349700000000006,
+      "largest_process_hwm_bytes": 71528448
+    }
+  ],
+  "task_success": true,
+  "capabilities": {
+    "cgroup": {
+      "available": false,
+      "attributable_memory_peak_bytes": null,
+      "reason": "[Errno 30] Read-only file system: '/sys/fs/cgroup/hcsn-v9-capability-5'"
+    },
+    "energy": {
+      "joules": null,
+      "attributable": false,
+      "counters": {
+        "/sys/class/powercap": {
+          "exists": false,
+          "energy_files": []
+        },
+        "/sys/class/hwmon": {
+          "exists": false,
+          "energy_files": []
+        },
+        "/sys/class/drm": {
+          "exists": false,
+          "energy_files": []
+        }
+      },
+      "reason": "No configured attributable device-energy counter"
+    }
+  },
+  "errors": [],
+  "memory": {
+    "status": "sampled_partial",
+    "samples": 337,
+    "observed_peak_nonatomic_rss_sum_bytes": 84819968,
+    "observed_peak_nonatomic_pss_sum_bytes": 68344832,
+    "samples_with_all_enumerated_members_read": 336,
+    "continuous_complete_family_peak_bytes": null,
+    "complete": false,
+    "seen_processes": [
+      {
+        "identity": {
+          "pid": 661165,
+          "start_ticks": 5667741
+        },
+        "sample_count": 337,
+        "available_samples": 337,
+        "observed_ppids": [
+          661130
+        ],
+        "namespace_pids": [
+          661165,
+          5
+        ]
+      },
+      {
+        "identity": {
+          "pid": 661188,
+          "start_ticks": 5667746
+        },
+        "sample_count": 337,
+        "available_samples": 336,
+        "observed_ppids": [
+          661165
+        ],
+        "namespace_pids": [
+          661188,
+          6
+        ]
+      }
+    ],
+    "limits": [
+      "Enumeration and smaps reads are non-atomic",
+      "Processes born and exited between samples may be absent",
+      "RSS double-counts shared pages; PSS apportions pages shared outside the family",
+      "Observed sums are not a simultaneous physical memory measurement"
+    ]
+  },
+  "historical_preparation_cpu_seconds": null,
+  "economic_advantage_established": false,
+  "sample_sha256": "b5fbee89e3d10e4b32aecabfd37a095146f878eebd0a1c3b8b9aea21cd77249c"
+}

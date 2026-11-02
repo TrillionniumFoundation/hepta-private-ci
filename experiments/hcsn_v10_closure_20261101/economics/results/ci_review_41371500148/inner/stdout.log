@@ -1,0 +1,86 @@
+{
+  "schema": "hcsn-v10-independent-review.v1",
+  "candidate_implementations_imported": false,
+  "audit_source_sha256": "22363992874c802040ceaae4e04dc2fc3caa7f1b55cb60c41ffe57a0a74db661",
+  "audit_driver_identity_basis": "source snapshot at audit start; no end-of-run disk re-read",
+  "audit_sources_snapshot": {
+    "av_reconstruction.py": "38dde8e972d2d3285eea34829660b9976395f3a60c19540797b4ff5a2a6ef56d",
+    "ci_reconstruction.py": "6673f671d1cbe47f81ebfeacef06d172c9231cd73bf00ab80330f466804f8850",
+    "close_av_interfaces.py": "d49885f03f35e6e26968ab124f88430eee7d2b9fb2201a15b2dde766f1909062",
+    "confirmation_reconstruction.py": "272b9f63ffd1749e9ecae1c781ca932e2b153484466c26f269bfd8b5b8ae1374",
+    "constant_reconstruction.py": "913fd719e80dac102f348587f00f7e41dd2c2ada26d07e179aa56daf5b8351f4",
+    "frontend_reconstruction.py": "de2e7e66706402b67ae22b464bc0aaa638dc5609c1bd5cf27d033a972c749f08",
+    "identity_notice.py": "72b20c54b1f2918bd340c2b04def5dcbbc23d6e794a5580172f7682b49aa1794",
+    "independent_audit.py": "22363992874c802040ceaae4e04dc2fc3caa7f1b55cb60c41ffe57a0a74db661",
+    "joint_knot_diagnostic.py": "2636781f87b496981700b9cea51f4d4bed86c74955a003d25d22b274772d313f",
+    "joint_reconstruction.py": "7ff0afaafefa0197122f68911ac7a859738844fef6cf964a243cfafb653eb7be",
+    "renewal_reconstruction.py": "cc36e785fadacfc2d1830575f55b6ec26225f0a37e59260080ef4d1201e74dcc"
+  },
+  "ci": {
+    "recorded_source_commit": "4ccada8d893a5471a39fec998fb3d14fc9728116",
+    "external_run_provenance": {
+      "schema": "hcsn-v10-independently-retrieved-CI-provenance.v1",
+      "run_id": 41371500148,
+      "run_attempt": 1,
+      "head_sha": "4ccada8d893a5471a39fec998fb3d14fc9728116",
+      "conclusion": "success",
+      "status": "completed",
+      "workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41371500148",
+      "source": "Independently fetched GitHub Actions workflow run metadata; archive digest and CRC separately verified in parent DOWNLOAD_VERIFICATION.json"
+    },
+    "external_run_identity_independently_supplied": true,
+    "source_commit_file_sha256": "55135585fff81a42600ed43c404a9d7f0981b117691ea8636ead8e7105215995",
+    "kernel_receipts": {
+      "fixture": {
+        "receipt_sha256": "0f4a43f5b5f99bd5119fe5e072f33fc700c2264eb7883477749686aaef6c9d86",
+        "memory_peak_bytes": 62148608,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0",
+          "sock_throttled": "0"
+        },
+        "command": [
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "experiments/hcsn_v10_closure_20261101/economics/ci_cgroup.py",
+          "fixture"
+        ],
+        "group_removed": true
+      },
+      "joint-memory": {
+        "receipt_sha256": "ca741911a2b1f1d4b71e5770154e23c8f3b7822a9d936475240ead2167923a70",
+        "memory_peak_bytes": 51634176,
+        "memory_events": {
+          "low": "0",
+          "high": "0",
+          "max": "0",
+          "oom": "0",
+          "oom_kill": "0",
+          "oom_group_kill": "0",
+          "sock_throttled": "0"
+        },
+        "command": [
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "-m",
+          "experiments.hcsn_v10_closure_20261101.economics.ci_joint_replay",
+          "--output",
+          "/home/runner/work/_temp/hcsn-v10-memory/joint-replay"
+        ],
+        "group_removed": true
+      }
+    },
+    "frozen_reference_summary_sha256": "e731a0b22480110ca1616920c5d7e5c73d1a50c6179b69d66399f49174ef91f5",
+    "CI_summary_sha256": "a0fad148c44a93277ca927abcd248e23ce4af57da5b91149ce3f2edef82d4543",
+    "summary_numeric_fields_compared": 142,
+    "maximum_summary_numeric_error": 0.0,
+    "raw_predictions_independently_reconstructed": 30720,
+    "maximum_probability_error": 1.1102230246251565e-16,
+    "memory_scope": "Exact recorded cgroup memory-charge peak of this gated frozen evaluation and descendants; not RSS/PSS or unique physical memory",
+    "scope": "One hosted frozen finite-model replay; no retraining/AV/deployment-wide/energy qualification",
+    "device_energy_joules": null
+  },
+  "scientific_adoption_asserted": false
+}

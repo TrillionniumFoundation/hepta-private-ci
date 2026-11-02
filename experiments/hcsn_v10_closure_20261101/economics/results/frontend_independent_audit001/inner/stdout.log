@@ -1,0 +1,187 @@
+{
+  "schema": "hcsn-v10-independent-review.v1",
+  "candidate_implementations_imported": false,
+  "audit_source_sha256": "a7225f2b367d64b9638bc73b6e44e7b7ef917696f226688f7cd31a5340d1e357",
+  "audit_sources_snapshot": {
+    "av_reconstruction.py": "9d4c54bb245dd190d18d7972527d851c08c490550a73cd37eee0489cc8c673d4",
+    "frontend_reconstruction.py": "de2e7e66706402b67ae22b464bc0aaa638dc5609c1bd5cf27d033a972c749f08",
+    "independent_audit.py": "a7225f2b367d64b9638bc73b6e44e7b7ef917696f226688f7cd31a5340d1e357",
+    "joint_knot_diagnostic.py": "2636781f87b496981700b9cea51f4d4bed86c74955a003d25d22b274772d313f",
+    "joint_reconstruction.py": "7ff0afaafefa0197122f68911ac7a859738844fef6cf964a243cfafb653eb7be",
+    "renewal_reconstruction.py": "cc36e785fadacfc2d1830575f55b6ec26225f0a37e59260080ef4d1201e74dcc"
+  },
+  "frontend": {
+    "audio_predictions_recomputed": 432,
+    "score_tables": {
+      "train": {
+        "selected_audio": {
+          "1": {
+            "count": 24,
+            "accuracy": 0.5416666666666666,
+            "nll": 1.3757037154074616
+          },
+          "2": {
+            "count": 24,
+            "accuracy": 0.5833333333333334,
+            "nll": 1.434193786984064
+          },
+          "3": {
+            "count": 24,
+            "accuracy": 0.5833333333333334,
+            "nll": 1.4242096430648787
+          }
+        },
+        "original_common_head_audio_only": {
+          "1": {
+            "count": 24,
+            "accuracy": 0.5,
+            "nll": 1.9966645900566704
+          },
+          "2": {
+            "count": 24,
+            "accuracy": 0.5833333333333334,
+            "nll": 1.4065423719407686
+          },
+          "3": {
+            "count": 24,
+            "accuracy": 0.625,
+            "nll": 1.166070875017868
+          }
+        },
+        "original_common_head_av": {
+          "1": {
+            "count": 24,
+            "accuracy": 0.5833333333333334,
+            "nll": 1.1913102689779629
+          },
+          "2": {
+            "count": 24,
+            "accuracy": 0.9583333333333334,
+            "nll": 0.5244869294341143
+          },
+          "3": {
+            "count": 24,
+            "accuracy": 1.0,
+            "nll": 0.300750526360905
+          }
+        }
+      },
+      "validation": {
+        "selected_audio": {
+          "1": {
+            "count": 12,
+            "accuracy": 0.16666666666666666,
+            "nll": 1.7482559069867192
+          },
+          "2": {
+            "count": 12,
+            "accuracy": 0.3333333333333333,
+            "nll": 1.6466814868893367
+          },
+          "3": {
+            "count": 12,
+            "accuracy": 0.3333333333333333,
+            "nll": 1.6133895850376059
+          }
+        },
+        "original_common_head_audio_only": {
+          "1": {
+            "count": 12,
+            "accuracy": 0.3333333333333333,
+            "nll": 3.0803197200028194
+          },
+          "2": {
+            "count": 12,
+            "accuracy": 0.25,
+            "nll": 2.050459730328789
+          },
+          "3": {
+            "count": 12,
+            "accuracy": 0.3333333333333333,
+            "nll": 1.8722258227195911
+          }
+        },
+        "original_common_head_av": {
+          "1": {
+            "count": 12,
+            "accuracy": 0.3333333333333333,
+            "nll": 2.322536014873465
+          },
+          "2": {
+            "count": 12,
+            "accuracy": 0.3333333333333333,
+            "nll": 1.4816003951243
+          },
+          "3": {
+            "count": 12,
+            "accuracy": 0.3333333333333333,
+            "nll": 1.2879401439137534
+          }
+        }
+      },
+      "test": {
+        "selected_audio": {
+          "1": {
+            "count": 12,
+            "accuracy": 0.4166666666666667,
+            "nll": 1.6020869572892131
+          },
+          "2": {
+            "count": 12,
+            "accuracy": 0.4166666666666667,
+            "nll": 1.5541323896344095
+          },
+          "3": {
+            "count": 12,
+            "accuracy": 0.4166666666666667,
+            "nll": 1.5987190270207672
+          }
+        },
+        "original_common_head_audio_only": {
+          "1": {
+            "count": 12,
+            "accuracy": 0.25,
+            "nll": 2.4798746627418735
+          },
+          "2": {
+            "count": 12,
+            "accuracy": 0.25,
+            "nll": 1.8311045293293546
+          },
+          "3": {
+            "count": 12,
+            "accuracy": 0.25,
+            "nll": 1.8657533918376303
+          }
+        },
+        "original_common_head_av": {
+          "1": {
+            "count": 12,
+            "accuracy": 0.16666666666666666,
+            "nll": 2.0960009176562235
+          },
+          "2": {
+            "count": 12,
+            "accuracy": 0.5,
+            "nll": 1.6676239124443042
+          },
+          "3": {
+            "count": 12,
+            "accuracy": 0.4166666666666667,
+            "nll": 1.8775912111615396
+          }
+        }
+      }
+    },
+    "same_recording_binding_audio_empirical_ceiling": 0.5,
+    "library_package_sha256": "b9bc77d41716de8e2babec5899f3e2c80f2ebacc9ced6553ce6d7ccd2a764518",
+    "library_manifest_files_verified_by_source_owner": 248,
+    "raw_media_recovered": false,
+    "original_v6_or_strong_audio_recovered": false,
+    "new_independent_recordings": 0,
+    "exclusion_ledger_sha256": "629e98854fd8b4f8e608227ef63dd327f84c5a65e2d05f5852f2c7fdecb4b576",
+    "scope": "Recorded finite audio predictions and package status only; upstream feature encoding and external archive completeness not independently proved",
+    "fresh_confirmation_or_frontend_admission_asserted": false
+  },
+  "scientific_adoption_asserted": false
+}

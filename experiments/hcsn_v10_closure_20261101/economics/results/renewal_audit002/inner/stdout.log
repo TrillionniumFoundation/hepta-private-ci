@@ -1,0 +1,243 @@
+{
+  "schema": "hcsn-v10-independent-review.v1",
+  "candidate_implementations_imported": false,
+  "audit_source_sha256": "a815a5e0df7739e92519676d23922edefe6e2143116b1e02f16e910fbc645f16",
+  "audit_sources_snapshot": {
+    "independent_audit.py": "a815a5e0df7739e92519676d23922edefe6e2143116b1e02f16e910fbc645f16",
+    "joint_knot_diagnostic.py": "2636781f87b496981700b9cea51f4d4bed86c74955a003d25d22b274772d313f",
+    "joint_reconstruction.py": "7ff0afaafefa0197122f68911ac7a859738844fef6cf964a243cfafb653eb7be",
+    "renewal_reconstruction.py": "9b9d41fb73a43020b229cdd5d9070cf09033637bb3bb7f0716f54efc96e9456a"
+  },
+  "persistent_renewal": {
+    "runs_reconstructed": 1632,
+    "tick_states_reconstructed": 34272,
+    "maximum_hidden_state_error": 0.0,
+    "effects": {
+      "matched": {
+        "D_minus_B": -0.018666666666666668,
+        "D_minus_MLP": -0.013083333333333332,
+        "D_minus_exact_history": 0.0
+      },
+      "hidden_refractory_mismatch": {
+        "D_minus_B": 0.012666666666666665,
+        "D_minus_MLP": 0.020333333333333335,
+        "D_minus_exact_history": 0.0
+      }
+    },
+    "candidate_status": [
+      {
+        "seed": 100101,
+        "family": "gru",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100101,
+        "family": "gru",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100101,
+        "family": "ssm",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100101,
+        "family": "ssm",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100101,
+        "family": "mlp",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100101,
+        "family": "mlp",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "gru",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "gru",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "ssm",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "ssm",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "mlp",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100103,
+        "family": "mlp",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100107,
+        "family": "gru",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100107,
+        "family": "gru",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100107,
+        "family": "ssm",
+        "width": 16,
+        "budget_exhausted": true,
+        "validation_plateau_stop": false
+      },
+      {
+        "seed": 100107,
+        "family": "ssm",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100107,
+        "family": "mlp",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100107,
+        "family": "mlp",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "gru",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "gru",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "ssm",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "ssm",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "mlp",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100109,
+        "family": "mlp",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100113,
+        "family": "gru",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100113,
+        "family": "gru",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100113,
+        "family": "ssm",
+        "width": 16,
+        "budget_exhausted": true,
+        "validation_plateau_stop": false
+      },
+      {
+        "seed": 100113,
+        "family": "ssm",
+        "width": 32,
+        "budget_exhausted": true,
+        "validation_plateau_stop": false
+      },
+      {
+        "seed": 100113,
+        "family": "mlp",
+        "width": 16,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      },
+      {
+        "seed": 100113,
+        "family": "mlp",
+        "width": 32,
+        "budget_exhausted": false,
+        "validation_plateau_stop": true
+      }
+    ],
+    "planner_scope": "Actual access chronology and state/probability/head/score replay; saved candidate values checked for decision consistency, full stochastic hypothetical planner not rerun",
+    "scope": "Original finite synthetic perfect-READ renewal process; not raw AV or strong-baseline qualification"
+  },
+  "scientific_adoption_asserted": false
+}

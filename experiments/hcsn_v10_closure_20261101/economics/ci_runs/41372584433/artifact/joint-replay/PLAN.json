@@ -1,0 +1,92 @@
+{
+  "schema": "hcsn-v10-finite-joint-retraining.v1",
+  "created_unix": 1793580674.2713792,
+  "source_sha256": {
+    "campaign.py": "4f31a5278dabc3baddfe268537c44a39a3a9bcb141a0d0149af126d04491ea16",
+    "joint_model.py": "8497e1692a8543ca1091c526981b8eb182a9674d18d93caa2190f0fd6fa27c73",
+    "ordinary.py": "4f40578e94a3013742eb1d66f78f9e53c015698ece7c340cb6e0d7af510c02e9",
+    "simulator.py": "271403a5dd46bf8412947ca6713b92d9a4bac388cda31b5a07e5a41cd010d142",
+    "test_joint.py": "1ba51337d06d302e102dfecb83837153bfb81e71e4387dba8062fc887931d35e"
+  },
+  "source_extraction_sha256": "ff7a107c0a6c18df6bc4fa92b26965385f47f3977050cfccaa1b7a9031623b8a",
+  "evidence_role": "development_only_finite_known_renewal_family",
+  "fit_seeds": [
+    101003,
+    101009,
+    101019,
+    101021,
+    101033
+  ],
+  "train_size": 2048,
+  "validation_size": 512,
+  "test_size": 1024,
+  "test_seed": 202611011043,
+  "joint_parameters": {
+    "count": 6,
+    "dynamics": "two log calibration scales on supplied drift/sigma",
+    "content": "four logits of common five-way cyclic Markov transition",
+    "dynamics_bounds": [
+      -0.5,
+      0.5
+    ],
+    "content_logit_bounds": [
+      -8.0,
+      8.0
+    ]
+  },
+  "ordinary_parameters": 197,
+  "ordinary_width": 16,
+  "ordinary_information": "same six-scalar physical packet, same known class-translation equivariance; larger capacity",
+  "joint_l2": [
+    0.0,
+    0.001
+  ],
+  "ordinary_l2": [
+    0.001,
+    0.01
+  ],
+  "optimizer": {
+    "method": "L-BFGS-B",
+    "maxiter": 800,
+    "ftol": 1e-09,
+    "gtol": 1e-06
+  },
+  "selection": "lowest validation NLL then lowest L2; one shared seed initialization per family, test never loaded by train",
+  "modes": [
+    "original",
+    "mean_two_point",
+    "single_transition"
+  ],
+  "arms": [
+    "joint_original",
+    "same_weight_mean_two_point",
+    "joint_mean_two_point",
+    "same_weight_single_transition",
+    "joint_single_transition",
+    "ordinary_mlp"
+  ],
+  "information": "perfect initial revealed class and common gap/horizon/drift/sigma/reset/refractory packet",
+  "labels": "independent IG event times/counts then stochastic public-family content transitions",
+  "joint_training": "final content NLL differentiates through count probability AND learned per-event content transition",
+  "single_transition_scope": "support exactly N=0 or1; learned dense T executes once and may approximate a multi-event marginal",
+  "mean_two_point_scope": "preserves fitted full-law mean, generally changes count shape; piecewise gradients away from integer knots",
+  "primary": "jointly retrained ablation minus jointly retrained full heldout NLL",
+  "secondary": "fixed-full-weight execution ablation, larger ordinary MLP, accuracy and Brier",
+  "cost": "prepare/data/train/evaluate/audit separate metered stages; failed attempts charged and retained",
+  "bootstrap": {
+    "replicates": 2000,
+    "seed": 101943,
+    "unit": "crossed fit and heldout-world resampling"
+  },
+  "limitations": [
+    "known finite renewal family",
+    "shared structurally correct stochastic model family",
+    "constant learned calibration map",
+    "fixed perfect initial observation, one mandatory output",
+    "no action/control net benefit",
+    "no real AV or deep multimodal content network",
+    "ordinary MLP strength remains empirically limited"
+  ],
+  "real_AV_confirmation": false,
+  "production_or_architecture_acceptance": false
+}
