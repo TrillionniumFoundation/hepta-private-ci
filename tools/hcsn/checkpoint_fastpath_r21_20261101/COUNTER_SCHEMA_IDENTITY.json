@@ -1,0 +1,19 @@
+{
+  "inspection": "Allthreeconstructorsinitialize0; advances/observations/writes incrementintegerliterals. NofloatCPUcounterexistsintheseschemas.",
+  "keys": [
+    "propagations",
+    "observations",
+    "writes"
+  ],
+  "schemas": [
+    "hcsn-r15-addressed-state-v1",
+    "hcsn-r16-packed-state-v1",
+    "hcsn-r16-anchored-state-v1"
+  ],
+  "scope": "LocalR21restorerpreflightonly; inheritedmodulesremainunchanged",
+  "sources": {
+    "tools/hcsn/addressed_decision_r15_20261101/planner.py": "2ca6033e52a0f941cd499230b04d9789bc761cf769ddb9a644de9641e09cc833",
+    "tools/hcsn/support_retention_r16_20261101/compression.py": "4ab10b3c945916dc0f7abfdd517cee5cf27eea6e363f76781195a6b6cea35d6a"
+  },
+  "types": "nonnegativeexactPythonint, boolrejected"
+}

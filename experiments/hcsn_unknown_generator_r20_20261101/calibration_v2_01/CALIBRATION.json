@@ -1,0 +1,145 @@
+{
+  "confirmation_opened": false,
+  "grid": {
+    "calibrate": {
+      "context_orbit": {
+        "accepted": 3561,
+        "actual_reads": 984,
+        "before_brier_sum": 450.1043560425003,
+        "errors": 5,
+        "fractional": 266,
+        "fractional_errors": 5,
+        "invalid": 0,
+        "passed": true,
+        "payoff_sum": 3364.6800000000194,
+        "upper_error": 0.004208512394804917,
+        "upper_fractional_error": 0.055366780432991064
+      },
+      "first_order": {
+        "accepted": 3542,
+        "actual_reads": 982,
+        "before_brier_sum": 462.25612170018803,
+        "errors": 7,
+        "fractional": 250,
+        "fractional_errors": 7,
+        "invalid": 0,
+        "passed": true,
+        "payoff_sum": 3338.94000000002,
+        "upper_error": 0.005091915444496185,
+        "upper_fractional_error": 0.0706691760274657
+      },
+      "orbit_first_order": {
+        "accepted": 3521,
+        "actual_reads": 978,
+        "before_brier_sum": 466.2014070770346,
+        "errors": 5,
+        "fractional": 266,
+        "fractional_errors": 5,
+        "invalid": 0,
+        "passed": true,
+        "payoff_sum": 3325.1400000000203,
+        "upper_error": 0.004256254859776342,
+        "upper_fractional_error": 0.055366780432991064
+      }
+    },
+    "calibrate_lag2": {
+      "context_orbit": {
+        "accepted": 27649,
+        "actual_reads": 9190,
+        "before_brier_sum": 4761.668359919654,
+        "errors": 37,
+        "fractional": 582,
+        "fractional_errors": 37,
+        "invalid": 0,
+        "passed": true,
+        "payoff_sum": 25770.84000000087,
+        "upper_error": 0.0020725617963246487,
+        "upper_fractional_error": 0.09677037196177021
+      },
+      "first_order": {
+        "accepted": 26935,
+        "actual_reads": 9073,
+        "before_brier_sum": 5339.447834553115,
+        "errors": 39,
+        "fractional": 328,
+        "fractional_errors": 39,
+        "invalid": 0,
+        "passed": false,
+        "payoff_sum": 25081.48000000077,
+        "upper_error": 0.002218171000341494,
+        "upper_fractional_error": 0.17640515707166043
+      },
+      "orbit_first_order": {
+        "accepted": 26349,
+        "actual_reads": 9041,
+        "before_brier_sum": 5429.533075676807,
+        "errors": 49,
+        "fractional": 391,
+        "fractional_errors": 49,
+        "invalid": 0,
+        "passed": false,
+        "payoff_sum": 24481.380000000656,
+        "upper_error": 0.002725289509714779,
+        "upper_fractional_error": 0.17830251031115135
+      }
+    },
+    "calibrate_reverse": {
+      "context_orbit": {
+        "accepted": 7129,
+        "actual_reads": 2220,
+        "before_brier_sum": 1076.1506376453174,
+        "errors": 15,
+        "fractional": 398,
+        "fractional_errors": 15,
+        "invalid": 0,
+        "passed": true,
+        "payoff_sum": 6652.279999999849,
+        "upper_error": 0.004108661310322242,
+        "upper_fractional_error": 0.07234716295277716
+      },
+      "first_order": {
+        "accepted": 7198,
+        "actual_reads": 2145,
+        "before_brier_sum": 1029.0604975354745,
+        "errors": 15,
+        "fractional": 488,
+        "fractional_errors": 15,
+        "invalid": 0,
+        "passed": true,
+        "payoff_sum": 6735.719999999847,
+        "upper_error": 0.004069314903202469,
+        "upper_fractional_error": 0.059202735784410716
+      },
+      "orbit_first_order": {
+        "accepted": 7067,
+        "actual_reads": 2197,
+        "before_brier_sum": 1067.382299938794,
+        "errors": 15,
+        "fractional": 394,
+        "fractional_errors": 15,
+        "invalid": 0,
+        "passed": true,
+        "payoff_sum": 6598.639999999851,
+        "upper_error": 0.004144670753928196,
+        "upper_fractional_error": 0.07306813989330749
+      }
+    }
+  },
+  "original_r20_54_bound_gate": "FAILED; unchanged; not pooled",
+  "schema": "hcsn.r20.power-calibration.v2",
+  "selected": {
+    "context_orbit": {
+      "calibration_gate_passed": true,
+      "threshold": 0.95
+    },
+    "first_order": {
+      "calibration_gate_passed": false,
+      "threshold": 0.95
+    },
+    "orbit_first_order": {
+      "calibration_gate_passed": false,
+      "threshold": 0.95
+    }
+  },
+  "simultaneous_delta": 0.002777777777777778
+}

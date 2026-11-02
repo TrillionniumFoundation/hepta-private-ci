@@ -1,0 +1,17 @@
+{
+  "schema": "checkpoint-r21-independent-admission-v2",
+  "classification": "Prospectively declared bounded correctness/ownership engineering; no resource adoption confirmation",
+  "namespace": 2100993,
+  "model": "hx fitted model from the immutable 151101 training archive in DEVELOPMENT_PROTOCOL.json",
+  "representations": ["full", "block", "anchored"],
+  "normal_admission": "Exact normal checkpoint round-trip and two-direction actor/payload/export detachment for each representation",
+  "counter_negative_cases_per_representation": ["bool", "list", "dict", "float", "nan", "negative", "missing_key", "extra_key", "list_map", "null_map"],
+  "additional_preflight_cases": ["unknown schema for each representation", "R15 list projection", "R15 mismatched projection", "R15 list method", "R15 unknown method", "packed expected-projection mismatch", "anchored expected-projection mismatch"],
+  "inherited_validation_cases_per_representation": ["bad inner checksum", "negative probability with recomputed checksum", "negative clock with recomputed checksum"],
+  "actual_executor_cases_per_representation": ["fresh post-restore operation-counter mutation rejected", "rechecksummed malformed returned checkpoint rejected before inherited restore", "rechecksummed malformed cold-resume checkpoint rejected before inherited restore"],
+  "expected_cases": 60,
+  "gates": {"all_declared_cases": true, "invalid_preflight_delegations": 0, "inherited_validator_delegations_per_case": 1, "normal_detachment": true, "post_restore_guard_rejections": 3, "postpersist_caller_rejections": 3, "cold_resume_caller_rejections": 3},
+  "nan_scope": "A direct Python-object preflight control; canonical JSON cannot encode NaN. Record its type/repr instead of fabricating valid canonical wire bytes.",
+  "freeze_rule": "Do not execute this protocol before the root remote source/protocol freeze acknowledgement; generate the engineering world afterwards.",
+  "production_activation": false
+}

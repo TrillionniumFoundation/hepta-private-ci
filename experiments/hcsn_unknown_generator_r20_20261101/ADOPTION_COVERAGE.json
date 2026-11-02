@@ -1,0 +1,23 @@
+{
+  "schema": "hcsn.r20.prospective-adoption-coverage.v1",
+  "declared_before_new_formal_worlds": true,
+  "registered_v2_count_risk_gate_unchanged": true,
+  "purpose": "Separate adoption-coverage subgate; do not convert rarefractional-count researchqualification into broaduncertaincoverage or modeladoption.",
+  "fractional_rate_floor": 0.03125,
+  "minimum_fractional_count": 32,
+  "risk_limit": 0.1,
+  "reference": {
+    "study": "R19 content study",
+    "minimum_registered_fractional_answers": 32,
+    "registered_confirmation_worlds": 1024,
+    "derived_sample_fraction": 0.03125,
+    "scope_flag": "This is a NEWprospective adoptionrate floor motivatedby32/1024. It is NOT a retroactive claim that R19registered a universalrateformula, nor proofR19andR20populations/performance are matched. R20V2registered count/risk gate remains unchanged and separatelyreported."
+  },
+  "panels": ["confirm", "reverse", "lag2", "relabeled_lag2", "lag2_skip"],
+  "arms": ["context_orbit", "orbit_first_order", "first_order", "feasible_orbit_first_order", "feasible_first_order"],
+  "evaluation": "Eachpanel/arm separately: registeredresearchgate TRUE (calibrationqualified, zeroinvalid/supportloss, >=32fractional, empiricalupper95fractionalANDoverallrisk<=.10) AND fractionalaccepted/attemptedworlds>=.03125. Reportcount, rate, totalanswercoverage andriskbounds, notcountalone. Nearpointmass-only/all-abstain cannotqualifyuncertaincoverage.",
+  "freeze": "Rootbindsthisfile andadoption_coverage.py togetherwithPOSTCALIBRATION_V2_FREEZE beforeanynewformalworld. No change tosampling, models, OOD, thresholds, actualREADs, fees or registeredbootstrap/gates.",
+  "interpretation": "A passingcoverage/risk subgate alone is not task superiority, netcostbenefit, arbitraryunknownlawrobustness, realAV, fullmodeladoption or productionqualification. No acrosspanel/exactfinitesampleconfidenceclaim.",
+  "all_blockers_closed": false,
+  "production_activation": false
+}

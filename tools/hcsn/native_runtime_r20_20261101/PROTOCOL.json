@@ -1,0 +1,41 @@
+{
+  "schema": "hcsn-native-runtime-r20-v1",
+  "baseline_commit": "ede941c81edaf246486c88725a8a921bf70279ec",
+  "classification": "Bounded Linux single-host actual numerical owner and provider integration; not a production model admission",
+  "formal_namespace": 20110471,
+  "formal_worlds": 16,
+  "formal_native_financial_worlds": 4,
+  "world_population": "Four declared finite laws (two HX-parameterized and two unconstrained), each with four fresh Dirichlet(.8) dense priors and causal sampled paid provider observations. Frozen namespace before fixture generation.",
+  "actions": ["PROP 110ms", "READ 80ms fee25", "RESET 60ms", "REFRESH 120ms fee70", "PROP 250ms", "MISSING 70ms", "READ 90ms fee25"],
+  "semantics": "RESET maps content mass to recovery indices32..35, then propagates the FULL supplied duration. PROP/MISSING propagate full duration. READ/REFRESH propagate full duration then condition on actual durable provider receipt. Integer-ns clocks and fees; owner receives no catalog path, tokens or successor state tape.",
+  "schedules_per_world": [
+    ["none", "none"],
+    ["owner_initialized", "none"],
+    ["owner_prepared:1", "none"],
+    ["owner_received:1", "none"],
+    ["owner_computed:1", "none"],
+    ["owner_committed:1", "none"],
+    ["owner_committed:2", "none"],
+    ["none", "provider_effect_committed:1"],
+    ["owner_received:1", "provider_reply_published:1"]
+  ],
+  "native_financial_population": "Four fixed (sigma,liquidity,maturity) profiles with maturity1.3. Owner MODEL contains ONLY three parameters; Rust constructs Q/E/prior and static financial boundary. Independent R15Law constructs reference matrices; fresh actual token realizations after freeze. This is a finite static law, not a continuum financial/neural PDE.",
+  "cases": 180,
+  "negative_and_intervention_cases": ["missing owner with provider effects", "missing provider with owned receipts", "corrupt owner checksum", "changed model", "changed plan", "duplicate opid", "changed provider catalog", "corrupt provider checksum", "invalid catalog token", "changed executable artifact with old plan", "changed executable artifact and new plan with old owned checkpoint", "identical executable bytes relocated to another path", "cached reply plus mismatched request and malformed wire", "impossible observation with explicitly paid pending effect", "same public model/plan with changed actual provider token"],
+  "gates": {
+    "all_valid_cases_exit_zero": true,
+    "same_world_recovery_owner_bytes_exact": true,
+    "same_world_recovery_provider_bytes_exact": true,
+    "final_state_independent_scipy_maximum_absolute_difference": 2e-11,
+    "mass_maximum_absolute_difference": 4e-11,
+    "full_cursor_clock_receipts_fee_binding": true,
+    "no_duplicate_provider_charge": true,
+    "all_negative_and_intervention_cases": 15,
+    "actual_token_posterior_change_minimum": 0.01
+  },
+  "billing_scope": "Owner charged field counts APPLIED receipts. An impossible paid observation leaves durable owner pending index and separately paid provider receipt. Such negative case is not successful completion; paid pending cost25 is recorded rather than charged zero or omitted.",
+  "cost_scope": "Outer wait4 full worker including imports, fixture generation, SciPy reference, all native descendants, negative cases, and raw writes. Inner process usage is retained but not added again. Build, development, independent audit, and transfer costs separate; no full-project or joules claim.",
+  "retained_open": ["native financial construction outside the registered three-parameter finite profile", "continuous financial PDE/free boundary", "parameter gradients", "policy learning/analytic D-B gain", "cross-host authenticated transport", "hostile filesystem writers", "paired owner/provider rollback without external witness", "arbitrary mid-fsync or machine power-loss", "real multimodal binding", "model migration across changed executable artifacts", "production model lifecycle", "GPU/energy/full-cost adoption"],
+  "production_activation": false,
+  "all_blockers_closed": false
+}

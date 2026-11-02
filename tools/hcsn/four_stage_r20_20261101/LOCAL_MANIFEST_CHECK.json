@@ -1,0 +1,50 @@
+{
+  "schema": "hcsn.r20.local-original-manifest-check.v1",
+  "components": [
+    {
+      "component": "tools/hcsn/native_financial_r20_20261101",
+      "manifest_sha256": "bd7263016a631cc0a91098dad6220cbcbbe77145387a4354000e21dfe54b6e98",
+      "records": 46,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "component": "tools/hcsn/native_runtime_r20_20261101",
+      "manifest_sha256": "0dcae64e78c0341bd4443c57f6af2be48d80b9ab5d1f3a8e7c4e8a4d7441f2a0",
+      "records": 7923,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "component": "tools/hcsn/continuous_task_r20_20261101",
+      "manifest_sha256": "bcdd1a119816b504f5731a21dadc3b9cd06605bc189bf20e31a0df438c4aa1ab",
+      "records": 237,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "component": "tools/hcsn/planner_r20_20261101",
+      "manifest_sha256": "3b1b421482354ffcc9e418da05dcbfdf36789a2f380f047070efcde21e5b20b5",
+      "records": 1035,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "component": "experiments/hcsn_unknown_generator_r20_20261101",
+      "manifest_sha256": "96c44642779e39ff0921cb7db241609a03c354b586ee44746524fb50a705b15b",
+      "records": 793,
+      "passed": true,
+      "errors": []
+    },
+    {
+      "component": "tools/hcsn/checkpoint_fastpath_r21_20261101",
+      "manifest_sha256": "b6e77a97a22b8e572ebd4086c72f5e868c64a0a9fc727ee5c624fc69bfefbb6c",
+      "records": 498,
+      "passed": true,
+      "errors": [],
+      "review": "Independent read-only size/SHA256 validation; no execution rerun"
+    }
+  ],
+  "passed": true,
+  "scope": "Byte and size verification against original component manifests; transport additions are intentionally separate."
+}

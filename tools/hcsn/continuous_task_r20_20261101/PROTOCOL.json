@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn-r20-fixed-mesh-directional-protocol-v1",
+  "baseline_commit": "ede941c81edaf246486c88725a8a921bf70279ec",
+  "classification": "Prospective numerical verification of one-sided directional derivatives at actual fixed-mesh task ties; not the old smooth full-gradient gate",
+  "config_changes": {
+    "horizon": 1.0, "recovery": 0.25, "reset_x": 0.625,
+    "wait_cost": 0.0, "recovery_cost": 0.0,
+    "reset_fee": [0.0, 0.0], "reward_base": [0.5, 0.5],
+    "reward_amplitude": [0.0, 0.0],
+    "content_transition": [[0.75, 0.25], [0.25, 0.75]]
+  },
+  "meshes": [[0.5, 0.125], [0.25, 0.0625]],
+  "direction_seed": 2020110248,
+  "directions_per_family": 24,
+  "coordinate_scales": [0.3, 0.04, 0.03, 0.4, 0.04, 0.04, 0.25, 0.25, 0.15, 0.15, 0.3, 0.3, 0.4],
+  "steps": [0.0001, 0.00003],
+  "affine_derivative_tolerance": 0.0000001,
+  "joint_remainder_bound": 5.0,
+  "algebra_tolerance": 0.0000000001,
+  "requirements": [
+    "9 independent exact scalar/coupled/mixed LCP controls at both fixed one-sided steps plus 4 max controls",
+    "24 fresh feasible affine directions and 24 fresh joint coefficient directions on both meshes; all 96 cases and 192 one-sided differences retained",
+    "Affine family changes rewards/costs/fees only: exact positive-homogeneous task law in real arithmetic",
+    "Joint family changes all thirteen coordinates but operator sigma/transition/reset-position/slope derivatives are silent to first order at this constant base; no all-thirteen nonzero-gradient claim",
+    "Every complete numeric array retained losslessly in bounded gzip files, including failures",
+    "Positive homogeneity checked in every case, actual delayed-admission nonadditivity checked on both meshes",
+    "Original R19 failed original and followup campaigns remain false and separate",
+    "10 infeasible or malformed directions must reject; generic numerical near-ties remain explicitly unqualified"
+  ],
+  "retained_open": ["unresolved generic numerical tie certification", "moving recovery/horizon/domain derivatives", "continuum directional convergence", "full financial/neural gradients", "core D-B", "real multimodal binding", "production/GPU/energy"],
+  "all_blockers_closed": false,
+  "production_activation": false
+}

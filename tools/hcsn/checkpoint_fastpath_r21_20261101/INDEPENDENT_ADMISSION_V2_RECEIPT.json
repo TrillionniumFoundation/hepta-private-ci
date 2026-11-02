@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "cases": 60,
+  "raw_sha256": "fbebd8f4871d7462bab80b6b1ffd78358b5dee377ce93469647d4d071dbd917e",
+  "gzip_sha256": "9913abd5a3f631a1052600ae1f57bdf202e692c6fba85a3ae7f0f9e3a1a0da73",
+  "counts": {
+    "normal_detachment": 3,
+    "bool": 3,
+    "list": 3,
+    "dict": 3,
+    "float": 3,
+    "nan": 3,
+    "negative": 3,
+    "missing_key": 3,
+    "extra_key": 3,
+    "list_map": 3,
+    "null_map": 3,
+    "unknown_schema": 3,
+    "projection_list": 1,
+    "projection_mismatch": 1,
+    "method_list": 1,
+    "method_unknown": 1,
+    "inner_checksum": 3,
+    "negative_probability": 3,
+    "negative_clock": 3,
+    "post_restore_guard": 3,
+    "postpersist_preflight": 3,
+    "cold_resume_preflight": 3,
+    "packed_projection_mismatch": 2
+  },
+  "source_publication": {
+    "readback_verified": true,
+    "source_commit": "df35a6d3869cbcafce8e15b9e40d4bcdd1164439",
+    "manifest_sha256": "9931324f4aa5c20daeb6b4340df7f14943680ed3c68655f8d3732583aa037112"
+  },
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 taskset -c 0-6 python -m tools.hcsn.checkpoint_fastpath_r21_20261101.independent_admission_v2",
+  "observed_exit_code": 0,
+  "cost_scope": "Recorded parent_cpu_seconds starts after imports; it is not a full independent-process or model-adoption cost. No runtime advantage inferred."
+}

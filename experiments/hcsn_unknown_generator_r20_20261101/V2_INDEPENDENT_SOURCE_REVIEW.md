@@ -1,0 +1,46 @@
+# Independent review of the R20 V2 power study
+
+The statistical and scientific design is coherent within its declared finite content-law populations. The original 54-bound calibration remains failed; choosing `.95` after inspecting that original calibration is disclosed. This review does not turn either source correctness or greater sample size into a claim that the population risk is below 10%.
+
+## Conditional fresh-sample calibration
+
+Condition on the original training, OOD and failed calibration data. The three fitted models, their OOD cutoffs and the newly fixed threshold are then fixed functions of those old data. The V2 stratum samples use a separate seed and one query per independently sampled generator. For each fixed policy/stratum, accepted errors and fractional-accepted errors can therefore be checked with their separate binomial conditional risks. All three models × three strata × two risks produce 18 bounds; the `.05/18` union allocation supports the stated simultaneous calibration contract under the declared independent sampling assumptions.
+
+There is no fresh threshold search, sample-size increase after inspection, pooling with the old calibration, or stopping when a bound first passes. The fixed counts are 4,096 mixed, 8,192 reverse and 32,768 lag-two generators. Each model must pass both risks and the fractional-count condition in every stratum. The original failure is not evidence that the population risk necessarily exceeds 10%; its point estimates and wide uncertainty must remain distinct.
+
+`world_v2.py` and `world_confirm_v2.py` preserve the original sampler logic with different seeds and explanatory module text. The original R20 confirmation seed is not called by the V2 entry points. The powered formal counts were chosen using the old calibration's observed fractional rates and fixed before new V2 cases; this is legitimate prospective power planning, not untouched planning. The reverse/lag-two families themselves are explicitly development/training populations. Label-transport follows a declared symmetry assumption; the separate lag-two `+2` structural shift has no reliability guarantee inherited from known-family calibration.
+
+## Baselines, actions and formal statistics
+
+All three scientific fixed-`.95` rows are retained. The two additional feasible-policy rows derive their threshold from their own new calibration status before formal execution: `.95` if qualified, otherwise the original near-point-mass threshold. The latter policy does not inherit the failed fixed-`.95` calibration, does not acquire a universal reliability guarantee, and cannot pass the uncertain-coverage gate through all-abstention or zero fractional answers.
+
+The fixed scientific model comparison is explicitly diagnostic when its control failed calibration. The separate feasible-policy utility comparisons are predeclared, use the same raw prefix, query, fitted model, OOD cutoff and paid READ opportunities, and do not choose a preferred control after seeing formal outcomes. The immutable posterior supports evaluating both threshold policies without modifying the fixed scientific row. Each policy still executes its own indexed READ/STOP/abstention and pays its own actual declared fee.
+
+The formal sampling unit is the generator, with its four dependent worlds retained together. Every model/policy shares the same cluster-resample indices. Zero accepted denominators become risk one. The bootstrap uses batches of 64 indices and one coordinate vector at a time, avoiding a `4096 × generators × 9` allocation. Its confidence statements remain nominal per-panel empirical bootstrap statements, not simultaneous finite-sample guarantees across all panels.
+
+The original minimum of 32 fractional accepted answers remains a count gate. With a powered 32,768-world panel, that count could represent only about 0.098% of attempts. Reports should retain fractional counts and rates alongside total answer coverage; passing the declared count condition is not evidence of broad uncertain-answer coverage or model adoption. This is an interpretation boundary, not a post hoc change to the registered gate.
+
+An independent multiplicity-count contraction was compared with the actual bounded bootstrap on a 23-cluster, five-arm, 4,096-draw synthetic fixture. Maximum difference was `3.33e-16`, including all three paired-control comparisons; the zero-denominator rule also passed. No content-world generator was called for that fixture. The independent formal auditor uses this different contraction route and does not import the candidate code.
+
+## Observed launch failure and accounting repair
+
+The first V2 launch under `cfaf44d9243e04b536ac6ad2b81c5e8dfb882f25` failed with `ENOSPC` at the coordinator output-directory creation, before any worker or content-world call. The old wrapper then tried to read a nonexistent worker ledger and failed without saving its measured CPU receipt. That old attempt's exact cost must remain unknown rather than zero; its trace/source belong to the preserved failed attempt.
+
+The prospective revision adds `process_guard.py`. `workers()` catches ordinary directory/log/Popen failures and reaps all known launched children in its `finally` block. It emits custody records before attempting exclusive disk writes. `outer()` constructs the measured `wait4` cost before reading the optional worker ledger; a missing ledger retains measured total CPU with a null worker sum and fails closed. Both calibration and confirmation entry points are wired to that helper. The actual guard fixture includes normal launches, a partial second-Popen failure, missing worker ledgers and missing receipt-directory writes, using five actual child processes. This is a suitable repair for the observed failure class without changing laws, samples, thresholds, models or OOD cutoffs.
+
+The repaired accounting covers ordinary caught failures and normally waited descendants. It explicitly does not claim asynchronous coordinator-SIGKILL/orphan-cost closure. Worker CPU is already included in the outer waited-family cost and must not be added again. Maximum process RSS is not concurrent aggregate family RSS; the latter remains null. Outer-launcher self cost, development/audits, GPU and attributable energy are outside the stated campaign cost.
+
+## Independent executable checks
+
+- `independent_v2_calibration_check.py` streams all raw archives, validates hashes and sequential generator identities, independently replays owner targets, alias/mask/READ/fee/proper-score fields, reconstructs counts, and inverts all 18 CP bounds with finite-binomial log-CDF bisection without candidate or SciPy risk imports.
+- `independent_v2_confirmation_check.py` streams every policy and cluster-stat record, checks the feasible-control mapping, reconstructs every registered bootstrap draw by multiplicity contraction, and checks reported confidence bounds, paid utility differences, gates and process-family accounting without candidate imports or generator calls.
+
+These scripts require completed successful phase artifacts. A prepared script or source review is not an executed calibration or confirmation audit. The four-world one-READ identification limit remains valid: finite declared-population qualification cannot establish universal 90% reliable fractional answers over arbitrary unseen laws. No analytic-core D−B, real audiovisual binding, production activation or complete-cost model adoption conclusion follows from this ordinary-reference study.
+
+## Audit dependency publication boundary
+
+After formal execution began, review found that the remotely bound confirmation auditor imports `owner_check` from `independent_v2_calibration_check.py`, while that helper was not listed in `POSTCALIBRATION_V2_FREEZE.json` and a GitHub fetch at the preformal commit `31f0646ebb18af9860cee7d252fd99db269f7536` returned 404. The current helper SHA256 exactly matches the checker SHA recorded in the executed preformal calibration audit (`7ef2949b35d7f61e393b6aa975d3adca365b55c3f7ec67ea6cde3215f7072c2e`). No helper, frozen entry point, scientific source, model or decision changed during this discovery.
+
+This is a real transitive audit-publication omission. The recorded local identity is useful custody evidence, but must not be called a complete remote transitive audit freeze before formal data. The appropriate correction is publication of the unchanged helper and an explicit after-start dependency-binding addendum. It does not require rewriting the original scientific freeze/publication or resampling any worlds. `V2_AUDIT_DEPENDENCY_REVIEW.json` records the exact observed gap; final repository reproducibility requires the missing helper to be present.
+
+The unchanged helper was subsequently retrieved successfully from `e1c32010652ced52662c67ef76a5b0dae112618c`. Its remote bytes exactly matched the local helper and the previously recorded SHA256. `V2_AUDIT_DEPENDENCY_DELIVERY_CHECK.json` records that independent readback. This resolves the missing-file delivery problem while preserving the original 404 observation and the fact that remote publication occurred after formal execution began. The scientific inputs and original frozen metadata were not changed.

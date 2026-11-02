@@ -1,0 +1,44 @@
+{
+  "observed": true,
+  "cases": [
+    {
+      "memory": "full",
+      "malformed_counter_checkpoint_accepted": true,
+      "before": [
+        4
+      ],
+      "after": [
+        4,
+        99
+      ],
+      "snapshot_aliases_actor": true
+    },
+    {
+      "memory": "block",
+      "malformed_counter_checkpoint_accepted": true,
+      "before": [
+        4
+      ],
+      "after": [
+        4,
+        99
+      ],
+      "snapshot_aliases_actor": true
+    },
+    {
+      "memory": "anchored",
+      "malformed_counter_checkpoint_accepted": true,
+      "before": [
+        4
+      ],
+      "after": [
+        4,
+        99
+      ],
+      "snapshot_aliases_actor": true
+    }
+  ],
+  "classification": "Inherited malformed-state validation gap in frozen R15/R16 restore, not introduced by snapshot caching.",
+  "proof_boundary": "Normal internally generated counters are integer scalars and isolated. All-accepted-input alias isolation or structural immutability is not claimed.",
+  "source_sha256": "184f2cdff8678d1a2fba7d364934437e69929c576857a156ec23ed9bdfd67899"
+}

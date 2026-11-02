@@ -1,0 +1,79 @@
+{
+  "schema": "hcsn.r20-r21.integrated-status.v1",
+  "baseline_commit": "ede941c81edaf246486c88725a8a921bf70279ec",
+  "all_blockers_closed": false,
+  "production_activation": false,
+  "model_adoption": false,
+  "passed_scopes": [
+    "bounded_native_three_parameter_constructor",
+    "constant_reward_exact_tie_directional_profile",
+    "trusted_local_live_numerical_owner_cold_and_paid_action_recovery",
+    "all_query_durable_accounting_and_exact_semantics",
+    "r21_strict_admission_and_cold_correctness",
+    "content_fixed_N_full_raw_and_bootstrap_replay"
+  ],
+  "failed_gates": {
+    "full_parameter_directional_both_step": {
+      "pass": 30,
+      "total": 78
+    },
+    "r20_original_cpu": {
+      "failed_groups": 1,
+      "total": 48
+    },
+    "r20_joint_resource": {
+      "failed_groups": 10,
+      "total": 48
+    },
+    "historical_investment_amortization": false,
+    "content_registered_panels": {
+      "pass": 4,
+      "total": 5
+    },
+    "content_new_coverage_subgate": {
+      "pass": 3,
+      "total": 5
+    },
+    "content_reverse_brier_nondegradation": false
+  },
+  "blockers": [
+    {
+      "id": "continuous_free_boundary",
+      "status": "open",
+      "required": "General continuous-law/free-boundary validation beyond fixed finite profile"
+    },
+    {
+      "id": "complete_gradients",
+      "status": "open",
+      "required": "All declared coordinates, nonconstant rewards and numerical tie admission"
+    },
+    {
+      "id": "exclusive_core_contribution",
+      "status": "open",
+      "required": "A genuinely distinct mechanism under matched information and budget; exact same-law finite profile has D-B=0"
+    },
+    {
+      "id": "content_generalization",
+      "status": "open",
+      "required": "Label transport, multi-missingness, unseen structural families and open-domain long-distance cross-modal binding"
+    },
+    {
+      "id": "quality_cost_joint_adoption",
+      "status": "open",
+      "required": "Every registered group passes quality/CPU/latency/throughput/memory gates with full investment accounting"
+    },
+    {
+      "id": "gpu_energy",
+      "status": "open",
+      "required": "Real attributable GPU and joule measurements under matched conditions"
+    },
+    {
+      "id": "production_ownership",
+      "status": "open",
+      "required": "Authenticated cross-host/version lifecycle, external rollback witness and actual power-loss/production qualification"
+    }
+  ],
+  "historical_auditor_dependency_complete_remote_prefreeze": false,
+  "final_auditor_dependency_delivery_gap_resolved": true,
+  "r21_formal_performance_campaign_run": false
+}

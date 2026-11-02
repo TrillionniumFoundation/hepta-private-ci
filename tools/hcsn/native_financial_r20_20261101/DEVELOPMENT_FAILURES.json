@@ -1,0 +1,13 @@
+{
+  "attempts": [
+    {
+      "stage": "first verifier startup",
+      "command": "python -m tools.hcsn.native_financial_r20_20261101.verify --output /tmp/hcsn-r20-financial-development01 --namespace 202011001",
+      "exit_code": 1,
+      "error": "ModuleNotFoundError: No module named mpmath",
+      "scientific_cases_opened": false,
+      "cpu_seconds": null,
+      "resolution": "Reuse existing /tmp/hcsn-mpmath package via PYTHONPATH; no scientific source or gate change. First unmetered smoke Rust compile also excluded from reported full-project costs."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "all_blockers_closed": false,
+  "binary_sha256": "1e91a310d82ea845d7149e8a2c9aa90a23c311a0644e05754001aaf6d5779a9d",
+  "cases": 72,
+  "cdf_cases": 129,
+  "child_cpu_seconds": 0.9780149999999999,
+  "cost_scope": "recorded verifier/build/child interval; excludes final summary serialization and unmetered first smoke compile; lower bound",
+  "gates": {
+    "high_precision_boundary": true,
+    "model": true,
+    "no_valid_failure": true,
+    "normal_tail": true,
+    "prior_mass": true,
+    "rejections": true,
+    "row_mass": true
+  },
+  "maxima": {
+    "boundary_vs_mp": 2.842170943040401e-14,
+    "cdf_relative": 3.606270299190449e-15,
+    "model_vs_r12": 1.1652900866465643e-12,
+    "prior_mass": 0.0,
+    "row_mass": 1.7763568394002505e-15
+  },
+  "namespace": 202011017,
+  "parent_cpu_seconds": 1.0997809100000002,
+  "passed": true,
+  "production_activation": false,
+  "raw_sha256": "51c03bc9cd41432c684bce4da8642f4895284bbca198044943c8dfa7d6dc9d38",
+  "source_sha256": {
+    "PROTOCOL.json": "c1772fecbd3efcb1370707d85cb842f9199be68d1afdc1ff5e7936c92a460cc9",
+    "financial.rs": "4b3d60b3aa3a56387bb07efb9ff9024a1634493dbecbd8d7c682cdd1bf5f57b4",
+    "main.rs": "014f85b401c17c01db234656da60406ce47f72f8f3b3f9982624702c0b1fa737",
+    "verify.py": "b4556d97bf720063dc9e520b67e88c901d45885276149fe688bfb582d9a5836b"
+  },
+  "wall_seconds": 6.880725624003389
+}

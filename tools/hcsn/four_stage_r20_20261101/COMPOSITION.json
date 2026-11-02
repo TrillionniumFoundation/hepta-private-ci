@@ -1,0 +1,135 @@
+{
+  "schema": "hcsn.r20-r21.composition.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_commit": "ede941c81edaf246486c88725a8a921bf70279ec",
+  "baseline_tree": "e544ec6a3e710f597b4ad94edae73cb7b595288f",
+  "pinned_base_branch": "research/hcsn-r20-four-stage-base-20261101",
+  "integration_branch": "research/hcsn-r20-four-stage-20261101",
+  "components": [
+    {
+      "key": "r20-native-financial",
+      "branch": "research/hcsn-r20-native-financial-20261101",
+      "head": "953e48da1f424c373c4db9eb0b12401ec9e4cd81",
+      "tree": "6b9d109148e7caf14461bb63f3534c780195ad4d",
+      "paths": 47,
+      "pr": 4605,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4605",
+      "base": "research/hcsn-r20-four-stage-base-20261101",
+      "base_sha": "ede941c81edaf246486c88725a8a921bf70279ec"
+    },
+    {
+      "key": "r20-live-runtime",
+      "branch": "research/hcsn-r20-live-runtime-20261101",
+      "head": "1e8b5d444b2675529c6850fe440a7f0669cd4002",
+      "tree": "3a279470d8b545e158eef89ddc104b37b5d1f9f9",
+      "paths": 54,
+      "pr": 4606,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4606",
+      "base": "research/hcsn-r20-native-financial-20261101",
+      "base_sha": "953e48da1f424c373c4db9eb0b12401ec9e4cd81"
+    },
+    {
+      "key": "r20-directional",
+      "branch": "research/hcsn-r20-directional-20261101",
+      "head": "4285d7faf470f93665b3663e1bc6a7f8be2014d5",
+      "tree": "6b8f2eda729109451c2a84a4c285aedca14f3abe",
+      "paths": 59,
+      "pr": 4607,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4607",
+      "base": "research/hcsn-r20-four-stage-base-20261101",
+      "base_sha": "ede941c81edaf246486c88725a8a921bf70279ec"
+    },
+    {
+      "key": "r20-planner",
+      "branch": "research/hcsn-r20-planner-20261101",
+      "head": "fb5ba4db3a90d293a7588ad686150ce448416a16",
+      "tree": "9d92a461cbcc544763b9cc43449869d46410b6ea",
+      "paths": 58,
+      "pr": 4608,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4608",
+      "base": "research/hcsn-r20-four-stage-base-20261101",
+      "base_sha": "ede941c81edaf246486c88725a8a921bf70279ec"
+    },
+    {
+      "key": "r20-content",
+      "branch": "research/hcsn-r20-content-20261101",
+      "head": "fc53f59a52aa2c2afb190b549ecd5410b06729a8",
+      "tree": "88e26fca17c9aad5ca996ed044e81c6624bbdaa6",
+      "paths": 204,
+      "pr": 4610,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4610",
+      "base": "research/hcsn-r20-four-stage-base-20261101",
+      "base_sha": "ede941c81edaf246486c88725a8a921bf70279ec"
+    },
+    {
+      "key": "r21-checkpoint",
+      "branch": "research/hcsn-r21-checkpoint-20261101",
+      "head": "a455996dd28da5903c453c819a9e96a185644b0b",
+      "tree": "017c099053c61b111c8c4c9cdc336824f4e3bfb1",
+      "paths": 47,
+      "pr": 4611,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4611",
+      "base": "research/hcsn-r20-planner-20261101",
+      "base_sha": "fb5ba4db3a90d293a7588ad686150ce448416a16"
+    }
+  ],
+  "source_checkpoints": [
+    {
+      "scope": "original content",
+      "commit": "5ce3648c8f7b98188edce1ac44fde820fc598402"
+    },
+    {
+      "scope": "native financial",
+      "commit": "aebb58339dda8010888569d78d29cfdb226bb712"
+    },
+    {
+      "scope": "directional v1",
+      "commit": "ce6d07d5f1e4210e8c1ade9846dd4e5cd89038ce"
+    },
+    {
+      "scope": "planner all-query resource",
+      "commit": "86e9128aa7498343bddc4a2435435af72d39de85"
+    },
+    {
+      "scope": "directional v2 and live native owner",
+      "commit": "d0acb8d41a9b7682d22f606998c4e04fe4093e6c"
+    },
+    {
+      "scope": "powered content v2 initial source, before zero-world ENOSPC failure",
+      "commit": "cfaf44d9243e04b536ac6ad2b81c5e8dfb882f25"
+    },
+    {
+      "scope": "scripted paid-action recovery supplement",
+      "commit": "cb40ef17a0c27250a8fa6445b6c761b7044cc8d1"
+    },
+    {
+      "scope": "powered content process guard correction, before fresh calibration",
+      "commit": "62a621d83112212cb89f76474f5ea5f7a55fa9c6"
+    },
+    {
+      "scope": "content powered calibration and prospective confirmation read-only audit map",
+      "commit": "31f0646ebb18af9860cee7d252fd99db269f7536"
+    },
+    {
+      "scope": "late transitive read-only auditor dependency correction, AFTER formal start",
+      "commit": "e1c32010652ced52662c67ef76a5b0dae112618c"
+    },
+    {
+      "scope": "R21 strict admission and prospective correctness contracts",
+      "commit": "df35a6d3869cbcafce8e15b9e40d4bcdd1164439"
+    }
+  ],
+  "convergence": {
+    "strategy": "Preserve final verified integrated tree, first parent integrated history, ordered additional parents all six component heads.",
+    "additional_parent_shas": [
+      "953e48da1f424c373c4db9eb0b12401ec9e4cd81",
+      "1e8b5d444b2675529c6850fe440a7f0669cd4002",
+      "4285d7faf470f93665b3663e1bc6a7f8be2014d5",
+      "fb5ba4db3a90d293a7588ad686150ce448416a16",
+      "fc53f59a52aa2c2afb190b549ecd5410b06729a8",
+      "a455996dd28da5903c453c819a9e96a185644b0b"
+    ]
+  },
+  "all_blockers_closed": false,
+  "production_activation": false
+}

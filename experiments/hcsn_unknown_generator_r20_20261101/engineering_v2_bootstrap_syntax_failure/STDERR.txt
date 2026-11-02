@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "experiments/hcsn_unknown_generator_r20_20261101/v2_bootstrap_fixture.py", line 8, in <module>
+    from .confirm_v2 import bootstrap
+  File "experiments/hcsn_unknown_generator_r20_20261101/confirm_v2.py", line 85
+    for measure in ("payoff", "before_brier_improvement")]))))
+                                                             ^
+SyntaxError: unmatched closing parenthesis
