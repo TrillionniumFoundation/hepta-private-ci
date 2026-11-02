@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "controls": [
+    {
+      "name": "roundtrip_and_idempotence",
+      "passed": true
+    },
+    {
+      "name": "entry_traversal",
+      "passed": true,
+      "error": "unsafe relative path"
+    },
+    {
+      "name": "tar_traversal",
+      "passed": true,
+      "error": "unsafe relative path"
+    },
+    {
+      "name": "symlink_member",
+      "passed": true,
+      "error": "unexpected or linked archive member"
+    },
+    {
+      "name": "hardlink_member",
+      "passed": true,
+      "error": "unexpected or linked archive member"
+    },
+    {
+      "name": "existing_different",
+      "passed": true,
+      "error": "existing different file"
+    },
+    {
+      "name": "symlink_target",
+      "passed": true,
+      "error": "symlink restore path"
+    },
+    {
+      "name": "symlink_parent",
+      "passed": true,
+      "error": "symlink restore path"
+    },
+    {
+      "name": "tampered_part",
+      "passed": true,
+      "error": "part identity"
+    },
+    {
+      "name": "symlink_part",
+      "passed": true,
+      "error": "symlink part path"
+    },
+    {
+      "name": "symlink_part_parent",
+      "passed": true,
+      "error": "symlink part path"
+    }
+  ],
+  "source_sha256": {
+    "build_transport.py": "dcb230189127cd4a221897c55379b50723dcb1f5cb9c52ad5fe09056407d0fcb",
+    "restore_evidence.py": "19c2d6e5bbad29881c0c39eb6b8b74d0824d76e066795743d811d2770bcb452a",
+    "verify_transport.py": "421afbd176a153a83c7bacaa35280dfeab6d03869ae6873cd4f0fb7a1bd1ede6"
+  }
+}
