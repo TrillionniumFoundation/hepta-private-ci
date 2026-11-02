@@ -1,0 +1,12 @@
+{
+  "source_sha256": "434fcec318a1f3f2b8ffb88f6361a8f7dc805f07d3b9f4453aaa04892b71c5e6",
+  "ci_manifest_sha256": "95b6a2300e584014ed5333394d8c6361e50bf80532694759ad529b749570afbc",
+  "python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "threads": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1"
+  },
+  "scope": "Actual single fresh NumPy model then separate waited stdlib verifier; no local cgroup memory claim"
+}

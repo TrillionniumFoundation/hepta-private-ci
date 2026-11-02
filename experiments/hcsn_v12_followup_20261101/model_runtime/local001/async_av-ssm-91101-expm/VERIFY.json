@@ -1,0 +1,62 @@
+{
+  "status": "passed",
+  "model": {
+    "task": "async_av",
+    "seed": 91101,
+    "family": "ssm",
+    "numpy_path": "async_av/ssm-91101.npz",
+    "source_pt_sha256": "5bc299575b6b247b29634a7c36f05b5918555efc145db6b54dcfd4e78612497c",
+    "source_pt_path": "async_av/ssm-91101-selected.pt",
+    "shapes": {
+      "rate.weight": [
+        64,
+        58
+      ],
+      "rate.bias": [
+        64
+      ],
+      "gain.weight": [
+        64,
+        58
+      ],
+      "gain.bias": [
+        64
+      ],
+      "drive.weight": [
+        64,
+        58
+      ],
+      "drive.bias": [
+        64
+      ],
+      "reader.0.weight": [
+        66,
+        418
+      ],
+      "reader.0.bias": [
+        66
+      ],
+      "reader.2.weight": [
+        16,
+        66
+      ],
+      "reader.2.bias": [
+        16
+      ]
+    },
+    "parameters": 40054
+  },
+  "implementation": "expm",
+  "executions": 24,
+  "checks": 949,
+  "maximum_numeric_difference": 1.1102230246251565e-16,
+  "rtol": 1e-10,
+  "atol": 1e-12,
+  "actions_classes_requests_fees_exact": true,
+  "bundle_manifest_sha256": "65dc110d8dae3fca4b18fdfb71faa5627a81bc9891edadc474c8a00e04995b60",
+  "reference_sha256": "add5b9201f97c90ed5c354131f9845675d962d9aa5e54661b37210591b2e4fd4",
+  "ci_manifest_sha256": "95b6a2300e584014ed5333394d8c6361e50bf80532694759ad529b749570afbc",
+  "verifier_source_sha256": "b1d94f08be151204d96fd7c19db386992a0806cd60a0ff09dfb837bbbaddca7e",
+  "worker_trace_sha256": "9de12d1a5daf30cf3590a4642f83312f1818f384de7463d829a9497a6cbfba91",
+  "scope": "Post-exit standard-library correctness audit, outside measured model worker"
+}

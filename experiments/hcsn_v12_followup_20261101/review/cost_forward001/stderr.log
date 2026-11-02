@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/review/replay_exported_forwards.py", line 137, in <module>
+    raise SystemExit(0 if run(args.source, args.bundle, args.validation, args.out) else 1)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/review/replay_exported_forwards.py", line 30, in run
+    "source_sha256": sha(__file__), "bundle_manifest_sha256": sha(bundle / "MANIFEST.json"),
+                     ^^^^^^^^^^^^^
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/review/replay_exported_forwards.py", line 22, in sha
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'read_bytes'

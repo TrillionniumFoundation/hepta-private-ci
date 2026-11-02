@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.model_runtime.numpy_runtime",
+    "--bundle",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/model_runtime/export002",
+    "--out",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/local001/async_av-filter-91103-uniformization/worker",
+    "--task",
+    "async_av",
+    "--family",
+    "filter",
+    "--seed",
+    "91103",
+    "--implementation",
+    "uniformization"
+  ],
+  "returncode": 0,
+  "complete_direct_child_cpu_seconds": 1.214208000000001,
+  "wall_seconds": 4.259306838001066,
+  "cpu_scope": "Nested in enclosing local campaign CPU"
+}

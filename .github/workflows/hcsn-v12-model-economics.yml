@@ -1,0 +1,83 @@
+name: HCSN V12 real frozen-model economics
+
+on:
+  push:
+    branches: [research/hcsn-v12-followup-20261101]
+    paths:
+      - .github/workflows/hcsn-v12-model-economics.yml
+      - experiments/hcsn_v12_followup_20261101/economics/**
+      - experiments/hcsn_v12_followup_20261101/model_runtime/**
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/hcsn-v12-model-economics.yml
+      - experiments/hcsn_v12_followup_20261101/economics/**
+      - experiments/hcsn_v12_followup_20261101/model_runtime/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-v12-cost-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  real-model-single-task-profile:
+    if: >-
+      github.event_name == 'push' ||
+      (github.event.pull_request.head.ref == 'research/hcsn-v12-followup-20261101' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONNOUSERSITE: "1"
+    steps:
+      - name: Checkout exact event head and frozen inputs
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/hcsn-v12-model-economics.yml
+            /experiments/hcsn_v12_followup_20261101/economics/
+            /experiments/hcsn_v12_followup_20261101/model_runtime/*.py
+            /experiments/hcsn_v12_followup_20261101/model_runtime/export002/
+            /experiments/hcsn_v10_followup_20261101/economics/cgroup_meter.py
+            /experiments/hcsn_v7_support_20261101/content_interface/content_interface.py
+            /experiments/hcsn_v8_execution_20261101/frontend/legacy_v3.py
+            /experiments/hcsn_v8_execution_20261101/scheduler/execution.py
+            /experiments/hcsn_v8_execution_20261101/scheduler/planning.py
+            /experiments/hcsn_v8_execution_20261101/scheduler/historical_service.py
+            /experiments/hcsn_causal_execution_v3/av_probe.py
+      - name: Pinned Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - name: Install only pinned NumPy and SciPy in a fresh environment
+        run: |
+          mkdir -p evidence
+          python -m venv "$RUNNER_TEMP/hcsn-v12-python"
+          "$RUNNER_TEMP/hcsn-v12-python/bin/python" -m pip install \
+            --disable-pip-version-check --only-binary=:all: \
+            --report evidence/DEPENDENCIES.json numpy==2.3.5 scipy==1.17.0 \
+            > evidence/SETUP.log 2>&1
+      - name: Real models, two fixed orders, no-swap and one-TID profile
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          sudo --preserve-env=PYTHONNOUSERSITE "$RUNNER_TEMP/hcsn-v12-python/bin/python" \
+            -m experiments.hcsn_v12_followup_20261101.economics.campaign \
+            --expected-head "$EXPECTED_HEAD" \
+            --bundle experiments/hcsn_v12_followup_20261101/model_runtime/export002 \
+            --out evidence/model-costs
+      - name: Preserve complete success and failure artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: hcsn-v12-model-cost-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

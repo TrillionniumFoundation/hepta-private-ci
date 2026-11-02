@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.review.audit_runtime_records",
+    "--root",
+    ".",
+    "--bundle",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/export002",
+    "--validation",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/validation001",
+    "--out",
+    "experiments/hcsn_v12_followup_20261101/review/DUAL_RUNTIME_RAW_AUDIT.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/review/cost_raw001",
+  "timeout": 1800.0,
+  "sample_interval": 0.2
+}

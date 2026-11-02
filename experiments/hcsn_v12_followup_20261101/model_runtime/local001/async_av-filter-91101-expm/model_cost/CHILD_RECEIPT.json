@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v12_followup_20261101.model_runtime.numpy_runtime",
+    "--bundle",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v12_followup_20261101/model_runtime/export002",
+    "--out",
+    "experiments/hcsn_v12_followup_20261101/model_runtime/local001/async_av-filter-91101-expm/worker",
+    "--task",
+    "async_av",
+    "--family",
+    "filter",
+    "--seed",
+    "91101",
+    "--implementation",
+    "expm"
+  ],
+  "returncode": 0,
+  "complete_direct_child_cpu_seconds": 1.1756200000000003,
+  "wall_seconds": 2.7630916710040765,
+  "cpu_scope": "Nested in enclosing local campaign CPU"
+}
