@@ -1,0 +1,31 @@
+{
+  "all_blockers_closed": false,
+  "audio_text": "Reuse exactR1 frozenfinalA/T predictors and genuineactornestedtrainingOOF probabilities, with allsource/candidate/inputSHA guarded.",
+  "checkpoint_sha256": "c72c9d494ffdcb8616ce183b92393b17a8bdf1ad8b523c9ac42b0507824c214f",
+  "cost": "Meter checkpointacquisition,rawprefixfeatureextraction,classifierfits andheldoutevaluationincluding allbaseline/diagnostic work. PriorLRWpretraining,R1A/Tpreparationanddevelopmentsoftwarecost not silentlyzero. CPU is not deviceenergy.",
+  "data": "Exactly288originaltrainclips/24actors and72historicaldevelopmentclips/6actors from samepinnedCOHORT. Never oldtest/eightactorreevaluation/1019. SentenceDFA/IOM\u21920/1; inheritedemotionlabel is not the target.",
+  "descriptor": "Fiveconsecutive5-frame512Dmeanbins flattened2560 plus frozen500DpretrainedTCNlogits =3060D. No descriptor/model/hyperparameter selection based on newCREMAoutcomes.",
+  "energy_joules": null,
+  "evaluation": "Afterremotesourceandcandidatefreeze: historical6actordevonly; videobinaryaccuracy; weightedAT/AVTaccuracy+Brier,6actorbootstrap10000seed20261103;100withinactorshufflesseed20261104. Frozenhead reverse-time andfirstacceptedframe-repeat diagnostics.",
+  "external_independent_confirmation": false,
+  "frozen_encoder": "Original-author3Dconv+ResNet18+MS-TCN,36,361,396parameters; strict safeweights_only load, CPUevalmode, everyparameterfrozen",
+  "frozen_utc": "2026-11-02T01:52:55.450242+00:00",
+  "gate": "Historicaldevelopment only: videoaccuracy>=.90 and AVT-AT_uniqueaccuracy actorbootstrap95lower>0. Externalpopulation, pretraining-actor exclusion, analyticcoreincrement and production/fullcost adoption remain separate.",
+  "observations": "Exactly1s frommax(audio.start,firstvideoPTS);25last-originalframes at/before origin+k/25,k1..25. Decodepixels onlythroughlastselectedindex; require noB-frame reordering. Noaftercutoffpixel, duration, filename, identity or target enters encoder/head.",
+  "pretrained_actor_overlap": "unknown",
+  "production_activation": false,
+  "relation": "Independently fit cleanAT_unique3basis[pA,pT,pA*pT] andAVT7nonemptymultilinearproductbasis, sameC1L2andfit-onlystandardization,L-BFGS-Bmax300,ftol1e-10,gtol1e-6, sameOOFdata/sampleweights.",
+  "runtime": {
+    "Pillow": "12.3.0",
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "scipy": "1.17.0",
+    "threads": 1,
+    "torch": "2.6.0+cpu"
+  },
+  "schema": "hcsn-pretrained-visual-transfer.v1",
+  "spatial": "Training-onlygeometry priorfrom1007DFA_NEU frame~.7s: fixednative96square center(round(.53W),round(.54H)); RGBdecode, Pillowgray, upstream88center crop andfixed /255,(x-.421)/.165. No68landmarkaffinealignment; explicit adaptation, not upstreambenchmark reproduction.",
+  "upstream_commit": "0cc99fab046bd959578f2baac52e654746da4825",
+  "visual_head": "C1L2logistic, fit-onlyfeaturemean/std,4sortedactorroundrobinfolds18fit/6held plus1full24actorfit; L-BFGS-Bmax1000,ftol1e-10,gtol1e-6. No neuralfinetune/earlystop."
+}

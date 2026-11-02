@@ -1,0 +1,23 @@
+{
+  "official_source": "https://spandh.dcs.shef.ac.uk/gridcorpus/",
+  "official_page_observed": "34talkers,1000utterances each; no video for21; research availability; native360x288normal and720x576high",
+  "archive_probes": [
+    {
+      "url": "https://spandh.dcs.shef.ac.uk/gridcorpus/s1/video/s1.mpg_vcd.zip",
+      "status": 206,
+      "content_range": "bytes 422680817-422746352/422746353",
+      "bytes_read": 65536,
+      "zip_eocd_offset": 65514
+    },
+    {
+      "url": "https://zenodo.org/records/3625687/files/s1.zip?download=1",
+      "status": 206,
+      "content_range": "bytes 423454978-423520513/423520514",
+      "bytes_read": 65536,
+      "zip_eocd_offset": 65514
+    }
+  ],
+  "payload_scope": "Two65536byte suffix responses held only in memory to detect EOCD/range capability; no member extraction, clip decode, or model ingestion.",
+  "viewed_example_alignment": "https://spandh.dcs.shef.ac.uk/gridcorpus/examples/swwp2s.align",
+  "provenance": "Official corpus page and creator-uploaded Zenodo DOI inspected; no third-party dataset mirror used"
+}

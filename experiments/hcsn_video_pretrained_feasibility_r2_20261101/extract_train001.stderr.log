@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_video_pretrained_feasibility_r2_20261101/study.py", line 146, in <module>
+    if args.phase=='extract_train':extract('train')
+                                   ^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_video_pretrained_feasibility_r2_20261101/study.py", line 68, in extract
+    pixels,detail=encoder.decode(row);embedding,score=encoder.encode(model,pixels)
+                  ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/65d0df4e0cbd/repo/experiments/hcsn_video_pretrained_feasibility_r2_20261101/encoder.py", line 50, in decode
+    assert video.get('has_b_frames',0)==0, 'Future-reordered frames are outside this registered prefix profile'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Future-reordered frames are outside this registered prefix profile

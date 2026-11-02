@@ -1,0 +1,146 @@
+{
+  "AVT_minus_AT": {
+    "accuracy": 0.0,
+    "accuracy_actor_bootstrap_95": [
+      0.0,
+      0.0
+    ],
+    "brier": 0.0001124251926038209,
+    "brier_actor_bootstrap_95": [
+      -0.00040413055739787026,
+      0.0005967253208639141
+    ]
+  },
+  "candidate_freeze_sha256": "6863852f90db0225ebce33e6bcf8e59d49e86fe227f623bb48cf2f9fcdaa669b",
+  "check_count": 41,
+  "checks": [
+    "validation_input_sha256",
+    "original_actor",
+    "original_sentence_indices",
+    "original_y",
+    "original_sample_weight",
+    "finite_probabilities",
+    "positive_weights",
+    "six_actor_population",
+    "AT_valid_probabilities",
+    "AT_accuracy",
+    "AT_brier",
+    "AVT_valid_probabilities",
+    "AVT_accuracy",
+    "AVT_brier",
+    "audio_sentence_count",
+    "audio_sentence_accuracy",
+    "video_sentence_count",
+    "video_sentence_accuracy",
+    "text_sentence_count",
+    "text_sentence_accuracy",
+    "per_actor_paired_differences",
+    "paired_accuracy_point",
+    "paired_accuracy_bootstrap",
+    "paired_brier_point",
+    "paired_brier_bootstrap",
+    "result_candidate_freeze",
+    "frozen_training",
+    "frozen_input_identity",
+    "frozen_source",
+    "frozen_protocol",
+    "frozen_AT_head.npz",
+    "frozen_AVT_head.npz",
+    "frozen_TRAIN_OOF.npz",
+    "frozen_audio_encoder.npz",
+    "frozen_text_encoder.npz",
+    "frozen_video_encoder.npz",
+    "video_gate_recomputed",
+    "scope_genuinely_external_confirmation",
+    "scope_analytic_core_contribution",
+    "scope_production_activation",
+    "scope_all_blockers_closed"
+  ],
+  "genuinely_external_confirmation": false,
+  "input_sha256": "9f84185c439562578ee3c319ac4e00e96e7bae9fb2bb52d7a07447f5d84d14eb",
+  "limits": [
+    "No inference rerun, raw media validation, shuffled-video recomputation, or whole-process cost audit was performed.",
+    "Zero accuracy difference and a degenerate [0,0] development bootstrap interval do not prove population equality or zero risk.",
+    "AT duplicated normalized polynomial columns alter effective ridge regularization; comparison does not prove equal-capacity video necessity.",
+    "Independent external-group video qualification, analytic-core gain and production adoption remain open."
+  ],
+  "paired_actor_differences": [
+    [
+      0.0,
+      -0.0008554991953127902
+    ],
+    [
+      0.0,
+      0.0008760900611118413
+    ],
+    [
+      0.0,
+      0.00024792587946869337
+    ],
+    [
+      0.0,
+      -0.0006402115755267361
+    ],
+    [
+      0.0,
+      0.0005122460482727252
+    ],
+    [
+      0.0,
+      0.0005339999376091917
+    ]
+  ],
+  "passed": true,
+  "population": {
+    "actor_count": 6,
+    "actors": [
+      "1006",
+      "1017",
+      "1026",
+      "1054",
+      "1055",
+      "1056"
+    ],
+    "rows": 288,
+    "scope": "Historically exposed six-actor development cohort; not new independent scientific confirmation."
+  },
+  "prior_audit_attempt": {
+    "correction": "Promote saved float32 weights to float64 before independent weighted reductions; no study source, models, outputs or result changed.",
+    "failed_field": "AT accuracy",
+    "float32_auditor_value": 0.7175925970077515,
+    "reported_float64_value": 0.7175925925925926,
+    "status": "failed due to auditor float32 summation precision mismatch"
+  },
+  "production_activation": false,
+  "raw_predictions_sha256": "7dc1295a9d65d3fcb75ee3adb19b6d67829c8834e38b8dfeddc925a0ac9a35fe",
+  "relation": {
+    "AT": {
+      "accuracy": 0.7175925925925926,
+      "brier": 0.19013566018762137
+    },
+    "AVT": {
+      "accuracy": 0.7175925925925926,
+      "brier": 0.1902480853802252
+    }
+  },
+  "result_sha256": "35ce54286d829e5f8624acdf47729f5878613ef5b7d7962f3f21a0bc24d6a049",
+  "schema": "hcsn.video.independent-result-audit.v1",
+  "sentence": {
+    "audio": {
+      "accuracy": 0.8333333333333334,
+      "count": 72
+    },
+    "text": {
+      "accuracy": 1.0,
+      "count": 72
+    },
+    "video": {
+      "accuracy": 0.4861111111111111,
+      "count": 72
+    }
+  },
+  "source_commit_reported_by_owner": "a452f4e59dc28bfe5f44bde81037e4f35558e6d8",
+  "source_of_computation": "Independent NumPy expressions over saved raw predictions and original hash-verified metadata; no study helper import and no inference or fitting rerun. Weights explicitly promoted to float64.",
+  "training_fit_count": 225,
+  "training_optimizer_failure_count": 0
+}

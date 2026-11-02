@@ -1,0 +1,335 @@
+{
+  "schema": "hcsn.addressed-preparation-contract.v1",
+  "checks": [
+    {
+      "name": "addressed_consumes_exact_returned_fields",
+      "fields": [
+        "MR",
+        "P",
+        "R",
+        "T",
+        "initial"
+      ],
+      "passed": true
+    },
+    {
+      "output_error": 0.0,
+      "parameter_gradient_error": 0.0,
+      "per_parameter_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0
+      },
+      "same_gradient_keys": true,
+      "argmax_identical": true,
+      "passed": true,
+      "name": "mqar/missing/logits_and_parameter_gradients"
+    },
+    {
+      "name": "mqar/missing/all_consumed_matrices",
+      "errors": {
+        "MR": 0.0,
+        "initial": 0.0,
+        "R": 0.0,
+        "T": 0.0,
+        "P": 0.0
+      },
+      "passed": true
+    },
+    {
+      "output_error": 0.0,
+      "parameter_gradient_error": 0.0,
+      "per_parameter_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0
+      },
+      "same_gradient_keys": true,
+      "argmax_identical": true,
+      "passed": true,
+      "name": "mqar/all_unobserved/logits_and_parameter_gradients"
+    },
+    {
+      "name": "mqar/all_unobserved/all_consumed_matrices",
+      "errors": {
+        "MR": 0.0,
+        "initial": 0.0,
+        "R": 0.0,
+        "T": 0.0,
+        "P": 0.0
+      },
+      "passed": true
+    },
+    {
+      "output_error": 0.0,
+      "parameter_gradient_error": 0.0,
+      "per_parameter_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0
+      },
+      "same_gradient_keys": true,
+      "argmax_identical": true,
+      "passed": true,
+      "name": "mqar/zero_time/logits_and_parameter_gradients"
+    },
+    {
+      "name": "mqar/zero_time/all_consumed_matrices",
+      "errors": {
+        "MR": 0.0,
+        "initial": 0.0,
+        "R": 0.0,
+        "T": 0.0,
+        "P": 0.0
+      },
+      "passed": true
+    },
+    {
+      "output_error": 0.0,
+      "parameter_gradient_error": 0.0,
+      "per_parameter_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0
+      },
+      "same_gradient_keys": true,
+      "argmax_identical": true,
+      "passed": true,
+      "name": "mqar/no_marks/logits_and_parameter_gradients"
+    },
+    {
+      "name": "mqar/no_marks/all_consumed_matrices",
+      "errors": {
+        "MR": 0.0,
+        "initial": 0.0,
+        "R": 0.0,
+        "T": 0.0,
+        "P": 0.0
+      },
+      "passed": true
+    },
+    {
+      "name": "mqar/context_restoration",
+      "passed": true
+    },
+    {
+      "output_error": 0.0,
+      "parameter_gradient_error": 0.0,
+      "per_parameter_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0
+      },
+      "same_gradient_keys": true,
+      "argmax_identical": true,
+      "passed": true,
+      "name": "binding/missing/logits_and_parameter_gradients"
+    },
+    {
+      "name": "binding/missing/all_consumed_matrices",
+      "errors": {
+        "MR": 0.0,
+        "initial": 0.0,
+        "R": 0.0,
+        "T": 0.0,
+        "P": 0.0
+      },
+      "passed": true
+    },
+    {
+      "output_error": 0.0,
+      "parameter_gradient_error": 0.0,
+      "per_parameter_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0
+      },
+      "same_gradient_keys": true,
+      "argmax_identical": true,
+      "passed": true,
+      "name": "binding/all_unobserved/logits_and_parameter_gradients"
+    },
+    {
+      "name": "binding/all_unobserved/all_consumed_matrices",
+      "errors": {
+        "MR": 0.0,
+        "initial": 0.0,
+        "R": 0.0,
+        "T": 0.0,
+        "P": 0.0
+      },
+      "passed": true
+    },
+    {
+      "output_error": 0.0,
+      "parameter_gradient_error": 0.0,
+      "per_parameter_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0
+      },
+      "same_gradient_keys": true,
+      "argmax_identical": true,
+      "passed": true,
+      "name": "binding/zero_time/logits_and_parameter_gradients"
+    },
+    {
+      "name": "binding/zero_time/all_consumed_matrices",
+      "errors": {
+        "MR": 0.0,
+        "initial": 0.0,
+        "R": 0.0,
+        "T": 0.0,
+        "P": 0.0
+      },
+      "passed": true
+    },
+    {
+      "output_error": 0.0,
+      "parameter_gradient_error": 0.0,
+      "per_parameter_errors": {
+        "physical": 0.0,
+        "address_a": 0.0,
+        "address_b": 0.0,
+        "log_temperature": 0.0,
+        "encode.0.weight": 0.0,
+        "encode.0.bias": 0.0,
+        "encode.2.weight": 0.0,
+        "encode.2.bias": 0.0,
+        "control.weight": 0.0,
+        "control.bias": 0.0,
+        "roles.weight": 0.0,
+        "roles.bias": 0.0,
+        "value.weight": 0.0,
+        "read.0.weight": 0.0,
+        "read.0.bias": 0.0,
+        "read.2.weight": 0.0,
+        "read.2.bias": 0.0
+      },
+      "same_gradient_keys": true,
+      "argmax_identical": true,
+      "passed": true,
+      "name": "binding/no_marks/logits_and_parameter_gradients"
+    },
+    {
+      "name": "binding/no_marks/all_consumed_matrices",
+      "errors": {
+        "MR": 0.0,
+        "initial": 0.0,
+        "R": 0.0,
+        "T": 0.0,
+        "P": 0.0
+      },
+      "passed": true
+    },
+    {
+      "name": "binding/context_restoration",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "source_sha256": {
+    "experiments/hcsn_propagation_perf_20261101/contract_checks.py": "26d507f6cbaa02cb084645bde2091bae656c13b31ef8ebc6ea7bac951824228e",
+    "experiments/hcsn_propagation_perf_20261101/fused_addressed.py": "c87e6ae821ea0aefe777c952010a23c6b5add9d93e81050419eb4ed3ca12094f",
+    "experiments/hcsn_propagation_perf_20261101/audit.py": "20cb18d2895e582ac15dd07f4bce76ea30a44d849959488917326c5a6616502d",
+    "experiments/hcsn_addressed_flow_20261101/addressed_models.py": "2c2c434c567f66d5e0f48d5befc05e54c201c724f0b2b5d6f211f3784612f25e"
+  }
+}

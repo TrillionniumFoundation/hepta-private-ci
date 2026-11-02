@@ -1,0 +1,60 @@
+{
+  "aggregate_process_family_peak_rss_bytes": null,
+  "complete_lifecycle_cpu_seconds": null,
+  "energy_joules": null,
+  "failed_no_reorder_extraction_included": true,
+  "gpu_seconds": null,
+  "measured_non_nested_outer_cpu_seconds": 281.09983800000003,
+  "outer_receipts": [
+    {
+      "cpu_seconds": 0.33861,
+      "path": "acquire001.receipt.json",
+      "peak_rss_bytes": 19673088,
+      "returncode": 0,
+      "sha256": "d0e2fe84dd1ee72aa422f107074d1d2a325019a30a9a475d713e77d094087f7f",
+      "wall_seconds": 13.27621742500196
+    },
+    {
+      "cpu_seconds": 76.39340200000001,
+      "path": "evaluate001.receipt.json",
+      "peak_rss_bytes": 563908608,
+      "returncode": 0,
+      "sha256": "84595d211d592b367b90d18ca8ed505ab9dcf566161437349fe762c3465f60ec",
+      "wall_seconds": 84.69220611699711
+    },
+    {
+      "cpu_seconds": 68.709255,
+      "path": "extract_train001.receipt.json",
+      "peak_rss_bytes": 550756352,
+      "returncode": 1,
+      "sha256": "1efa06df389d4964f7bfc6999b2610f1e6ef144465e439a68972a523617d333a",
+      "wall_seconds": 68.89999178900325
+    },
+    {
+      "cpu_seconds": 133.220674,
+      "path": "extract_train002.receipt.json",
+      "peak_rss_bytes": 551796736,
+      "returncode": 0,
+      "sha256": "5e05853783bdf48f6c4583cdb238ff67e50086054d1efc22d58592510ba6163b",
+      "wall_seconds": 133.38829373399494
+    },
+    {
+      "cpu_seconds": 2.437897,
+      "path": "train001.receipt.json",
+      "peak_rss_bytes": 278339584,
+      "returncode": 0,
+      "sha256": "ea8df576e9053ed942571da01d36dd129a125106089e2b66953d82cf4da95fa1",
+      "wall_seconds": 2.4472327589974157
+    }
+  ],
+  "schema": "hcsn.visual-pretrained.r2.cost.v1",
+  "scope": "All five complete-child acquisition/extraction/fit/evaluation envelopes, including failed68.709255s no-B-frame probe; no body-timer double count",
+  "unmeasured": [
+    "Original LRW pretraining and source-development cost",
+    "Historical R1 A/T training and feature preparation",
+    "Shared CREMA raw acquisition measured separately in raw CNN lane, not added twice",
+    "Independent review, source freezing, publication and report writing",
+    "Initial acquisition setup failure has no complete outer envelope"
+  ],
+  "wall_not_summed": true
+}
