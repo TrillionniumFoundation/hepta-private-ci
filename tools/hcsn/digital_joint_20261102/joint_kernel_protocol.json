@@ -1,0 +1,20 @@
+{
+  "schema": "joint-kernel-numerical-qualification-v1",
+  "scope": "All-state finite CTMC propagation and deterministic float64 derivatives; no continuum/free-boundary or task-benefit claim",
+  "raw_coordinates": ["boundary","diffusion","gain","drift_bias","reset_plus","reset_minus","recovery_rate","reset_sd"],
+  "default_grid": 31,
+  "refinement_grids": [31,63,127],
+  "generator": "central difference Brownian interior jump rates; both boundary exits enter side refractory; exponential rate recovery injects normalized continuous truncated-Gaussian bin law; full expm",
+  "bank": "horizons .25,.75,1.5 by relative thresholds -.5,0,.5, strict coordinate>threshold, including ref coordinates; T_h times indicators; put=1-call",
+  "raw_map": "b=.8+.4sigmoid(r0), sigma=.35+.45sigmoid(r1), gain=.9tanh(r2), bias=.2tanh(r3), centers=.6b*tanh(r4/r5), gamma=.25+1.75sigmoid(r6), sd=b*(.06+.06sigmoid(r7))",
+  "gradient": "complete long-prefix 33mass plus nine reset-aware future probabilities and count; raw8 full Jacobian against deterministic central differences at 1e-4 and 1e-5; physical7 Jacobian at 1e-5; absolute gate3e-6+relative3e-4*|derivative|",
+  "gradient_activation": "each raw coordinate must have Jacobian column norm>1e-7 in at least one declared nonzero-symbol/non-.5reliability case; fixed-boundary raw0 gradient must vanish and buffer remain fixed under optimizer weight decay",
+  "semigroup": "same-context whole vs split complete mass and raw Jacobian: max mass error<1e-9, max gradient error<1e-8; zero dt identity and raw gradient zero; expected-count splitting separately checked",
+  "stochastic": "Q offdiagonal nonnegative and row mass within1e-10; expm nonnegative within1e-12 and stochastic within1e-9; durations 0,.01,.25,.75,2 across envelope/raw cases",
+  "independent_reference": "SciPy expm and existing independently implemented finite-difference PDE; killed Brownian image-law first-exit and piecewise-uniform projected killed CDF; same physical laws across grids",
+  "continuum_gates": "killed-law maximum absolute error on default grid<.01 and grid127<.00075 with aggregate refinement improvement; regenerative five moments grid31 vs PDE240 error<.005; report all errors rather than infer exact continuum",
+  "trajectory_reference": "published continuous_renewal_samples.csv truncated_reset 2000 rows (b=.8,sigma=.8,drift0,gamma2,reset_minus=-.2,reset_plus=.2,sd=.096); compare five moments using six empirical SE +2 grid63/127 difference +.002; no MC path gradient estimate",
+  "identifiability": "simultaneous scaling b,sigma,drift,reset centers,sd leaves normalized Q invariant; raw boundary learning is a finite scale parameterization, not a moving/free boundary or independent physical identification",
+  "failure_retention": "Every attempt stores exact source snapshots, source/runtime/input hashes and all failed checks or exception; do not overwrite previous attempt",
+  "training": "No task fit or confirmation world generation in this stage"
+}
