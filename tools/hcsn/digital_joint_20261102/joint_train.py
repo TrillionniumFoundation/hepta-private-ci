@@ -39,7 +39,7 @@ def write(path, value):
 
 def source_identity():
     root = HERE.parent.parent.parent
-    names = [HERE/name for name in ("joint_train.py", "joint_model.py", "joint_deploy.py", "joint_kernel.py", "joint_task.py", "joint_law.py", "joint_data.py", "joint_budget.py", "joint_protocol.json")]
+    names = [HERE/name for name in ("joint_train.py", "joint_model.py", "joint_deploy.py", "joint_kernel.py", "joint_task.py", "joint_law.py", "joint_data.py", "joint_budget.py", "joint_campaign.py", "joint_compiled_dp.py", "joint_protocol.json")]
     owner = HERE.parent/"task_value_factorial_20261030"
     names += [owner/"task.py", owner/"UPSTREAM_FILES.json", HERE.parent/"digital_read_before_20261031/task.py"]
     manifest = json.loads((owner/"UPSTREAM_FILES.json").read_text())

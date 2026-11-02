@@ -1,0 +1,169 @@
+{
+  "schema": "joint-full-distribution-protocol-v1",
+  "status": "frozen",
+  "baseline_commit": "3475586908611c1394d31ee5047b8babe405822c",
+  "pilot_source_commit": "8d413a4ecf8ef44582ff3e5f289f983dc3991c17",
+  "fits": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "families": [
+    "renewal",
+    "full_markov",
+    "affine_markov",
+    "gru"
+  ],
+  "controllers": [
+    "fixed",
+    "value"
+  ],
+  "n_grid": 31,
+  "truth_raw": [
+    0.1,
+    -0.15,
+    0.25,
+    0.1,
+    0.45,
+    -0.45,
+    -0.2,
+    0.2
+  ],
+  "prior_distances": [
+    0.125,
+    0.375,
+    0.75
+  ],
+  "train_worlds": 64,
+  "validation_worlds": 16,
+  "calibration_count": 64,
+  "packet_length": 32,
+  "confirmation_worlds_per_fit_split": 40,
+  "data_seed_base": 202611110000,
+  "confirmation_seed_base": 202611130000,
+  "train_domain": {
+    "durations": [
+      0.25,
+      0.5
+    ],
+    "drives": [
+      -1,
+      0,
+      1
+    ],
+    "reliabilities": [
+      0.65,
+      0.85
+    ],
+    "prices": [
+      0.03,
+      0.12
+    ],
+    "delays": [
+      1,
+      2
+    ],
+    "latency_price": 0.025,
+    "repair_price": 0.03,
+    "failure_probability": 0.08
+  },
+  "ood_domain": {
+    "durations": [
+      0.25,
+      0.75,
+      1.5
+    ],
+    "drives": [
+      -1,
+      0,
+      1
+    ],
+    "reliabilities": [
+      0.55,
+      0.95
+    ],
+    "prices": [
+      0.01,
+      0.18
+    ],
+    "delays": [
+      1,
+      2
+    ],
+    "latency_price": 0.04,
+    "repair_price": 0.05,
+    "failure_probability": 0.16
+  },
+  "behavior_action_weights": [
+    0.025,
+    0.2,
+    0.6,
+    0.5,
+    0.025,
+    0.025
+  ],
+  "learning_rate": 0.003,
+  "batch_states": 32,
+  "belief_loss_weight": 1.0,
+  "mass_kl_weight": 0.1,
+  "bank_mse_weight": 0.1,
+  "gradient_clip": 5.0,
+  "weight_decay": 0.0001,
+  "policy_feedback_rounds": 4,
+  "exploration_probability": 0.2,
+  "budget": {
+    "nominal_cpu_seconds": 60.0,
+    "tolerance_fraction": 0.02,
+    "match_fraction": 0.1,
+    "pair_gap_fraction": 0.1,
+    "export_reserve_seconds": 2.0,
+    "wall_seconds": 600.0,
+    "poll_seconds": 0.005,
+    "termination_grace_seconds": 0.1
+  },
+  "task": "New completion-current observation task: every nonterminal action advances exogenous hidden CTMC first; a due READ then observes the current boundary sign through noisy marked-symbol FullHX packet. Request time is not observation time. SUBMIT always predicts fixed deadline6 sign; STOP abstains. All future drives, durations, fees and public balanced-prior spread are common information. Failed reads charge costs and need REPAIR; pending can be cancelled on termination.",
+  "information": "Policy features contain public43 and representations computed from completed history only. Teacher current mass, target posterior, bank and six Q values enter TRAIN targets or post-execution audit only. A model's conditional mass is not supplied true posterior. Dynamic exact-law belief+DP remains an upper bound under its declared model; TRAIN-fitted decoder confusion does not establish exact unknown true FullHX law.",
+  "models": "All families have identical 85->48 tanh->4 head initialization per fit. Inputs are public43, current mass33, and ordered forecast bank9. Renewal learns all eight bounded physical raw parameters; full_markov learns every offdiagonal rate of three drive-specific33state generators from the same nominal Q via projected AdamW; affine_markov learns two unrestricted endpoint generators and Q0=(Q-+Q+)/2, sharing the same linear forcing prior as renewal. GRU64 consumes interval+completed-observation events, with mass33 decoder and three four-bin forecast softmaxes. All TRAIN drives include -1,0,1 to avoid an untrained ordinary branch.",
+  "bank": "Three normalized strict thresholds(-.5,0,.5), next boundary/two boundaries/deadline6 under the actual remaining public drive/duration schedule, with no additional observation assumed. Refractory coordinates are -1,+1. This differs from joint_kernel.bank_features' held-current-drive physical horizons and the archived free-endpoint bank.",
+  "objective": "Sampled visited-state supervised masked six-Q MSE + belief soft-posterior BCE + .1 KL(teacher_current_mass||model_mass) + .1 scheduled-bank MSE. Complete mass and matrix exponentials stay in autograd. No hard cell-state sample, task policy-gradient, DQN convergence or continuum-exact claim.",
+  "selection": "No family/seed/checkpoint exclusion and no validation selection. Final complete update before declared CPU work deadline is selected. Four rounds collect fixed/value mixed actual policy visits with epsilon=.2 from the same TRAIN worlds; all actual updates/reads/visits and failed attempts remain recorded.",
+  "cost": "Each family/fit has the same complete standalone CPU cap, including executable imports, the full actual shared preparation charge, policy collection, optimizer, diagnostics/export/exit. Shared data/decoder/teacher preparation is measured once and separately shown both fully charged standalone and amortized over exactly four launched consumers. Actual standalone spend must lie in the frozen match band and paired family gap; no idle filling. Supervisor/import/receipt costs outside worker are separately accounted, not silently hidden.",
+  "references": [
+    "Frozen nominal-generator cached/compiled DP with TRAIN-fitted decoder confusion; nominal model knowledge explicit, preparation+compile+dispatch charged",
+    "Known environment-generator + TRAIN-fitted decoder-law DP; a reference under that declared model, not asserted true unknown-law optimum",
+    "No-READ prior-to-deadline classifier; WAIT adds no information under fixed target and nonnegative time charges"
+  ],
+  "primary_contrasts": [
+    "renewal/value-minus-renewal/fixed",
+    "full_markov/value-minus-full_markov/fixed",
+    "affine_markov/value-minus-affine_markov/fixed",
+    "gru/value-minus-gru/fixed",
+    "renewal/value-minus-full_markov/value",
+    "renewal/value-minus-affine_markov/value",
+    "renewal/value-minus-gru/value"
+  ],
+  "statistics": "Five independent fits; paired common40worlds per fit/split. Fourteen two-sided paired Student t intervals(df4), Bonferroni familywise alpha=.05; practical benefit lower bound>.02. Both IID/OOD required for cross-domain benefit. All eight arms, full2x2 contrasts/interactions, all fit differences retained. Read uses, Brier, actual chosen-Q future-return MSE, fitted-oracle regret/margins, mass/bank calibration and complete costs are distinct outcomes.",
+  "freeze": "Publish formal source/protocol after isolated pilot qualification, before formal data/fits. Publish all20 final models plus original source/model/input freeze and hashes before generating any formal confirmation. All pilot costs/failures and original negative rounds remain visible. This new task cannot retroactively close archived static-task efficacy gates.",
+  "production": "Finite33state synthetic task only; continuous Brownian/free-boundary, arbitrary refractory ages, open-domain content, multimodal production ownership and energy adoption remain separate gates. New JSON native integration must be qualified on its own source/model identity.",
+  "preparation_cpu_cap_seconds": 20.0,
+  "execution_order_seed": 202611170000,
+  "execution_measurement": "Resident interpreter with a real per-request model file read, JSON parse and NumPy policy initialization, public JSON/Owner initialization, all forecasts/control and actual FullHX/Owner calls, and actual wire JSON serialization. Fixed FullHX decoder loads once per fit, with full measured setup separately recorded and equally amortized over all actual880 requests of that fit. One-time interpreter/module bootstrap and all auditing/serialization/exit remain in full-stage SELF CPU since exec; scientific teacher/evaluator diagnostics happen strictly after the timed execution and are separately timed. Serial-service throughput is request count divided by summed complete execution wall, not a concurrent-server benchmark.",
+  "execution_order": "For each paired world, an independent preregistered RNG seed permutes all8 learned family/controller arms and3 separately labelled cold compiled/prior references. Exact order is archived. No familywise timing batch order or confirmation-driven ordering.",
+  "secondary_cpu_adoption": {
+    "familywise_alpha": 0.05,
+    "interval_count": 24,
+    "comparisons": "renewal/value versus each of3 strong ordinary/value families, IID andOOD separately",
+    "endpoints": [
+      "paired utility difference lower>-.02",
+      "paired log full executionCPU ratio upper<log(.90)",
+      "paired log p95 complete execution wall ratio upper<log(1.05)",
+      "paired log serial-service throughput ratio lower>log(.95)"
+    ],
+    "method": "Five paired fit estimates, df4 Student t, two-sided Bonferroni24 intervals; all four endpoints must pass for a comparison. The primary14quality family and this secondary24endpoint family are separately controlled; no combined omnibus FWER=.05 claim.",
+    "limits": "No energy/GPU/production adoption inference; model table preparation, all training costs and stage-level import/audit/DP compilation are reported separately and never hidden in a microtimer."
+  },
+  "pilot_qualification": "v1 three-family6update profiles and v2 affine6update profile all admitted under declared caps; all complete gradients finite, pureNumPy exports agree <=3.33e-16, export+validation<.1CPU seconds. Fixed short profiles underspent their matching band and never claim actual matched CPU. Formal deadline worker60s and2s reserve are chosen before formal data/fits and admission must be checked on each actual fit.",
+  "capacity": "Common head has4324 allocated coordinates. Renewal adds8raw with all eight partial derivatives validated, but common physical scaling leaves Q unchanged so locally identifiable generator directions are at most7; this is not8 independent physical mechanisms. FullMarkov adds3168 free nonnegative offdiagonal rates, affineMarkov2112, GRU has a larger recurrent/decoder parameter set. Equal information/common head and fullCPU matching do not establish equal effective capacity. All counts and learned shifts remain reported."
+}
