@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/auth_recovery_v2_r22_20261102/replay_after_transport.py", line 177, in <module>
+    args=parser.parse_args();run(args.transported.resolve(),args.output.resolve(),args.binary.resolve() if args.binary else (ROOT/"tools/hcsn/native_runtime_r20_20261101/confirmation01/negative/identical_artifact"))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/auth_recovery_v2_r22_20261102/replay_after_transport.py", line 118, in run
+    client = Client(keyfile,endpoint)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/auth_recovery_v2_r22_20261102/checkpoint.py", line 24, in __init__
+    info = parse(read_regular(endpoint))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/auth_recovery_v2_r22_20261102/security.py", line 56, in parse
+    return json.loads(data, object_pairs_hook=_pairs,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/__init__.py", line 359, in loads
+    return cls(**kw).decode(s)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
