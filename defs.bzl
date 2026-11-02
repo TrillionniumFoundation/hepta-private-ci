@@ -230,9 +230,10 @@ def codex_rust_crate(
             optional functionality to a separate crate.
         unit_test_dependency_replacements: Test-only workspace dependency variants.
             Replace the complete transitive closure when public types cross crates.
-        integration_test_dependency_replacements: Test-only workspace dependencies for
-            generated integration rust_test targets only. Never enable qualification
-            features on the product rust_library or product rust_binary.
+        integration_test_dependency_replacements: Per-integration-test-stem mapping to
+            test-only workspace dependencies. Unlisted tests retain product crate
+            identities; never inject a second crate identity across a typed
+            product interface or enable features on production targets.
         unit_test_features: Additional features for the test-only library and harness.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
         crate_edition: Rust edition override, if not default.
@@ -526,13 +527,14 @@ def codex_rust_crate(
     if integration_test_timeout:
         integration_test_kwargs["timeout"] = integration_test_timeout
 
-    integration_test_deps = rust_test_dependencies(
-        integration_test_dependency_replacements,
-        normal_dev = True,
-    ) + maybe_deps + deps_extra
-
     for test in native.glob(["tests/*.rs"], allow_empty = True):
         test_file_stem = test.removeprefix("tests/").removesuffix(".rs")
+        # A test-only crate variant is safe only when the selected fixture's
+        # bytes cross a process/serialization boundary, not Rust public types.
+        integration_test_deps = rust_test_dependencies(
+            integration_test_dependency_replacements.get(test_file_stem, {}),
+            normal_dev = True,
+        ) + maybe_deps + deps_extra
         test_crate_name = test_file_stem.replace("-", "_")
         test_name = name + "-" + test_file_stem.replace("/", "-")
         if not test_name.endswith("-test"):

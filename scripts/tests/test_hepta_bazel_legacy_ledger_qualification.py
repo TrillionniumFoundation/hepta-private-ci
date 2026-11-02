@@ -1,8 +1,7 @@
-"""Fail-closed regression for Bazel test-only legacy ledger qualification.
+"""Fail-closed checks for narrowly scoped Bazel legacy-ledger test fixtures.
 
-This checks the declaration surface. The actual generated Rust integration
-target must still compile and run in GitHub Bazel CI; these assertions alone
-are not proof of production admissibility or runtime correctness.
+These are static wiring regressions, not a substitute for native Bazel
+compilation or full production/runtime qualification.
 """
 
 import unittest
@@ -10,8 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 LEDGER_TEST_LABEL = (
-    "//codex-rs/hepta-learning-ledger:"
-    "hepta-learning-ledger-qualification-lib"
+    "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib"
 )
 
 
@@ -27,16 +25,17 @@ def qualifying_wiring(defs: str, agentd: str, ledger: str) -> bool:
     return all(
         [
             "integration_test_dependency_replacements = {}" in macro,
-            "integration_test_deps = rust_test_dependencies(" in integration[0],
-            "integration_test_dependency_replacements," in integration[0],
-            # Sharded native, unsharded native, and Windows-cross target.
+            "integration_test_deps = rust_test_dependencies(" in generated_tests,
+            "integration_test_dependency_replacements.get(test_file_stem, {})"
+            in generated_tests,
             generated_tests.count("deps = integration_test_deps,") == 3,
-            'integration_test_dependency_replacements = {' in agentd,
+            '"plasticity_process_e2e": {' in agentd,
+            '"terminal_cell_owner": {' not in agentd,
+            '"intuition_policy_product": {' not in agentd,
             LEDGER_TEST_LABEL in agentd,
-            'unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES' in agentd,
-            # Normal product dependencies must not acquire the legacy feature.
-            'deps = all_crate_deps() + maybe_deps + deps_extra,' in macro,
-            'testonly = True' in ledger,
+            "unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES" in agentd,
+            "deps = all_crate_deps() + maybe_deps + deps_extra," in macro,
+            "testonly = True" in ledger,
             'crate_features = ["qualification-legacy-write"]' in ledger,
         ]
     )
@@ -45,25 +44,40 @@ def qualifying_wiring(defs: str, agentd: str, ledger: str) -> bool:
 class BazelLegacyLedgerQualificationTests(unittest.TestCase):
     def setUp(self):
         self.defs = (ROOT / "defs.bzl").read_text(encoding="utf-8")
-        self.agentd = (
-            ROOT / "codex-rs/hepta-agentd/BUILD.bazel"
-        ).read_text(encoding="utf-8")
-        self.ledger = (
-            ROOT / "codex-rs/hepta-learning-ledger/BUILD.bazel"
-        ).read_text(encoding="utf-8")
+        self.agentd = (ROOT / "codex-rs/hepta-agentd/BUILD.bazel").read_text(
+            encoding="utf-8"
+        )
+        self.ledger = (ROOT / "codex-rs/hepta-learning-ledger/BUILD.bazel").read_text(
+            encoding="utf-8"
+        )
 
-    def test_qualification_is_available_only_to_generated_test_targets(self):
+    def test_only_serialized_fixture_receives_legacy_feature(self):
         self.assertTrue(qualifying_wiring(self.defs, self.agentd, self.ledger))
 
-    def test_missing_generated_dependency_wiring_is_rejected(self):
+    def test_global_dependency_replacement_is_rejected(self):
+        altered = self.defs.replace(
+            "integration_test_dependency_replacements.get(test_file_stem, {})",
+            'integration_test_dependency_replacements.get("plasticity_process_e2e", {})',
+        )
+        self.assertFalse(qualifying_wiring(altered, self.agentd, self.ledger))
+
+    def test_retarget_to_type_sharing_test_is_rejected(self):
+        altered = self.agentd.replace(
+            '"plasticity_process_e2e": {', '"terminal_cell_owner": {'
+        )
+        self.assertFalse(qualifying_wiring(self.defs, altered, self.ledger))
+
+    def test_unmapped_default_test_dependency_is_required(self):
         altered = self.defs.replace(
             "deps = integration_test_deps,",
             "deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,",
         )
         self.assertFalse(qualifying_wiring(altered, self.agentd, self.ledger))
 
-    def test_missing_testonly_qualification_label_is_rejected(self):
-        altered = self.agentd.replace(LEDGER_TEST_LABEL, "//codex-rs/hepta-learning-ledger")
+    def test_non_testonly_qualification_target_is_rejected(self):
+        altered = self.agentd.replace(
+            LEDGER_TEST_LABEL, "//codex-rs/hepta-learning-ledger"
+        )
         self.assertFalse(qualifying_wiring(self.defs, altered, self.ledger))
 
 
