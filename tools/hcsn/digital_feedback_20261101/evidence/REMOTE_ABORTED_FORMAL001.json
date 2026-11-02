@@ -1,0 +1,1220 @@
+{
+  "schema": "digital-feedback-remote-aborted-archive-verification-v1",
+  "commit": "df41f64d0a9e01fb4fcbef50da0e7d0939b6c4ca",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "created_utc": "2026-11-02T01:48:09.074Z",
+  "method": "Immutable Git commit/tree chain readback; every blob SHA and size matched to exact local bytes. Local cold restore independently validates original file SHA256s.",
+  "namespace_tree_sha": "3a8fd83b88c8315a7305b95b99dd139d193f46b4",
+  "tree_truncated": false,
+  "route": [
+    {
+      "parent": "a35f649805d176c7505ef09162e31c4cefd599e5",
+      "path": "tools",
+      "sha": "5485b446240b47e6a4f4dd99be9e3aee75d9cca8"
+    },
+    {
+      "parent": "5485b446240b47e6a4f4dd99be9e3aee75d9cca8",
+      "path": "hcsn",
+      "sha": "c8ca3eb234fe523dccc125bad2c10ffef44906d7"
+    },
+    {
+      "parent": "c8ca3eb234fe523dccc125bad2c10ffef44906d7",
+      "path": "digital_feedback_20261101",
+      "sha": "3a8fd83b88c8315a7305b95b99dd139d193f46b4"
+    }
+  ],
+  "all_blob_hashes_verified": true,
+  "verified_files": 119,
+  "files": [
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_control/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_control/MANIFEST.json",
+      "bytes": 15475,
+      "git_sha": "bce842451b56b0dcbf5573d63e135696f761fa65",
+      "sha256": "c4ce5a2ea5ed3ae5bcf70b3752607b8af7aa16b0955532ccec2cb0ad3183af8e",
+      "remote_blob_sha": "bce842451b56b0dcbf5573d63e135696f761fa65",
+      "remote_bytes": 15475,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_control/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_control/part0000.b64",
+      "bytes": 9949,
+      "git_sha": "839705b86140dea9433cb8bb8982d58bcbb30763",
+      "sha256": "6ccacd8adbdc8530a44ac8f1b5d7b23334b6fb7f54521494d83a6edcdfbceba1",
+      "remote_blob_sha": "839705b86140dea9433cb8bb8982d58bcbb30763",
+      "remote_bytes": 9949,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/MANIFEST.json",
+      "bytes": 128645,
+      "git_sha": "e234767f03eb05da4a2a2932b631e9d3cd49bc76",
+      "sha256": "0bfdd340e19362d989beb5df524e26e0b31e65297415fb252006131ac2933790",
+      "remote_blob_sha": "e234767f03eb05da4a2a2932b631e9d3cd49bc76",
+      "remote_bytes": 128645,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0000.b64",
+      "bytes": 400001,
+      "git_sha": "e641055f52adafeb2ecf5152f3c9147578e7d215",
+      "sha256": "91c2a351b48d775622c22fe42cad31cc2cf708b29699f50e3eef24083cd0ef0b",
+      "remote_blob_sha": "e641055f52adafeb2ecf5152f3c9147578e7d215",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0001.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0001.b64",
+      "bytes": 400001,
+      "git_sha": "de6888fc6c0867831c23a06eeab8bfcc65bf20fd",
+      "sha256": "bace429d2a5a6a1a0589891936dd53eadb28a6ebace336f07f2cf4cded3ecaa0",
+      "remote_blob_sha": "de6888fc6c0867831c23a06eeab8bfcc65bf20fd",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0002.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0002.b64",
+      "bytes": 400001,
+      "git_sha": "6147854de8bc08468d09271161dd42796de49340",
+      "sha256": "59dac45f84eb3b5c652bd17c3f73ab3434f53c83f0bb7611d73458e1319ab251",
+      "remote_blob_sha": "6147854de8bc08468d09271161dd42796de49340",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0003.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0003.b64",
+      "bytes": 400001,
+      "git_sha": "f4cfa5a9786b91cd83c0d80ce646f27b2bf52510",
+      "sha256": "a2e4251fe2e15eecd32a20aee76473d2ae5f34efe0dd49d7b1993a773fe76fde",
+      "remote_blob_sha": "f4cfa5a9786b91cd83c0d80ce646f27b2bf52510",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0004.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0004.b64",
+      "bytes": 400001,
+      "git_sha": "b0e383cea1df016ba4b62814ada68b54d1340e32",
+      "sha256": "5b76c329628b3d1fa7b707ab706f4155417fca2cdc9020399db9fc91ed1f767c",
+      "remote_blob_sha": "b0e383cea1df016ba4b62814ada68b54d1340e32",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0005.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0005.b64",
+      "bytes": 400001,
+      "git_sha": "6ff1f07ea81600e568c42dd5b19fc5ecec393f06",
+      "sha256": "9406d73611b78c90f29fe67f51fa9a38714f85ad013d776e0736ac65139b9c84",
+      "remote_blob_sha": "6ff1f07ea81600e568c42dd5b19fc5ecec393f06",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0006.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0006.b64",
+      "bytes": 400001,
+      "git_sha": "440d04ba98671cdb0e90099623813bbdae059de9",
+      "sha256": "1927483fe099f171912c52b6c31d23319798e56e1b9c1d9bf3be479d679e50f6",
+      "remote_blob_sha": "440d04ba98671cdb0e90099623813bbdae059de9",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0007.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0007.b64",
+      "bytes": 400001,
+      "git_sha": "258c2659577197e52e3d869c8b1e7e102d3c77c1",
+      "sha256": "df61c09fcd5f499407ad15d484dc2c4a07956cc296b6433a8c0a5565f03ba2ad",
+      "remote_blob_sha": "258c2659577197e52e3d869c8b1e7e102d3c77c1",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0008.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0008.b64",
+      "bytes": 400001,
+      "git_sha": "332c12de707a2efac872ec312258fed604ea6ffe",
+      "sha256": "0d9dfbcdd1605baedceef80b33ca91c09b0e414005c78bfb052404b0134e0d6f",
+      "remote_blob_sha": "332c12de707a2efac872ec312258fed604ea6ffe",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0009.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0009.b64",
+      "bytes": 400001,
+      "git_sha": "8657e533c68d22a10af63c2280e10594533723f0",
+      "sha256": "f512b866840e39cabff8db38e25436184fcb8fd3a1c35affa0d21a5d2f3dce11",
+      "remote_blob_sha": "8657e533c68d22a10af63c2280e10594533723f0",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0010.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3003/part0010.b64",
+      "bytes": 268629,
+      "git_sha": "90da8ef0c496c8b025838df388933bd6c13a9e11",
+      "sha256": "83508a9e5b63a1a1ce1b070b647b4d7f188e6f8bba78ccc4dafdd39895217125",
+      "remote_blob_sha": "90da8ef0c496c8b025838df388933bd6c13a9e11",
+      "remote_bytes": 268629,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/MANIFEST.json",
+      "bytes": 123963,
+      "git_sha": "706987f365de7da41269cd6ec7486cc433d24b5e",
+      "sha256": "eac398e74307fb9b9f16100a2ec82fe122ea7c1019a556664f484be95b31059f",
+      "remote_blob_sha": "706987f365de7da41269cd6ec7486cc433d24b5e",
+      "remote_bytes": 123963,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0000.b64",
+      "bytes": 400001,
+      "git_sha": "8e7e9c2c63ecb68041945cebf672622c1b94d6ae",
+      "sha256": "9f581200d788fb7e6c708d384b6f16fc95e9ca8dff2bee68e939098e86e6004e",
+      "remote_blob_sha": "8e7e9c2c63ecb68041945cebf672622c1b94d6ae",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0001.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0001.b64",
+      "bytes": 400001,
+      "git_sha": "fd30fb49422f7f3c63cbc0843c91ca4209aa05a5",
+      "sha256": "779c375e3f2edfc5176d12df5c058abcaf41efdc243533d5280450418031d057",
+      "remote_blob_sha": "fd30fb49422f7f3c63cbc0843c91ca4209aa05a5",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0002.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0002.b64",
+      "bytes": 400001,
+      "git_sha": "c3cf2f7bc8bea60a4407c84f58a6c0735ce995bd",
+      "sha256": "3599795470b1792aa6f41b5012920b67b28de8280300138414092158e12d107e",
+      "remote_blob_sha": "c3cf2f7bc8bea60a4407c84f58a6c0735ce995bd",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0003.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0003.b64",
+      "bytes": 400001,
+      "git_sha": "f1de736ae0bad7afc0d73a61c378f18a8ab06693",
+      "sha256": "7d186117b73032f13ab8f1230542f776c0f2a1b725cc4bdc8f6da42f4bbdcb12",
+      "remote_blob_sha": "f1de736ae0bad7afc0d73a61c378f18a8ab06693",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0004.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0004.b64",
+      "bytes": 400001,
+      "git_sha": "6bc61a4af26ad29962920fcdd7812547966d28bd",
+      "sha256": "59ef09daeb875ee621cbb0b08ff2cc28d6b4b1557ea0254123dafd75118bee01",
+      "remote_blob_sha": "6bc61a4af26ad29962920fcdd7812547966d28bd",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0005.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0005.b64",
+      "bytes": 400001,
+      "git_sha": "978125c17a3ce840d270aaad49849e5f017b96ce",
+      "sha256": "5cee422a946f509972fbc5e2805648bfee4ad00f13ef5a613e3890a914a757ee",
+      "remote_blob_sha": "978125c17a3ce840d270aaad49849e5f017b96ce",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0006.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0006.b64",
+      "bytes": 400001,
+      "git_sha": "3796c0385af9508dd3bf4fabc44d08cb06dd9e71",
+      "sha256": "2859f8244dba44b1360e99294daca2576128367358a6b5828900fde476136fd7",
+      "remote_blob_sha": "3796c0385af9508dd3bf4fabc44d08cb06dd9e71",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0007.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0007.b64",
+      "bytes": 400001,
+      "git_sha": "37a3e02132d16a5cd32c23af7ba64aeeb44aa993",
+      "sha256": "5412dc1b2206c5876bbb77b98f51c81a152d1ae4521a3487397a8d620aec1597",
+      "remote_blob_sha": "37a3e02132d16a5cd32c23af7ba64aeeb44aa993",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0008.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0008.b64",
+      "bytes": 400001,
+      "git_sha": "9945da409f5aafda5433ead9399b3160f2c19a88",
+      "sha256": "adc48a9958f6ecbd1cf3bf4024a70472bff5fb1dcb515ab7d8d498ad72db90f9",
+      "remote_blob_sha": "9945da409f5aafda5433ead9399b3160f2c19a88",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0009.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0009.b64",
+      "bytes": 400001,
+      "git_sha": "c6c6711c4a43e76212cc1fc81aa944df142b6a3a",
+      "sha256": "ca494e6421497d0fb67c02002f613ff6dfaff1b03fc5c09ef735df0d2c8b059f",
+      "remote_blob_sha": "c6c6711c4a43e76212cc1fc81aa944df142b6a3a",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0010.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3005/part0010.b64",
+      "bytes": 290489,
+      "git_sha": "734e7e2c443b238c587ea3cc58bd6c715e353f67",
+      "sha256": "0eea8fc7132e7feb13a7fae0c1879d3413db1fd7c6824ebd96967c6e7dc0743a",
+      "remote_blob_sha": "734e7e2c443b238c587ea3cc58bd6c715e353f67",
+      "remote_bytes": 290489,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/MANIFEST.json",
+      "bytes": 126578,
+      "git_sha": "10634b4340221928abb89928230245e1a7eb5fff",
+      "sha256": "d52cbe52e278fb8af303da60abf110d78e79a6c8e354c7323d53f1838189f27c",
+      "remote_blob_sha": "10634b4340221928abb89928230245e1a7eb5fff",
+      "remote_bytes": 126578,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0000.b64",
+      "bytes": 400001,
+      "git_sha": "5a5e8438278a9d88b963c535585096420aa95168",
+      "sha256": "6f0c13390c8cd0e259e5332a63950add22da001c46b9fe7801139e7dddce8a7e",
+      "remote_blob_sha": "5a5e8438278a9d88b963c535585096420aa95168",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0001.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0001.b64",
+      "bytes": 400001,
+      "git_sha": "8d628d7f6e0696a8a99335e9882619a9a6c66749",
+      "sha256": "43eb85da036b32ba01682216edf0d10f64e200cafd1b4124b5c1a368b438b61d",
+      "remote_blob_sha": "8d628d7f6e0696a8a99335e9882619a9a6c66749",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0002.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0002.b64",
+      "bytes": 400001,
+      "git_sha": "8695e02ce89c872587905bc1b39d9a51073b98a1",
+      "sha256": "568abe735011279111652267af462a87d3947284b5b887bdbdab3ab28489ed12",
+      "remote_blob_sha": "8695e02ce89c872587905bc1b39d9a51073b98a1",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0003.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0003.b64",
+      "bytes": 400001,
+      "git_sha": "bcb130ea94fff75b891021e7ffbc7c35add6c1fb",
+      "sha256": "53d4965f18043f694b648b198e970b1663b1487742c63102aaee9ec5555c0831",
+      "remote_blob_sha": "bcb130ea94fff75b891021e7ffbc7c35add6c1fb",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0004.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0004.b64",
+      "bytes": 400001,
+      "git_sha": "5f3cfe276b0339d0d0947363bb7cc1c2523d4b42",
+      "sha256": "2bf15376add25ca3ba544c4a5255739ca6819e8fb04f9ae97f266c9d8d6a6987",
+      "remote_blob_sha": "5f3cfe276b0339d0d0947363bb7cc1c2523d4b42",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0005.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0005.b64",
+      "bytes": 400001,
+      "git_sha": "348d00a1bc3c87145c4dd12a51a9eed2a4df7674",
+      "sha256": "c3dba909ca5115eb09f5837e33c1c7d72d4fddd03cdec11da696c0a28a67a6a6",
+      "remote_blob_sha": "348d00a1bc3c87145c4dd12a51a9eed2a4df7674",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0006.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0006.b64",
+      "bytes": 400001,
+      "git_sha": "232819d26e139687575129b8d567b4a178ca6b73",
+      "sha256": "84bf05e9fb0ab47c1f9399baa963d0809d618eb0722c121fb887484432689f12",
+      "remote_blob_sha": "232819d26e139687575129b8d567b4a178ca6b73",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0007.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0007.b64",
+      "bytes": 400001,
+      "git_sha": "e8084fad08755bad7f6175769b29edfcbb5ba898",
+      "sha256": "262d68daf73cf9a80b16873e782fcf72a4f1c7728b02828609e96ad17e9c46ea",
+      "remote_blob_sha": "e8084fad08755bad7f6175769b29edfcbb5ba898",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0008.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0008.b64",
+      "bytes": 400001,
+      "git_sha": "40a7c0b13915d228048151a27e047bdb9f5d61e0",
+      "sha256": "0e636c1ad79aff4429563062d93f7735cbada8c2db244d24284643dadd62879b",
+      "remote_blob_sha": "40a7c0b13915d228048151a27e047bdb9f5d61e0",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0009.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0009.b64",
+      "bytes": 400001,
+      "git_sha": "9037261c399ac6fe440cb3419ca523c92952445a",
+      "sha256": "1d4a780ce3a49e3dc1bd10649352283fd9336c75132ceb7b20fa7ebfd4f0a5fb",
+      "remote_blob_sha": "9037261c399ac6fe440cb3419ca523c92952445a",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0010.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3007/part0010.b64",
+      "bytes": 231729,
+      "git_sha": "8f3c12f77cca5ba8a7b8f4cdf9fe0d49bc12bf82",
+      "sha256": "41b96bd2def3aa9d7d111db7ca69f0e41742adcd3de4fcb86ef6a1ec3f46ca92",
+      "remote_blob_sha": "8f3c12f77cca5ba8a7b8f4cdf9fe0d49bc12bf82",
+      "remote_bytes": 231729,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/MANIFEST.json",
+      "bytes": 127272,
+      "git_sha": "b16b0a7c5004e06ab2c7e5ec462af2211a5f4dae",
+      "sha256": "412b08c1ca8a4c4e29c2a5a3386a5480db29031200146dac7e55b6cfec6a2021",
+      "remote_blob_sha": "b16b0a7c5004e06ab2c7e5ec462af2211a5f4dae",
+      "remote_bytes": 127272,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0000.b64",
+      "bytes": 400001,
+      "git_sha": "9b58adcfd8d59f1943a09ca743b7ef9828a90104",
+      "sha256": "492ba393691f236142fbf0423feac388ed808e36ce5a19d12b327bc97bab23d4",
+      "remote_blob_sha": "9b58adcfd8d59f1943a09ca743b7ef9828a90104",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0001.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0001.b64",
+      "bytes": 400001,
+      "git_sha": "bb9b480de9341e9564daa46fa8b9f10d9d9e8ef1",
+      "sha256": "1b2a5c2139129a3048b684124477882e99b7f7ad352e900f6e2893405c52824f",
+      "remote_blob_sha": "bb9b480de9341e9564daa46fa8b9f10d9d9e8ef1",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0002.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0002.b64",
+      "bytes": 400001,
+      "git_sha": "35cd64e1abd07c43e259d733ec79078ee834e03d",
+      "sha256": "9163f21e6077740873a31f5a2eeb29522af59eb23664c883377d35509d122141",
+      "remote_blob_sha": "35cd64e1abd07c43e259d733ec79078ee834e03d",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0003.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0003.b64",
+      "bytes": 400001,
+      "git_sha": "707d1e7b678196b70733519888ca3ee0bf59a767",
+      "sha256": "2561e4f040bc1520258384ee680202d25601bab1b269790085df10e3e884f770",
+      "remote_blob_sha": "707d1e7b678196b70733519888ca3ee0bf59a767",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0004.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0004.b64",
+      "bytes": 400001,
+      "git_sha": "067b02a93571d6f6e1335154fbc3ea173612bf7a",
+      "sha256": "14cfa6eb4ff7e33e9eb76361d1e0166883501299d6d154fe8d85d859bb557a97",
+      "remote_blob_sha": "067b02a93571d6f6e1335154fbc3ea173612bf7a",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0005.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0005.b64",
+      "bytes": 400001,
+      "git_sha": "d7d3eb15e4563c913318298dfa05c8ffa27ac967",
+      "sha256": "58cccce3111d2386f35391a2c617a9a743a44ffbdbe120505ac92e7313b692b2",
+      "remote_blob_sha": "d7d3eb15e4563c913318298dfa05c8ffa27ac967",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0006.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0006.b64",
+      "bytes": 400001,
+      "git_sha": "687c30180b46a447c002e2137eb4d701f1d80718",
+      "sha256": "54327b4a873a824206eb49dbdc14a52bb9a27e3f295ab78590a5ae6f9dfd02e2",
+      "remote_blob_sha": "687c30180b46a447c002e2137eb4d701f1d80718",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0007.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0007.b64",
+      "bytes": 400001,
+      "git_sha": "89d2f7f04cc1428610fdd0abbd53b748816383c9",
+      "sha256": "c6d718895b4907743384e000435e03b23a2918d5f1eb76fcda1ee6604c10b26c",
+      "remote_blob_sha": "89d2f7f04cc1428610fdd0abbd53b748816383c9",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0008.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0008.b64",
+      "bytes": 400001,
+      "git_sha": "77c0358dde93321e5862df7330eca19af1a35e77",
+      "sha256": "c198b911e758d030d5ad4180e965437ffeee69580247ee48cf9e930b985a28fe",
+      "remote_blob_sha": "77c0358dde93321e5862df7330eca19af1a35e77",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0009.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0009.b64",
+      "bytes": 400001,
+      "git_sha": "cfbba1d7ba991e02bbab75c9f1c726b54acca9ad",
+      "sha256": "12bc97874e84a8ca9a2e1ae130e526072176233a11044cdae7e486a34e044769",
+      "remote_blob_sha": "cfbba1d7ba991e02bbab75c9f1c726b54acca9ad",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0010.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3009/part0010.b64",
+      "bytes": 163461,
+      "git_sha": "dd2705a076501177e2bc606e164f83fe26383672",
+      "sha256": "48c4ad777ed206af80f4fea4ac13dbe5d993ec940f245f4dfc5607ae6278bc8f",
+      "remote_blob_sha": "dd2705a076501177e2bc606e164f83fe26383672",
+      "remote_bytes": 163461,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3011/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3011/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "3e8a0f9c8152762a3e4e43b0a59a9998e019d551",
+      "sha256": "f7fe2bb515ef6178c1336305572fe212de2cdc2c3a787efc5f73a904d5e3193e",
+      "remote_blob_sha": "3e8a0f9c8152762a3e4e43b0a59a9998e019d551",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3011/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3011/part0000.b64",
+      "bytes": 1113,
+      "git_sha": "498f8124677644b70c57016397ded434bb6b2cf5",
+      "sha256": "6b0ba1a63673e7f51cfe9369e8d90065cf0096214af9315e063560778b2f2e45",
+      "remote_blob_sha": "498f8124677644b70c57016397ded434bb6b2cf5",
+      "remote_bytes": 1113,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3013/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3013/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "52a91583c6ec31451848c670e1fdcebbcbfadc97",
+      "sha256": "2fb66730a0f62fc8d1e39439100cdfd6bf3c66b9753fe641bd8f93c0e5eac985",
+      "remote_blob_sha": "52a91583c6ec31451848c670e1fdcebbcbfadc97",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3013/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3013/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "8d6228559657671bcffed53b87da8c4f7d5e6f76",
+      "sha256": "ad0853bf605a54c4a2c723baed2065f8ca5ed51963e94609b2377b983706b5e8",
+      "remote_blob_sha": "8d6228559657671bcffed53b87da8c4f7d5e6f76",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3015/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3015/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "c898c1b31e9915d7fce11c7cd644fa9fac907473",
+      "sha256": "4d593fc4885510c7b643680b630cf664f6e1c37996cb8c518e19ed5d3b614907",
+      "remote_blob_sha": "c898c1b31e9915d7fce11c7cd644fa9fac907473",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3015/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3015/part0000.b64",
+      "bytes": 1113,
+      "git_sha": "ce33710054901e8f5d76dd9f6936011dd77fbb5e",
+      "sha256": "af9f9fa11a6ce3483f22df941ee92a7be1ff424bed953af1cb2c57e3d35b1ac3",
+      "remote_blob_sha": "ce33710054901e8f5d76dd9f6936011dd77fbb5e",
+      "remote_bytes": 1113,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3017/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3017/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "e5e01cd65ba15fd86e158fce6d9c7548c46376c8",
+      "sha256": "f2f853511a4f57d86ca4a2fb67f3c2bad192d7192acb59764b2e91c06b15877c",
+      "remote_blob_sha": "e5e01cd65ba15fd86e158fce6d9c7548c46376c8",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3017/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3017/part0000.b64",
+      "bytes": 1113,
+      "git_sha": "821217fdd7d355f83a92d7cc1a3d519240549174",
+      "sha256": "ff83d6608412548c9f425a42bfbec48a6438254aafe96b08a6635468b78ec1f5",
+      "remote_blob_sha": "821217fdd7d355f83a92d7cc1a3d519240549174",
+      "remote_bytes": 1113,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3019/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3019/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "b690b2ef742bcbd6a8781a74dd60e9d45ec12836",
+      "sha256": "c8bb8b365db3f758f3271489431ecb1b4b11d787d18127952c80f4a9b73db385",
+      "remote_blob_sha": "b690b2ef742bcbd6a8781a74dd60e9d45ec12836",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3019/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3019/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "37944cd4dc4489add4918e58bacbd117bd5a3e68",
+      "sha256": "42ee98ce514a399fc64b4e97e4c6643c8419ecefeb0fbcc0cfe80d4ae7a378bc",
+      "remote_blob_sha": "37944cd4dc4489add4918e58bacbd117bd5a3e68",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3021/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3021/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "085fdd4009f854dc485ddffb76791751519684b6",
+      "sha256": "33b2c8e99168bed361162004fd31289d770255230052ae7fe5c4027348dff719",
+      "remote_blob_sha": "085fdd4009f854dc485ddffb76791751519684b6",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3021/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3021/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "69142a9172b1573cf8ad614cede7295bf3d3a1bc",
+      "sha256": "0e91515d21e7e560bca77505cd755c8ec78aba98ecf838c716d62e24785ace1c",
+      "remote_blob_sha": "69142a9172b1573cf8ad614cede7295bf3d3a1bc",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3023/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3023/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "a5884be8d3d1cfaf0129080cf313691c0c4fccf9",
+      "sha256": "dd586dfccc9b04b04d9b8cee9119103e8130584d78b2b8128fc75622983a09c0",
+      "remote_blob_sha": "a5884be8d3d1cfaf0129080cf313691c0c4fccf9",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3023/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3023/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "2e5e910b60369dd00fb210905662c2f2e3d3055f",
+      "sha256": "5c5007b758aed7bb301831689157d0090f3b1be94b55893869831236acf4df7a",
+      "remote_blob_sha": "2e5e910b60369dd00fb210905662c2f2e3d3055f",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3025/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3025/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "b1b16ccc5cbdb19fd786ff81d9df8418f5525bfc",
+      "sha256": "cd4a3f4677aaa39877c5ed79bb87115622d8eb605d8ec38236934ea8dd45368b",
+      "remote_blob_sha": "b1b16ccc5cbdb19fd786ff81d9df8418f5525bfc",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3025/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3025/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "5b13f37d90533df41fed2544ae762c8cfa9f21f5",
+      "sha256": "8d90d9192e3a0bed135d109d91337a5715c83e20f0c454a13519c04f2f63467b",
+      "remote_blob_sha": "5b13f37d90533df41fed2544ae762c8cfa9f21f5",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3027/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3027/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "5250bb8dd61218349afe21606b1e94238f416854",
+      "sha256": "de636320d2b2956b726aedbc508218adeaaa1f88e658386c1859d7a52d871179",
+      "remote_blob_sha": "5250bb8dd61218349afe21606b1e94238f416854",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3027/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3027/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "b10877649016c378acd1d7cb8af5b92e2779e921",
+      "sha256": "3f0ba9274aad90e1649c469a4d8d1c162ef13f6c074263bec4192f34f5923b65",
+      "remote_blob_sha": "b10877649016c378acd1d7cb8af5b92e2779e921",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3029/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3029/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "204e95bc039d15e75d962d90d1e711626c8af315",
+      "sha256": "a725f96f372da38d86a4e4adfb3276e0aa0771048a706cf213a12d17c57e4c1b",
+      "remote_blob_sha": "204e95bc039d15e75d962d90d1e711626c8af315",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3029/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3029/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "6d9d486b8c8cd9409633a6a8cfeef9419fd2f12d",
+      "sha256": "4837cad51e3686ec8be5c94416e39ff5a7a37832ac486079fd6c8ee4561ac59d",
+      "remote_blob_sha": "6d9d486b8c8cd9409633a6a8cfeef9419fd2f12d",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3031/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3031/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "e316474e45fb26274bbbe13219e4a32c7496247a",
+      "sha256": "051acdff0b39fce739604986b010683ded6c005f634ec6888765874d9f9c9f16",
+      "remote_blob_sha": "e316474e45fb26274bbbe13219e4a32c7496247a",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3031/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3031/part0000.b64",
+      "bytes": 1113,
+      "git_sha": "1dc27f959c286d5e83cd77ed4d2c4f08b7bebb6a",
+      "sha256": "cd60491ab621e406072fca2239a23f9dbaf6a58241cad4b52488e4ef15f5c6f0",
+      "remote_blob_sha": "1dc27f959c286d5e83cd77ed4d2c4f08b7bebb6a",
+      "remote_bytes": 1113,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3033/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3033/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "ed1042bb0eb147ff87ff6749d3ebbc8d5be58d13",
+      "sha256": "639412aee316dcba2de92d49c8ca09c43913b3b89770e1398d884bde2377748c",
+      "remote_blob_sha": "ed1042bb0eb147ff87ff6749d3ebbc8d5be58d13",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3033/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3033/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "13639c9f111a1c29c73b9992ad79b3808cd8690e",
+      "sha256": "45edde83f2725a0baa4fb84f74cf3343fe745ded970dd12f20858fd0248c6f79",
+      "remote_blob_sha": "13639c9f111a1c29c73b9992ad79b3808cd8690e",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3035/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3035/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "41984165a4cae5448eabe904dd3b084d9bf2804d",
+      "sha256": "bda46f2ba2551b7a89f5863f890b51d2be582e18cce63b0e6316ee722b702aaa",
+      "remote_blob_sha": "41984165a4cae5448eabe904dd3b084d9bf2804d",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3035/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3035/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "ff7157e8fa169aa61ce58a9dfef2a65e53219f5d",
+      "sha256": "9d77d76708a3d97b789ec9e2d824c94a618df9546a92a82f4d191c69359843f2",
+      "remote_blob_sha": "ff7157e8fa169aa61ce58a9dfef2a65e53219f5d",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3037/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3037/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "5be2a44d9bdff95cc11f7bbfdbf3b5b74b6dc2db",
+      "sha256": "54330bc4c964dcb6162341a034db03c5b4099216328f2bf7d4628e72a80393d1",
+      "remote_blob_sha": "5be2a44d9bdff95cc11f7bbfdbf3b5b74b6dc2db",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3037/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3037/part0000.b64",
+      "bytes": 1113,
+      "git_sha": "88c5f783792b8e22ba36ad9079311fd6919908e2",
+      "sha256": "d7decfd9d3869f8400d932434a5470cb7532a8da8cbd34590977ee2f309b1ea4",
+      "remote_blob_sha": "88c5f783792b8e22ba36ad9079311fd6919908e2",
+      "remote_bytes": 1113,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3039/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3039/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "5b473831cf8b7fb77011ee246f6ba8010ea890b5",
+      "sha256": "193d49992dfa84769d05a928373c26862670c39c82c161ed866d8422a50ea8b7",
+      "remote_blob_sha": "5b473831cf8b7fb77011ee246f6ba8010ea890b5",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3039/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3039/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "a351f2902c7c8a3bf01e5c3dfd3c7d50291a2b93",
+      "sha256": "9f0f806684ae0346b0c4f5d27677bd96afdc2e25265010319612da9e51bc0787",
+      "remote_blob_sha": "a351f2902c7c8a3bf01e5c3dfd3c7d50291a2b93",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3041/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3041/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "5b147c744c9fd76948f5ca88ca175a314fb04fda",
+      "sha256": "a581fd911d8211a6e3ee8298ce28ebe0cf0d8f37aad8036ba0c3cbdb14e99e1e",
+      "remote_blob_sha": "5b147c744c9fd76948f5ca88ca175a314fb04fda",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3041/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3041/part0000.b64",
+      "bytes": 1113,
+      "git_sha": "fbdd9581893bada874196b16d3061977c1657535",
+      "sha256": "3d2f20b9ab0142dda2f4c1b2f4955a14c0cb209526ef2292a4e0faa881c16bb0",
+      "remote_blob_sha": "fbdd9581893bada874196b16d3061977c1657535",
+      "remote_bytes": 1113,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3043/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3043/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "12a41cf8d51fe3ecba63bbc172862b3b966f5df0",
+      "sha256": "6b954b43d55737d72f9dba91cd5cd16d72c56e14f4f385ab495801f004d1b84b",
+      "remote_blob_sha": "12a41cf8d51fe3ecba63bbc172862b3b966f5df0",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3043/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3043/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "bfd23c73886332837a601fe3a8b4d87c6a9cf27c",
+      "sha256": "c2ea04ba9dd98db9f09af3e908603f186227536d5db5298e15f3233cbd9e9ad4",
+      "remote_blob_sha": "bfd23c73886332837a601fe3a8b4d87c6a9cf27c",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3045/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3045/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "c364540f21e0447a69f3c4c99056a97804e0e44f",
+      "sha256": "7174b99142fefe892d7314a9776ce8c00568c6ca2c4a8a6e723682a3198e69e5",
+      "remote_blob_sha": "c364540f21e0447a69f3c4c99056a97804e0e44f",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3045/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3045/part0000.b64",
+      "bytes": 1113,
+      "git_sha": "1ccf6b637a00c17f84d12e1cb726a7ee1b727ac9",
+      "sha256": "2830e88fbd26c4762c387aa8082b1c7b50e6451301a25053498537e46a43688d",
+      "remote_blob_sha": "1ccf6b637a00c17f84d12e1cb726a7ee1b727ac9",
+      "remote_bytes": 1113,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3047/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3047/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "0408a43fbc9b0c533118287b115043c6aa2768a3",
+      "sha256": "21bfb93c86fec16da2891fa5df131c8ada4a94350cc63624780746db82b39d4d",
+      "remote_blob_sha": "0408a43fbc9b0c533118287b115043c6aa2768a3",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3047/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3047/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "0a3e7339506d705a653b46b72eec591796cc8a6c",
+      "sha256": "fb0b983715212575dbfef78d08ffb23a55ab8f386b8b47c2d213e7eb43a15ba1",
+      "remote_blob_sha": "0a3e7339506d705a653b46b72eec591796cc8a6c",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3049/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3049/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "56ac2cd3af2f3876a327932dfb87e96fa1dd461e",
+      "sha256": "101cdb799260b651ba90deaf296b7ded5db74ec0cd95c422dec75552e38fcfc0",
+      "remote_blob_sha": "56ac2cd3af2f3876a327932dfb87e96fa1dd461e",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3049/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3049/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "d6bf59b79f39a098200fc680b0188378ac4404bf",
+      "sha256": "492fdbbd9744bc3776b4b653f70356b425fe365884d65a88c19ee057687f6049",
+      "remote_blob_sha": "d6bf59b79f39a098200fc680b0188378ac4404bf",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3051/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3051/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "6725832e14ed2130ff8345b2e1c30a05429c0315",
+      "sha256": "0b2c7ae4be005f8392a243bc8e8fea8d1b23abd4c86e8cfde414451475e2b519",
+      "remote_blob_sha": "6725832e14ed2130ff8345b2e1c30a05429c0315",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3051/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3051/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "a7be8aef0268851c60873717855c215c1c96afed",
+      "sha256": "a774aa66159c65e5a17a7da0175ce1d1050dfef7e7c882910b565cc64c379c86",
+      "remote_blob_sha": "a7be8aef0268851c60873717855c215c1c96afed",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3053/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3053/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "669ed47b33277370a52e2ae6c169c2253885f353",
+      "sha256": "3f0f3f145884e19d0d9e8d04b2c887d2c2ba0871406bd65e9e4cc1706df74efd",
+      "remote_blob_sha": "669ed47b33277370a52e2ae6c169c2253885f353",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3053/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3053/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "1b070182a6b03e564de4ef6bf1f882026e79b090",
+      "sha256": "bcde8942b7a89c6f21e91a3dd7435a7b8ef3ea44dce055a6d56bd9b02f8474a4",
+      "remote_blob_sha": "1b070182a6b03e564de4ef6bf1f882026e79b090",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3055/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3055/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "5d0b1ed581870fa04111800d0c6e6456a2db6b1f",
+      "sha256": "982524a7bc3ed09adde055e1caae5d3224b15bd6c11c018c110569d2e0365d1b",
+      "remote_blob_sha": "5d0b1ed581870fa04111800d0c6e6456a2db6b1f",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3055/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3055/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "c41ac3bf7a13059940522173973d203fb717f238",
+      "sha256": "7fb41776f8981438fa01a33b0a8de77609d182aefb5b307d7cd0a4d6b8974436",
+      "remote_blob_sha": "c41ac3bf7a13059940522173973d203fb717f238",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3057/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3057/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "c1f2c5f1ba9151516886f7d5f45c212851db91e5",
+      "sha256": "ac1413cdabab1cf9c06c2c8e24393e9575f6d96d5123d58b8c7aaf93a325130e",
+      "remote_blob_sha": "c1f2c5f1ba9151516886f7d5f45c212851db91e5",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3057/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3057/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "0b90d70fbf4cd040e5464871a58cf41b713dcf8c",
+      "sha256": "75691629b5022454c3e9d5af97d99d38a393740c0141982de65be1539db89f6f",
+      "remote_blob_sha": "0b90d70fbf4cd040e5464871a58cf41b713dcf8c",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3059/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3059/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "2b08dbd72a70b0ea361cb24608899db2247c018c",
+      "sha256": "f828cdcaf28557f7d28d658666297f4aedbc7b12100303cba4aa05b6307e2c99",
+      "remote_blob_sha": "2b08dbd72a70b0ea361cb24608899db2247c018c",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3059/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3059/part0000.b64",
+      "bytes": 1117,
+      "git_sha": "d04350c06086a9293813531a3ee7fbdcd030288a",
+      "sha256": "2c7ea1ac5208cea8863a97a964b49cfc9f8060b0aff5b044d929f7980003d8df",
+      "remote_blob_sha": "d04350c06086a9293813531a3ee7fbdcd030288a",
+      "remote_bytes": 1117,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3061/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3061/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "f402f96a319a07032e889867e9c551504bb26627",
+      "sha256": "1ecb9d66e9a23cf44d5c1b7dd629d0adc130a2d0ef73c19fff5220903ef80020",
+      "remote_blob_sha": "f402f96a319a07032e889867e9c551504bb26627",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3061/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3061/part0000.b64",
+      "bytes": 1113,
+      "git_sha": "28cda36c9133894e0d7e9af8fc27db283b1c4b80",
+      "sha256": "202610c24fe096290f3b16eabcad59977d51a50e213a3190f38ee1bcc709d6d2",
+      "remote_blob_sha": "28cda36c9133894e0d7e9af8fc27db283b1c4b80",
+      "remote_bytes": 1113,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3063/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3063/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "9aba20e69815553c1e1b5dd1a48280ccfafa3524",
+      "sha256": "ae2c51f2daccad2497eaa972698a890e8db37077bbf77357a74b770e57a5ff9e",
+      "remote_blob_sha": "9aba20e69815553c1e1b5dd1a48280ccfafa3524",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3063/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3063/part0000.b64",
+      "bytes": 1113,
+      "git_sha": "d478507fef608c546a89568582d9e3f35781f552",
+      "sha256": "434210d98462c40c3350d099b3ff3801e7692f03b33ef1c28b9a100e2d1a17e0",
+      "remote_blob_sha": "d478507fef608c546a89568582d9e3f35781f552",
+      "remote_bytes": 1113,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3065/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3065/MANIFEST.json",
+      "bytes": 749,
+      "git_sha": "5a66c7b44a2a6e9d87151ef3b9d9b55c7ac218ee",
+      "sha256": "75d01f97b7ac2562634b6a4584d4358aa9f00c5e2171b485e7c5f04dfd5f1edd",
+      "remote_blob_sha": "5a66c7b44a2a6e9d87151ef3b9d9b55c7ac218ee",
+      "remote_bytes": 749,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3065/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/training_001_fit_3065/part0000.b64",
+      "bytes": 1113,
+      "git_sha": "f8a3f0a4f2e07fccd209e4dbf3cfca2db82e7151",
+      "sha256": "bb7f419adc61fe63705764b16c43b1b922aa5ff15cdcd125ef6bc67a3bd2acd6",
+      "remote_blob_sha": "f8a3f0a4f2e07fccd209e4dbf3cfca2db82e7151",
+      "remote_bytes": 1113,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/formal_source_001/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/formal_source_001/MANIFEST.json",
+      "bytes": 3418,
+      "git_sha": "5254b8139e9d429a8912cdeb3e73785c8def9e45",
+      "sha256": "11a6025eb528bd27eb5ab2ae17e3655f3e6552aabb40321cfb3136206b60257c",
+      "remote_blob_sha": "5254b8139e9d429a8912cdeb3e73785c8def9e45",
+      "remote_bytes": 3418,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/formal_source_001/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/formal_source_001/part0000.b64",
+      "bytes": 69665,
+      "git_sha": "b04faafca855dda5e6e2a928ade1ebf175fa48e9",
+      "sha256": "227a3e4b4f0ebf789c544d5875b52ef2b59349639c693742beb31176cd9987ea",
+      "remote_blob_sha": "b04faafca855dda5e6e2a928ade1ebf175fa48e9",
+      "remote_bytes": 69665,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/MANIFEST.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/MANIFEST.json",
+      "bytes": 14093,
+      "git_sha": "e40b47165ec1e4b4960b408bb4b8855f971dd84b",
+      "sha256": "94539e0433fc522128125b038168c8dff16f7c3ba48932aa2463db111308b8e3",
+      "remote_blob_sha": "e40b47165ec1e4b4960b408bb4b8855f971dd84b",
+      "remote_bytes": 14093,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/part0000.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/part0000.b64",
+      "bytes": 400001,
+      "git_sha": "7ba6a5f59721d38e41d5585db016c057a11faa8b",
+      "sha256": "cee9711135ed6ac9579ecc46dcef60fb8820a49f7380e926ebfa26fb120da480",
+      "remote_blob_sha": "7ba6a5f59721d38e41d5585db016c057a11faa8b",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/part0001.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/part0001.b64",
+      "bytes": 400001,
+      "git_sha": "9b840048a7d950fe17ceaf4e92d4ea2affa24460",
+      "sha256": "b82c7f32ecb133f4c140b204599fe028a7ea79e348ae8353b93ccdede960827a",
+      "remote_blob_sha": "9b840048a7d950fe17ceaf4e92d4ea2affa24460",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/part0002.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/part0002.b64",
+      "bytes": 400001,
+      "git_sha": "d1c2d08c26fec1030cc43e2a24bb833e12fa0726",
+      "sha256": "6efd0f188aebadc03dbf4163c6a1a85db6983fc35d62062eb541c788163cb7f0",
+      "remote_blob_sha": "d1c2d08c26fec1030cc43e2a24bb833e12fa0726",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/part0003.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/part0003.b64",
+      "bytes": 400001,
+      "git_sha": "d1101e29e8a6bb6d6c6afef5727d833bff994c83",
+      "sha256": "6e0f8d2f371ef851734dd4f76f3fae3c1c1e5ffe7dd831b7bd78de04ee2cf06f",
+      "remote_blob_sha": "d1101e29e8a6bb6d6c6afef5727d833bff994c83",
+      "remote_bytes": 400001,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/part0004.b64",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/archives/cooperative_budget_evidence/part0004.b64",
+      "bytes": 10257,
+      "git_sha": "655152f589156ea51ca0afb57ca540016f5c6adc",
+      "sha256": "55d35fecc47de73899f515e74a7b53842e9c4ee1839014d2a3463a167edd0f58",
+      "remote_blob_sha": "655152f589156ea51ca0afb57ca540016f5c6adc",
+      "remote_bytes": 10257,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/evidence/PACK_training_001_formal_source_001.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/evidence/PACK_training_001_formal_source_001.json",
+      "bytes": 14136,
+      "git_sha": "abd4bafa02d90415d5cabd25757d5430249fb0f3",
+      "sha256": "cee6d3831c77600b955ad284067e9ac5ab88fd00990e8898ec1d64d04bc993c8",
+      "remote_blob_sha": "abd4bafa02d90415d5cabd25757d5430249fb0f3",
+      "remote_bytes": 14136,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/evidence/PACK_cooperative_budget_evidence.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/evidence/PACK_cooperative_budget_evidence.json",
+      "bytes": 564,
+      "git_sha": "4b11fdf8eaf4241a8ce09fdaa8afd8bd59cb7fe4",
+      "sha256": "8a5bbbefa7036238f08665823d5f95bf0849c1ad72f5b2af20359dcf3c090d61",
+      "remote_blob_sha": "4b11fdf8eaf4241a8ce09fdaa8afd8bd59cb7fe4",
+      "remote_bytes": 564,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/evidence/FORMAL001_FAILURE.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/evidence/FORMAL001_FAILURE.json",
+      "bytes": 3032,
+      "git_sha": "5aabe29cbe22e95638613b5062621d9029515dd5",
+      "sha256": "428b4d93ae4f6c0c60b37cff91111acac4c0347f8a425da9e5861fe3645dd945",
+      "remote_blob_sha": "5aabe29cbe22e95638613b5062621d9029515dd5",
+      "remote_bytes": 3032,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/evidence/COST_FORMAL001.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/evidence/COST_FORMAL001.json",
+      "bytes": 111691,
+      "git_sha": "1a36c040f62d990510cdfe7ad8609d4d219b7016",
+      "sha256": "800e52a7d26a5c4a367cdd3016f3fcb597b664795d39111bb19c47bb11798339",
+      "remote_blob_sha": "1a36c040f62d990510cdfe7ad8609d4d219b7016",
+      "remote_bytes": 111691,
+      "match": true
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/evidence/REMOTE_DEVELOPMENT002.json",
+      "absolute": "/workspace/scratch/078cd06b139c/hepta-feedback/tools/hcsn/digital_feedback_20261101/evidence/REMOTE_DEVELOPMENT002.json",
+      "bytes": 78524,
+      "git_sha": "d21e79659b14060383fa5386d284ea73368194ab",
+      "sha256": "2266e1a1a18576ca0aaf8fcdb2251d9c5a404f122465358f1cbdf6cfb5ab901e",
+      "remote_blob_sha": "d21e79659b14060383fa5386d284ea73368194ab",
+      "remote_bytes": 78524,
+      "match": true
+    }
+  ]
+}

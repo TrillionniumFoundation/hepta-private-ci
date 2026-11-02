@@ -338,6 +338,155 @@ def infer(fits, means, validity):
     return output
 
 
+def cpu_checks(review, receipt_rows, protocol, seal=None):
+    """Recompute the complete registered CPU and training-validity contracts.
+
+    Rows may stream from disk. Only bounded numeric summaries remain in memory;
+    receipt boolean flags never substitute for actual CPU or feedback records.
+    """
+    fits = protocol["fits"]
+    if not fits or len(fits) != len(set(fits)):
+        raise ValueError("unique nonempty registered fits required for CPU audit")
+    budget = protocol["training_cpu_seconds"]
+    tolerance = protocol["cpu_tolerance_seconds"]
+    disparity_limit = protocol["between_arm_cpu_tolerance_seconds"]
+    if (not all(isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x)
+                for x in (budget, tolerance, disparity_limit))
+            or budget <= 0 or tolerance < 0 or disparity_limit < 0):
+        raise ValueError("invalid frozen CPU contract")
+    expected = {(fit, candidate) for fit in fits for candidate in ARMS[:-1]}
+    index = {}
+    seen_rows = 0
+    for receipt in receipt_rows:
+        seen_rows += 1
+        key = (receipt.get("fit"), receipt.get("spec", {}).get("id"))
+        context = f"cpu/fit_{key[0]}/{key[1]}"
+        if key not in expected:
+            review.fail(context, "unregistered CPU receipt identity", repr(key))
+            continue
+        if key in index:
+            review.fail(context, "duplicate CPU receipt identity", repr(key))
+            continue
+        value = dict(fit=key[0], candidate=key[1], actual_cpu_seconds=None,
+                     cpu_gate=False, training_valid_recomputed=False)
+        index[key] = value
+        try:
+            actual = receipt["candidate_cpu_seconds"]
+            if (isinstance(actual, bool) or not isinstance(actual, (int, float))
+                    or not math.isfinite(actual) or actual < 0):
+                raise ValueError("missing, negative or nonfinite actual CPU")
+            contract_matches = (receipt["training_cpu_budget"] == budget
+                                and receipt["cpu_tolerance_seconds"] == tolerance)
+            review.equal(context + "/registered_contract", contract_matches, True)
+            cpu_gate = bool(contract_matches and abs(actual - budget) <= tolerance)
+            review.equal(context + "/actual_cpu_gate", cpu_gate, True)
+            review.equal(context + "/cpu_flag_is_boolean", isinstance(receipt.get("cpu_compliant"), bool), True)
+            review.equal(context + "/cpu_flag_matches_actual", receipt.get("cpu_compliant"), cpu_gate)
+            value.update(actual_cpu_seconds=actual, cpu_gate=cpu_gate)
+            updates = receipt["updates"]
+            failures = receipt["failures"]
+            rounds = receipt["visit_rounds"]
+            if not all(isinstance(rows, list) for rows in (updates, failures, rounds)):
+                raise ValueError("updates, failures and feedback rounds must be retained lists")
+            feedback = expected_spec(key[1])["feedback"]
+            planned = 0 if feedback == "off" else 1 if feedback == "single" else len(protocol["feedback_round_fractions"])
+            total_worlds = protocol["feedback_worlds_total"]
+            if not isinstance(total_worlds, int) or isinstance(total_worlds, bool) or total_worlds < planned:
+                raise ValueError("invalid registered feedback world allocation")
+            world_counts = [total_worlds // planned + int(i < total_worlds % planned)
+                            for i in range(planned)]
+            feedback_violations_before = review.violations_count
+            review.equal(context + "/collection_round_count", receipt["visit_collection_count"], len(rounds))
+            if len(rounds) > planned:
+                raise ValueError("more feedback collections than registered rounds")
+            for ordinal, update in enumerate(updates):
+                if (update.get("update") != ordinal + 1
+                        or any(not isinstance(update.get(name), int) or isinstance(update[name], bool)
+                               or update[name] < 0 for name in ("visited_rows", "mixed_realized_records"))):
+                    raise ValueError("invalid committed optimizer update identity or visitation counts")
+            flattened, committed_counts = [], []
+            complete = supervised = 0
+            for ordinal, row in enumerate(rounds):
+                episodes, raw_rows, used_rows = row["episodes"], row["rows"], row["supervised_rows"]
+                if not all(isinstance(items, list) for items in (episodes, raw_rows, used_rows)):
+                    raise ValueError("feedback episode, collection and supervision lists missing")
+                where = context + f"/round_{ordinal}"
+                review.equal(where + "/round_id", row["round_id"], ordinal + 1)
+                review.equal(where + "/planned_worlds", row["planned_worlds"], world_counts[ordinal])
+                review.equal(where + "/complete_worlds", row["complete_worlds"], len(episodes))
+                if row["status"] == "complete":
+                    review.equal(where + "/complete_registered_worlds", len(episodes), world_counts[ordinal])
+                for collected in raw_rows:
+                    count = collected["supervised_updates"]
+                    if not isinstance(count, int) or isinstance(count, bool) or not 0 <= count <= len(updates):
+                        raise ValueError("invalid committed visit supervision count")
+                    review.equal(where + "/row_round_id", collected["round_id"], ordinal + 1)
+                    eligible_updates = sum(update["visited_rows"] > len(flattened)
+                                           and update["mixed_realized_records"] > 0 for update in updates)
+                    review.equal(where + "/supervision_has_committed_update_support", count <= eligible_updates, True)
+                    flattened.append(collected)
+                    committed_counts.append(count)
+                expected_used = [item for item in raw_rows if item["supervised_updates"] > 0]
+                subset_digest = lambda values: hashlib.sha256(json.dumps(
+                    values, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+                review.equal(where + "/supervised_subset_sha256", subset_digest(used_rows), subset_digest(expected_used))
+                complete += int(row["status"] == "complete" and len(episodes) == world_counts[ordinal])
+                supervised += int(bool(expected_used))
+            review.equal(context + "/realized_visit_records", receipt["realized_visit_records"], len(flattened))
+            review.equal(context + "/committed_visit_counts", receipt["visit_supervised_update_counts"], committed_counts)
+            encoded_rows = json.dumps(flattened, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+            review.equal(context + "/collected_rows_sha256", receipt["visited_rows_sha256"], hashlib.sha256(encoded_rows).hexdigest())
+            review.equal(context + "/supervision_total_bounded_by_committed_batches", sum(committed_counts) <= sum(
+                min(update["visited_rows"], update["mixed_realized_records"]) for update in updates), True)
+            feedback_consistent = review.violations_count == feedback_violations_before
+            valid = (feedback_consistent and not failures and len(updates) > 0
+                     and complete == planned and supervised == planned)
+            review.equal(context + "/optimizer_updates", receipt["optimizer_updates"], len(updates))
+            review.equal(context + "/planned_feedback_rounds", receipt["planned_feedback_rounds"], planned)
+            review.equal(context + "/complete_feedback_rounds", receipt["complete_feedback_rounds"], complete)
+            review.equal(context + "/supervised_feedback_rounds", receipt["supervised_feedback_rounds"], supervised)
+            review.equal(context + "/training_flag_is_boolean", isinstance(receipt.get("training_valid"), bool), True)
+            review.equal(context + "/training_flag_matches_records", receipt.get("training_valid"), valid)
+            review.equal(context + "/actual_training_valid_gate", valid, True)
+            value.update(actual_cpu_seconds=actual, cpu_gate=cpu_gate, training_valid_recomputed=valid,
+                         optimizer_updates=len(updates), planned_rounds=planned,
+                         complete_rounds=complete, supervised_rounds=supervised,
+                         feedback_records_consistent=feedback_consistent)
+        except (KeyError, TypeError, ValueError) as error:
+            review.fail(context, "invalid or incomplete training receipt", str(error))
+    missing = sorted(expected - index.keys())
+    review.equal("cpu/receipt_count", seen_rows, len(expected))
+    review.equal("cpu/missing_registered_receipts", missing, [])
+    groups = []
+    for fit in fits:
+        rows = [index.get((fit, candidate)) for candidate in ARMS[:-1]]
+        numeric = all(row is not None and row["actual_cpu_seconds"] is not None for row in rows)
+        actual = [row["actual_cpu_seconds"] for row in rows] if numeric else []
+        disparity = max(actual) - min(actual) if numeric else None
+        disparity_gate = disparity is not None and disparity <= disparity_limit
+        review.equal(f"cpu/fit_{fit}/disparity_gate", disparity_gate, True)
+        groups.append(dict(fit=fit, expected_arms=len(ARMS) - 1,
+                           actual_min=min(actual) if numeric else None,
+                           actual_max=max(actual) if numeric else None,
+                           disparity_seconds=disparity, disparity_gate=disparity_gate,
+                           matching_gate=bool(disparity_gate and all(row["cpu_gate"] for row in rows)),
+                           all_training_valid=all(row is not None and row["training_valid_recomputed"] for row in rows)))
+    complete_set = not missing and len(index) == len(expected) and seen_rows == len(expected)
+    all_cpu = complete_set and all(group["matching_gate"] for group in groups)
+    all_valid = complete_set and all(group["all_training_valid"] for group in groups)
+    if seal is not None:
+        matching = seal.get("cpu_matching", {})
+        for name, computed in (("all_actual_cpu_matching", all_cpu), ("all_training_valid", all_valid)):
+            review.equal("seal/cpu_matching/" + name + "/strict_true", matching.get(name) is True, True)
+            review.equal("seal/cpu_matching/" + name + "/recomputed", matching.get(name), computed)
+    return dict(expected_receipts=len(expected), observed_receipts=seen_rows, unique_registered_receipts=len(index),
+                missing=[dict(fit=fit, candidate=candidate) for fit, candidate in missing],
+                budget_seconds=budget, per_arm_tolerance=tolerance, between_arm_tolerance=disparity_limit,
+                all_actual_cpu_matching=all_cpu, all_training_valid=all_valid,
+                arms=[index[key] for key in sorted(index)], fits=groups,
+                scope="Actual recorded CPU, complete registered identities, registered feedback world allocation, positive committed supervision counts and exact used-row subsets. No hardware-counter reconstruction or replay of sampled minibatch indices/gradients.")
+
+
 def audit(confirmation, protocol_path, analysis_path, seal_path=None, training=None):
     review = Review()
     protocol, analysis = read(protocol_path), read(analysis_path)
@@ -349,6 +498,9 @@ def audit(confirmation, protocol_path, analysis_path, seal_path=None, training=N
         review.equal("seal/schema", seal.get("schema"), "digital-feedback-sealed-models-v1")
         review.equal("seal/protocol", seal["protocol"], protocol)
         review.equal("seal/fits", seal["fits"], fits)
+        for name in ("all_actual_cpu_matching", "all_training_valid"):
+            review.equal("seal/cpu_matching/" + name + "/strict_true",
+                         seal.get("cpu_matching", {}).get(name) is True, True)
         repository = Path(__file__).resolve().parents[4]
         namespace = Path(__file__).resolve().parents[1]
         inherited = read(namespace.parent / "digital_mechanisms_20261101/SOURCE_FREEZE.json")["source_sha256"]
@@ -369,6 +521,20 @@ def audit(confirmation, protocol_path, analysis_path, seal_path=None, training=N
         review.equal("remote_receipt/model_manifest", remote["model_manifest_sha256"], seal["model_manifest_sha256"])
         review.equal("remote_receipt/verified_flag", remote["all_blob_hashes_verified"], True)
     means, validity = {}, {}
+    cpu_result = None
+    if training:
+        def retained_receipts():
+            for fit in fits:
+                for candidate in ARMS[:-1]:
+                    path = Path(training) / f"fit_{fit}" / "training" / f"{candidate}.json.gz"
+                    if not path.exists():
+                        review.fail(str(path), "missing registered training CPU receipt")
+                        continue
+                    try:
+                        yield read(path)
+                    except (OSError, ValueError, TypeError) as error:
+                        review.fail(str(path), "unreadable registered training CPU receipt", str(error))
+        cpu_result = cpu_checks(review, retained_receipts(), protocol, seal)
     totals = dict(fits=0, episode_files=0, episodes=0, decisions=0, source_files=0, training_files=0, dataset_files=0)
     for fit in fits:
         folder = Path(confirmation) / f"fit_{fit}"
@@ -576,9 +742,90 @@ def audit(confirmation, protocol_path, analysis_path, seal_path=None, training=N
                     seal_sha256=sha(seal_path) if seal_path else None),
         source_verification="checked against seal" if seal else "not requested",
         model_bytes_verification="checked against seal" if seal and training else "not requested",
+        cpu_verification=cpu_result if cpu_result is not None else "not requested; no training directory supplied",
         independent_primary=[dict(split=key[0], contrast=key[1], inference=value) for key, value in fresh.items()],
         independence="Separate formulas, no project imports; same author as statistics.py, not third-party review.",
         limits="Recomputes recorded teacher-target decision metrics, not the teacher oracle, model head, cell transition draws or neural content decoder. Content observation is checked against retained logits and packet identity. Fingerprints, support strata, ECE, eight quality gates and independently fitted decoder outputs are not recomputed here. Timing truth, distribution-free inference, unseen policy support and production efficacy are not established.")
+
+
+def cpu_self_check():
+    """Artificial complete receipts and explicit corruptions; no real fit access."""
+    protocol = dict(fits=[1, 3], training_cpu_seconds=8., cpu_tolerance_seconds=.16,
+                    between_arm_cpu_tolerance_seconds=.32, feedback_round_fractions=[.2, .45, .7],
+                    feedback_worlds_total=12)
+    seal = dict(cpu_matching=dict(all_actual_cpu_matching=True, all_training_valid=True))
+    receipts = []
+    for fit in protocol["fits"]:
+        for candidate in ARMS[:-1]:
+            spec = expected_spec(candidate)
+            count = {"off": 0, "single": 1, "multi": 3}[spec["feedback"]]
+            rounds = []
+            for ordinal in range(count):
+                row = dict(round_id=ordinal + 1, supervised_updates=1)
+                worlds = protocol["feedback_worlds_total"] // count
+                rounds.append(dict(round_id=ordinal + 1, status="complete", planned_worlds=worlds,
+                                   complete_worlds=worlds, episodes=[{} for _ in range(worlds)],
+                                   rows=[row], supervised_rows=[row]))
+            rows = [row for group in rounds for row in group["rows"]]
+            encoded = json.dumps(rows, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+            receipts.append(dict(fit=fit, spec=spec, candidate_cpu_seconds=8., training_cpu_budget=8.,
+                cpu_tolerance_seconds=.16, cpu_compliant=True, training_valid=True,
+                updates=[dict(update=1, visited_rows=len(rows), mixed_realized_records=len(rows))],
+                optimizer_updates=1, failures=[], visit_rounds=rounds, visit_collection_count=count,
+                realized_visit_records=len(rows), visited_rows_sha256=hashlib.sha256(encoded).hexdigest(),
+                visit_supervised_update_counts=[1 for _ in rows],
+                planned_feedback_rounds=count, complete_feedback_rounds=count, supervised_feedback_rounds=count))
+    clean_review = Review()
+    clean_result = cpu_checks(clean_review, receipts, protocol, seal)
+    fixtures = []
+    for kind in ("overrun_with_forged_true", "between_arm_disparity", "missing_registered_arm",
+                 "duplicate_receipt", "forged_training_valid", "altered_receipt_tolerance",
+                 "nonfinite_cpu", "seal_numeric_one", "complete_with_partial_registered_worlds",
+                 "collected_but_never_supervised_row", "flat_committed_counts_mismatch",
+                 "positive_support_without_mixed_optimizer_update"):
+        changed, claimed = copy.deepcopy(receipts), copy.deepcopy(seal)
+        if kind == "overrun_with_forged_true":
+            changed[0]["candidate_cpu_seconds"] = 8.3
+        elif kind == "between_arm_disparity":
+            changed[0]["candidate_cpu_seconds"], changed[1]["candidate_cpu_seconds"] = 8.2, 7.8
+        elif kind == "missing_registered_arm":
+            changed.pop(0)
+        elif kind == "duplicate_receipt":
+            changed.append(copy.deepcopy(changed[0]))
+        elif kind == "forged_training_valid":
+            changed[0]["visit_rounds"] = []
+        elif kind == "altered_receipt_tolerance":
+            changed[0]["cpu_tolerance_seconds"] = .5
+        elif kind == "nonfinite_cpu":
+            changed[0]["candidate_cpu_seconds"] = float("nan")
+        elif kind == "seal_numeric_one":
+            claimed["cpu_matching"] = dict(all_actual_cpu_matching=1, all_training_valid=1)
+        elif kind == "complete_with_partial_registered_worlds":
+            changed[0]["visit_rounds"][0]["episodes"] = [{}]
+            changed[0]["visit_rounds"][0]["complete_worlds"] = 1
+        elif kind == "collected_but_never_supervised_row":
+            changed[0]["visit_rounds"][0]["rows"][0]["supervised_updates"] = 0
+            changed[0]["visit_rounds"][0]["supervised_rows"][0]["supervised_updates"] = 0
+            changed[0]["visit_supervised_update_counts"][0] = 0
+            rows = [row for group in changed[0]["visit_rounds"] for row in group["rows"]]
+            encoded = json.dumps(rows, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+            changed[0]["visited_rows_sha256"] = hashlib.sha256(encoded).hexdigest()
+        elif kind == "flat_committed_counts_mismatch":
+            changed[0]["visit_supervised_update_counts"][0] = 0
+        elif kind == "positive_support_without_mixed_optimizer_update":
+            changed[0]["updates"][0]["mixed_realized_records"] = 0
+        review = Review()
+        result = cpu_checks(review, changed, protocol, claimed)
+        fixtures.append(dict(case=kind, rejected=review.violations_count > 0,
+                             recomputed_matching=result["all_actual_cpu_matching"],
+                             recomputed_training_valid=result["all_training_valid"],
+                             expected_failure_record=review.report()))
+    passed = clean_review.violations_count == 0 and all(case["rejected"] for case in fixtures)
+    return dict(schema="digital-feedback-independent-cpu-checks-v2", passed=passed,
+                empirical_data_used=False, confirmation_accessed=False,
+                fixture_protocol=protocol, complete_fixture=clean_result,
+                complete_fixture_review=clean_review.report(), corruption_cases=fixtures,
+                description="Independent CPU and feedback-record reconstruction, including positive committed support and registered complete-world plans; frozen scientific tolerances unchanged.")
 
 
 def self_check():
@@ -676,8 +923,13 @@ def main():
     parser.add_argument("--training", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--self-check", action="store_true")
+    parser.add_argument("--cpu-self-check", action="store_true")
     args = parser.parse_args()
-    if args.self_check:
+    if args.self_check and args.cpu_self_check:
+        parser.error("choose one self-check mode")
+    if args.cpu_self_check:
+        result = cpu_self_check()
+    elif args.self_check:
         result = self_check()
     else:
         if not all((args.confirmation, args.protocol, args.analysis)):

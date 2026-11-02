@@ -79,10 +79,11 @@ loads sealed confusion/model/support artifacts and generates its own fresh
 world folders; it does not replay unread training packet paths. Raw recorded
 confirmation can be audited without generating any new worlds.
 
-Some confirmation archives defer duplicate `*_audits.json.gz` tables. Their
-`DERIVED_DIAGNOSTICS.json` records the exact original size and SHA256. All raw
-decisions, trained support records, actual outcomes and quality summaries remain
-verbatim. Recreate these derived tables before running the full numerical audit:
+The archive format also supports deferring duplicate `*_audits.json.gz` tables
+when an archive explicitly contains `DERIVED_DIAGNOSTICS.json`. That manifest
+records the exact original size and SHA256. All raw decisions, trained support
+records, actual outcomes and quality summaries remain verbatim. Only for such
+an archive, recreate the derived tables before running the full numerical audit:
 
 ```bash
 python -m tools.hcsn.digital_feedback_20261101.orchestration.rebuild_diagnostics \
@@ -99,3 +100,29 @@ cross-runtime gzip/NumPy byte identity is not assumed.
 without importing the project summarizer. Authorship and the separate code
 review are disclosed; it is not an external peer review. All attempted workers,
 including failed or CPU-noncompliant ones, remain in the archive and cost ledger.
+
+## Full confirmation archives for this run
+
+This run uses the complete archive mode: both `iid_audits.json.gz` and
+`ood_audits.json.gz` are included verbatim alongside all raw episode/probe
+records, cohort files, quality summaries and decoder results. No derived table
+is deferred, so the reconstruction command above is not needed for this run.
+
+After the confirmation group's `LAUNCH.json` exists, incremental packaging can
+run alongside the remaining workers:
+
+```bash
+python -m tools.hcsn.digital_feedback_20261101.orchestration.live_pack \
+  CONFIRMATION_GROUP \
+  --seal tools/hcsn/digital_feedback_20261101/SEALED_MODELS.json \
+  --include-control --watch
+```
+
+Replace `CONFIRMATION_GROUP` with the group directory name under this study.
+The helper requires the confirmation stage, current frozen source/protocol,
+the registered fit set and the same seal/model publication recorded by every
+completed worker. It packages a fit only after its FINISHED record and successful
+external process receipt exist, then cold-restores and verifies every file.
+The control archive waits for all 32 registered fits to finish and for the
+controller to have no active or pending workers. The helper writes cumulative
+packaging evidence and local immutable-blob metadata; it performs no upload.
