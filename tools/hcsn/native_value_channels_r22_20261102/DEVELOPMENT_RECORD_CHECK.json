@@ -1,0 +1,33 @@
+{
+  "body_cpu_seconds": 0.020175837000000002,
+  "checker_sha256": "d83d9a14c782d046cf62493ff6586676ee415e64200025fa80102f24d6769548",
+  "checks": 528,
+  "controls": 37,
+  "cost_scope": "After imports; full external meter is authoritative for complete process CPU.",
+  "counts": {
+    "finite_difference_positions": 1800,
+    "jacobian_positions": 900,
+    "points": 18,
+    "reference_positions": 1980,
+    "values": 90
+  },
+  "maxima": {
+    "finite_difference": 1.9819973063657632e-07,
+    "reference_ratio": 0.061316160973884676
+  },
+  "passed": true,
+  "raw_sha256": "b4a25600d6aa27e59ae301b3d94fcd32e76e48bd9b97bcc008f603d2ea711472",
+  "source_hashes_match": {
+    "DEPENDENCIES.json": true,
+    "PROTOCOL.json": true,
+    "channels.rs": true,
+    "dual.rs": true,
+    "independent_check.py": true,
+    "independent_math.py": true,
+    "main.rs": true,
+    "measure.py": true,
+    "r11_kernel_snapshot.py": true,
+    "reference.py": true,
+    "verify.py": true
+  }
+}

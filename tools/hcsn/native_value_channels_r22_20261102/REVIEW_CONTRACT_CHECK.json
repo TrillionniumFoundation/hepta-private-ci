@@ -1,0 +1,133 @@
+{
+  "checks": [
+    {
+      "name": "physical_order",
+      "passed": true
+    },
+    {
+      "name": "state_coordinate",
+      "passed": true
+    },
+    {
+      "name": "five_outputs",
+      "passed": true
+    },
+    {
+      "name": "registered_box",
+      "passed": true
+    },
+    {
+      "name": "continuation_only_state_box",
+      "passed": true
+    },
+    {
+      "name": "fixed_states",
+      "passed": true
+    },
+    {
+      "name": "fixed_namespace",
+      "passed": true
+    },
+    {
+      "name": "fixed_selected_indices",
+      "passed": true
+    },
+    {
+      "name": "unchanged_value_tolerances",
+      "passed": true
+    },
+    {
+      "name": "unchanged_jacobian_tolerances",
+      "passed": true
+    },
+    {
+      "name": "unchanged_fd_contract",
+      "passed": true
+    },
+    {
+      "name": "unchanged_R11_snapshot",
+      "passed": true
+    },
+    {
+      "name": "snapshot_matches_existing_R11",
+      "passed": true
+    },
+    {
+      "name": "parameter_mapping",
+      "passed": true
+    },
+    {
+      "name": "jacobian_mapping",
+      "passed": true
+    },
+    {
+      "name": "reference.py_does_not_import_candidate_or_R11",
+      "passed": true
+    },
+    {
+      "name": "independent_math.py_does_not_import_candidate_or_R11",
+      "passed": true
+    },
+    {
+      "name": "drift_variance_corner_bound",
+      "passed": true
+    },
+    {
+      "name": "liquid_root_scale_bound",
+      "passed": true
+    },
+    {
+      "name": "state_scale_bound",
+      "passed": true
+    },
+    {
+      "name": "all_real_CDF_arguments_inside_admission",
+      "passed": true
+    },
+    {
+      "name": "raw_R11_branch_only",
+      "passed": true
+    }
+  ],
+  "count": 22,
+  "imports": {
+    "independent_math.py": [
+      "argparse",
+      "gzip",
+      "hashlib",
+      "json",
+      "pathlib",
+      "resource",
+      "subprocess",
+      "time",
+      "mpmath"
+    ],
+    "reference.py": [
+      "mpmath"
+    ]
+  },
+  "passed": true,
+  "rational_bounds": {
+    "cdf_argument_absolute_upper_bound": "6.499 < 12",
+    "maximum_mu_square_over_variance": "4489/40000",
+    "x_over_s_square_maximum": "32",
+    "zt_s_square_maximum": "14169/20000"
+  },
+  "reviewer_source_sha256": "d711e9d5300c65bec3c64c1424081e6c38714b6b62241ff44a54fa2593db8051",
+  "scope": "Exact-rational real-domain and read-only source-contract checks. No new parameter points, native numerical runs, derivative measurements, uniform quadrature/FP64 bound or model-adoption evidence.",
+  "source_sha256": {
+    "DEPENDENCIES.json": "d7c6fd163a4cefb9a2d35c6479368b8e4e3155826447d0ab0655f648813baf6b",
+    "PROTOCOL.json": "6aead40afdc3a8fbda144105be9445abba142c35a640cec8933450295d8542be",
+    "REVIEW_PROTOCOL.json": "7249a6d0bdeb0f5d721b74564ebda6e800628ffb800d28a70d37a42e4e9c1591",
+    "channels.rs": "e3a0e776cd24deaaf2aca7ed5272f60c372f320d07c41858765fe1d1b9eba7ea",
+    "dual.rs": "90fbfe4f4e9040cb7280ea4637690ef98fe47bf05e731d1a3989cf89fa97b884",
+    "independent_check.py": "d83d9a14c782d046cf62493ff6586676ee415e64200025fa80102f24d6769548",
+    "independent_math.py": "9c1ccb29fe997df447f3822919c02e11d78cfaa055b52e3f13a6ea562ca1aef7",
+    "main.rs": "b8a495b5d618adabe3a51c2acd107c2d3e8e15255b02f6f2d7d8a1ae5daaf29c",
+    "measure.py": "8e11cc19ef70356f4bf85e9a9c8cb053031eb33f35dfd97dab4e87ad58e227f0",
+    "r11_kernel_snapshot.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "reference.py": "7666c56ab981c7517209162c014c7f178bd7efb8dad4eaf92b13a0bdc0ed6cde",
+    "review_contract.py": "d711e9d5300c65bec3c64c1424081e6c38714b6b62241ff44a54fa2593db8051",
+    "verify.py": "fa85da38f3b4a0658fc68bd448146f4c6f9d0577c0d35c1f8f4daf37d3590f50"
+  }
+}
