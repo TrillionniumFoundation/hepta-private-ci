@@ -1,0 +1,16 @@
+{
+  "schema": "hcsn.native-financial.r20.v1",
+  "baseline_commit": "ede941c81edaf246486c88725a8a921bf70279ec",
+  "sources": ["financial.rs", "main.rs", "verify.py", "PROTOCOL.json"],
+  "scope": "Three-variable R12 box; six fixed financial parameters; native static financial boundary and declared finite 40-state generator, emissions and prior. Not a continuum neural/free-boundary solution, full equity/debt kernel, gradients or production qualification.",
+  "confirmation_namespace": 202011017,
+  "cases": "Eight corners plus64 new uniform draws in R12 box; 129 normal-CDF arguments including 97 fixed grid and32 new random points; seven out-of-profile rejections. All attempted valid cases retained, any valid failure fails gate.",
+  "model_tolerance": 2e-11,
+  "boundary_tolerance": 2e-11,
+  "mass_tolerance": 2e-12,
+  "cdf_relative_tolerance": 2e-13,
+  "independent_references": "Untouched R12 Cell/R11 FullHX plus independent80digit mpmath direct divided differences; native evaluates B by derivative quadrature and Phi by a positive tail integral.",
+  "positive_normal_tail": "Phi(-u)=exp(-u*u/2)/sqrt(2*pi)*integral_0^12 exp(-u*t-t*t/2)dt, twelve16-point Gauss-Legendre panels; neglected tail <= Phi(-12). No probability floor, clipping or normalization. This tail bound alone is not a uniform floating-point/quadrature proof.",
+  "publication": "Exact source/protocol remotely published and read back before formal namespace is generated; formal output is separate from development and does not overwrite it.",
+  "production_activation": false
+}
