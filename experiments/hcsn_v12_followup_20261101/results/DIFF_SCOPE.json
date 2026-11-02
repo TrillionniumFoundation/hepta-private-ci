@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-v12-formatting-scope.v1",
+  "active_python_diff_check_exit_code": 0,
+  "active_python_files": [
+    "experiments/hcsn_v12_followup_20261101/control/campaign.py",
+    "experiments/hcsn_v12_followup_20261101/control/common_actions.py",
+    "experiments/hcsn_v12_followup_20261101/control/feedback_rollout.py",
+    "experiments/hcsn_v12_followup_20261101/control/review/audit_common_actions.py",
+    "experiments/hcsn_v12_followup_20261101/control/review/audit_raw.py",
+    "experiments/hcsn_v12_followup_20261101/control/review/check_gate.py",
+    "experiments/hcsn_v12_followup_20261101/control/review/check_live_gate.py",
+    "experiments/hcsn_v12_followup_20261101/control/review/check_scalar.py",
+    "experiments/hcsn_v12_followup_20261101/control/review/replay_campaign_forward.py",
+    "experiments/hcsn_v12_followup_20261101/control/review/scalar_reference.py",
+    "experiments/hcsn_v12_followup_20261101/control/review/source_common001/audit_common_actions.py",
+    "experiments/hcsn_v12_followup_20261101/frontend/probe_local_media.py",
+    "experiments/hcsn_v12_followup_20261101/results/economics/summarize_costs.py"
+  ],
+  "raw_byte_preservation_exceptions": [
+    "frontend/LICENSE_CREMA_D.txt: original upstream trailing whitespace",
+    "results/ci_run41374244788_cancelled/JOB.log: original Actions log whitespace",
+    "results/ci_run41374287486_attempt1/JOB.log: original Actions log whitespace"
+  ],
+  "original_evidence_not_reformatted": true,
+  "final_just_fmt": "exit0; changed-file scope reports no owned files",
+  "tests_rerun_after_final_formatter": false
+}
