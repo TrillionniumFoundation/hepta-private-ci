@@ -1,0 +1,31 @@
+{
+  "candidate_sources_and_weights_changed": false,
+  "correction": "Stored action must exactly maximize stored legal Q. Independently rebuilt Q and selected action value are compared numerically; exact argmax index is not well-defined across roundoff ties. Actual episode actions still reproduce exactly.",
+  "failed_attempt": "joint_independent_audit_confirmation_attempt1.json",
+  "failed_source_sha256": "7da1aac6936feed783b2d3cdf6235412d19a2bc0fdf8a12ebda53193410a9c11",
+  "independent_first_argmax": 1,
+  "independent_selected_action_loss": 0.0,
+  "independently_rebuilt_q": [
+    0.0,
+    0.549816754088461,
+    0.0,
+    0.549816754088461,
+    0.12914882004514916,
+    -0.12914882004514916
+  ],
+  "max_q_error": 1.1102230246251565e-16,
+  "schema": "joint-independent-audit-expectation-correction-v1",
+  "state_key": "[3,1,true,null,[[0,1,0]]]",
+  "stored_action": 3,
+  "stored_action_is_exact_stored_q_argmax": true,
+  "stored_q": [
+    0.0,
+    0.5498167540884609,
+    0.0,
+    0.549816754088461,
+    0.12914882004514916,
+    -0.12914882004514916
+  ],
+  "table": "iid_fit11_0004_reference_nominal.json.gz",
+  "table_sha256": "0591730699d23ff21dc82f8ddecedb64d93a3ab3408e90b4b6bc7152661ed009"
+}
