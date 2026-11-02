@@ -1,0 +1,54 @@
+name: HCSN V11 isolated cgroup economics
+
+on:
+  push:
+    branches: [research/hcsn-v11-cgroup-ci-20261101]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/hcsn-v11-cgroup-economics.yml
+      - experiments/hcsn_v11_followup_20261101/economics/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-v11-cgroup-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  real-cgroup-qualification:
+    if: >-
+      github.event_name == 'push' ||
+      (github.event.pull_request.head.ref == 'research/hcsn-v11-cgroup-ci-20261101' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/hcsn-v11-cgroup-economics.yml
+            /experiments/hcsn_v10_followup_20261101/economics/
+            /experiments/hcsn_v9_followup_20261101/economics/short_tree_probe.py
+            /experiments/hcsn_v11_followup_20261101/economics/
+      - name: Real isolated parent and independent raw audit
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          sudo --preserve-env=GITHUB_RUN_ID,GITHUB_RUN_ATTEMPT python3 \
+            -m experiments.hcsn_v11_followup_20261101.economics.ci_driver \
+            --expected-head "$EXPECTED_HEAD" --out evidence/hcsn-v11-cgroup
+      - name: Preserve all completed or failed evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: hcsn-v11-cgroup-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: evidence/hcsn-v11-cgroup/
+          if-no-files-found: error
+          retention-days: 14
