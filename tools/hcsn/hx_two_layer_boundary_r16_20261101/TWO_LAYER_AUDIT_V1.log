@@ -1,0 +1,33 @@
+{
+  "artifact": {
+    "path": "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_AUDIT_V1.json.gz",
+    "bytes": 639504,
+    "sha256": "8ff233b9045b96ff846d146acc94e9daa6e066f7a9137204bcbc6cb89e8be7c3"
+  },
+  "audit_passed": true,
+  "identification_checks": {
+    "four_modes_present": true,
+    "conditioning_only_upstream_gradient_nonzero": true,
+    "direct_boundary_conditioning_path_nonzero": true,
+    "full_upstream_gradient_nonzero": true,
+    "both_detached_upstream_gradient_zero": true,
+    "both_detached_layer1_initial_state_gradient_zero": true,
+    "both_detached_external_u1_gradient_zero": true,
+    "normal_initial_layer1_state_gradient_nonzero": true,
+    "normal_early_drive1_gradient_nonzero": true,
+    "drive_only_forward_exact_numerical_equality": true,
+    "conditioning_only_forward_exact_numerical_equality": true,
+    "both_detached_forward_exact_numerical_equality": true
+  },
+  "conditioning_vjp_l2": 3.837308693746183e-06,
+  "runtime": {
+    "evaluation_started_at_utc": "2026-11-01T18:39:20.134955+00:00",
+    "wall_seconds": 0.4629189180013782,
+    "process_cpu_seconds": 0.406818357,
+    "financial_calls": 171,
+    "financial_states": 1359,
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "cuda_available": false
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "hcsn.two-layer-boundary-prefreeze-plan.v1",
+  "status": "Draft source and design only. No new kernel evaluation, trajectory or training has been executed.",
+  "publication_prefix": "tools/hcsn/hx_two_layer_boundary_r16_20261101",
+  "state_order": ["z1", "a1", "z2", "a2"],
+  "trainable_parameters": "raw_theta1[9] and raw_theta2[9] only; all gains, inputs, references and targets frozen before evaluation",
+  "steps": 16,
+  "batch_size": 8,
+  "optimizer_updates": 12,
+  "dt": 0.05,
+  "coupling_gain": 0.2,
+  "conditioning_gain": 0.5,
+  "parameter_fraction": 0.03,
+  "forward_links": [
+    "link=FP32(x1), where x1=log(V1_repr/b1) from the original V3 asset feature map",
+    "u2=external_u2+0.2*link",
+    "theta2(t,sample)=base2*(1+0.03*tanh(raw_theta2+0.5*link[...,None]))"
+  ],
+  "gradient_modes": {
+    "full": "Both interlayer gradient routes active",
+    "drive_only": "Only conditioning link detached; its numerical forward value is unchanged",
+    "conditioning_only": "Only drive link detached; its numerical forward value is unchanged",
+    "both_detached": "Both interlayer routes detached; numerical forward values unchanged"
+  },
+  "mandatory_identification_checks": [
+    "All four modes have equal finite forward state/readout/boundary values",
+    "Layer1 raw-parameter terminal VJP is nonzero in conditioning_only; zero is a retained failure, not a reason to retune",
+    "Layer1 full VJP equals drive_only plus conditioning_only within predeclared first-order tolerances",
+    "Layer1 raw VJP vanishes when both links are detached; layer2 raw VJP agrees across all four modes",
+    "Actual raw b2 varies within the 16-step rollout for at least one fixed sample",
+    "Four-state/18-parameter manual local-Jacobian composition matches actual terminal-loss BPTT"
+  ],
+  "manual_chain_convention": "G_l denotes continuous drift derivative, so ALL discrete cross-state and parameter blocks carry dt. A11/A22 are I+dt*local_state_J. A12=0.",
+  "manual_link_blocks": {
+    "D1": "diag(base1*0.03*sech^2(raw1))",
+    "D2": "diag(base2*0.03*sech^2(raw2+0.5*link))",
+    "K_drive": "[0.2,0]",
+    "K_condition": "G2*(0.5*D2*ones(9))",
+    "A21": "dt*outer(K_drive+K_condition,[dx1/dz1,0]); dx1/dz1=1 in the underlying continuous formula",
+    "B_lower_raw1": "dt*outer(K_drive+K_condition,(-b1_theta/b1)*D1)",
+    "B_lower_raw2": "dt*G2*D2",
+    "B_upper_raw1": "dt*G1*D1"
+  },
+  "planned_inputs": "Fixed mixed default/continuation physical points from the already observed 40-100 asset range; frozen deterministic drives and terminal z2/a2 targets. Functional fixtures, not unseen financial or quality samples.",
+  "loss_scope": "Terminal z2/a2 only; no direct margin/boundary term and no layer1 loss. Loss improvement is not required.",
+  "precision_scope": "CPU FP32 states and explicitly converted interlayer link; frozen FP64 financial arithmetic and saved 5x10 Jacobians; first-order VJP of continuous formulas at represented inputs, not rounding derivatives.",
+  "interpretation_limits": [
+    "Each changing theta2(t) causes a new STATIC H-X feature evaluation. This is not the closed-form solution of a time-varying financial PDE or the coupled ODE.",
+    "Changing b2 within a trajectory and nonzero financial-route VJP demonstrate wiring, not regenerative spikes or task usefulness.",
+    "Detach modes are same-value derivative identification controls, not forward-model quality ablations.",
+    "Default saturation, tiny/negative training changes and all failed checks will be retained.",
+    "No new quality, multimodal, speed, GPU, power, stability or limit-cycle benchmark is opened."
+  ]
+}

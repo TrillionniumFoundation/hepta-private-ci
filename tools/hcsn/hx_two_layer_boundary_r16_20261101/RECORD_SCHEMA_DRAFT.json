@@ -1,0 +1,60 @@
+{
+  "status": "Draft exact record contract for concurrent checker implementation; not yet a frozen numerical protocol",
+  "input_fields": {
+    "base1": "[9] FP32 words serialized as numbers",
+    "base2": "[9]",
+    "initial_state": "[8,4] ordered z1,a1,z2,a2; fixed independently of theta",
+    "drive1": "[16,8] fixed external drives",
+    "drive2": "[16,8] fixed external drives before interlayer link",
+    "target_z2": "[8] fixed",
+    "target_a2": "[8] fixed",
+    "loss_a_weight": 0.25,
+    "readout_fixture_z": "[5] known physical log-potential fixtures"
+  },
+  "protocol_fields": {
+    "cell": "steps,dt,leak,k_equity,k_risk,tau,fraction,coupling_gain,conditioning_gain,z_rest1,z_rest2",
+    "experiment": "batch_size=8,updates=12,learning_rate=.02,optimizer=Adam default",
+    "gates": "gradient_atol=2e-9,gradient_rtol=2e-5,min_z=3.5,max_z=4.7,max_adaptation=.08,range_tolerance=1e-10,constant_boundary_atol=1e-10,minimum_boundary2_range=1e-10,minimum_conditioning_vjp=1e-12,minimum_direct_boundary_vjp=1e-12,nonzero_gradient_floor=1e-12",
+    "source_sha256": "All runnable model/audit/train/reference/checker sources and README/requirements before first evaluation",
+    "inputs_sha256": "SHA256 of TWO_LAYER_INPUTS.json"
+  },
+  "trace": "Defined by two_layer_common.pack_trace; 17x8x4 states, two 17x8x3 Q/R/x, two actual raw b/V arrays[17,8], layer1 shared theta[9], layer2 dynamic theta[17,8,9], link[16,8], used_drive2[16,8], drift[16,8,4], raw1/raw2 snapshots; actual phase is sign(V-b). Audit includes actual tanh1[9], tanh2/preactivation[16,8,9]. Training may omit tanh/preactivation only, retaining all effective theta.",
+  "audit": {
+    "schema": "hcsn.hx-two-layer-audit.v1",
+    "protocol_sha256": "exact expected protocol",
+    "audit_passed": "bool, requires all groups",
+    "readout_equivalence": "passed,comparisons{values,theta_vjp,z_vjp},contracts[{name,passed,exception_type,message}]",
+    "financial_reference": "16 entries with step,raw1[8,5],jac1[8,5,10],raw2[8,5],jac2[8,5,10]; represented assets and effective theta come from full trace",
+    "modes": {
+      "keys": ["full", "drive_only", "conditioning_only", "both_detached"],
+      "each": {
+        "loss": "terminal z2/a2 only",
+        "trajectory": "pack_trace(...,include_internal=True)",
+        "actual": "raw1[9],raw2[9],initial_state[8,4],drive1/drive2[16,8],theta1_nodes[16,9],theta2_nodes[16,8,9],step_raw_credit[16,18]",
+        "unused": "Per-requested-tensor None flags; zeros materialized only in numeric records",
+        "reference": "A[16,8,4,4],B[16,8,4,18],step_raw[16,18],shared_raw[18],state_adj[17,8,4]",
+        "comparisons": "shared_raw,step_raw_credit,initial_state,drive1,drive2,raw1_equals_time_sum,raw2_equals_time_sum. Each has observed/reference,passed,max_absolute_error,max_error_over_allowance.",
+        "trace_checks": "dict from common; all finite/shape/domain/static-b1/dynamic-b2 gates",
+        "passed": "bool"
+      }
+    },
+    "full_local_decomposition": "All keys from compose_local stacked in time: A,B,K_drive,K_condition,D1,D2,G1,G2,margin_theta,margin_z,boundary_raw1_drive,boundary_raw1_condition",
+    "identification": "checks dict + comparisons{raw1_route_additivity,raw2_drive_mode_same,raw2_conditioning_mode_same,raw2_both_detached_same}; conditioning_vjp_l2,direct_boundary_condition_step[16,9],direct_boundary_condition_total[9],direct_boundary_drive_step[16,9],direct_boundary_drive_total[9],conditioning_state_history_remainder[9],passed",
+    "runtime": "actual times,calls,states,versions; no results yet"
+  },
+  "training": {
+    "schema": "hcsn.hx-two-layer-training.v1",
+    "protocol_sha256": "same",
+    "training_passed": "bool, no loss improvement gate",
+    "data": "exact full TWO_LAYER_INPUTS dictionary",
+    "parameters": "raw_theta1:{initial:[9],final:[9]},raw_theta2:{initial:[9],final:[9]}",
+    "history": "12 entries iteration,loss_before_update,raw1_before,raw2_before,grad_raw1,grad_raw2,trajectory,trace_checks,raw1_after,raw2_after; trace/raw snapshots captured BEFORE optimizer.step",
+    "final_trajectory": "pack_trace(...,include_internal=False)",
+    "initial_loss": "history[0].loss_before_update",
+    "final_loss": "terminal loss of final_trajectory",
+    "parameter_update_l2": "dict raw_theta1,raw_theta2",
+    "checks": "complete history,18 parameters only,finite gradients/parameters,both raw groups actually updated,and trace gates",
+    "runtime": "actual timing/calls; no results yet"
+  },
+  "checker_scope": "Recompute source/input binding, all counts/shapes/finiteness, FP32 Euler and both link formulas, actual V<=raw_b classification, dynamic b2, all four same-value traces, 4x4/18-parameter reference using archived raw financial fields/J and actual tanh, all route/gradient tests, terminal physical loss and parameter update chain. No optimizer replay, no need to run model or open new financial points. financial-root verifies original protocol/binary/source identities; input raw/J are from the full audit's fixed frozen kernel calls."
+}
