@@ -1,0 +1,59 @@
+{
+  "deduplication": "development_fit and development_v1/development_fit are copies of one V1 execution; original root and archived V1 receipt are copies, counted once. Failed second fitting attempt included.",
+  "executions": [
+    {
+      "child_cpu_seconds": 6.388603,
+      "exit_code": 0,
+      "max_process_rss_kib": 69352,
+      "new_world_generator_called": false,
+      "path": "development_v1/DEVELOPMENT_FIT_PROCESS_RECEIPT.json",
+      "scope": "Complete fitting child/imports/publicCV/compiledmodels/output. Development evaluation and audits separate.",
+      "sha256": "c883dd331192090997d3981c990e2d66c7183add0f2a7d3f28d84956f5f9784e",
+      "wall_seconds": 7.821228050997888
+    },
+    {
+      "child_cpu_seconds": 6.020429,
+      "exit_code": 1,
+      "failure": "Previouslymoveddevelopment_fit/MODELS.json.gz androotreceipt reappeared; exclusivearchivewrite andreceiptwrite refusedoverwrite",
+      "max_process_rss_kib": 69720,
+      "new_world_generator_called": false,
+      "next_action": "Uniquefinaloutputpath; donotdelete/reusesupersededfitnamespace",
+      "path": "development_v2_failure/PROCESS_RECEIPT.json",
+      "sha256": "e737b26e102b66441056b74638204b6cceff18b815857d14e4423b300bcec9af",
+      "source_scope": "OnlyexistingR20publictrainingdata; no freshworlds",
+      "wall_seconds": 6.684115928997926
+    },
+    {
+      "child_cpu_seconds": 4.95049,
+      "exit_code": 0,
+      "max_process_rss_kib": 69728,
+      "new_world_generator_called": false,
+      "path": "development_fit_final_PROCESS_RECEIPT.json",
+      "scope": "Complete fitting child/imports/publicCV/compiledmodels/output. Development evaluation and audits separate.",
+      "sha256": "d0bad65e247507b5de7c84430430feaed1e97f9f92f146b57865b21461eae826",
+      "wall_seconds": 4.989061979002145
+    },
+    {
+      "child_cpu_seconds": 84.472262,
+      "exit_code": 0,
+      "max_process_rss_kib": 97900,
+      "path": "MASKED_DEVELOPMENT_01_PROCESS_RECEIPT.json",
+      "scope": "Complete old-development evaluation child/imports/allmodels/allthresholds/paidactions/rawoutput; not new confirmation",
+      "sha256": "e4b6481bd11dad5f3de95344844fe06bf13d43fedf6e8ad4bc507c0186f96e56",
+      "wall_seconds": 90.46096610899986
+    },
+    {
+      "child_cpu_seconds": 13.829649999999999,
+      "exit_code": 0,
+      "max_process_rss_kib": 90900,
+      "new_worlds_opened": 0,
+      "path": "ROBUST_DEVELOPMENT_01_PROCESS_RECEIPT.json",
+      "sha256": "7ac0bfe7c2e477b01ede14245732ab8b7f1680b84a4141bc7fefe3f0f3a002da",
+      "wall_seconds": 13.852704354001617
+    }
+  ],
+  "fresh_worlds_opened": 0,
+  "schema": "hcsn.r22.development.cost.v1",
+  "scope": "Measured wait4 child execution/import/fit-or-evaluation/IO. Launcher self CPU, interactive inspection/source drafting, scalar-audit import overhead, full energy and monetary infrastructure cost remain unmetered; not zero and not a total-project cost claim.",
+  "unique_measured_child_cpu_seconds": 115.661434
+}
