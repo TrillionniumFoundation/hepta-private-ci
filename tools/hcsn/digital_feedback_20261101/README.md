@@ -68,7 +68,14 @@ The source/protocol, formal fitted models and confirmation evidence are publishe
 in separate stages. Formal conclusions are given in `REPORT_ZH.md` and
 `evidence/ANALYSIS.json` only after the corresponding frozen run completes.
 
-The final plan uses 32 new fits, 3003 through 3065 in steps of two. Development
+The final plan uses 32 new fits, 6003 through 6065 in steps of two. Development
 variance planning requested 122 to 632 fits across the four primary comparisons.
 The prospectively fixed cap of 32 therefore binds: target 80% modeled power is
 not claimed. Increasing the number of worlds does not replace independent fits.
+
+The first prospective fitting attempt, `training_001`, failed actual CPU and
+feedback qualification after four started fits. Its 60 scientific attempts and
+28 explicitly cancelled fits are retained with `formal_source_001`. It generated
+no independent confirmation. The revised implementation uses synchronous CPU
+checkpoints without SIGPROF; the same 8±0.16-second budget and every-fit gates
+remain in force. Its new fit identities do not reuse the aborted trial.

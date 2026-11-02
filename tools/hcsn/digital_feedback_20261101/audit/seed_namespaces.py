@@ -34,7 +34,8 @@ def expression(path, function, target=None, rng=False):
     return compile(value, str(path), "eval"), ast.unparse(matches[0])
 
 
-def audit(protocol, study, training, historical=(), formal_fits=None, retained=(), retained_sources=None):
+def audit(protocol, study, training, historical=(), formal_fits=None, retained=(), retained_sources=None,
+          retained_formal=()):
     formal = list(protocol["fits"] if formal_fits is None else formal_fits)
     development = list(protocol["development_fits"])
     if set(formal) & set(development) or len(formal) != len(set(formal)) or len(development) != len(set(development)):
@@ -55,6 +56,7 @@ def audit(protocol, study, training, historical=(), formal_fits=None, retained=(
     rows = []
     retained_sources = retained_sources or {}
     retained_expressions = {}
+    formal_expressions = {}
 
     def add(stage, role, fit, split, index, seed, historical=False):
         if isinstance(seed, bool) or not isinstance(seed, int) or seed < 0:
@@ -159,6 +161,54 @@ def audit(protocol, study, training, historical=(), formal_fits=None, retained=(
             for index in range(old["validation_worlds"]):
                 add(name, "value_execution", fit, "validation", index,
                     old["execution_seed_base"] + fit * 100000 + 10000 + index, True)
+    for previous in retained_formal:
+        old, name = previous["protocol"], previous["run"]
+        archived_study, archived_training = Path(previous["study"]), Path(previous["training"])
+        functions = {node.name for node in ast.parse(archived_training.read_text()).body
+                     if isinstance(node, ast.FunctionDef)}
+        body = "_fit_candidate_body" if "_fit_candidate_body" in functions else "fit_candidate"
+        specifications = dict(value_execution=(archived_study,"evaluate","seed",False),
+                              decoder_probe=(archived_study,"probe_pairs","seed",False),
+                              feedback_execution=(archived_training,body,"execution_seed",False),
+                              minibatches=(archived_training,body,None,True),
+                              candidate_order=(archived_study,"train",None,True))
+        expressions = {role:expression(path,function,target,rng)
+                       for role,(path,function,target,rng) in specifications.items()}
+        formal_expressions[name] = {role:description for role,(_,description) in expressions.items()}
+        started, cancelled, finished = (set(previous[key]) for key in
+                                        ("started_fits","cancelled_before_start_fits","finished_fits"))
+        for fit in old["fits"]:
+            historical_fits.add(fit)
+
+            def reserve(role, split, index, seed):
+                add(name,role,fit,split,index,seed,True)
+                rows[-1].update(planned_only=fit not in started or split in ("iid","ood"),
+                    fit_execution_status="training_finished" if fit in finished else "training_started" if fit in started else
+                                         "cancelled_before_scientific_start" if fit in cancelled else "no_start_record",
+                    use_scope="registered namespace window, not proof every listed stream was drawn; IID/OOD remained ungenerated in this aborted formal version")
+
+            def seed_for(role, split="train", index=0):
+                return int(eval(expressions[role][0],{"__builtins__":{}},
+                                dict(protocol=old,fit=fit,split=split,i=index,world_cursor=index)))
+
+            for split,offset in (("train",0),("validation",100000),("iid",200000),("ood",300000)):
+                base = old["confirmation_seed_base"] if split in ("iid","ood") else old["data_seed_base"]
+                reserve("cohort",split,None,base+fit*1000000+offset)
+            reserve("calibration","train",None,old["data_seed_base"]+fit*1000000+900000)
+            for split,offset in (("train",700000),("validation",800000)):
+                reserve("behavior_actions",split,None,old["data_seed_base"]+fit*1000000+offset)
+            reserve("head_initialization","train",None,731000+fit)
+            reserve("cell_initialization","train",None,732000+fit)
+            for role in ("minibatches","candidate_order"):
+                reserve(role,"train",None,seed_for(role))
+            for index in range(old["feedback_worlds_total"]):
+                reserve("feedback_execution","train",index,seed_for("feedback_execution",index=index))
+            for index in range(old["train_worlds"]):
+                reserve("decoder_probe","train",index,seed_for("decoder_probe",index=index))
+            for split in ("iid","ood"):
+                for index in range(old[split+"_worlds"]):
+                    for role in ("value_execution","decoder_probe"):
+                        reserve(role,split,index,seed_for(role,split,index))
     if set(formal) & historical_fits:
         raise ValueError("formal fit IDs reuse historical formal/development/pilot fits")
     by_seed, intervals = defaultdict(list), defaultdict(list)
@@ -175,6 +225,10 @@ def audit(protocol, study, training, historical=(), formal_fits=None, retained=(
                 expressions=dict(value_execution=value_text, decoder_probe=probe_text, feedback=visit_text,
                                  minibatches=batch_text, candidate_order=order_text),
                 retained_development_expressions=retained_expressions,
+                retained_formal_expressions=formal_expressions,
+                retained_formal_execution_inventory=[{key:entry[key] for key in
+                    ("run","snapshot","started_fits","finished_fits","cancelled_before_start_fits")}
+                    for entry in retained_formal],
                 source_sha256={str(path): hashlib.sha256(Path(path).read_bytes()).hexdigest() for path in (study, training)},
                 entries=len(rows), enumeration_sha256=hashlib.sha256(serialized).hexdigest(),
                 collision_seed_count=len(collisions), collisions=collisions,
@@ -188,7 +242,7 @@ def audit(protocol, study, training, historical=(), formal_fits=None, retained=(
                            for k, v in sorted(intervals.items())],
                 all_explicit_seeds=rows,
                 declared_reuse="All candidates of one fit intentionally share initialization/minibatch and paired world-execution streams; those aliases are enumerated once.",
-                historical_scope="Retained finite-task formal/development protocols and explicit prior-development/pilot process records. Pilot protocol role windows with a probe configuration include the plumbing operations as a conservative superset, not a claim that every configured episode ran. Standalone CTMC auxiliaries and unit fixtures are outside this task study.",
+                historical_scope="Retained finite-task formal/development protocols, explicit prior-development/pilot records, and aborted-formal source snapshots with started/cancelled status. Unstarted formal fits and all ungenerated IID/OOD windows are planned-only reservations. Pilot role windows with a probe configuration include plumbing conservatively, not a claim every configured episode ran. Standalone CTMC auxiliaries and unit fixtures are outside this task study.",
                 development_reuse_scope="Old development aliases are reported, never relabeled fresh independent confirmation. passed requires zero new-design internal aliases and zero formal aliases with all retained roles, even across different generator APIs.",
                 limits="No world/label/packet bytes generated. Nested packet seeds are random draws inside each cohort stream, not separately pre-inspected. Distinct initializers do not prove abstract PRNG independence.")
 
@@ -200,6 +254,8 @@ def main():
     parser.add_argument("--training-source", type=Path)
     parser.add_argument("--historical-protocol", type=Path, action="append", default=[])
     parser.add_argument("--retained-development", type=Path, action="append", default=[])
+    parser.add_argument("--retained-formal", type=Path, action="append", default=[],
+                        help="Aborted formal training directory, paired with formal_source_NNN snapshot")
     parser.add_argument("--pilot-process", type=Path, action="append", default=[])
     parser.add_argument("--formal-fits", help="Inclusive first:last:step planning override, without changing protocol")
     parser.add_argument("--output", type=Path, required=True)
@@ -221,15 +277,65 @@ def main():
             p = prior / f"fit_{fit}" / "STARTED.json"
             retained.append((str(p), json.loads(p.read_text()), "development"))
             retained_sources[str(p)] = archived_study
+    retained_formal, formal_inputs = [], []
+    for prior in args.retained_formal:
+        snapshot = prior.parent / prior.name.replace("training_","formal_source_",1)
+        snapshot_path = snapshot / "SNAPSHOT.json"
+        snapshot_record = json.loads(snapshot_path.read_text())
+        if snapshot_record.get("confirmation_generated") is not False:
+            raise ValueError("retained-formal option requires an explicitly unconfirmed aborted version")
+        formal_inputs.append(snapshot_path)
+        for name,expected in snapshot_record["source_sha256"].items():
+            if Path(name).name != name or hashlib.sha256((snapshot/name).read_bytes()).hexdigest() != expected:
+                raise ValueError("retained formal snapshot identity mismatch")
+            formal_inputs.append(snapshot/name)
+        old = json.loads((snapshot/"protocol.json").read_text())
+        launch_path = prior/"LAUNCH.json"
+        launch = json.loads(launch_path.read_text())
+        frozen = json.loads((snapshot/"SOURCE_FREEZE.json").read_text())
+        if launch["fits"] != old["fits"] or launch["source_sha256"] != frozen["source_sha256"]:
+            raise ValueError("retained formal launch differs from archived source/protocol")
+        formal_inputs.append(launch_path)
+        for name in ("ABORT_REGISTRATION.json","STOP_AFTER_ACTIVE.json","CONTROLLER_RECEIPT.json"):
+            if (prior/name).exists():
+                formal_inputs.append(prior/name)
+        started,finished,cancelled = [],[],[]
+        for fit in old["fits"]:
+            folder = prior/f"fit_{fit}"
+            begin = folder/"STARTED.json"
+            if begin.exists():
+                value = json.loads(begin.read_text())
+                if value["fit"] != fit or value["protocol"] != old or value["source_sha256"] != launch["source_sha256"]:
+                    raise ValueError("retained formal STARTED identity mismatch")
+                started.append(fit)
+            if (folder/"FINISHED.json").exists():
+                if fit not in started:
+                    raise ValueError("formal FINISHED without a started scientific fit")
+                finished.append(fit)
+            if any((folder/name).exists() for name in ("ABORTED_BEFORE_START.json","CANCELLED_BEFORE_START.json")):
+                if fit in started:
+                    raise ValueError("formal fit both started and cancelled-before-start")
+                cancelled.append(fit)
+            for name in ("STARTED.json","FINISHED.json","FAILED.json","ABORTED_BEFORE_START.json","CANCELLED_BEFORE_START.json"):
+                if (folder/name).exists():
+                    formal_inputs.append(folder/name)
+            receipt = prior/"process_receipts"/f"fit_{fit}.json"
+            if receipt.exists():
+                formal_inputs.append(receipt)
+        retained_formal.append(dict(run=str(prior),snapshot=str(snapshot),protocol=old,
+            study=str(snapshot/"study.py"),training=str(snapshot/"training.py"),started_fits=started,
+            finished_fits=finished,cancelled_before_start_fits=cancelled))
     result = audit(json.loads(args.protocol.read_text()), args.study or root / "study.py",
                    args.training_source or root / "training.py",
-                   [(str(p), json.loads(p.read_text())) for p in args.historical_protocol], fits, retained, retained_sources)
+                   [(str(p), json.loads(p.read_text())) for p in args.historical_protocol], fits, retained, retained_sources,
+                   retained_formal)
     inputs = [args.protocol] + args.historical_protocol + args.pilot_process
     for prior in args.retained_development:
         inputs.append(prior / "LAUNCH.json")
         inputs += [prior / f"fit_{fit}" / "STARTED.json"
                    for fit in json.loads((prior / "LAUNCH.json").read_text())["fits"]]
     inputs += list(set(retained_sources.values()))
+    inputs += formal_inputs
     result["input_files_sha256"] = {str(path): hashlib.sha256(path.read_bytes()).hexdigest()
                                     for path in inputs}
     raw = (json.dumps(result, sort_keys=True, indent=2) + "\n").encode()

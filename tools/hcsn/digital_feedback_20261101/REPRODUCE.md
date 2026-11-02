@@ -6,8 +6,9 @@ inventory is checked against that study's published `SOURCE_FREEZE.json` before
 every new worker. No parent scientific file is edited.
 
 The recorded environment uses Python 3.12, NumPy 2.3.5, SciPy 1.17.0 and
-PyTorch 2.15.0+cpu with one numerical thread per worker. The CPU interrupt uses
-Linux `ITIMER_PROF`. Set the standard numerical-library thread counts to one.
+PyTorch 2.15.0+cpu with one numerical thread per worker. The final CPU control uses synchronous process-CPU checks at bounded work
+boundaries. It does not arm `ITIMER_PROF`; actual native-call overshoots are
+measured and rejected. Set numerical-library thread counts to one.
 The session provided PyTorch as an existing package tree at
 `/tmp/hcsn-torch-runtime`; an ordinary installation of the recorded versions is
 also sufficient. Do not substitute a GPU training budget.
@@ -85,9 +86,9 @@ verbatim. Recreate these derived tables before running the full numerical audit:
 
 ```bash
 python -m tools.hcsn.digital_feedback_20261101.orchestration.rebuild_diagnostics \
-  --fit /absolute/restored_confirmation/fit_3003 \
-  --training-fit /absolute/restored_training/fit_3003 \
-  --output /absolute/restored_confirmation/fit_3003
+  --fit /absolute/restored_confirmation/fit_6003 \
+  --training-fit /absolute/restored_training/fit_6003 \
+  --output /absolute/restored_confirmation/fit_6003
 ```
 
 The command rejects any mismatch with the original derived table hashes. A
