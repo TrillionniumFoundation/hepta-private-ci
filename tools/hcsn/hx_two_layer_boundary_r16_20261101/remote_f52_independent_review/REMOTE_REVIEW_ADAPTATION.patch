@@ -1,0 +1,112 @@
+--- review_two_layer_records.py
++++ review_remote_two_layer_records.py
+@@ -1,4 +1,4 @@
+-"""Recompose archived two-layer results; never invoke Torch or a financial kernel."""
++"""Recompose actual remote two-layer records; only provenance/path handling is adapted."""
+ import argparse
+ import datetime
+ import gzip
+@@ -31,7 +31,69 @@
+     return value
+ 
+ 
+-def run(root, reference_path, output):
++
++EXPECTED_HEAD = 'f52dc359344cd0eb9b5dba84d4af3d5815aeb629'
++EXPECTED_ARCHIVE = '7e45f10d267648e88db09a8b5d2b40dcfd606b2f065c894691695c18993897c3'
++
++
++def remote_artifact_binding(root, artifact_root, financial_root, protocol, source):
++    """Verify actual remote identities without treating earlier local runs as remote evidence."""
++    import zipfile
++    artifact_root, financial_root = Path(artifact_root), Path(financial_root)
++    extracted = artifact_root/'extracted'
++    archive, download = artifact_root/'REMOTE_ARTIFACT.zip', read(artifact_root/'DOWNLOAD_IDENTITY.json')
++    assert identity(archive)['sha256'] == EXPECTED_ARCHIVE
++    assert identity(archive)['bytes'] == download['bytes'] == 1551454
++    assert download['sha256'] == EXPECTED_ARCHIVE and download['source_head'] == EXPECTED_HEAD
++    assert download['artifact_id'] == 13107591722 and download['github_digest_matched'] is True
++    expected_members = {item['path']: item for item in download['members']}
++    assert len(expected_members) == len(download['members']) == 14
++    member_identities = []
++    with zipfile.ZipFile(archive) as zipped:
++        assert len(zipped.namelist()) == len(set(zipped.namelist())) == 14
++        assert set(zipped.namelist()) == set(expected_members)
++        for name in zipped.namelist():
++            assert Path(name).name == name and not name.startswith('.')
++            blob = zipped.read(name)
++            expected = expected_members[name]
++            assert len(blob) == expected['bytes']
++            assert hashlib.sha256(blob).hexdigest() == expected['sha256']
++            assert (extracted/name).read_bytes() == blob
++            member_identities.append(identity(extracted/name))
++    bindings, check = read(extracted/'source-bindings.json'), read(extracted/'two-layer-check.json')
++    assert bindings['head'] == EXPECTED_HEAD
++    prefix = 'tools/hcsn/hx_two_layer_boundary_r16_20261101/'
++    assert bindings['sha256'][prefix+'TWO_LAYER_PROTOCOL.json'] == EXPECTED_PROTOCOL
++    assert bindings['sha256'][prefix+'check_two_layer_results.py'] == protocol['source_sha256']['check_two_layer_results.py']
++    assert check['passed'] is True and check['protocol_sha256'] == EXPECTED_PROTOCOL
++    assert check['checker_sha256'] == protocol['source_sha256']['check_two_layer_results.py']
++    assert check['counts'] == {'modes':4, 'steps':16, 'batch':8, 'state_columns':4, 'trainable_parameters':18, 'optimizer_updates':12, 'readout_contracts':12, 'temporal_comparisons_per_mode':7}
++    assert check['financial_kernel_calls'] == check['pytorch_calls'] == 0
++    repo = '/home/runner/work/hepta-private-ci/hepta-private-ci/'
++    result_prefix = '/home/runner/work/_temp/hcsn-financial-autograd-r16-results/'
++    financial_prefix = 'tools/hcsn/compiled_fp32_r16_20261101/recovery/'
++    bound = check['bound_artifact_sha256']
++    expected_paths = {repo+prefix+n: digest for n, digest in source.items()}
++    recovery = read(financial_root/'RECOVERY_PROTOCOL_V1.json')
++    assert identity(financial_root/'RECOVERY_PROTOCOL_V1.json')['sha256'] == protocol['dependencies']['financial_protocol_sha256']
++    finance_sources = dict(recovery['source_sha256'])
++    finance_sources.update({'RECOVERY_PROTOCOL_V1.json': protocol['dependencies']['financial_protocol_sha256'], 'recovered.so': protocol['dependencies']['financial_binary_sha256'], 'RECOVERED_BUILD.json':recovery['build_receipt_sha256'], 'RECOVERY_CASES_V1.json':recovery['manifest_sha256']})
++    expected_paths.update({repo+financial_prefix+n: digest for n,digest in finance_sources.items()})
++    expected_paths.update({result_prefix+n:identity(extracted/n)['sha256'] for n in ('two-layer-audit.json.gz','two-layer-training.json.gz')})
++    assert bound == expected_paths
++    for name,digest in finance_sources.items():
++        assert identity(financial_root/name)['sha256'] == digest
++    for source_name,artifact_name in [('TWO_LAYER_AUDIT_V1.json.gz','two-layer-audit.json.gz'),('TWO_LAYER_TRAINING_V1.json.gz','two-layer-training.json.gz'),('TWO_LAYER_RESULT_CHECK_V1.json','two-layer-check.json')]:
++        assert identity(root/source_name)['sha256'] == identity(extracted/artifact_name)['sha256']
++    return {'artifact':identity(archive),'download_identity':identity(artifact_root/'DOWNLOAD_IDENTITY.json'),
++            'artifact_id':download['artifact_id'], 'source_head':bindings['head'], 'source_bindings':identity(extracted/'source-bindings.json'),
++            'all_archive_members_verified':member_identities, 'remote_checker':identity(extracted/'two-layer-check.json'),
++            'remote_checker_source_input_financial_and_raw_bindings_verified':len(bound),
++            'parent_reported_run_id':41366558836, 'parent_reported_job_id':125027835819,
++            'provenance_limit':'Archive bytes and its declared head, frozen sources and raw results were independently bound here. The GitHub API digest/success status and head/merge tree equivalence were verified by the parent, not queried anew by this reviewer. No local execution receipt has been substituted for a remote run.'}
++
++
++def run(root, reference_path, output, artifact_root, financial_root):
+     root, reference_path = Path(root), Path(reference_path)
+     assert identity(root/'TWO_LAYER_PROTOCOL.json')['sha256'] == EXPECTED_PROTOCOL
+     assert identity(reference_path)['sha256'] == EXPECTED_REFERENCE
+@@ -176,20 +238,10 @@
+         loss = np.mean((state[:, 2]-array(data['target_z2']))**2) + data['loss_a_weight']*np.mean((state[:, 3]-array(data['target_a2']))**2)
+         observed = training['history'][i]['loss_before_update'] if i < 12 else training['final_loss']
+         compare('terminal_loss_'+str(i), observed, loss)
+-    executions = {}
+-    for label, artifact in [('AUDIT','TWO_LAYER_AUDIT_V1.json.gz'), ('TRAINING','TWO_LAYER_TRAINING_V1.json.gz'), ('CHECK','TWO_LAYER_RESULT_CHECK_V1.json')]:
+-        item = read(root/('TWO_LAYER_'+label+'_EXECUTION_V1.json'))
+-        assert item['actual_returncode'] == 0 and item['artifact_sha256'] == identity(root/artifact)['sha256']
+-        before = item.get('source_sha256_before', item.get('source_and_raw_sha256_before'))
+-        after = item.get('source_sha256_after', item.get('source_and_raw_sha256_after'))
+-        assert before == after
+-        assert all(identity(root/name)['sha256'] == value for name, value in before.items())
+-        if label != 'CHECK':
+-            assert datetime.datetime.fromisoformat(item['checkpoint_commit_utc']) < datetime.datetime.fromisoformat(item['controller_started_at_utc'])
+-        executions[label] = {'actual_returncode': 0, 'controller_started_at_utc': item['controller_started_at_utc'], 'artifact': identity(root/artifact)}
+-    receipt = {'schema': 'hcsn.two-layer-result-independent-review.v1', 'passed': True,
++    executions = remote_artifact_binding(root, artifact_root, financial_root, p, source)
++    receipt = {'schema': 'hcsn.two-layer-remote-result-independent-review.v1', 'passed': True,
+                'reviewed_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'protocol_sha256': EXPECTED_PROTOCOL,
+-               'review_source': identity(__file__), 'reference': identity(reference_path), 'original_executions': executions,
++               'review_source': identity(__file__), 'reference': identity(reference_path), 'remote_artifact_evidence': executions,
+                'comparison_count': len(comparisons), 'comparisons': comparisons,
+                'maximum_absolute_gradient_error': max(v['max_absolute_error'] for k, v in comparisons.items() if 'terminal_loss' not in k),
+                'route_gradient_norms': route_summary, 'direct_boundary_credit': direct,
+@@ -217,5 +269,7 @@
+     parser.add_argument('--root', required=True)
+     parser.add_argument('--reference', required=True)
+     parser.add_argument('--output', required=True)
++    parser.add_argument('--artifact-root', required=True)
++    parser.add_argument('--financial-root', required=True)
+     args = parser.parse_args()
+-    run(args.root, args.reference, args.output)
++    run(args.root, args.reference, args.output, args.artifact_root, args.financial_root)

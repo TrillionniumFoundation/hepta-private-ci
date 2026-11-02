@@ -1,0 +1,173 @@
+{
+  "schema": "hcsn.f52-remote-two-layer-independent-summary.v1",
+  "reviewed_at_utc": "2026-11-02T00:25:55.608972+00:00",
+  "decision": "The actual f52 remote two-layer artifact passes the unchanged 69-comparison independent record reconstruction. No new financial, Torch or training call was made. This is a replay of frozen functional fixtures, not a new scientific confirmation set.",
+  "head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "parent_verified_remote_run": 41366558836,
+  "parent_verified_remote_job": 125027835819,
+  "archive_sha256": "7e45f10d267648e88db09a8b5d2b40dcfd606b2f065c894691695c18993897c3",
+  "archive_bytes": 1551454,
+  "artifact_id": 13107591722,
+  "archive_members_verified": 14,
+  "remote_checker_source_and_raw_bindings_verified": 28,
+  "frozen_protocol_sha256": "da07c580e258f51517f124d6d7b902a8ae3c6700fb58cb96948c18447c740ad7",
+  "checker_sha256": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e",
+  "actual_reviewer_exit_code": 0,
+  "comparisons": 69,
+  "maximum_error_over_frozen_allowance": 0.013300639813596771,
+  "full_equals_drive_plus_condition_max_abs_error": 3.0468072509393096e-11,
+  "route_gradient_norms": {
+    "full": {
+      "raw1_l2": 0.00044444966042335215,
+      "raw2_l2": 0.000744999217610972
+    },
+    "drive_only": {
+      "raw1_l2": 0.0004406123843813935,
+      "raw2_l2": 0.000744999217610972
+    },
+    "conditioning_only": {
+      "raw1_l2": 3.837308693746183e-06,
+      "raw2_l2": 0.000744999217610972
+    },
+    "both_detached": {
+      "raw1_l2": 0.0,
+      "raw2_l2": 0.000744999217610972
+    }
+  },
+  "direct_boundary_credit": {
+    "conditioning": {
+      "time_resolved_l2": 9.869645764414118e-07,
+      "net_time_sum_l2": 3.83635492135651e-06,
+      "state_history_remainder_l2": 9.690556557251098e-10
+    },
+    "drive": {
+      "time_resolved_l2": 0.00010883576767518305,
+      "net_time_sum_l2": 0.0004270021569204966
+    }
+  },
+  "conditioning_to_drive_norm_ratio": 0.008709035037981623,
+  "training_updates": 12,
+  "parameter_updates": {
+    "raw_theta1": {
+      "changed_coordinates": 9,
+      "l2": 0.717020015230448
+    },
+    "raw_theta2": {
+      "changed_coordinates": 9,
+      "l2": 0.7166894218752645
+    }
+  },
+  "loss": {
+    "initial": 0.017321569845080376,
+    "final": 0.016821451485157013,
+    "relative_reduction": 0.028872577046785686
+  },
+  "initial_trajectory": {
+    "z_min": 3.9119255542755127,
+    "z_max": 4.605170249938965,
+    "layer1": {
+      "default_states": 78,
+      "recorded_states": 136,
+      "sampled_phase_changes": 6,
+      "positive_to_nonpositive": 3,
+      "nonpositive_to_positive": 3,
+      "used_boundary_min": 67.44151430180042,
+      "used_boundary_max": 67.44151430180042,
+      "used_time_boundary_range_per_sample": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "layer2": {
+      "default_states": 51,
+      "recorded_states": 136,
+      "sampled_phase_changes": 0,
+      "positive_to_nonpositive": 0,
+      "nonpositive_to_positive": 0,
+      "used_boundary_min": 67.40345484730463,
+      "used_boundary_max": 67.49066885505707,
+      "used_time_boundary_range_per_sample": [
+        0.009805891969577374,
+        0.004539272379759041,
+        0.021093992679240614,
+        0.0038596514634576806,
+        0.005825200785835705,
+        0.011198146872885673,
+        0.01967297914504229,
+        0.00307267361857555
+      ]
+    }
+  },
+  "final_trajectory": {
+    "z_min": 3.9119255542755127,
+    "z_max": 4.605170249938965,
+    "layer1": {
+      "default_states": 60,
+      "recorded_states": 136,
+      "sampled_phase_changes": 4,
+      "positive_to_nonpositive": 3,
+      "nonpositive_to_positive": 1,
+      "used_boundary_min": 66.45381846450951,
+      "used_boundary_max": 66.45381846450951,
+      "used_time_boundary_range_per_sample": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "layer2": {
+      "default_states": 53,
+      "recorded_states": 136,
+      "sampled_phase_changes": 1,
+      "positive_to_nonpositive": 1,
+      "nonpositive_to_positive": 0,
+      "used_boundary_min": 68.3583957416069,
+      "used_boundary_max": 68.4182078211214,
+      "used_time_boundary_range_per_sample": [
+        0.01665873393888262,
+        0.003617039683376788,
+        0.007053247434370746,
+        0.0036407967790950124,
+        0.004161144492897506,
+        0.01881873092578701,
+        0.006999100179953643,
+        0.002399232175406496
+      ]
+    }
+  },
+  "record_reproduction": "After removing only the top-level runtime object, the canonical full audit and training JSON payloads equal the corresponding original published local payloads exactly. Archive and gzip bytes differ and are separately identified.",
+  "adaptation": {
+    "local_path": "/tmp/hcsn-f52-two-layer-independent-review/REMOTE_REVIEW_ADAPTATION.json",
+    "bytes": 859,
+    "sha256": "0ff069bc4b059a55163e59bb26812be45865bcea7df2fc1665a7833647e0eace"
+  },
+  "detailed_result": {
+    "local_path": "/tmp/hcsn-f52-two-layer-independent-review/REMOTE_TWO_LAYER_REVIEW.json",
+    "bytes": 33511,
+    "sha256": "c4fa4cba85323151ae747ab146168f45af25e79200985e4d43c35f0d64a1a94d"
+  },
+  "limitations": [
+    "The GitHub API digest/success and head/merge-tree equivalence were independently checked by the parent. This reviewer binds the actual archive and its source-bindings/remote-checker identities, without a new API query.",
+    "The three-channel source, all scientific gates and the independent numerical comparison core remain unchanged. Only path layout and remote provenance were adapted.",
+    "Later eleven training gradients were recorded and checked for finite update continuity, not independently recomputed; no Adam replay is claimed.",
+    "Conditioning-gradient magnitude is small relative to drive and does not measure task benefit.",
+    "The 2.8872577% training-loss reduction is a fixed functional observation with no matched model comparison or held-out assessment.",
+    "Default saturation persists: lower default count increases 51 to 53 of 136 while upper phase changes decrease 6 to 4. No autonomous repeated spiking or efficiency result follows."
+  ],
+  "new_financial_calls": 0,
+  "new_pytorch_calls": 0,
+  "new_training_calls": 0,
+  "new_candidate_rollouts": 0,
+  "blocking_findings": []
+}

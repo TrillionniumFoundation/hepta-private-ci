@@ -1,0 +1,90 @@
+{
+  "schema": "hcsn.remote-review-layout.v1",
+  "scope": "Only path aliases. Frozen sources link to hash-identical local snapshots; result aliases link exclusively to the real downloaded remote artifact. No original local result or execution receipt is aliased.",
+  "members": [
+    {
+      "layout_name": "two_layer_model.py",
+      "actual_path": "/tmp/hcsn-two-layer-boundary-next-v1/two_layer_model.py",
+      "bytes": 9442,
+      "sha256": "7e14756e5b98023092ce44f57eeef3933816a62d1a7dd4b126e8443448dfb2f5"
+    },
+    {
+      "layout_name": "two_layer_common.py",
+      "actual_path": "/tmp/hcsn-two-layer-boundary-next-v1/two_layer_common.py",
+      "bytes": 6871,
+      "sha256": "108098be5027a78d550b0a5a36be5f81c3cb4c156822e1e7d1f96a3e4e19a8d9"
+    },
+    {
+      "layout_name": "two_layer_reference.py",
+      "actual_path": "/tmp/hcsn-two-layer-boundary-next-v1/two_layer_reference.py",
+      "bytes": 6907,
+      "sha256": "35e8680e3faa501dcde7913a19b2998d2d799a1feb27667fbad6d55812c8ca69"
+    },
+    {
+      "layout_name": "audit_two_layer.py",
+      "actual_path": "/tmp/hcsn-two-layer-boundary-next-v1/audit_two_layer.py",
+      "bytes": 14112,
+      "sha256": "3676dcbb62f68ae5411df19db7b71560cca05eba17dfdfcedf382a3a0190202d"
+    },
+    {
+      "layout_name": "train_two_layer.py",
+      "actual_path": "/tmp/hcsn-two-layer-boundary-next-v1/train_two_layer.py",
+      "bytes": 6469,
+      "sha256": "6f28e980dbdae1d2528d764477f2b1cbdfdc9c41e0f34a1d5003897c52b8ba58"
+    },
+    {
+      "layout_name": "check_two_layer_results.py",
+      "actual_path": "/tmp/hcsn-two-layer-boundary-next-v1/check_two_layer_results.py",
+      "bytes": 30196,
+      "sha256": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e"
+    },
+    {
+      "layout_name": "freeze_two_layer.py",
+      "actual_path": "/tmp/hcsn-two-layer-boundary-next-v1/freeze_two_layer.py",
+      "bytes": 12913,
+      "sha256": "fa0f05ffeb94338193c30b6bbeaaa1e3cf79761104b5ef1433f3e48702303aab"
+    },
+    {
+      "layout_name": "README.md",
+      "actual_path": "/tmp/hcsn-two-layer-boundary-next-v1/README.md",
+      "bytes": 8861,
+      "sha256": "02571e4447cf63b27e81fb85a4777fcfd5e2efdfa4aaadf7b158ceff33349a2b"
+    },
+    {
+      "layout_name": "requirements.txt",
+      "actual_path": "/tmp/hcsn-two-layer-boundary-next-v1/requirements.txt",
+      "bytes": 31,
+      "sha256": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+    },
+    {
+      "layout_name": "TWO_LAYER_PROTOCOL.json",
+      "actual_path": "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_PROTOCOL.json",
+      "bytes": 7927,
+      "sha256": "da07c580e258f51517f124d6d7b902a8ae3c6700fb58cb96948c18447c740ad7"
+    },
+    {
+      "layout_name": "TWO_LAYER_INPUTS.json",
+      "actual_path": "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_INPUTS.json",
+      "bytes": 17425,
+      "sha256": "a71e0504039f65fde804b31bd015475ce78f67e409073a5a6e9bd86c58e8d6db"
+    },
+    {
+      "layout_name": "TWO_LAYER_AUDIT_V1.json.gz",
+      "actual_path": "/tmp/hcsn-f52-remote-artifact/extracted/two-layer-audit.json.gz",
+      "bytes": 639506,
+      "sha256": "8b9b02b39e55ec60e4ad79787862c03510c247aae354d4b8e3bdfc86d91b28f8"
+    },
+    {
+      "layout_name": "TWO_LAYER_TRAINING_V1.json.gz",
+      "actual_path": "/tmp/hcsn-f52-remote-artifact/extracted/two-layer-training.json.gz",
+      "bytes": 453634,
+      "sha256": "4685ce7b0deac4d006e469565cd758238f6ef8d550af4f6fa060a9789038d7c1"
+    },
+    {
+      "layout_name": "TWO_LAYER_RESULT_CHECK_V1.json",
+      "actual_path": "/tmp/hcsn-f52-remote-artifact/extracted/two-layer-check.json",
+      "bytes": 6430,
+      "sha256": "c22b9f00fa4e74446844e467aa316e94f2cacbb29c42202768c5b93b7e0c2e15"
+    }
+  ]
+}

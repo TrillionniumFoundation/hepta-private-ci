@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn.remote-review-adaptation.v1",
+  "original_source_sha256": "d980311b484be6f221d07596eb2a9bce1db68ec4beb4e93b6c6bf2571b9634aa",
+  "adapted_source_sha256": "51968fb413b76ff1d069d75db864bb18a372819dba5228bfef04a5dd38dde619",
+  "scientific_core_exact_text_identity": true,
+  "scientific_core_sha256": "d9f35268c17b3bc4d981ff5459278bc9d6891faacce06cac6f25a6c176c14ba7",
+  "changes": [
+    "CLI receives remote artifact and frozen financial source roots.",
+    "Only the old local execution receipt verification block is replaced by actual remote archive/head/source/raw identity verification.",
+    "Output schema/provenance field names identify remote evidence.",
+    "All original 69 numerical record comparisons and their fixed tolerances remain byte-identical."
+  ],
+  "no_frozen_candidate_change": true,
+  "no_new_scientific_calls": true
+}
