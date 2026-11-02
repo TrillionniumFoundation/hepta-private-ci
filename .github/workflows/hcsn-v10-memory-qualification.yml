@@ -10,6 +10,7 @@ on:
       - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/PLAN.json
       - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/DATA.json
       - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/TRAINING_COMPLETE.json
+      - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/SUMMARY.json
       - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/test.npz
       - experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/fit_*/weights.npz
 
@@ -46,6 +47,7 @@ jobs:
             /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/PLAN.json
             /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/DATA.json
             /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/TRAINING_COMPLETE.json
+            /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/SUMMARY.json
             /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/test.npz
             /experiments/hcsn_v10_closure_20261101/joint_retrain/results/development001/fit_*/weights.npz
       - name: Python from existing repository action pin
