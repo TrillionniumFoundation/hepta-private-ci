@@ -1,0 +1,1362 @@
+{
+  "schema": "hcsn-v9-remote-delivery-verification.v1",
+  "baseline_commit": "059b43a0b20ad07654880c155cc49799e0bb8858",
+  "verified_candidate_commit": "029135111396508681910ba6d800dd6ab56acebb",
+  "root_tree": "029135111396508681910ba6d800dd6ab56acebb",
+  "new_directory_tree": "32abf16ddbd8908b2fabafefa18d241a0d1b2c30",
+  "verified_files": 209,
+  "verified_bytes": 30591843,
+  "inherited_experiment_directories_unchanged": 20,
+  "other_root_entries_unchanged": 52,
+  "checks": [
+    "Remote nontruncated Git tree inventory equals local delivery inventory",
+    "Every file Git blob, size and mode equals local bytes",
+    "Every inherited experiment directory retains its full original Git tree",
+    "Every other repository root entry retains its original Git object"
+  ],
+  "evidence_reconstruction": "publication/TRANSPORT.json; preserves the original 18371753-byte gzip after verified reconstruction",
+  "stages": [
+    {
+      "title": "research(hcsn): add v9 frontend implementation and review",
+      "commit": "1b453e136de51da10130eff076b674c26dd9c7c9",
+      "tree": "0091dda6b62c250df0de88c0f3754f0d01e63a7f",
+      "files": 3
+    },
+    {
+      "title": "research(hcsn): add v9 persistent core implementation and review",
+      "commit": "a8e04931c4fd35d80a224aeaf3c4734d5a6c75e4",
+      "tree": "3d81c2e3a96a49181da5a8cc088550b62a73fbf4",
+      "files": 5
+    },
+    {
+      "title": "research(hcsn): add v9 risk implementation and review",
+      "commit": "fcb8cc90ac0718ae10d0d1fc5ba53e5a1ae8f480",
+      "tree": "0345f3dcc3372e00d9b9e676b720ba30574f5192",
+      "files": 6
+    },
+    {
+      "title": "research(hcsn): add v9 refit ablation implementation and review",
+      "commit": "dc5748c8018d0c73b3be4b0fd34a7b889a4ae431",
+      "tree": "aeae5d83bf113c069a3d203c74d349f13dcd5fa2",
+      "files": 6
+    },
+    {
+      "title": "research(hcsn): add v9 economics implementation and review",
+      "commit": "746507cbdf8d5f23f0262d45451437beb0bf3790",
+      "tree": "7f78edce9072c7c0075b5a5cb6a261c2357ad79e",
+      "files": 4
+    },
+    {
+      "title": "research(hcsn): add v9 review implementation and review",
+      "commit": "a22f3c274209295a80dafd7fb2cc969c1e823378",
+      "tree": "3869a1a02ca7dddf14d7d49e2515432096ccf849",
+      "files": 2
+    },
+    {
+      "title": "docs(hcsn): record v9 strict limits and exact evidence recovery",
+      "commit": "6fb6d54d015e5af806cc79f4a796b7655a7291d6",
+      "tree": "fa15e47b13ba9e23587ef44b26c93571c5d6bd8c",
+      "files": 5
+    },
+    {
+      "title": "research(hcsn): preserve frozen v9 frontend evidence",
+      "commit": "bfaf1aff7bc855e53c18fa72895d47cd4d2c8043",
+      "tree": "aa73e5382aa462da697e10efb7b66587490ea9e3",
+      "files": 6
+    },
+    {
+      "title": "research(hcsn): preserve frozen v9 persistent core evidence",
+      "commit": "79e2dae93e4e8951d316c9bae2e00aad2e47e87a",
+      "tree": "f70e06675042757befc46638570346edac43d9cf",
+      "files": 24
+    },
+    {
+      "title": "research(hcsn): preserve frozen v9 risk evidence",
+      "commit": "27c46a7f648f46f2325d59139f0026564a5e1922",
+      "tree": "b667f62327ed5b6da7dc36f0f255c077a8dbaf6e",
+      "files": 5
+    },
+    {
+      "title": "research(hcsn): preserve frozen v9 refit ablation evidence",
+      "commit": "65f49d470b048ed9d29919ba6db2274f9e9905a1",
+      "tree": "3cb39f227f25df4cbd5b83b55498e0eee44ae2d9",
+      "files": 58
+    },
+    {
+      "title": "research(hcsn): preserve frozen v9 economics evidence",
+      "commit": "202915f38c977cfebc0b460863746f05f0c1e608",
+      "tree": "8d2e96d0fa2c1ea1414ca1cb7a6fc3cf2578b60b",
+      "files": 59
+    },
+    {
+      "title": "research(hcsn): preserve frozen v9 review evidence",
+      "commit": "1bac1d9528a5e5f38170cbc293978824d7fd3af8",
+      "tree": "729fe63cc15efc385e34b537ec0670ea1ffba432",
+      "files": 11
+    },
+    {
+      "title": "research(hcsn): bind v9 delivery manifest and original raw transport",
+      "commit": "029135111396508681910ba6d800dd6ab56acebb",
+      "tree": "f8bde6634e1c2c30298a6179bf0cd4c7d21df4c5",
+      "files": 15
+    }
+  ],
+  "files": [
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/ACCEPTANCE.json",
+      "git_blob": "ce546a00e1cda5767336c87e112b69bfa2d4db8a",
+      "bytes": 3185,
+      "sha256": "5f1bc018f90d28962e387f84309b341ce3c0a2c66069a928efff234dcfada7ce"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/BEHAVIOR_CORE_MECHANISMS.log",
+      "git_blob": "8eacf94d0adbc8423b7f8dfea39ab85b6d003cab",
+      "bytes": 2619,
+      "sha256": "68626d9179fd464e70e3234dd9ef3886995226df647f61a036b47ad3687a841a"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/BEHAVIOR_FRONTEND.log",
+      "git_blob": "d04421ddbd06e3d0e9b1ebf87962c0530119c237",
+      "bytes": 3014,
+      "sha256": "e8f3d5e73283e0ae5208eed143e4437fd8f1cfacfe291144d974546144e8749e"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/BEHAVIOR_TESTS.log",
+      "git_blob": "9a44c77474003b71686f136536132776a1358c1a",
+      "bytes": 3493,
+      "sha256": "3c3377ab2586e786be4c0fb8901b6da9b7aa50e1ec4fcec3d9852af6c84d1b8e"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/FORMATTING_STATUS.json",
+      "git_blob": "1b6cc48172cec1a9147433789b586e9e4a4e089c",
+      "bytes": 597,
+      "sha256": "83c688f3e0b9be74de630f8022732497eb9a474c9797a6425f26015f459f2d49"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/README.md",
+      "git_blob": "185336a38fe69ca58cbad3e286773e0d4e483577",
+      "bytes": 1191,
+      "sha256": "085be789691561d9433b190a7b5e3710870e41f306e0f6e12e75d5ba3e47cdf7"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/REPORT_ZH.md",
+      "git_blob": "a1b0839598a671c97e786aae9882e03d2487dc45",
+      "bytes": 6911,
+      "sha256": "e083a65f613f1f0f06c33011fdc05a6f1fa4470f70e98d596d27b6bb75e033dc"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/REPRODUCE.md",
+      "git_blob": "6b1605318ac0bac03ef5a956acdec4d708d75e25",
+      "bytes": 3936,
+      "sha256": "c48ab1443e6150821697e80aac6d0b1169ba5cc24c63165ead944cf95522ded3"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/SOURCE_RECOVERY.json",
+      "git_blob": "79fc758235a072831f6b6a8c2d1edb4fc3b5f710",
+      "bytes": 11998,
+      "sha256": "01bccb158faea8c12773bc11442a79f4bfbe857af85981aaaec1f27981aafb3d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/SOURCE_RECOVERY_CHECK.json",
+      "git_blob": "04416b1c0ae3e7c80aa6373862a93dfc69d095a4",
+      "bytes": 20232,
+      "sha256": "11a440699f920f93ff615af514ae19a8a1af2c1d13e322bff5d690505cc6d5c2"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/VALIDATION.json",
+      "git_blob": "064df38498d57626940d30d9cff36f7f0cdf40b0",
+      "bytes": 756,
+      "sha256": "c8db3217bd23fe55839384880ff638b1fffbe21165719f161a6aff0e86493cb1"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/AUDIT001.json",
+      "git_blob": "9c699c9cceef80e97375fac6ce1fc65171798191",
+      "bytes": 9023,
+      "sha256": "5dc5c67c9b153050620fecc3a6075fba6526469058dc1512c3fd5f3a1ca83351"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/AUDIT002.json",
+      "git_blob": "d81a4d27f715ce25a232fca4d53955dd0bf6481a",
+      "bytes": 14112,
+      "sha256": "619a2cc0b9272bcaeb755e380cb540773f3cc4d4d5774642573d9df8438f2b46"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/REPORT_ZH.md",
+      "git_blob": "6636e58fd92366b34ab952e81595e4d49fbd6418",
+      "bytes": 4095,
+      "sha256": "2baa738cab48d11eafd5f1dfa1de2307d796265dd48326e2e4e557bdb8b869e0"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/SUMMARY.json",
+      "git_blob": "3d74ece831982531b00f7e323af5861be3e088ad",
+      "bytes": 7446,
+      "sha256": "700071680be99ced610c3d547abc06d675cabcd48a857fc9584c0e133c7b5206"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/audit_receipts.py",
+      "git_blob": "82616f44c330b019365a20a5b3b5be93370b35c4",
+      "bytes": 4258,
+      "sha256": "6241193f5fa15d874e233ea43eede3fd8b9459b2b61a14508fb9a1f85726bc25"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/family_cost.py",
+      "git_blob": "124cdf7bd7a6cbd141899acc8fd83087224ea524",
+      "bytes": 12040,
+      "sha256": "85f02df43788eebdd72058b80bce6d2e84e51d4d5816c9a894a107dfa066b80d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/memory_fixture.py",
+      "git_blob": "274f71a5ab4647c7d6310b1fdf9ba5042eb96b88",
+      "bytes": 2557,
+      "sha256": "cde830618f10316a41c3d96e6710514d0a3eb2af93c82a0c17a00f0389eac39a"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/behavior001/MEMORY_SAMPLES.jsonl",
+      "git_blob": "fc2028016a7faaa22956b1d2eceb5a27058d18b5",
+      "bytes": 2831,
+      "sha256": "fa204dc271ada1771e94d8c154582569cd4bb48c6c9425ec2e2f9c597cf07f5c"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/behavior001/RECEIPT.json",
+      "git_blob": "f8b89a3bf60ed32fe5713f378ec7d70e849046a5",
+      "bytes": 3295,
+      "sha256": "fa063fcf6660759bbf314179df646d2b9f4b3149ca23433d0c3c85e8ec02dd04"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/behavior001/stderr.log",
+      "git_blob": "5cf14f7938a08b7efc6f7826ae0efc250d809369",
+      "bytes": 920,
+      "sha256": "217c734dfa764d8bdbb080884da4c6cd72a47b67e6118381cdc992461c3330e3"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/behavior001/stdout.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/behavior002/MEMORY_SAMPLES.jsonl",
+      "git_blob": "d2365f5cf5c380a3df8a7cbe3f328cb37b07ec9e",
+      "bytes": 3529,
+      "sha256": "c54f5af08a5ca2bc06dc038667b9163517fba157170e6d30984eb92eb2552a0f"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/behavior002/RECEIPT.json",
+      "git_blob": "8800b4ec9946e7b13c3b95804b5f8c56b9ea6d95",
+      "bytes": 3282,
+      "sha256": "2f8c3851103601bcadfd93213416f2fd94ee826bde21ab076e70e39ce3b02fbd"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/behavior002/stderr.log",
+      "git_blob": "4c2b90fc476c6cbab915a69f12c6b1829f3500ed",
+      "bytes": 131,
+      "sha256": "d898207e53c8ee54148a5ec8765f8fb7aa04457cbdddb441edc9fd05925671b0"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/behavior002/stdout.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/orphan001/MEMORY_SAMPLES.jsonl",
+      "git_blob": "e6a343192e7b440cf69bfd67ac03a088a7656204",
+      "bytes": 43467,
+      "sha256": "00b7fc361d7c07cc13b5ae0481f8d398f48c90c6a60025af5038593baab310e4"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/orphan001/RECEIPT.json",
+      "git_blob": "a281876a6bf910ed4046c617f2f8c0eda173ef34",
+      "bytes": 4434,
+      "sha256": "4da2036e7f1066bce43c75691238a454181f09118134f887ed8f21c23c116947"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/orphan001/fixture/child.json",
+      "git_blob": "68631e462af679d009f15b9a123d0a759f7eda9c",
+      "bytes": 391,
+      "sha256": "580c5b4428e678bd4e7aab695420df408f6287b0409e42ca5fe6e8e670f43625"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/orphan001/fixture/grandchild.json",
+      "git_blob": "76c99ca2cf2007c35e4b9bba4a35a5e9918045e3",
+      "bytes": 318,
+      "sha256": "c57c298ee3ca3c33f8a4f9b7f1d4556c9a941dd9df33af6059665a3288801529"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/orphan001/fixture/root.json",
+      "git_blob": "2a6923860063994ba5d9d1ac5d1054738212af79",
+      "bytes": 311,
+      "sha256": "c47b6f0d7aa9d96fea6ba1b37722e626efb7da298c8516e8a33648a7841765a7"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/orphan001/fixture/short.json",
+      "git_blob": "d64e77ba25365d966f7a34f12ddcb5e6441edd16",
+      "bytes": 326,
+      "sha256": "c4f48d535cc42489061ccac052ce6591fe144dcea64c670ba95c0e981dc35c15"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/orphan001/stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/orphan001/stdout.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_audit001/MEMORY_SAMPLES.jsonl",
+      "git_blob": "36fa8deb7917090c1e829bf8ea0dc85f9aae0a16",
+      "bytes": 95667,
+      "sha256": "6ffe773732f11bd1a9bb5bef3ec6ee40582157de0f4311afcea0481bb97fbfd5"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_audit001/RECEIPT.json",
+      "git_blob": "bea5382eabe7a84e7e2855b0cd26d834f6da01c6",
+      "bytes": 3368,
+      "sha256": "fcf6eb5ba6be0ed4e91987de8d89ead9f38f8aeb5a1fc1e838cfa902442dc612"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_audit001/stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_audit001/stdout.log",
+      "git_blob": "c356a82e2e7404c3e4ec4a658298d8fc9738e1ae",
+      "bytes": 443,
+      "sha256": "a6d55193058b3075291d4753564981cbab9b9c13ee97435c613232fbc7afed64"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_prepare001/MEMORY_SAMPLES.jsonl",
+      "git_blob": "1e6814b7cc933dfba701b97f6d62ac306f38e869",
+      "bytes": 3530,
+      "sha256": "86a52a328a079cd3155f759941a9892a192b2f70703bfc4bbeb2c321bfb52a42"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_prepare001/RECEIPT.json",
+      "git_blob": "9ac56803a084a6fd867e2014f9fe4734105b6c92",
+      "bytes": 3362,
+      "sha256": "394dca5baa050abddeeb9bc39191241712268445c7cda52e8853ec34bd1bf828"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_prepare001/stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_prepare001/stdout.log",
+      "git_blob": "94424b2cbb1fc284d9adee0c5ef686ae5d949904",
+      "bytes": 84,
+      "sha256": "13c6dfd0e6824acd745dafee2ca7d8c94634c8de32c317e90d000dc0d67d792b"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_run001/MEMORY_SAMPLES.jsonl",
+      "git_blob": "585eeb6b8a2e2e382012dd67bb84a1bfa7899324",
+      "bytes": 660781,
+      "sha256": "07d7f0125514890a47d1b598e3817dc7e47f35d1704a7091972a9ab0e5ab4e5c"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_run001/RECEIPT.json",
+      "git_blob": "d20aa25795fc7af2efa1535fd3bd046607883a8f",
+      "bytes": 3365,
+      "sha256": "01b76b250bb592648ba815b1bc1706b749c9af3a7f036f660f09fdf6d561eae7"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_run001/stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/persistent_run001/stdout.log",
+      "git_blob": "cb5a59ac7eb11f01c1ac8cd90f0c2cdbb23330dd",
+      "bytes": 1552,
+      "sha256": "f8b680f4e13b66553d670223ed75a7b5f7fcdc0cf0610d8287cdc41486b47d26"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/refit_execute001/MEMORY_SAMPLES.jsonl",
+      "git_blob": "9af75ae7aa1d8e3bad3eb4158fdbeaece554593a",
+      "bytes": 206821,
+      "sha256": "a743853c11ed3d31bfccb0ac7232954027a65e4290744112e235ae5ba4650ee0"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/refit_execute001/RECEIPT.json",
+      "git_blob": "ac6a58195ea74a6601c2a7adf066b2076c6618b9",
+      "bytes": 3385,
+      "sha256": "f4de3830312c1f33b80b82a975e28fb17af61875436382862deb48dd8804298d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/refit_execute001/stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/refit_execute001/stdout.log",
+      "git_blob": "c460f1467cf991728ca37e9fc615af51a67ed636",
+      "bytes": 15127,
+      "sha256": "a07091acd7b78b88922ba74ae178692edcaf794d0e30134abba178b1d70375ba"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/refit_execute002/MEMORY_SAMPLES.jsonl",
+      "git_blob": "0665a1ec613d4a92bc3f71c3f07a41e1347be5c5",
+      "bytes": 176706,
+      "sha256": "6f1f20e57635c8e4dd6cb05d4fafcc1e1728c71c587337c806b5daeea833f1cb"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/refit_execute002/RECEIPT.json",
+      "git_blob": "b7a9cf983fa9d07862b7ab1a7309ed9d3a7459ce",
+      "bytes": 3400,
+      "sha256": "66359b725290ac0f14a21df3274477e6e5a5c065164f4657f88142b3e905b37f"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/refit_execute002/stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/refit_execute002/stdout.log",
+      "git_blob": "eda4e6ddf9b75f00a04eaddd4e9051893e1c3ed1",
+      "bytes": 15320,
+      "sha256": "96404ab248cedd91420ad9a45cb2f4e2249f8366093dcd2b3ab3d345f7f21a9f"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/risk_execute001/MEMORY_SAMPLES.jsonl",
+      "git_blob": "32f43e24189606fc212810233740a609c8c08233",
+      "bytes": 771944,
+      "sha256": "3233d3f681152687abf245fa55cf5893b7647967da2312594aab5a39303e1faf"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/risk_execute001/RECEIPT.json",
+      "git_blob": "c43827b84e183a0d925c3f772886c3bca7f261ca",
+      "bytes": 17439,
+      "sha256": "143c9c26b028eac7e72c75498030d668159f01d7812e5a21af41dcaad6968bb7"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/risk_execute001/stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/risk_execute001/stdout.log",
+      "git_blob": "87e61cdb49d8889d4ca2667f1911d11d8eb88a42",
+      "bytes": 59,
+      "sha256": "d1e678439f5d3a82b543e8382b012d9871fd7a65dc76725c1fa91b46fae8b582"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/short_gap001/MEMORY_SAMPLES.jsonl",
+      "git_blob": "3e3302829ad09cb19c995b6f007963d67b66e590",
+      "bytes": 4280,
+      "sha256": "d642ac99b7f1ff9304d719dec1b5e6f260227ca510c566dd54619b1edff3ee2c"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/short_gap001/RECEIPT.json",
+      "git_blob": "d65db3a44c84566b0745a9f67b0cb98a9f4920c2",
+      "bytes": 4102,
+      "sha256": "af125c146d606206d30b34dbdd6ba7bf17f9f9bd292333e19d6bd66e44b2b9f7"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/short_gap001/fixture/child.json",
+      "git_blob": "10c6f08745c243ad15aef6c1e61cd61d96051eaa",
+      "bytes": 385,
+      "sha256": "887a4f9cffadad1648b2879c3f5e322f0fdff21c7038bc692e9615965169b629"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/short_gap001/fixture/grandchild.json",
+      "git_blob": "2b1047ace210fead23a250a053ae01c64bdf518d",
+      "bytes": 319,
+      "sha256": "d3ffcff1d02d6f6d3588ccf1d3200562f4af07940bc34af1dca1107cba7810df"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/short_gap001/fixture/root.json",
+      "git_blob": "9a9813f5b4980cc9416841d9880f2f9576c1df22",
+      "bytes": 484,
+      "sha256": "696cdaca0f0ffd12d7f9b7d93332c611a4b7a3f4bac0f806d77b78ec0c5f9768"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/short_gap001/fixture/short.json",
+      "git_blob": "27a47997afbd1c6b504d15950177c6da5a50bf2d",
+      "bytes": 326,
+      "sha256": "17ead12d4a3228483348371a3921ef643347ffaca8bd959a490ca95d7455e46a"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/short_gap001/stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/short_gap001/stdout.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/tree001/MEMORY_SAMPLES.jsonl",
+      "git_blob": "067028de7842aa6e375e7e0ba091154097b1d1e1",
+      "bytes": 49756,
+      "sha256": "bb960955eb7181f9670db81711b1fe0254df9e66042d9f16c29e898c5dc26a1e"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/tree001/RECEIPT.json",
+      "git_blob": "fd545dfc6cfc543507fd1f8472975b238d9d8c6b",
+      "bytes": 4168,
+      "sha256": "3e8a1b0e0b79ec413fa6af9a76da3a7a3e32d0db5e04991e820f81eef582352e"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/tree001/fixture/child.json",
+      "git_blob": "70f7c437acc13aa9bf712ae7f1cc90ddd36a9fe9",
+      "bytes": 383,
+      "sha256": "7a830d9f76f9d3feda28b4feebd9b8f3b14dda3496c98283d59a78d390a2ad0d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/tree001/fixture/grandchild.json",
+      "git_blob": "7419fbd357509ff6113d5ff30cc5b46ecb1b5de4",
+      "bytes": 319,
+      "sha256": "e5f54c7e1970be2dca78ce5a20e8c4554559cb17e9d369b05f3e5902ce3e3ed9"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/tree001/fixture/root.json",
+      "git_blob": "38dc94e6e0c10907b6fcd7282880befff8952d31",
+      "bytes": 473,
+      "sha256": "0c49b34bcd5a7ff9a7200ad70cd9dec131f65910a89308c0ba7c9358b7bba3c2"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/tree001/fixture/short.json",
+      "git_blob": "a531eb31f4ae8865264d3eb7ef6619c1be243a0a",
+      "bytes": 326,
+      "sha256": "29f448f4169b80150ac65604bfd5a64751320d777edba8427f4e9f97746937e3"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/tree001/stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/economics/results/tree001/stdout.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/frontend/INVESTIGATION.json",
+      "git_blob": "91101e3be6ba3e8e681383f49d0db89bf111979e",
+      "bytes": 3928,
+      "sha256": "bd8ca59dac7337ed8ef0aa4e4445bbeadb631de37834c6f13f4445c6938757af"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/frontend/OBSERVED_RESULT.json",
+      "git_blob": "cb43bb85d8804d0e50e7383a5fd9485c8063d37f",
+      "bytes": 1982,
+      "sha256": "5f201e1a43ba13094d68d7c0143495e50586d9e5d87438fd5db2ca586eaab4da"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/frontend/OBSERVED_SUBMISSION.json",
+      "git_blob": "c5d2c377343c871656698f9e4b39ce10b69f0d6a",
+      "bytes": 840,
+      "sha256": "c43bae49b80e908268ff3a246cd214b0918dd41cd690b539ecc4fcf88cf04801"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/frontend/README.md",
+      "git_blob": "399a866c0e7b45b7eb5b4326b72ed93a67a1dc59",
+      "bytes": 2649,
+      "sha256": "1676870bf8e418b4b2657be0ac28cba91df98818e61cbbc29b1fc61239f13add"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/frontend/READ_SOURCE_BINDINGS.json",
+      "git_blob": "3d1060b8fdb4f9974f39f180309c3b2f7c50b0ee",
+      "bytes": 841,
+      "sha256": "28364ccc43c4fa947c92a2f94f716aef99e005a998c4a7aae15921a3abd67a2f"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/frontend/TESTS.log",
+      "git_blob": "802cb64a72bf72e4cc9b8a18199c6b94f3e6eb28",
+      "bytes": 3014,
+      "sha256": "a8d5b70069fb44d9db6f2b1e3e054ee45b8170b08733cb37a026bf9ecf2b1100"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/frontend/TEST_RECEIPT.json",
+      "git_blob": "46e2ddd642ce774ac0c2fdd7ced7b676f3702da9",
+      "bytes": 847,
+      "sha256": "b650eb611aa8bb164c60c0ed41b3f448bdd411f3d15ed3a08df769ea850ad722"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/frontend/admission.py",
+      "git_blob": "971b9ece2078ec7ec1fb6f0bf9763c19d0d7ca25",
+      "bytes": 15791,
+      "sha256": "46314a555819d1e677cf1c1045262b8cffbe162d1f9983368043209f58511551"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/frontend/test_admission.py",
+      "git_blob": "4de8d59be7ee8b620781d55b9c0777a032961be0",
+      "bytes": 9950,
+      "sha256": "aef4810e1cbb86d82b799b834104ee4014c153e0faf45e651d38e8f25466e2c9"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/MANIFEST.json",
+      "git_blob": "735c974b5a99c4e451ea6e2281f1efbbc29aa6f7",
+      "bytes": 5024,
+      "sha256": "760a4542482d7ef7e84e84b8b6fb22ca2ccb7b5454c99c0cf41c480ee5939b9a"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/README.md",
+      "git_blob": "38b3a504bc0c4f50b51000549e93949e412668ea",
+      "bytes": 6240,
+      "sha256": "b3e7079ca4dbc2ea11e48dc2be5d7fff1dabff9f3c5592cb36ca478aa13297fb"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/audit.py",
+      "git_blob": "9806425f685a0f63e1e781d74cabd13f67f6d6bd",
+      "bytes": 6132,
+      "sha256": "8e826402df90a032aaf9fd3c20c2748752f5826dbceea9643defd8e1300c4961"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/campaign.py",
+      "git_blob": "92f39a3763fc1181348e26f3c69e21b6b76b4b6b",
+      "bytes": 17178,
+      "sha256": "10ae0f8dec97757de20651bfdb175d8a7a7112dbe5f17ead0bb9a2b0e9082671"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/models.py",
+      "git_blob": "256cbaf18c5df46ab2d9d0f6792545e607b227a3",
+      "bytes": 5481,
+      "sha256": "7bd238c1b5224248cb376516ed5bf6c1dea43c3ea3208a8bc8b1f76dc97b4508"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/AUDIT.json",
+      "git_blob": "6daeb508d4ce82517061590d67e27fd7d1d1ebcf",
+      "bytes": 461,
+      "sha256": "8f45363a6a9e5c8d925e4fd9c7ba331a7d902a6526032fe7bc8c856fe7732831"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/FIT.json",
+      "git_blob": "b18d621dc620099d22e860bc5127bfa46ce367d1",
+      "bytes": 36489,
+      "sha256": "48efb71198adb672e90903ca2ea6f495b1a44894c81f486025c95b75047d65f6"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/FROZEN_MODELS.json",
+      "git_blob": "6f0881cc22f833dbbbfb6b70e9498924c793945a",
+      "bytes": 1296,
+      "sha256": "d7c0521a88865bef3f6cdee3ae4ad8c8f354f7d0eece9b71e1410937f252f060"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/PLAN.json",
+      "git_blob": "ac068dc02b447574c123e9598c4f272b6dc12e2c",
+      "bytes": 2385,
+      "sha256": "9b0f900bdc7710effdeb88a399a4d2b5bbc2880952c294638b818cc13b840b8d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/RUNTIME.json",
+      "git_blob": "e555970fd051071447b34f5fd3db333773e23c1c",
+      "bytes": 347,
+      "sha256": "b000569b9c4bbbaca3dd4ac3304b86b02d74dd650256f8b02d7eaf87648ffe45"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/SUMMARY.json",
+      "git_blob": "fcd331076ff26a575168aade1f4925e4832c6bff",
+      "bytes": 3777,
+      "sha256": "59380899d24dee74fea99d6496bfc6d2f1b5fd1a9aa027101103d63ba5560c77"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/evaluation/paired_D_minus_B.npz",
+      "git_blob": "421b53deac51e99f68fb85d3e34ee2f77e4c7efc",
+      "bytes": 2260,
+      "sha256": "f7d99f4c82533600a7f31b9fe4a00dbdb83fe0e36f13fcb193f8ce4b56af832d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/evaluation/worlds.jsonl.gz",
+      "git_blob": "781091631122dafecba06a618c6ee3a9f0399c9f",
+      "bytes": 43943,
+      "sha256": "35728169dbb8baca8f146950eeb8c84b07d20bc69dcbd021e85dfbad3e9abe37"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/data_91101.npz",
+      "git_blob": "ec111da9c1261723516679dc97542962774c8af1",
+      "bytes": 85206,
+      "sha256": "80c5a4f2cf4899e8a4efe458646bf9751f8668bff29dab421850d708af2cfc02"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/data_91103.npz",
+      "git_blob": "310ddeb33ff07d5dc58e8a3d61e2f04f9be9a6ab",
+      "bytes": 85282,
+      "sha256": "0253a2302a41b6b2a5419dc7fa8cea5f03a9bec2ed493193dce474050d4718b1"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/data_91107.npz",
+      "git_blob": "87cf6248f6eb7e6995e435985d8fffd659fece94",
+      "bytes": 85306,
+      "sha256": "091dbefdb5a64b866875779fa9b8cadc23fb55e459427222c23ea016c02a7294"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/data_91109.npz",
+      "git_blob": "e796a3e73545415ab217b832984c341deeffa394",
+      "bytes": 85272,
+      "sha256": "744ac552a3f32c330de631427f021ca5d508d01066e143cd83a856325b66b8d7"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/data_91113.npz",
+      "git_blob": "1ef502cfec710d4f7c0d78907d5a274d42870236",
+      "bytes": 85183,
+      "sha256": "1a6631b99de2a43e48ee8e387490d5b1ada432e92bf7bb9f8c0d9197df9c9a1d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/gru_91101.npz",
+      "git_blob": "7efe6ce76d9bdc6e407f1274fddf54e47885bd7b",
+      "bytes": 10581,
+      "sha256": "75d1d731969e18d3868fa6570c51139d4f67bf5ae2cd6acb0c4c8928645b986d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/gru_91103.npz",
+      "git_blob": "247487f678f1c497214a5943b47640e033509bb8",
+      "bytes": 10572,
+      "sha256": "9e7e975c3032165d16dd4b18f76a88ae49629760490ca657f2afc61603ca6163"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/gru_91107.npz",
+      "git_blob": "ccb3c44c36b0f84a1852227676bb8bf82a36547b",
+      "bytes": 10569,
+      "sha256": "f3e1ef98789a155eb017b89d5d3938c182af4be2a858091767d073a6f5c4f9a9"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/gru_91109.npz",
+      "git_blob": "58be7585ae121bb901be853fa5e46d18050fe613",
+      "bytes": 10570,
+      "sha256": "70c3c9998eb5bff5147047dd06c52ac6ab05597bc911580310bf1169c759cc0f"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/gru_91113.npz",
+      "git_blob": "745f5c999cf4f314c48bdb0bf796528859465d95",
+      "bytes": 10572,
+      "sha256": "dc6ee6f48ba1f0c18951291660a9ade863fc872bb10f9215774af25827a1c13d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/ssm_91101.npz",
+      "git_blob": "65af7a14806919e7a2f363e10cce943590338f93",
+      "bytes": 2328,
+      "sha256": "43a33ccb3a8f25cdf6c70292c43a3dc5d036efbfbff56be3fcffb19edca27a8f"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/ssm_91103.npz",
+      "git_blob": "d8104f98ccbdf3de5cf3bdae478f2ea857d390bd",
+      "bytes": 2330,
+      "sha256": "2b16e96acbf8e66807a3706c1bf94b2e2b62b4f64b0aa2fdb4d41a871fe3102a"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/ssm_91107.npz",
+      "git_blob": "0a3d2ace4cb4d37310663a3b89f01657f4485e8d",
+      "bytes": 2328,
+      "sha256": "4bb31f5f4a382bf879367415375ecd2cf25986aef2e4d510f38a5d261c496b68"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/ssm_91109.npz",
+      "git_blob": "5d92c78761437397d16bb541990af9394b249918",
+      "bytes": 2332,
+      "sha256": "b1bc77934a4d4af1091b1f62932f9079b80e87a240d678f9a836724fe82054d7"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/results/development001/fits/ssm_91113.npz",
+      "git_blob": "f7da8cbc4ab0d5f89491c7281070809f81bc2161",
+      "bytes": 2330,
+      "sha256": "5db40559a57107ca2110c5970d9c17cdb1fbfdab212a4be288bf9486af597e5c"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/persistent_core/test_models.py",
+      "git_blob": "03063909f2028e4395a75cae91b2c043a8f72ecf",
+      "bytes": 4201,
+      "sha256": "911209a460d9cff11f0e4f302f95c8688b7d728080cb9ea860fbd147081df4f9"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/publication/DELIVERY_ATTEMPTS.json",
+      "git_blob": "2a6623bca5f9557d1d280936e67f8a9a2dfca0b3",
+      "bytes": 717,
+      "sha256": "3f45aab1a4dd388048b6a249ced50436232ea5dded7ea246e5649bf67749131b"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/publication/TRANSPORT.json",
+      "git_blob": "d459ecd6feea06335cb7a5513cc62bc2de7d6eb5",
+      "bytes": 1210,
+      "sha256": "8e84a03577d6810b35d83bda7c6aca3a9fd0c910bd85fb069abf4ee4a0717c8a"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/publication/VALIDATION.json",
+      "git_blob": "e050a374d41375e2edb2895baea033805657e24e",
+      "bytes": 815,
+      "sha256": "80168881ac34c4260c8669520de239ce992bf2d6f300ed4ffc97462cb9caf884"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/publication/persistent-runs.part-000.bin",
+      "git_blob": "062f5dc2c4e80b315d95272a35e09275ea97bc39",
+      "bytes": 9000000,
+      "sha256": "8e6baa8d7fd9937ec00a92892c37241f59964b93485954161dca75b9e87d5f7c"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/publication/persistent-runs.part-001.bin",
+      "git_blob": "21d1b1425ea699ef3073489bef3c5447215c849f",
+      "bytes": 9000000,
+      "sha256": "78f41155587d63c1bcc67e2e6af77ed57cd0f136f4accfeacdedc9c2ba99fac3"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/publication/persistent-runs.part-002.bin",
+      "git_blob": "74092d0e5da8f75e0d2f4ab92ba491adc6380e25",
+      "bytes": 371753,
+      "sha256": "e337685320d7337b63486cc3d7fd5e1c7224bac9b1221a6f06f227a9187f04a7"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/publication/restore.py",
+      "git_blob": "aa1e22f339c9f871e909dcf2506e7feb9f98f63b",
+      "bytes": 1534,
+      "sha256": "a7d0fad4bf600c8eb952a63d93f40bc7430dba7e6b2f2a98fa87799d7570dde0"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/publication/validate_transport.py",
+      "git_blob": "47b4e5a8691ddc62190cc2d88ffbff8194c73f4b",
+      "bytes": 2485,
+      "sha256": "67c83d916fabe566b239c77cc71fb965ad17c5f9417f6abaee5d6ab726fedf54"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/PREPARATION_COST.json",
+      "git_blob": "d957f005097c4e085750e05fc6a4a83c1afb7232",
+      "bytes": 557,
+      "sha256": "685dc17aa3d300af8892b0c4c543097c6b58dda28898b09a55413d85e60cfcd1"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/README.md",
+      "git_blob": "e3e2f88edeac76fad86421110fff98b2c95187d6",
+      "bytes": 4520,
+      "sha256": "e1a382a876deba384db31ac3231ca03e246f2eb656d23fba7264527b66d29e5b"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/REFIT_REPORT.json",
+      "git_blob": "21a9252f899647e5cc3eac085fc1187c36ab1c85",
+      "bytes": 4311,
+      "sha256": "e27cd41069fe4682df1e3121aa9874d69f80ab4721be247d53e03f768cf1dd83"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/SOURCE_EXTRACTION.json",
+      "git_blob": "8a7e8898c7224b8f34d0bf63f2fa2739ec08e493",
+      "bytes": 676,
+      "sha256": "a19083300ef0bb40f3ff34930984419095084565a3f77ff43e982073e4c5842b"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/SOURCE_FREEZE_CHECK.json",
+      "git_blob": "2803f8cd6579f5fbce1aeb703fc2e49c923b4d1f",
+      "bytes": 370,
+      "sha256": "4cd1dddd11f7c8ade47a4fbda0254913dc9a6477b2c3789455d92400cb93bfd6"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/TESTS.txt",
+      "git_blob": "23c802575e39969df40135ad10c789ed1d73c98a",
+      "bytes": 1091,
+      "sha256": "dcffd95ab9d3dfd25f423a1703cf277d937ece3343cf9ef3d023d3165ec6f38b"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/TESTS_FINAL.txt",
+      "git_blob": "90ef3de39e0b436201849958ce9f7dab62096002",
+      "bytes": 1091,
+      "sha256": "e4fbb45ae64f8ec805e3836597963692993db0de45def212c66fd914e8389aa6"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/VALIDATION.json",
+      "git_blob": "e80285679f4f6bd2f48be5348d6fc20a53eee6b4",
+      "bytes": 317,
+      "sha256": "29ff03a07a5947dda954c00ddf0a9676cc9c47df29f7f7ccbb7ddfb88c17223d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/campaign.py",
+      "git_blob": "40d6d18ef557e3c3c38f93cccb7db7dd3072658d",
+      "bytes": 12144,
+      "sha256": "2ea18288cce73551da177feb614ce4afa12df79766eea1edeeba375cecfb96b2"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/renewal_numpy.py",
+      "git_blob": "556d390db4e01e3e7b77e3d8186769d2f8d6941b",
+      "bytes": 5402,
+      "sha256": "c9ab2308fbdf8baf295383310bae4b731141b4539c324867a409a55ec5689052"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/INDEPENDENT_RAW_AUDIT.json",
+      "git_blob": "c5e4927f5a53b45ad517922923613d515dd691f7",
+      "bytes": 583,
+      "sha256": "ac91baae715ce84add2a585dd0a09b02499b92eeaa89b40c91fcb62408b70876"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/OPTIMIZER_LIMIT.json",
+      "git_blob": "90a46a9bb6cae31808f2a54b742cce9f9c540ac6",
+      "bytes": 548,
+      "sha256": "1328e582bc04b959031c64224fd58232c24d90ebc6d9009b0dba291d795de725"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/PLAN.json",
+      "git_blob": "b4a81d23cb9494f4bfc14fdfb44115625df83c8d",
+      "bytes": 2076,
+      "sha256": "dc0159956ef7aa45a1a2c72e176410e41bedfd81704355bc39aa01a43b944b28"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/SUMMARY.json",
+      "git_blob": "f3f9dedce22a6482a86974463c30152a80e503c9",
+      "bytes": 39188,
+      "sha256": "36b90bb7726d8ee96f567d4046ab84da2573ce34e8b95bf47a982b751440ae45"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91003/FIT.json",
+      "git_blob": "aede9cf1c6c3a2e3fd9100509c84acb5cacf17b9",
+      "bytes": 6505,
+      "sha256": "4cec37af942c87546e5f93f220408df34bb6bc14b8fe82c9d4daef4dc25b651d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91003/data.npz",
+      "git_blob": "82ac8b4d6d386d83bcfd11867b60ca75a4370862",
+      "bytes": 493164,
+      "sha256": "8af80e976cd109ac30e5391600ac7f1e8ad0015737dd974a20f60cdb9d43c9d6"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91003/weights.npz",
+      "git_blob": "9bc4f222fe5da35ab5b8e654a6fdf50284d28fa4",
+      "bytes": 1387,
+      "sha256": "2568b07770dd705681af8ed4102768bc5d3f31ba036fa8a0de4b4a39c1a6df8c"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91009/FIT.json",
+      "git_blob": "9b9c2a79f5c154c5f465235b383d94b5417cecdf",
+      "bytes": 6495,
+      "sha256": "17727cd2628cfc5fea2696f79b3bd95775140da2ef07d87d269892dd50caf9e3"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91009/data.npz",
+      "git_blob": "4ae269fbe280a6e6d2789261535f4c282616e8d7",
+      "bytes": 494659,
+      "sha256": "4bea85d6db3ea37310c54cb16f9c8890a0b22367e7c4851cbdbe51dcf89f6944"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91009/weights.npz",
+      "git_blob": "15bef35364234d861f0ca4478f2a86955bbc5656",
+      "bytes": 1387,
+      "sha256": "591a2602e9fd9c762b99544b20a50afac5f7b88516df84dce932da547db18a65"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91019/FIT.json",
+      "git_blob": "3537d28650906f4a3bd659b4aa2175cbccb4e7f7",
+      "bytes": 6519,
+      "sha256": "94c6f0960275929245a30661e5415e58188454dc3a65ba9432b23faaf1c0063b"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91019/data.npz",
+      "git_blob": "71d36d5d3b20b95f267eea08a7ce105c10171a4d",
+      "bytes": 492356,
+      "sha256": "b57e2c37ac99d5d44887d076be19414c9c67ae38dc3bd5fe5b2d205677d36d0f"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91019/weights.npz",
+      "git_blob": "219dce4a86ed9861a32694b073cb44587e2297be",
+      "bytes": 1389,
+      "sha256": "35177f0b95d4dccc0c796fff5daade6e09e56dcca0a05301a07f84075e0467e1"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91021/FIT.json",
+      "git_blob": "764e3184c786ceb6cfd47fa4a85dbef968601159",
+      "bytes": 6511,
+      "sha256": "9080ed33aaca1b1017bea6c1a314c5bea0edf76dcaa1be53821fa9c6461a32ba"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91021/data.npz",
+      "git_blob": "095f9891ffb81fac716b71a1563f87031df3b335",
+      "bytes": 495438,
+      "sha256": "7f068fb12efad3c8a854d36c7b965a421b1ff38d523edc6ecb15a7a1d404df7c"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91021/weights.npz",
+      "git_blob": "26a9c64e12c6b1304faa15942cac6dda493373bc",
+      "bytes": 1385,
+      "sha256": "700263d3d09670be21ab252f9d52664d9f4c4074594d43022daf93d39b8a8abc"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91033/FIT.json",
+      "git_blob": "71c7fb4a7a964bc6bde04ba55b945cf11254c479",
+      "bytes": 6512,
+      "sha256": "9b713ce25f8a3c53af0c228269defaba9c60e8298b056734a07a30c8e9ca29f8"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91033/data.npz",
+      "git_blob": "87f973a7a70705ba9521317d0bcbcdc902b2671a",
+      "bytes": 493825,
+      "sha256": "0cd0fc197735dcc94ed1fe7d1189f6b5d769ceb783e8565a4342748095a79f28"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/fit_91033/weights.npz",
+      "git_blob": "49274009ffc4de0d7550d1042b501ecea4ad2981",
+      "bytes": 1389,
+      "sha256": "12c686034931c52841c1b8197d9de57db987373efd20b11642bdfb7fdc6241e4"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/predictions.jsonl.gz",
+      "git_blob": "6efcda86808c8011710f04dac851ffae2776cc45",
+      "bytes": 1642989,
+      "sha256": "d6e5327c58affcb74b1180712f8a01c1145dff9d42edc30e41c5453d7d8ccd2c"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/source_snapshot/SOURCE_EXTRACTION.json",
+      "git_blob": "8a7e8898c7224b8f34d0bf63f2fa2739ec08e493",
+      "bytes": 676,
+      "sha256": "a19083300ef0bb40f3ff34930984419095084565a3f77ff43e982073e4c5842b"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/source_snapshot/campaign.py",
+      "git_blob": "ccc53590da8814c016dbc2d0a20845e5a34407eb",
+      "bytes": 12144,
+      "sha256": "df942b16236e1ef7b5f3e5468632ec39181f42516e70b1855f2b9d285467bbbc"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/source_snapshot/renewal_numpy.py",
+      "git_blob": "556d390db4e01e3e7b77e3d8186769d2f8d6941b",
+      "bytes": 5402,
+      "sha256": "c9ab2308fbdf8baf295383310bae4b731141b4539c324867a409a55ec5689052"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/source_snapshot/test_refit.py",
+      "git_blob": "26936c18930a65752100536b9c98da1a0104527f",
+      "bytes": 3257,
+      "sha256": "77f6d90f9e78c929e657e174da3965842a189474281d60f0e513b7ec9c57e4d2"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/source_snapshot/transforms.py",
+      "git_blob": "294383f2e477648808c25805a7fb48c1e567e833",
+      "bytes": 1018,
+      "sha256": "b2f07f04f632a3ddd07f9fdfecee577cacaca6c8b2b7c9bcbcef8fcffb412382"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development001/test_data.npz",
+      "git_blob": "2c5639f2ad1b57eb9c6b4891f0bdbb84b755055e",
+      "bytes": 197544,
+      "sha256": "ca08fcba2b4d19bb1946e1fa538ad7b3b368cff0598d57e520cebb29ebca122d"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/INDEPENDENT_RAW_AUDIT.json",
+      "git_blob": "df38b1a2e8a1d6f6ea891a726eca939b59511019",
+      "bytes": 582,
+      "sha256": "84fc5a0502fbad7e6a55046b07032a9b2a375aedbbe0821cecbf94305e85dea7"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/PLAN.json",
+      "git_blob": "8bde86d052bc1702064f6a25b1c44e01c663d6c6",
+      "bytes": 2076,
+      "sha256": "965e520d1a37e98ed49b1a483b545c36686913acbf077aee97f76967b00ce41f"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/SUMMARY.json",
+      "git_blob": "2490bb7472fe3bab42d2ca7b3a6d47be7627eabf",
+      "bytes": 39494,
+      "sha256": "a507a6f51a32d48c67d80dcc955140b065a6e7eefdf530a14788c0cfe471c3fb"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92003/FIT.json",
+      "git_blob": "94b96ed4e7b35ee0fed40d139629dc72b6a1c956",
+      "bytes": 6574,
+      "sha256": "e2317b5b3dcaa7745bff225f29c09a3dd76443714e33baf44b02d8e1efa07b6a"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92003/data.npz",
+      "git_blob": "fefb71673238444563f0f2ccd929b01b546f05ab",
+      "bytes": 495080,
+      "sha256": "9e7c4b0f79868114baafc478a8eb98c882b6c221577acda7d1e101304db33c94"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92003/weights.npz",
+      "git_blob": "043c886e4c3a8b176c6561c016164aa6d47cbc97",
+      "bytes": 1387,
+      "sha256": "0d9144d7910ba60c8a25c83534d685bf19882a982fb7d33ffecd1434c9dacbba"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92009/FIT.json",
+      "git_blob": "1682be32701d69bd1c3d7832c1c131d1d4b0c585",
+      "bytes": 6553,
+      "sha256": "30da1754d85b036e7157c0936620b8e69159d4b5dc285ae3dbd38b71ba9a338f"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92009/data.npz",
+      "git_blob": "345c0851677498640e144818f2aadfe7bafed43b",
+      "bytes": 494858,
+      "sha256": "c74062c172e5a283e3c70151681481387b882f9c2a65b7998adebdc62640253e"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92009/weights.npz",
+      "git_blob": "f19f9f3eecccd20618126bc634dc4245ebf7c1de",
+      "bytes": 1388,
+      "sha256": "4627aad616b398340ed04b6a69560839bc783dbde13ef7e620a8647a390815a6"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92019/FIT.json",
+      "git_blob": "a6dc294795d599db9a055f0b19277863604e7b9e",
+      "bytes": 6569,
+      "sha256": "84745ff474c01a2f639ed3a82c9b786ab1c3216862384744773f2f8de2b6eebf"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92019/data.npz",
+      "git_blob": "42f04b5eba4ce12527e2aadc8abfc10c1c07adac",
+      "bytes": 494836,
+      "sha256": "27975ba7f449122c2e63658509b445ff6d6eb2fc42adde9fa37ed1310d5f95c1"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92019/weights.npz",
+      "git_blob": "73782a5411a33fc76ee20e1559183e071face413",
+      "bytes": 1389,
+      "sha256": "1519be108066990aae0647e2dc09ed203e7b7b9b49bbe55ca8cc749fb1b92ad8"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92021/FIT.json",
+      "git_blob": "27ca5ead07185244167a0ea426b928f206ec33b4",
+      "bytes": 6582,
+      "sha256": "6686f43819f0741061a8c7574d2ac12ba570bd953c5dfbb5289aae14e8a9f0da"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92021/data.npz",
+      "git_blob": "6c19f8c2646ad64b1041571097df70653a0b953b",
+      "bytes": 495278,
+      "sha256": "65cff9787b39c469e966794c9d0e3cddcc6f863bc007419f3264850bbd3dd5a5"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92021/weights.npz",
+      "git_blob": "a9a2499cc705b1834f6fdec47871f6d1d3da36c3",
+      "bytes": 1388,
+      "sha256": "051794d1a82e077a3d4269fe254b4ab5576b6d057e6d5ce2b760adea754df8d3"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92033/FIT.json",
+      "git_blob": "cb33b5f292038b69da5e03290a6395f9b87e194e",
+      "bytes": 6569,
+      "sha256": "15b5a4daea3141aa600f70206070210a2b98adb172a7668deb1765c0551e50da"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92033/data.npz",
+      "git_blob": "756d86bc7af19943950e8f17f4fb225c3e8a3cbd",
+      "bytes": 493455,
+      "sha256": "7f2c0edffb12b15d97c3d1c977ae805b9865da316ca698b8c88da98af3ca5fb0"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/fit_92033/weights.npz",
+      "git_blob": "dfe9df0d6df2572fe275e227e114f9bc9e35e647",
+      "bytes": 1390,
+      "sha256": "4c1bbd4c36e6e3d4e2f5da6fddfee9d1639afe4cc49e6c2856a5bab8253934c8"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/predictions.jsonl.gz",
+      "git_blob": "a42d6b513f7d2e661a9e0fe2851f5928c485a519",
+      "bytes": 1637864,
+      "sha256": "014f48e7bf82abeb325bd2d75738442f92e68347f2e79ca13ba3a484f5b20663"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/source_snapshot/SOURCE_EXTRACTION.json",
+      "git_blob": "8a7e8898c7224b8f34d0bf63f2fa2739ec08e493",
+      "bytes": 676,
+      "sha256": "a19083300ef0bb40f3ff34930984419095084565a3f77ff43e982073e4c5842b"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/source_snapshot/campaign.py",
+      "git_blob": "40d6d18ef557e3c3c38f93cccb7db7dd3072658d",
+      "bytes": 12144,
+      "sha256": "2ea18288cce73551da177feb614ce4afa12df79766eea1edeeba375cecfb96b2"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/source_snapshot/renewal_numpy.py",
+      "git_blob": "556d390db4e01e3e7b77e3d8186769d2f8d6941b",
+      "bytes": 5402,
+      "sha256": "c9ab2308fbdf8baf295383310bae4b731141b4539c324867a409a55ec5689052"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/source_snapshot/test_refit.py",
+      "git_blob": "26936c18930a65752100536b9c98da1a0104527f",
+      "bytes": 3257,
+      "sha256": "77f6d90f9e78c929e657e174da3965842a189474281d60f0e513b7ec9c57e4d2"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/source_snapshot/transforms.py",
+      "git_blob": "294383f2e477648808c25805a7fb48c1e567e833",
+      "bytes": 1018,
+      "sha256": "b2f07f04f632a3ddd07f9fdfecee577cacaca6c8b2b7c9bcbcef8fcffb412382"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/results/development002/test_data.npz",
+      "git_blob": "5cd67c61e0b38e1cb9fa05dd98a0efbba8cd9bbe",
+      "bytes": 197475,
+      "sha256": "e8b3c8ee500935b3e07cdf0d2e3b14d813aa892627f5583cc2a02239845b3ae3"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/review/audit_refit.py",
+      "git_blob": "51516897227d231990c4c52d08f0bf9b7f3e0d5c",
+      "bytes": 4393,
+      "sha256": "a17753f791c336701636854dd4b3f052f78d6d61a7ad87974b3df2ec0e74b66a"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/test_refit.py",
+      "git_blob": "26936c18930a65752100536b9c98da1a0104527f",
+      "bytes": 3257,
+      "sha256": "77f6d90f9e78c929e657e174da3965842a189474281d60f0e513b7ec9c57e4d2"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/refit_ablation/transforms.py",
+      "git_blob": "294383f2e477648808c25805a7fb48c1e567e833",
+      "bytes": 1018,
+      "sha256": "b2f07f04f632a3ddd07f9fdfecee577cacaca6c8b2b7c9bcbcef8fcffb412382"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/ECONOMICS_RECONSTRUCTION.json",
+      "git_blob": "6c281e54d37a8f9540a222104e7ffd2dd622c546",
+      "bytes": 2815,
+      "sha256": "5ecd6375c48c1b223ee3f71325225fa1559357d26d407f57e226dc31fe2da9dd"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/ECONOMICS_REVIEW_RUN.json",
+      "git_blob": "40a76ebc33aedbce0122955a1c0856f5c5b76c8d",
+      "bytes": 3194,
+      "sha256": "1bb39dfbbe366a5d77f14b04128b2a04d625c6c1fbf508c4f5860a276cfd8f64"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/INDEPENDENT_REVIEW.md",
+      "git_blob": "a3a76093d04abb7766e61b40118ae508fa0592a4",
+      "bytes": 6302,
+      "sha256": "c1f09fd73d82a0fce56551069da4b1a7b6fe59baf851d6bf45a877fb4b09ff47"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/INITIAL_REVIEW_FAILURE.json",
+      "git_blob": "8850bbe5eb8e6922926e6af808f01f97b2af3c8f",
+      "bytes": 713,
+      "sha256": "84e59fdf6725c4e8a6faf4e3ae2ad1c469af00f9a0f287beb2bd7f5e061bfd95"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/PERSISTENT_CORE_RECONSTRUCTION.json",
+      "git_blob": "bcf9c08c6fed3473d1573b3e92c6caf1b44cc859",
+      "bytes": 360,
+      "sha256": "c929576bf7b0662b89e0427ba2bc227ceb2a6e9d199731b40cf8cf74ec4696a3"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/PERSISTENT_CORE_REVIEW_RUN.json",
+      "git_blob": "6f16fc35b232ad8edca5f0d924dbb9960a21eae9",
+      "bytes": 575,
+      "sha256": "f8c986d51f3d5a83148a13f6afd35c5412ba792ce37b791d8055622a0b65c8e1"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/RECONSTRUCTION.json",
+      "git_blob": "6c2febc41ae5e2ad52bf295dbc09f07c90cda15a",
+      "bytes": 5773,
+      "sha256": "082d3c9801ea9daf9760d0059e18563fa91311d282fe62a0f74cb3e2d5c2c6bb"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/REFIT_ABLATION_RECONSTRUCTION.json",
+      "git_blob": "664adc911efa4baa26f19beda34fbec48c95b587",
+      "bytes": 1593,
+      "sha256": "3bebe6897e6dda94db54573112668be316212c809c1c07413d6911abc60dad7c"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/REFIT_ABLATION_REVIEW_RUN.json",
+      "git_blob": "c58b5cc5003ff57eee75a45e1c5253ad5d2f1a0f",
+      "bytes": 1861,
+      "sha256": "edb0b231a11a1488c5d553ccee831726726acc89017b6cd062cb9c2b95610702"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/REVIEW_BINDINGS.json",
+      "git_blob": "113adf103dc47f97112b1941ecac1d7b928a1a3a",
+      "bytes": 2213,
+      "sha256": "8c3c24f0be6cb791729eefb332ad8ebae9faf66d0f1bde633dd5ebdde18b0216"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/RISK_RECONSTRUCTION.json",
+      "git_blob": "c1d77591b0265398f93d6fb21b1b2498ffab2c9a",
+      "bytes": 462,
+      "sha256": "8be8063b9f70cb0a829f66bc984e1690f25a7f1a024f339c5354ec1ac62c6a73"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/RISK_REVIEW_RUN.json",
+      "git_blob": "c7044be337cc0b1bdc3a173220fa7be64483cf37",
+      "bytes": 674,
+      "sha256": "1f2c818947981ce7602d1c33abecd3c72ee4de8ca1e3218db9d4865918ea2122"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/review/check_evidence.py",
+      "git_blob": "f00cfe482a5bf7924a5c00171d23ab483b148b78",
+      "bytes": 16680,
+      "sha256": "2501b92e7565b5624b9c5533c60c56efa88d52645e88a58ae84fc5682bb35da8"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/risk/README.md",
+      "git_blob": "e6224b1ef79f1f4ed9592c12cf81d6e47943b5ce",
+      "bytes": 3818,
+      "sha256": "45c61a04de2c807fbb6091abc5944d62033aaceb79cd1af2f0c151153dc53e36"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/risk/__init__.py",
+      "git_blob": "0a96d7e064981f31ddb0b0fa53ee69c6de4d79f5",
+      "bytes": 69,
+      "sha256": "ed7480345d702750f71ae378c6bf89149962e928d6c8c82ebdf3a09cdd717cbb"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/risk/results/development001/JSON_AUDIT.json",
+      "git_blob": "a0320af983e6a2e6e1041a9123d43f5586a55ed5",
+      "bytes": 171,
+      "sha256": "703e61d5ae7a8f66bbc49a8988120a718920f46544b6076b0442a9cbf3400433"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/risk/results/development001/PLAN.json",
+      "git_blob": "79e4dc423b59cc2c06a138b44645d2523c707024",
+      "bytes": 4665,
+      "sha256": "5f62ee893167487679ccc72f5d2c95a15ea5d23107b454d8e8fc5ae573c37963"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/risk/results/development001/SENSITIVITY.json",
+      "git_blob": "adcbc58ff2a975e751637f8064c8c4134219fe16",
+      "bytes": 3434,
+      "sha256": "632bffbd16dce53a1164e8a71d1c561d95f037ea51805076881b35dfcc9ace54"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/risk/results/development001/SUMMARY.json",
+      "git_blob": "e18e1c8fe98d7628a533d076f9c7deb136d46458",
+      "bytes": 7240,
+      "sha256": "af93ced3ee06f7a9d059e97a73776861e9746b75fb82d0aff61f91f7382c5ccc"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/risk/results/development001/runs.jsonl",
+      "git_blob": "265efcf5bdda26eb041ebdfc5f6e97e67ec210d6",
+      "bytes": 313963,
+      "sha256": "325f1049b0357991e807c89c82c7dab5aab922edeb29878618b52c94a6f0ac2f"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/risk/sensitivity.py",
+      "git_blob": "28660a84e9410678f680aa4fb43498ca329e23b7",
+      "bytes": 2642,
+      "sha256": "1e9e9ab61de7f2674cfa9444842303554095be5a4075c299178a7adc6025b92f"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/risk/study.py",
+      "git_blob": "21ddbd76f95d8f3a65f2e1d9185d67ffecf7b38b",
+      "bytes": 15774,
+      "sha256": "cfce684338deec129387affad76a85f31850ce763d0936b5e2bab05c5a4dfe6c"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/risk/test_study.py",
+      "git_blob": "eb8fb78e844a6f1479d534f1ccce0703473ccfb5",
+      "bytes": 3232,
+      "sha256": "1187b0eda5431a0ed795219a5ab080438610e27da1c0730971ff5c1cd24c89bc"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/risk/validate_results.py",
+      "git_blob": "03e091a899c62cb3a19950992d1b2ee39b3af71e",
+      "bytes": 3530,
+      "sha256": "b2f32ac58310f486fd494213d7dc48cd388853a396200bbb673aeb506c429c95"
+    },
+    {
+      "path": "experiments/hcsn_v9_followup_20261101/MANIFEST_DELIVERY.json",
+      "git_blob": "e328bf6fe6cb6b10c578a64aa4ea4dba1685a2c9",
+      "bytes": 56610,
+      "sha256": "b158545e3c5dca2da32f51d17d1c6436e77f0793c216bf1bdc902fcf1bf675a2"
+    }
+  ],
+  "receipt_self_reference_excluded": true,
+  "scientific_acceptance": "HOLD; remote byte identity is not scientific qualification"
+}
