@@ -187,9 +187,18 @@ def negative_contexts(binary,model_path,completed_case,directory):
         error=(directory/f"{name}.stderr").read_text();assert receipt["exit_code"]==2 and ("state context"in error or"invalid owned"in error),error;results[name]=True
     save(directory/"CHECK.json",results);return results,meter.rows
 
-def run(output,binary,manifest_path):
-    output.mkdir(parents=True,exist_ok=False);protocol=json.loads((HERE/"PROTOCOL.json").read_text());manifest=json.loads(manifest_path.read_text())
+def run(output,binary,manifest_path,protocol_path,publication_path):
+    publication=json.loads(publication_path.read_text())
+    source_hash=hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+    assert publication["readback_verified"] and publication["manifest_sha256"]==source_hash
+    assert len(publication["source_commit"])==40
+    protocol=json.loads(protocol_path.read_text());manifest=json.loads(manifest_path.read_text())
     for relative,sha in manifest["files"].items():assert hashlib.sha256((ROOT/relative).read_bytes()).hexdigest()==sha,relative
+    assert manifest["files"][str(protocol_path.relative_to(ROOT))]==hashlib.sha256(protocol_path.read_bytes()).hexdigest()
+    output.mkdir(parents=True,exist_ok=False)
+    save(output/"START.json",dict(publication=publication,source_manifest_sha256=source_hash,
+        protocol=str(protocol_path.relative_to(ROOT)),world_seed_base=protocol["world_seed_base"],
+        source_readback_required_before_any_owner_world=True))
     owner=Law();operator_rows=[];cases=[];receipts=[];negative_checks=None
     with tempfile.TemporaryDirectory(prefix="n19-")as scratch:
         for fit in protocol["fits"]:
@@ -204,11 +213,11 @@ def run(output,binary,manifest_path):
                             negative_checks,rows=negative_contexts(binary,model_path,d,output/"negative_contexts");receipts+=rows
             for rep in protocol["representations"]:
                 d=folder/f"cold_{rep}";row,rows=execute_case(binary,model_path,law,owner,fit,"ood",0,rep,d,Path(scratch)/"ipc",protocol,"received_before_commit");cases.append(row);receipts+=rows
-    summary=dict(schema="hcsn-r19-native-numeric-results-v1",source_manifest_sha256=hashlib.sha256(manifest_path.read_bytes()).hexdigest(),binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
+    summary=dict(schema="hcsn-r19-native-numeric-results-v1",source_manifest_sha256=source_hash,source_publication=publication,binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
         cases=cases,operator_checks=operator_rows,all_passed=True,native_case_count=len(cases),actual_cold_recoveries=sum(r["actually_killed"]for r in cases),
         negative_checks=negative_checks,
         complete_child_cpu_seconds=sum(r["cpu_seconds"]for r in receipts),process_count=len(receipts),production_activation=False)
     save(output/"SUMMARY.json",summary);print(canonical({k:v for k,v in summary.items()if k not in("cases","operator_checks")}),flush=True)
 
 if __name__=="__main__":
-    p=argparse.ArgumentParser();p.add_argument("--output",type=Path,required=True);p.add_argument("--binary",type=Path,required=True);p.add_argument("--manifest",type=Path,required=True);a=p.parse_args();run(a.output.resolve(),a.binary.resolve(),a.manifest.resolve())
+    p=argparse.ArgumentParser();p.add_argument("--output",type=Path,required=True);p.add_argument("--binary",type=Path,required=True);p.add_argument("--manifest",type=Path,required=True);p.add_argument("--protocol",type=Path,required=True);p.add_argument("--publication",type=Path,required=True);a=p.parse_args();run(a.output.resolve(),a.binary.resolve(),a.manifest.resolve(),a.protocol.resolve(),a.publication.resolve())
