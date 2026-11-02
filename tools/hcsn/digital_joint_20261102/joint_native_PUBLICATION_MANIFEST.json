@@ -984,7 +984,7 @@
       "total_source_and_documentation_lines": 187,
       "complex_code_under_500": true,
       "total_nonmechanical_under_800": true,
-      "recommended_publication": "stacked draft PR / reviewable commit; generated reports/logs/archive parts are mechanical evidence"
+      "recommended_publication": "separate stacked draft PR; source-only diff in this group meets size guidance, while one combined 2515-line logic PR would not"
     },
     {
       "id": "02_generation_transaction_recovery",
@@ -998,7 +998,7 @@
       "total_source_and_documentation_lines": 459,
       "complex_code_under_500": true,
       "total_nonmechanical_under_800": true,
-      "recommended_publication": "stacked draft PR / reviewable commit; generated reports/logs/archive parts are mechanical evidence"
+      "recommended_publication": "separate stacked draft PR; source-only diff in this group meets size guidance, while one combined 2515-line logic PR would not"
     },
     {
       "id": "03_joint_task_core",
@@ -1009,7 +1009,7 @@
       "total_source_and_documentation_lines": 395,
       "complex_code_under_500": true,
       "total_nonmechanical_under_800": true,
-      "recommended_publication": "stacked draft PR / reviewable commit; generated reports/logs/archive parts are mechanical evidence"
+      "recommended_publication": "separate stacked draft PR; source-only diff in this group meets size guidance, while one combined 2515-line logic PR would not"
     },
     {
       "id": "04_joint_task_pairing",
@@ -1021,7 +1021,7 @@
       "total_source_and_documentation_lines": 193,
       "complex_code_under_500": true,
       "total_nonmechanical_under_800": true,
-      "recommended_publication": "stacked draft PR / reviewable commit; generated reports/logs/archive parts are mechanical evidence"
+      "recommended_publication": "separate stacked draft PR; source-only diff in this group meets size guidance, while one combined 2515-line logic PR would not"
     },
     {
       "id": "05_joint_policy_core",
@@ -1032,7 +1032,7 @@
       "total_source_and_documentation_lines": 481,
       "complex_code_under_500": true,
       "total_nonmechanical_under_800": true,
-      "recommended_publication": "stacked draft PR / reviewable commit; generated reports/logs/archive parts are mechanical evidence"
+      "recommended_publication": "separate stacked draft PR; source-only diff in this group meets size guidance, while one combined 2515-line logic PR would not"
     },
     {
       "id": "06_real_joint_owner_port",
@@ -1046,7 +1046,7 @@
       "total_source_and_documentation_lines": 311,
       "complex_code_under_500": true,
       "total_nonmechanical_under_800": true,
-      "recommended_publication": "stacked draft PR / reviewable commit; generated reports/logs/archive parts are mechanical evidence"
+      "recommended_publication": "separate stacked draft PR; source-only diff in this group meets size guidance, while one combined 2515-line logic PR would not"
     },
     {
       "id": "07_joint_owner_qualification",
@@ -1059,7 +1059,7 @@
       "total_source_and_documentation_lines": 226,
       "complex_code_under_500": true,
       "total_nonmechanical_under_800": true,
-      "recommended_publication": "stacked draft PR / reviewable commit; generated reports/logs/archive parts are mechanical evidence"
+      "recommended_publication": "separate stacked draft PR; source-only diff in this group meets size guidance, while one combined 2515-line logic PR would not"
     },
     {
       "id": "08_independent_owner_audits",
@@ -1071,7 +1071,7 @@
       "total_source_and_documentation_lines": 272,
       "complex_code_under_500": true,
       "total_nonmechanical_under_800": true,
-      "recommended_publication": "stacked draft PR / reviewable commit; generated reports/logs/archive parts are mechanical evidence"
+      "recommended_publication": "separate stacked draft PR; source-only diff in this group meets size guidance, while one combined 2515-line logic PR would not"
     },
     {
       "id": "09_actual_twenty_weight_qualification",
@@ -1082,7 +1082,7 @@
       "total_source_and_documentation_lines": 120,
       "complex_code_under_500": true,
       "total_nonmechanical_under_800": true,
-      "recommended_publication": "stacked draft PR / reviewable commit; generated reports/logs/archive parts are mechanical evidence"
+      "recommended_publication": "separate stacked draft PR; source-only diff in this group meets size guidance, while one combined 2515-line logic PR would not"
     }
   ],
   "constraints": {
@@ -1106,7 +1106,8 @@
       "tools/hcsn/digital_joint_20261102/evidence/joint_native_gate/SUMMARY.json",
       "tools/hcsn/digital_joint_20261102/evidence/joint_native_full_build.json"
     ],
-    "format_and_test_scope": "Recorded real isolated-workspace fmt/test receipts cover declared build inputs. The superseded standalone pure-policy probe is a historical development helper, not a final owner/gate artifact. No executable checks rerun during publication preparation."
+    "format_and_test_scope": "Recorded real isolated-workspace fmt/test receipts cover declared build inputs. The superseded standalone pure-policy probe is a historical development helper, not a final owner/gate artifact. No executable checks rerun during publication preparation.",
+    "size_guidance_interpretation": "The nine source groups are intended as separate stacked PRs; multiple commits inside one combined large logic PR do not alone satisfy the stated change-size guidance. Generated receipts/logs/archive parts are mechanical evidence."
   },
   "dependencies": {
     "legacy_base_commit": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
