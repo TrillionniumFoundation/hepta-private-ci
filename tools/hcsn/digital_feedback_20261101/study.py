@@ -61,6 +61,14 @@ def sources(protocol_path):
     return result
 
 
+def require_confirmation_qualification(artifact):
+    """No confirmation worlds until every registered fit/arm qualifies."""
+    cost = artifact.get("cpu_matching")
+    if (not isinstance(cost, dict) or cost.get("all_actual_cpu_matching") is not True
+            or cost.get("all_training_valid") is not True):
+        raise ValueError("confirmation requires all registered fit/arm CPU matching and training-validity gates")
+
+
 def public_map(records):
     return {r["id"]: read(Path(r["folder"]) / "public.json") for r in records}
 
@@ -191,6 +199,7 @@ def confirm(root, training, seal_path, fit, protocol, protocol_path):
     from .quality import quality_audit
 
     seal = read(seal_path)
+    require_confirmation_qualification(seal)
     if sources(protocol_path) != seal["source_sha256"] or protocol != seal["protocol"]:
         raise ValueError("Source/protocol changed after publication")
     if seal["fits"] != protocol["fits"] or fit not in seal["fits"]:
@@ -269,40 +278,99 @@ def required_training_files():
 
 
 def launch(args, protocol):
-    """Own child CPU via wait4; no success-only aggregation or silent retries."""
+    """Own child CPU via wait4; stop requests cancel only unstarted workers."""
+    cpu_start, wall_start = time.process_time(), time.perf_counter()
+    if args.workers < 1:
+        raise ValueError("at least one worker slot required")
     args.root.mkdir(parents=True, exist_ok=False)
     fits = protocol["development_fits" if args.stage == "development" else "fits"]
+    identity = sources(args.protocol)
     write(args.root / "LAUNCH.json", dict(stage=args.stage, fits=fits, workers=args.workers,
-          source_sha256=sources(args.protocol), utc=datetime.now(timezone.utc).isoformat()))
+          source_sha256=identity, utc=datetime.now(timezone.utc).isoformat()))
     pending, active = list(fits), {}
-    while pending or active:
-        while pending and len(active) < args.workers:
-            fit = pending.pop(0)
-            stdout = (args.root / f"fit_{fit}.stdout").open("xb")
-            stderr = (args.root / f"fit_{fit}.stderr").open("xb")
-            command = [sys.executable, "-m", "tools.hcsn.digital_feedback_20261101.study", args.stage,
-                       "--root", str(args.root), "--fit", str(fit), "--protocol", str(args.protocol)]
-            if args.training:
-                command += ["--training", str(args.training)]
-            if args.seal:
-                command += ["--seal", str(args.seal)]
-            child = subprocess.Popen(command, stdout=stdout, stderr=stderr, env=dict(os.environ,
-                OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1", MKL_NUM_THREADS="1"))
-            active[child.pid] = (child, fit, stdout, stderr, time.perf_counter())
-        for pid in list(active):
-            ended, status, usage = os.wait4(pid, os.WNOHANG)
-            if not ended:
-                continue
-            child, fit, stdout, stderr, started = active.pop(pid)
-            child.returncode = os.waitstatus_to_exitcode(status)
-            stdout.close()
-            stderr.close()
-            receipt = dict(fit=fit, returncode=child.returncode, cpu_seconds=usage.ru_utime + usage.ru_stime,
-                           wall_seconds=time.perf_counter() - started, peak_rss_kib=usage.ru_maxrss)
-            write(args.root / "process_receipts" / f"fit_{fit}.json", receipt)
-            print(json.dumps(receipt), flush=True)
-        if active:
-            time.sleep(.1)
+    spawned, completed, cancelled = [], [], []
+    stop = None
+    controller_error = None
+
+    def observe_stop():
+        nonlocal stop
+        marker = args.root / "STOP_AFTER_ACTIVE.json"
+        if stop is None and marker.exists():
+            stop = dict(path=marker.name, sha256=digest(marker), observed_utc=datetime.now(timezone.utc).isoformat())
+        if stop is not None:
+            while pending:
+                fit = pending[0]
+                folder = args.root / f"fit_{fit}"
+                folder.mkdir(parents=True, exist_ok=False)
+                write(folder / "CANCELLED_BEFORE_START.json", dict(fit=fit, stage=args.stage,
+                      spawned=False, cancelled=True, scientific_fit_started=False,
+                      stop_request=stop, source_sha256=identity))
+                receipt = dict(fit=fit, spawned=False, cancelled=True, returncode=None,
+                               cpu_seconds=0., wall_seconds=0., peak_rss_kib=None,
+                               status="cancelled_before_start", stop_request=stop,
+                               cost_scope="no child process was spawned; zero child CPU, controller work counted separately")
+                write(args.root / "process_receipts" / f"fit_{fit}.json", receipt)
+                pending.pop(0)
+                cancelled.append(fit)
+                print(json.dumps(receipt), flush=True)
+
+    try:
+        while pending or active:
+            observe_stop()
+            while pending and len(active) < args.workers:
+                observe_stop()
+                if not pending:
+                    break
+                fit = pending[0]
+                stdout = (args.root / f"fit_{fit}.stdout").open("xb")
+                stderr = (args.root / f"fit_{fit}.stderr").open("xb")
+                command = [sys.executable, "-m", "tools.hcsn.digital_feedback_20261101.study", args.stage,
+                           "--root", str(args.root), "--fit", str(fit), "--protocol", str(args.protocol)]
+                if args.training:
+                    command += ["--training", str(args.training)]
+                if args.seal:
+                    command += ["--seal", str(args.seal)]
+                try:
+                    child = subprocess.Popen(command, stdout=stdout, stderr=stderr, env=dict(os.environ,
+                        OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1", MKL_NUM_THREADS="1"))
+                except BaseException:
+                    stdout.close()
+                    stderr.close()
+                    raise
+                pending.pop(0)
+                spawned.append(fit)
+                active[child.pid] = (child, fit, stdout, stderr, time.perf_counter())
+            for pid in list(active):
+                ended, status, usage = os.wait4(pid, os.WNOHANG)
+                if not ended:
+                    continue
+                child, fit, stdout, stderr, started = active.pop(pid)
+                child.returncode = os.waitstatus_to_exitcode(status)
+                stdout.close()
+                stderr.close()
+                receipt = dict(fit=fit, spawned=True, cancelled=False, returncode=child.returncode,
+                               cpu_seconds=usage.ru_utime + usage.ru_stime,
+                               wall_seconds=time.perf_counter() - started, peak_rss_kib=usage.ru_maxrss,
+                               cost_scope="child wait4 user+system CPU; controller self CPU is separate")
+                write(args.root / "process_receipts" / f"fit_{fit}.json", receipt)
+                completed.append(fit)
+                print(json.dumps(receipt), flush=True)
+            if active:
+                time.sleep(.1)
+    except BaseException as error:
+        controller_error = repr(error)
+        raise
+    finally:
+        controller_cpu = time.process_time()
+        write(args.root / "CONTROLLER_RECEIPT.json", dict(schema="digital-feedback-controller-receipt-v1",
+              stage=args.stage, registered_fits=fits, spawned_fits=spawned, completed_fits=completed,
+              cancelled_before_start_fits=cancelled, pending_fits=list(pending), active_pids=list(active),
+              stop_request=stop, error=controller_error,
+              status="failed" if controller_error is not None else "stopped_after_active" if stop is not None else "complete",
+              controller_self_cpu_seconds=controller_cpu,
+              controller_launch_cpu_seconds=controller_cpu - cpu_start,
+              controller_wall_seconds=time.perf_counter() - wall_start,
+              cost_scope="self process_time excludes all child CPU; launch CPU is a subset of self CPU and must not be added again; child wait4 receipts are disjoint"))
 
 
 def main():

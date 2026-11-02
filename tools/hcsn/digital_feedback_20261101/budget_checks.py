@@ -1,4 +1,4 @@
-"""Adversarial interruption and optimizer-equation checks for the CPU contract."""
+"""Adversarial bounded-work and optimizer-equation checks for the CPU contract."""
 import json
 import signal
 import sys
@@ -37,15 +37,17 @@ class BudgetChecks(unittest.TestCase):
     def setUp(self):
         torch.set_num_threads(1)
 
-    def test_cpu_interruption_preserves_signal_owner(self):
+    def test_cooperative_cpu_stop_preserves_signal_owner(self):
         handler = signal.getsignal(signal.SIGPROF)
+        timer = signal.getitimer(signal.ITIMER_PROF)
         start = time.process_time()
         with self.assertRaises(CpuExpired):
-            with cpu_deadline(.035):
+            with cpu_deadline(.035) as cpu:
                 while True:
                     sum(i * i for i in range(100))
+                    cpu.check("bounded_test_block")
         self.assertLess(time.process_time() - start, .15)
-        self.assertEqual(signal.getitimer(signal.ITIMER_PROF), (0., 0.))
+        self.assertEqual(signal.getitimer(signal.ITIMER_PROF), timer)
         self.assertEqual(signal.getsignal(signal.SIGPROF), handler)
 
     def test_explicit_adamw_matches_library(self):
@@ -94,13 +96,15 @@ class BudgetChecks(unittest.TestCase):
         self.assertFalse(receipt["training_valid"])
         self.assertEqual(receipt["behavior_rows_with_support"], [])
 
-    def test_whole_cohort_slow_call_cannot_consume_unbounded_budget(self):
+    def test_slow_collection_stops_at_each_runtime_boundary(self):
         data, protocol = fixture()
         spec = next(s for s in candidates() if s["id"] == "acc_structured_multi")
 
-        def slow_collect(*args, **kwargs):
+        def slow_collect(runtime, *args, **kwargs):
             while True:
-                sum(i ** 2 for i in range(100))
+                sum(i ** 2 for i in range(1000))
+                row = data["train"]["rows"][0]
+                runtime.predict(row["public"], row["state"], 0)
 
         with patch("tools.hcsn.digital_feedback_20261101.training.run_episode", slow_collect):
             _, _, receipt = fit_candidate(spec, 23, data, None, protocol)
@@ -110,17 +114,39 @@ class BudgetChecks(unittest.TestCase):
         self.assertEqual(receipt["visit_rounds"][0]["status"], "interrupted")
         self.assertFalse(receipt["training_valid"])
         self.assertEqual(receipt["visit_rounds"][0]["attempted_world"], "budget_fixture")
+        self.assertFalse(receipt["cpu_control"]["asynchronous_signal"])
+
+    def test_oversized_unchecked_block_is_retained_and_rejected(self):
+        data, protocol = fixture()
+        protocol.update(training_cpu_seconds=.12, cpu_tolerance_seconds=.02)
+        spec = next(s for s in candidates() if s["id"] == "acc_structured_off")
+        original_step = HeadAdamW.step
+
+        def finite_slow_step(optimizer):
+            original_step(optimizer)
+            end = time.process_time() + .18
+            while time.process_time() < end:
+                sum(i * i for i in range(100))
+
+        with patch.object(HeadAdamW, "step", finite_slow_step):
+            _, _, receipt = fit_candidate(spec, 27, data, None, protocol)
+        self.assertFalse(receipt["cpu_compliant"])
+        self.assertGreater(receipt["cpu_budget_overshoot"], protocol["cpu_tolerance_seconds"])
+        self.assertGreaterEqual(receipt["cpu_control"]["maximum_unchecked_cpu_seconds"], .18)
+        self.assertEqual(receipt["optimizer_updates"], 1)
+        self.assertEqual(receipt["interruptions"][0]["last_complete_update"], 1)
+        self.assertEqual(receipt["failures"], [])
 
     def test_collected_but_unused_rows_are_not_supervised_support(self):
         data, protocol = fixture()
         spec = next(s for s in candidates() if s["id"] == "acc_structured_multi")
         original_encode, calls = encode_rows, []
 
-        def interrupt_encoding(policy, rows, cache):
+        def interrupt_encoding(policy, rows, cache, checkpoint=None):
             if calls:
                 raise CpuExpired("injected before collected rows participate in an update")
             calls.append(True)
-            return original_encode(policy, rows, cache)
+            return original_encode(policy, rows, cache, checkpoint)
 
         result = (dict(world="budget_fixture"), [dict(data["train"]["rows"][0], latent_index=0)])
         with patch("tools.hcsn.digital_feedback_20261101.training.run_episode", return_value=result):
@@ -212,17 +238,27 @@ class BudgetChecks(unittest.TestCase):
         self.assertEqual(receipt["behavior_rows_with_support"], [])
 
 
-    def test_early_prof_signals_do_not_end_process_cpu_budget(self):
+    def test_foreign_signal_handler_remains_usable_during_budget(self):
         start = time.process_time()
-        returned_early_signals = 0
-        with self.assertRaises(CpuExpired):
-            with cpu_deadline(.04):
-                for _ in range(8):
-                    signal.raise_signal(signal.SIGPROF)
-                    returned_early_signals += 1
-                while True:
-                    sum(i * i for i in range(100))
-        self.assertEqual(returned_early_signals, 8)
+        previous = signal.getsignal(signal.SIGPROF)
+        delivered = []
+
+        def foreign_handler(signum, frame):
+            delivered.append(signum)
+
+        signal.signal(signal.SIGPROF, foreign_handler)
+        try:
+            with self.assertRaises(CpuExpired):
+                with cpu_deadline(.04) as cpu:
+                    for _ in range(8):
+                        signal.raise_signal(signal.SIGPROF)
+                    while True:
+                        sum(i * i for i in range(100))
+                        cpu.check("bounded_foreign_signal_test")
+            self.assertIs(signal.getsignal(signal.SIGPROF), foreign_handler)
+        finally:
+            signal.signal(signal.SIGPROF, previous)
+        self.assertEqual(delivered, [signal.SIGPROF] * 8)
         self.assertGreaterEqual(time.process_time() - start, .04)
         self.assertLess(time.process_time() - start, .16)
 

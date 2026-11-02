@@ -1,14 +1,13 @@
 """CPU-bounded head fitting with repeated, detached policy-visit feedback.
 
 This Linux research runner freezes each fit's initial physical cell parameters.
-The timer covers candidate setup, feature encoding, collection and optimization.
+The budget covers candidate setup, feature encoding, collection and optimization.
 Only complete optimizer updates can become the returned model.
 """
 from contextlib import contextmanager
 import hashlib
 import json
 import math
-import signal
 import time
 
 import numpy as np
@@ -23,33 +22,63 @@ class CpuExpired(BaseException):
     """A planned resource stop, distinct from an unsuccessful scientific fit."""
 
 
-@contextmanager
-def cpu_deadline(seconds):
-    """Use periodic wakeups, with process_time as the only deadline clock.
+class ProcessCpuBudget:
+    """Check actual process CPU at boundaries of finite computation blocks.
 
-    ITIMER_PROF ticks can disagree with process_time under CPU contention.
-    An early wakeup must return without interrupting or restarting the work.
-    Native calls may defer Python signal delivery; actual overrun is therefore
-    still measured and rejected by the caller's registered CPU tolerance.
+    No asynchronous signal is installed. A single native call cannot be
+    preempted here, so actual total CPU and the longest unchecked block remain
+    explicit receipts; an excessive total is rejected by the registered gate.
     """
-    if not hasattr(signal, "ITIMER_PROF") or not math.isfinite(seconds) or seconds <= 0:
-        raise ValueError("positive CPU deadline and ITIMER_PROF platform required")
-    if signal.getitimer(signal.ITIMER_PROF) != (0., 0.):
-        raise RuntimeError("another process CPU timer is already active")
-    previous = signal.getsignal(signal.SIGPROF)
-    deadline = time.process_time() + seconds
 
-    def expired(signum, frame):
-        if time.process_time() >= deadline:
-            raise CpuExpired("registered process CPU budget reached")
+    def __init__(self, seconds, start=None):
+        if not math.isfinite(seconds) or seconds <= 0:
+            raise ValueError("positive process CPU deadline required")
+        self.start = time.process_time() if start is None else start
+        self.deadline = self.start + seconds
+        self.last_check = self.start
+        self.checks = 0
+        self.maximum_unchecked_cpu_seconds = 0.
+        self.maximum_unchecked_ending_at = None
 
-    signal.signal(signal.SIGPROF, expired)
-    try:
-        signal.setitimer(signal.ITIMER_PROF, .01, .01)
-        yield
-    finally:
-        signal.setitimer(signal.ITIMER_PROF, 0.)
-        signal.signal(signal.SIGPROF, previous)
+    def check(self, boundary="unspecified"):
+        now = time.process_time()
+        gap = now - self.last_check
+        if gap > self.maximum_unchecked_cpu_seconds:
+            self.maximum_unchecked_cpu_seconds = gap
+            self.maximum_unchecked_ending_at = boundary
+        self.last_check = now
+        self.checks += 1
+        if now >= self.deadline:
+            raise CpuExpired("registered process CPU budget reached at " + boundary)
+        return now
+
+
+@contextmanager
+def cpu_deadline(seconds, start=None):
+    """Yield a cooperative budget without changing any signal or CPU timer."""
+    yield ProcessCpuBudget(seconds, start)
+
+
+class BudgetRuntime(FactorRuntime):
+    """Bound policy collection at each prediction and physical transition."""
+
+    def __init__(self, policy, checkpoint):
+        self.checkpoint = checkpoint
+        checkpoint("runtime_setup_before")
+        super().__init__(policy)
+        checkpoint("runtime_setup_after")
+
+    def predict(self, public, state, index):
+        self.checkpoint("predict_before")
+        result = super().predict(public, state, index)
+        self.checkpoint("predict_after")
+        return result
+
+    def advance(self, context, index, rng):
+        self.checkpoint("advance_before")
+        result = super().advance(context, index, rng)
+        self.checkpoint("advance_after")
+        return result
 
 
 def digest(value):
@@ -57,7 +86,7 @@ def digest(value):
                                      allow_nan=False).encode()).hexdigest()
 
 
-def encode_rows(policy, rows, cache):
+def encode_rows(policy, rows, cache, checkpoint=None):
     """Fixed dynamics permit reuse without detaching any trained parameter.
 
     Independent behavior uses its exact conditional prefix law. Policy visits
@@ -69,6 +98,8 @@ def encode_rows(policy, rows, cache):
     inputs, masses, support = [], [], []
     with torch.no_grad():
         for row in rows:
+            if checkpoint is not None:
+                checkpoint("encode_row_before")
             x = policy.latent_inputs(row["public"], row["state"], cache)
             if "latent_index" in row:
                 index = int(row["latent_index"])
@@ -85,11 +116,16 @@ def encode_rows(policy, rows, cache):
             masses.append(mass.detach())
             support.append(dict(public=row["public"], state=row["state"],
                                 latent_support=torch.nonzero(mass > 0).flatten().tolist()))
+            if checkpoint is not None:
+                checkpoint("encode_row_after")
     x = torch.stack(inputs)
-    return dict(x=x, mass=torch.stack(masses),
+    result = dict(x=x, mass=torch.stack(masses),
                 target=x.new_tensor([r["q"] for r in rows]),
                 mask=torch.tensor([r["legal"] for r in rows], dtype=torch.bool),
-                belief=x.new_tensor([r["posterior"] for r in rows])), support
+                belief=x.new_tensor([r["posterior"] for r in rows]))
+    if checkpoint is not None:
+        checkpoint("encode_stack_after")
+    return result, support
 
 
 def batch_loss(policy, batch, protocol):
@@ -150,12 +186,12 @@ class HeadAdamW:
 
 
 def fit_candidate(spec, fit, data, adapter, protocol):
-    """Own and restore autograd mode across asynchronous CPU interruptions.
+    """Own and restore autograd mode across every candidate return or error.
 
     A signal during a nested no_grad context's entry/exit can leave thread-local
     mode disabled despite every parameter still requiring gradients. The outer
-    guard runs after the body's timer is disarmed and restores the caller's
-    observed mode explicitly, including when the body raises.
+    guard restores the caller's observed mode explicitly, including when the
+    body raises. The cooperative CPU controller itself installs no signals.
     """
     start_cpu, start_wall = time.process_time(), time.perf_counter()
     original_grad_enabled = torch.is_grad_enabled()
@@ -170,7 +206,7 @@ def fit_candidate(spec, fit, data, adapter, protocol):
         if receipt is not None:
             receipt["autograd_mode"] = dict(incoming_enabled=original_grad_enabled,
                 training_entry_enabled=True, restored_enabled=torch.is_grad_enabled(),
-                contract="explicit enable at candidate entry; explicit restore after timer disarm on every exit")
+                contract="explicit enable at candidate entry; explicit restore on every exit; no asynchronous CPU signal")
             elapsed = time.process_time() - start_cpu
             receipt["autograd_guard_cpu_seconds"] = elapsed - receipt["candidate_cpu_seconds"]
             receipt.update(candidate_cpu_seconds=elapsed, learning_cpu_seconds=elapsed,
@@ -204,9 +240,10 @@ def _fit_candidate_body(spec, fit, data, adapter, protocol):
     behavior_support, initial, committed, policy = [], None, None, None
     current_phase, phase_start = "setup", start
     batch_digest = hashlib.sha256()
-    stop_reason = None
+    stop_reason, cpu = None, None
     try:
-        with cpu_deadline(budget - reserve):
+        with cpu_deadline(budget - reserve, start=start) as cpu:
+            cpu.check("setup_before")
             policy = FactorPolicy.from_spec(spec, fit)
             if policy.cell is not None:
                 policy.cell.raw.requires_grad_(False)
@@ -216,17 +253,18 @@ def _fit_candidate_body(spec, fit, data, adapter, protocol):
             committed = (initial, 0, np.zeros(len(data["train"]["rows"]), dtype=np.int64),
                          np.zeros(max_visits, dtype=np.int64))
             rng = np.random.default_rng(protocol["batch_seed_base"] + fit)
+            cpu.check("setup_after")
             phases[current_phase] += time.process_time() - phase_start
             current_phase, phase_start = "behavior_encoding", time.process_time()
             cache = {}
-            encoded, behavior_support = encode_rows(policy, data["train"]["rows"], cache)
+            encoded, behavior_support = encode_rows(policy, data["train"]["rows"], cache, cpu.check)
             behavior_count = len(data["train"]["rows"])
             phases[current_phase] += time.process_time() - phase_start
             current_phase, phase_start = "optimization", time.process_time()
             next_round, world_cursor = 0, 0
             visited_encoded = None
             while True:
-                elapsed = time.process_time() - start
+                elapsed = cpu.check("training_loop") - start
                 if next_round < len(schedule) and elapsed >= schedule[next_round] * budget:
                     phases[current_phase] += time.process_time() - phase_start
                     current_phase, phase_start = "collection", time.process_time()
@@ -237,8 +275,9 @@ def _fit_candidate_body(spec, fit, data, adapter, protocol):
                                   start_cpu_seconds=elapsed, planned_worlds=counts[next_round],
                                   rows=[], episodes=[], complete_worlds=0, status="in_progress")
                     visit_rounds.append(record)
-                    runtime = FactorRuntime(policy)
+                    runtime = BudgetRuntime(policy, cpu.check)
                     for _ in range(counts[next_round]):
+                        cpu.check("episode_before")
                         if len(visits) + 7 > max_visits:
                             record["status"] = "visit_memory_limit"
                             break
@@ -248,6 +287,7 @@ def _fit_candidate_body(spec, fit, data, adapter, protocol):
                         record["attempted_seed"] = execution_seed
                         episode, rows = run_episode(runtime, source, adapter, data["confusion"],
                                                     "value", execution_seed, supervised=True)
+                        cpu.check("episode_after")
                         for row in rows:
                             row.update(round_id=round_id, snapshot_sha256=record["snapshot_sha256"])
                         # Commit the complete episode receipt together. Finalization
@@ -263,7 +303,7 @@ def _fit_candidate_body(spec, fit, data, adapter, protocol):
                     phases[current_phase] += time.process_time() - phase_start
                     current_phase, phase_start = "visit_encoding", time.process_time()
                     if visits:
-                        visited_encoded, _ = encode_rows(policy, visits, cache)
+                        visited_encoded, _ = encode_rows(policy, visits, cache, cpu.check)
                     phases[current_phase] += time.process_time() - phase_start
                     current_phase, phase_start = "optimization", time.process_time()
                     next_round += 1
@@ -295,6 +335,7 @@ def _fit_candidate_body(spec, fit, data, adapter, protocol):
                                     visited_rows=len(visits), mixed_realized_records=size - off_count,
                                     cumulative_cpu_seconds=time.process_time() - start))
                 committed = (snapshot, len(updates), behavior_use, visit_use)
+                cpu.check("optimizer_update_after")
     except CpuExpired as error:
         stop_reason = "cpu_deadline"
         interruptions.append(dict(phase=current_phase, reason=str(error),
@@ -350,6 +391,12 @@ def _fit_candidate_body(spec, fit, data, adapter, protocol):
                    policy_gradient_claim=False, budget_scope="candidate setup+encoding+collection+optimization+finalization",
                    excluded_shared_cost="shared data/content setup and returned-artifact serialization; worker measures separately",
                    returned_model_sha256=digest(artifact), max_visits=max_visits)
+    receipt["cpu_control"] = dict(method="cooperative_process_cpu_boundaries", asynchronous_signal=False,
+        checks=cpu.checks, maximum_unchecked_cpu_seconds=cpu.maximum_unchecked_cpu_seconds,
+        maximum_unchecked_ending_at=cpu.maximum_unchecked_ending_at,
+        collection_boundaries="each predict/advance before+after and each episode before+after",
+        optimization_boundaries="before minibatch and after complete committed optimizer update",
+        encoding_boundaries="each row before+after and final stack")
     elapsed = time.process_time() - start
     receipt.update(candidate_cpu_seconds=elapsed, learning_cpu_seconds=elapsed,
                    candidate_wall_seconds=time.perf_counter() - wall,

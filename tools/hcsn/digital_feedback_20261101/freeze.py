@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .factors import candidates
-from .study import digest, read, required_training_files, sources, write
+from .study import digest, read, require_confirmation_qualification, required_training_files, sources, write
 from .training import digest as object_digest
 
 
@@ -49,8 +49,8 @@ def manifest(training, protocol_path, source_commit):
                       between_arm_tolerance=protocol["between_arm_cpu_tolerance_seconds"],
                       budget_seconds=protocol["training_cpu_seconds"],
                       per_arm_tolerance=protocol["cpu_tolerance_seconds"])
-    # Noncompliance is retained and freezes with its actual failed status. The
-    # confirm/analysis path may not delete an arm to manufacture matched CPU.
+    # A manifest retains noncompliance. Sealing and confirmation both reject it;
+    # an arm cannot be deleted to manufacture matched CPU.
     return dict(schema="digital-feedback-all-model-manifest-v1", protocol=protocol,
                 fits=expected_fits, source_sha256=identity, training_files_sha256=files,
                 process_sha256=processes, published_source_commit=source_commit,
@@ -73,6 +73,7 @@ def main():
         value = manifest(args.training, args.protocol, args.source_commit)
     else:
         value = read(args.manifest)
+        require_confirmation_qualification(value)
         receipt = read(args.remote_receipt)
         if (receipt["commit"] != args.models_commit or not receipt["all_blob_hashes_verified"]
                 or receipt["model_manifest_sha256"] != digest(args.manifest)):
