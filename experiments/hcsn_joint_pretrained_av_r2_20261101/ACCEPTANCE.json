@@ -1,0 +1,43 @@
+{
+  "schema": "hcsn.pretrained-frontend.acceptance.v1",
+  "component": "hcsn_joint_pretrained_av_r2_20261101",
+  "baseline_commit": "a793d55c23a7742378b081b162252da428a9fdb2",
+  "source_published_before_target_fit": true,
+  "all_heads_published_before_development_extraction": true,
+  "source_and_dependencies_unchanged": true,
+  "candidate_changed_after_development": false,
+  "source_commit": "5fb3d6cf116dff2db76d0dbe2ca4a94a2b7d0fe5",
+  "candidate_commit": "c7ead309b20d96367aaca9332bee79f68ed3ccef",
+  "source_freeze_sha256": "fa43f9d50ed35febed03b3097ca58bf768e2e839eb69fa85e89f83cedfa94e37",
+  "candidate_freeze_sha256": "e84aa62d8805d2a8619522d6870dc8ab487677a09bce9b7d7c164daec178cdd1",
+  "result": {
+    "path": "experiments/hcsn_joint_pretrained_av_r2_20261101/results/run001/RESULT.json",
+    "bytes": 4212,
+    "sha256": "19152e824d02717f07033111569886e46d9e02e905b17d0f22f45ade6b828397"
+  },
+  "development": {
+    "scope": "Original historically exposed six actors only",
+    "clips": 72,
+    "actors": 6,
+    "relation_episodes": 288,
+    "new_independent_population": false
+  },
+  "independent_candidate_and_result_audits_pass": true,
+  "primary_video_attribution_replaced": false,
+  "analytic_core_contribution_tested": false,
+  "live_causal_compressed_media_decode_qualified": false,
+  "external_pretraining_cost_known": false,
+  "production_activation": false,
+  "all_blockers_closed": false,
+  "audio_correct": 69,
+  "video_correct": 39,
+  "sentence_total_each": 72,
+  "both_frontends_above_90_percent": false,
+  "AVT_minus_AT_unique_accuracy": 0.016203703703703703,
+  "paired_actor_95_accuracy_interval": [
+    -0.02314814814814815,
+    0.04861111111111111
+  ],
+  "accuracy_interval_strictly_positive": false,
+  "predeclared_joint_gate": false
+}

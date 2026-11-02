@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn.pretrained-frontend.outer-cost-ledger.v1",
+  "component": "hcsn_joint_pretrained_av_r2_20261101",
+  "receipt_count": 2,
+  "receipt_rows": [
+    {
+      "path": "experiments/hcsn_joint_pretrained_av_r2_20261101/train001.receipt.json",
+      "bytes": 2139,
+      "sha256": "621dc1636e8d8f388f6d7ba630ddca63a21d231aeaa29dcd580f9bd08c8f7754",
+      "started_utc": "2026-11-02T02:11:28.374075+00:00",
+      "finished_utc": "2026-11-02T02:11:31.792484+00:00",
+      "returncode": 0,
+      "total_cpu_seconds": 3.281714,
+      "wall_seconds": 3.4180537329957588,
+      "peak_rss_bytes": 295784448,
+      "phase": "train001"
+    },
+    {
+      "path": "experiments/hcsn_joint_pretrained_av_r2_20261101/evaluate001.receipt.json",
+      "bytes": 2262,
+      "sha256": "d878df3d39fba82f6b6f6e6d1bc2821a2ee23a62398b07458271198e34f48e51",
+      "started_utc": "2026-11-02T02:17:00.112097+00:00",
+      "finished_utc": "2026-11-02T02:17:03.909544+00:00",
+      "returncode": 0,
+      "total_cpu_seconds": 3.0601260000000003,
+      "wall_seconds": 3.797176717998809,
+      "peak_rss_bytes": 307200000,
+      "phase": "evaluate001"
+    }
+  ],
+  "measured_component_cpu_seconds": 6.34184,
+  "sum_of_invocation_wall_seconds": 7.215230450994568,
+  "summed_wall_is_end_to_end_elapsed": false,
+  "receipt_intervals_nonoverlapping_within_component": true,
+  "known_failed_metered_invocations": [],
+  "measurement": "Outer os.wait4 direct-child receipts including process startup/imports, awaited decoding children and writes. No nested fit/body CPU is added. Wrapper CPU is recorded separately in each receipt, not part of this sum.",
+  "peak_memory_scope": "Per-invocation wait4 peak RSS only; not aggregate concurrent process-tree memory.",
+  "observation_seconds_per_clip": 1.0,
+  "observation_plus_inference_latency_measured": false,
+  "standalone_steady_inference_benchmark": null,
+  "hardware": "CPU execution, OMP_NUM_THREADS=OPENBLAS_NUM_THREADS=MKL_NUM_THREADS=1; no GPU execution claimed",
+  "inherited_provider_costs": [
+    {
+      "scope": "Audio provider acquisition/checks/extraction/fitting/evaluation",
+      "reference": "experiments/hcsn_audio_pretrained_r2_20261101/COST_LEDGER.json",
+      "known_component_cpu_seconds": 161.391499,
+      "added_to_joint_incremental_sum": false
+    },
+    {
+      "scope": "Pretrained video provider and R1 nested text; separately reported by provider owners",
+      "cpu_seconds": null,
+      "added_to_joint_incremental_sum": false
+    }
+  ],
+  "complete_lifecycle_cpu_seconds": null,
+  "gpu": null,
+  "energy_joules": null,
+  "independent_review_cpu_seconds": null,
+  "source_preparation_install_freeze_finalization_cpu_seconds": null,
+  "unknown_cost_policy": "Unmetered source preparation, package installation, interactive failed freeze attempts, review and finalization are unknown rather than zero; upstream neural pretraining and previously shared media acquisition are not part of this component sum."
+}
