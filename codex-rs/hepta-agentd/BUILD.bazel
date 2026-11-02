@@ -16,6 +16,12 @@ codex_rust_crate(
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
+    # Cargo's dev-dependency enables this legacy write API only for test crates.
+    # The Bazel-generated integration tests need the same testonly variant;
+    # the production agentd library/binaries must retain the default ledger.
+    integration_test_dependency_replacements = {
+        "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+    },
 )
 
 # Compile the local writer qualification separately from the default product
