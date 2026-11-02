@@ -1,0 +1,83 @@
+{
+  "duplicates": [
+    {
+      "additive_cpu_seconds": 0.0,
+      "byte_identical": true,
+      "canonical_path": "development/attempt_01/differential",
+      "path": "development/differential"
+    },
+    {
+      "additive_cpu_seconds": 0.0,
+      "byte_identical": true,
+      "canonical_path": "development/attempt_02/differential_v2",
+      "path": "development/differential_v2"
+    },
+    {
+      "additive_cpu_seconds": 0.0,
+      "byte_identical": true,
+      "canonical_path": "development/attempt_04_fp64/differential_v4",
+      "path": "development/differential_v4"
+    }
+  ],
+  "exclusions": [
+    "supervisor parent CPU",
+    "source publication and bookkeeping",
+    "unmetered independent audit/analysis CPU",
+    "older R17 and other unrelated studies",
+    "GPU/joules/network/deployment lifecycle"
+  ],
+  "inclusion": "Full child imports, all candidates including failures, preparation, owned checkpoints, raw archive writes, exit. Nested actor/preparation/kernel timers are not added again.",
+  "inherited_common_training_cpu_seconds": 30.111223,
+  "inherited_training_is_same_machine_measurement": false,
+  "nonoverlapping_measured_child_cpu_lower_bound": 141.098189,
+  "phases": [
+    {
+      "cpu_seconds": 3.943517,
+      "phase": "baseline_profile",
+      "receipt": "development/profile/PROCESS_RECEIPT.json"
+    },
+    {
+      "cpu_seconds": 7.654597,
+      "phase": "failed_batched_BLAS_ties",
+      "receipt": "development/attempt_01/differential/PROCESS_RECEIPT.json"
+    },
+    {
+      "cpu_seconds": 7.7319629999999995,
+      "phase": "exact_forest_v2_development",
+      "receipt": "development/attempt_02/differential_v2/PROCESS_RECEIPT.json"
+    },
+    {
+      "cpu_seconds": 8.175248,
+      "phase": "exact_forest_v3_development",
+      "receipt": "development/differential_v3/PROCESS_RECEIPT.json"
+    },
+    {
+      "cpu_seconds": 7.678425,
+      "phase": "validator_v4_development",
+      "receipt": "development/attempt_04_fp64/differential_v4/PROCESS_RECEIPT.json"
+    },
+    {
+      "cpu_seconds": 8.30773,
+      "phase": "cast_corrected_v4b_development",
+      "receipt": "development/differential_v4b/PROCESS_RECEIPT.json"
+    },
+    {
+      "cpu_seconds": 43.279104,
+      "phase": "v3_formal_cost_failure",
+      "receipt": "confirmation_01/PROCESS_SUMMARY.json"
+    },
+    {
+      "cpu_seconds": 37.3705,
+      "phase": "v4b_formal_success",
+      "receipt": "confirmation_02/PROCESS_SUMMARY.json"
+    },
+    {
+      "cpu_seconds": 16.957105,
+      "phase": "posthoc_memory_diagnostic",
+      "receipt": "development/memory/PROCESS_RECEIPT.json"
+    }
+  ],
+  "qualification": "Recorded child CPU lower bound, not complete project/deployment cost. Duplicated original artifacts have zero additive cost; duplication cause is not established.",
+  "schema": "hcsn-r18-cost-ledger-v1"
+}
+

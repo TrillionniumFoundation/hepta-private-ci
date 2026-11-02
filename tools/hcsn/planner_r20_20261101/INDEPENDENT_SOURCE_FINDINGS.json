@@ -1,0 +1,107 @@
+{
+  "fresh_reviewer_controls": {
+    "additional_actual_row_sum_threshold_cases": 8,
+    "checks": 4128,
+    "exact_value_cases": 864,
+    "predicate_controls": 672,
+    "scope": "Eight frozen fitted seeds; newly selected sparse/recovery/read-only input controls. The first nominal row-mass deltas did not straddle computed sums; independent supplemental cases do, and both sets remain preserved."
+  },
+  "frozen_identity": {
+    "manifest_sha256": "a5bfa4585170b2650e7cf56c15c587d8bc3ae94a0df26b0def7993b6b42f69a2",
+    "remote_blobs": 10,
+    "source_and_input_files": 35,
+    "training_archives": 8
+  },
+  "persistence_review": [
+    "Every query from 0 through 5 runs the identical tempfile write/flush/fsync, atomic replace, directory fsync, exact-byte/checksum readback and model-state restore sequence for all four variants.",
+    "Persisted history excludes target, reward and utility. Cold resume checks model/world/seed/representation and deadline, then recomputes past scorer fields while preserving completed public action and fee history.",
+    "The fixed temporary filename and lack of fencing are consistent only with the declared trusted single-writer profile.",
+    "The directory containing the checkpoint is fsynced; newly created ancestor directories are not recursively fsynced. No machine power-loss qualification follows.",
+    "Successful fsync syscall probes and frozen source support the declared process-death profile; self-reported receipt counters alone are not independent syscall evidence."
+  ],
+  "planner_review": [
+    "The finite, minimum-mass and row-sum predicate function and tolerances are the unchanged R18 callable. Concatenation contents and each matrix operand shape remain the same.",
+    "Deleting merged validation arrays changes lifetime only; source arrays remain referenced and no matrix input is mutated.",
+    "Full projection preserves the R19 C-contiguous storage guarantee required after the prior last-bit failure.",
+    "In-place posterior normalization still uses a freshly allocated joint and separately allocated likelihood, then replaces all impossible rows with the unchanged prior. Descendants read beliefs without mutation.",
+    "This is a source-level ownership and operation-order argument plus recorded bounded checks, not arbitrary-domain or cross-BLAS bit-identity proof."
+  ],
+  "recovery_coverage": {
+    "all_retained_query_state_files": 96,
+    "atomic_windows": 3,
+    "episodes": "One HX OOD episode reused across four planner variants and two representations; exactly one READ at query 5, no WAIT or REFRESH.",
+    "lost_reply_sigkill_cases": 48,
+    "main_checks": 1386,
+    "processes": 107,
+    "supplemental_state_checks": 3840
+  },
+  "remaining": [
+    "Original CPU gate fails in one group; joint CPU/memory gate fails in ten groups. Full-investment adoption remains failed.",
+    "The scripted action profiles extend bounded paid-prefix recovery coverage and do not change any value-policy, resource or population conclusion.",
+    "Unregistered worlds, mid-query external effects, power loss, concurrent ownership, networking, GPU/energy, real media, analytic-core D-B and production adoption remain unqualified."
+  ],
+  "resource_decision_rules": [
+    "Evaluate all 48 frozen fit/model/representation groups without pooling away failures.",
+    "Original CPU threshold remains <= 0.90 of matched R16; joint threshold additionally requires CPU <= 1 of matched R18 and peak <= 0.90 of R18 in each group.",
+    "All variants now pay six-query atomic storage; do not pool old query2-only timing data.",
+    "There are 64 actual worlds per fit/group and 512 unique worlds, not 1,000 actual uses per fit/group.",
+    "Memory peaks use 8 warmed calls per variant/group. Actor wall rate excludes separately measured preparation and common campaign work.",
+    "Historical investment floor is 141.098189 + 243.893282255 = 384.991471255 CPU seconds before this new round. Complete child receipts and nested timers must not be added together."
+  ],
+  "resource_review": {
+    "actual_actor_cpu_savings": 16.358607397000156,
+    "all_peak_gates_pass": true,
+    "checks": 449472,
+    "fitted_seeds": 8,
+    "groups": 48,
+    "historical_investment_floor": 384.99147125499996,
+    "joint_cpu_memory_gate": false,
+    "joint_failure_count": 10,
+    "memory_replays": 1536,
+    "original_cpu_failures": [
+      {
+        "fit": 151101,
+        "model": "hx",
+        "ratios": {
+          "baseline": 1.0504614570598165,
+          "peak": 0.6822753284831624,
+          "r18": 1.2711326775679557,
+          "r19": 1.216068227360846
+        },
+        "representation": "anchored"
+      }
+    ],
+    "original_cpu_gate": false,
+    "savings_minus_historical_floor": -368.63286385799984,
+    "timed_executions": 12288,
+    "unique_worlds": 512,
+    "uses_per_fit_group": 64
+  },
+  "review_outputs": {
+    "INDEPENDENT_ALL_STATE_REVIEW.json": "96879adc3a590e007a01766a822d9647544f2b9679ed4056d746645d831d3a0f",
+    "INDEPENDENT_NUMERIC_REVIEW.json.gz": "974137c953ec69cc80384b15f3da89a1a63ed602ff0b61e927ea7986171aeba8",
+    "INDEPENDENT_PER_FIT_STATISTICS.json": "65f2df36a60f4f78431868779e7a86b002a66b226fff82393b068477316953b4",
+    "INDEPENDENT_RECOVERY_REVIEW.json": "ef7387faab6caae5d7c0a64618f6da78bfb21cd77d83f7c0dcff0eb89485957b",
+    "INDEPENDENT_REMOTE_BINDINGS.json": "a59404ab3e3e0afdb80b1b9713a8fe87234b8fe644128270766911c753613144",
+    "INDEPENDENT_RESOURCES_REVIEW.json": "4ea0470db426d40f7bfd5ae4cdea29800d91a26c761e9f302d4dfd8a934f889d",
+    "INDEPENDENT_SCRIPTED_REMOTE_BINDINGS.json": "31410d7db5ff8839d7d0c6f194be1d6219ead7efb873a3837546fe8fd31e09dd",
+    "INDEPENDENT_SCRIPTED_REVIEW.json": "8b828e87315e317dc75e51472f8ebc63157d4cc269b1b6cfa3e74e9738975f1a",
+    "INDEPENDENT_THRESHOLD_REVIEW.json": "d0bd4b5ea9172ca5d289ecc0d238e194afa67e3f523d0113719f9faf3b574b0b"
+  },
+  "schema": "hcsn-r20-independent-source-findings-v1",
+  "scripted_action_coverage": {
+    "checks": 984,
+    "lost_reply_cuts": 24,
+    "patterns": [
+      "WAIT then READ then STOP",
+      "REFRESH then STOP"
+    ],
+    "processes": 52,
+    "scope": "Independent standard-library reconstruction of separately frozen scripted WAIT-READ and REFRESH-STOP controls with actual paid prefixes and cold continuations. The child replaces choose only; filtering, answers, fees and persistence remain original. No value-policy quality, optimality, resource, population, mid-query external-effect or power-loss inference.",
+    "source_commit": "cb40ef17a0c27250a8fa6445b6c761b7044cc8d1",
+    "source_files": 38,
+    "states": 48
+  },
+  "source_commit": "86e9128aa7498343bddc4a2435435af72d39de85",
+  "verdict": "bounded source and query-recovery contracts supported; both registered resource adoption gates and full-investment adoption remain failed"
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "hcsn-evidence-transport-v2",
+  "component": "tools/hcsn/planner_r20_20261101",
+  "included_directories": [
+    "development_01",
+    "recovery_development_01",
+    "recovery_confirmation_01",
+    "confirmation_01",
+    "scripted_confirmation_01"
+  ],
+  "included_files": [],
+  "file_count_cap": 65536,
+  "logical_bytes_cap": 536870912,
+  "archive": {
+    "gzip_bytes": 2645989,
+    "gzip_sha256": "7cf4bf572497d97239c0534abbd7506b51bebc6642f0e1eb0559e08fb877c66c",
+    "raw_bytes": 6942720,
+    "raw_sha256": "fa5af904bd9347a4901e9e02fee4743b761973d502b0f39c0dce6994596913fb",
+    "parts": [
+      {
+        "path": "transport/0000.part",
+        "size": 450000,
+        "sha256": "2240fb772b60ad22c0877309fac08b2a63910fc26b2fe7d61a216dd68169a38f"
+      },
+      {
+        "path": "transport/0001.part",
+        "size": 450000,
+        "sha256": "cacecf0dc27d7509d989cd2a777e3e0cec8e7bbb121ce77edf51fddf2c6e15fd"
+      },
+      {
+        "path": "transport/0002.part",
+        "size": 450000,
+        "sha256": "7ca5fd66472aed0b342c33599071a414e01236d2eb11e2720881ed146ad022dd"
+      },
+      {
+        "path": "transport/0003.part",
+        "size": 450000,
+        "sha256": "8ea1d821c0af479f62560a6981909218f30549dd958561a226711c7c3c57af08"
+      },
+      {
+        "path": "transport/0004.part",
+        "size": 450000,
+        "sha256": "6b2dd0efce07dfe4d0f65eaf3908924d8a27695f0909d536a526fa89a6e9e2c3"
+      },
+      {
+        "path": "transport/0005.part",
+        "size": 395989,
+        "sha256": "125237a560c443cedf2094fa74bfec0ce4823473c8311ba3bc1b21ff336b4d4a"
+      }
+    ]
+  },
+  "file_map": {
+    "gzip_bytes": 26194,
+    "gzip_sha256": "fcb1908b3910d89f19a85d806f568c5627ccb7d73234d1b1412bf7994b1f1fc4",
+    "raw_bytes": 170087,
+    "raw_sha256": "7e5be69ae4447215f5bdaa51d1e98cda3e0522325c33cf82a6aabb3229d95594",
+    "parts": [
+      {
+        "path": "map_transport/0000.part",
+        "size": 26194,
+        "sha256": "fcb1908b3910d89f19a85d806f568c5627ccb7d73234d1b1412bf7994b1f1fc4"
+      }
+    ]
+  }
+}

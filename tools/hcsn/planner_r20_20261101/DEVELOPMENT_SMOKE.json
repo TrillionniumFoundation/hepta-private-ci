@@ -1,0 +1,77 @@
+{
+  "rows": [
+    {
+      "representation": "full",
+      "planner": "BatchedPlanner",
+      "cpu": 0.202785508,
+      "peak": 247136,
+      "exact_values": {
+        "STOP": 0.313007638795999,
+        "WAIT": 0.8955000000000013,
+        "READ": 0.8705000000000013,
+        "REFRESH": 0.8853764885126004
+      }
+    },
+    {
+      "representation": "full",
+      "planner": "OwnedPlanner",
+      "cpu": 0.20822951,
+      "peak": 171096,
+      "exact_values": {
+        "STOP": 0.313007638795999,
+        "WAIT": 0.8955000000000013,
+        "READ": 0.8705000000000013,
+        "REFRESH": 0.8853764885126004
+      }
+    },
+    {
+      "representation": "full",
+      "planner": "BatchOwnedPlanner",
+      "cpu": 0.144729879,
+      "peak": 205712,
+      "exact_values": {
+        "STOP": 0.313007638795999,
+        "WAIT": 0.8955000000000013,
+        "READ": 0.8705000000000013,
+        "REFRESH": 0.8853764885126004
+      }
+    },
+    {
+      "representation": "block",
+      "planner": "BatchedPlanner",
+      "cpu": 0.19034826000000005,
+      "peak": 317616,
+      "exact_values": {
+        "STOP": 0.313007638795999,
+        "WAIT": 0.8955000000000012,
+        "READ": 0.8705000000000012,
+        "REFRESH": 0.8783094905294668
+      }
+    },
+    {
+      "representation": "block",
+      "planner": "OwnedPlanner",
+      "cpu": 0.29692560600000006,
+      "peak": 203856,
+      "exact_values": {
+        "STOP": 0.313007638795999,
+        "WAIT": 0.8955000000000012,
+        "READ": 0.8705000000000012,
+        "REFRESH": 0.8783094905294668
+      }
+    },
+    {
+      "representation": "block",
+      "planner": "BatchOwnedPlanner",
+      "cpu": 0.17217996299999982,
+      "peak": 208080,
+      "exact_values": {
+        "STOP": 0.313007638795999,
+        "WAIT": 0.8955000000000012,
+        "READ": 0.8705000000000012,
+        "REFRESH": 0.8783094905294668
+      }
+    }
+  ],
+  "scope": "Fixedfixturedevelopment,200valuescalls pervariant; noformalconfirmation orfullprocessCPUmeasurement"
+}

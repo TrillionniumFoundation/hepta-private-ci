@@ -1,0 +1,5 @@
+{
+  "recovery": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 taskset -c 2 python -m tools.hcsn.planner_r20_20261101.recovery_checks --output tools/hcsn/planner_r20_20261101/recovery_confirmation_01",
+  "resource": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 taskset -c 8 python -m tools.hcsn.planner_r20_20261101.campaign --output tools/hcsn/planner_r20_20261101/confirmation_01",
+  "source_commit": "86e9128aa7498343bddc4a2435435af72d39de85"
+}
