@@ -59,3 +59,14 @@ to int64 with explicit overflow rejection; adopted run002 refroze and repeated
 preparation. No registered test sample was opened in run001. Both preparations
 and the development probe remain in the cost ledger. The DP uses FP64, a stated
 tie tolerance and belief memoization; it is a numerical finite-horizon solution.
+
+`results/run002/CORRECTED_SUMMARY.json` is the canonical summary. The original
+frozen analyzer and original SUMMARY are retained because sequential floating
+arithmetic generated an invalid tiny positive interaction flag. The registered
+paired interaction is exactly zero; `correct_interaction.py` and
+`INTERACTION_CORRECTION.json` preserve the deterministic saved-record correction.
+
+`independent_review/raw_review.py` imports no campaign/model/controller/world
+code. Its RAW_REVIEW.json checks all saved training and execution records and
+binds both original and corrected summaries. A read-only recheck of the saved
+study can call its `distribution()` function without replacing that receipt.
