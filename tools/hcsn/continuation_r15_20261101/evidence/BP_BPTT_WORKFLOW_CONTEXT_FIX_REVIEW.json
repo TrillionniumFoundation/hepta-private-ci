@@ -1,0 +1,71 @@
+{
+  "schema": "hcsn.bp-bptt-workflow-context-correction.v1",
+  "problem": "The newly introduced V1 BP/BPTT workflow used runner.temp in two job-level env values, where the runner context is unavailable. GitHub rejected the workflow before creating a job.",
+  "exact_failed_source": {
+    "head": "e2252649e6bfc390c60e041a76e50dd94332bbdb",
+    "path": ".github/workflows/hcsn-financial-autograd-r16.yml",
+    "git_blob": "91db1650b92e47cf417d87180ec048d923d5c9cc",
+    "sha256": "37acf5263850f81eb2a14f3f6d0a847fa2261cfe79ec51f5b1161e0320fdd9e4"
+  },
+  "actual_remote_observation": {
+    "run_id": 41334191519,
+    "event": "push",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobs_returned": 0,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41334191519",
+    "evidence": "The full-event run API returned this failed validation run. The convenience commit wrapper filters to pull_request and therefore did not reveal it. Exact server annotation retrieval through the generic fetch tool was unsupported; the expression cause is independently established by official rules and actionlint reproduction."
+  },
+  "corrected_source": {
+    "sha256": "f412f538369121a101d8f183bb1136795c9de365a5c6f8a221f77f69bf53af97",
+    "patch_sha256": "182c164360ce59563074508f0d8a16340fa15463ffb814b2a1ef1590d3529c61",
+    "changes": [
+      "Remove HCSN_PYTHON and HCSN_RESULTS from job.env.",
+      "Insert a shell initialization step before runtime setup. Derive both paths from the runner-provided RUNNER_TEMP and write their values to GITHUB_ENV for subsequent steps."
+    ],
+    "unchanged": "All other parsed workflow fields are identical, including five original BP/BPTT entrypoints, hashes, dependencies, triggers, read-only permissions, artifacts and source-cleanliness. No financial source, fixture or binary is changed."
+  },
+  "correction_to_prior_reviews": {
+    "preserved_original_primary_review_sha256": "a932de778d83e8a9effd83efa8d71a55922781ce6909d3ac94af764fce8b3d53",
+    "preserved_original_independent_review_sha256": "b3fd9abad2c56f40e1389bc32c89a81c502c065a7795d633f08e70bf37148ceb",
+    "finding": "The previous no-blocking assessment was incomplete and incorrect for Actions validation. YAML parsing, Bash syntax, Prettier, argument matching and frozen identity checks do not validate GitHub expression-context availability. Those earlier records and the invalid workflow version are retained; this corrective receipt does not overwrite them."
+  },
+  "official_rules": [
+    {
+      "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability",
+      "rule": "jobs.<job_id>.env allows github, needs, strategy, matrix, vars, secrets and inputs; runner is not allowed there. Step run/env/with permit runner."
+    },
+    {
+      "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#setting-an-environment-variable",
+      "rule": "A value appended to GITHUB_ENV is available to subsequent job steps, not to the step that creates it. The initializer and consuming runtime setup remain separate steps."
+    }
+  ],
+  "actionlint": {
+    "version": "1.7.12",
+    "download": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz",
+    "official_release_asset_sha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+    "installed_binary_sha256": "c872d6db8c6bf83a8eaa704fc93999f027d55dffbc63b8a6abdccb47df5f4cd4",
+    "command": "/tmp/hcsn-bp-ci-tools/actionlint WORKFLOW_PATH",
+    "old_exit_code": 1,
+    "old_error_count": 2,
+    "old_positions": [
+      "34:24",
+      "35:25"
+    ],
+    "new_exit_code": 0,
+    "new_output": "",
+    "no_lint_suppression": true
+  },
+  "local_checks": {
+    "actual_initializer_bash_exit": 0,
+    "subsequent_shell_with_environment_file_assignments_exit": 0,
+    "runner_temp_with_spaces": true,
+    "semantic_difference_limited_to_two_values_and_initializer": true,
+    "prettier_3_5_3_check_exit": 0,
+    "actual_just_fmt_exit": 0,
+    "just_fmt_scope_note": "The repository scoped formatter does not select YAML; actual Prettier is the YAML-formatting check.",
+    "git_diff_check_exit": 0
+  },
+  "remaining_gate": "The corrected workflow must be published and actually run in GitHub Actions. Local actionlint success is not a remote BP/BPTT success or an assertion that package installation/shared-library ABI will pass.",
+  "fixed_z_scope": "This minimal correction contains no fixed-z extension. That extension will be a separate candidate after its final checker identity is available."
+}

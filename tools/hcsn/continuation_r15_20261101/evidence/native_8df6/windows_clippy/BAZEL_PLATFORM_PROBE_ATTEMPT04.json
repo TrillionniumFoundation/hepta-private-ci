@@ -1,0 +1,193 @@
+{
+  "schema": "hcsn.bazel-platform-selection-probe.v1",
+  "started_at_utc": "2026-11-01T18:56:04.375786+00:00",
+  "bazel_sha256": "c44a93f25398c68f904fa1d19b61d321de6c0d2f09dca375d7bc0dc9b9428403",
+  "source_sha256": "90c75b0cdb365cc43a2dd95742962cf4ecfa320ac00ebd2fec6c2b01fc379f88",
+  "scope": "Real Bazel 9 compatibility/action behavior on a synthetic Linux-hosted graph; no repository, Windows or Rust build.",
+  "java_trust_store": "/etc/ssl/certs/java/cacerts",
+  "java_trust_store_sha256": "5213f603236172a4016919c66003b2455f8bc05b7bbdab586dd7de87fcbc9a7d",
+  "fixture_sources": {
+    "MODULE.bazel": "module(name = \"hcsn_platform_selection_probe\")\n",
+    "probe.bzl": "def _ok(ctx):\n    output = ctx.actions.declare_file(ctx.label.name + \".txt\")\n    ctx.actions.write(output, ctx.label.name + \" was built\")\n    return [DefaultInfo(files = depset([output]))]\n\ndef _bad(ctx):\n    output = ctx.actions.declare_file(ctx.label.name + \".txt\")\n    ctx.actions.run_shell(\n        outputs = [output],\n        command = \"echo INTENTIONAL_COMPATIBLE_ACTION_FAILURE >&2; exit 23\",\n    )\n    return [DefaultInfo(files = depset([output]))]\n\nok = rule(implementation = _ok)\nbad = rule(implementation = _bad)\n",
+    "BUILD.bazel": "load(\":probe.bzl\", \"bad\", \"ok\")\nconstraint_setting(name = \"abi\")\nconstraint_value(name = \"msvc\", constraint_setting = \":abi\")\nconstraint_value(name = \"gnullvm\", constraint_setting = \":abi\")\nconstraint_value(name = \"unix\", constraint_setting = \":abi\")\nplatform(name = \"msvc_platform\", constraint_values = [\":msvc\"])\nplatform(name = \"gnullvm_platform\", constraint_values = [\":gnullvm\"])\nplatform(name = \"unix_platform\", constraint_values = [\":unix\"])\nok(name = \"common_ok\", tags = [\"manual\"])\nok(name = \"cross_only\", tags = [\"manual\"], target_compatible_with = [\":gnullvm\"])\nok(name = \"unix_only\", tags = [\"manual\"], target_compatible_with = [\":unix\"])\nbad(name = \"compatible_failure\", tags = [\"manual\"], target_compatible_with = [\":msvc\"])\n"
+  },
+  "cases": [
+    {
+      "name": "explicit incompatibility is a baseline failure",
+      "command": [
+        "/tmp/hcsn-bazel-platform-probe-tools/bazel-9.0.0-linux-x86_64",
+        "--batch",
+        "--ignore_all_rc_files",
+        "--output_user_root=/tmp/hcsn-bazel-platform-probe-tools/cache",
+        "--host_jvm_args=-Xmx256m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=2",
+        "--host_jvm_args=-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "build",
+        "--keep_going",
+        "--lockfile_mode=off",
+        "--host_platform=//:unix_platform",
+        "--jobs=1",
+        "--spawn_strategy=local",
+        "--platforms=//:msvc_platform",
+        "--",
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only"
+      ],
+      "targets": [
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only"
+      ],
+      "expected_success": false,
+      "expected_diagnostic": "is incompatible and cannot be built",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.\nComputing main repo mapping: \nComputing main repo mapping: \nComputing main repo mapping: \nComputing main repo mapping: \nLoading: \nLoading: 0 packages loaded\nAnalyzing: 3 targets (1 packages loaded, 3 targets configured)\nAnalyzing: 3 targets (1 packages loaded, 3 targets configured)\n\nINFO: Analyzed 3 targets (1 packages loaded, 7 targets configured).\nWARNING: errors encountered while analyzing target '//:cross_only', it will not be built.\nTarget //:cross_only is incompatible and cannot be built, but was explicitly requested.\nDependency chain:\n    //:cross_only (c8cba6)   <-- target platform (//:msvc_platform) didn't satisfy constraint //:gnullvm\nWARNING: errors encountered while analyzing target '//:unix_only', it will not be built.\nTarget //:unix_only is incompatible and cannot be built, but was explicitly requested.\nDependency chain:\n    //:unix_only (c8cba6)   <-- target platform (//:msvc_platform) didn't satisfy constraint //:unix\nINFO: Build succeeded for only 1 of 3 top-level targets\nINFO: Found 3 targets...\nUse --verbose_failures to see the command lines of failed build steps.\nERROR: command succeeded, but not all targets were analyzed\nINFO: Elapsed time: 4.892s, Critical Path: 0.04s\nINFO: 2 processes: 2 internal.\nERROR: Build did NOT complete successfully\n",
+      "passed": true
+    },
+    {
+      "name": "declared incompatible targets filtered; native common target builds",
+      "command": [
+        "/tmp/hcsn-bazel-platform-probe-tools/bazel-9.0.0-linux-x86_64",
+        "--batch",
+        "--ignore_all_rc_files",
+        "--output_user_root=/tmp/hcsn-bazel-platform-probe-tools/cache",
+        "--host_jvm_args=-Xmx256m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=2",
+        "--host_jvm_args=-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "build",
+        "--keep_going",
+        "--lockfile_mode=off",
+        "--host_platform=//:unix_platform",
+        "--jobs=1",
+        "--spawn_strategy=local",
+        "--platforms=//:msvc_platform",
+        "--skip_incompatible_explicit_targets",
+        "--",
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only"
+      ],
+      "targets": [
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only"
+      ],
+      "expected_success": true,
+      "expected_diagnostic": "Build completed successfully",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.\nComputing main repo mapping: \nComputing main repo mapping: \nComputing main repo mapping: \nComputing main repo mapping: \nLoading: \nLoading: 0 packages loaded\nAnalyzing: 3 targets (1 packages loaded, 3 targets configured)\nAnalyzing: 3 targets (1 packages loaded, 3 targets configured)\n\nINFO: Analyzed 3 targets (1 packages loaded, 7 targets configured).\nINFO: Found 3 targets...\nINFO: Elapsed time: 4.618s, Critical Path: 0.03s\nINFO: 1 process: 1 action cache hit, 1 internal.\nINFO: Build completed successfully, 1 total action\n",
+      "passed": true
+    },
+    {
+      "name": "compatible action failure remains a failure",
+      "command": [
+        "/tmp/hcsn-bazel-platform-probe-tools/bazel-9.0.0-linux-x86_64",
+        "--batch",
+        "--ignore_all_rc_files",
+        "--output_user_root=/tmp/hcsn-bazel-platform-probe-tools/cache",
+        "--host_jvm_args=-Xmx256m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=2",
+        "--host_jvm_args=-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "build",
+        "--keep_going",
+        "--lockfile_mode=off",
+        "--host_platform=//:unix_platform",
+        "--jobs=1",
+        "--spawn_strategy=local",
+        "--platforms=//:msvc_platform",
+        "--skip_incompatible_explicit_targets",
+        "--",
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only",
+        "//:compatible_failure"
+      ],
+      "targets": [
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only",
+        "//:compatible_failure"
+      ],
+      "expected_success": false,
+      "expected_diagnostic": "INTENTIONAL_COMPATIBLE_ACTION_FAILURE",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.\nComputing main repo mapping: \nComputing main repo mapping: \nComputing main repo mapping: \nComputing main repo mapping: \nLoading: \nLoading: 0 packages loaded\nAnalyzing: 4 targets (1 packages loaded, 3 targets configured)\nAnalyzing: 4 targets (1 packages loaded, 5 targets configured)\n\nINFO: Analyzed 4 targets (1 packages loaded, 8 targets configured).\nERROR: /tmp/hcsn-platform-selection-rv3umv6u/BUILD.bazel:12:4: Action compatible_failure.txt failed: (Exit 23): bash failed: error executing Action command (from bad rule target //:compatible_failure) /bin/bash -c 'echo INTENTIONAL_COMPATIBLE_ACTION_FAILURE >&2; exit 23'\nINTENTIONAL_COMPATIBLE_ACTION_FAILURE\nINFO: Build succeeded for only 3 of 4 top-level targets\nINFO: Found 4 targets...\nUse --verbose_failures to see the command lines of failed build steps.\nINFO: Elapsed time: 4.626s, Critical Path: 0.03s\nINFO: 2 processes: 1 action cache hit, 2 internal.\nERROR: Build did NOT complete successfully\n",
+      "passed": true
+    },
+    {
+      "name": "Unix qualification remains buildable on its own platform",
+      "command": [
+        "/tmp/hcsn-bazel-platform-probe-tools/bazel-9.0.0-linux-x86_64",
+        "--batch",
+        "--ignore_all_rc_files",
+        "--output_user_root=/tmp/hcsn-bazel-platform-probe-tools/cache",
+        "--host_jvm_args=-Xmx256m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=2",
+        "--host_jvm_args=-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "build",
+        "--keep_going",
+        "--lockfile_mode=off",
+        "--host_platform=//:unix_platform",
+        "--jobs=1",
+        "--spawn_strategy=local",
+        "--platforms=//:unix_platform",
+        "--skip_incompatible_explicit_targets",
+        "--",
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only"
+      ],
+      "targets": [
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only"
+      ],
+      "expected_success": true,
+      "expected_diagnostic": "Build completed successfully",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.\nComputing main repo mapping: \nComputing main repo mapping: \nComputing main repo mapping: \nComputing main repo mapping: \nLoading: \nLoading: 0 packages loaded\nAnalyzing: 3 targets (1 packages loaded, 3 targets configured)\nAnalyzing: 3 targets (1 packages loaded, 3 targets configured)\n\nINFO: Analyzed 3 targets (1 packages loaded, 6 targets configured).\nINFO: Found 3 targets...\nINFO: Elapsed time: 4.718s, Critical Path: 0.04s\nINFO: 2 processes: 1 action cache hit, 2 internal.\nINFO: Build completed successfully, 2 total actions\n",
+      "passed": true
+    },
+    {
+      "name": "cross target remains buildable on its own platform",
+      "command": [
+        "/tmp/hcsn-bazel-platform-probe-tools/bazel-9.0.0-linux-x86_64",
+        "--batch",
+        "--ignore_all_rc_files",
+        "--output_user_root=/tmp/hcsn-bazel-platform-probe-tools/cache",
+        "--host_jvm_args=-Xmx256m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=2",
+        "--host_jvm_args=-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "build",
+        "--keep_going",
+        "--lockfile_mode=off",
+        "--host_platform=//:unix_platform",
+        "--jobs=1",
+        "--spawn_strategy=local",
+        "--platforms=//:gnullvm_platform",
+        "--skip_incompatible_explicit_targets",
+        "--",
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only"
+      ],
+      "targets": [
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only"
+      ],
+      "expected_success": true,
+      "expected_diagnostic": "Build completed successfully",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.\nComputing main repo mapping: \nComputing main repo mapping: \nComputing main repo mapping: \nComputing main repo mapping: \nLoading: \nLoading: 0 packages loaded\nAnalyzing: 3 targets (1 packages loaded, 3 targets configured)\nAnalyzing: 3 targets (1 packages loaded, 3 targets configured)\n\nINFO: Analyzed 3 targets (1 packages loaded, 7 targets configured).\nINFO: Found 3 targets...\nINFO: Elapsed time: 4.596s, Critical Path: 0.05s\nINFO: 2 processes: 1 action cache hit, 2 internal.\nINFO: Build completed successfully, 2 total actions\n",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

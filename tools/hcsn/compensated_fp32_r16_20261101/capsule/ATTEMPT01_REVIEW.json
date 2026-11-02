@@ -1,0 +1,36 @@
+{
+  "scope": "single-word FP32 development only",
+  "old_passed_rows": 136,
+  "new_passed_rows": 344,
+  "old_and_new_full_case_passes": 0,
+  "newly_failed_old_passes": [
+    {
+      "case": "maturity_20",
+      "coordinate": "asset",
+      "state": 100.0,
+      "value_error": 8.90496983431686e-08,
+      "jacobian_error": 0.00010258355261116847,
+      "jacobian_worst": [
+        "equity",
+        "sigma",
+        -0.9461135864257812,
+        -0.9460110028731701
+      ]
+    },
+    {
+      "case": "tax_0.6",
+      "coordinate": "asset",
+      "state": 100.0,
+      "value_error": 8.639581193139757e-08,
+      "jacobian_error": 3.6015798693950115e-05,
+      "jacobian_worst": [
+        "equity",
+        "r",
+        52.260711669921875,
+        52.262593948984765
+      ]
+    }
+  ],
+  "source": "ATTEMPT01_kernel.py",
+  "followup": "Independent compensated two-word candidate is tracked separately; no one-word qualification claimed."
+}

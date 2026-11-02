@@ -1,0 +1,174 @@
+{
+  "schema": "hcsn.old-head-native-failure-observations.v1",
+  "head": "889e7acebd14ecb05018c1d8c6ae4d26287cbcf8",
+  "workflow_run_id": 41330412374,
+  "snapshot_finished_utc": "2026-11-01 18:10:10 UTC",
+  "scope": "Bounded observations from terminal jobs on this exact old head. Some source changes occurred later; current-head native behavior is not inferred from these logs. No repairs or test reruns were performed for this closeout.",
+  "categories": [
+    {
+      "name": "Dependency policy",
+      "jobs": [
+        124919782430
+      ],
+      "status": "failure",
+      "terminal_log_available": false,
+      "limitation": "Two connector log reads returned Transport closed. The failed job status is verified; advisory identities/counts are not reconstructed from older logs."
+    },
+    {
+      "name": "Windows secure-state and registry availability",
+      "jobs": [
+        124919782670,
+        124919782734
+      ],
+      "evidence": [
+        {
+          "job_id": 124919782670,
+          "line_start": 2598,
+          "lines": [
+            "2026-11-01T17:24:22.2682765Z thread 'prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input' (4940) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:",
+            "2026-11-01T17:24:22.2698054Z open durable registry: UnsafeStateDirectory"
+          ]
+        },
+        {
+          "job_id": 124919782734,
+          "line_start": 3770,
+          "lines": [
+            "2026-11-01T17:44:05.5353596Z thread 'automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit' (8988) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "2026-11-01T17:44:05.5355589Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")"
+          ]
+        }
+      ],
+      "interpretation": "Observed UnsafeStateDirectory failures in registry/prompt/runtime initialization. This receipt does not weaken or bypass the platform safety contract."
+    },
+    {
+      "name": "Windows file locking and filesystem operations",
+      "jobs": [
+        124919782670
+      ],
+      "evidence": [
+        {
+          "job_id": 124919782670,
+          "line_start": 2583,
+          "lines": [
+            "2026-11-01T17:24:22.1741991Z thread 'evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes' (604) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:171:42:",
+            "2026-11-01T17:24:22.1771861Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }"
+          ]
+        }
+      ],
+      "interpretation": "Observed Windows OS error 33 while reopening/using ledger files; distinct from successful native compilation."
+    },
+    {
+      "name": "Windows runfiles and helper discovery",
+      "jobs": [
+        124919782670
+      ],
+      "evidence": [
+        {
+          "job_id": 124919782670,
+          "line_start": 3758,
+          "lines": [
+            "2026-11-01T17:30:55.4207379Z Error: Bazel launcher did not set INSTA_WORKSPACE_ROOT"
+          ]
+        },
+        {
+          "job_id": 124919782670,
+          "line_start": 2824,
+          "lines": [
+            "2026-11-01T17:27:58.0457274Z Error: find setup helper _main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe"
+          ]
+        }
+      ],
+      "interpretation": "Actual artifact/runtime path failures remain visible on the old head."
+    },
+    {
+      "name": "Windows migration and supervisor lifecycle/recovery assertions",
+      "jobs": [
+        124919782738,
+        124919782734
+      ],
+      "evidence": [
+        {
+          "job_id": 124919782738,
+          "line_start": 2840,
+          "lines": [
+            "2026-11-01T17:32:28.5823277Z thread 'store::migration_convergence_tests::canonical_cut_before_rebind_reopens' (2668) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:",
+            "2026-11-01T17:32:28.6253195Z real open: Invalid"
+          ]
+        },
+        {
+          "job_id": 124919782738,
+          "line_start": 3069,
+          "lines": [
+            "2026-11-01T17:35:03.2966298Z thread 'restart_budget_survives_repeated_supervisord_recovery' (9088) panicked at hepta-supervisor/tests/restart_budget_recovery.rs:251:5:",
+            "2026-11-01T17:35:03.3935512Z assertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|",
+            "2026-11-01T17:35:03.4615014Z         matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued",
+            "2026-11-01T17:35:03.5365141Z             { attempt: 2 }))"
+          ]
+        },
+        {
+          "job_id": 124919782734,
+          "line_start": 3062,
+          "lines": [
+            "2026-11-01T17:33:03.8077853Z thread 'exact_digest_abort_terminalizes_unresolved_intent' (5016) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:",
+            "2026-11-01T17:33:03.8116701Z assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))",
+            "2026-11-01T17:33:03.8257483Z     if agent_id == fleet.agent_id)"
+          ]
+        }
+      ],
+      "interpretation": "These are exact old-head failures; later submitted source fixes and the unresolved safe-abort design must be evaluated separately on a new native run."
+    },
+    {
+      "name": "Other Windows runtime integration failures",
+      "jobs": [
+        124919782734,
+        124919782738,
+        124919782670
+      ],
+      "evidence": [
+        {
+          "job_id": 124919782734,
+          "line_start": 3143,
+          "lines": [
+            "2026-11-01T17:34:14.7659277Z thread 'authorized_read_rpc_is_capability_gated_and_denies_outside_root' (1684) panicked at exec-server/tests/authorized_read_rpc.rs:84:13:",
+            "2026-11-01T17:34:14.8178251Z assertion `left == right` failed",
+            "2026-11-01T17:34:14.8179004Z   left: -32600",
+            "2026-11-01T17:34:14.8508169Z  right: -32603"
+          ]
+        },
+        {
+          "job_id": 124919782738,
+          "line_start": 2732,
+          "lines": [
+            "2026-11-01T17:30:25.2953294Z thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (6904) panicked at git-utils/src\\git_process_tests.rs:75:6:",
+            "2026-11-01T17:30:25.3012304Z wait for Git wrapper child readiness: Elapsed(())"
+          ]
+        }
+      ],
+      "interpretation": "Examples include RPC error-contract mismatch and child-readiness timeout. These excerpts are representative rather than an exhaustive root-cause diagnosis."
+    }
+  ],
+  "log_sources": [
+    {
+      "job_id": 124919782670,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41330412374/job/124919782670",
+      "decoded_log_characters": 4629592,
+      "line_count": 16757,
+      "raw_response_retained_in_session_store": true
+    },
+    {
+      "job_id": 124919782734,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41330412374/job/124919782734",
+      "decoded_log_characters": 2096571,
+      "line_count": 16589,
+      "raw_response_retained_in_session_store": true
+    },
+    {
+      "job_id": 124919782738,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41330412374/job/124919782738",
+      "decoded_log_characters": 890163,
+      "line_count": 5743,
+      "raw_response_retained_in_session_store": true
+    }
+  ],
+  "no_transfer_of_old_status_to_current_head": true
+}

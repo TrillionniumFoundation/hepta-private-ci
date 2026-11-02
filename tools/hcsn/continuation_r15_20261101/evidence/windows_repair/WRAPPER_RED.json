@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_authenticated_native_msvc_keeps_cache_and_matching_compiler",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_authenticated_native_msvc_keeps_matching_compiler_through_both_wrappers"
+  ],
+  "relative_cwd": ".github/scripts",
+  "exit_code": 1,
+  "wall_seconds": 0.1265274399993359,
+  "scope": "actual repository Python and Bash wrappers; test-only recording Bazel subprocess, no native compiler",
+  "log": "WRAPPER_RED.log"
+}

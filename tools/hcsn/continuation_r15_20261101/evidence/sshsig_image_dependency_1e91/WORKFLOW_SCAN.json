@@ -1,0 +1,486 @@
+{
+  "head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "scan_regex": "docker\\s+(build|push|login)|buildx|build-push-action|docker/login|ghcr\\.io|Dockerfile\\.bazel|codex-bazel|packages:\\s*write",
+  "workflows": [
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "sha": "43269479125e8e8b660cee1ad80666fe017205b8",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "sha": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "sha": "60de74f581a2fa4f2b504f375bff39942fc2d499",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "sha": "950849763e6cc2c3a0459af3fd746f68bce9e086",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "sha": "0b93acf955da200d7728b9a9e47b6118293701ab",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/cla.yml",
+      "sha": "8316a3562fb2adeda5deb36a94d7aafa3fc5a8df",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/close-stale-contributor-prs.yml",
+      "sha": "cbda37e3105bd47fc22dcd46b3edc47db676162f",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "sha": "538cd852fa3c846a35ed6391d016e843572bd902",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hcsn-calibrated-operator.yml",
+      "sha": "adf5e4975f6ceef659f4b57a3a5eb2b8876a572f",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hcsn-compensated-fp32-r16.yml",
+      "sha": "ed96cedd5687a8067fa6b7bce258a07774c0f1df",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hcsn-task-flow-r13.yml",
+      "sha": "683f1760c8b77943dd28c4a614e0d3bd2801c409",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hcsn-task-flow-r14.yml",
+      "sha": "a193556f9376158e006fd837f9a9da2af2c3055a",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hcsn-task-native-loop.yml",
+      "sha": "31fe414bffeef9f9218236ca2da3fe4a1150b5d9",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-algorithm-docs.yml",
+      "sha": "c324bb5be80d978289ed54fb25d6cf4f2b594acd",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "sha": "df330bc1b23af7fbdd9b92de7e1565f2a260393a",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-artifact-storage.yml",
+      "sha": "b6e05d76c3ee4b5e94994937bef77278bb6a1c22",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-assimilation-discovery.yml",
+      "sha": "12c4ffb399949abd6d0f2cf99fd68d7bbd7dfecf",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-audit-remediation.yml",
+      "sha": "05b56cd3c6dfff68641a5c9b5e7036140ea760a7",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-browser-agentd-composition.yml",
+      "sha": "1c856bc9231633413cadb9b7f70e8fcfdb14d8d8",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+      "sha": "73db9f4a62ab3027c81363c33f1846f99f6dd8f9",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "sha": "f36e53e91ca31b16d5e9202a433f1c7b2ed0a749",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-cns-embodiment.yml",
+      "sha": "fdd4c690d2c46d858c93960a738fc72282a35d2e",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "sha": "c7d7e7acbec213f2380ca2457737bf2e8aae9087",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-contract-gate.yml",
+      "sha": "0eb3d84801cc456b34fa1e33957400c1a00dcb68",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "sha": "612b8821d7ff64fb547017845dbed540f838f868",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-deployment-handoff.yml",
+      "sha": "484ddf80b8547212f3bfab73cca8249599f9a772",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-development-docs.yml",
+      "sha": "7aab1401243b47d5cd08d91173e477dcc63647c3",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "sha": "b55dfea959f9a289485f17596206a341bd3505f6",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-durable-learning-roundtrip.yml",
+      "sha": "02d7d00321cf2531e3bd21f7cc0c69b15ba172ca",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "sha": "18a6d4e1108482653ff7560d9e64d91649e41236",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-implementation-readiness.yml",
+      "sha": "d79bb1fb105a7ef5258a9c5735abd898845dbe40",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-inference-maintenance.yml",
+      "sha": "f260bd655d0efc9b67daebb3ab24541482caff68",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "sha": "fa58a00ef075c620d8d3b682f0656dcc4e7fcd57",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "sha": "be6988be378481a9c55c221d56e1816dd29ce2a5",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "sha": "f9faf5a9f7d48b4e47ed292fa62284e1b37bc0f2",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "sha": "08147efcdd975e662e6268add84af966c5c6ae1d",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-lane-b-truth.yml",
+      "sha": "8e28fec00be67547ba1393462abffa810e0181fb",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "sha": "4756be76b745582520ff66d07fa103048fc6ec5c",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "sha": "1962600a30be18c08e46c99aed0babb61c01361d",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+      "sha": "f70c4a3a1f35b1e1e81956d066ff096c42b2e42e",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-learning-ledger-durable.yml",
+      "sha": "30de1cf1befb1a16a412fa0ba91163db88040824",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "sha": "8d91832441db0cf8f064e27ed8193f9cadbbf462",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "sha": "2d4d44b3e920bc0e025704ddae82054103a8688f",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "sha": "ef98ab5c6918c38949583ecdb4b089a31cb4ceac",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-objective-product-composition.yml",
+      "sha": "cb8ccf4b403aef6aef4825930e4a4a1c5d67cc1c",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "sha": "43980e2ef6870d20d1a3fedebcb04fbfd647c1c2",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-organ-implementation.yml",
+      "sha": "8c9850af7a5816a1895dcaaa6ebfe848071569a6",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "sha": "0a2115eac94a7f25bead86e3859fd3a2b9ec90e8",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-self-iteration-activation.yml",
+      "sha": "ef8fbdbbe33eb1da199df244a86d6a3708130839",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hepta-vnext-qualification.yml",
+      "sha": "ddf97e16833fa93c22dedb877accccc2724c2ace",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/hnmf-qualification.yml",
+      "sha": "178e47acc1f35b21bda334345f71e95e784481d3",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/issue-deduplicator.yml",
+      "sha": "05ef554988de56a6ecb9d033243d7df401227f24",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/issue-labeler.yml",
+      "sha": "c9f1a8f1281f9af1dc7998d5d47b604617f4bca9",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/issue-translator.yml",
+      "sha": "8fe85ba0d51bdea3e087f9ce874d82bde887fadd",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "sha": "a3bd267880a6faf81f4b83af4bb5d54765074851",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "sha": "5e08c0d7d19c4df1e87b2cae7db83c8a1d4c236b",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/openbao-compatibility.yml",
+      "sha": "bb6875c2a0213e6dfe3e8c73eaee4ed843bee9d4",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "sha": "2a7032e049df0efb8056211f96bc9b41174c10e2",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/python-runtime-build.yml",
+      "sha": "aa8d6d891daf76b5f13a03db92e2e2c8fc7ca1f4",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/python-runtime-release.yml",
+      "sha": "8316bf911c3e383a54ec7417ec72b035cb32ec73",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "sha": "a322c87c5bc250f7026e2700f92b6edfd45ef6be",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/r2-release.yml",
+      "sha": "96a07685cfc41a0383a14fc7bf99d8584d10f865",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "sha": "72bd28da471f893a556c2acb689e52a28d73ff99",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "sha": "3d78747cbe8cf8c52e360462f501c1bab4049a3e",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "sha": "a388ab40723d2d2cab332a05e39fa96668c95aa4",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "sha": "81330bf3ed388e9deafa474516be437ac165cbb7",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "sha": "a4f3540b342b13015e26f3d0011c01b87686cbca",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/rust-release-prepare.yml",
+      "sha": "fbdcb2e43f2bae3ce34645a6f5d1556069cd8756",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/rust-release-windows.yml",
+      "sha": "2e723ea2d52817ea3b8e87d8787fdc63ff8fb724",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "sha": "7c0eab9ee115e68be98202b845d19967fec45b93",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "sha": "1082826f7a19fcda44545c79d8620fe51e326d99",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "sha": "83d3b98c2359ec312cc5fbe560334598489e2e1e",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/sdk.yml",
+      "sha": "520d5905b1f3b38c8483490df6d2caf1fdd4e9bb",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/self-hosted-desktop-availability.yml",
+      "sha": "54fef7f63726fd870974223b2205b73664995f24",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/self-hosted-fleet-availability.yml",
+      "sha": "09d77076acd3a231a3b0245bc946349d7cff2188",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "sha": "69509c54da76eee1a6cb5a350f231117174c784d",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "sha": "7a4102412d01b6f63c4a7dceb490633733d8b0e5",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "sha": "f75d05e226d2b6579c8f029d91490591839e0b54",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+      "sha": "811964e6d542e70b7dd4cae955f80af76e4f411c",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "sha": "86e23394e6a0ad243c8c79cf68ae01423aebc721",
+      "matched_directory_blob": true,
+      "matching_lines": []
+    }
+  ]
+}

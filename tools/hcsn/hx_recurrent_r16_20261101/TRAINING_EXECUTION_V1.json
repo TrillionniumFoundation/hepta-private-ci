@@ -1,0 +1,24 @@
+{
+  "schema": "hcsn.recurrent-training-execution.v1",
+  "command": [
+    "python",
+    "-B",
+    "/tmp/hcsn-recurrent-next-v1/train_recurrent.py",
+    "--adapter-root",
+    "/tmp/hcsn-autograd-adapter-v3",
+    "--financial-root",
+    "/tmp/hcsn-compiled-recovery",
+    "--protocol-sha256",
+    "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+    "--output",
+    "/tmp/hcsn-recurrent-next-v1/RECURRENT_TRAINING_V1.json.gz"
+  ],
+  "controller_launch_utc": "2026-11-01T17:44:34.964623+00:00",
+  "controller_finish_utc": "2026-11-01T17:44:55.724803+00:00",
+  "returncode": 0,
+  "controller_wall_seconds": 20.760404172000563,
+  "launch_receipt_sha256": "e33d023663e38fba2b9ac0018fed1e9954e3c4db18ac5abc17a2c3b28e4c4316",
+  "run_log_sha256": "3c6f093c54a8fbfe938382e6fb52f5e51e0cbe3b5ffe8f17c467cd9d20777382",
+  "output_sha256": "b07378052e70e0ad97978f74398b2db0fda02bb3eae9041c51f70f9caac4a35e",
+  "scope": "Actual process execution. Controller wall time includes imports/startup; numerical runtime is separately measured inside the frozen training script."
+}

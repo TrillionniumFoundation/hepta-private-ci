@@ -1,0 +1,408 @@
+{
+  "schema": "hcsn.two-layer-workflow-static-check.v1",
+  "passed": true,
+  "workflow_sha256": "7b6c90ee67b5484d79e105b75fb60d3e6a41f97620dc22ddf05d1f869d3070e9",
+  "baseline_sha256": "bac8820cb23ff6637c4a692027f2e3d953b00427349567ff42808fc6785e13a4",
+  "validator_sha256": "eb269b609661f22b21a31ac3fef53485fac8651837780ee69e57f0c61a1cc8ed",
+  "existing_eight_entrypoints_unchanged": true,
+  "bash_syntax": [
+    {
+      "name": "Initialize runner-local paths",
+      "exit_code": 0
+    },
+    {
+      "name": "Verify frozen inputs and install the CPU runtime",
+      "exit_code": 0
+    },
+    {
+      "name": "Audit the actual financial autograd interface",
+      "exit_code": 0
+    },
+    {
+      "name": "Train through the actual financial autograd interface",
+      "exit_code": 0
+    },
+    {
+      "name": "Audit the recurrent temporal gradient",
+      "exit_code": 0
+    },
+    {
+      "name": "Train through the recurrent temporal gradient",
+      "exit_code": 0
+    },
+    {
+      "name": "Independently check the recurrent result records",
+      "exit_code": 0
+    },
+    {
+      "name": "Audit gradients at fixed physical potential",
+      "exit_code": 0
+    },
+    {
+      "name": "Train with the fixed physical potential and moving boundary",
+      "exit_code": 0
+    },
+    {
+      "name": "Check fixed-potential records and raw boundary branches",
+      "exit_code": 0
+    },
+    {
+      "name": "Audit the two-layer boundary-gradient routes",
+      "exit_code": 0
+    },
+    {
+      "name": "Train both layers through their continuous boundary links",
+      "exit_code": 0
+    },
+    {
+      "name": "Independently check both routes and the full update history",
+      "exit_code": 0
+    },
+    {
+      "name": "Verify checkout remains unchanged",
+      "exit_code": 0
+    }
+  ],
+  "cli_identity_and_outputs": [
+    {
+      "script": "ADAPTER_ROOT/audit_gradients.py",
+      "source_sha256": "9d4e4ec2ee1bb6d05c4931c4692703cb018928aaacab00046b93e7764e320fc4",
+      "flags": [
+        "--frozen-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/adapter-gradients.json.gz"
+    },
+    {
+      "script": "ADAPTER_ROOT/training_smoke.py",
+      "source_sha256": "f91ea1ac624681aedd90ce72644a9c7fac8ac123a5e720cf28ae28fb24569c03",
+      "flags": [
+        "--frozen-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/adapter-training.json.gz"
+    },
+    {
+      "script": "RECURRENT_ROOT/audit_recurrent.py",
+      "source_sha256": "b437b2233ede3a4829f931df290763eb73c084266e4fe820f31f1f566b0704fb",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/recurrent-audit.json.gz"
+    },
+    {
+      "script": "RECURRENT_ROOT/train_recurrent.py",
+      "source_sha256": "41bd77e742719e774e2fd050ec923ea721e715c793706e10f91ca5448120cb7c",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/recurrent-training.json.gz"
+    },
+    {
+      "script": "RECURRENT_ROOT/check_recurrent_results.py",
+      "source_sha256": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+      "flags": [
+        "--audit",
+        "--output",
+        "--protocol-sha256",
+        "--root",
+        "--training"
+      ],
+      "output": "$HCSN_RESULTS/recurrent-check.json"
+    },
+    {
+      "script": "ASSET_ROOT/audit_asset.py",
+      "source_sha256": "fb99430491cbb73733cb65cc6dbcb7571d83c67bf21dda9f75be2b1e042b40bc",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/asset-audit.json.gz"
+    },
+    {
+      "script": "ASSET_ROOT/train_asset.py",
+      "source_sha256": "339d7023456cc3a8b248fa29f07c1c39e52c52bf8a6eb45a809e59554c2c91af",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/asset-training.json.gz"
+    },
+    {
+      "script": "ASSET_ROOT/check_asset_results.py",
+      "source_sha256": "6bfdadae171d833d32039d892fe26d9687aa9b888351c8a3f19111e68293c369",
+      "flags": [
+        "--audit",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256",
+        "--root",
+        "--training"
+      ],
+      "output": "$HCSN_RESULTS/asset-check.json"
+    },
+    {
+      "script": "TWO_LAYER_ROOT/audit_two_layer.py",
+      "source_sha256": "3676dcbb62f68ae5411df19db7b71560cca05eba17dfdfcedf382a3a0190202d",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/two-layer-audit.json.gz"
+    },
+    {
+      "script": "TWO_LAYER_ROOT/train_two_layer.py",
+      "source_sha256": "6f28e980dbdae1d2528d764477f2b1cbdfdc9c41e0f34a1d5003897c52b8ba58",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/two-layer-training.json.gz"
+    },
+    {
+      "script": "TWO_LAYER_ROOT/check_two_layer_results.py",
+      "source_sha256": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e",
+      "flags": [
+        "--audit",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256",
+        "--root",
+        "--training"
+      ],
+      "output": "$HCSN_RESULTS/two-layer-check.json"
+    }
+  ],
+  "actual_embedded_preflight": {
+    "positive_exit_code": 0,
+    "identities_checked": 10,
+    "wrong_protocol_exit_code": 1,
+    "local_fixture_commit": "4e8f136cbf7439b7d46972acd95a1f0699929627"
+  },
+  "nested_source_seals": [
+    {
+      "root": "ADAPTER_ROOT",
+      "file": "hx_autograd.py",
+      "sha256": "8117df2cae6b17612d7537b96d72ca74a340bb5356e61bbc3f73b9fe478aa870"
+    },
+    {
+      "root": "ADAPTER_ROOT",
+      "file": "adapter_common.py",
+      "sha256": "6921dfae93b6ecd7bf28724b10b4d2823c4b21bd7c237b022c075aa9f76fab5a"
+    },
+    {
+      "root": "ADAPTER_ROOT",
+      "file": "audit_gradients.py",
+      "sha256": "9d4e4ec2ee1bb6d05c4931c4692703cb018928aaacab00046b93e7764e320fc4"
+    },
+    {
+      "root": "ADAPTER_ROOT",
+      "file": "training_smoke.py",
+      "sha256": "f91ea1ac624681aedd90ce72644a9c7fac8ac123a5e720cf28ae28fb24569c03"
+    },
+    {
+      "root": "ADAPTER_ROOT",
+      "file": "readout_evidence.py",
+      "sha256": "671ecd0fc548d4ce77118a12beea107f5ad0eda079c857c0cd28c3502d664a5c"
+    },
+    {
+      "root": "ADAPTER_ROOT",
+      "file": "verify_first_order_identity.py",
+      "sha256": "f180c7762b7d71e66a54479f22f07d094655258a52d78e7cc570a608dab4ad4f"
+    },
+    {
+      "root": "ADAPTER_ROOT",
+      "file": "freeze_first_order_v3.py",
+      "sha256": "db50e30052c77f0db9214d0a729e7344c363e977d05a02a0c0e5928d1160c000"
+    },
+    {
+      "root": "RECURRENT_ROOT",
+      "file": "recurrent.py",
+      "sha256": "bd8f9fcc4fc10f36088d9bd98e55a598d79e0c653aacbe5caaced2406b0c614d"
+    },
+    {
+      "root": "RECURRENT_ROOT",
+      "file": "recurrent_common.py",
+      "sha256": "ade8f72b9dc1160778705eaeb6dac7c2302ebabe299de182d66aba4b23796ce9"
+    },
+    {
+      "root": "RECURRENT_ROOT",
+      "file": "audit_recurrent.py",
+      "sha256": "b437b2233ede3a4829f931df290763eb73c084266e4fe820f31f1f566b0704fb"
+    },
+    {
+      "root": "RECURRENT_ROOT",
+      "file": "train_recurrent.py",
+      "sha256": "41bd77e742719e774e2fd050ec923ea721e715c793706e10f91ca5448120cb7c"
+    },
+    {
+      "root": "RECURRENT_ROOT",
+      "file": "freeze_recurrent.py",
+      "sha256": "5b2062397a552efa3a34ed40c6b020900c478780a56ab5e80e0abc9893a9125c"
+    },
+    {
+      "root": "RECURRENT_ROOT",
+      "file": "README.md",
+      "sha256": "39eed2fd43c970ea5967f5e8fea1b992c0b4d6406695911a02adb7a31ae6ab9e"
+    },
+    {
+      "root": "RECURRENT_ROOT",
+      "file": "requirements.txt",
+      "sha256": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+    },
+    {
+      "root": "ASSET_ROOT",
+      "file": "asset_model.py",
+      "sha256": "ae59e1ed4bb84ce9ad48fdaa0d7c0fd7140f4f3ea3bee7f9aa3ac9d665eed68d"
+    },
+    {
+      "root": "ASSET_ROOT",
+      "file": "asset_common.py",
+      "sha256": "f237b9034342845faef433f43ec452c987f8f9d0b8314d4619241311c5ac6590"
+    },
+    {
+      "root": "ASSET_ROOT",
+      "file": "audit_asset.py",
+      "sha256": "fb99430491cbb73733cb65cc6dbcb7571d83c67bf21dda9f75be2b1e042b40bc"
+    },
+    {
+      "root": "ASSET_ROOT",
+      "file": "train_asset.py",
+      "sha256": "339d7023456cc3a8b248fa29f07c1c39e52c52bf8a6eb45a809e59554c2c91af"
+    },
+    {
+      "root": "ASSET_ROOT",
+      "file": "freeze_asset.py",
+      "sha256": "4e9d7b8a3b9347202ee78351b5422acb36dca1acd781e72a4c3f26b7b5aff00f"
+    },
+    {
+      "root": "ASSET_ROOT",
+      "file": "README.md",
+      "sha256": "4b5e0da20b9e2acd3b1de045d2a0432e5d1f41b4522729747372080465df0b1c"
+    },
+    {
+      "root": "ASSET_ROOT",
+      "file": "requirements.txt",
+      "sha256": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+    },
+    {
+      "root": "TWO_LAYER_ROOT",
+      "file": "two_layer_model.py",
+      "sha256": "7e14756e5b98023092ce44f57eeef3933816a62d1a7dd4b126e8443448dfb2f5"
+    },
+    {
+      "root": "TWO_LAYER_ROOT",
+      "file": "two_layer_common.py",
+      "sha256": "108098be5027a78d550b0a5a36be5f81c3cb4c156822e1e7d1f96a3e4e19a8d9"
+    },
+    {
+      "root": "TWO_LAYER_ROOT",
+      "file": "two_layer_reference.py",
+      "sha256": "35e8680e3faa501dcde7913a19b2998d2d799a1feb27667fbad6d55812c8ca69"
+    },
+    {
+      "root": "TWO_LAYER_ROOT",
+      "file": "audit_two_layer.py",
+      "sha256": "3676dcbb62f68ae5411df19db7b71560cca05eba17dfdfcedf382a3a0190202d"
+    },
+    {
+      "root": "TWO_LAYER_ROOT",
+      "file": "train_two_layer.py",
+      "sha256": "6f28e980dbdae1d2528d764477f2b1cbdfdc9c41e0f34a1d5003897c52b8ba58"
+    },
+    {
+      "root": "TWO_LAYER_ROOT",
+      "file": "check_two_layer_results.py",
+      "sha256": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e"
+    },
+    {
+      "root": "TWO_LAYER_ROOT",
+      "file": "freeze_two_layer.py",
+      "sha256": "fa0f05ffeb94338193c30b6bbeaaa1e3cf79761104b5ef1433f3e48702303aab"
+    },
+    {
+      "root": "TWO_LAYER_ROOT",
+      "file": "README.md",
+      "sha256": "02571e4447cf63b27e81fb85a4777fcfd5e2efdfa4aaadf7b158ceff33349a2b"
+    },
+    {
+      "root": "TWO_LAYER_ROOT",
+      "file": "requirements.txt",
+      "sha256": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+    },
+    {
+      "root": "FINANCIAL_ROOT",
+      "file": "kernel.cpp",
+      "sha256": "6c04009f4a782a2aaac5f0e6d8af7048d9bd9c26f1a3039f47c1c83491bb63cd"
+    },
+    {
+      "root": "FINANCIAL_ROOT",
+      "file": "arithmetic.hpp",
+      "sha256": "1f03b2cef36b5395511c98f815be741df9c3659b8f40a31dd38bfc5dc8e59bdd"
+    },
+    {
+      "root": "FINANCIAL_ROOT",
+      "file": "constants.hpp",
+      "sha256": "d44d34cf51bcc70ef1961fdbef964ed2b703512f3d371683e743365c16d9ea4e"
+    },
+    {
+      "root": "FINANCIAL_ROOT",
+      "file": "compiled.py",
+      "sha256": "5c60c7e7e9dada2388fb596f285e1ae4033c0b2accc1aed7ee1aa3892585b63d"
+    },
+    {
+      "root": "FINANCIAL_ROOT",
+      "file": "generate_constants.py",
+      "sha256": "bc0109476c5c7a7bede37c1e7fcebba64f1ae3bd297af73894b49a2a6960637e"
+    },
+    {
+      "root": "FINANCIAL_ROOT",
+      "file": "DEVELOPMENT_PROTOCOL.json",
+      "sha256": "419c52de3f3c88856d6d07c3f3dff1c6aeb62ecf63834d606e3382b02ca3588f"
+    },
+    {
+      "root": "FINANCIAL_ROOT",
+      "file": "build.py",
+      "sha256": "aabc166766fa02e33fa8331733ece742a8dcd787f403f839070dc45f5174a6d5"
+    },
+    {
+      "root": "FINANCIAL_ROOT",
+      "file": "recovery_eval.py",
+      "sha256": "3c9a68e6688b3ec4cbc04bc3581be202557cc9ce106722730085f3b61bb1469e"
+    },
+    {
+      "root": "FINANCIAL_ROOT",
+      "file": "recovery_check.py",
+      "sha256": "e5428232e7d3c81428e04eabfb5a595b014c9fc56cc9fdcaa3622c60e1663b07"
+    },
+    {
+      "root": "FINANCIAL_ROOT",
+      "file": "freeze_recovery.py",
+      "sha256": "a5eb83825bf25e73d22a10090197b90f5e8b0c689b6beec5d290d7c884c8e954"
+    },
+    {
+      "root": "FINANCIAL_ROOT",
+      "file": "frozen_input/frozen_reference.py",
+      "sha256": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52"
+    }
+  ],
+  "financial_calls": 0,
+  "model_calls": 0,
+  "scope": "Static syntax, real embedded hash preflight, exact CLI signatures and preserved workflow structure only. No remote Actions or candidate runtime result."
+}

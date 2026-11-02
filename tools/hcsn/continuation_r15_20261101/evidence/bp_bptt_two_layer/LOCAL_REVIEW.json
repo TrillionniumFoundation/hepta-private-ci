@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn.two-layer-ci-extension-review.v1",
+  "recorded_at_utc": "2026-11-01T18:41:41.223454+00:00",
+  "baseline_workflow_sha256": "bac8820cb23ff6637c4a692027f2e3d953b00427349567ff42808fc6785e13a4",
+  "workflow_sha256": "7b6c90ee67b5484d79e105b75fb60d3e6a41f97620dc22ddf05d1f869d3070e9",
+  "patch_sha256": "6fbb371277df69d2fc8018b314cd8271259cfaf9e1efaec599a5ee30bf65585a",
+  "change": {
+    "files": 1,
+    "added_lines": 44,
+    "removed_lines": 0,
+    "new_entrypoints": [
+      "audit_two_layer.py",
+      "train_two_layer.py",
+      "check_two_layer_results.py"
+    ],
+    "original_eight_entrypoints_unchanged": true
+  },
+  "frozen_candidate": {
+    "protocol_sha256": "da07c580e258f51517f124d6d7b902a8ae3c6700fb58cb96948c18447c740ad7",
+    "checker_sha256": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e",
+    "prefix": "tools/hcsn/hx_two_layer_boundary_r16_20261101"
+  },
+  "actual_validation": {
+    "actionlint": {
+      "version": "1.7.12",
+      "exit_code": 0,
+      "independent_execution_receipt_sha256": "f56dfbc8160a09a31f62d37be3fc56b5d38f84afc49a558f8322c3c007c17963"
+    },
+    "prettier": {
+      "version": "3.5.3",
+      "operation": "--write final workflow (unchanged); subsequent --check reported all matched files use code style",
+      "exit_code": 0
+    },
+    "just_fmt": {
+      "command": "env PATH=/tmp/hcsn-r15-runtime-tools/cargo/bin:/tmp/hcsn-r15-yaml-alias-tools:$PATH CARGO_HOME=/tmp/hcsn-r15-runtime-tools/cargo RUSTUP_HOME=/tmp/hcsn-r15-runtime-tools/rustup RUSTUP_TOOLCHAIN=1.95.0 /tmp/hcsn-r15-yaml-alias-tools/just fmt",
+      "cwd": "/tmp/hcsn-r16-cascade-ci/candidate/codex-rs",
+      "exit_code": 0,
+      "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+      "scope": "Actual repository formatter in a scoped exact-policy fixture. Its selector excludes YAML; the workflow was formatted with the locked Prettier version."
+    },
+    "static_and_identity_receipt_sha256": "424b9cbbee1a1ba0158f0762f8e0c5447b39b9b02e05af37fb13a7c9d89d2512",
+    "bash_blocks": 14,
+    "real_cli_signatures": 11,
+    "real_embedded_hash_preflight_entries": 10,
+    "wrong_protocol_preflight_rejected": true,
+    "nested_frozen_sources_verified": 41,
+    "git_diff_check_exit_code": 0,
+    "worktree_change_scope": "Only .github/workflows/hcsn-financial-autograd-r16.yml is modified."
+  },
+  "security_and_failure_semantics": [
+    "contents:read only; same pinned checkout/upload actions; checkout persist-credentials:false and exact PR head or dispatch SHA.",
+    "Literal job environment and prior RUNNER_TEMP/GITHUB_ENV path initialization retained; no invalid job.env runner context.",
+    "Relevant path trigger and sparse directory added; no other trigger or existing gate weakened.",
+    "All numerical scripts keep set -euo pipefail and unique create-only RUNNER_TEMP outputs; checker requires both producer steps succeed.",
+    "Original source-cleanliness and failure artifact upload steps are unchanged.",
+    "No dependency update, secret, native binary rebuild, replacement fallback or repository write operation is introduced."
+  ],
+  "independent_review_sha256": "6456a2132970683a2d312132cc9b7c704e5cdf87afebc812df12ccb7e6ac3168",
+  "reproduction": "From a complete repository checkout, invoke validate_workflow.py --candidate .github/workflows/hcsn-financial-autograd-r16.yml --baseline PATH/BASELINE_WORKFLOW.yml --roots-file PATH/REPOSITORY_SOURCE_ROOTS.json --repository-root . --output NEW.json. The development-only validator uses PyYAML; it does not run or add dependencies to the CI scientific runtime.",
+  "preserved_prior_failure": "The invalid original V1 job.env runner.temp workflow and corrected reviews remain in earlier evidence/history; this additive extension does not retroactively validate it.",
+  "scope": "Real local workflow syntax, formatter, source and CLI checks only. No remote Actions success is claimed by this review. Model/runtime evidence is produced and recorded separately.",
+  "passed_local_review": true
+}

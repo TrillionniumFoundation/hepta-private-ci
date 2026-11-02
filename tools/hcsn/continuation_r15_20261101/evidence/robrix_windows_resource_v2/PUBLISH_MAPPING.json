@@ -1,0 +1,56 @@
+{
+  "schema": "hcsn-review-publication-v1",
+  "evidence_archive": {
+    "bytes": 854181,
+    "sha256": "1f9907c20b831f5dc8b3c59603c25b158e32f24acda25795e94a912c488392e8",
+    "git_blob": "ce7a347c62d65db1f47dba7a1b0aab1b618c36be"
+  },
+  "parts_in_order": [
+    {
+      "path": "ROBRIX_WINDOWS_FIX_EVIDENCE.zip.part01",
+      "bytes": 350000,
+      "sha256": "34a8661237dc131ee2a693252a4c86383014da363e9c7d2afb028b2efc3b2c5d",
+      "git_blob": "f4cbf42fb388baba80cbad4c21e66b61ce1aa2d0"
+    },
+    {
+      "path": "ROBRIX_WINDOWS_FIX_EVIDENCE.zip.part02",
+      "bytes": 350000,
+      "sha256": "5b5a8cef501d651809b25cf59c6f1ee4604ce049790cac175609601a54796bd0",
+      "git_blob": "23e6e06ac93adb9e33ea29da49c7d2a9796764fc"
+    },
+    {
+      "path": "ROBRIX_WINDOWS_FIX_EVIDENCE.zip.part03",
+      "bytes": 154181,
+      "sha256": "9b75e8fd1f6d934b2e09efaa24f1e859bbe28a014a1a021286823a0ea6ca6957",
+      "git_blob": "3cb25b51c1f3f4f5d4552a298762a2ed742a021f"
+    }
+  ],
+  "member_manifest": {
+    "path": "EVIDENCE_MEMBERS.json",
+    "bytes": 26357,
+    "sha256": "5f1ecefa8b06c07f2451dc9dd12b0865bdd110f860111b064e2ade2fa426551c",
+    "git_blob": "e55e4b8982ed914925cafda119a989fd6033557b"
+  },
+  "external_deliverables": [
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/CHANGE_REVIEW.json",
+      "bytes": 3921,
+      "sha256": "d848a5f6b6f36cd1a4e6854c08665adf5d5d881865468ca5d1e8322335426d4b",
+      "git_blob": "793b1fad228c4c7b863e7ff7c75627a70d3ea7b9"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/FORMAT_IDENTITY.json",
+      "bytes": 358,
+      "sha256": "bf6092a5902e10cb8661fb96ba01f728b7b61bb5a13e736f9bcb7126b2ea53d9",
+      "git_blob": "ec08077623a526b56c7d224756a75264f0267abe"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/robrix_windows_resource_resolution.patch",
+      "bytes": 2174,
+      "sha256": "41b44b3a50d45e76d7a54916818ac1d865a3a628d5466093134f4392dcf43d49",
+      "git_blob": "5910cf6c70a6d4bae660fb302d308804a274f330"
+    }
+  ],
+  "original_windows_job_log_is_archived_separately_by_root": true,
+  "no_binaries_targets_caches_or_credentials_in_bundle": true
+}

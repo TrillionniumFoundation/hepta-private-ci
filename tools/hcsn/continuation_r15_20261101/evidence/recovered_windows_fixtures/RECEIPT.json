@@ -1,0 +1,88 @@
+{
+  "scope": "Test-only portability candidate; main worktree unchanged; Windows runtime qualification pending",
+  "failure_head": "6500d80838d0baf5304a9de584b93d9e0df8c914",
+  "failures": [
+    {
+      "job": 124806429538,
+      "sites": [
+        "hepta-intelligence/src/evaluated_shadow_tests.rs:129",
+        "hepta-intelligence/src/evaluated_shadow_segment_tests.rs:21",
+        "hepta-intelligence/src/outcome_credit_v2.rs:378"
+      ],
+      "observed": "File::open(directory) reports Windows OS code5 PermissionDenied before durable writer is constructed",
+      "repair": "Shared cfg(test) helper opens the actual Windows directory with read/write and FILE_FLAG_BACKUP_SEMANTICS, matching pre-existing learning-ledger production_tests.rs:204-221 fixture contract. Non-Windows still uses File::open. Production writer still synchronizes the real handle and propagates errors."
+    },
+    {
+      "job": 124806429565,
+      "site": "hepta-fleet/src/registry_tests.rs:273-275",
+      "observed": "WorkspaceBinding rejects D:\\tmp\\...\\sweep\\a because the test passes noncanonical Windows path",
+      "repair": "Retain recursive directory creation and canonicalize the resulting fixture path before calling the unchanged WorkspaceBinding validation. All256 subsets/two identity orders and overlap assertions remain."
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "original_git_blob": "d462cc845a448c802d32e56ab2de00ee3249ee11",
+      "candidate_sha256": "461c2479e3cdc4bc16164bbbab334599195f371ffff2eca291b586fe169e3e57",
+      "all_string_literals_identical": true,
+      "assert_invocation_lines_identical": true,
+      "assert_invocation_count": 16
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/lib.rs",
+      "original_git_blob": "ac161c19df7b828fbca02d39ebfdb6661982e6d4",
+      "candidate_sha256": "733cc7381c7f5c086278a8a13784d15b320021de53371712086c3526c3f26498",
+      "all_string_literals_identical": true,
+      "assert_invocation_lines_identical": true,
+      "assert_invocation_count": 0
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "original_git_blob": "80996b19831da4b6a88b1282157ca82ec526e8d8",
+      "candidate_sha256": "7e612cdedd779d61d2f792b012ec4b7aeab34cc0ed7ec3af6e64a19aaad2b408",
+      "all_string_literals_identical": true,
+      "assert_invocation_lines_identical": true,
+      "assert_invocation_count": 43
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+      "original_git_blob": "9de2be23178bf344eacf09eaff464b672351c860",
+      "candidate_sha256": "6dc0c10881f12a07f6320ed9c9969bbdc348622c4d2b5ce1dfc6ee5a3271f190",
+      "all_string_literals_identical": true,
+      "assert_invocation_lines_identical": true,
+      "assert_invocation_count": 12
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+      "original_git_blob": "2d8e226a87cf0346bbfbb0ddb6b00cb4e973d742",
+      "candidate_sha256": "c3ebdfa4118ef76043357f9e6993debaa87433d2f4e1f63f4f8e3f5fd85a002d",
+      "all_string_literals_identical": true,
+      "assert_invocation_lines_identical": true,
+      "assert_invocation_count": 14
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/directory_test_support.rs",
+      "new_test_only_file": true,
+      "candidate_sha256": "6235ac6d1877c5f15fdd2b72a45cd54b9f8b1db7ae644a2e20e7c32b27e50fde"
+    }
+  ],
+  "source_review": "Initial idea to reuse create_workspace directly was rejected because that helper uses nonrecursive create_dir; final candidate preserves create_dir_all and applies the same canonicalization pattern.",
+  "bazel_source_inclusion": "Existing defs.bzl uses src/**/*.rs for both crate and test sources, so the cfg(test) support module is included without build/dependency changes.",
+  "validation": {
+    "rustfmt_check": "actual rustfmt1.9.0/Rust1.95 --edition2024 --config skip_children=true --check on all6 candidate files, exit0",
+    "windows_native": "not run locally; new-head Windows shards must exercise the original tests",
+    "large_local_native_build": "not attempted per parent instruction"
+  },
+  "not_addressed": [
+    "prompt_delivery and prompt-optimizer Unsupported Windows secure state backend",
+    "operator-acceptance additional runtime failures",
+    "Java native-thread resource exhaustion",
+    "All linker fixes and V8 corrections have separate earlier receipts"
+  ],
+  "no_gate_changes": [
+    "No test skips, cfg platform exclusions of existing tests, expected-result relaxation, production storage change, dependency change or ordinary-file fallback for secure storage"
+  ],
+  "patch": "windows_fixture_portability.patch",
+  "patch_sha256": "0033c33df24aa7372ffd675b53ea0e15a3e724e501bf967d6a2028902bfb3193",
+  "argument_comment_review": "OpenOptionsExt::custom_flags parameter is flags in the official standard-library signature; candidate now supplies /*flags*/ before its numeric Windows flag as required by AGENTS. No other candidate changes."
+}

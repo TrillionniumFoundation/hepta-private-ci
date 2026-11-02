@@ -1,0 +1,53 @@
+{
+  "schema": "hcsn.hx-two-layer-independent-result-check.v1",
+  "passed": true,
+  "protocol_sha256": "da07c580e258f51517f124d6d7b902a8ae3c6700fb58cb96948c18447c740ad7",
+  "checker_sha256": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e",
+  "bound_artifact_sha256": {
+    "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_PROTOCOL.json": "da07c580e258f51517f124d6d7b902a8ae3c6700fb58cb96948c18447c740ad7",
+    "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_INPUTS.json": "a71e0504039f65fde804b31bd015475ce78f67e409073a5a6e9bd86c58e8d6db",
+    "/tmp/hcsn-two-layer-boundary-next-v1/two_layer_model.py": "7e14756e5b98023092ce44f57eeef3933816a62d1a7dd4b126e8443448dfb2f5",
+    "/tmp/hcsn-two-layer-boundary-next-v1/two_layer_common.py": "108098be5027a78d550b0a5a36be5f81c3cb4c156822e1e7d1f96a3e4e19a8d9",
+    "/tmp/hcsn-two-layer-boundary-next-v1/two_layer_reference.py": "35e8680e3faa501dcde7913a19b2998d2d799a1feb27667fbad6d55812c8ca69",
+    "/tmp/hcsn-two-layer-boundary-next-v1/audit_two_layer.py": "3676dcbb62f68ae5411df19db7b71560cca05eba17dfdfcedf382a3a0190202d",
+    "/tmp/hcsn-two-layer-boundary-next-v1/train_two_layer.py": "6f28e980dbdae1d2528d764477f2b1cbdfdc9c41e0f34a1d5003897c52b8ba58",
+    "/tmp/hcsn-two-layer-boundary-next-v1/check_two_layer_results.py": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e",
+    "/tmp/hcsn-two-layer-boundary-next-v1/freeze_two_layer.py": "fa0f05ffeb94338193c30b6bbeaaa1e3cf79761104b5ef1433f3e48702303aab",
+    "/tmp/hcsn-two-layer-boundary-next-v1/README.md": "02571e4447cf63b27e81fb85a4777fcfd5e2efdfa4aaadf7b158ceff33349a2b",
+    "/tmp/hcsn-two-layer-boundary-next-v1/requirements.txt": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23",
+    "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_AUDIT_V1.json.gz": "8ff233b9045b96ff846d146acc94e9daa6e066f7a9137204bcbc6cb89e8be7c3",
+    "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_TRAINING_V1.json.gz": "33049a15099c3e8634b0a5575f63040ead4031d90c5e0a6f4697600b5cf794a9",
+    "/tmp/hcsn-compiled-recovery/RECOVERY_PROTOCOL_V1.json": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+    "/tmp/hcsn-compiled-recovery/kernel.cpp": "6c04009f4a782a2aaac5f0e6d8af7048d9bd9c26f1a3039f47c1c83491bb63cd",
+    "/tmp/hcsn-compiled-recovery/arithmetic.hpp": "1f03b2cef36b5395511c98f815be741df9c3659b8f40a31dd38bfc5dc8e59bdd",
+    "/tmp/hcsn-compiled-recovery/constants.hpp": "d44d34cf51bcc70ef1961fdbef964ed2b703512f3d371683e743365c16d9ea4e",
+    "/tmp/hcsn-compiled-recovery/compiled.py": "5c60c7e7e9dada2388fb596f285e1ae4033c0b2accc1aed7ee1aa3892585b63d",
+    "/tmp/hcsn-compiled-recovery/generate_constants.py": "bc0109476c5c7a7bede37c1e7fcebba64f1ae3bd297af73894b49a2a6960637e",
+    "/tmp/hcsn-compiled-recovery/DEVELOPMENT_PROTOCOL.json": "419c52de3f3c88856d6d07c3f3dff1c6aeb62ecf63834d606e3382b02ca3588f",
+    "/tmp/hcsn-compiled-recovery/build.py": "aabc166766fa02e33fa8331733ece742a8dcd787f403f839070dc45f5174a6d5",
+    "/tmp/hcsn-compiled-recovery/recovery_eval.py": "3c9a68e6688b3ec4cbc04bc3581be202557cc9ce106722730085f3b61bb1469e",
+    "/tmp/hcsn-compiled-recovery/recovery_check.py": "e5428232e7d3c81428e04eabfb5a595b014c9fc56cc9fdcaa3622c60e1663b07",
+    "/tmp/hcsn-compiled-recovery/freeze_recovery.py": "a5eb83825bf25e73d22a10090197b90f5e8b0c689b6beec5d290d7c884c8e954",
+    "/tmp/hcsn-compiled-recovery/frozen_input/frozen_reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+    "/tmp/hcsn-compiled-recovery/recovered.so": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+    "/tmp/hcsn-compiled-recovery/RECOVERED_BUILD.json": "459f899f2fbc11c3d386071e73f878b0c603cb4c70826aab1c05086de5cd65f4",
+    "/tmp/hcsn-compiled-recovery/RECOVERY_CASES_V1.json": "517ce163008c82ff1eab432a5b0e6e59e5b7aebfa28fc8b6184c449d1f5010b5"
+  },
+  "counts": {
+    "modes": 4,
+    "steps": 16,
+    "batch": 8,
+    "state_columns": 4,
+    "trainable_parameters": 18,
+    "optimizer_updates": 12,
+    "readout_contracts": 12,
+    "temporal_comparisons_per_mode": 7
+  },
+  "identification_magnitudes": {
+    "conditioning_vjp_l2": 3.837308693746183e-06,
+    "direct_boundary_condition_step_l2": 9.869645764414118e-07
+  },
+  "financial_kernel_calls": 0,
+  "pytorch_calls": 0,
+  "scope": "Independent NumPy record, represented Euler, four audit modes with archived local-Jacobian chain and route-identification consistency. Training checks every parameter-update link and finite gradient, with only the first gradient tied to the independent audit chain. No optimizer replay, new financial point, independent financial oracle, quality or stability claim."
+}

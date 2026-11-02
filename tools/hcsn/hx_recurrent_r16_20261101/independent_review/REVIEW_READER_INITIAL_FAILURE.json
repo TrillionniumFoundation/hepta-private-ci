@@ -1,0 +1,8 @@
+{
+  "stage": "independent reviewer receipt reader, before numerical record recomputation",
+  "actual_exit_code": 1,
+  "error": "KeyError: returncode",
+  "reason": "AUDIT_EXECUTION_V1 uses actual_exit_code/artifact_sha256; TRAINING_EXECUTION_V1 uses returncode/output_sha256. Initial review reader assumed a shared schema.",
+  "candidate_changed": false,
+  "review_script_sha256": "2e552eb35d5a35f2ea9cb7845e3b321a7542224e672f264ed41fe4182ed12ea2"
+}

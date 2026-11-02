@@ -1,0 +1,85 @@
+{
+  "schema": "hcsn-r15-test-fixture-lint-repair-v2",
+  "original_remote_head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+  "remote_blob_provenance": "GitHub fetch_file at the exact original PR head, independently matched to local Git blob hashes",
+  "files": {
+    "codex-rs/hepta-fleet/src/authority_port.rs": {
+      "original_git_blob": "55e117dafe84709451a638bb8f6bafa41c38bd5a",
+      "before_sha256": "72b4e86e8adfcdff4edc62507458e64da8489dd7be4dd476c91638777ef4eb83",
+      "after_sha256": "e26a8617580ce0e1a893aff4c593bdea99f3733d58fce567ce5e026b523a2901",
+      "assertion_count": 10,
+      "assertions_unchanged_ignoring_whitespace": true,
+      "function_names_unchanged": true,
+      "lint_allow_attributes_unchanged": true,
+      "production_prefix_sha256": "5d391d43442a4bf7c086d1b4b0498a5282131ceb76cdf101a194de4151115030",
+      "production_prefix_byte_identical": true
+    },
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": {
+      "original_git_blob": "b2a68028afd8cc636b7b6a5a324f17ebf92d6bcc",
+      "before_sha256": "4897cf6645ec4cb49f383c4f3d577ccb3db7d67f5f410387294b012822af067a",
+      "after_sha256": "b06480154f08e0b9620e7b670074e12330d786739384e16391587e26f3ea3d18",
+      "assertion_count": 11,
+      "assertions_unchanged_ignoring_whitespace": true,
+      "function_names_unchanged": true,
+      "lint_allow_attributes_unchanged": true
+    },
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": {
+      "original_git_blob": "a3e546830527f214c08b6a367c0f708b26a3e9d2",
+      "before_sha256": "27806d0f380c635cc306a3286457f904b5437a69ffbe61d9a3b0caff9248f962",
+      "after_sha256": "c435c06766b29542580cfe876cf53bf6982099fc33af522f1efa2cac9e490f57",
+      "assertion_count": 15,
+      "assertions_unchanged_ignoring_whitespace": true,
+      "function_names_unchanged": true,
+      "lint_allow_attributes_unchanged": true
+    },
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": {
+      "original_git_blob": "691f54836f2114bebcd58acd0af50961349d52ae",
+      "before_sha256": "0c1fd91ffd3eaa8686662b106cec2fb1eab07c822e7fbc61022c607f4814e991",
+      "after_sha256": "8247d1d8bc638f1ad8784fe06490ed1c48d1659516df5fb59a242dc52fdbc668",
+      "assertion_count": 5,
+      "assertions_unchanged_ignoring_whitespace": true,
+      "function_names_unchanged": true,
+      "lint_allow_attributes_unchanged": true,
+      "production_prefix_sha256": "0fef5de43037a2a7902d27850f4f28bb32d0410f0470e288e4b544528e8f7923",
+      "production_prefix_byte_identical": true
+    }
+  },
+  "scope": "Test fixture and test caller changes only; no production prefix, Cargo manifest, dependency feature, SQL migration, lint policy, assertion or provider expectation changes.",
+  "runtime_validation": "Actual prescribed just test -p codex-hepta-fleet --locked --offline passed41tests with0skips; see SCOPED_NATIVE_TEST.json. Other changed crates were not compiled locally; actual affected Bazel compile, Clippy and tests remain mandatory remote gates.",
+  "database_fixture_change": "The historical migration fixture now opens a private file-backed SQLite database through the existing codex-state SqliteConfig shim. Each caller retains its TempDir until after pool.close(). Historical migrations and VACUUM INTO/reopen checks are unchanged.",
+  "independent_type_review": "EvidenceId::parse returns Result<_, String>; v2 converts String through anyhow::Error::msg before Context. Other newly contextualized errors were checked against concrete Error/anyhow return signatures.",
+  "wiremock_expect_one_preserved": true,
+  "no_direct_sqlx_pool_construction": true,
+  "rustfmt": {
+    "command": [
+      "/tmp/hepta-digital-rust195/bin/rustfmt",
+      "--check",
+      "--edition",
+      "2024",
+      "--config",
+      "imports_granularity=Item,skip_children=true",
+      "/workspace/scratch/d87ad18a3bba/tmp_r15_clippy_source/codex-rs/hepta-fleet/src/authority_port.rs",
+      "/workspace/scratch/d87ad18a3bba/tmp_r15_clippy_source/codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "/workspace/scratch/d87ad18a3bba/tmp_r15_clippy_source/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "/workspace/scratch/d87ad18a3bba/tmp_r15_clippy_source/codex-rs/hepta-agentd/src/automation_effect_host.rs"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.03553254199869116,
+    "stdout": "",
+    "stderr": ""
+  },
+  "git_apply_check": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "scope": "Exact original Git blob copies; main already has the reviewed patch applied."
+  },
+  "patch_sha256": "861fb48d3a60769385b67859a48775a7249005ddc4876801b445f7e19b6a0247",
+  "patch_bytes": 23435,
+  "main_current_hash_matches": {
+    "codex-rs/hepta-fleet/src/authority_port.rs": true,
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": true,
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": true,
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": true
+  }
+}

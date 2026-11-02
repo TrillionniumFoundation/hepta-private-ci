@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn.r16.compensated-fp32-independent-validation-result.v1",
+  "candidate_precision": "compensated FP32: two float32 words per value and tangent, approximately 44-48 significand bits",
+  "source_sha256_before": {
+    "compensated_kernel.py": "c1088ca5cfd2c8a18877078b8a14ff251986c1eaeca0911a838c2d55e400643f",
+    "float32_pair.py": "63010529b91de196698c7b096a5bac94f73460f3a811f70b61a95d53ffd87ae9",
+    "frozen_kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "frozen_reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+    "R16_VALIDATION_PROTOCOL_V1.json": "18f66bd44e4ea03792c678947ede965af0f83199ccbdc34067f1c5b809af2c31",
+    "R16_HOLDOUT_CASES_V1.json": "317162122a0f6d43143b42b37c12e48f8e8888276d5018784b887848b420a86c"
+  },
+  "source_sha256_after": {
+    "compensated_kernel.py": "c1088ca5cfd2c8a18877078b8a14ff251986c1eaeca0911a838c2d55e400643f",
+    "float32_pair.py": "63010529b91de196698c7b096a5bac94f73460f3a811f70b61a95d53ffd87ae9",
+    "frozen_kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "frozen_reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+    "R16_VALIDATION_PROTOCOL_V1.json": "18f66bd44e4ea03792c678947ede965af0f83199ccbdc34067f1c5b809af2c31",
+    "R16_HOLDOUT_CASES_V1.json": "317162122a0f6d43143b42b37c12e48f8e8888276d5018784b887848b420a86c"
+  },
+  "runner_sha256": "70dcf01f2aec090f91d826465b16336aba3321b1b4985048e7e38f57d33e7a82",
+  "reference_input_convention": "Frozen oracle converts round-trip decimal strings of float32 words represented as Python floats to mp80; it does not reconstruct exact binary rationals.",
+  "gate_scope": "Finite independent numerical validation of two-word compensated FP32 only; not ordinary FP32 admission or global-domain/task/GPU qualification.",
+  "gates": {
+    "value_scaled": 8e-07,
+    "jacobian_scaled": 2e-05,
+    "error_denominator": "max(1,abs(reference))",
+    "required": "Every valid point/state must pass; all failures and rejections retained."
+  },
+  "summary": {
+    "generated_points": 128,
+    "independently_valid_points": 128,
+    "independently_rejected_points": 0,
+    "evaluated_rows": 512,
+    "passed_rows": 512,
+    "passed_valid_points": 128,
+    "oracle_halving_failures": 0,
+    "max_value_error": 5.718660608053465e-08,
+    "max_jacobian_error": 7.1891889198427705e-06,
+    "max_oracle_halving_error": 4.778802063239728e-59,
+    "all_valid_rows_passed": true,
+    "diagnostic_wall_seconds": 167.27297413899942,
+    "diagnostic_cpu_seconds": 167.157670013
+  },
+  "evidence_file": "R16_HOLDOUT_V1.json.gz",
+  "evidence_sha256": "44f6340bbe2f783e10f36aeddda6f96ed67df1efe5f6d6cf2a0732241f798310",
+  "rejected_points": [],
+  "failed_rows": []
+}

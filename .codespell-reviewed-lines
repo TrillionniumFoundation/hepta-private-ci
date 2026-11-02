@@ -1,0 +1,31 @@
+        datas=sha(base/'DATA.npz');native_records={};owner_entries={};pending_counts=Counter();composite=0
+                    stats=record_check(r,model,modelsha,key,datas,binarysha)
+        "Original owner/credit-finalizer research sidecar; deployed forward never evaluates FPT surrogate"
+        "FPT mu/sigma/lambda are training surrogate quantities, not deployed physical Brownian coefficients",
+FPT model. Conditional surviving-state and event-direction distributions and
+          "T=1 reproduces the base FPT law up to row-normalization roundoff.",
+Thus a coarse-grid FPT cell can emit more frequently because of numerical
+mesh-refinement progress, absolute FPT accuracy, small-time-step variance,
+      "selection": "Explicit directory registration only. Primary four modes use fits_primary; temperature uses fits_temperature_corrected; FPT content/dynamics/noise use fits_freezes_a; FPT boundary/reset/recovery use fits_freezes_b; clocked boundary uses fits_clocked_control. Seeds 11..15 only.",
+      "interpretation": "One-parameter calibration mechanism control with matched trainable count; not the original FPT generator/semigroup or a physical diffusion parameter. Does not enlarge the three primary comparison family.",
+    "shared_checkpoint_cost": "A/B share one clocked fit and C/D share one FPT fit. Count each physical fit once in total study cost. For a hypothetical standalone deployment of either head, charge the full training procedure that produced its shared checkpoint; do not silently halve training cost. Disclose any separately assumed joint-deployment allocation.",
+    "The FPT extra-variance diagnostic remains nonzero in learned checkpoints and decreases with mesh refinement.",
+    "The FPT/temperature upwind extra-variance ratio is a diagnostic of the underlying generator; the temperature control itself is not a diffusion semigroup."
+    "T=1 reproduces the base FPT law up to row-normalization roundoff.",
+                                 "The FPT/temperature upwind extra-variance ratio is a diagnostic of the underlying generator; the temperature control itself is not a diffusion semigroup."]}
+"""Capacity-matched event-temperature control, explicitly not an FPT semigroup."""
+        "message": "fo ==> of, for, to, do, go"
+        "message": "Ot ==> To, Of, Or, Not, It"
+      "parameter": "bu",
+            self.params.update(Wu=random((11, h), .25), bu=np.zeros(h),
+        u = np.tanh(x @ p["Wu"] + p["bu"])
+                grads["bu"] += du.sum(axis=0)
+五段独立 uniformization 与 expm 相符；4,000 条独立 Gillespie 路径末态频率最大绝对差 **0.006745**。双 cell 事件期望 [0.662076,0.760764]、样本均值 [0.659500,0.771500] 在登记容差内。4,096 步长流期望事件 **87.144747**、质量误差 **1.67×10⁻¹⁵**。极端 FPT 部分检查只验证可表示性，不是极端尾概率相对精度证明。
+"""Finite regenerative diffusion reference and exact lower-barrier FPT features.
+        raise ValueError("FPT inputs must be finite")
+        raise ArithmeticError("FPT probability cannot be represented reliably")
+    """Scalar FPT summary; an unresolved saturated hazard is explicitly None."""
+            raise ArithmeticError("FPT density exceeds float64 range")
+        u, ue = uniformized(q, r, 1e-8)
+        np.testing.assert_allclose(e, ue, atol=2e-15)
+            self.params.update({"Wu": random((10, h), .25), "bu": np.zeros(h),

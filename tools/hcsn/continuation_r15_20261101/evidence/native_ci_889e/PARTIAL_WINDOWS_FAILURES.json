@@ -1,0 +1,1084 @@
+{
+  "schema": "hcsn.partial-native-log-classification.v1",
+  "source_head": "889e7acebd14ecb05018c1d8c6ae4d26287cbcf8",
+  "source_tree": "dc1eb6177529930bfd27d33eae71967e3d91b462",
+  "prospective_merge": "118aeded28c79a7d8e72e73ee4c593c9a82d931d",
+  "scope": "Only completed Windows shards1 and3, not the complete native matrix. Distinct name texts are not cross-target unique test identities. Retry occurrences remain visible.",
+  "all_native_blockers_closed": false,
+  "cargo_deny_log_retrieval_error": "Transport closed; failed job/step status verified separately",
+  "jobs": [
+    {
+      "job": 124919782738,
+      "shard": 1,
+      "file": "WINDOWS_SHARD_1.log.gz",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41330412374/job/124919782738",
+      "decoded_bytes": 890165,
+      "decoded_sha256": "015ff1e25c6f7e35b8633032a9500bad822fcb67752ed9b3503fd5407381e6d6",
+      "gzip_bytes": 132075,
+      "gzip_sha256": "8a1a89d11f3528f57906a9316dae4587852f2a796a0fd3715b1f0afd7f67eeda",
+      "failed_target_labels": [
+        "//codex-rs/app-server-protocol:app-server-protocol-unit-tests",
+        "//codex-rs/core:core-unit-tests",
+        "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests",
+        "//codex-rs/git-utils:git-utils-unit-tests",
+        "//codex-rs/hepta-automation:hepta-automation-unit-tests",
+        "//codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test"
+      ],
+      "failed_target_occurrences": [
+        {
+          "line": 2646,
+          "target": "//codex-rs/git-utils:git-utils-unit-tests",
+          "text": "FAIL: //codex-rs/git-utils:git-utils-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/git-utils/git-utils-unit-tests/test.log)"
+        },
+        {
+          "line": 2805,
+          "target": "//codex-rs/hepta-automation:hepta-automation-unit-tests",
+          "text": "FAIL: //codex-rs/hepta-automation:hepta-automation-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-automation/hepta-automation-unit-tests/test.log)"
+        },
+        {
+          "line": 3058,
+          "target": "//codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test",
+          "text": "FAIL: //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-supervisor/hepta-supervisor-restart_budget_recovery-test/test.log)"
+        },
+        {
+          "line": 3159,
+          "target": "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests",
+          "text": "FAIL: //codex-rs/ext/hepta-memory:hepta-memory-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/ext/hepta-memory/hepta-memory-unit-tests/test.log)"
+        },
+        {
+          "line": 3289,
+          "target": "//codex-rs/app-server-protocol:app-server-protocol-unit-tests",
+          "text": "FAIL: //codex-rs/app-server-protocol:app-server-protocol-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server-protocol/app-server-protocol-unit-tests/test.log)"
+        },
+        {
+          "line": 3601,
+          "target": "//codex-rs/core:core-unit-tests",
+          "text": "FAIL: //codex-rs/core:core-unit-tests (shard 1 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_1_of_8/test_attempts/attempt_1.log)"
+        },
+        {
+          "line": 3605,
+          "target": "//codex-rs/core:core-unit-tests",
+          "text": "FAIL: //codex-rs/core:core-unit-tests (shard 1 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_1_of_8/test_attempts/attempt_2.log)"
+        },
+        {
+          "line": 3609,
+          "target": "//codex-rs/core:core-unit-tests",
+          "text": "FAIL: //codex-rs/core:core-unit-tests (shard 1 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log)"
+        }
+      ],
+      "named_failure_occurrences": [
+        {
+          "line": 2725,
+          "name": "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running"
+        },
+        {
+          "line": 2726,
+          "name": "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+        },
+        {
+          "line": 2828,
+          "name": "store::migration_convergence_tests::canonical_cut_before_rebind_reopens"
+        },
+        {
+          "line": 2829,
+          "name": "store::migration_convergence_tests::canonical_cut_after_rebind_reopens"
+        },
+        {
+          "line": 2830,
+          "name": "store::migration_convergence_tests::displaced_cut_after_rebind_reopens"
+        },
+        {
+          "line": 2831,
+          "name": "store::migration_convergence_tests::displaced_cut_before_rebind_reopens"
+        },
+        {
+          "line": 3063,
+          "name": "restart_budget_survives_repeated_supervisord_recovery"
+        },
+        {
+          "line": 3182,
+          "name": "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send"
+        },
+        {
+          "line": 3782,
+          "name": "guardian::tests::guardian_reused_trunk_ignores_stale_prior_turn_completion"
+        },
+        {
+          "line": 4071,
+          "name": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment"
+        },
+        {
+          "line": 4419,
+          "name": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment"
+        },
+        {
+          "line": 5295,
+          "name": "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send"
+        },
+        {
+          "line": 5478,
+          "name": "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running"
+        },
+        {
+          "line": 5479,
+          "name": "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+        },
+        {
+          "line": 5525,
+          "name": "store::migration_convergence_tests::canonical_cut_before_rebind_reopens"
+        },
+        {
+          "line": 5526,
+          "name": "store::migration_convergence_tests::canonical_cut_after_rebind_reopens"
+        },
+        {
+          "line": 5527,
+          "name": "store::migration_convergence_tests::displaced_cut_after_rebind_reopens"
+        },
+        {
+          "line": 5528,
+          "name": "store::migration_convergence_tests::displaced_cut_before_rebind_reopens"
+        },
+        {
+          "line": 5571,
+          "name": "restart_budget_survives_repeated_supervisord_recovery"
+        }
+      ],
+      "distinct_failure_name_texts": [
+        "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+        "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+        "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+        "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+        "guardian::tests::guardian_reused_trunk_ignores_stale_prior_turn_completion",
+        "restart_budget_survives_repeated_supervisord_recovery",
+        "store::migration_convergence_tests::canonical_cut_after_rebind_reopens",
+        "store::migration_convergence_tests::canonical_cut_before_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_after_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_before_rebind_reopens"
+      ],
+      "panic_excerpts": [
+        {
+          "line": 2732,
+          "excerpt": "2026-11-01T17:30:25.2953294Z thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (6904) panicked at git-utils/src\\git_process_tests.rs:75:6:\n2026-11-01T17:30:25.3012304Z wait for Git wrapper child readiness: Elapsed(())\n2026-11-01T17:30:25.3162416Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:30:25.3201854Z \n2026-11-01T17:30:25.3295050Z ---- git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running stdout ----\n2026-11-01T17:30:25.3331981Z "
+        },
+        {
+          "line": 2738,
+          "excerpt": "2026-11-01T17:30:25.3384454Z thread 'git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running' (6620) panicked at git-utils/src\\git_process_tests.rs:75:6:\n2026-11-01T17:30:25.3482542Z wait for Git wrapper child readiness: Elapsed(())\n2026-11-01T17:30:25.3521358Z \n2026-11-01T17:30:25.3623029Z \n2026-11-01T17:30:25.3652272Z failures:\n2026-11-01T17:30:25.3803197Z     git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running"
+        },
+        {
+          "line": 2840,
+          "excerpt": "2026-11-01T17:32:28.5823277Z thread 'store::migration_convergence_tests::canonical_cut_before_rebind_reopens' (2668) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:\n2026-11-01T17:32:28.6253195Z real open: Invalid\n2026-11-01T17:32:28.8193623Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:32:28.8698793Z \n2026-11-01T17:32:28.9159178Z ---- store::migration_convergence_tests::canonical_cut_after_rebind_reopens stdout ----\n2026-11-01T17:32:29.1233072Z "
+        },
+        {
+          "line": 2846,
+          "excerpt": "2026-11-01T17:32:29.1670098Z thread 'store::migration_convergence_tests::canonical_cut_after_rebind_reopens' (9260) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:\n2026-11-01T17:32:29.2243351Z real open: Invalid\n2026-11-01T17:32:29.2647694Z \n2026-11-01T17:32:29.3198900Z ---- store::migration_convergence_tests::displaced_cut_after_rebind_reopens stdout ----\n2026-11-01T17:32:29.3287926Z \n2026-11-01T17:32:29.3793013Z thread 'store::migration_convergence_tests::displaced_cut_after_rebind_reopens' (4044) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:"
+        },
+        {
+          "line": 2851,
+          "excerpt": "2026-11-01T17:32:29.3793013Z thread 'store::migration_convergence_tests::displaced_cut_after_rebind_reopens' (4044) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:\n2026-11-01T17:32:29.4169133Z real open: Invalid\n2026-11-01T17:32:29.4532923Z \n2026-11-01T17:32:29.5144149Z ---- store::migration_convergence_tests::displaced_cut_before_rebind_reopens stdout ----\n2026-11-01T17:32:29.5365119Z \n2026-11-01T17:32:29.5632581Z thread 'store::migration_convergence_tests::displaced_cut_before_rebind_reopens' (4512) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:"
+        },
+        {
+          "line": 2856,
+          "excerpt": "2026-11-01T17:32:29.5632581Z thread 'store::migration_convergence_tests::displaced_cut_before_rebind_reopens' (4512) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:\n2026-11-01T17:32:29.5886164Z real open: Invalid\n2026-11-01T17:32:29.6242659Z \n2026-11-01T17:32:29.6273416Z \n2026-11-01T17:32:29.6561133Z failures:\n2026-11-01T17:32:29.6631695Z     store::migration_convergence_tests::canonical_cut_after_rebind_reopens"
+        },
+        {
+          "line": 3069,
+          "excerpt": "2026-11-01T17:35:03.2966298Z thread 'restart_budget_survives_repeated_supervisord_recovery' (9088) panicked at hepta-supervisor/tests/restart_budget_recovery.rs:251:5:\n2026-11-01T17:35:03.3935512Z assertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|\n2026-11-01T17:35:03.4615014Z         matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued\n2026-11-01T17:35:03.5365141Z             { attempt: 2 }))\n2026-11-01T17:35:03.6055267Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:35:03.6694561Z "
+        },
+        {
+          "line": 3249,
+          "excerpt": "2026-11-01T17:36:35.1942956Z thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (612) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1309:9:\n2026-11-01T17:36:35.1943977Z assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,\n2026-11-01T17:36:35.1944490Z     &turn_store)\n2026-11-01T17:36:35.1944858Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:36:35.1945167Z \n2026-11-01T17:36:35.1945170Z "
+        },
+        {
+          "line": 3798,
+          "excerpt": "2026-11-01T17:47:35.1089643Z thread 'guardian::tests::guardian_reused_trunk_ignores_stale_prior_turn_completion' (6968) panicked at core/src\\guardian\\tests.rs:2786:9:\n2026-11-01T17:47:35.1090310Z expected second guardian assessment\n2026-11-01T17:47:35.1090730Z \n2026-11-01T17:47:35.1090737Z \n2026-11-01T17:47:35.1090900Z failures:\n2026-11-01T17:47:35.1092124Z     guardian::tests::guardian_reused_trunk_ignores_stale_prior_turn_completion"
+        },
+        {
+          "line": 4140,
+          "excerpt": "2026-11-01T17:47:35.1379280Z thread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (3440) panicked at core/src\\environment_selection.rs:1282:9:\n2026-11-01T17:47:35.1380306Z blocking snapshot should contain its environment wait span: 2026-11-01T17:45:29.642774Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new\n2026-11-01T17:47:35.1381648Z 2026-11-01T17:45:29.644277Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new\n2026-11-01T17:47:35.1382876Z 2026-11-01T17:45:29.644314Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.wait_until_ready{remote=true}: codex_exec_server::environment: new\n2026-11-01T17:47:35.1383979Z 2026-11-01T17:45:29.644406Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new\n2026-11-01T17:47:35.1384912Z 2026-11-01T17:45:29.645975Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new"
+        },
+        {
+          "line": 4487,
+          "excerpt": "2026-11-01T17:47:35.1655112Z thread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (8332) panicked at core/src\\environment_selection.rs:1282:9:\n2026-11-01T17:47:35.1656129Z blocking snapshot should contain its environment wait span: 2026-11-01T17:46:36.605055Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new\n2026-11-01T17:47:35.1657579Z 2026-11-01T17:46:36.606573Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new\n2026-11-01T17:47:35.1658531Z 2026-11-01T17:46:36.606694Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new\n2026-11-01T17:47:35.1659480Z 2026-11-01T17:46:36.608376Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new\n2026-11-01T17:47:35.1660667Z 2026-11-01T17:46:36.609519Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new"
+        },
+        {
+          "line": 5112,
+          "excerpt": "2026-11-01T17:47:50.8463284Z thread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (8332) panicked at core/src\\environment_selection.rs:1282:9:\n2026-11-01T17:47:50.8464935Z blocking snapshot should contain its environment wait span: 2026-11-01T17:46:36.605055Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new\n2026-11-01T17:47:50.8466146Z 2026-11-01T17:46:36.606573Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new\n2026-11-01T17:47:50.8467131Z 2026-11-01T17:46:36.606694Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new\n2026-11-01T17:47:50.8468733Z 2026-11-01T17:46:36.608376Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new\n2026-11-01T17:47:50.8470575Z 2026-11-01T17:46:36.609519Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new"
+        },
+        {
+          "line": 5362,
+          "excerpt": "2026-11-01T17:47:50.8681096Z thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (612) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1309:9:\n2026-11-01T17:47:50.8683368Z assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,\n2026-11-01T17:47:50.8684256Z     &turn_store)\n2026-11-01T17:47:50.8684789Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:47:50.8685332Z \n2026-11-01T17:47:50.8685339Z "
+        },
+        {
+          "line": 5485,
+          "excerpt": "2026-11-01T17:47:50.8782747Z thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (6904) panicked at git-utils/src\\git_process_tests.rs:75:6:\n2026-11-01T17:47:50.8783936Z wait for Git wrapper child readiness: Elapsed(())\n2026-11-01T17:47:50.8784643Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:47:50.8784952Z \n2026-11-01T17:47:50.8785220Z ---- git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running stdout ----\n2026-11-01T17:47:50.8785584Z "
+        },
+        {
+          "line": 5491,
+          "excerpt": "2026-11-01T17:47:50.8786297Z thread 'git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running' (6620) panicked at git-utils/src\\git_process_tests.rs:75:6:\n2026-11-01T17:47:50.8787877Z wait for Git wrapper child readiness: Elapsed(())\n2026-11-01T17:47:50.8788247Z \n2026-11-01T17:47:50.8788253Z \n2026-11-01T17:47:50.8788362Z failures:\n2026-11-01T17:47:50.8789217Z     git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running"
+        },
+        {
+          "line": 5537,
+          "excerpt": "2026-11-01T17:47:50.9111624Z thread 'store::migration_convergence_tests::canonical_cut_before_rebind_reopens' (2668) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:\n2026-11-01T17:47:50.9112820Z real open: Invalid\n2026-11-01T17:47:50.9113345Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:47:50.9114150Z \n2026-11-01T17:47:50.9114575Z ---- store::migration_convergence_tests::canonical_cut_after_rebind_reopens stdout ----\n2026-11-01T17:47:50.9115191Z "
+        },
+        {
+          "line": 5543,
+          "excerpt": "2026-11-01T17:47:50.9116089Z thread 'store::migration_convergence_tests::canonical_cut_after_rebind_reopens' (9260) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:\n2026-11-01T17:47:50.9117568Z real open: Invalid\n2026-11-01T17:47:50.9117781Z \n2026-11-01T17:47:50.9118211Z ---- store::migration_convergence_tests::displaced_cut_after_rebind_reopens stdout ----\n2026-11-01T17:47:50.9118827Z \n2026-11-01T17:47:50.9119690Z thread 'store::migration_convergence_tests::displaced_cut_after_rebind_reopens' (4044) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:"
+        },
+        {
+          "line": 5548,
+          "excerpt": "2026-11-01T17:47:50.9119690Z thread 'store::migration_convergence_tests::displaced_cut_after_rebind_reopens' (4044) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:\n2026-11-01T17:47:50.9120833Z real open: Invalid\n2026-11-01T17:47:50.9121024Z \n2026-11-01T17:47:50.9121433Z ---- store::migration_convergence_tests::displaced_cut_before_rebind_reopens stdout ----\n2026-11-01T17:47:50.9122041Z \n2026-11-01T17:47:50.9122954Z thread 'store::migration_convergence_tests::displaced_cut_before_rebind_reopens' (4512) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:"
+        },
+        {
+          "line": 5553,
+          "excerpt": "2026-11-01T17:47:50.9122954Z thread 'store::migration_convergence_tests::displaced_cut_before_rebind_reopens' (4512) panicked at hepta-automation/src\\migration_convergence_tests.rs:157:10:\n2026-11-01T17:47:50.9124493Z real open: Invalid\n2026-11-01T17:47:50.9124655Z \n2026-11-01T17:47:50.9124659Z \n2026-11-01T17:47:50.9124728Z failures:\n2026-11-01T17:47:50.9125029Z     store::migration_convergence_tests::canonical_cut_after_rebind_reopens"
+        },
+        {
+          "line": 5577,
+          "excerpt": "2026-11-01T17:47:50.9868015Z thread 'restart_budget_survives_repeated_supervisord_recovery' (9088) panicked at hepta-supervisor/tests/restart_budget_recovery.rs:251:5:\n2026-11-01T17:47:50.9869408Z assertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|\n2026-11-01T17:47:50.9870461Z         matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued\n2026-11-01T17:47:50.9871405Z             { attempt: 2 }))\n2026-11-01T17:47:50.9872425Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:47:50.9872959Z "
+        }
+      ]
+    },
+    {
+      "job": 124919782734,
+      "shard": 3,
+      "file": "WINDOWS_SHARD_3.log.gz",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41330412374/job/124919782734",
+      "decoded_bytes": 2106142,
+      "decoded_sha256": "9d43694360cb09faf45a163e432214ab79fc0d9e6922f5adee02387b31f6acfd",
+      "gzip_bytes": 416514,
+      "gzip_sha256": "97ddbd6d15c8de7bec1283aaa650441dbed1ee9fa9c287a3e2fbb1484969a739",
+      "failed_target_labels": [
+        "//codex-rs/code-mode-host:code-mode-host-unit-tests",
+        "//codex-rs/code-mode-runtime:code-mode-runtime-unit-tests",
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test",
+        "//codex-rs/ext/queue:queue-queue_service-test",
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+        "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests",
+        "//codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test",
+        "//codex-rs/tui:tui-unit-tests"
+      ],
+      "failed_target_occurrences": [
+        {
+          "line": 2662,
+          "target": "//codex-rs/code-mode-runtime:code-mode-runtime-unit-tests",
+          "text": "FAIL: //codex-rs/code-mode-runtime:code-mode-runtime-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/code-mode-runtime/code-mode-runtime-unit-tests/test.log)"
+        },
+        {
+          "line": 2748,
+          "target": "//codex-rs/code-mode-host:code-mode-host-unit-tests",
+          "text": "FAIL: //codex-rs/code-mode-host:code-mode-host-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/code-mode-host/code-mode-host-unit-tests/test.log)"
+        },
+        {
+          "line": 3051,
+          "target": "//codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test",
+          "text": "FAIL: //codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-supervisor/hepta-supervisor-signed_intent_recovery-test/test.log)"
+        },
+        {
+          "line": 3132,
+          "target": "//codex-rs/exec-server:exec-server-authorized_read_rpc-test",
+          "text": "FAIL: //codex-rs/exec-server:exec-server-authorized_read_rpc-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-authorized_read_rpc-test/test.log)"
+        },
+        {
+          "line": 3266,
+          "target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "text": "FAIL: //codex-rs/ext/queue:queue-queue_service-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/ext/queue/queue-queue_service-test/test.log)"
+        },
+        {
+          "line": 3548,
+          "target": "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests",
+          "text": "FAIL: //codex-rs/hepta-matrixd:hepta-matrixd-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-matrixd/hepta-matrixd-unit-tests/test.log)"
+        },
+        {
+          "line": 3685,
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "text": "FAIL: //codex-rs/hepta-agentd:hepta-agentd-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/test.log)"
+        },
+        {
+          "line": 4115,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 6 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_6_of_8/test_attempts/attempt_1.log)"
+        },
+        {
+          "line": 4116,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 7 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_7_of_8/test_attempts/attempt_1.log)"
+        },
+        {
+          "line": 4117,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 3 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test_attempts/attempt_1.log)"
+        },
+        {
+          "line": 4119,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 8 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_8_of_8/test_attempts/attempt_1.log)"
+        },
+        {
+          "line": 4126,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 2 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_2_of_8/test_attempts/attempt_1.log)"
+        },
+        {
+          "line": 4127,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 5 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_5_of_8/test_attempts/attempt_1.log)"
+        },
+        {
+          "line": 4128,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 1 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_1_of_8/test_attempts/attempt_1.log)"
+        },
+        {
+          "line": 4129,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 7 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_7_of_8/test_attempts/attempt_2.log)"
+        },
+        {
+          "line": 4136,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 8 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_8_of_8/test_attempts/attempt_2.log)"
+        },
+        {
+          "line": 4137,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 6 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_6_of_8/test_attempts/attempt_2.log)"
+        },
+        {
+          "line": 4138,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 3 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test_attempts/attempt_2.log)"
+        },
+        {
+          "line": 4139,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 2 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_2_of_8/test_attempts/attempt_2.log)"
+        },
+        {
+          "line": 4146,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 7 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_7_of_8/test.log)"
+        },
+        {
+          "line": 5792,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 1 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_1_of_8/test_attempts/attempt_2.log)"
+        },
+        {
+          "line": 5793,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 5 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_5_of_8/test_attempts/attempt_2.log)"
+        },
+        {
+          "line": 5794,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 8 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_8_of_8/test.log)"
+        },
+        {
+          "line": 7441,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 6 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_6_of_8/test.log)"
+        },
+        {
+          "line": 9012,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 3 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test.log)"
+        },
+        {
+          "line": 10687,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 1 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_1_of_8/test.log)"
+        },
+        {
+          "line": 12203,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 2 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_2_of_8/test.log)"
+        },
+        {
+          "line": 13764,
+          "target": "//codex-rs/tui:tui-unit-tests",
+          "text": "FAIL: //codex-rs/tui:tui-unit-tests (shard 5 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_5_of_8/test.log)"
+        }
+      ],
+      "named_failure_occurrences": [
+        {
+          "line": 3056,
+          "name": "exact_digest_abort_terminalizes_unresolved_intent"
+        },
+        {
+          "line": 3137,
+          "name": "authorized_read_rpc_is_capability_gated_and_denies_outside_root"
+        },
+        {
+          "line": 3280,
+          "name": "caller_abort_after_core_started_keeps_exact_authority_until_persistence"
+        },
+        {
+          "line": 3283,
+          "name": "core_error_after_started_never_releases_ambiguous_dispatch"
+        },
+        {
+          "line": 3288,
+          "name": "explicitly_started_rejected_queue_messages_remain_durable"
+        },
+        {
+          "line": 3304,
+          "name": "rejected_queue_messages_remain_durable_and_block_followups"
+        },
+        {
+          "line": 3305,
+          "name": "registered_queue_lifecycle_starts_messages_in_fifo_order"
+        },
+        {
+          "line": 3555,
+          "name": "control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity"
+        },
+        {
+          "line": 3692,
+          "name": "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit"
+        },
+        {
+          "line": 3694,
+          "name": "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen"
+        },
+        {
+          "line": 3695,
+          "name": "automation::service_tests::production_constructor_never_resumes_a_draining_owner"
+        },
+        {
+          "line": 3696,
+          "name": "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement"
+        },
+        {
+          "line": 3697,
+          "name": "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn"
+        },
+        {
+          "line": 3700,
+          "name": "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen"
+        },
+        {
+          "line": 3701,
+          "name": "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation"
+        },
+        {
+          "line": 3702,
+          "name": "browser_servo::tests::non_effect_calls_never_enter_final_use_authority"
+        },
+        {
+          "line": 3703,
+          "name": "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding"
+        },
+        {
+          "line": 3704,
+          "name": "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary"
+        },
+        {
+          "line": 3718,
+          "name": "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records"
+        },
+        {
+          "line": 3719,
+          "name": "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends"
+        },
+        {
+          "line": 3720,
+          "name": "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment"
+        },
+        {
+          "line": 3721,
+          "name": "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently"
+        },
+        {
+          "line": 3722,
+          "name": "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict"
+        },
+        {
+          "line": 3731,
+          "name": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation"
+        },
+        {
+          "line": 3880,
+          "name": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host"
+        },
+        {
+          "line": 3887,
+          "name": "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
+        },
+        {
+          "line": 3891,
+          "name": "runtime::tests::automation_owner_mismatch_remains_fail_closed"
+        },
+        {
+          "line": 3892,
+          "name": "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation"
+        },
+        {
+          "line": 3893,
+          "name": "runtime::tests::automation_generation_change_during_open_remains_fail_closed"
+        },
+        {
+          "line": 3894,
+          "name": "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor"
+        },
+        {
+          "line": 3895,
+          "name": "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store"
+        },
+        {
+          "line": 3896,
+          "name": "runtime::tests::generation_change_during_open_is_fenced_before_serving"
+        },
+        {
+          "line": 3897,
+          "name": "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation"
+        },
+        {
+          "line": 3898,
+          "name": "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe"
+        },
+        {
+          "line": 3901,
+          "name": "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open"
+        },
+        {
+          "line": 3902,
+          "name": "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane"
+        },
+        {
+          "line": 3903,
+          "name": "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error"
+        },
+        {
+          "line": 3904,
+          "name": "runtime::tests::unavailable_automation_store_degrades_without_startup_failure"
+        },
+        {
+          "line": 4053,
+          "name": "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress"
+        },
+        {
+          "line": 4055,
+          "name": "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it"
+        },
+        {
+          "line": 4056,
+          "name": "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access"
+        },
+        {
+          "line": 4057,
+          "name": "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership"
+        },
+        {
+          "line": 4058,
+          "name": "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent"
+        },
+        {
+          "line": 4059,
+          "name": "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption"
+        },
+        {
+          "line": 4061,
+          "name": "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences"
+        },
+        {
+          "line": 4250,
+          "name": "app::tests::safety_buffering::safety_retry_preserves_a_committed_steer_from_the_interrupted_turn"
+        },
+        {
+          "line": 5346,
+          "name": "app::tests::safety_buffering::safety_retry_preserves_a_committed_steer_from_the_interrupted_turn"
+        },
+        {
+          "line": 9500,
+          "name": "resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output"
+        },
+        {
+          "line": 10103,
+          "name": "resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output"
+        },
+        {
+          "line": 10614,
+          "name": "resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output"
+        },
+        {
+          "line": 12260,
+          "name": "app::tests::safety_buffering::safety_retry_can_retry_a_first_turn_a_second_time"
+        },
+        {
+          "line": 14300,
+          "name": "resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget"
+        },
+        {
+          "line": 14856,
+          "name": "resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget"
+        },
+        {
+          "line": 15400,
+          "name": "resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget"
+        },
+        {
+          "line": 15839,
+          "name": "authorized_read_rpc_is_capability_gated_and_denies_outside_root"
+        },
+        {
+          "line": 15871,
+          "name": "caller_abort_after_core_started_keeps_exact_authority_until_persistence"
+        },
+        {
+          "line": 15874,
+          "name": "core_error_after_started_never_releases_ambiguous_dispatch"
+        },
+        {
+          "line": 15879,
+          "name": "explicitly_started_rejected_queue_messages_remain_durable"
+        },
+        {
+          "line": 15895,
+          "name": "rejected_queue_messages_remain_durable_and_block_followups"
+        },
+        {
+          "line": 15896,
+          "name": "registered_queue_lifecycle_starts_messages_in_fifo_order"
+        },
+        {
+          "line": 16100,
+          "name": "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress"
+        },
+        {
+          "line": 16102,
+          "name": "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it"
+        },
+        {
+          "line": 16103,
+          "name": "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access"
+        },
+        {
+          "line": 16104,
+          "name": "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership"
+        },
+        {
+          "line": 16105,
+          "name": "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent"
+        },
+        {
+          "line": 16106,
+          "name": "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption"
+        },
+        {
+          "line": 16108,
+          "name": "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences"
+        },
+        {
+          "line": 16169,
+          "name": "control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity"
+        },
+        {
+          "line": 16216,
+          "name": "exact_digest_abort_terminalizes_unresolved_intent"
+        }
+      ],
+      "distinct_failure_name_texts": [
+        "app::tests::safety_buffering::safety_retry_can_retry_a_first_turn_a_second_time",
+        "app::tests::safety_buffering::safety_retry_preserves_a_committed_steer_from_the_interrupted_turn",
+        "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+        "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+        "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement",
+        "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen",
+        "automation::service_tests::production_constructor_never_resumes_a_draining_owner",
+        "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn",
+        "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation",
+        "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+        "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding",
+        "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary",
+        "browser_servo::tests::non_effect_calls_never_enter_final_use_authority",
+        "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+        "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+        "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+        "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+        "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+        "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+        "control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity",
+        "core_error_after_started_never_releases_ambiguous_dispatch",
+        "exact_digest_abort_terminalizes_unresolved_intent",
+        "explicitly_started_rejected_queue_messages_remain_durable",
+        "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+        "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+        "registered_queue_lifecycle_starts_messages_in_fifo_order",
+        "rejected_queue_messages_remain_durable_and_block_followups",
+        "resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget",
+        "resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output",
+        "runtime::tests::automation_generation_change_during_open_remains_fail_closed",
+        "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor",
+        "runtime::tests::automation_owner_mismatch_remains_fail_closed",
+        "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation",
+        "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+        "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+        "runtime::tests::generation_change_during_open_is_fenced_before_serving",
+        "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe",
+        "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane",
+        "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open",
+        "runtime::tests::unavailable_automation_store_degrades_without_startup_failure",
+        "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error",
+        "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress",
+        "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it",
+        "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+        "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent",
+        "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership",
+        "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption",
+        "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences"
+      ],
+      "panic_excerpts": [
+        {
+          "line": 3062,
+          "excerpt": "2026-11-01T17:33:03.8077853Z thread 'exact_digest_abort_terminalizes_unresolved_intent' (5016) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:\n2026-11-01T17:33:03.8116701Z assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))\n2026-11-01T17:33:03.8257483Z     if agent_id == fleet.agent_id)\n2026-11-01T17:33:03.8437539Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:33:03.8594995Z \n2026-11-01T17:33:03.8792710Z "
+        },
+        {
+          "line": 3143,
+          "excerpt": "2026-11-01T17:34:14.7659277Z thread 'authorized_read_rpc_is_capability_gated_and_denies_outside_root' (1684) panicked at exec-server/tests/authorized_read_rpc.rs:84:13:\n2026-11-01T17:34:14.8178251Z assertion `left == right` failed\n2026-11-01T17:34:14.8179004Z   left: -32600\n2026-11-01T17:34:14.8508169Z  right: -32603\n2026-11-01T17:34:14.8922017Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:34:14.9361267Z "
+        },
+        {
+          "line": 3324,
+          "excerpt": "2026-11-01T17:38:55.7178847Z thread 'explicitly_started_rejected_queue_messages_remain_durable' (1992) panicked at ext/queue/tests/queue_service.rs:2424:6:\n2026-11-01T17:38:55.7503865Z hook rejection must not consume an unpersisted queue item: Started { turn_id: \"01a19830-6fff-77c1-b7b4-b3612076e0f0\" }\n2026-11-01T17:38:55.7817834Z \n2026-11-01T17:38:55.7999449Z ---- rejected_queue_messages_remain_durable_and_block_followups stdout ----\n2026-11-01T17:38:55.8008762Z Error: deadline has elapsed\n2026-11-01T17:38:55.8258265Z "
+        },
+        {
+          "line": 3332,
+          "excerpt": "2026-11-01T17:38:55.8999890Z thread 'registered_queue_lifecycle_starts_messages_in_fifo_order' (7968) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:\n2026-11-01T17:38:55.9245746Z Verifications failed:\n2026-11-01T17:38:55.9548702Z - Mock #1.\n2026-11-01T17:38:55.9689074Z \tExpected range of matching incoming requests: == 3\n2026-11-01T17:38:55.9976937Z \tNumber of matched incoming requests: 1\n2026-11-01T17:38:56.0238916Z "
+        },
+        {
+          "line": 3770,
+          "excerpt": "2026-11-01T17:44:05.5353596Z thread 'automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit' (8988) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\n2026-11-01T17:44:05.5355589Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:05.5356750Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:44:05.5357277Z \n2026-11-01T17:44:05.5357877Z ---- automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen stdout ----\n2026-11-01T17:44:05.5358653Z "
+        },
+        {
+          "line": 3776,
+          "excerpt": "2026-11-01T17:44:05.5359555Z thread 'automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen' (1992) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\n2026-11-01T17:44:05.5361388Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:05.5362154Z \n2026-11-01T17:44:05.5362704Z ---- automation::service_tests::production_constructor_never_resumes_a_draining_owner stdout ----\n2026-11-01T17:44:05.5363359Z \n2026-11-01T17:44:05.5364392Z thread 'automation::service_tests::production_constructor_never_resumes_a_draining_owner' (1220) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:"
+        },
+        {
+          "line": 3781,
+          "excerpt": "2026-11-01T17:44:05.5364392Z thread 'automation::service_tests::production_constructor_never_resumes_a_draining_owner' (1220) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\n2026-11-01T17:44:05.5366535Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:05.5367456Z \n2026-11-01T17:44:05.5368143Z ---- automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement stdout ----\n2026-11-01T17:44:05.5368973Z \n2026-11-01T17:44:05.5370015Z thread 'automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement' (2680) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:"
+        },
+        {
+          "line": 3786,
+          "excerpt": "2026-11-01T17:44:05.5370015Z thread 'automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement' (2680) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\n2026-11-01T17:44:05.5371814Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:05.5372660Z \n2026-11-01T17:44:05.5373250Z ---- automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn stdout ----\n2026-11-01T17:44:05.5374060Z \n2026-11-01T17:44:05.5375294Z thread 'automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn' (5716) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:"
+        },
+        {
+          "line": 3791,
+          "excerpt": "2026-11-01T17:44:05.5375294Z thread 'automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn' (5716) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\n2026-11-01T17:44:05.5377152Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:05.5378034Z \n2026-11-01T17:44:05.5378720Z ---- automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen stdout ----\n2026-11-01T17:44:05.5379576Z \n2026-11-01T17:44:05.5380881Z thread 'automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen' (5332) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:"
+        },
+        {
+          "line": 3796,
+          "excerpt": "2026-11-01T17:44:05.5380881Z thread 'automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen' (5332) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\n2026-11-01T17:44:05.5395618Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:05.5396470Z \n2026-11-01T17:44:05.5397412Z ---- automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation stdout ----\n2026-11-01T17:44:05.5398304Z \n2026-11-01T17:44:05.5399355Z thread 'automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation' (7000) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:"
+        },
+        {
+          "line": 3801,
+          "excerpt": "2026-11-01T17:44:05.5399355Z thread 'automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation' (7000) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\n2026-11-01T17:44:05.5401176Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:05.5401999Z \n2026-11-01T17:44:05.5402460Z ---- browser_servo::tests::non_effect_calls_never_enter_final_use_authority stdout ----\n2026-11-01T17:44:05.5403117Z \n2026-11-01T17:44:05.5403931Z thread 'browser_servo::tests::non_effect_calls_never_enter_final_use_authority' (6332) panicked at hepta-agentd/src\\browser_servo.rs:906:10:"
+        },
+        {
+          "line": 3806,
+          "excerpt": "2026-11-01T17:44:05.5403931Z thread 'browser_servo::tests::non_effect_calls_never_enter_final_use_authority' (6332) panicked at hepta-agentd/src\\browser_servo.rs:906:10:\n2026-11-01T17:44:05.5405418Z authority: UnsafeStateDirectory\n2026-11-01T17:44:05.5452732Z \n2026-11-01T17:44:05.5473195Z ---- browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding stdout ----\n2026-11-01T17:44:05.5515465Z \n2026-11-01T17:44:05.5667357Z thread 'browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding' (9376) panicked at hepta-agentd/src\\browser_servo.rs:906:10:"
+        },
+        {
+          "line": 3811,
+          "excerpt": "2026-11-01T17:44:05.5667357Z thread 'browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding' (9376) panicked at hepta-agentd/src\\browser_servo.rs:906:10:\n2026-11-01T17:44:05.5716787Z authority: UnsafeStateDirectory\n2026-11-01T17:44:05.5851998Z \n2026-11-01T17:44:05.5925946Z ---- browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary stdout ----\n2026-11-01T17:44:05.6034077Z \n2026-11-01T17:44:05.6162408Z thread 'browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary' (2900) panicked at hepta-agentd/src\\browser_servo.rs:906:10:"
+        },
+        {
+          "line": 3816,
+          "excerpt": "2026-11-01T17:44:05.6162408Z thread 'browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary' (2900) panicked at hepta-agentd/src\\browser_servo.rs:906:10:\n2026-11-01T17:44:05.6294611Z authority: UnsafeStateDirectory\n2026-11-01T17:44:05.6313741Z \n2026-11-01T17:44:05.6337477Z ---- cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records stdout ----\n2026-11-01T17:44:05.6338642Z \n2026-11-01T17:44:05.6350257Z thread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (5364) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:"
+        },
+        {
+          "line": 3821,
+          "excerpt": "2026-11-01T17:44:05.6350257Z thread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (5364) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\n2026-11-01T17:44:05.6353422Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n2026-11-01T17:44:05.6354898Z \n2026-11-01T17:44:05.6382124Z ---- cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends stdout ----\n2026-11-01T17:44:05.6446611Z \n2026-11-01T17:44:05.6457583Z thread 'cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends' (7588) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:"
+        },
+        {
+          "line": 3826,
+          "excerpt": "2026-11-01T17:44:05.6457583Z thread 'cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends' (7588) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\n2026-11-01T17:44:05.6459443Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n2026-11-01T17:44:05.6473534Z \n2026-11-01T17:44:05.6488220Z ---- cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment stdout ----\n2026-11-01T17:44:05.6492788Z \n2026-11-01T17:44:05.6498454Z thread 'cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment' (4020) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:"
+        },
+        {
+          "line": 3831,
+          "excerpt": "2026-11-01T17:44:05.6498454Z thread 'cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment' (4020) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\n2026-11-01T17:44:05.6527682Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n2026-11-01T17:44:05.6528354Z \n2026-11-01T17:44:05.6534188Z ---- cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently stdout ----\n2026-11-01T17:44:05.6548725Z \n2026-11-01T17:44:05.6556227Z thread 'cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently' (4888) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:"
+        },
+        {
+          "line": 3836,
+          "excerpt": "2026-11-01T17:44:05.6556227Z thread 'cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently' (4888) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\n2026-11-01T17:44:05.6574952Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n2026-11-01T17:44:05.6580431Z \n2026-11-01T17:44:05.6594854Z ---- cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict stdout ----\n2026-11-01T17:44:05.6595679Z \n2026-11-01T17:44:05.6651941Z thread 'cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict' (9612) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:"
+        },
+        {
+          "line": 3841,
+          "excerpt": "2026-11-01T17:44:05.6651941Z thread 'cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict' (9612) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\n2026-11-01T17:44:05.6731673Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n2026-11-01T17:44:05.6781844Z \n2026-11-01T17:44:05.6846538Z ---- cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation stdout ----\n2026-11-01T17:44:05.6880225Z \n2026-11-01T17:44:05.6965916Z thread 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation' (6424) panicked at hepta-agentd/src\\cognitive_ranker_tests.rs:506:74:"
+        },
+        {
+          "line": 3846,
+          "excerpt": "2026-11-01T17:44:05.6965916Z thread 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation' (6424) panicked at hepta-agentd/src\\cognitive_ranker_tests.rs:506:74:\n2026-11-01T17:44:05.6987656Z called `Result::unwrap()` on an `Err` value: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:05.6996035Z \n2026-11-01T17:44:05.7013741Z \n2026-11-01T17:44:05.7024330Z failures:\n2026-11-01T17:44:05.7062683Z     automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit"
+        },
+        {
+          "line": 3964,
+          "excerpt": "2026-11-01T17:44:06.7376193Z thread 'prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host' (6844) panicked at hepta-agentd/src\\prompt_runtime_tests.rs:511:33:\n2026-11-01T17:44:06.7473945Z pipeline owner: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:44:06.7519897Z \n2026-11-01T17:44:06.7656596Z ---- plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently stdout ----\n2026-11-01T17:44:06.7714046Z \n2026-11-01T17:44:06.7823639Z thread 'plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently' (5412) panicked at hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80:"
+        },
+        {
+          "line": 3969,
+          "excerpt": "2026-11-01T17:44:06.7823639Z thread 'plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently' (5412) panicked at hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80:\n2026-11-01T17:44:06.7825713Z state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.7877861Z \n2026-11-01T17:44:06.7926788Z ---- runtime::tests::automation_owner_mismatch_remains_fail_closed stdout ----\n2026-11-01T17:44:06.7951048Z \n2026-11-01T17:44:06.8017756Z thread 'runtime::tests::automation_owner_mismatch_remains_fail_closed' (7044) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 3974,
+          "excerpt": "2026-11-01T17:44:06.8017756Z thread 'runtime::tests::automation_owner_mismatch_remains_fail_closed' (7044) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8129642Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8130967Z \n2026-11-01T17:44:06.8166525Z ---- runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation stdout ----\n2026-11-01T17:44:06.8219120Z \n2026-11-01T17:44:06.8246368Z thread 'runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation' (5712) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 3979,
+          "excerpt": "2026-11-01T17:44:06.8246368Z thread 'runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation' (5712) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8348927Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8456847Z \n2026-11-01T17:44:06.8536309Z ---- runtime::tests::automation_generation_change_during_open_remains_fail_closed stdout ----\n2026-11-01T17:44:06.8554670Z \n2026-11-01T17:44:06.8563424Z thread 'runtime::tests::automation_generation_change_during_open_remains_fail_closed' (1152) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 3984,
+          "excerpt": "2026-11-01T17:44:06.8563424Z thread 'runtime::tests::automation_generation_change_during_open_remains_fail_closed' (1152) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8571915Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8600171Z \n2026-11-01T17:44:06.8713385Z ---- runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor stdout ----\n2026-11-01T17:44:06.8806629Z \n2026-11-01T17:44:06.8861813Z thread 'runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor' (9544) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 3989,
+          "excerpt": "2026-11-01T17:44:06.8861813Z thread 'runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor' (9544) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8888903Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8892109Z \n2026-11-01T17:44:06.8897991Z ---- runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store stdout ----\n2026-11-01T17:44:06.8900519Z \n2026-11-01T17:44:06.8902010Z thread 'runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store' (2212) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 3994,
+          "excerpt": "2026-11-01T17:44:06.8902010Z thread 'runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store' (2212) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8913503Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8915617Z \n2026-11-01T17:44:06.8920527Z ---- runtime::tests::generation_change_during_open_is_fenced_before_serving stdout ----\n2026-11-01T17:44:06.8921318Z \n2026-11-01T17:44:06.8924405Z thread 'runtime::tests::generation_change_during_open_is_fenced_before_serving' (7272) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 3999,
+          "excerpt": "2026-11-01T17:44:06.8924405Z thread 'runtime::tests::generation_change_during_open_is_fenced_before_serving' (7272) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8936559Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8947785Z \n2026-11-01T17:44:06.8950961Z ---- runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation stdout ----\n2026-11-01T17:44:06.8954603Z \n2026-11-01T17:44:06.8956200Z thread 'runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation' (8664) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 4004,
+          "excerpt": "2026-11-01T17:44:06.8956200Z thread 'runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation' (8664) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8960290Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8961962Z \n2026-11-01T17:44:06.8963154Z ---- runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe stdout ----\n2026-11-01T17:44:06.8964439Z \n2026-11-01T17:44:06.8968095Z thread 'runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe' (9068) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 4009,
+          "excerpt": "2026-11-01T17:44:06.8968095Z thread 'runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe' (9068) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8970545Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8971380Z \n2026-11-01T17:44:06.8972555Z ---- runtime::tests::stale_generation_is_fenced_before_cognitive_store_open stdout ----\n2026-11-01T17:44:06.8973242Z \n2026-11-01T17:44:06.8973982Z thread 'runtime::tests::stale_generation_is_fenced_before_cognitive_store_open' (6908) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 4014,
+          "excerpt": "2026-11-01T17:44:06.8973982Z thread 'runtime::tests::stale_generation_is_fenced_before_cognitive_store_open' (6908) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8975632Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8976677Z \n2026-11-01T17:44:06.8977225Z ---- runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane stdout ----\n2026-11-01T17:44:06.8977949Z \n2026-11-01T17:44:06.8978756Z thread 'runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane' (10132) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 4019,
+          "excerpt": "2026-11-01T17:44:06.8978756Z thread 'runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane' (10132) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8980589Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8981413Z \n2026-11-01T17:44:06.8981949Z ---- runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error stdout ----\n2026-11-01T17:44:06.8982839Z \n2026-11-01T17:44:06.8983726Z thread 'runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error' (7148) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 4024,
+          "excerpt": "2026-11-01T17:44:06.8983726Z thread 'runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error' (7148) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8985475Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8986363Z \n2026-11-01T17:44:06.8986860Z ---- runtime::tests::unavailable_automation_store_degrades_without_startup_failure stdout ----\n2026-11-01T17:44:06.8987584Z \n2026-11-01T17:44:06.8988523Z thread 'runtime::tests::unavailable_automation_store_degrades_without_startup_failure' (1236) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 4029,
+          "excerpt": "2026-11-01T17:44:06.8988523Z thread 'runtime::tests::unavailable_automation_store_degrades_without_startup_failure' (1236) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:44:06.8990220Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:44:06.8991042Z \n2026-11-01T17:44:06.8991049Z \n2026-11-01T17:44:06.8991207Z failures:\n2026-11-01T17:44:06.8992014Z     plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
+        },
+        {
+          "line": 4068,
+          "excerpt": "2026-11-01T17:44:06.9083411Z thread 'state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress' (2824) panicked at hepta-agentd/src\\state_isolation_tests.rs:123:46:\n2026-11-01T17:44:06.9085327Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:44:06.9086537Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:44:06.9087165Z \n2026-11-01T17:44:06.9087665Z ---- state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it stdout ----\n2026-11-01T17:44:06.9088645Z "
+        },
+        {
+          "line": 4074,
+          "excerpt": "2026-11-01T17:44:06.9089524Z thread 'state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it' (7668) panicked at hepta-agentd/src\\state_isolation_tests.rs:220:47:\n2026-11-01T17:44:06.9091261Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:44:06.9092135Z \n2026-11-01T17:44:06.9092766Z ---- state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access stdout ----\n2026-11-01T17:44:06.9093568Z \n2026-11-01T17:44:06.9094565Z thread 'state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access' (4588) panicked at hepta-agentd/src\\state_isolation_tests.rs:639:47:"
+        },
+        {
+          "line": 4079,
+          "excerpt": "2026-11-01T17:44:06.9094565Z thread 'state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access' (4588) panicked at hepta-agentd/src\\state_isolation_tests.rs:639:47:\n2026-11-01T17:44:06.9096386Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:44:06.9097252Z \n2026-11-01T17:44:06.9097773Z ---- state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership stdout ----\n2026-11-01T17:44:06.9098760Z \n2026-11-01T17:44:06.9099687Z thread 'state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership' (4408) panicked at hepta-agentd/src\\state_isolation_tests.rs:659:47:"
+        },
+        {
+          "line": 4084,
+          "excerpt": "2026-11-01T17:44:06.9099687Z thread 'state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership' (4408) panicked at hepta-agentd/src\\state_isolation_tests.rs:659:47:\n2026-11-01T17:44:06.9101528Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:44:06.9102409Z \n2026-11-01T17:44:06.9102935Z ---- state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent stdout ----\n2026-11-01T17:44:06.9103645Z \n2026-11-01T17:44:06.9104539Z thread 'state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent' (2540) panicked at hepta-agentd/src\\state_isolation_tests.rs:163:47:"
+        },
+        {
+          "line": 4089,
+          "excerpt": "2026-11-01T17:44:06.9104539Z thread 'state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent' (2540) panicked at hepta-agentd/src\\state_isolation_tests.rs:163:47:\n2026-11-01T17:44:06.9106269Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:44:06.9107161Z \n2026-11-01T17:44:06.9107636Z ---- state::isolation_tests::serving_agent_survives_unrelated_registry_corruption stdout ----\n2026-11-01T17:44:06.9108583Z \n2026-11-01T17:44:06.9109469Z thread 'state::isolation_tests::serving_agent_survives_unrelated_registry_corruption' (1784) panicked at hepta-agentd/src\\state_isolation_tests.rs:92:46:"
+        },
+        {
+          "line": 4094,
+          "excerpt": "2026-11-01T17:44:06.9109469Z thread 'state::isolation_tests::serving_agent_survives_unrelated_registry_corruption' (1784) panicked at hepta-agentd/src\\state_isolation_tests.rs:92:46:\n2026-11-01T17:44:06.9111207Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:44:06.9112271Z \n2026-11-01T17:44:06.9112753Z ---- state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences stdout ----\n2026-11-01T17:44:06.9113432Z \n2026-11-01T17:44:06.9114309Z thread 'state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences' (5400) panicked at hepta-agentd/src\\state_isolation_tests.rs:174:46:"
+        },
+        {
+          "line": 4099,
+          "excerpt": "2026-11-01T17:44:06.9114309Z thread 'state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences' (5400) panicked at hepta-agentd/src\\state_isolation_tests.rs:174:46:\n2026-11-01T17:44:06.9116288Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:44:06.9117194Z \n2026-11-01T17:44:06.9117201Z \n2026-11-01T17:44:06.9117328Z failures:\n2026-11-01T17:44:06.9118264Z     state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress"
+        },
+        {
+          "line": 4257,
+          "excerpt": "2026-11-01T17:45:47.2579935Z thread 'app::tests::safety_buffering::safety_retry_preserves_a_committed_steer_from_the_interrupted_turn' (1844) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:45:47.2581355Z expected 5 Responses API requests\n2026-11-01T17:45:47.2582965Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:45:47.2583547Z \n2026-11-01T17:45:47.2583553Z \n2026-11-01T17:45:47.2583670Z failures:"
+        },
+        {
+          "line": 4805,
+          "excerpt": "2026-11-01T17:45:47.3660725Z thread 'app::tests::safety_buffering::safety_retry_preserves_a_committed_steer_from_the_interrupted_turn' (2608) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:45:47.3661987Z expected 5 Responses API requests\n2026-11-01T17:45:47.3662597Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:45:47.3663124Z \n2026-11-01T17:45:47.3663135Z \n2026-11-01T17:45:47.3663244Z failures:"
+        },
+        {
+          "line": 5353,
+          "excerpt": "2026-11-01T17:45:47.4519671Z thread 'app::tests::safety_buffering::safety_retry_preserves_a_committed_steer_from_the_interrupted_turn' (7620) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:45:47.4521792Z expected 5 Responses API requests\n2026-11-01T17:45:47.4522425Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:45:47.4524073Z \n2026-11-01T17:45:47.4524080Z \n2026-11-01T17:45:47.4524206Z failures:"
+        },
+        {
+          "line": 5882,
+          "excerpt": "2026-11-01T17:45:47.4940268Z thread 'app::tests::safety_buffering::safety_retry_forks_after_the_previous_turn_and_uses_faster_settings' (6804) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:45:47.4940460Z expected 4 Responses API requests\n2026-11-01T17:45:47.4941086Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:45:47.4941104Z \n2026-11-01T17:45:47.4941109Z \n2026-11-01T17:45:47.4941231Z failures:"
+        },
+        {
+          "line": 6429,
+          "excerpt": "2026-11-01T17:45:47.5271897Z thread 'app::tests::safety_buffering::safety_retry_forks_after_the_previous_turn_and_uses_faster_settings' (4080) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:45:47.5272052Z expected 4 Responses API requests\n2026-11-01T17:45:47.5272394Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:45:47.5272401Z \n2026-11-01T17:45:47.5272407Z \n2026-11-01T17:45:47.5272522Z failures:"
+        },
+        {
+          "line": 6976,
+          "excerpt": "2026-11-01T17:45:47.5566515Z thread 'app::tests::safety_buffering::safety_retry_forks_after_the_previous_turn_and_uses_faster_settings' (3392) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:45:47.5566664Z expected 4 Responses API requests\n2026-11-01T17:45:47.5567011Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:45:47.5567018Z \n2026-11-01T17:45:47.5567023Z \n2026-11-01T17:45:47.5567132Z failures:"
+        },
+        {
+          "line": 7531,
+          "excerpt": "2026-11-01T17:46:10.5455607Z thread 'app::tests::safety_buffering::safety_retry_replays_older_interruption_notices' (1460) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:46:10.5459459Z expected 4 Responses API requests\n2026-11-01T17:46:10.5459971Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:10.5463965Z \n2026-11-01T17:46:10.5463973Z \n2026-11-01T17:46:10.5470036Z failures:"
+        },
+        {
+          "line": 8054,
+          "excerpt": "2026-11-01T17:46:10.6555735Z thread 'app::tests::safety_buffering::safety_retry_replays_older_interruption_notices' (5192) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:46:10.6556923Z expected 4 Responses API requests\n2026-11-01T17:46:10.6557574Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:10.6558113Z \n2026-11-01T17:46:10.6558120Z \n2026-11-01T17:46:10.6558236Z failures:"
+        },
+        {
+          "line": 8577,
+          "excerpt": "2026-11-01T17:46:10.8163347Z thread 'app::tests::safety_buffering::safety_retry_replays_older_interruption_notices' (6200) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:46:10.8164004Z expected 4 Responses API requests\n2026-11-01T17:46:10.8164399Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:10.8164416Z \n2026-11-01T17:46:10.8164422Z \n2026-11-01T17:46:10.8164542Z failures:"
+        },
+        {
+          "line": 9560,
+          "excerpt": "2026-11-01T17:46:10.9213634Z thread 'resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output' (7084) panicked at tui/src\\resume_picker_transcript_preview_tests.rs:366:14:\n2026-11-01T17:46:10.9214368Z start turn: Server { method: \"turn/start\", source: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" } }\n2026-11-01T17:46:10.9214694Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:10.9214711Z \n2026-11-01T17:46:10.9214716Z \n2026-11-01T17:46:10.9214820Z failures:"
+        },
+        {
+          "line": 10117,
+          "excerpt": "2026-11-01T17:46:10.9553713Z thread 'resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output' (9580) panicked at tui/src\\resume_picker_transcript_preview_tests.rs:366:14:\n2026-11-01T17:46:10.9554547Z start turn: Server { method: \"turn/start\", source: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" } }\n2026-11-01T17:46:10.9554886Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:10.9554892Z \n2026-11-01T17:46:10.9554903Z \n2026-11-01T17:46:10.9555010Z failures:"
+        },
+        {
+          "line": 10674,
+          "excerpt": "2026-11-01T17:46:10.9894132Z thread 'resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output' (7236) panicked at tui/src\\resume_picker_transcript_preview_tests.rs:366:14:\n2026-11-01T17:46:10.9894860Z start turn: Server { method: \"turn/start\", source: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" } }\n2026-11-01T17:46:10.9895205Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:10.9895212Z \n2026-11-01T17:46:10.9895217Z \n2026-11-01T17:46:10.9895333Z failures:"
+        },
+        {
+          "line": 10775,
+          "excerpt": "2026-11-01T17:46:16.3466513Z thread 'app::tests::safety_buffering::safety_retry_forks_first_turn_and_continues_without_duplicating_prompt' (2540) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:46:16.3475516Z expected 3 Responses API requests\n2026-11-01T17:46:16.3476977Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:16.3478363Z \n2026-11-01T17:46:16.3481885Z \n2026-11-01T17:46:16.3488915Z failures:"
+        },
+        {
+          "line": 11279,
+          "excerpt": "2026-11-01T17:46:16.4941382Z thread 'app::tests::safety_buffering::safety_retry_forks_first_turn_and_continues_without_duplicating_prompt' (7840) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:46:16.4942862Z expected 3 Responses API requests\n2026-11-01T17:46:16.4944069Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:16.4944963Z \n2026-11-01T17:46:16.4945130Z \n2026-11-01T17:46:16.4945399Z failures:"
+        },
+        {
+          "line": 11783,
+          "excerpt": "2026-11-01T17:46:16.5556683Z thread 'app::tests::safety_buffering::safety_retry_forks_first_turn_and_continues_without_duplicating_prompt' (5628) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:46:16.5556844Z expected 3 Responses API requests\n2026-11-01T17:46:16.5557187Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:16.5557209Z \n2026-11-01T17:46:16.5557214Z \n2026-11-01T17:46:16.5557321Z failures:"
+        },
+        {
+          "line": 12299,
+          "excerpt": "2026-11-01T17:46:18.2872856Z thread 'app::tests::safety_buffering::safety_retry_can_retry_a_first_turn_a_second_time' (8300) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:46:18.2874086Z expected 4 Responses API requests\n2026-11-01T17:46:18.2874707Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:18.2875230Z \n2026-11-01T17:46:18.2875242Z \n2026-11-01T17:46:18.2875351Z failures:"
+        },
+        {
+          "line": 12818,
+          "excerpt": "2026-11-01T17:46:18.3901608Z thread 'app::tests::safety_buffering::safety_retry_can_retry_a_first_turn_a_second_time' (8280) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:46:18.3904104Z expected 4 Responses API requests\n2026-11-01T17:46:18.3904786Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:18.3905327Z \n2026-11-01T17:46:18.3905333Z \n2026-11-01T17:46:18.3905444Z failures:"
+        },
+        {
+          "line": 13337,
+          "excerpt": "2026-11-01T17:46:18.4616644Z thread 'app::tests::safety_buffering::safety_retry_can_retry_a_first_turn_a_second_time' (7852) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:\n2026-11-01T17:46:18.4616735Z expected 4 Responses API requests\n2026-11-01T17:46:18.4616932Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:18.4616936Z \n2026-11-01T17:46:18.4616939Z \n2026-11-01T17:46:18.4617022Z failures:"
+        },
+        {
+          "line": 14321,
+          "excerpt": "2026-11-01T17:46:22.7282929Z thread 'resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget' (9628) panicked at tui/src\\resume_picker_transcript_preview_tests.rs:366:14:\n2026-11-01T17:46:22.7283999Z start turn: Server { method: \"turn/start\", source: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" } }\n2026-11-01T17:46:22.7284971Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:22.7285262Z \n2026-11-01T17:46:22.7285266Z \n2026-11-01T17:46:22.7285335Z failures:"
+        },
+        {
+          "line": 14864,
+          "excerpt": "2026-11-01T17:46:22.7815931Z thread 'resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget' (1404) panicked at tui/src\\resume_picker_transcript_preview_tests.rs:366:14:\n2026-11-01T17:46:22.7816970Z start turn: Server { method: \"turn/start\", source: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" } }\n2026-11-01T17:46:22.7817315Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:22.7817322Z \n2026-11-01T17:46:22.7817456Z \n2026-11-01T17:46:22.7817576Z failures:"
+        },
+        {
+          "line": 15407,
+          "excerpt": "2026-11-01T17:46:22.8101760Z thread 'resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget' (7088) panicked at tui/src\\resume_picker_transcript_preview_tests.rs:366:14:\n2026-11-01T17:46:22.8102552Z start turn: Server { method: \"turn/start\", source: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" } }\n2026-11-01T17:46:22.8102910Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:22.8102926Z \n2026-11-01T17:46:22.8102931Z \n2026-11-01T17:46:22.8103042Z failures:"
+        },
+        {
+          "line": 15845,
+          "excerpt": "2026-11-01T17:46:36.6522955Z thread 'authorized_read_rpc_is_capability_gated_and_denies_outside_root' (1684) panicked at exec-server/tests/authorized_read_rpc.rs:84:13:\n2026-11-01T17:46:36.6524638Z assertion `left == right` failed\n2026-11-01T17:46:36.6525490Z   left: -32600\n2026-11-01T17:46:36.6525791Z  right: -32603\n2026-11-01T17:46:36.6526577Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:36.6526933Z "
+        },
+        {
+          "line": 15915,
+          "excerpt": "2026-11-01T17:46:36.7401898Z thread 'explicitly_started_rejected_queue_messages_remain_durable' (1992) panicked at ext/queue/tests/queue_service.rs:2424:6:\n2026-11-01T17:46:36.7403412Z hook rejection must not consume an unpersisted queue item: Started { turn_id: \"01a19830-6fff-77c1-b7b4-b3612076e0f0\" }\n2026-11-01T17:46:36.7404170Z \n2026-11-01T17:46:36.7404511Z ---- rejected_queue_messages_remain_durable_and_block_followups stdout ----\n2026-11-01T17:46:36.7405152Z Error: deadline has elapsed\n2026-11-01T17:46:36.7405390Z "
+        },
+        {
+          "line": 15923,
+          "excerpt": "2026-11-01T17:46:36.7407180Z thread 'registered_queue_lifecycle_starts_messages_in_fifo_order' (7968) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:\n2026-11-01T17:46:36.7408417Z Verifications failed:\n2026-11-01T17:46:36.7408721Z - Mock #1.\n2026-11-01T17:46:36.7409064Z \tExpected range of matching incoming requests: == 3\n2026-11-01T17:46:36.7409577Z \tNumber of matched incoming requests: 1\n2026-11-01T17:46:36.7410545Z "
+        },
+        {
+          "line": 16011,
+          "excerpt": "2026-11-01T17:46:36.8184727Z thread 'prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host' (6844) panicked at hepta-agentd/src\\prompt_runtime_tests.rs:511:33:\n2026-11-01T17:46:36.8185471Z pipeline owner: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:46:36.8185696Z \n2026-11-01T17:46:36.8186047Z ---- plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently stdout ----\n2026-11-01T17:46:36.8186504Z \n2026-11-01T17:46:36.8187281Z thread 'plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently' (5412) panicked at hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80:"
+        },
+        {
+          "line": 16016,
+          "excerpt": "2026-11-01T17:46:36.8187281Z thread 'plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently' (5412) panicked at hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80:\n2026-11-01T17:46:36.8189119Z state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8189843Z \n2026-11-01T17:46:36.8190221Z ---- runtime::tests::automation_owner_mismatch_remains_fail_closed stdout ----\n2026-11-01T17:46:36.8190768Z \n2026-11-01T17:46:36.8191460Z thread 'runtime::tests::automation_owner_mismatch_remains_fail_closed' (7044) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16021,
+          "excerpt": "2026-11-01T17:46:36.8191460Z thread 'runtime::tests::automation_owner_mismatch_remains_fail_closed' (7044) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8193175Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8193955Z \n2026-11-01T17:46:36.8194454Z ---- runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation stdout ----\n2026-11-01T17:46:36.8195408Z \n2026-11-01T17:46:36.8196226Z thread 'runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation' (5712) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16026,
+          "excerpt": "2026-11-01T17:46:36.8196226Z thread 'runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation' (5712) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8197807Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8198575Z \n2026-11-01T17:46:36.8200045Z ---- runtime::tests::automation_generation_change_during_open_remains_fail_closed stdout ----\n2026-11-01T17:46:36.8200774Z \n2026-11-01T17:46:36.8201864Z thread 'runtime::tests::automation_generation_change_during_open_remains_fail_closed' (1152) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16031,
+          "excerpt": "2026-11-01T17:46:36.8201864Z thread 'runtime::tests::automation_generation_change_during_open_remains_fail_closed' (1152) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8203505Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8204284Z \n2026-11-01T17:46:36.8204727Z ---- runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor stdout ----\n2026-11-01T17:46:36.8205366Z \n2026-11-01T17:46:36.8206131Z thread 'runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor' (9544) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16036,
+          "excerpt": "2026-11-01T17:46:36.8206131Z thread 'runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor' (9544) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8207683Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8208474Z \n2026-11-01T17:46:36.8208976Z ---- runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store stdout ----\n2026-11-01T17:46:36.8209677Z \n2026-11-01T17:46:36.8210508Z thread 'runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store' (2212) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16041,
+          "excerpt": "2026-11-01T17:46:36.8210508Z thread 'runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store' (2212) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8212326Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8213120Z \n2026-11-01T17:46:36.8213542Z ---- runtime::tests::generation_change_during_open_is_fenced_before_serving stdout ----\n2026-11-01T17:46:36.8214134Z \n2026-11-01T17:46:36.8214888Z thread 'runtime::tests::generation_change_during_open_is_fenced_before_serving' (7272) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16046,
+          "excerpt": "2026-11-01T17:46:36.8214888Z thread 'runtime::tests::generation_change_during_open_is_fenced_before_serving' (7272) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8216389Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8217144Z \n2026-11-01T17:46:36.8217689Z ---- runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation stdout ----\n2026-11-01T17:46:36.8218414Z \n2026-11-01T17:46:36.8219309Z thread 'runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation' (8664) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16051,
+          "excerpt": "2026-11-01T17:46:36.8219309Z thread 'runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation' (8664) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8221012Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8222075Z \n2026-11-01T17:46:36.8222620Z ---- runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe stdout ----\n2026-11-01T17:46:36.8223334Z \n2026-11-01T17:46:36.8224208Z thread 'runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe' (9068) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16056,
+          "excerpt": "2026-11-01T17:46:36.8224208Z thread 'runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe' (9068) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8225858Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8226625Z \n2026-11-01T17:46:36.8227044Z ---- runtime::tests::stale_generation_is_fenced_before_cognitive_store_open stdout ----\n2026-11-01T17:46:36.8227634Z \n2026-11-01T17:46:36.8228332Z thread 'runtime::tests::stale_generation_is_fenced_before_cognitive_store_open' (6908) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16061,
+          "excerpt": "2026-11-01T17:46:36.8228332Z thread 'runtime::tests::stale_generation_is_fenced_before_cognitive_store_open' (6908) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8229793Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8230442Z \n2026-11-01T17:46:36.8230844Z ---- runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane stdout ----\n2026-11-01T17:46:36.8231488Z \n2026-11-01T17:46:36.8232826Z thread 'runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane' (10132) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16066,
+          "excerpt": "2026-11-01T17:46:36.8232826Z thread 'runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane' (10132) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8234339Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8235080Z \n2026-11-01T17:46:36.8235559Z ---- runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error stdout ----\n2026-11-01T17:46:36.8237328Z \n2026-11-01T17:46:36.8238198Z thread 'runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error' (7148) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16071,
+          "excerpt": "2026-11-01T17:46:36.8238198Z thread 'runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error' (7148) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8239838Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8240591Z \n2026-11-01T17:46:36.8241057Z ---- runtime::tests::unavailable_automation_store_degrades_without_startup_failure stdout ----\n2026-11-01T17:46:36.8241921Z \n2026-11-01T17:46:36.8242724Z thread 'runtime::tests::unavailable_automation_store_degrades_without_startup_failure' (1236) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+        },
+        {
+          "line": 16076,
+          "excerpt": "2026-11-01T17:46:36.8242724Z thread 'runtime::tests::unavailable_automation_store_degrades_without_startup_failure' (1236) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\n2026-11-01T17:46:36.8244356Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n2026-11-01T17:46:36.8245146Z \n2026-11-01T17:46:36.8245152Z \n2026-11-01T17:46:36.8245278Z failures:\n2026-11-01T17:46:36.8245993Z     plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
+        },
+        {
+          "line": 16115,
+          "excerpt": "2026-11-01T17:46:36.8270968Z thread 'state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress' (2824) panicked at hepta-agentd/src\\state_isolation_tests.rs:123:46:\n2026-11-01T17:46:36.8272394Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:46:36.8273085Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:36.8273378Z \n2026-11-01T17:46:36.8273642Z ---- state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it stdout ----\n2026-11-01T17:46:36.8273994Z "
+        },
+        {
+          "line": 16121,
+          "excerpt": "2026-11-01T17:46:36.8274460Z thread 'state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it' (7668) panicked at hepta-agentd/src\\state_isolation_tests.rs:220:47:\n2026-11-01T17:46:36.8275365Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:46:36.8275826Z \n2026-11-01T17:46:36.8276148Z ---- state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access stdout ----\n2026-11-01T17:46:36.8276560Z \n2026-11-01T17:46:36.8277086Z thread 'state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access' (4588) panicked at hepta-agentd/src\\state_isolation_tests.rs:639:47:"
+        },
+        {
+          "line": 16126,
+          "excerpt": "2026-11-01T17:46:36.8277086Z thread 'state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access' (4588) panicked at hepta-agentd/src\\state_isolation_tests.rs:639:47:\n2026-11-01T17:46:36.8278057Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:46:36.8278511Z \n2026-11-01T17:46:36.8278777Z ---- state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership stdout ----\n2026-11-01T17:46:36.8279148Z \n2026-11-01T17:46:36.8279624Z thread 'state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership' (4408) panicked at hepta-agentd/src\\state_isolation_tests.rs:659:47:"
+        },
+        {
+          "line": 16131,
+          "excerpt": "2026-11-01T17:46:36.8279624Z thread 'state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership' (4408) panicked at hepta-agentd/src\\state_isolation_tests.rs:659:47:\n2026-11-01T17:46:36.8280922Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:46:36.8282021Z \n2026-11-01T17:46:36.8282532Z ---- state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent stdout ----\n2026-11-01T17:46:36.8283269Z \n2026-11-01T17:46:36.8284155Z thread 'state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent' (2540) panicked at hepta-agentd/src\\state_isolation_tests.rs:163:47:"
+        },
+        {
+          "line": 16136,
+          "excerpt": "2026-11-01T17:46:36.8284155Z thread 'state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent' (2540) panicked at hepta-agentd/src\\state_isolation_tests.rs:163:47:\n2026-11-01T17:46:36.8285907Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:46:36.8286770Z \n2026-11-01T17:46:36.8287253Z ---- state::isolation_tests::serving_agent_survives_unrelated_registry_corruption stdout ----\n2026-11-01T17:46:36.8287906Z \n2026-11-01T17:46:36.8288777Z thread 'state::isolation_tests::serving_agent_survives_unrelated_registry_corruption' (1784) panicked at hepta-agentd/src\\state_isolation_tests.rs:92:46:"
+        },
+        {
+          "line": 16141,
+          "excerpt": "2026-11-01T17:46:36.8288777Z thread 'state::isolation_tests::serving_agent_survives_unrelated_registry_corruption' (1784) panicked at hepta-agentd/src\\state_isolation_tests.rs:92:46:\n2026-11-01T17:46:36.8290435Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:46:36.8291273Z \n2026-11-01T17:46:36.8292010Z ---- state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences stdout ----\n2026-11-01T17:46:36.8293612Z \n2026-11-01T17:46:36.8294121Z thread 'state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences' (5400) panicked at hepta-agentd/src\\state_isolation_tests.rs:174:46:"
+        },
+        {
+          "line": 16146,
+          "excerpt": "2026-11-01T17:46:36.8294121Z thread 'state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences' (5400) panicked at hepta-agentd/src\\state_isolation_tests.rs:174:46:\n2026-11-01T17:46:36.8295085Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n2026-11-01T17:46:36.8295562Z \n2026-11-01T17:46:36.8295565Z \n2026-11-01T17:46:36.8295631Z failures:\n2026-11-01T17:46:36.8296462Z     state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress"
+        },
+        {
+          "line": 16222,
+          "excerpt": "2026-11-01T17:46:36.9676336Z thread 'exact_digest_abort_terminalizes_unresolved_intent' (5016) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:\n2026-11-01T17:46:36.9677817Z assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))\n2026-11-01T17:46:36.9678655Z     if agent_id == fleet.agent_id)\n2026-11-01T17:46:36.9679300Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T17:46:36.9679841Z \n2026-11-01T17:46:36.9679847Z "
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn.bazel-platform-selection-probe.v1",
+  "started_at_utc": "2026-11-01T18:52:30.805424+00:00",
+  "bazel_sha256": "c44a93f25398c68f904fa1d19b61d321de6c0d2f09dca375d7bc0dc9b9428403",
+  "source_sha256": "b932a2c4d875088572a6d495fe1e9a579033e483dcb04fc533127c86c7a1f8ce",
+  "scope": "Real Bazel 9 compatibility/action behavior on a synthetic Linux-hosted graph; no repository, Windows or Rust build.",
+  "fixture_sources": {
+    "MODULE.bazel": "module(name = \"hcsn_platform_selection_probe\")\n",
+    "probe.bzl": "def _ok(ctx):\n    output = ctx.actions.declare_file(ctx.label.name + \".txt\")\n    ctx.actions.write(output, ctx.label.name + \" was built\")\n    return [DefaultInfo(files = depset([output]))]\n\ndef _bad(ctx):\n    output = ctx.actions.declare_file(ctx.label.name + \".txt\")\n    ctx.actions.run_shell(\n        outputs = [output],\n        command = \"echo INTENTIONAL_COMPATIBLE_ACTION_FAILURE >&2; exit 23\",\n    )\n    return [DefaultInfo(files = depset([output]))]\n\nok = rule(implementation = _ok)\nbad = rule(implementation = _bad)\n",
+    "BUILD.bazel": "load(\":probe.bzl\", \"bad\", \"ok\")\nconstraint_setting(name = \"abi\")\nconstraint_value(name = \"msvc\", constraint_setting = \":abi\")\nconstraint_value(name = \"gnullvm\", constraint_setting = \":abi\")\nconstraint_value(name = \"unix\", constraint_setting = \":abi\")\nplatform(name = \"msvc_platform\", constraint_values = [\":msvc\"])\nplatform(name = \"gnullvm_platform\", constraint_values = [\":gnullvm\"])\nplatform(name = \"unix_platform\", constraint_values = [\":unix\"])\nok(name = \"common_ok\", tags = [\"manual\"])\nok(name = \"cross_only\", tags = [\"manual\"], target_compatible_with = [\":gnullvm\"])\nok(name = \"unix_only\", tags = [\"manual\"], target_compatible_with = [\":unix\"])\nbad(name = \"compatible_failure\", tags = [\"manual\"], target_compatible_with = [\":msvc\"])\n"
+  },
+  "cases": [
+    {
+      "name": "explicit incompatibility is a baseline failure",
+      "command": [
+        "/tmp/hcsn-bazel-platform-probe-tools/bazel-9.0.0-linux-x86_64",
+        "--batch",
+        "--ignore_all_rc_files",
+        "--output_user_root=/tmp/hcsn-bazel-platform-probe-tools/cache",
+        "--host_jvm_args=-Xmx256m",
+        "--host_jvm_args=-XX:ActiveProcessorCount=2",
+        "build",
+        "--keep_going",
+        "--lockfile_mode=off",
+        "--host_platform=//:unix_platform",
+        "--jobs=1",
+        "--spawn_strategy=local",
+        "--platforms=//:msvc_platform",
+        "--",
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only"
+      ],
+      "targets": [
+        "//:common_ok",
+        "//:cross_only",
+        "//:unix_only"
+      ],
+      "expected_success": false,
+      "expected_diagnostic": "is incompatible and cannot be built",
+      "exit_code": 32,
+      "stdout": "",
+      "stderr": "OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.\nComputing main repo mapping: \nERROR: Error computing the main repository mapping: Error accessing registry https://bcr.bazel.build/: Failed to fetch registry file https://bcr.bazel.build/modules/protobuf/33.4/MODULE.bazel: (certificate_unknown) PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target\n",
+      "passed": false
+    }
+  ],
+  "passed": false
+}

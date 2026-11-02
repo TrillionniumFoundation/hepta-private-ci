@@ -1,0 +1,202 @@
+{
+  "format": "hcsn-dependency-recovery-from-visible-session-record-v1",
+  "provenance": {
+    "source": "Previously displayed tool outputs and messages in this agent's visible conversation.",
+    "reconstructed": true,
+    "original_raw_archives_recovered": false,
+    "original_receipt_bytes_recovered": false,
+    "original_filesystem_path_exists": false,
+    "new_validation_runs_performed": false,
+    "note": "This is a newly reconstructed status record, not a byte-identical original receipt or a replacement for lost raw logs. Historical hashes do not prove that original artifacts remain available."
+  },
+  "audited_baseline": {
+    "scope": "Historical pinned local audit after accepted ZIP, zstd, i18n and YAML migrations; not an inaccessible latest remote CI log.",
+    "rustsec_commit": "2295466c4e9df26647fd67d8fa1c705ac2fc7f81",
+    "cargo_deny_version": "0.19.0",
+    "rust_version": "1.95.0",
+    "command_features": [
+      "--all-features",
+      "--locked",
+      "--offline",
+      "check",
+      "--disable-fetch"
+    ],
+    "cargo_deny_exitcode": 1,
+    "initial_advisories": 22,
+    "remaining_advisories": 6,
+    "deny_policy_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+    "yaml_cargo_lock_sha256": "53df80eb7b16cb343388de5a9c10c76595d12c01af8d0f86d5bf45952ed04d88",
+    "yaml_bazel_lock_sha256": "0f3564b380951c7dc0c9b20de3abf5f4dbc8b4bc884438572ffa2a694eaede8c"
+  },
+  "remaining": [
+    {
+      "id": "RUSTSEC-2026-0319",
+      "package": "anymap2",
+      "category": "unmaintained",
+      "patched": [],
+      "advice": "Maintained replacement recommended by the advisory: anymap3; actual Matrix parent migration still requires validation."
+    },
+    {
+      "id": "RUSTSEC-2026-0387",
+      "package": "crypto-bigint",
+      "observed_version": "0.5.5",
+      "category": "vulnerability",
+      "patched": [
+        ">=0.7.6"
+      ],
+      "observed_chain": [
+        "aws-config 1.8.12 with credentials-login",
+        "p256 0.13.2",
+        "elliptic-curve 0.13.8",
+        "crypto-bigint 0.5.5"
+      ],
+      "scope": "Timing variability in operations intended to be constant-time."
+    },
+    {
+      "id": "RUSTSEC-2026-0318",
+      "package": "matrix-sdk-crypto",
+      "observed_version": "0.18.0",
+      "category": "vulnerability",
+      "patched": [
+        ">=0.19.0"
+      ],
+      "scope": "IdentityBasedStrategy custom to-device encryption may panic when a recipient lacks cross-signing keys."
+    },
+    {
+      "id": "RUSTSEC-2026-0370",
+      "package": "zvariant",
+      "category": "unmaintained",
+      "patched": [],
+      "advice": "Migrate to zbus >=6 wire module; upgrading only standalone zvariant or zbus5 does not close this advisory."
+    },
+    {
+      "id": "RUSTSEC-2026-0371",
+      "package": "zbus_names",
+      "category": "unmaintained",
+      "patched": [],
+      "advice": "Migrate to zbus >=6 names module; upgrading only standalone zbus_names or zbus5 does not close this advisory."
+    },
+    {
+      "id": "RUSTSEC-2026-0372",
+      "package": "zvariant_derive",
+      "category": "unmaintained",
+      "patched": [],
+      "advice": "Derive macros are integrated into zbus >=6; standalone versions have no patched range."
+    }
+  ],
+  "rejected_keyring_attempt": {
+    "disposition": "Rejected; do not apply.",
+    "candidate": "Keep keyring3.6.3 and crypto-rust; switch the two Linux dependencies to linux-native-sync-persistent plus vendored.",
+    "historical_results": {
+      "metadata_exitcode": 0,
+      "cargo_deny_exitcode": 1,
+      "advisories_before": 6,
+      "advisories_after": 3,
+      "removed_ids": [
+        "RUSTSEC-2026-0370",
+        "RUSTSEC-2026-0371",
+        "RUSTSEC-2026-0372"
+      ],
+      "new_ids": [],
+      "bazel_lock_update_exitcode": 0,
+      "native_tests_passed": 3,
+      "native_tests_skipped": 0
+    },
+    "probe_scope": "Unchanged first-party credential adapter copied byte-for-byte; two mock tests and one unavailable-backend error-propagation test on an isolated empty D-Bus inside current-thread Tokio.",
+    "adapter_source_sha256": "8e345522aa87967a0ce36e6f58c09f5cbc2cd775fbccd7dd5fba2ab0e35b76ba",
+    "probe_limits": [
+      "No real Secret Service persistence or desktop unlock test",
+      "No nonblocking behavior or latency equivalence claim",
+      "No full login/rmcp-client integration build",
+      "No existing user credential/session access"
+    ],
+    "rejection_reason": "libdbus-sys0.2.7 vendored C source uses AFL-2.1 OR GPL-2.0-or-later, absent from the repository's unchanged license allow-list. The Rust binding metadata's MIT/Apache license does not describe that bundled C implementation.",
+    "rollback_observed": true,
+    "original_async_backend_retained": true,
+    "pure_rust_followup": "Official secret-service5.2.0 registry metadata still requires zbus^5. A real source/API migration to zbus6 is needed, preserving credential namespaces, encrypted transport, persistence and synchronous API semantics.",
+    "historical_original_receipt_sha256": "26c14d0ed4dc5bc5403f91ca9e95aaffce00f91120330e2faf1287bf7f490514"
+  },
+  "insufficient_aws_attempt": {
+    "disposition": "Diagnosis only; targeted official update rolled back.",
+    "candidate": "aws-sigv4 1.3.7 ->1.6.4",
+    "offline_update_exitcode": 101,
+    "offline_error": "Could not resolve required aws-credential-types^1.3.1 against the cached locked1.2.11.",
+    "network_exact_update_exitcode": 0,
+    "actual_network_command": [
+      "cargo",
+      "update",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "-p",
+      "aws-sigv4@1.3.7",
+      "--precise",
+      "1.6.4"
+    ],
+    "resolved_changes": [
+      "aws-credential-types1.2.11 ->1.3.1",
+      "aws-sigv41.3.7 ->1.6.4",
+      "aws-smithy-async1.2.14 ->1.3.1",
+      "add aws-smithy-http0.64.3",
+      "aws-smithy-runtime-api1.12.0 ->1.19.2",
+      "aws-smithy-runtime-api-macros1.0.0 ->1.2.0",
+      "aws-smithy-types1.4.7 ->1.9.1",
+      "serde1.0.228 ->1.0.229",
+      "serde_core1.0.228 ->1.0.229",
+      "serde_derive1.0.228 ->1.0.229"
+    ],
+    "registry_checksum_aws_sigv4_1_6_4": "f385da9b7757ed4c8214797ad663ff534fb622006143530aa80e21f8e06ff85c",
+    "independently_observed_official_manifest_git_blob": "041de57413b13bd930fb7f7ec41006d5973dde86",
+    "why_not_fixed": "aws-config1.8.12 credentials-login still requires p256^0.13.2. Even the observed official aws-config1.13.0 registry entry requires p256^0.13.2. The existing crypto-bigint0.5.5 parent chain remains.",
+    "new_full_audit_executed": false,
+    "native_test_executed": false,
+    "rollback_observed": true,
+    "next_candidate_not_implemented": "A checksum-verified aws-config parent compatibility patch in its private login/dpop.rs: maintained P256/RNG dependencies, ToSec1Point and fallible randomized signing; original four DPoP tests plus ES256 verification/tamper rejection and codex-aws-auth integration. Do not disable credentials-login or SigV4a, and do not invent version numbers.",
+    "historical_original_receipt_sha256": "539a3820a8e6c3184a1a38f158967194d3d2fcecee6abb5b34ba241b3ae44ee9"
+  },
+  "lost_artifacts": {
+    "note": "The following are historical identities only. The full bytes were not put into functions store and were not confirmed uploaded before executor reset.",
+    "keyring": {
+      "historical_manifest_sha256": "789ee63aa7dedec62cb85337952af1bad315dd6e8cf60adf7319aa30b3c0a61d",
+      "historical_file_count": 41,
+      "historical_gzip_bytes": 1426383,
+      "parts": [
+        {
+          "path": "keyring_evidence.tar.gz.part001",
+          "bytes": 480000,
+          "sha256": "1f5eb17731cbaf2522027041b5c85f6084deab038e03c27f6d35881922cfbe4d"
+        },
+        {
+          "path": "keyring_evidence.tar.gz.part002",
+          "bytes": 480000,
+          "sha256": "e04bd77cdf761d0a11f4de8a623baef35048f2efd4a5c198e5039d3b1fc106d4"
+        },
+        {
+          "path": "keyring_evidence.tar.gz.part003",
+          "bytes": 466383,
+          "sha256": "604c1e31df89b2ac0916f7acdb32ec12a128c1d85b48c58a11b71dfee67ff638"
+        }
+      ]
+    },
+    "crypto": {
+      "historical_manifest_sha256": "c338653e098c9ae7b3b68672dfb301e81dbeea9ff445ab97b1cb788de326debd",
+      "historical_file_count": 20,
+      "historical_gzip_bytes": 203602,
+      "parts": [
+        {
+          "path": "crypto_evidence.tar.gz.part001",
+          "bytes": 203602,
+          "sha256": "725a3a2980da93432ab449fc25d25b9ab88bf9360ca1137acd4d5bbe053470ce"
+        }
+      ]
+    },
+    "remaining_blockers_original_sha256": "2e4df43a6c47504f304c0c65b5e32ded4687e63161ed504bac67ada8dc08741b"
+  },
+  "historical_final_state": {
+    "unaccepted_tracked_changes_restored": true,
+    "isolated_tracked_worktree_clean": true,
+    "main_worktree_changed_by_this_agent": false,
+    "no_advisory_ignore_added": true,
+    "no_license_allow_added": true,
+    "native_builds_halted_before_reset": true
+  }
+}

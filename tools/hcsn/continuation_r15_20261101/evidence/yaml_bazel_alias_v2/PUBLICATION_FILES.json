@@ -1,0 +1,58 @@
+{
+  "files": [
+    {
+      "source_path": "/tmp/hcsn-r15-yaml-alias/yaml_cargo_aliases_v2.patch",
+      "path": "yaml_cargo_aliases_v2.patch",
+      "sha256": "2900e85e564b88306996e9e90f9734dc49cc194555885c65c946c26568a07103",
+      "bytes": 7673
+    },
+    {
+      "source_path": "/tmp/hcsn-r15-yaml-alias/VALIDATION_RECEIPT.json",
+      "path": "VALIDATION_RECEIPT.json",
+      "sha256": "77e9d54d27fa9924f61dec78adafb40ef81d874cf5c16fa8534fe8ddd2eefe10",
+      "bytes": 6836
+    },
+    {
+      "source_path": "/tmp/hcsn-r15-yaml-alias/EXACT_HEAD_DIAGNOSTIC.json",
+      "path": "EXACT_HEAD_DIAGNOSTIC.json",
+      "sha256": "0dba36090c36de86f3ee950277236531f3575e84718bd514f5129b27769ff340",
+      "bytes": 18342
+    },
+    {
+      "source_path": "/tmp/hcsn-r15-yaml-alias/TARGET_EMISSION.json",
+      "path": "TARGET_EMISSION.json",
+      "sha256": "84e58c5f8eff651dc527010222b79c8b71d77baf0015eb23bfe4f52cdf9528ac",
+      "bytes": 2974
+    },
+    {
+      "source_path": "/tmp/hcsn-r15-yaml-alias/audit_cargo_aliases.py",
+      "path": "audit_cargo_aliases.py",
+      "sha256": "bffebc6fedf865eb1b455cba473ad375bb3514c64ba15f5c10eb0c240ef32d71",
+      "bytes": 11193
+    },
+    {
+      "source_path": "/tmp/hcsn-r15-yaml-alias/GNU_ADDITIONAL_FAILURES_1E91.json",
+      "path": "GNU_ADDITIONAL_FAILURES_1E91.json",
+      "sha256": "719d2bb15ea9c249027a56818e3792b789e52bcce3fb2ced612d5516fe3710e1",
+      "bytes": 18040
+    }
+  ],
+  "candidate_source_files": [
+    {
+      "path": "defs.bzl",
+      "candidate_sha256": "0190c8ac91e1de5a9124d06c9b5608d1cd04e9fcdbdccd3a73b14fd751a54336",
+      "bytes": 33758
+    },
+    {
+      "path": "bazel/rules/BUILD.bazel",
+      "candidate_sha256": "5963d7e67bdcc17566ce41f0f2e4b78728720b07432034ccce2c52ecd174cadf",
+      "bytes": 129
+    },
+    {
+      "path": "bazel/rules/rust_crate_aliases.bzl",
+      "candidate_sha256": "0881176bff495caa39615536ea8e05433e9d31a8d0ec2c738a73e088d3e2d57c",
+      "bytes": 2068
+    }
+  ],
+  "exclude": "Raw logs, upstream/vendor copies, tools, local source fixture/Git metadata and superseded prior_v1 are intermediate only; do not include them in the repair commit."
+}

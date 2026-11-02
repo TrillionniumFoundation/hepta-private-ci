@@ -1,0 +1,15 @@
+{
+  "head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "merge": "73ffeaf2d120289b935f3aed3cc4608866c20b4a",
+  "base": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "run": 41294998586,
+  "job": 124814581056,
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41294998586/job/124814581056",
+  "failures": [
+    {
+      "test": "exact_digest_abort_terminalizes_unresolved_intent",
+      "line": 8158,
+      "text": "2026-11-01T10:00:43.8097297Z ---- exact_digest_abort_terminalizes_unresolved_intent stdout ----\n2026-11-01T10:00:43.8098124Z \n2026-11-01T10:00:43.8098825Z thread 'exact_digest_abort_terminalizes_unresolved_intent' (15) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:\n2026-11-01T10:00:43.8100148Z assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))\n2026-11-01T10:00:43.8100951Z     if agent_id == fleet.agent_id)\n2026-11-01T10:00:43.8101590Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T10:00:43.8102107Z \n2026-11-01T10:00:43.8102112Z "
+    }
+  ]
+}

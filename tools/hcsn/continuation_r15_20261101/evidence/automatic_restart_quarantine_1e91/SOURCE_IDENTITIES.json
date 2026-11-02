@@ -1,0 +1,64 @@
+{
+  "base_head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "ordered_predecessor_patch_sha256": "d0d6e5c35f7fdc52a5d0d885e1ea1ffa3a4f03ed8fb2071b54e050df7103c026",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "base_sha256": "020c539fad73186cc285d2b222631a25389af30e3f54b02c04af26cded9dfbdf",
+      "candidate_sha256": "efe3ba56c541783397c8ec06158fa3624aed059f3a80bb50db1fabaa8a43248a",
+      "bytes": 14292,
+      "derived_base_git_blob": "a97ff7d83dbe60b45e922843a5d02e61e9250bd5"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "base_sha256": "92dd039fc3c3dec1662c93549e69afc61bb73b8dccd4842b0ccbc7feb42ea744",
+      "candidate_sha256": "23c447c6de225320e5452de20393bcea60bf1e0c361b1ae99260cdeb73038c43",
+      "bytes": 15235,
+      "derived_base_git_blob": "cf1995e08107fe1619f5ac23afce08676e458939"
+    }
+  ],
+  "context_sources": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sha256": "98ce7286ce2b9680bfb2838ec14e969c2333d7818c7ed14711263a08003e0b48",
+      "bytes": 50277
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+      "git_blob": "eed817dcac736beded62ad83c2cbb908936370e4",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-supervisor/src/daemon.rs",
+      "sha256": "aaf780f945bf45b9a0e6442c22fdee06f2c953efcc968d61141efe61b25bce16",
+      "bytes": 62705
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+      "git_blob": "529b16dfa8e8ba0d192bedd17b4d6698e0dc3e3c",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-supervisor/src/recovery.rs",
+      "sha256": "c5e93d67fbe8aa1e7d5276721247a46354fc8b6f159534e314d210ce8d888e50",
+      "bytes": 15553
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release.rs",
+      "git_blob": "8fb9c220b1254bd6d0618896140cee7f9c17c10f",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-supervisor/src/release.rs",
+      "sha256": "124fbc08bd5baf4f084c8391b50f477a24fcd74b456287bed936661252716566",
+      "bytes": 27972
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "git_blob": "35dcd4c52989089631237b9498d7a36ce48fb109",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "sha256": "51f36c3f3fd7f57755d6b6c0b9df3a5e2233dfb4f630bf18d9115341c474b93c",
+      "bytes": 7464
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_journal.rs",
+      "git_blob": "d0d721e3843067fdb129f2100126b06237ce0a27",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1e91c5cf18272505508b9ce880fd34879bb6a546/codex-rs/hepta-supervisor/src/restart_journal.rs",
+      "sha256": "da99147a71f63066bb131d3f67d126f28e174db022ce18a78a0e79bf8d8a2a3f",
+      "bytes": 15264
+    }
+  ]
+}

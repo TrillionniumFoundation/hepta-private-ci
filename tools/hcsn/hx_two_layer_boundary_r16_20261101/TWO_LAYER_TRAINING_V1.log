@@ -1,0 +1,48 @@
+{
+  "artifact": {
+    "path": "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_TRAINING_V1.json.gz",
+    "bytes": 453637,
+    "sha256": "33049a15099c3e8634b0a5575f63040ead4031d90c5e0a6f4697600b5cf794a9"
+  },
+  "training_passed": true,
+  "initial_loss": 0.017321569845080376,
+  "final_loss": 0.016821451485157013,
+  "parameter_update_l2": {
+    "raw_theta1": 0.717020015230448,
+    "raw_theta2": 0.7166894218752645
+  },
+  "checks": {
+    "state_shape": true,
+    "state_finite": true,
+    "fixed_initial_state": true,
+    "bounded_z": true,
+    "bounded_adaptation": true,
+    "layer1_shapes": true,
+    "layer1_finite_positive_b_V": true,
+    "layer1_actual_default_values": true,
+    "layer1_Q_R_range": true,
+    "layer2_shapes": true,
+    "layer2_finite_positive_b_V": true,
+    "layer2_actual_default_values": true,
+    "layer2_Q_R_range": true,
+    "layer1_boundary_constant_within_rollout": true,
+    "layer2_boundary_changes_within_used_steps": true,
+    "theta2_shape_and_bound": true,
+    "complete_training_history": true,
+    "only_eighteen_raw_parameters": true,
+    "finite_final_loss": true,
+    "finite_parameters_and_gradients": true,
+    "layer1_parameters_updated": true,
+    "layer2_parameters_updated": true
+  },
+  "runtime": {
+    "evaluation_started_at_utc": "2026-11-01T18:40:16.178732+00:00",
+    "wall_seconds": 0.6431854269976611,
+    "process_cpu_seconds": 0.6431885230000001,
+    "financial_calls": 442,
+    "financial_states": 3536,
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "cuda_available": false
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "hcsn.r15.dependency-evidence-transport-review.v1",
+  "scope": "Independent readback of every chunk, reconstructed archive and all 162 regular-file member identities; no extraction or execution during this check.",
+  "stages": [
+    {
+      "stage": "zip",
+      "parts": 4,
+      "largest_part_bytes": 480000,
+      "files_verified": 52,
+      "manifest_sha256": "e549bf9ac5c5a9db7f74047b067330b4a3a49bc902e15390457e26333beb002f",
+      "exact_gzip_sha256": "a82b228934201e4566ef34a276d5f081f3856d16bd79d88ef2734e915d8f76ac",
+      "exact_tar_sha256": "2cf2bfdfd7b1d05c36bd982c20f2e1725c6b5e655adbacb0046a64d2a37ae7fa",
+      "missing_or_unlisted_files": 0
+    },
+    {
+      "stage": "zstd",
+      "parts": 3,
+      "largest_part_bytes": 480000,
+      "files_verified": 27,
+      "manifest_sha256": "dce521d437f5bce3066e7e7e47f5ef855a9bf50dd05685ead9a5ae30ba4e26b8",
+      "exact_gzip_sha256": "5c2c13e5d06d748f260ba449825433ccaff54de7c440587825e713f9ed347a62",
+      "exact_tar_sha256": "65fed884acbf494f2e33f6946e6018597f07f5f194558dfcf1efa93294dd80d5",
+      "missing_or_unlisted_files": 0
+    },
+    {
+      "stage": "i18n",
+      "parts": 3,
+      "largest_part_bytes": 480000,
+      "files_verified": 50,
+      "manifest_sha256": "e87daddb02c1c445496ef199185ca1a42d3500bebed79c1eaac982222a1c93a1",
+      "exact_gzip_sha256": "c552144b06387ec1f9b7b22f9c2f72c33e26262f8e229a3ca2782820444bd1d1",
+      "exact_tar_sha256": "446b8f584695204f66082e1b1a9f541b1d382dd9bdd769a54e3495b25f56e14a",
+      "missing_or_unlisted_files": 0
+    },
+    {
+      "stage": "yaml",
+      "parts": 3,
+      "largest_part_bytes": 480000,
+      "files_verified": 33,
+      "manifest_sha256": "ab29d38604fd6ef651a01d2694ab14d758455b9af8bd9b201ac27bfdb7d3d0f3",
+      "exact_gzip_sha256": "09729cd2aa618788a630fa6a10e590bea7dda6abe438c8289683dbed46546a15",
+      "exact_tar_sha256": "1070ddc99e0c846a4231613a4f799789f1e9582d79246ab04ccfa87897006874",
+      "missing_or_unlisted_files": 0
+    }
+  ]
+}

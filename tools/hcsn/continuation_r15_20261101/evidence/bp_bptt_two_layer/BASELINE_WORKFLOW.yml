@@ -1,0 +1,215 @@
+# Replays frozen BP/BPTT fixtures; this is not a new scientific confirmation set.
+name: HCSN financial BP and recurrent BPTT R16
+
+"on":
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/hcsn-financial-autograd-r16.yml
+      - tools/hcsn/hx_autograd_r16_20261101/**
+      - tools/hcsn/hx_recurrent_r16_20261101/**
+      - tools/hcsn/hx_asset_recurrent_r16_20261101/**
+      - tools/hcsn/compiled_fp32_r16_20261101/recovery/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-financial-autograd-r16-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  financial-bp-and-bptt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      ADAPTER_ROOT: tools/hcsn/hx_autograd_r16_20261101
+      RECURRENT_ROOT: tools/hcsn/hx_recurrent_r16_20261101
+      ASSET_ROOT: tools/hcsn/hx_asset_recurrent_r16_20261101
+      FINANCIAL_ROOT: tools/hcsn/compiled_fp32_r16_20261101/recovery
+      ADAPTER_PROTOCOL_SHA256: 9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72
+      RECURRENT_PROTOCOL_SHA256: 87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241
+      ASSET_PROTOCOL_SHA256: 7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            tools/hcsn/hx_autograd_r16_20261101
+            tools/hcsn/hx_recurrent_r16_20261101
+            tools/hcsn/hx_asset_recurrent_r16_20261101
+            tools/hcsn/compiled_fp32_r16_20261101/recovery
+
+      - name: Initialize runner-local paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'HCSN_PYTHON=%s\nHCSN_RESULTS=%s\n' \
+            "$RUNNER_TEMP/hcsn-financial-autograd-r16-python/bin/python" \
+            "$RUNNER_TEMP/hcsn-financial-autograd-r16-results" >> "$GITHUB_ENV"
+
+      - name: Verify frozen inputs and install the CPU runtime
+        id: runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$HCSN_RESULTS"
+          test "$(uname -m)" = x86_64
+          python3.12 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          adapter = Path(os.environ["ADAPTER_ROOT"])
+          recurrent = Path(os.environ["RECURRENT_ROOT"])
+          asset = Path(os.environ["ASSET_ROOT"])
+          financial = Path(os.environ["FINANCIAL_ROOT"])
+          expected = {
+              adapter / "ADAPTER_PROTOCOL.json": os.environ["ADAPTER_PROTOCOL_SHA256"],
+              adapter / "requirements.txt": "c8038849aaa1710f940a6c70bfb9a6739c67c132abdc56c4d19d37c4126e945d",
+              recurrent / "RECURRENT_PROTOCOL.json": os.environ["RECURRENT_PROTOCOL_SHA256"],
+              recurrent / "check_recurrent_results.py": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+              asset / "ASSET_PROTOCOL.json": os.environ["ASSET_PROTOCOL_SHA256"],
+              asset / "check_asset_results.py": "6bfdadae171d833d32039d892fe26d9687aa9b888351c8a3f19111e68293c369",
+              financial / "RECOVERY_PROTOCOL_V1.json": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+              financial / "recovered.so": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+          }
+          observed = {}
+          for path, digest in expected.items():
+              actual = hashlib.sha256(path.read_bytes()).hexdigest()
+              if actual != digest:
+                  raise ValueError(f"Frozen identity mismatch: {path}")
+              observed[str(path)] = actual
+          receipt = {
+              "head": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "sha256": observed,
+              "binary_policy": "Load the sealed Linux x86_64 binary; no rebuild or fallback.",
+              "scope": "Replay existing functional fixtures, not a new confirmation set.",
+          }
+          with (Path(os.environ["HCSN_RESULTS"]) / "source-bindings.json").open("x") as output:
+              output.write(json.dumps(receipt, indent=2) + "\n")
+          PY
+          python3.12 -m venv "$RUNNER_TEMP/hcsn-financial-autograd-r16-python"
+          "$HCSN_PYTHON" -m pip install --disable-pip-version-check --no-input --no-cache-dir \
+            -r "$ADAPTER_ROOT/requirements.txt" 2>&1 | tee "$HCSN_RESULTS/install.log"
+          "$HCSN_PYTHON" -m pip freeze > "$HCSN_RESULTS/runtime.txt"
+
+      - name: Audit the actual financial autograd interface
+        id: adapter_audit
+        if: always() && !cancelled() && steps.runtime.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HCSN_PYTHON" -B "$ADAPTER_ROOT/audit_gradients.py" \
+            --frozen-root "$FINANCIAL_ROOT" \
+            --protocol-sha256 "$ADAPTER_PROTOCOL_SHA256" \
+            --output "$HCSN_RESULTS/adapter-gradients.json.gz"
+
+      - name: Train through the actual financial autograd interface
+        id: adapter_training
+        if: always() && !cancelled() && steps.runtime.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HCSN_PYTHON" -B "$ADAPTER_ROOT/training_smoke.py" \
+            --frozen-root "$FINANCIAL_ROOT" \
+            --protocol-sha256 "$ADAPTER_PROTOCOL_SHA256" \
+            --output "$HCSN_RESULTS/adapter-training.json.gz"
+
+      - name: Audit the recurrent temporal gradient
+        id: recurrent_audit
+        if: always() && !cancelled() && steps.runtime.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HCSN_PYTHON" -B "$RECURRENT_ROOT/audit_recurrent.py" \
+            --adapter-root "$ADAPTER_ROOT" \
+            --financial-root "$FINANCIAL_ROOT" \
+            --protocol-sha256 "$RECURRENT_PROTOCOL_SHA256" \
+            --output "$HCSN_RESULTS/recurrent-audit.json.gz"
+
+      - name: Train through the recurrent temporal gradient
+        id: recurrent_training
+        if: always() && !cancelled() && steps.runtime.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HCSN_PYTHON" -B "$RECURRENT_ROOT/train_recurrent.py" \
+            --adapter-root "$ADAPTER_ROOT" \
+            --financial-root "$FINANCIAL_ROOT" \
+            --protocol-sha256 "$RECURRENT_PROTOCOL_SHA256" \
+            --output "$HCSN_RESULTS/recurrent-training.json.gz"
+
+      - name: Independently check the recurrent result records
+        if: always() && !cancelled() && steps.recurrent_audit.outcome == 'success' && steps.recurrent_training.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HCSN_PYTHON" -B "$RECURRENT_ROOT/check_recurrent_results.py" \
+            --root "$RECURRENT_ROOT" \
+            --protocol-sha256 "$RECURRENT_PROTOCOL_SHA256" \
+            --audit "$HCSN_RESULTS/recurrent-audit.json.gz" \
+            --training "$HCSN_RESULTS/recurrent-training.json.gz" \
+            --output "$HCSN_RESULTS/recurrent-check.json"
+
+      - name: Audit gradients at fixed physical potential
+        id: asset_audit
+        if: always() && !cancelled() && steps.runtime.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HCSN_PYTHON" -B "$ASSET_ROOT/audit_asset.py" \
+            --adapter-root "$ADAPTER_ROOT" \
+            --financial-root "$FINANCIAL_ROOT" \
+            --protocol-sha256 "$ASSET_PROTOCOL_SHA256" \
+            --output "$HCSN_RESULTS/asset-audit.json.gz"
+
+      - name: Train with the fixed physical potential and moving boundary
+        id: asset_training
+        if: always() && !cancelled() && steps.runtime.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HCSN_PYTHON" -B "$ASSET_ROOT/train_asset.py" \
+            --adapter-root "$ADAPTER_ROOT" \
+            --financial-root "$FINANCIAL_ROOT" \
+            --protocol-sha256 "$ASSET_PROTOCOL_SHA256" \
+            --output "$HCSN_RESULTS/asset-training.json.gz"
+
+      - name: Check fixed-potential records and raw boundary branches
+        if: always() && !cancelled() && steps.asset_audit.outcome == 'success' && steps.asset_training.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HCSN_PYTHON" -B "$ASSET_ROOT/check_asset_results.py" \
+            --root "$ASSET_ROOT" \
+            --protocol-sha256 "$ASSET_PROTOCOL_SHA256" \
+            --audit "$HCSN_RESULTS/asset-audit.json.gz" \
+            --training "$HCSN_RESULTS/asset-training.json.gz" \
+            --financial-root "$FINANCIAL_ROOT" \
+            --output "$HCSN_RESULTS/asset-check.json"
+
+      - name: Preserve complete BP and BPTT outputs
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hcsn-financial-bp-bptt-r16-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/hcsn-financial-autograd-r16-results
+          if-no-files-found: warn
+
+      - name: Verify checkout remains unchanged
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"

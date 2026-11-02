@@ -1,0 +1,89 @@
+{
+  "schema": "hcsn.r16.compensated-fp32-independent-validation.v1",
+  "frozen_before_evaluation": true,
+  "candidate_source_sha256": {
+    "compensated_kernel.py": "c1088ca5cfd2c8a18877078b8a14ff251986c1eaeca0911a838c2d55e400643f",
+    "float32_pair.py": "63010529b91de196698c7b096a5bac94f73460f3a811f70b61a95d53ffd87ae9",
+    "frozen_kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "frozen_reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52"
+  },
+  "candidate_precision": "two float32 words per scalar/tangent; effective extended significand, not ordinary one-word FP32",
+  "case_manifest": "R16_HOLDOUT_CASES_V1.json",
+  "case_manifest_sha256": "317162122a0f6d43143b42b37c12e48f8e8888276d5018784b887848b420a86c",
+  "generation": {
+    "seed": 2026110107,
+    "algorithm": "Independent NumPy PCG64 generator; column-wise (random permutation + uniform jitter)/128 Latin hypercube; quantize once to float32",
+    "points": 128,
+    "lower": [
+      0.04,
+      0.01,
+      0.08,
+      0.0,
+      0.0,
+      0.0001,
+      0.01,
+      0.5,
+      20.0
+    ],
+    "upper": [
+      0.15,
+      0.2,
+      0.8,
+      1.0,
+      0.6,
+      0.1,
+      20.0,
+      10.0,
+      100.0
+    ],
+    "log_scaled_indices": [
+      5,
+      6
+    ]
+  },
+  "candidate_independent_validity": "Independent 80-digit literal boundary at x=0 must be finite/positive and independent boundary cashflow < -64*eps32*max(1,scale), using inherited scale. Rejections are retained and are not numerical passes; candidate rejection of a valid point is a failure.",
+  "states_per_valid_point": [
+    {
+      "coordinate": "log_distance",
+      "state": "0.75*min(.002,.02*sigma*sqrt(maturity),.05/(1+abs(a)+zt))"
+    },
+    {
+      "coordinate": "log_distance",
+      "state": 1.0
+    },
+    {
+      "coordinate": "asset",
+      "state": "independent_boundary*(1+1e-6)"
+    },
+    {
+      "coordinate": "asset",
+      "state": 100.0
+    }
+  ],
+  "state_preparation": "Compute prescribed state locations independently, quantize once to float32; same represented inputs passed to candidate and oracle.",
+  "reference": {
+    "file": "frozen_reference.py",
+    "digits": 80,
+    "jacobian_steps": [
+      "1e-18",
+      "5e-19"
+    ],
+    "halving_scaled_gate": 1e-12,
+    "output_count": 5,
+    "jacobian_columns": 10
+  },
+  "gates": {
+    "value_scaled": 8e-07,
+    "jacobian_scaled": 2e-05,
+    "error_denominator": "max(1,abs(reference))",
+    "required": "Every valid point/state must pass; all failures and rejections retained."
+  },
+  "retuning_rule": "Any candidate retuning after opening these results requires a new version and a new independent validation set. V1 failure evidence remains immutable.",
+  "cost_plan": {
+    "inputs": "Original 18 registered parameter cases, each at log-distance .001 and .1 and fixed asset100, all inputs quantized once to FP32",
+    "whole_evaluation": "Boundary plus all five outputs and all ten Jacobian columns; compensated candidate versus original FP64 and original single-FP32 on identical represented inputs",
+    "reuse_evaluation": "Separately report same three states with one prebuilt differentiated boundary per parameter case",
+    "timing": "One warmup, one complete measurement per mode/order, wall and CPU time, no GPU claim"
+  },
+  "scientific_scope": "Independent numerical validation of the declared finite financial operator. No R14 task confirmation changes, ordinary FP32 admission, uniform box theorem, production/GPU or learning-utility claim."
+}

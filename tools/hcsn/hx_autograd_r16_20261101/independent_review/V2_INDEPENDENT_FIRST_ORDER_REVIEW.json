@@ -1,0 +1,162 @@
+{
+  "schema": "hcsn.independent-autograd-first-order-source-review.v1",
+  "status": "First-order source and retained-record review found no defect; V2 higher-order refusal has a separately retained counterexample and requires V3.",
+  "financial_oracle_calls": 0,
+  "new_financial_evaluations_for_this_record": 0,
+  "protocol_sha256": "d3ada27411e77ebc4be99dd96e7f6895fbd844e0fd985e7506d682088ee3f4ce",
+  "fixture_sha256": "c94ccdbc02f783c99c5de47032ebc883d7de0b6ff9efc02857ac846547c43bee",
+  "source_identities": {
+    "hx_autograd.py": {
+      "sha256": "51eebb33a39340d680afbb7a560f17fb2dbe9f17ec74e16dcf9dab6d7a7eefdf",
+      "matches_protocol": true
+    },
+    "adapter_common.py": {
+      "sha256": "6921dfae93b6ecd7bf28724b10b4d2823c4b21bd7c237b022c075aa9f76fab5a",
+      "matches_protocol": true
+    },
+    "audit_gradients.py": {
+      "sha256": "02b731f2508d614bb5da0366eb1734685933db57628585c378b75165016f5757",
+      "matches_protocol": true
+    },
+    "training_smoke.py": {
+      "sha256": "f91ea1ac624681aedd90ce72644a9c7fac8ac123a5e720cf28ae28fb24569c03",
+      "matches_protocol": true
+    },
+    "freeze_adapter.py": {
+      "sha256": "8f6566cbb402716be92d88339a0c7eecc799a54044166c31ee8b0d07465d75f5",
+      "matches_protocol": true
+    },
+    "revise_protocol.py": {
+      "sha256": "fc6b507d7ea0c4ce22aa3a1b5630fe6286c0743bca5a0ed4bdf9db5fde4568a1",
+      "matches_protocol": true
+    }
+  },
+  "artifact_identities": {
+    "GRADIENT_AUDIT_V2.json.gz": "ac15ecd17abecb7cc4e18058f464689ff07cd7478bf5a33f735290af7c9cf022",
+    "TRAINING_SMOKE_V2.json.gz": "1a00a8aa7b4e3756811b18cf3fc9f60dbe2ef6c0e4e068184bc79a14a2d110a7",
+    "READOUT_VJP_EVIDENCE.json": "8f6ebd643691ac71635d94fca0e7a4a48a4e2fb72d8e31d7f486963b52426edb"
+  },
+  "reviewed_contracts": {
+    "input": "CPU torch.float32 only; finite nonempty [...,10], V>0 or independent x>=0; represented FP32 inputs evaluated by immutable FP64 backend.",
+    "backward": "Finite full 5x10 continuous-model Jacobian contracted in FP64 then returned in FP32; no derivative of the rounding operation is claimed.",
+    "asset_chain": "d(E/b)=dE/b-E db/b^2; dR=2(1-F)dF; dx=dV/V-db/b. The original asset kernel itself uses log(V/b), so parameter boundary motion is included.",
+    "log_chain": "x is an independent input; dx/dtheta=0, dx/dstate=1. Kernel theta derivatives are at fixed x; the output E/b quotient still includes db. x=0 is a right-derivative convention.",
+    "regularity": "Only E/b,R,x are conditional joint-C1 candidates (positive C1 boundary and sufficient joint regularity). Raw five and diagnostic seven contain original F/G/debt and are not globally C1; C2 forces/Hessians are not supplied.",
+    "default": "Original financial default F=G=1,E=0 unchanged. R gradient is zero while asset x retains state and boundary-parameter sensitivity.",
+    "training": "Two feature layers and linear head, 28 parameters, 32 training points, 80 Adam updates. No recurrence/BPTT, hard spiking, generalization, causal feature necessity, efficiency or Transformer comparison is demonstrated by this smoke."
+  },
+  "independent_readout_chain_recalculation": [
+    {
+      "case": "baseline_continuation_asset",
+      "coordinate": "asset",
+      "max_scaled_first_order_chain_difference": 5.270680520615516e-08,
+      "passes_registered_1e_6": true
+    },
+    {
+      "case": "baseline_default_asset",
+      "coordinate": "asset",
+      "max_scaled_first_order_chain_difference": 3.7253935253461116e-08,
+      "passes_registered_1e_6": true
+    },
+    {
+      "case": "baseline_continuation_log",
+      "coordinate": "log_distance",
+      "max_scaled_first_order_chain_difference": 3.689700876698822e-08,
+      "passes_registered_1e_6": true
+    },
+    {
+      "case": "baseline_boundary_right",
+      "coordinate": "log_distance",
+      "max_scaled_first_order_chain_difference": 0.0,
+      "passes_registered_1e_6": true
+    },
+    {
+      "case": "short_continuation_asset",
+      "coordinate": "asset",
+      "max_scaled_first_order_chain_difference": 4.272483544781103e-08,
+      "passes_registered_1e_6": true
+    },
+    {
+      "case": "short_boundary_right",
+      "coordinate": "log_distance",
+      "max_scaled_first_order_chain_difference": 0.0,
+      "passes_registered_1e_6": true
+    }
+  ],
+  "audit_cardinality": {
+    "cases": 6,
+    "directional_checks": 168,
+    "passed_directions": 168,
+    "contract_checks": 16,
+    "recorded_contract_passed": 16,
+    "scope": "Existing 16 contracts missed composite-readout higher-order refusal."
+  },
+  "tensor_update_recalculation": {
+    "first.raw_theta": {
+      "elements": 9,
+      "changed_elements": 9,
+      "independently_recomputed_update_norm": 0.8712897852400071,
+      "recorded_norm": 0.8712897852400071,
+      "norm_matches": true
+    },
+    "first.projection.weight": {
+      "elements": 1,
+      "changed_elements": 1,
+      "independently_recomputed_update_norm": 0.01885998249053955,
+      "recorded_norm": 0.01885998249053955,
+      "norm_matches": true
+    },
+    "first.projection.bias": {
+      "elements": 1,
+      "changed_elements": 1,
+      "independently_recomputed_update_norm": 0.24177956581115723,
+      "recorded_norm": 0.24177956581115723,
+      "norm_matches": true
+    },
+    "second.raw_theta": {
+      "elements": 9,
+      "changed_elements": 9,
+      "independently_recomputed_update_norm": 0.5113195521023671,
+      "recorded_norm": 0.5113195521023671,
+      "norm_matches": true
+    },
+    "second.projection.weight": {
+      "elements": 3,
+      "changed_elements": 3,
+      "independently_recomputed_update_norm": 1.0060507938685976,
+      "recorded_norm": 1.0060507938685976,
+      "norm_matches": true
+    },
+    "second.projection.bias": {
+      "elements": 1,
+      "changed_elements": 1,
+      "independently_recomputed_update_norm": 0.1443028748035431,
+      "recorded_norm": 0.1443028748035431,
+      "norm_matches": true
+    },
+    "head.weight": {
+      "elements": 3,
+      "changed_elements": 3,
+      "independently_recomputed_update_norm": 0.4663151295564167,
+      "recorded_norm": 0.4663151295564167,
+      "norm_matches": true
+    },
+    "head.bias": {
+      "elements": 1,
+      "changed_elements": 1,
+      "independently_recomputed_update_norm": 0.29497429728507996,
+      "recorded_norm": 0.29497429728507996,
+      "norm_matches": true
+    }
+  },
+  "history_step_ids_exactly_0_through_79": true,
+  "training_loss": {
+    "initial": 1.2916021347045898,
+    "final": 0.10680591315031052,
+    "same_training_grid_only": true
+  },
+  "no_frozen_source_changes": true,
+  "first_order_review_passed": true,
+  "higher_order_refusal_contract_passed": false,
+  "defect_evidence_sha256": "2a8e827c04c7d60ffff377fd18337f75c8ffd4362fac55f068055bccfeb7a42f"
+}

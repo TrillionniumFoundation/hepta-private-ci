@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "scope": "Entire unchanged/exact-extracted tick_slot control flow; explicit synthetic process/storage/registry/release helper boundaries. Not full native integration or actual authorized release validation.",
+  "original_expected_failures": 2,
+  "candidate_expected_passes": 8,
+  "runs": [
+    {
+      "variant": "original",
+      "tick_source_sha256": "020c539fad73186cc285d2b222631a25389af30e3f54b02c04af26cded9dfbdf",
+      "method_sha256": "c74f023ec151fdcff88b1800707cd3d0c80d6d3b523b6541dec7a5a740fb8d80",
+      "generated_sha256": "e3982c1ca9ea831f00377e3963e38a7aa9cf123d4389829b65856cf1ffdf50f1",
+      "compile_command": [
+        "/tmp/hcsn-r15-runtime-tools/cargo/bin/rustc",
+        "--edition=2024",
+        "--test",
+        "/tmp/hcsn-tick-quarantine-tzqf_12n/original.rs",
+        "-o",
+        "/tmp/hcsn-tick-quarantine-tzqf_12n/original"
+      ],
+      "compile_exit_code": 0,
+      "compile_stderr": "",
+      "run_command": [
+        "/tmp/hcsn-tick-quarantine-tzqf_12n/original",
+        "--test-threads=1"
+      ],
+      "run_exit_code": 101,
+      "stdout": "\nrunning 8 tests\ntest admitted_target_and_rollback_continuation_remain_before_guard ... ok\ntest future_eligibility_keeps_existing_backoff ... ok\ntest normal_pending_restart_runs_once ... ok\ntest poll_failure_keeps_existing_runtime_handle ... ok\ntest quarantined_missing_previous_command_does_not_enter_startup ... FAILED\ntest recovery_quarantine_retains_pending_witness_after_eligibility ... FAILED\ntest startup_failure_retains_existing_cleanup_and_error ... ok\ntest terminal_signed_outcome_allows_existing_normal_restart ... ok\n\nfailures:\n\n---- quarantined_missing_previous_command_does_not_enter_startup stdout ----\n\nthread 'quarantined_missing_previous_command_does_not_enter_startup' (35) panicked at /tmp/hcsn-tick-quarantine-tzqf_12n/original.rs:138:5:\nassertion `left == right` failed\n  left: Err(NoPreviousCommand(\"agent\"))\n right: Ok(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n---- recovery_quarantine_retains_pending_witness_after_eligibility stdout ----\n\nthread 'recovery_quarantine_retains_pending_witness_after_eligibility' (36) panicked at /tmp/hcsn-tick-quarantine-tzqf_12n/original.rs:125:9:\nassertion `left == right` failed\n  left: 1\n right: 0\n\n\nfailures:\n    quarantined_missing_previous_command_does_not_enter_startup\n    recovery_quarantine_retains_pending_witness_after_eligibility\n\ntest result: FAILED. 6 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s\n\n",
+      "stderr": ""
+    },
+    {
+      "variant": "candidate",
+      "tick_source_sha256": "efe3ba56c541783397c8ec06158fa3624aed059f3a80bb50db1fabaa8a43248a",
+      "method_sha256": "10080ee46c2ab6a2f07c30c6f98a4b257bd598b7da4f1e7a8ff07bd287de9b74",
+      "generated_sha256": "097c5cdf593c52be913649dc11710c55d2b39856e8576d65075cb53d563c03d8",
+      "compile_command": [
+        "/tmp/hcsn-r15-runtime-tools/cargo/bin/rustc",
+        "--edition=2024",
+        "--test",
+        "/tmp/hcsn-tick-quarantine-tzqf_12n/candidate.rs",
+        "-o",
+        "/tmp/hcsn-tick-quarantine-tzqf_12n/candidate"
+      ],
+      "compile_exit_code": 0,
+      "compile_stderr": "",
+      "run_command": [
+        "/tmp/hcsn-tick-quarantine-tzqf_12n/candidate",
+        "--test-threads=1"
+      ],
+      "run_exit_code": 0,
+      "stdout": "\nrunning 8 tests\ntest admitted_target_and_rollback_continuation_remain_before_guard ... ok\ntest future_eligibility_keeps_existing_backoff ... ok\ntest normal_pending_restart_runs_once ... ok\ntest poll_failure_keeps_existing_runtime_handle ... ok\ntest quarantined_missing_previous_command_does_not_enter_startup ... ok\ntest recovery_quarantine_retains_pending_witness_after_eligibility ... ok\ntest startup_failure_retains_existing_cleanup_and_error ... ok\ntest terminal_signed_outcome_allows_existing_normal_restart ... ok\n\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+      "stderr": ""
+    }
+  ]
+}

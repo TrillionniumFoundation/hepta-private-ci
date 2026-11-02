@@ -1,0 +1,100 @@
+{
+  "scope": "Minimal repair of our earlier INSTA_WORKSPACE_ROOT fixture-loader regression; no financial model or gate change",
+  "base_head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "observed_failed_job": 125028471631,
+  "target": "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test",
+  "changes": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "before": {
+        "bytes": 419182,
+        "sha256": "53df80eb7b16cb343388de5a9c10c76595d12c01af8d0f86d5bf45952ed04d88",
+        "git_blob": "dd10ff92a5044e1b077bcd54e221dd0bfaa8b7b9"
+      },
+      "after": {
+        "bytes": 419208,
+        "sha256": "b06463c3bf8881b39b36dc8162002d317dcf06d6a354b554b362eb3636d6c93f",
+        "git_blob": "5670e8ebe6399fc1a1ca88ff7ce4a807b212abca"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/Cargo.toml",
+      "before": {
+        "bytes": 2710,
+        "sha256": "d12a4fcdc5752242de0ee2c4d3b87b40f68184b8ff184400593f2c8377e9111e",
+        "git_blob": "3ed96436070a4e0d5a06aca8f247c25f28a798f1"
+      },
+      "after": {
+        "bytes": 2755,
+        "sha256": "16c8f5bb4a0f8681198c35a14970f918a716f48d89d305d0dade7d0496df0a5c",
+        "git_blob": "3a5c9f790aca3e0ee660d69d6d8f592b28e76abc"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+      "before": {
+        "bytes": 13420,
+        "sha256": "c39ef87bef3f66a67c35c19cc03d34a4008f2655204a52f97fcc94c4d465a99d",
+        "git_blob": "69343b055da5c2db8efcdac07db5ef55a8448951"
+      },
+      "after": {
+        "bytes": 13179,
+        "sha256": "702ef5fa17b6f101f9d7bad4afe90d028ddc9d7345f115f6b175c4655b091cc9",
+        "git_blob": "a75c2079b062518510cb0cf1348568097d99e63c"
+      }
+    }
+  ],
+  "patch": {
+    "bytes": 2174,
+    "sha256": "41b44b3a50d45e76d7a54916818ac1d865a3a628d5466093134f4392dcf43d49",
+    "git_blob": "5910cf6c70a6d4bae660fb302d308804a274f330"
+  },
+  "module_lock": {
+    "bytes": 1664247,
+    "sha256": "0f3564b380951c7dc0c9b20de3abf5f4dbc8b4bc884438572ffa2a694eaede8c",
+    "git_blob": "d043b328da3ad8434c60312980340fe5e90757df",
+    "actual_update_exit_code": 0,
+    "byte_unchanged": true
+  },
+  "cargo_lock": {
+    "actual_update_exit_code": 0,
+    "packages": 1522,
+    "version_source_checksum_changes": 0,
+    "only_edge_added": "codex-hepta-supervisor -> codex-utils-cargo-bin (dev)"
+  },
+  "probe": {
+    "actual_exit_code": 0,
+    "compile_subprocesses": 6,
+    "runtime_cases": 14,
+    "original_six_cases_retained": true,
+    "all_original_projection_assertions_unchanged": true,
+    "actual_pinned_runfiles_full_source": {
+      "bytes": 30494,
+      "sha256": "c69621b4dd7eb15899b7b3dae117d765e8473ca4a6b957ec35d5d2f3a366e591",
+      "git_blob": "3dbcd7977412b180af598c692c4a641816305331"
+    },
+    "helper_compilation_scope": "verbatim fixture API fragments; unrelated binary API omitted; std-only error adaptation in reader probe",
+    "native_platform": "Linux",
+    "windows_native_executions": 0,
+    "original_supervisor_suite_executions": 0,
+    "complete_fixture_bytes_compared": true,
+    "synthetic_Bazel_REPOSITORY_NAME": "_main"
+  },
+  "format": {
+    "actual_exit_code": 0,
+    "final_source_not_retested_after_formatter": true,
+    "exact_whitespace_only_bridge": "FORMAT_IDENTITY.json"
+  },
+  "prior_attempts": [
+    "Cargo offline update exit 101: empty Git dependency cache",
+    "Bazel lock attempt 01 exit 2: sparse auxiliary library source absent; restored exact f52 blob 76b9e17732db18c5e5dda3a3ddbdfa4e057bc6fa before successful attempt 02"
+  ],
+  "unchanged": [
+    "original target roster",
+    "test sharding and retry policy",
+    "both projection tests and all assertions",
+    "full fixture enumeration and nonfile rejection",
+    "all financial candidates and gates"
+  ],
+  "remaining_gate": "New-head Windows/MSVC and Ubuntu execution of the original Bazel target; local fragment probes do not replace it"
+}

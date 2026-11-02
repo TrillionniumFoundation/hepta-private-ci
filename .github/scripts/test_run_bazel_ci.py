@@ -264,6 +264,30 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             any(arg == "--incompatible_strict_action_env=0" for arg in args)
         )
 
+    def test_authenticated_native_msvc_keeps_matching_compiler_through_both_wrappers(
+        self,
+    ) -> None:
+        self.env["BUILDBUDDY_API_KEY"] = "test-only-token"
+        result, calls = self.run_wrapper(
+            "--windows-msvc-host-platform",
+            "--",
+            "test",
+            "--platforms=//:windows_x86_64_msvc",
+            "--",
+            "//fake:target",
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1)
+        args = calls[0]
+        self.assertIn("--config=buildbuddy-generic", args)
+        self.assertIn("--extra_toolchains=//:local_windows_msvc_cc_toolchain", args)
+        self.assertIn("--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0", args)
+        self.assertIn("--host_platform=//:local_windows_msvc", args)
+        self.assertIn("--platforms=//:windows_x86_64_msvc", args)
+        self.assertIn("--action_env=LIB", args)
+        self.assertIn("--host_action_env=LIB", args)
+        self.assertEqual(args[args.index("--") + 1 :], ["//fake:target"])
+
     def test_native_windows_rejects_missing_required_msvc_environment(self) -> None:
         del self.env["LIB"]
         result = subprocess.run(

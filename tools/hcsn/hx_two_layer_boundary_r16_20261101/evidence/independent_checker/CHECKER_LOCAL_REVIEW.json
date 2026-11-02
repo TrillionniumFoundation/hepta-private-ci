@@ -1,0 +1,76 @@
+{
+  "schema": "hcsn.two-layer-checker-local-review.v1",
+  "recorded_at_utc": "2026-11-01T18:39:48.205447+00:00",
+  "scope": "Pre-freeze implementation review and nonfinancial checker controls only; no candidate/financial evaluation by this script owner.",
+  "checker_sha256": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e",
+  "protocol_sha256": "da07c580e258f51517f124d6d7b902a8ae3c6700fb58cb96948c18447c740ad7",
+  "syntax_compile_exit_code": 0,
+  "nonfinancial_attempts": [
+    {
+      "attempt": 1,
+      "count": 19,
+      "exit_code": 0,
+      "checker_sha256": "2bcbf849a32624295cb674dcf2272e1cddfb9fcaafe99063bc2de341d054031c",
+      "script_sha256": "1f09825ba5daaf254585ab2d0e1f8905e462a2d621872793da707462be3ad40f",
+      "receipt_sha256": "43ac39ce79a1180f5ea13e225aa2b7bcc86c392a69cd293c944e258c26035afa"
+    },
+    {
+      "attempt": 2,
+      "count": 19,
+      "exit_code": 0,
+      "checker_sha256": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e",
+      "script_sha256": "1f09825ba5daaf254585ab2d0e1f8905e462a2d621872793da707462be3ad40f",
+      "receipt_sha256": "91fcd7ca4875e8e53e3f4defd60eff2a6d59e4dc715602a268ab8db74d3bf266"
+    },
+    {
+      "attempt": 3,
+      "count": 23,
+      "exit_code": 0,
+      "checker_sha256": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e",
+      "script_sha256": "febe4f2e8bdd265c183ad064f48f3b62f1d2fef377035b65c2c318d79495335d",
+      "receipt_sha256": "9c78186827e3b28fcc74ad70fd645fbdd86b9e3ac9f89134adf069482f98a3bf"
+    }
+  ],
+  "actual_final_command": "python -B synthetic_checker_faults.py check_two_layer_results.py NEW.json",
+  "independently_recomputed": [
+    "All 17x8x4 states per trajectory, exact represented Euler, drive links, preactivation, raw parameter snapshots and update chain.",
+    "Actual raw V<=b phases/counts; default Q/R; audit raw E/F/G and default Jacobians; complete five-output ten-column archived financial records.",
+    "Four same-value interventions; 4x4 state and 4x18 parameter blocks, 16-step reverse adjoints, node VJPs, time credits and shared raw VJPs.",
+    "Nonzero conditioning-only and direct boundary routes separately; exact both-detached upstream zeros; unchanged raw2 VJP.",
+    "Fixed input/source/binary/build/protocol/file-hash identities before and after checks."
+  ],
+  "gates": {
+    "state_columns": 4,
+    "steps": 16,
+    "batch": 8,
+    "modes": 4,
+    "raw_parameters": 18,
+    "optimizer_updates": 12,
+    "readout_contracts": 12,
+    "unused_flags_per_mode": 37,
+    "temporal_comparisons_per_mode": 7,
+    "cross_library_fp32_transcendental_ulps": 4,
+    "gradient_atol": 2e-09,
+    "gradient_rtol": 2e-05
+  },
+  "independent_review": {
+    "reviewer": "architecture_comparison",
+    "final_sha_confirmed": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e",
+    "reported_blocking_findings": 0,
+    "status": "Final three guards confirmed by reviewer message; separate signed hash receipt supplied by reviewer."
+  },
+  "retained_history": {
+    "attempt01": "Unfrozen checker 2bcbf849 with 19 controls.",
+    "attempt02": "Final checker 8674bb2e with the same 19 controls.",
+    "attempt03": "Final checker 8674bb2e with 23 controls including integer phase and raw default derivative failures.",
+    "historical_source_reconstruction": "Earlier script/checker reconstructed from their exact pre-freeze edits; SHA256 matches the original execution receipts. They are retained as history and are not the current runnable candidate."
+  },
+  "limitations": [
+    "This is a consistency gate over archived financial raw/J records, not an independent financial oracle or a proof of record authenticity.",
+    "All training update links and gradient finiteness are checked; only the first training gradient is bound to the independent audit chain. No optimizer or later financial gradient replay.",
+    "No new model, shared-library load, Torch run, task benchmark or remote Actions execution performed by these local controls."
+  ],
+  "financial_kernel_calls": 0,
+  "candidate_model_calls": 0,
+  "passed": true
+}

@@ -1,0 +1,135 @@
+{
+  "schema": "hcsn.hx-two-layer-protocol.v1",
+  "frozen_at_utc": "2026-11-01T18:35:36.337920+00:00",
+  "status_at_freeze": "New financial evaluations, trajectories and optimizer updates of this candidate: zero. Only source review and independent non-financial synthetic chain tests have occurred.",
+  "scope": "Two one-way-coupled physical-potential states, continuous margin transmission and time-conditioned static H-X boundary; bounded functional first-order experiment only.",
+  "publication_prefix": "tools/hcsn/hx_two_layer_boundary_r16_20261101",
+  "dependencies": {
+    "adapter_protocol_sha256": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+    "adapter_source_sha256": "8117df2cae6b17612d7537b96d72ca74a340bb5356e61bbc3f73b9fe478aa870",
+    "financial_protocol_sha256": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+    "financial_binary_sha256": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+    "financial_mode": "float64",
+    "adapter_coordinate": "asset",
+    "independent_chain_source_sha256": "35e8680e3faa501dcde7913a19b2998d2d799a1feb27667fbad6d55812c8ca69"
+  },
+  "source_sha256": {
+    "two_layer_model.py": "7e14756e5b98023092ce44f57eeef3933816a62d1a7dd4b126e8443448dfb2f5",
+    "two_layer_common.py": "108098be5027a78d550b0a5a36be5f81c3cb4c156822e1e7d1f96a3e4e19a8d9",
+    "two_layer_reference.py": "35e8680e3faa501dcde7913a19b2998d2d799a1feb27667fbad6d55812c8ca69",
+    "audit_two_layer.py": "3676dcbb62f68ae5411df19db7b71560cca05eba17dfdfcedf382a3a0190202d",
+    "train_two_layer.py": "6f28e980dbdae1d2528d764477f2b1cbdfdc9c41e0f34a1d5003897c52b8ba58",
+    "check_two_layer_results.py": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e",
+    "freeze_two_layer.py": "fa0f05ffeb94338193c30b6bbeaaa1e3cf79761104b5ef1433f3e48702303aab",
+    "README.md": "02571e4447cf63b27e81fb85a4777fcfd5e2efdfa4aaadf7b158ceff33349a2b",
+    "requirements.txt": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+  },
+  "inputs_sha256": "a71e0504039f65fde804b31bd015475ce78f67e409073a5a6e9bd86c58e8d6db",
+  "cell": {
+    "steps": 16,
+    "dt": 0.05,
+    "leak": 0.5,
+    "k_equity": 0.15,
+    "k_risk": 0.04,
+    "tau": 0.4,
+    "fraction": 0.03,
+    "coupling_gain": 0.2,
+    "conditioning_gain": 0.5,
+    "z_rest1": 4.204692840576172,
+    "z_rest2": 4.204692840576172
+  },
+  "experiment": {
+    "batch_size": 8,
+    "updates": 12,
+    "learning_rate": 0.02,
+    "optimizer": "torch.optim.Adam default betas/epsilon, no weight decay",
+    "trainable_parameters": [
+      "raw_theta1[9]",
+      "raw_theta2[9]"
+    ],
+    "loss": "mean((z2_T-target_z2)^2)+0.25*mean((a2_T-target_a2)^2)",
+    "loss_improvement_is_gate": false
+  },
+  "gates": {
+    "gradient_atol": 2e-09,
+    "gradient_rtol": 2e-05,
+    "fp32_transcendental_ulps": 4,
+    "min_z": 3.5,
+    "max_z": 4.7,
+    "max_adaptation": 0.08,
+    "range_tolerance": 1e-10,
+    "constant_boundary_atol": 1e-10,
+    "minimum_boundary2_range": 1e-10,
+    "minimum_conditioning_vjp": 1e-12,
+    "minimum_direct_boundary_vjp": 1e-12,
+    "nonzero_gradient_floor": 1e-12,
+    "required_readout_contracts": 12,
+    "required_temporal_comparisons": 7,
+    "required_gradient_modes": 4,
+    "no_nonfinite_or_rejected_rows_discarded": true
+  },
+  "gradient_modes": {
+    "full": "both links active",
+    "drive_only": "conditioning link detached",
+    "conditioning_only": "drive link detached",
+    "both_detached": "both links detached"
+  },
+  "identification_contract": [
+    "The four graphs have exact numerical forward equality; they are derivative interventions, not forward-model quality ablations.",
+    "Full upstream raw1 VJP equals drive-only plus conditioning-only; raw2 VJP is invariant across modes.",
+    "Conditioning-only upstream VJP and the norm of its time-resolved [T,9] direct b1 boundary contributions must be nonzero; their net time sum can cancel. Zero in a required test is a retained failure, not permission to retune.",
+    "Both-detached raw1, upstream initial-state and upstream external-drive VJPs must be zero; full early input/state influence must be nonzero.",
+    "The independent NumPy reference composes archived full 5x10 financial Jacobians using actual tanh intermediates and reverse adjoints.",
+    "G denotes continuous drift derivatives: every discrete parameter/cross-layer block includes dt. The direct b1 term is -b1_theta/b1.",
+    "The direct conditioning boundary contribution and remaining state-history contribution are separately recorded."
+  ],
+  "precision_contract": [
+    "Finite CPU FP32 states, assets, raw and effective parameters, links and Euler updates; FP64 financial arithmetic and saved raw Jacobians.",
+    "Q/R are explicitly cast to FP32 inside each drift. Margin is explicitly cast to FP32 before both interlayer routes.",
+    "First-order continuous-formula VJPs at represented points; rounding is not a differentiable model operation.",
+    "The V3 bridge rejects create_graph=True; no second derivatives or C2 force are supplied.",
+    "Four FP32 ULPs apply only to cross-library exp/tanh and derived theta record consistency. Linear links, preactivation and Euler checks require exact FP32 numerical equality. Financial accuracy and gradient gates are unchanged."
+  ],
+  "temporal_and_branch_contract": [
+    "Sixteen simultaneous old-state Euler steps, no normal state detach, hard reset or binary event.",
+    "z0, rest, drives and terminal z2/a2 targets remain fixed independently of b. No direct x or b loss and no trainable head.",
+    "The scalar layer1 margin changes both layer2 drive and its static financial parameters at each time and sample.",
+    "Raw V<=b determines the financial default branch. Q=0,R=1 there; x and its full boundary chain remain.",
+    "b1 is constant within a rollout; b2 must vary within the first sixteen used states, not merely final logging.",
+    "Two final no-grad financial readouts are logging only. Sampled branch transitions are not exact event times.",
+    "Every time-conditioned H-X evaluation remains a static feature map, not the solution of a time-dependent financial PDE or analytic neural temporal flow."
+  ],
+  "prior_negative_results_retained": {
+    "fixed_margin_V1": {
+      "protocol_sha256": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+      "loss_initial": 0.0004702643782366067,
+      "loss_final": 0.0004702617588918656
+    },
+    "fixed_asset_V1": {
+      "protocol_sha256": "7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa",
+      "loss_initial": 0.00047014461597427726,
+      "loss_final": 0.0004700341960415244,
+      "default_initial": 107,
+      "default_final": 127,
+      "sampled_crossings_initial": 8,
+      "sampled_crossings_final": 4
+    },
+    "interpretation": "Nearly flat training and increased saturation are not superseded by this new architecture. No expected loss-improvement threshold is imposed."
+  },
+  "excluded_claims": [
+    "new financial precision qualification",
+    "unseen quality or multimodal benchmark",
+    "task or generalization advantage",
+    "analytic time-varying financial PDE solution",
+    "analytic recurrent flow",
+    "autonomous regenerative spikes or limit cycle",
+    "global stability or step-size convergence",
+    "GPU, event sparsity, power or speed advantage",
+    "pure boundary causal task benefit"
+  ],
+  "exit_semantics": {
+    "audit_two_layer.py": "0 only when every frozen audit gate passes; failures retain complete available records and exit nonzero.",
+    "train_two_layer.py": "0 only for complete finite twelve-update history, both parameter groups updated and all trajectory gates; loss decrease is not required.",
+    "check_two_layer_results.py": "0 only after independent source/input/raw binding, represented Euler, archived Jacobian chain, four-route and full history checks; no optimizer replay or financial calls."
+  }
+}

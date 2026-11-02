@@ -6,6 +6,9 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(test)]
+mod directory_test_support;
+
 mod canonical;
 
 pub use canonical::AdvisoryDecisionReceiptV1;

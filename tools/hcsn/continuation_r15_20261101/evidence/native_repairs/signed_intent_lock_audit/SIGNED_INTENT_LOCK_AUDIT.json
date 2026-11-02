@@ -1,0 +1,149 @@
+{
+  "schema": "hcsn.signed-intent-independent-lock-audit.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "exact_head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "status": "blocking_protocol_gaps_found; no Abort acceptance or unconditional terminal-status bypass approved",
+  "mode": "read-only exact-source audit; no native suite or race execution claimed",
+  "source_identities": [
+    {
+      "repository_path": "codex-rs/hepta-fleet/src/lib.rs",
+      "local_source": "/tmp/hcsn-r15-abort-review/original/codex-rs/hepta-fleet/src/lib.rs",
+      "git_blob": "a0e919677766746416a297e32f3c98c306c14f6d",
+      "sha256": "638e4615f0bb8f115cdb5e475bea975f749d8ab7177862ea1361ac18ccb82eeb",
+      "bytes": 2594,
+      "archive_member": "original/codex-rs/hepta-fleet/src/lib.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-fleet/src/registry.rs",
+      "local_source": "/tmp/hcsn-r15-abort-review/original/codex-rs/hepta-fleet/src/registry.rs",
+      "git_blob": "b17115eb5cffff5f890f34a786534c588d0d3aa5",
+      "sha256": "714b160817bf07b71d11af569a6849769395df00b3769988898e7aff29880753",
+      "bytes": 21262,
+      "archive_member": "original/codex-rs/hepta-fleet/src/registry.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "local_source": "/tmp/hcsn-r15-abort-review/original/codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+      "sha256": "98ce7286ce2b9680bfb2838ec14e969c2333d7818c7ed14711263a08003e0b48",
+      "bytes": 50277,
+      "archive_member": "original/codex-rs/hepta-supervisor/src/supervisor.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-supervisor/src/recovery.rs",
+      "local_source": "/tmp/hcsn-r15-abort-review/original/codex-rs/hepta-supervisor/src/recovery.rs",
+      "git_blob": "529b16dfa8e8ba0d192bedd17b4d6698e0dc3e3c",
+      "sha256": "c5e93d67fbe8aa1e7d5276721247a46354fc8b6f159534e314d210ce8d888e50",
+      "bytes": 15553,
+      "archive_member": "original/codex-rs/hepta-supervisor/src/recovery.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-supervisor/src/signed_intent.rs",
+      "local_source": "/tmp/hcsn-r15-abort-review/original/codex-rs/hepta-supervisor/src/signed_intent.rs",
+      "git_blob": "a48cd70d219c54f0cf753a8966d61169341f3696",
+      "sha256": "32266fdff012ac2ab6659d5aa95c6de46097fdd80c75926cab6bec78d976135c",
+      "bytes": 12925,
+      "archive_member": "original/codex-rs/hepta-supervisor/src/signed_intent.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-supervisor/src/daemon.rs",
+      "local_source": "/tmp/hcsn-r15-abort-review/original/codex-rs/hepta-supervisor/src/daemon.rs",
+      "git_blob": "eed817dcac736beded62ad83c2cbb908936370e4",
+      "sha256": "aaf780f945bf45b9a0e6442c22fdee06f2c953efcc968d61141efe61b25bce16",
+      "bytes": 62705,
+      "archive_member": "original/codex-rs/hepta-supervisor/src/daemon.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-supervisor/src/bin/hepta-supervisor-intent-recovery.rs",
+      "local_source": "/tmp/hcsn-r15-abort-review/original/codex-rs/hepta-supervisor/src/bin/hepta-supervisor-intent-recovery.rs",
+      "git_blob": "305f4b397bcd6125a78a5d32f093ce6cee28f41b",
+      "sha256": "c78b50498837419f2ee153850a07dd2a9feba6bf775510dae0e1a3c007a3d003",
+      "bytes": 2536,
+      "archive_member": "original/codex-rs/hepta-supervisor/src/bin/hepta-supervisor-intent-recovery.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "local_source": "/tmp/hcsn-r15-abort-review/original/codex-rs/hepta-supervisor/src/matrix.rs",
+      "git_blob": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+      "sha256": "021fd2d4cef0a765e651676a7efd06a58dc77f7932d184001d1ade8cf09b3bed",
+      "bytes": 31847,
+      "archive_member": "original/codex-rs/hepta-supervisor/src/matrix.rs"
+    },
+    {
+      "repository_path": "codex-rs/hepta-supervisor/src/driver.rs",
+      "local_source": "/tmp/hcsn-r15-abort-review/original/codex-rs/hepta-supervisor/src/driver.rs",
+      "git_blob": "290a1c2d0324868c649df6945b73ea1b74a85c1d",
+      "sha256": "aa6349e8b868ed07e0271f6c4045a2e98099dd6a81880eb06c79f4290d18a32b",
+      "bytes": 3745,
+      "archive_member": "original/codex-rs/hepta-supervisor/src/driver.rs"
+    }
+  ],
+  "provenance_check": "The earlier unarchived daemon working copy contained an extra trailing newline and failed Git-blob verification. It is excluded. The canonical connector-byte copy from abort-review is verified against eed817dcac736beded62ad83c2cbb908936370e4.",
+  "findings": [
+    {
+      "id": "owner_lock_scope",
+      "evidence": [
+        "FleetRegistry contains only layout. compare_and_transition reads a generation and publishes the next lifecycle file using hard_link.",
+        "run_supervisord_inner acquires its private Unix SingleInstanceLock before Supervisor::recover and serializes RPC/tick via Mutex.",
+        "Public Supervisor::recover itself accepts a plain FleetRegistry without an owner-lock token."
+      ],
+      "conclusion": "Single-file lifecycle CAS and daemon-local serialization do not establish exclusion spanning all public library instances and durable state files."
+    },
+    {
+      "id": "intent_publish_is_not_multi_file_cas",
+      "evidence": [
+        "read_intent validates schema/identity digest. Intent digest includes status and grant fields.",
+        "write_intent checks one existing grant and atomically replaces the file; it does not CAS the observed full intent digest, lifecycle generation, lease or transaction snapshot.",
+        "The inspect/abort CLI reads an exact intent digest and only publishes an Abort directive. It does not hold the supervisor owner lock or itself establish terminal Aborted."
+      ],
+      "conclusion": "An exact digest and atomic publication cannot substitute for exclusive ownership plus revalidation across the full critical section."
+    },
+    {
+      "id": "aborted_is_not_an_unconditional_admission_clearance",
+      "evidence": [
+        "recover_signed_intent returns early only for Committed/RolledBack and otherwise rewrites to RecoveryRequired if no terminal transaction witness resolves it.",
+        "production_recovery_required reports only SignedIntentStatus::RecoveryRequired.",
+        "Ordinary daemon mutations other than emergency Kill consult that predicate."
+      ],
+      "conclusion": "Adding Aborted to the early-return list alone can remove the signed-intent quarantine while a separate release fence is unresolved."
+    },
+    {
+      "id": "start_admission_needs_independent_fences",
+      "evidence": [
+        "preflight_start checks active Agent runtime, Agent lease and Failed/Stopped lifecycle, with no nonterminal release transaction check.",
+        "Public start/start_release call start_release_slot; that helper checks runtime, lease and lifecycle before CAS to Starting and spawn.",
+        "preflight_upgrade has an explicit nonterminal transaction/release-change/restart-pending guard."
+      ],
+      "conclusion": "Aborted terminality and permission to Start must remain separate. A blanket transaction rejection in the shared internal spawn helper could break authorized upgrade/rollback paths; distinguish explicit starts from the owner state machine."
+    },
+    {
+      "id": "matrix_kill_does_not_prove_absence",
+      "evidence": [
+        "ManagedProcess contract in driver.rs says every method must return promptly and never wait for process exit.",
+        "matrix.rs recover_matrix_companion: the non-running-Agent Adoption::Adopted branch calls kill, then removes the Matrix lease and drops the process handle.",
+        "tick_matrix_companion takes the runtime out of the slot and has early question-mark returns on kill/poll errors before restoring the handle.",
+        "The Agent signed-intent quarantine path instead retains its runtime in RuntimePhase::Killing after issuing kill."
+      ],
+      "conclusion": "A new Abort absence check would be unsound on the Matrix recovery path: kill success is not observed exit. Retain a fenced observable Matrix handle and lease until poll/adoption establishes termination; preserve the handle and a retryable fence on errors."
+    }
+  ],
+  "static_race_scenario": {
+    "classification": "reasoned interleaving from source, not an executed production race",
+    "steps": [
+      "Recovery A reads Failed/Stopped, no runtime/lease, an exact recovery intent and no unresolved transaction.",
+      "Another public Supervisor instance B advances lifecycle and spawns through its unlocked library path.",
+      "A merely replacing the intent with Aborted cannot detect that intervening change; a CAS on a separate lifecycle file does not couple these operations."
+    ],
+    "required_prevention": "A common owner lock or equivalent fencing/transaction protocol covering all cooperating writers and the full check-to-publication interval."
+  },
+  "minimum_safe_candidate_scope": [
+    "Use one lifetime-held supervisor owner exclusion for daemon and public recovery, or an equivalently enforceable owner token; inventory every writer and avoid a temporary lock that is released while a mutable Supervisor remains live.",
+    "Within the same protected operation, verify the exact current intent/directive binding, Agent identity, lifecycle/generation, absence of Agent/Matrix live handles and unresolved leases, and absence of unresolved release transactions. Persist only the intended Abort.",
+    "Keep Aborted terminal on later recovery while independently enforcing release/restart/process fences on RPC and public Start paths. Do not clear an unrelated fence.",
+    "Retain Agent/Matrix process observability after kill, including failure paths. Only confirmed Exited/Missing can establish absence.",
+    "Run native cases for competing ownership, stale digest/generation, live/terminating Agent and Matrix, leases, unresolved release transactions and second recovery after Abort. Preserve successful authorized release transitions."
+  ],
+  "implementation_changes": 0,
+  "native_tests_executed": 0,
+  "blocker_closed": false
+}

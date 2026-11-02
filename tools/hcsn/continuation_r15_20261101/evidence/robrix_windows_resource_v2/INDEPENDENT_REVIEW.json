@@ -1,0 +1,172 @@
+{
+  "schema": "robrix-independent-final-source-review-v1",
+  "result": "no_blocking_defect_in_final_minimal_patch; native original tests remain required",
+  "reviewer": "math_validation, independent of architecture_comparison author",
+  "base_head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "patch": {
+    "path": "/tmp/hcsn-robrix-windows-fix/robrix_windows_resource_resolution.patch",
+    "bytes": 2174,
+    "sha256": "41b44b3a50d45e76d7a54916818ac1d865a3a628d5466093134f4392dcf43d49",
+    "git_blob": "5910cf6c70a6d4bae660fb302d308804a274f330"
+  },
+  "final_changed_files": [
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/candidate/codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+      "bytes": 13179,
+      "sha256": "702ef5fa17b6f101f9d7bad4afe90d028ddc9d7345f115f6b175c4655b091cc9",
+      "git_blob": "a75c2079b062518510cb0cf1348568097d99e63c"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/candidate/codex-rs/hepta-supervisor/Cargo.toml",
+      "bytes": 2755,
+      "sha256": "16c8f5bb4a0f8681198c35a14970f918a716f48d89d305d0dade7d0496df0a5c",
+      "git_blob": "3a5c9f790aca3e0ee660d69d6d8f592b28e76abc"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/candidate/codex-rs/Cargo.lock",
+      "bytes": 419208,
+      "sha256": "b06463c3bf8881b39b36dc8162002d317dcf06d6a354b554b362eb3636d6c93f",
+      "git_blob": "5670e8ebe6399fc1a1ca88ff7ce4a807b212abca"
+    }
+  ],
+  "unchanged_module_lock": {
+    "path": "/tmp/hcsn-robrix-windows-fix/candidate/MODULE.bazel.lock",
+    "bytes": 1664247,
+    "sha256": "0f3564b380951c7dc0c9b20de3abf5f4dbc8b4bc884438572ffa2a694eaede8c",
+    "git_blob": "d043b328da3ad8434c60312980340fe5e90757df"
+  },
+  "verified_auxiliary_retry_source": {
+    "path": "/tmp/hcsn-robrix-windows-fix/original/tools/argument-comment-lint/src/lib.rs",
+    "bytes": 9366,
+    "sha256": "b8a5060cc872c21b7b5c79f057f194b43a0013658b5565349226edec35bab02e",
+    "git_blob": "76b9e17732db18c5e5dda3a3ddbdfa4e057bc6fa"
+  },
+  "checked": {
+    "original_two_test_bodies_all_assertions_and_whole_directory_enumerator_byte_unchanged": true,
+    "loader_uses_fixed_resource_literal_approved_public_macro_and_lexical_absolute": true,
+    "no_new_cwd_mutation_fallback_skip_filter_or_retry": true,
+    "unique_manifest_delta_is_test_only_workspace_helper_dependency": true,
+    "all_1522_lock_package_identities_unchanged_one_dependency_edge_added": true,
+    "module_lock_regenerated_actual_exit0_and_byte_unchanged": true,
+    "post_fmt_delta_is_one_exact_whitespace_reformat_of_parent_context_chain": true,
+    "six_probe_compiles_fourteen_runtime_expected_outcomes_and_forty_stream_hashes_verified": true
+  },
+  "probe_scope": {
+    "pre_fmt_test_source_sha256": "57d8c43de917ad5c567fd62ded8be0b6d57c4a57d069937e058feef4a3fe5c79",
+    "final_test_source_sha256": "702ef5fa17b6f101f9d7bad4afe90d028ddc9d7345f115f6b175c4655b091cc9",
+    "final_bytes_compiled_by_probe": false,
+    "host": "Linux x86_64, rustc 1.95.0",
+    "method": "actual complete pinned runfiles source plus verbatim relevant public helper fragments and real five tracked fixture byte maps; only error-type adapter is std shim",
+    "coverage": [
+      "Cargo without Bazel environment",
+      "configured manifest-only direct rust_test without INSTA: original failure and repaired success",
+      "absolute physical target containing spaces",
+      "relative physical parent target",
+      "basename-only physical target",
+      "missing manifest entry without Cargo fallback",
+      "mapped nonexistent file",
+      "missing sibling map mismatch",
+      "extra file map mismatch",
+      "non-file rejection",
+      "runtime manifest without compiled Bazel package rejection"
+    ],
+    "not_claimed": [
+      "native Windows execution",
+      "full supervisor crate or original generated-schema tests executed locally",
+      "arbitrary symlink-runfiles layout support"
+    ]
+  },
+  "fixture_identities": [
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/original/codex-rs/hepta-supervisor/fixtures/robrix-control-v2/cross-parser-corpus-v2.json",
+      "bytes": 1846236,
+      "sha256": "8227b8a80e21a2f7202b6127950c0e2c44b84b1b890c54748493f0d809b439e3",
+      "git_blob": "044fe5d461e3e1b2dc2530aa3f7b822b4d1e66e2"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/original/codex-rs/hepta-supervisor/fixtures/robrix-control-v2/manifest.json",
+      "bytes": 2206,
+      "sha256": "9ca541d6fe8e5de1b6023d503ff858051b1756ba5b07e21ef7ec9ceeb7fff992",
+      "git_blob": "a5ae1f8034403f55a0ec075665685922ebfb3306"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/original/codex-rs/hepta-supervisor/fixtures/robrix-control-v2/matrixd-control-v2.schema.json",
+      "bytes": 25875,
+      "sha256": "16d3f43c4fd94dac8d55b2371a093ee8e6e4a5128cabdeff18b64528d09cc1e4",
+      "git_blob": "bb7909afc0247246f2814649a6da76b115dc879b"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/original/codex-rs/hepta-supervisor/fixtures/robrix-control-v2/robrix_control_projection.rs",
+      "bytes": 1202,
+      "sha256": "aeac02f987444d875bbfde01c931c21e8eebccb0513a583279c0eebed237764d",
+      "git_blob": "71e7ed5b6380a64d38481d7271d13f94e6d19161"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/original/codex-rs/hepta-supervisor/fixtures/robrix-control-v2/supervisord-readonly-v2.schema.json",
+      "bytes": 21482,
+      "sha256": "09e09128d9681f154155dc609f606bdc2904abcef36ce7b62e989d648b08d962",
+      "git_blob": "ee485187d1d311f26659328b4494ce619179e55c"
+    }
+  ],
+  "execution_evidence": [
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/CARGO_LOCK_ATTEMPT01.json",
+      "bytes": 219,
+      "sha256": "c9c7db5c781025e1fca10e827714f95489d9cb0b8e4d9d8b7ae8f5720cbc076b",
+      "git_blob": "2a4d4048c046d2263ac51b1135fe35ddab039cf1"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/CARGO_METADATA_ATTEMPT01.json",
+      "bytes": 212,
+      "sha256": "ea22df06ade366258de198ac57ee7c620c95315e7d90fd497ad2351d6da280ae",
+      "git_blob": "f36856a1709049fd16b846e57ada18537b3c26e4"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/CARGO_UPDATE_ACTUAL.json",
+      "bytes": 822,
+      "sha256": "b9f762e7949061df25e20388201c72bdbb1030ee052629bc9badea6d06eedde9",
+      "git_blob": "6fe660c5455e6f70115dd91e9f562ff5f1205d72"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/CARGO_LOCK_CHANGE_VERIFICATION.json",
+      "bytes": 1990,
+      "sha256": "8315b6c138b9e43400fdd8870fc4241f3879c9ea335687a8433ac2c4a08cc787",
+      "git_blob": "82611c2d4b72f9af43f8b252dd8205efb9d8a143"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/BAZEL_LOCK_ACTUAL.json",
+      "bytes": 783,
+      "sha256": "0e20866680e24bab17df1d1f45ce217477a69496e4ab7c95fd04476b900491a5",
+      "git_blob": "a02014d6b9e42778f9a0d6af3ae069c7b6dac984"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/BAZEL_LOCK_ACTUAL_ATTEMPT02.json",
+      "bytes": 783,
+      "sha256": "e6454c3778d9707efdd751db136a03edc0e45a97030cdce0395092b224a558b3",
+      "git_blob": "373945b535b77c7180d3fb722567e6fa89747b59"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/FMT_ACTUAL.json",
+      "bytes": 778,
+      "sha256": "1c15e3d9a7b10f9a8d6d78fb9b0910bd7ed1f0bb0a2989400b92709d8ef34a54",
+      "git_blob": "3a1c486c14ae317d8bd33d6aea07edaa434ff30e"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/fixture-probe/VALIDATION.json",
+      "bytes": 14243,
+      "sha256": "f50fe11ed5854b6d22c45de4bf0f56265b5439dfff2a16c0945ef0d8e7894a3d",
+      "git_blob": "669e78d00567a3d2fe828496cf8b8ebf5fcf6017"
+    }
+  ],
+  "retained_attempts": [
+    "offline cargo update exit101 due unavailable git cache, followed by actual online scoped update exit0",
+    "Bazel lock attempt01 exit2 due missing sparse auxiliary lib, restored exact f52 source then attempt02 exit0",
+    "reviewer preliminary assumption original Cargo.toml lacked dev-dependencies was wrong; corrected structured comparison established the unique intended delta"
+  ],
+  "remaining_acceptance": "publish these exact files with reviewed targeted workflow; both hosted Ubuntu and Windows/MSVC jobs must execute and pass the complete original target, and clean-worktree check must pass",
+  "new_native_tests_run_by_reviewer": 0,
+  "new_financial_calls": 0,
+  "new_model_rollouts": 0,
+  "new_training_runs": 0,
+  "shared_source_writes_by_reviewer": 0
+}

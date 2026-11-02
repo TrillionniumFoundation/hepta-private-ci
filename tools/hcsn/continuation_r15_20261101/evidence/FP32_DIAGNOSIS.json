@@ -1,0 +1,363 @@
+{
+  "schema": "hcsn.r15.readonly-full-financial-fp32-diagnosis.v2",
+  "published_commit_checked": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+  "source_location": "tools/hcsn/calibrated_operator_r11_20261031/numerics",
+  "reproducer_sha256": "9af46b01f3d1cf61ee4816b215bd3f203da4fe5a36a12d940d24bea107dd04d4",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5"
+  },
+  "current_kernel_git_blob_sha1": "95cace749982a6b48b738dfa5d369b6491589a87",
+  "source_sha256": {
+    "kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+    "audit.py": "7e78e2ba7e46b76e5026b1eafc0de38eed587a79806b4464751bb628b40e5584",
+    "PROTOCOL_V3.json": "07e4abe9e19da7b1617484a0697dbe7fb9767f3b5a33136976327e6b61711836"
+  },
+  "source_seal_after": {
+    "kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+    "audit.py": "7e78e2ba7e46b76e5026b1eafc0de38eed587a79806b4464751bb628b40e5584",
+    "PROTOCOL_V3.json": "07e4abe9e19da7b1617484a0697dbe7fb9767f3b5a33136976327e6b61711836"
+  },
+  "source_unchanged": true,
+  "archive_member": "FINAL_RESULTS.json",
+  "archive_member_sha256": "aa35be2e7e8760518ca6d0865abb363256d04f937ab831f35c408e719e92bec0",
+  "all_chunk_hashes_offsets_sizes_verified": true,
+  "historical_kernel_sha256": "1a7fb9480bca8fd127241b2488834bc682626f817469f8a69e07097f74adf4b6",
+  "historical_source_difference": "Current kernel has exactly one additional final newline; removing it reproduces the archived source SHA256.",
+  "gate_scope": {
+    "original_archive": "All five financial outputs and all ten Jacobian columns; 432 rows, 18 cases.",
+    "current_rerun": "Five selected previous failures only; no new qualification.",
+    "debt_rearrangements": "Debt output and its ten Jacobian columns ONLY. A debt case passes only if all its state rows pass. This is not a full financial-operator case pass."
+  },
+  "error_definition": "max(abs(actual-reference)/max(1,abs(reference)))",
+  "original_gates": {
+    "value_scaled": 8e-07,
+    "jacobian_scaled": 2e-05
+  },
+  "original_full_operator_native_fp32_summary": {
+    "passed_rows": 136,
+    "total_rows": 432,
+    "passed_cases": 0,
+    "total_cases": 18,
+    "cases": {
+      "baseline": false,
+      "liquidity_0.1": false,
+      "maturity_0.01": false,
+      "maturity_0.1": false,
+      "maturity_5": false,
+      "maturity_20": false,
+      "sigma_0.08": false,
+      "sigma_0.8": false,
+      "delta_0.2": false,
+      "recovery_0": false,
+      "recovery_1": false,
+      "tax_0": false,
+      "tax_0.6": false,
+      "lower_liquidity_limit": false,
+      "joint_m0.01_l0.0001": false,
+      "joint_m0.01_l0.1": false,
+      "joint_m20.0_l0.0001": false,
+      "joint_m20.0_l0.1": false
+    },
+    "max_value_error": 0.0162872771445453,
+    "max_jacobian_error": 61.81494268103482
+  },
+  "reproduced_current_source_witnesses": [
+    {
+      "case": "maturity_0.01",
+      "coordinate": "log_distance",
+      "state": 0.0004600004758685827,
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        0.009999999776482582,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "values": [
+        97.3689193725586,
+        -0.014980316162109375,
+        0.9837546348571777,
+        0.9837405681610107,
+        5847.46044921875
+      ],
+      "reference": [
+        97.36897040105218,
+        0.001306960982435923,
+        0.9837546588201146,
+        0.983740660758211,
+        5847.463547446953
+      ],
+      "value_errors": [
+        5.240734638241302e-07,
+        0.0162872771445453,
+        2.3962936857024886e-08,
+        9.259720024079598e-08,
+        5.298413881731168e-07
+      ],
+      "max_jacobian_error": 2.637794888606275,
+      "fails_original_gate": true,
+      "worst_jacobian": {
+        "output": "equity",
+        "column": "liquidity",
+        "actual": 2.6275634765625,
+        "reference": -0.010231412043775312
+      },
+      "current_values_exactly_equal_archived": true,
+      "current_jacobian_exactly_equal_archived": true
+    },
+    {
+      "case": "maturity_0.01",
+      "coordinate": "log_distance",
+      "state": 0.00034500000765547156,
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        0.009999999776482582,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "values": [
+        97.3689193725586,
+        0.016876213252544403,
+        0.9878147840499878,
+        0.9878042936325073,
+        5846.1298828125
+      ],
+      "reference": [
+        97.36897040105218,
+        0.0007361983982179003,
+        0.9878147689218851,
+        0.9878042030776041,
+        5846.132792204928
+      ],
+      "value_errors": [
+        5.240734638241302e-07,
+        0.016140014854326503,
+        1.5128102659467402e-08,
+        9.055490324261228e-08,
+        4.976610232941478e-07
+      ],
+      "max_jacobian_error": 61.81494268103482,
+      "fails_original_gate": true,
+      "worst_jacobian": {
+        "output": "equity",
+        "column": "state",
+        "actual": 267.51763916015625,
+        "reference": 4.258821671120072
+      },
+      "current_values_exactly_equal_archived": true,
+      "current_jacobian_exactly_equal_archived": true
+    },
+    {
+      "case": "maturity_0.1",
+      "coordinate": "asset",
+      "state": 87.50782775878906,
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        0.10000000149011612,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "values": [
+        87.5079345703125,
+        0.0,
+        1.0,
+        1.0,
+        525.047607421875
+      ],
+      "reference": [
+        87.50774201707857,
+        1.7180545009127689e-09,
+        0.9999886184150983,
+        0.9999885218571587,
+        525.04753680549
+      ],
+      "value_errors": [
+        2.2004136947378987e-06,
+        1.7180545009127689e-09,
+        1.1381584901659636e-05,
+        1.1478142841303551e-05,
+        1.344952218795701e-07
+      ],
+      "max_jacobian_error": 1.9233215907338057,
+      "fails_original_gate": true,
+      "worst_jacobian": {
+        "output": "debt",
+        "column": "r",
+        "actual": -468.564453125,
+        "reference": 507.476980747965
+      },
+      "current_values_exactly_equal_archived": true,
+      "current_jacobian_exactly_equal_archived": true
+    },
+    {
+      "case": "delta_0.2",
+      "coordinate": "log_distance",
+      "state": 0.0,
+      "theta": [
+        0.07999999821186066,
+        0.20000000298023224,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "values": [
+        71.53301239013672,
+        0.0,
+        1.0,
+        1.0,
+        42.91980743408203
+      ],
+      "reference": [
+        71.53288183503338,
+        6.747006683667535e-80,
+        1.0,
+        1.0,
+        42.91973080649683
+      ],
+      "value_errors": [
+        1.8251061608392057e-06,
+        6.747006683667535e-80,
+        0.0,
+        0.0,
+        1.7853696600993224e-06
+      ],
+      "max_jacobian_error": 0.00046531536115387964,
+      "fails_original_gate": true,
+      "worst_jacobian": {
+        "output": "boundary",
+        "column": "liquidity",
+        "actual": 38.746212005615234,
+        "reference": 38.764249606420705
+      },
+      "current_values_exactly_equal_archived": true,
+      "current_jacobian_exactly_equal_archived": true
+    },
+    {
+      "case": "recovery_0",
+      "coordinate": "asset",
+      "state": 128.73773193359375,
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.0,
+        0.27000001072883606,
+        0.009999999776482582,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "values": [
+        128.7377166748047,
+        1.713090780341986e-11,
+        0.9999995231628418,
+        0.999999463558197,
+        3.0517578125e-05
+      ],
+      "reference": [
+        128.7375956859156,
+        1.3502260268377207e-09,
+        0.9999956183650899,
+        0.9999952939440322,
+        0.0002968079157622363
+      ],
+      "value_errors": [
+        9.398100720712037e-07,
+        1.3330951190343008e-09,
+        3.904797751919098e-06,
+        4.169614164828417e-06,
+        0.0002662903376372363
+      ],
+      "max_jacobian_error": 0.017896695088726173,
+      "fails_original_gate": true,
+      "worst_jacobian": {
+        "output": "equity",
+        "column": "r",
+        "actual": 0.0022717476822435856,
+        "reference": 0.02016844277096976
+      },
+      "current_values_exactly_equal_archived": true,
+      "current_jacobian_exactly_equal_archived": true
+    }
+  ],
+  "narrow_rearrangement_diagnostic": {
+    "executed": true,
+    "scope": "Post hoc, debt-only, all 432 old FP32 rows; not a new qualification or benchmark.",
+    "definitions": {
+      "sf": "1-F",
+      "recovery": "alpha*b/m",
+      "debt_regroup": "recovery*G + (c/R)*(1-G) + discount*q*sf",
+      "debt_positive_components": "(c/R)*((1-discount)*sf+(F-G))+p*discount*sf+recovery*G"
+    },
+    "results": {
+      "original": {
+        "rows": 432,
+        "debt_rows_passed": 214,
+        "debt_cases_passed": 4,
+        "max_value_scaled": 0.0002662903376372363,
+        "max_jacobian_scaled": 7.262990772722548,
+        "fixed_debt_pass_failures": 0,
+        "regressed_debt_passes": 0
+      },
+      "debt_regroup": {
+        "rows": 432,
+        "debt_rows_passed": 220,
+        "debt_cases_passed": 4,
+        "max_value_scaled": 0.0002627821691899392,
+        "max_jacobian_scaled": 7.262990772722548,
+        "fixed_debt_pass_failures": 6,
+        "regressed_debt_passes": 0
+      },
+      "debt_positive_components": {
+        "rows": 432,
+        "debt_rows_passed": 229,
+        "debt_cases_passed": 4,
+        "max_value_scaled": 0.0002627821691899392,
+        "max_jacobian_scaled": 7.262990772722548,
+        "fixed_debt_pass_failures": 15,
+        "regressed_debt_passes": 0
+      }
+    },
+    "source_mutated": false,
+    "precision_promoted": false,
+    "full_operator_qualification_inferred": false
+  },
+  "conclusion": {
+    "full_native_fp32_qualified": false,
+    "single_debt_rearrangement_closes_blocker": false,
+    "independent_failure_sites": [
+      "B/b boundary value and parameter derivatives",
+      "wrong asset/default branch caused by inaccurate b",
+      "raw A7 equity cancellation and C2 blend derivative amplification",
+      "debt complements and derivative cancellation"
+    ],
+    "next_stage": "New additive stable FP32 financial kernel with unchanged inherited gates and independent high-precision values/Jacobians. Preserve R11 source and failures.",
+    "exclusions": [
+      "No R15 benchmark rerun",
+      "No acceptance change",
+      "No mixed32 relabeling",
+      "No full parameter-box or production qualification"
+    ]
+  }
+}

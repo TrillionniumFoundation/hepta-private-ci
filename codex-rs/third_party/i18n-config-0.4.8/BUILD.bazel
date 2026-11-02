@@ -1,0 +1,6 @@
+# The registry replacement is built by rules_rs from its Cargo manifest.
+# This standalone Cargo workspace is not a first-party DEP_DATA entry.
+exports_files([
+    "Cargo.toml",
+    "LICENSE.txt",
+])

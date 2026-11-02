@@ -1,0 +1,35 @@
+{
+  "artifact": {
+    "path": "/tmp/hcsn-recurrent-next-v1/RECURRENT_TRAINING_V1.json.gz",
+    "bytes": 102846,
+    "sha256": "b07378052e70e0ad97978f74398b2db0fda02bb3eae9041c51f70f9caac4a35e"
+  },
+  "training_passed": true,
+  "initial_loss": 0.0004702643782366067,
+  "final_loss": 0.0004702617588918656,
+  "parameter_update_l2": 0.19922968582039557,
+  "checks": {
+    "complete_shapes": true,
+    "all_finite": true,
+    "bounded_x": true,
+    "bounded_adaptation": true,
+    "risk_in_range": true,
+    "equity_nonnegative": true,
+    "complete_training_history": true,
+    "nine_trainable_parameters_only": true,
+    "finite_parameters_and_gradients": true,
+    "actual_parameter_update": true,
+    "bounded_theta_change": true
+  },
+  "runtime": {
+    "wall_seconds": 1.1753922139978386,
+    "process_cpu_seconds": 0.26119185999999983,
+    "financial_calls": 208,
+    "financial_states": 1664,
+    "additional_boundary_diagnostic_calls": 1,
+    "additional_boundary_diagnostic_states": 2,
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "cuda_available": false
+  }
+}

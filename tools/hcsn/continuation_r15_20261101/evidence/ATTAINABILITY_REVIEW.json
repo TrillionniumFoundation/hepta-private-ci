@@ -1,0 +1,193 @@
+{
+  "arithmetic_method": "Python stdlib Decimal reaggregation directly from all stored schedule rows; no import of attainability, scientific model or summarizer",
+  "checked_bytes": 704496,
+  "checked_file": "tools/hcsn/continuation_r15_20261101/evidence/ATTAINABILITY.json",
+  "checked_sha256": "381b87035c31595be896119d7032c3609c61a8b9316b12b579e1b3e248723cee",
+  "checks": 10453,
+  "conclusion": "For these fixed eight published B policies and unchanged finite task/schedule laws, the computed public-information oracle leaves mean headroom far below 0.01 in each domain. This numerically excludes the requested expected practical effect against those fixed B policies, not all HCSN tasks or future baseline choices.",
+  "diagnostic_source_sha256": "c8d16fd0ffbf585d545563c2a2928bd6caacda96d2013edf5d87ffd51cceaa70",
+  "domains": {
+    "iid": {
+      "gap_below_mean_floor": "0.0093751484263203250000000000",
+      "oracle_minus_D": "0.0000095673977408796296296296125",
+      "per_seed": [
+        {
+          "B_mean": "0.6694907048522519",
+          "D_mean": "0.6694882363498670407407407407",
+          "D_minus_B": "-0.0000024685023848592592592593",
+          "oracle_minus_B": "8.111111111111E-16",
+          "oracle_minus_D": "0.0000024685023856703703703704",
+          "seed": 141101
+        },
+        {
+          "B_mean": "0.6693260429215572407407407407",
+          "D_mean": "0.6694805647473345703703703704",
+          "D_minus_B": "0.0001545218257773296296296297",
+          "oracle_minus_B": "0.0001646619306954703703703704",
+          "oracle_minus_D": "0.0000101401049181407407407407",
+          "seed": 141103
+        },
+        {
+          "B_mean": "0.6688467879262311259259259259",
+          "D_mean": "0.6694907048522519",
+          "D_minus_B": "0.0006439169260207740740740741",
+          "oracle_minus_B": "0.0006439169260215851851851852",
+          "oracle_minus_D": "8.111111111111E-16",
+          "seed": 141107
+        },
+        {
+          "B_mean": "0.6694907048522519",
+          "D_mean": "0.6694907048522519",
+          "D_minus_B": "0E-16",
+          "oracle_minus_B": "8.111111111111E-16",
+          "oracle_minus_D": "8.111111111111E-16",
+          "seed": 141109
+        },
+        {
+          "B_mean": "0.6694862115705125592592592593",
+          "D_mean": "0.6694862115705125592592592593",
+          "D_minus_B": "0E-28",
+          "oracle_minus_B": "0.0000044932817401518518518518",
+          "oracle_minus_D": "0.0000044932817401518518518518",
+          "seed": 141113
+        },
+        {
+          "B_mean": "0.6689166458316842074074074074",
+          "D_mean": "0.6694907048522519",
+          "D_minus_B": "0.0005740590205676925925925926",
+          "oracle_minus_B": "0.0005740590205685037037037037",
+          "oracle_minus_D": "8.111111111111E-16",
+          "seed": 141117
+        },
+        {
+          "B_mean": "0.6661106679548806370370370370",
+          "D_mean": "0.6694446505743340555555555556",
+          "D_minus_B": "0.0033339826194534185185185186",
+          "oracle_minus_B": "0.0033800368973720740740740741",
+          "oracle_minus_D": "0.0000460542779186555555555555",
+          "seed": 141119
+        },
+        {
+          "B_mean": "0.6692590603192147185185185185",
+          "D_mean": "0.6694773218372907259259259259",
+          "D_minus_B": "0.0002182615180760074074074074",
+          "oracle_minus_B": "0.0002316445330379925925925926",
+          "oracle_minus_D": "0.0000133830149619851851851852",
+          "seed": 141123
+        }
+      ],
+      "per_seed_headroom_max": "0.0033800368973720740740740741",
+      "per_seed_headroom_min": "8.111111111111E-16",
+      "recomputed": {
+        "B_mean": "0.668865853278573036111111111",
+        "D_mean": "0.6694811374545118314814814815",
+        "D_minus_B": "0.0006152841759387953703703703875",
+        "oracle_mean": "0.6694907048522527111111111111",
+        "oracle_minus_B": "0.0006248515736796750000000000"
+      }
+    },
+    "ood": {
+      "gap_below_mean_floor": "0.0091754873124896518518518518",
+      "oracle_minus_D": "4.515342657287037037037875E-7",
+      "per_seed": [
+        {
+          "B_mean": "0.6491686567605563407407407407",
+          "D_mean": "0.6491674526691840370370370370",
+          "D_minus_B": "-0.0000012040913723037037037037",
+          "oracle_minus_B": "1.1148148148149E-15",
+          "oracle_minus_D": "0.0000012040913734185185185186",
+          "seed": 141101
+        },
+        {
+          "B_mean": "0.6489602258717177925925925926",
+          "D_mean": "0.6491686567605563407407407407",
+          "D_minus_B": "0.0002084308888385481481481481",
+          "oracle_minus_B": "0.0002084308888396629629629630",
+          "oracle_minus_D": "1.1148148148149E-15",
+          "seed": 141103
+        },
+        {
+          "B_mean": "0.6474122945579797037037037037",
+          "D_mean": "0.6491686567605563407407407407",
+          "D_minus_B": "0.0017563622025766370370370370",
+          "oracle_minus_B": "0.0017563622025777518518518519",
+          "oracle_minus_D": "1.1148148148149E-15",
+          "seed": 141107
+        },
+        {
+          "B_mean": "0.6491686567605563407407407407",
+          "D_mean": "0.6491686567605563407407407407",
+          "D_minus_B": "0E-28",
+          "oracle_minus_B": "1.1148148148149E-15",
+          "oracle_minus_D": "1.1148148148149E-15",
+          "seed": 141109
+        },
+        {
+          "B_mean": "0.6491686567605563407407407407",
+          "D_mean": "0.6491686567605563407407407407",
+          "D_minus_B": "0E-28",
+          "oracle_minus_B": "1.1148148148149E-15",
+          "oracle_minus_D": "1.1148148148149E-15",
+          "seed": 141113
+        },
+        {
+          "B_mean": "0.6488277585756816555555555556",
+          "D_mean": "0.6491686567605563407407407407",
+          "D_minus_B": "0.0003408981848746851851851851",
+          "oracle_minus_B": "0.0003408981848758000000000000",
+          "oracle_minus_D": "1.1148148148149E-15",
+          "seed": 141117
+        },
+        {
+          "B_mean": "0.6449975638912868111111111111",
+          "D_mean": "0.6491674526691840370370370370",
+          "D_minus_B": "0.0041698887778972259259259259",
+          "oracle_minus_B": "0.0041710928692706444444444445",
+          "oracle_minus_D": "0.0000012040913734185185185186",
+          "seed": 141119
+        },
+        {
+          "B_mean": "0.6490493394060418740740740741",
+          "D_mean": "0.6491674526691840370370370370",
+          "D_minus_B": "0.0001181132631421629629629629",
+          "oracle_minus_B": "0.0001193173545155814814814815",
+          "oracle_minus_D": "0.0000012040913734185185185186",
+          "seed": 141123
+        }
+      ],
+      "per_seed_headroom_max": "0.0041710928692706444444444445",
+      "per_seed_headroom_min": "1.1148148148149E-15",
+      "recomputed": {
+        "B_mean": "0.6483441440730471074074074075",
+        "D_mean": "0.649168205226291726851851852",
+        "D_minus_B": "0.0008240611532446194444444444125",
+        "oracle_mean": "0.6491686567605574555555555556",
+        "oracle_minus_B": "0.0008245126875103481481481482"
+      }
+    }
+  },
+  "failures": [],
+  "input_identities_checked": 31,
+  "limits": [
+    "No formal interval certificate for the matrix exponential or DP value; floating-point headroom diagnostic only",
+    "Stored oracle DP values were structurally reviewed but not independently recomputed by a second optimizer in this receipt",
+    "No new confirmation opened; original negative Monte Carlo confirmation results remain authoritative for their registered test",
+    "No quality, quality-constrained CPU, production or architecture-adoption gate is closed by this diagnostic"
+  ],
+  "max_recomputed_forward_backward_difference": "5E-16",
+  "max_summary_or_identity_arithmetic_discrepancy": "3.9E-15",
+  "policy_rows": 864,
+  "r14_freeze_sha256": "0af6d81c45e485efac0bb27b8bdbc907947996b4b36f4db2b90d0b273dfe229a",
+  "r14_sources_checked": 45,
+  "review_independence": "Algorithmically separate arithmetic and identity checks; this reviewer also authored attainability.py, so this is not an independent-person code review",
+  "schedule_information_review": "No unauthorized schedule foresight: original protocol and deployed execution both expose the entire remaining public schedule. This result does not apply to a hidden-future-duration task.",
+  "schedule_rows": 432,
+  "schema": "hcsn.r15.attainability-arithmetic-review.v1",
+  "source_paths": [
+    "tools/hcsn/task_aligned_r14_20261101/PROTOCOL.json",
+    "tools/hcsn/task_aligned_r14_20261101/execution.py",
+    "tools/hcsn/unified_cell_r12_20261031/task_value.py",
+    "tools/hcsn/continuation_r15_20261101/attainability.py"
+  ],
+  "status": "pass"
+}

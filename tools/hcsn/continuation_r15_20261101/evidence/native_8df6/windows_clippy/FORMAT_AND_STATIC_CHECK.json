@@ -1,0 +1,56 @@
+{
+  "schema": "hcsn.windows-clippy-format-and-static.v1",
+  "candidate_sha256": "4bf5b7b9211d0943eda0df95dc966a3ab7371f0ffa5215db4e7c462eba8a5053",
+  "actionlint": [
+    {
+      "name": "baseline",
+      "command": [
+        "/tmp/hcsn-bp-ci-tools/actionlint",
+        "-oneline",
+        "-no-color",
+        "/tmp/hcsn-8df6-native-diagnostics/original/8df6e272e3a31a3fae0491dd2d511825e212290c/.github/workflows/bazel.yml"
+      ],
+      "exit_code": 1,
+      "stdout": "hcsn-8df6-native-diagnostics/original/8df6e272e3a31a3fae0491dd2d511825e212290c/.github/workflows/bazel.yml:359:18: property \"runs_on\" is not defined in object type {os: string; target: string} [expression]\nhcsn-8df6-native-diagnostics/original/8df6e272e3a31a3fae0491dd2d511825e212290c/.github/workflows/bazel.yml:446:18: property \"runs_on\" is not defined in object type {os: string; target: string} [expression]\n",
+      "stderr": "",
+      "normalized_messages": [
+        "property \"runs_on\" is not defined in object type {os: string; target: string} [expression]",
+        "property \"runs_on\" is not defined in object type {os: string; target: string} [expression]"
+      ]
+    },
+    {
+      "name": "candidate",
+      "command": [
+        "/tmp/hcsn-bp-ci-tools/actionlint",
+        "-oneline",
+        "-no-color",
+        "/tmp/hcsn-8df6-native-diagnostics/candidate/.github/workflows/bazel.yml"
+      ],
+      "exit_code": 1,
+      "stdout": "hcsn-8df6-native-diagnostics/candidate/.github/workflows/bazel.yml:359:18: property \"runs_on\" is not defined in object type {os: string; target: string} [expression]\nhcsn-8df6-native-diagnostics/candidate/.github/workflows/bazel.yml:449:18: property \"runs_on\" is not defined in object type {os: string; target: string} [expression]\n",
+      "stderr": "",
+      "normalized_messages": [
+        "property \"runs_on\" is not defined in object type {os: string; target: string} [expression]",
+        "property \"runs_on\" is not defined in object type {os: string; target: string} [expression]"
+      ]
+    }
+  ],
+  "actionlint_assessment": "Both exact baseline and candidate report the same two pre-existing matrix.runs_on property findings; this is not an actionlint-zero claim. No new expression finding is introduced.",
+  "prettier": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/tmp/hcsn-bp-ci-tools/node_modules/prettier/bin/prettier.cjs",
+      "--check",
+      "/tmp/hcsn-8df6-native-diagnostics/candidate/.github/workflows/bazel.yml"
+    ],
+    "exit_code": 0,
+    "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+    "stderr": ""
+  },
+  "git_diff_check_exit_code": 0,
+  "just_fmt": {
+    "exit_code": 0,
+    "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+    "scope": "Actual repo just fmt in scoped exact-policy fixture; YAML is not selected. Prettier formats the only changed YAML file."
+  }
+}

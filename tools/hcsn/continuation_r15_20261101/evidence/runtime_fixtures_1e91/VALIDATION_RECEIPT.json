@@ -1,0 +1,180 @@
+{
+  "schema": "hcsn-runtime-fixture-repair-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "tested_merge": "73ffeaf2d120289b935f3aed3cc4608866c20b4a",
+  "base": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "actual_ci_failure": {
+    "job_id": 124814581056,
+    "log_sha256": "221e6d67c5b2c267db11303c832065535d92da9ba04be5f53682df0d4fc5b137",
+    "log_bytes": 1266916,
+    "blocks": [
+      {
+        "test": "v1_store_migrates_atomically_to_dispatch_outcome_schema",
+        "line": 7577,
+        "text": "2026-11-01T09:59:56.9197467Z ---- v1_store_migrates_atomically_to_dispatch_outcome_schema stdout ----\n2026-11-01T09:59:56.9345682Z \n2026-11-01T09:59:56.9540909Z thread 'v1_store_migrates_atomically_to_dispatch_outcome_schema' (119) panicked at hepta-automation/tests/automation.rs:1039:10:\n2026-11-01T09:59:56.9732121Z remove v14 run revision from v1 fixture: Database(SqliteError { code: 1, message: \"error in trigger automation_timer_lifecycle_drain: no such table: main.automation_dispatch_outcomes\" })\n2026-11-01T09:59:57.0016429Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T09:59:57.0325847Z \n2026-11-01T09:59:57.0516028Z "
+      },
+      {
+        "test": "authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed",
+        "line": 7769,
+        "text": "2026-11-01T10:00:20.1948042Z ---- authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed stdout ----\n2026-11-01T10:00:20.1948810Z \n2026-11-01T10:00:20.1949770Z thread 'authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed' (54) panicked at hepta-evidence/src/authbus_outbox_tests.rs:57:10:\n2026-11-01T10:00:20.1951301Z called `Result::unwrap()` on an `Err` value: Capacity\n2026-11-01T10:00:20.1952033Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T10:00:20.1952565Z \n2026-11-01T10:00:20.1952571Z "
+      },
+      {
+        "test": "cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection",
+        "line": 8073,
+        "text": "2026-11-01T10:00:22.2632211Z ---- cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection stdout ----\n2026-11-01T10:00:22.2633032Z \n2026-11-01T10:00:22.2634063Z thread 'cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection' (656) panicked at hepta-memory/src/cognitive_store_tests.rs:1094:5:\n2026-11-01T10:00:22.2675666Z assertion failed: `(left == right)`\n2026-11-01T10:00:22.2675992Z \n2026-11-01T10:00:22.2676141Z Diff < left / right > :\n2026-11-01T10:00:22.2676520Z <1,2,3,4,5,6,7,8,9,10,11,12,13,14,15\n2026-11-01T10:00:22.2676938Z >1,2,3,4,5,6,7,8,9,10,11,12,13,14\n2026-11-01T10:00:22.2677207Z \n2026-11-01T10:00:22.2677220Z \n2026-11-01T10:00:22.2677579Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T10:00:22.2678129Z \n2026-11-01T10:00:22.2678134Z "
+      }
+    ]
+  },
+  "attribution": {
+    "classification": "Inherited fixture defects; all inspected baseline and head source blobs equal. Not attributed to the R15 dependency migration.",
+    "identity_checks": [
+      {
+        "path": "codex-rs/hepta-automation/tests/automation.rs",
+        "base_git_blob": "2d465dd4fb81e2d81ac32a7a7515386889d533aa",
+        "head_git_blob": "2d465dd4fb81e2d81ac32a7a7515386889d533aa",
+        "exact_content_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "base_git_blob": "b5462745d335c2115144ddc161d242b3205fdc06",
+        "head_git_blob": "b5462745d335c2115144ddc161d242b3205fdc06",
+        "exact_content_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+        "base_git_blob": "73055702902c901cf0937ea0bff35b19bb83052c",
+        "head_git_blob": "73055702902c901cf0937ea0bff35b19bb83052c",
+        "exact_content_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
+        "base_git_blob": "bc01d34af36d208ba2988d947c1f0d92c6aa22df",
+        "head_git_blob": "bc01d34af36d208ba2988d947c1f0d92c6aa22df",
+        "exact_content_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-evidence/src/authbus_outbox_record.rs",
+        "base_git_blob": "b9edd2c97098fadec77a0767ed9048ebee59b2df",
+        "head_git_blob": "b9edd2c97098fadec77a0767ed9048ebee59b2df",
+        "exact_content_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-automation/migrations/0018_timer_lifecycle.sql",
+        "base_git_blob": "7bd35e962aee168d30881417356e3e050fe46b6b",
+        "head_git_blob": "7bd35e962aee168d30881417356e3e050fe46b6b",
+        "exact_content_equal": true
+      },
+      {
+        "path": "codex-rs/hepta-memory/migrations/0015_shared_experience_use.sql",
+        "base_git_blob": "7aba239af63d28dc9c357d1a16e7f34fdb2b5dcc",
+        "head_git_blob": "7aba239af63d28dc9c357d1a16e7f34fdb2b5dcc",
+        "exact_content_equal": true
+      }
+    ]
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "original_git_blob_sha1": "2d465dd4fb81e2d81ac32a7a7515386889d533aa",
+      "original_sha256": "59a80a42014242d6d9d9cb5786552356b182550359987dde6f8e0ea29cb06e66",
+      "candidate_sha256": "d61bde594e99686b6389dd305e8d9712b4dd6fb837ec2cb98070386f2ba14499",
+      "bytes": 54239,
+      "lines_added": 4,
+      "lines_removed": 8
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+      "original_git_blob_sha1": "73055702902c901cf0937ea0bff35b19bb83052c",
+      "original_sha256": "9345d0c6316fec630a5a1580d315b3ea845c3938db476c212035baec999d8fe9",
+      "candidate_sha256": "31f0a36ee632005a1d8680ff9312672ba01da09ff9dc51be2f5d8db06c7870af",
+      "bytes": 21339,
+      "lines_added": 23,
+      "lines_removed": 3
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "original_git_blob_sha1": "b5462745d335c2115144ddc161d242b3205fdc06",
+      "original_sha256": "a4199940540f6deca0d1765e87596a23c302f78894e6402f854753b8af40a4d9",
+      "candidate_sha256": "abb813f058c24c4b36beefc60f60c507d8896368e22553787de3eed6be48315e",
+      "bytes": 40711,
+      "lines_added": 1,
+      "lines_removed": 1
+    }
+  ],
+  "assertion_preservation": [
+    {
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "old_assertion_count": 101,
+      "new_assertion_count": 101,
+      "preservation": "all original assertion blocks byte-for-byte retained"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+      "old_assertion_count": 42,
+      "new_assertion_count": 44,
+      "preservation": "all original assertion blocks byte-for-byte retained"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "old_assertion_count": 38,
+      "new_assertion_count": 38,
+      "preservation": "all original blocks exact; memory ledger literal updated from 14 to 15 only"
+    }
+  ],
+  "validation": {
+    "sql_integration": {
+      "command": "python3 audit_runtime_fixtures.py --baseline original --candidate candidate --output SQL_RED_GREEN.json",
+      "exit_code": 0,
+      "receipt_sha256": "6f3f84976608d9c3e5b6d064134a36402660c0c079eea9aac08ee8da44322a46",
+      "script_sha256": "51491fa4083a1db2fd327f6999cf4076ed51e09505566f2200b7622c20e4f38d",
+      "sqlite_version": "3.53.1",
+      "scope": "Executes source-extracted fixture SQL and exact production migration/claim/ack/maintenance SQL in real SQLite. Does not execute Rust authentication, SQLx pooling/checksums, replay admission, or async APIs."
+    },
+    "formatter": {
+      "command": "PATH=/tmp/hcsn-r15-runtime-tools/cargo/bin:/tmp/hcsn-r15-yaml-alias-tools:$PATH CARGO_HOME=/tmp/hcsn-r15-runtime-tools/cargo RUSTUP_HOME=/tmp/hcsn-r15-runtime-tools/rustup RUSTUP_TOOLCHAIN=1.95.0 /tmp/hcsn-r15-yaml-alias-tools/just fmt",
+      "working_directory": "format-checkout/codex-rs",
+      "exit_code": 0,
+      "scope": "Actual unchanged repository justfile, scripts/format.py and scripts/just-shell.py in an isolated exact-file Git checkout; three dirty Rust test files only.",
+      "rustc": "1.95.0 (59807616e 2026-04-14)",
+      "rustfmt": "1.9.0-stable (59807616e1 2026-04-14)",
+      "additional_source_mutations": [],
+      "tool_install": {
+        "official_download": "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init",
+        "checksum_file": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4 *./rustup-init",
+        "installer_sha256": "5be191e8c70a5007074254cb74d78dbfdd25cd5a61c27de7b8e5410122ec24f4",
+        "checksum_check_exit_code": 0,
+        "install_exit_code": 0,
+        "components": "minimal Rust 1.95.0 plus rustfmt",
+        "sandbox_download_attempt_exit_code": 7,
+        "sandbox_download_failure": "curl: (7) Failed to connect to browser-proxy port 8889; automatically approved require_escalated download and installation then succeeded."
+      }
+    },
+    "patch_checks": [
+      {
+        "command": "git diff --check",
+        "exit_code": 0
+      },
+      {
+        "command": "git apply --reverse --check ../runtime_fixtures.patch",
+        "exit_code": 0
+      }
+    ],
+    "native_project_suites": {
+      "state": "not_run",
+      "reason": "Parent directs complete native validation on the published new-head CI. Local fixture reconstruction is not a full Cargo workspace; no native compile/test result is claimed.",
+      "required_commands": [
+        "just test -p codex-hepta-automation",
+        "just test -p codex-hepta-memory",
+        "just test -p codex-hepta-evidence"
+      ],
+      "gate": "New-head real GNU/Windows/macOS Bazel test jobs must retain original coverage."
+    }
+  },
+  "unchanged_contracts": [
+    "No production source, SQL migration, Cargo dependency, lockfile, auth/replay check, per-issuer/global capacity bound, or Windows security policy changed.",
+    "No test or assertion skipped.",
+    "New capacity assertions establish full global occupancy while every synthetic issuer stays below the existing per-issuer cap."
+  ],
+  "patch_sha256": "775776e28db705046b45ffc1c147a654d880c58fc0b2eca1d3571306f6a0cbea"
+}

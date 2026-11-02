@@ -1,0 +1,49 @@
+{
+  "schema": "hcsn.r15.composed-format-with-locks.v1",
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "cwd": "codex-rs",
+  "exit_code": 0,
+  "wall_seconds": 0.335827776001679,
+  "before_sha256": {
+    ".codespellrc": "dbd402342044737119f961855909b70656d46d4b886e54046857e9ff873927de",
+    ".github/workflows/codespell.yml": "8b88c3964de90e9a5e19f16d861f793eb9ad966146199d41e9a5d0f9b5f7a841",
+    "MODULE.bazel.lock": "ccea886b1eaf5362cd4dcc3fef524ccc537e4b5f6ad358ea82b0866f2587cca2",
+    "codex-rs/Cargo.lock": "48e2c1373d99f808b6500b1e07537dcb5ee3df3f6a08ae66331de7211082f6a8",
+    "codex-rs/hepta-agentd/BUILD.bazel": "f193ff8bdd0f42cd804a5ee46a5cb44e7dfa467ca80c6a10a4218e4387a67a9e",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "8247d1d8bc638f1ad8784fe06490ed1c48d1659516df5fb59a242dc52fdbc668",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "c435c06766b29542580cfe876cf53bf6982099fc33af522f1efa2cac9e490f57",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "b06480154f08e0b9620e7b670074e12330d786739384e16391587e26f3ea3d18",
+    "codex-rs/hepta-fleet/src/authority_port.rs": "e26a8617580ce0e1a893aff4c593bdea99f3733d58fce567ce5e026b523a2901",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "930b29b3010de976f8638091222f00fc70e6ad831a6134474b8eb31a26b50463",
+    "codex-rs/hepta-memory/src/production_writer.rs": "1f21334c69b258240905e96ccc91b67dd2e5cd44f55a63baa0d003c429fd26ec",
+    "defs.bzl": "3fc965c2f62659b7257ba316b41fd11f19365205a4a20e421f0005aaa78a6d52",
+    "patches/zstd-sys_windows_msvc_include_dirs.patch": "6ce040bf865845f91cc30e6e58962bee6ac48f890102ac55ce6774d43dd2a6f0",
+    "tools/hcsn/continuation_r15_20261101/BLOCKERS.json": "4303329016ef30363014fbbf5b76af5567eae001fbe0c1ab087b9c42f0336ede",
+    "tools/hcsn/continuation_r15_20261101/README.md": "b5885e14b0e9a824a488ba19effc042ca895ecffd3f53f1fec428e0df63dc359",
+    "tools/hcsn/continuation_r15_20261101/REPORT_ZH.md": "c1953ec989c3ad53d21ba3bbe76ce1c17a7894d95cae754539265fed27021a22"
+  },
+  "after_sha256": {
+    ".codespellrc": "dbd402342044737119f961855909b70656d46d4b886e54046857e9ff873927de",
+    ".github/workflows/codespell.yml": "8b88c3964de90e9a5e19f16d861f793eb9ad966146199d41e9a5d0f9b5f7a841",
+    "MODULE.bazel.lock": "ccea886b1eaf5362cd4dcc3fef524ccc537e4b5f6ad358ea82b0866f2587cca2",
+    "codex-rs/Cargo.lock": "48e2c1373d99f808b6500b1e07537dcb5ee3df3f6a08ae66331de7211082f6a8",
+    "codex-rs/hepta-agentd/BUILD.bazel": "f193ff8bdd0f42cd804a5ee46a5cb44e7dfa467ca80c6a10a4218e4387a67a9e",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "8247d1d8bc638f1ad8784fe06490ed1c48d1659516df5fb59a242dc52fdbc668",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "c435c06766b29542580cfe876cf53bf6982099fc33af522f1efa2cac9e490f57",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "b06480154f08e0b9620e7b670074e12330d786739384e16391587e26f3ea3d18",
+    "codex-rs/hepta-fleet/src/authority_port.rs": "e26a8617580ce0e1a893aff4c593bdea99f3733d58fce567ce5e026b523a2901",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "930b29b3010de976f8638091222f00fc70e6ad831a6134474b8eb31a26b50463",
+    "codex-rs/hepta-memory/src/production_writer.rs": "1f21334c69b258240905e96ccc91b67dd2e5cd44f55a63baa0d003c429fd26ec",
+    "defs.bzl": "3fc965c2f62659b7257ba316b41fd11f19365205a4a20e421f0005aaa78a6d52",
+    "patches/zstd-sys_windows_msvc_include_dirs.patch": "6ce040bf865845f91cc30e6e58962bee6ac48f890102ac55ce6774d43dd2a6f0",
+    "tools/hcsn/continuation_r15_20261101/BLOCKERS.json": "4303329016ef30363014fbbf5b76af5567eae001fbe0c1ab087b9c42f0336ede",
+    "tools/hcsn/continuation_r15_20261101/README.md": "b5885e14b0e9a824a488ba19effc042ca895ecffd3f53f1fec428e0df63dc359",
+    "tools/hcsn/continuation_r15_20261101/REPORT_ZH.md": "c1953ec989c3ad53d21ba3bbe76ce1c17a7894d95cae754539265fed27021a22"
+  },
+  "stdout": "",
+  "stderr": "",
+  "scope": "Actual changed-file repository recipe after composition of five compatible dependencies and native fixtures; not compilation."
+}

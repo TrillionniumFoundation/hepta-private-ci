@@ -1,0 +1,44 @@
+{
+  "scope": "One-line command environment repair; no target/matrix/test removal or native V8 rebuild by reviewer",
+  "failure_head": "6500d80838d0baf5304a9de584b93d9e0df8c914",
+  "merge": "f2298c98d294fd0491d408a7e25f0dfacaefd347",
+  "run": 41292214032,
+  "primary_job": 124806452167,
+  "additional_same_E0514_job": 124806452166,
+  "source_remote_blob_verified": "bc0bb7a93bd97d422e6b9d9dd5d5e12294fbd6f1",
+  "diagnosis": "Workflow fixes the Cargo executable at1.95.0 but leaves rustc as rustup proxy. Registry v8-150.4.0 has channel1.91.0 in rust-toolchain.toml; rustc invoked from that package directory selects1.91.0 while its build-dependencies are1.95.0. Full primary log explicitly reports both versions for six crates.",
+  "repair": "Set RUSTUP_TOOLCHAIN=1.95.0 only for the Cargo smoke subprocess. Existing upstream Windows V8 build remains explicitly cargo+1.91.0, Windows smoke remains cargo+1.95.0, and artifact build/test matrices remain untouched.",
+  "official_semantics": "https://rust-lang.github.io/rustup/overrides.html",
+  "validation": {
+    "yaml_semantic_comparison": "All values identical except one env assignment in build job Cargo smoke run string",
+    "prettier": {
+      "command": [
+        "node",
+        "/tmp/hcsn-prettier/node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        ".github/workflows/v8-canary.yml"
+      ],
+      "version": "3.5.3",
+      "exit_code": 0
+    },
+    "main_git_apply_check": {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "v8_canary_toolchain_scope.patch"
+      ],
+      "exit_code": 0
+    },
+    "proxy": "Real official rustup1.28.2 binary, checksum verified against official .sha256; exact registry cwd chooses absent1.91 without override and real pre-existing1.95 with explicit environment override. Local toolchain alias is used only to reuse standalone Rust; not a synthetic compiler.",
+    "native_v8_test": "not run; remote new-head canary matrix remains required"
+  },
+  "separate_open_failure": "job124806452168 macOS aarch64 sandbox staging fails with Java unable-to-create-native-thread. This compiler-selection patch does not claim to fix it.",
+  "network": "Initial sandbox socket call denied EPERM; authorized require_escalated download completed after automatic review. No credential/proxy settings changed. No Rust toolchain downloaded.",
+  "artifacts": [
+    "v8_canary_toolchain_scope.patch",
+    "SOURCE_AND_SEMANTICS.json",
+    "PROXY_RESOLUTION.json",
+    "EXACT_HEAD_CANARY_LOG_DIAGNOSTIC.json"
+  ]
+}

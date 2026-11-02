@@ -1,0 +1,195 @@
+{
+  "schema": "hcsn.fixed-potential-ci-extension-local-checks.v1",
+  "workflow_sha256": "bac8820cb23ff6637c4a692027f2e3d953b00427349567ff42808fc6785e13a4",
+  "baseline_context_fixed_workflow_sha256": "f412f538369121a101d8f183bb1136795c9de365a5c6f8a221f77f69bf53af97",
+  "original_V1_five_entrypoint_steps_identical": true,
+  "original_permissions_and_error_gates_preserved": true,
+  "new_trigger_and_sparse_directory_only": "tools/hcsn/hx_asset_recurrent_r16_20261101",
+  "new_financial_build_commands": 0,
+  "bash_syntax": [
+    {
+      "step": "Initialize runner-local paths",
+      "exit_code": 0
+    },
+    {
+      "step": "Verify frozen inputs and install the CPU runtime",
+      "exit_code": 0
+    },
+    {
+      "step": "Audit the actual financial autograd interface",
+      "exit_code": 0
+    },
+    {
+      "step": "Train through the actual financial autograd interface",
+      "exit_code": 0
+    },
+    {
+      "step": "Audit the recurrent temporal gradient",
+      "exit_code": 0
+    },
+    {
+      "step": "Train through the recurrent temporal gradient",
+      "exit_code": 0
+    },
+    {
+      "step": "Independently check the recurrent result records",
+      "exit_code": 0
+    },
+    {
+      "step": "Audit gradients at fixed physical potential",
+      "exit_code": 0
+    },
+    {
+      "step": "Train with the fixed physical potential and moving boundary",
+      "exit_code": 0
+    },
+    {
+      "step": "Check fixed-potential records and raw boundary branches",
+      "exit_code": 0
+    },
+    {
+      "step": "Verify checkout remains unchanged",
+      "exit_code": 0
+    }
+  ],
+  "entrypoints": [
+    {
+      "entrypoint": "audit_gradients.py",
+      "source_sha256": "9d4e4ec2ee1bb6d05c4931c4692703cb018928aaacab00046b93e7764e320fc4",
+      "flags": [
+        "--frozen-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/adapter-gradients.json.gz"
+    },
+    {
+      "entrypoint": "training_smoke.py",
+      "source_sha256": "f91ea1ac624681aedd90ce72644a9c7fac8ac123a5e720cf28ae28fb24569c03",
+      "flags": [
+        "--frozen-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/adapter-training.json.gz"
+    },
+    {
+      "entrypoint": "audit_recurrent.py",
+      "source_sha256": "b437b2233ede3a4829f931df290763eb73c084266e4fe820f31f1f566b0704fb",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/recurrent-audit.json.gz"
+    },
+    {
+      "entrypoint": "train_recurrent.py",
+      "source_sha256": "41bd77e742719e774e2fd050ec923ea721e715c793706e10f91ca5448120cb7c",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/recurrent-training.json.gz"
+    },
+    {
+      "entrypoint": "check_recurrent_results.py",
+      "source_sha256": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+      "flags": [
+        "--audit",
+        "--output",
+        "--protocol-sha256",
+        "--root",
+        "--training"
+      ],
+      "output": "$HCSN_RESULTS/recurrent-check.json"
+    },
+    {
+      "entrypoint": "audit_asset.py",
+      "source_sha256": "fb99430491cbb73733cb65cc6dbcb7571d83c67bf21dda9f75be2b1e042b40bc",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/asset-audit.json.gz"
+    },
+    {
+      "entrypoint": "train_asset.py",
+      "source_sha256": "339d7023456cc3a8b248fa29f07c1c39e52c52bf8a6eb45a809e59554c2c91af",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256"
+      ],
+      "output": "$HCSN_RESULTS/asset-training.json.gz"
+    },
+    {
+      "entrypoint": "check_asset_results.py",
+      "source_sha256": "6bfdadae171d833d32039d892fe26d9687aa9b888351c8a3f19111e68293c369",
+      "flags": [
+        "--audit",
+        "--financial-root",
+        "--output",
+        "--protocol-sha256",
+        "--root",
+        "--training"
+      ],
+      "output": "$HCSN_RESULTS/asset-check.json"
+    }
+  ],
+  "actual_initializer_exit": 0,
+  "actual_preflight_exit": 0,
+  "wrong_asset_protocol_exit": 1,
+  "repeat_output_exit": 1,
+  "existing_output_preserved": true,
+  "bound_sha256": {
+    "/tmp/hcsn-autograd-adapter-v3/ADAPTER_PROTOCOL.json": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+    "/tmp/hcsn-autograd-adapter-v3/requirements.txt": "c8038849aaa1710f940a6c70bfb9a6739c67c132abdc56c4d19d37c4126e945d",
+    "/tmp/hcsn-recurrent-next-v1/RECURRENT_PROTOCOL.json": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+    "/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+    "/tmp/hcsn-asset-recurrent-next-v1/ASSET_PROTOCOL.json": "7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa",
+    "/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py": "6bfdadae171d833d32039d892fe26d9687aa9b888351c8a3f19111e68293c369",
+    "/tmp/hcsn-compiled-recovery/RECOVERY_PROTOCOL_V1.json": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+    "/tmp/hcsn-compiled-recovery/recovered.so": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615"
+  },
+  "asset_protocol_sources": [
+    {
+      "name": "asset_model.py",
+      "sha256": "ae59e1ed4bb84ce9ad48fdaa0d7c0fd7140f4f3ea3bee7f9aa3ac9d665eed68d"
+    },
+    {
+      "name": "asset_common.py",
+      "sha256": "f237b9034342845faef433f43ec452c987f8f9d0b8314d4619241311c5ac6590"
+    },
+    {
+      "name": "audit_asset.py",
+      "sha256": "fb99430491cbb73733cb65cc6dbcb7571d83c67bf21dda9f75be2b1e042b40bc"
+    },
+    {
+      "name": "train_asset.py",
+      "sha256": "339d7023456cc3a8b248fa29f07c1c39e52c52bf8a6eb45a809e59554c2c91af"
+    },
+    {
+      "name": "freeze_asset.py",
+      "sha256": "4e9d7b8a3b9347202ee78351b5422acb36dca1acd781e72a4c3f26b7b5aff00f"
+    },
+    {
+      "name": "README.md",
+      "sha256": "4b5e0da20b9e2acd3b1de045d2a0432e5d1f41b4522729747372080465df0b1c"
+    },
+    {
+      "name": "requirements.txt",
+      "sha256": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+    }
+  ],
+  "asset_input_sha256": "74e8a4cae1734762579a65608b8350ba8545bb1be79df2de657eaf2e4b65b079",
+  "new_numerical_runs_in_this_review": 0,
+  "remote_fixed_workflow_runs_claimed": 0,
+  "checker_scope": "check_asset_results.py receives financial-root and uses the same sealed native kernel for raw-boundary and five local-record consistency; it is not an independent financial oracle."
+}

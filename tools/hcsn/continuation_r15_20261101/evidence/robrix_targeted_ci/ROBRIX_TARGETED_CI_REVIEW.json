@@ -1,0 +1,46 @@
+{
+  "schema": "robrix-targeted-ci-review-v1",
+  "observed_at": "2026-11-02T01:15:11.759Z",
+  "source_head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "source_tree": "1437e365efb2e45e887d4a7835706bdd01b4b3a9",
+  "workflow_path": ".github/workflows/hcsn-robrix-fixture-r16.yml",
+  "workflow_sha256": "f03ad806a2789a72b33af94d29ba89f3c67745713c883150db3ce46f28357491",
+  "problem": {
+    "job_id": 125028471631,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558746/job/125028471631",
+    "actual_error": "Bazel launcher did not set INSTA_WORKSPACE_ROOT",
+    "scope": "Two original Robrix fixture tests failed under Windows. The separate source fix uses the existing public Cargo/Bazel runfiles helper and synchronized dependency locks."
+  },
+  "change": "Add one separately named regression workflow executing the sole complete original Robrix Bazel target on Ubuntu GNU and Windows/MSVC. Existing broad/native/financial workflows are unchanged.",
+  "target": "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test",
+  "preserved": {
+    "permissions": {
+      "contents": "read"
+    },
+    "source_checkout": "PR head SHA, otherwise event SHA; actual Git HEAD mismatch fails before setup/test",
+    "fixed_actions": "Exact repository checkout/upload action commit SHAs; unchanged existing local prepare and cleanup actions",
+    "windows": "Explicit MSVC host and x86_64 MSVC target via the existing shared wrapper; no cross-compile or incompatible-target skip",
+    "test": "Result cache disabled; full target with no test/name/tag filter or sharding option; execution failure remains fatal",
+    "cleanup": "Original clean-worktree action after success/failure; failure fatal",
+    "artifact": "Original execution-log upload pattern runs after failure; only artifact upload is nonfatal, as in existing native workflow",
+    "credentials": "Only existing Bazel environment BuildBuddy input is referenced. No credential values read or printed; checkout persists no token.",
+    "trigger": "pull_request path filter covers workflow, source/fixtures, public runfiles helper, Cargo/Bazel dependency locks and native build/setup wiring; workflow_dispatch is defined but not invoked"
+  },
+  "validation": {
+    "actionlint": "Actual 1.7.12 exit 0",
+    "prettier": "Actual locked 3.5.3 check exit 0",
+    "diff": "git diff --check exit 0; sole changed repository path is new workflow",
+    "shell_wiring": "4 extracted workflow+unchanged shell-wrapper executions, explicit synthetic Python executor boundary, Linux/Windows branch exit 0 and injected 37 propagated; 2 real local Git HEAD positive/negative controls",
+    "native_execution_count": 0,
+    "remote_workflow_dispatch_count": 0
+  },
+  "acceptance_remaining": "Publish source fix and dependency locks with this workflow; both exact-source-head hosted matrix jobs must execute and pass the original target with clean worktrees. Static/stub checks do not satisfy native acceptance.",
+  "just_fmt": {
+    "command": "env PATH=/tmp/hcsn-r15-runtime-tools/cargo/bin:/tmp/hcsn-r15-yaml-alias-tools:$PATH CARGO_HOME=/tmp/hcsn-r15-runtime-tools/cargo RUSTUP_HOME=/tmp/hcsn-r15-runtime-tools/rustup RUSTUP_TOOLCHAIN=1.95.0 /tmp/hcsn-r15-yaml-alias-tools/just fmt",
+    "cwd": "/tmp/hcsn-robrix-targeted-ci/candidate/codex-rs",
+    "exit_code": 0,
+    "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+    "stderr": "",
+    "scope": "Actual repository recipe executed; YAML is outside its owning-language selectors. Prettier and actionlint validate the new workflow separately."
+  }
+}

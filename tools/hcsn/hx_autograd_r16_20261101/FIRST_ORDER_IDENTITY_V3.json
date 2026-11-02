@@ -1,0 +1,36 @@
+{
+  "schema": "hcsn.hx-autograd-first-order-identity.v1",
+  "passed": true,
+  "protocol_sha256": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+  "script_sha256": "f180c7762b7d71e66a54479f22f07d094655258a52d78e7cc570a608dab4ad4f",
+  "scope": "Exact canonical JSON byte identity of every first-order matrix/directional record and all 80 training steps, predictions and parameter tensors. Timing/protocol metadata and newly extended rejection checks are intentionally separate.",
+  "results": [
+    {
+      "dataset": "gradients",
+      "previous_sha256": "ac15ecd17abecb7cc4e18058f464689ff07cd7478bf5a33f735290af7c9cf022",
+      "current_sha256": "b00099d2260a4b906ad13e7c8dfdc340d2069117dd8343cc1ac52b6f4b138c0d",
+      "exact_field_identity": {
+        "base_matrices": true,
+        "directional_checks": true
+      },
+      "passed": true
+    },
+    {
+      "dataset": "training",
+      "previous_sha256": "1a00a8aa7b4e3756811b18cf3fc9f60dbe2ef6c0e4e068184bc79a14a2d110a7",
+      "current_sha256": "bfba8c4a99d5fa2e3b3f957d70e29651d6a8497e8202897f05467a30a728d909",
+      "exact_field_identity": {
+        "inputs": true,
+        "targets": true,
+        "initial_predictions": true,
+        "final_predictions": true,
+        "initial_loss": true,
+        "final_loss": true,
+        "parameter_update_norms": true,
+        "parameters": true,
+        "history": true
+      },
+      "passed": true
+    }
+  ]
+}

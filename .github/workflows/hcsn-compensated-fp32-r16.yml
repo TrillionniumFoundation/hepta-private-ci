@@ -1,0 +1,92 @@
+# Replays already-opened numerical fixtures; this is not a new confirmation set.
+name: HCSN compensated FP32 R16 regressions
+
+"on":
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/hcsn-compensated-fp32-r16.yml
+      - tools/hcsn/compensated_fp32_r16_20261101/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-compensated-fp32-r16-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compensated-financial-regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            tools/hcsn/compensated_fp32_r16_20261101
+
+      - name: Install numerical runtime and verify sealed capsule
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3.12 -m venv "$RUNNER_TEMP/hcsn-r16-python"
+          "$RUNNER_TEMP/hcsn-r16-python/bin/python" -m pip install --disable-pip-version-check \
+            -r tools/hcsn/compensated_fp32_r16_20261101/requirements-ci.txt
+          "$RUNNER_TEMP/hcsn-r16-python/bin/python" -B \
+            tools/hcsn/compensated_fp32_r16_20261101/capsule/prepare_workspace.py \
+            --destination "$RUNNER_TEMP/hcsn-r16-workspace"
+          mkdir "$RUNNER_TEMP/hcsn-r16-results"
+          "$RUNNER_TEMP/hcsn-r16-python/bin/python" -B \
+            tools/hcsn/compensated_fp32_r16_20261101/audit_ci_gate.py \
+            > "$RUNNER_TEMP/hcsn-r16-results/gate-review.json"
+          git rev-parse HEAD
+
+      - name: Recompute primitives and every frozen financial row
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/hcsn-r16-workspace"
+          "$RUNNER_TEMP/hcsn-r16-python/bin/python" -B audit_primitives.py \
+            --output "$RUNNER_TEMP/hcsn-r16-results/primitives.json"
+          "$RUNNER_TEMP/hcsn-r16-python/bin/python" -B audit_development.py \
+            --kernel compensated_kernel \
+            --output "$RUNNER_TEMP/hcsn-r16-results/development.json"
+          "$RUNNER_TEMP/hcsn-r16-python/bin/python" -B audit_holdout.py \
+            --output "$RUNNER_TEMP/hcsn-r16-results/frozen-v1.json.gz" \
+            --summary "$RUNNER_TEMP/hcsn-r16-results/frozen-v1-summary.json"
+
+      - name: Enforce complete finite value and Jacobian acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/hcsn-r16-python/bin/python" -B \
+            tools/hcsn/compensated_fp32_r16_20261101/verify_regression.py \
+            --capsule tools/hcsn/compensated_fp32_r16_20261101/capsule \
+            --primitives "$RUNNER_TEMP/hcsn-r16-results/primitives.json" \
+            --development "$RUNNER_TEMP/hcsn-r16-results/development.json" \
+            --holdout "$RUNNER_TEMP/hcsn-r16-results/frozen-v1.json.gz"
+
+      - name: Preserve complete replay outputs
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hcsn-r16-frozen-regression-${{ github.sha }}
+          path: ${{ runner.temp }}/hcsn-r16-results
+          if-no-files-found: warn
+
+      - name: Verify checkout remains unchanged
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"

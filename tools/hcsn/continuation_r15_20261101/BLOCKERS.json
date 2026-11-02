@@ -1,0 +1,303 @@
+{
+  "all_blockers_closed": false,
+  "base_commit": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "items": [
+    {
+      "detail": "Checked finite transitions and optimal/actual-policy values pass published R14/R15 regression.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
+      "id": "numerical_finiteness",
+      "status": "closed_remote_research_profile"
+    },
+    {
+      "detail": "Restricted actions and absent reset channel pass published regression.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
+      "id": "no_reset_channels",
+      "status": "closed_remote_research_profile"
+    },
+    {
+      "detail": "Original sequential tolerance and channel/action selector identity pass published regression.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
+      "id": "tie_and_channel_action_identity",
+      "status": "closed_remote_research_profile"
+    },
+    {
+      "detail": "19927 reachable decisions match; 192 measured full executions preserve all records",
+      "evidence": "evidence/PLANNER_EXHAUSTIVE.json",
+      "id": "policy_preserving_shared_acceleration",
+      "status": "closed_in_frozen_profile"
+    },
+    {
+      "detail": "Oracle-minus-fixed-B below0.01 in both domains; original quality gate remains failed",
+      "evidence": "evidence/ATTAINABILITY_SUMMARY.json",
+      "id": "fixed_task_effect_headroom",
+      "status": "diagnosed_below_original_floor"
+    },
+    {
+      "detail": "All nine original ZIPs recover exactly from26 containers; remote512000-byte check passed all120 changed files.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
+      "id": "oversized_archives",
+      "status": "closed_remote_research_profile"
+    },
+    {
+      "detail": "At cf74634b actual48 R14 plus22 R15 tests and source cleanliness pass. e225 exact floating-count failure and the failed local matrix probe are preserved; only two floating expectation assertions use16*float64 eps, categorical action and algorithms/quality gates unchanged.",
+      "evidence": "evidence/ci_cf746/REMOTE_REGRESSION.json",
+      "id": "r14_regression_workflow",
+      "status": "closed_remote_after_float_expectation_assertion_repair"
+    },
+    {
+      "detail": "R13 numerical contract and repository build-test passed remotely; original YAML meaning retained.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
+      "id": "r13_workflow_format",
+      "status": "closed_remote_research_profile"
+    },
+    {
+      "detail": "Original both-domain mean0.01/CI/Holm acceptance unmet; no threshold change",
+      "evidence": "../task_aligned_r14_20261101/PROTOCOL.json",
+      "id": "r14_quality_gain",
+      "status": "failed_unchanged"
+    },
+    {
+      "detail": "Original OOD utility/correctness bounds fail; equivalent acceleration does not repair quality",
+      "evidence": "../task_aligned_r14_20261101/REPORT_ZH.md",
+      "id": "r14_quality_guarded_cost",
+      "status": "failed_unchanged"
+    },
+    {
+      "detail": "Final-matrix ordinary HMM is behaviorally identical; shared acceleration is available to both",
+      "evidence": "../task_aligned_r14_20261101/models.py",
+      "id": "hx_exclusive_inference_claim",
+      "status": "unsupported_in_this_model"
+    },
+    {
+      "detail": "Original frozen Python native FP32 remains136/432 development rows and0/18 points. Separate renewed compiled control passes155/768 rows and0/128 points. Two-word FP32 uses extended effective precision and does not qualify ordinary single-word FP32.",
+      "evidence": "evidence/FP32_DIAGNOSIS.json",
+      "id": "full_financial_fp32",
+      "status": "failed_reproduced_current_source"
+    },
+    {
+      "detail": "No production NeuronRuntime/state ownership replacement or integration qualification",
+      "evidence": null,
+      "id": "production_rust_ownership",
+      "status": "open"
+    },
+    {
+      "detail": "Finite dynamic-bit task cannot qualify general semantic binding or long-term memory",
+      "evidence": null,
+      "id": "multimodal_and_long_term_content",
+      "status": "open"
+    },
+    {
+      "detail": "No accelerator, joule or production communication/recovery benchmark",
+      "evidence": null,
+      "id": "gpu_and_energy",
+      "status": "unmeasured"
+    },
+    {
+      "detail": "At exact8df6 source,18:42:38Z complete56 checks have38success,5failure,4skipped,9pending. Failures: Windows shards1/3,Windows Clippy,macOS ARM test,cargo-deny. BP/BPTT,fixed finite regressions,and compensated numerical replay succeed. Aggregate green does not qualify the platform matrix; newer source must be assessed separately.",
+      "evidence": "evidence/CI_8DF6_EXACT_HEAD_20261101T184238Z.json",
+      "id": "repository_wide_ci",
+      "status": "open_exact_head_native_and_policy_failures"
+    },
+    {
+      "detail": "PR4550 published; seven remote stage trees match local and research regressions/blob policy pass. Followup native/spelling checks remain separate.",
+      "evidence": "evidence/REMOTE_RESEARCH_VALIDATION.json",
+      "id": "remote_publication_and_verification",
+      "status": "closed_for_research_candidate"
+    },
+    {
+      "id": "dependency_security_policy",
+      "status": "open_six_findings_after_accepted_migrations",
+      "detail": "Same pinned DB22 to14 to11 to8 to7 to6; two vulnerabilities and four unmaintained advisories remain. ZIP3, zstd3, i18n3 and existing parser6 isolated native tests passed; complete workspace integration is not admitted. Later keyring and AWS attempts were rejected/insufficient, not merged.",
+      "evidence": "evidence/DEPENDENCY_YAML_REVIEW.json"
+    },
+    {
+      "id": "windows_native_toolchain_and_runtime",
+      "status": "open_repair_candidates_and_missing_backends",
+      "detail": "ABI, V8 and test-directory/canonical-path fixes are separate from missing Windows secure-storage/SSHSIG semantics. The exact source6500 four-shard classification contains36 unique named failed tests; no skips or weaker security checks qualify these.",
+      "evidence": "evidence/WINDOWS_FAILURE_CLASSIFICATION.json"
+    },
+    {
+      "id": "codespell_frozen_false_positives",
+      "status": "closed_remote_at_assessed_head",
+      "detail": "Actual Codespell guard passed again at889e7ace; exact frozen identities and complete literal-line review retained.",
+      "evidence": "evidence/R16_REMOTE_889E_NATIVE_SNAPSHOT.json"
+    },
+    {
+      "id": "compensated_fp32_finite_numerics",
+      "status": "passed_independent_finite_validation_and_remote_regression",
+      "detail": "Two-word FP32 passes432 development rows and512 distinct independently frozen V1 rows across128 points at unchanged five-output and ten-column Jacobian gates. Actual remote replay passed again at889e7ace. This is not ordinary FP32, whole-domain, global-C1, training or production admission.",
+      "evidence": "../compensated_fp32_r16_20261101/README.md"
+    },
+    {
+      "id": "compensated_fp32_evaluation_cost",
+      "status": "open_negative_cost_evidence",
+      "detail": "Complete Python kernel219.005ms/state versus2.339ms FP64. New same-template C++ full boundary+five-output+ten-column-Jacobian medians:243.961649us compensated versus10.749016us FP64 (22.696185x). Reusing one boundary per three states remains21.314831x.36 full new raw timing batches preserved; no CPU cost advantage.",
+      "evidence": "../compiled_fp32_r16_20261101/recovery/RECOVERY_CPU_COST_V1.json"
+    },
+    {
+      "id": "compiled_candidate_evidence",
+      "status": "passed_renewed_independent_finite_validation",
+      "detail": "Pre-evaluation protocol checkpoint086baf3ee freezes seed2026110127. New128x6 observations: FP64 and two-word FP32 each768/768 rows and128/128 points at unchanged gates. Independent checker recomputes every five-output and5x10 Jacobian,15360 neighboring branch checks and128 continuation-side right derivatives. Complete52-file evidence is published atbfd3a5a6f9445ae681b27d3947865ad67ef5651e; original lost raw evidence is not relabeled recovered.",
+      "evidence": "../compiled_fp32_r16_20261101/recovery/README_RECOVERY.md"
+    },
+    {
+      "id": "global_c1_original_dual_channel",
+      "status": "unsupported_for_untransformed_risk",
+      "detail": "Equity satisfies boundary value matching and smooth pasting, but F/G and debt have nonzero continuation-side slopes and constant/default-side behavior. A separate transformed observable requires its own explicit assumptions and cannot be mislabeled the original put.",
+      "evidence": "../compensated_fp32_r16_20261101/capsule/tmp_r15_compensated_independent_review.json"
+    },
+    {
+      "id": "transformed_c1_risk_observable",
+      "status": "proved_under_explicit_regularity_conditions",
+      "detail": "R=2F-F^2 with default-side1 is jointly C1 when b is C1, F is continuous to F=1 and its complete first derivatives are locally bounded. The transformed PDE has a gradient-square source; this is a new observable, generally not C2 or the original put. Equity needs joint regularity as well as smooth pasting.",
+      "evidence": "../c1_risk_observable_r16_20261101/README.md"
+    },
+    {
+      "id": "continuous_recurrent_activity_candidate",
+      "status": "observed_in_separate_simplified_model",
+      "detail": "Direct C1 E/R values in a two-state ODE produce stable focus atgamma0.2 and repeated broad plateaus atgamma0.8 without hard reset or0/1 dynamics. Four fixed RK4 step sizes agree; finest tail has four full plateaus, period74.308476 and duty64.57percent. This is a separate perpetual example, not the full rollover neuron, sparse spiking or trained-network admission.",
+      "evidence": "../c1_value_dynamics_r16_20261101/REPORT_ZH.md"
+    },
+    {
+      "id": "actual_financial_autograd_interface",
+      "status": "closed_for_first_order_cpu_interface_v3",
+      "detail": "Actual immutable FP64 H-X kernel:168/168 fixed functional directions and32/32 contracts pass. Independent48-channel audit confirms ordinary first-order values/VJPs bit-identical to V2 and first create_graph=True explicitly rejected.80-step two-layer training MSE1.2916021347 to0.1068059132;8 parameter tensors updated. V1 serialization failure and V2 incomplete-Hessian counterexample retained. No second-order, recurrent, generalization or mechanism advantage admission.",
+      "evidence": "../hx_autograd_r16_20261101/README.md"
+    },
+    {
+      "id": "inherited_runtime_fixtures",
+      "status": "repaired_sql_integration_passed_native_ci_pending",
+      "detail": "Three test-only changes restore complete v1 schema rewind, include migration15, and populate global outbox capacity without violating per-issuer512 bound. Exact source-extracted SQL red/green passes, all original assertions retained except explicitly current ledger version. Actual just fmt passes; source blobs match original base, so inherited defects not attributed to this dependency migration.",
+      "evidence": "evidence/runtime_fixtures_1e91/VALIDATION_RECEIPT.json"
+    },
+    {
+      "id": "robrix_fixture_runfiles",
+      "status": "repaired_launcher_probe_passed_native_ci_pending",
+      "detail": "Declare unchanged tracked fixtures as Bazel test data and use the launcher runfiles workspace at runtime. Original launcher plus unchanged extracted Rust reader exercised six meaningful cases; actual macro data emission and just fmt pass. Synthetic fixture harness is not full Bazel/native test execution.",
+      "evidence": "evidence/native_repairs/robrix_fixture/ROBRIX_REPAIR_RECEIPT.json"
+    },
+    {
+      "id": "simplified_periodic_orbit_existence",
+      "status": "proved_for_exact_fixed_continuous_model",
+      "detail": "Separate reviewed proof: a(t) in[0,.9], the selected trajectory has x in[-9,3], unique equilibrium is a hyperbolic source, a local repelling Lyapunov ellipse excludes it from the omega limit. Poincare-Bendixson establishes a periodic omega limit and nonconstant periodic R. Does not prove a unique/stable orbit, boundary crossing, exact period, full rollover dynamics or sampled-map identity.",
+      "evidence": "../c1_value_dynamics_r16_20261101/analysis/PERIODIC_ORBIT_PROOF_ZH.md"
+    },
+    {
+      "id": "linux_sshsig_image_dependency",
+      "status": "source_patch_ready_image_activation_blocked",
+      "detail": "Ten inherited GNU failures need real /usr/bin/ssh-keygen in the pinned RBE images. Dockerfile adds openssh-client, local real-signature positive/negative controls pass; current executor has no image builder and no existing image publication workflow was identified. Publishing access to the existing registry namespace is not established. Both replacement platform digests remain unset; rbe.bzl unchanged. Source recipe alone does not activate CI.",
+      "evidence": "evidence/sshsig_image_dependency_1e91/ACTIVATION_PLAN.md"
+    },
+    {
+      "id": "stable_handle_authorized_rpc_contract",
+      "status": "fail_closed_source_repair_native_execution_pending",
+      "detail": "The server checks the same advertised stable-handle capability before any authorized file read. Linux capability staysfalse and this RPC rejects unsupported; ordinary reads/read-stream/Local bounded APIs unchanged. Raw RPC test source covers valid,outside,oversize,parent and Unix symlink requests; RemoteFileSystem unsupported branches stop at client guard. Native RPC execution count locally is0; formatting and source review passed, real CI remains required.",
+      "evidence": "evidence/native_repairs/authorized_read_rpc/EXEC_AUTHORIZED_READ_REPORT_ZH.md"
+    },
+    {
+      "id": "supervisor_lifecycle_fixtures_and_events",
+      "status": "source_repair_and_fragment_red_green_passed_native_pending",
+      "detail": "Three inherited failures: controlled process now answers Drain with current lifecycle/generation; automatic restart emits existing diagnostic events; exhausted budget tests preserve and assert the real fault. Exact-source fragment harness improves3-pass3-fail to6-pass0-fail with explicit stubs; actual just fmt and patch checks pass. Original native suite execution is pending.",
+      "evidence": "evidence/supervisor_lifecycle_1e91/VALIDATION_RECEIPT.json"
+    },
+    {
+      "id": "actual_financial_recurrent_bptt",
+      "status": "closed_for_fixed_short_first_order_functional_protocol",
+      "detail": "Actual H-X signed Q/R readout and16-step FP32 Euler pass5 signed fixtures,13 contracts,8 temporal-gradient comparisons; earliest theta VJP6.0718e-7, manual chain max abs9.3854e-10, detach negative control zero, all-negative A^16 control passes.12 theta-only updates execute;loss improves only0.000557percent, not quality evidence. Local freeze/store precedes audit, remote checkpoint was later.",
+      "evidence": "../hx_recurrent_r16_20261101/RESULTS.md"
+    },
+    {
+      "id": "signed_abort_owner_and_exit_evidence",
+      "status": "blocked_exact_source_and_counterexamples_preserved",
+      "detail": "Existing recovery does not consume exact-digest Abort directives. Safe activation requires one lifetime owner capability across daemon/public Supervisor/Fleet/CLI and all journal writers, versioned protected snapshot, retained Matrix process/lease until observed exit, and independent release admission fences.25 exact source blobs and71 writer/definition locations reviewed;2 synthetic real-filesystem race witnesses plus same-generation CAS rejection control executed. No product mutation, no weakened terminal-state gate, original quarantine remains.",
+      "evidence": "evidence/signed_abort_1e91/SAFETY_REVIEW.json"
+    },
+    {
+      "id": "automatic_main_restart_quarantine",
+      "status": "reviewed_source_repair_native_execution_pending",
+      "detail": "RecoveryRequired now suppresses the pending automatic MAIN restart branch while preserving pending/deadline/journal and legitimate release target/rollback state-machine paths. Exact tick_slot fragment harness passes8/8 versus prior6/8; new original-library regression source and independent review included, native CI still required. Other ownership/Matrix/Abort gaps remain.",
+      "evidence": "evidence/automatic_restart_quarantine_1e91/VALIDATION_RECEIPT.json"
+    },
+    {
+      "id": "fixed_physical_state_boundary_learning",
+      "status": "closed_for_separately_frozen_short_asset_coordinate_protocol",
+      "detail": "Remote786e535 checkpoint precedes first fixed-z evaluation. Fixed z0/rest/targets, terminal loss onlyz/a, complete asset boundary/exp chain.5 fixtures15 contracts8 temporal comparisons pass; independent2057-state reassembly.9 theta update; b67.4415 to68.3124, fixed five assets unchanged, common margin shift agrees with-log(b_after/b_before), one physical fixture enters default. Loss improves only0.0234864percent; no causal quality gain.",
+      "evidence": "../hx_asset_recurrent_r16_20261101/RESULTS.md"
+    },
+    {
+      "id": "actual_bp_bptt_remote_regression",
+      "status": "closed_for_v3_signed_v1_and_fixed_z_remote_replay",
+      "detail": "Actual job124931932431 at cf746 passes V3/signed-V1;257659-byte artifact downloaded and SHA checked, frozen record checker independently rerun. Actual job124934898501 at8df6 adds all fixed-z audit/training/raw-branch checks and source cleanliness successfully, including2057 states. Original workflow context failure and corrected reviews retained. No global native or efficacy admission.",
+      "evidence": "evidence/ci_8df6/REMOTE_REGRESSION.json"
+    },
+    {
+      "id": "recurrent_default_saturation",
+      "status": "open_negative_training_evidence",
+      "detail": "Fixed-z12-update run increases default occupancy107/136 to127/136 and reduces sampled transitions8 to4. Separately frozen two-layer run changes layer1 occupancy78 to60/136 and transitions6 to4, layer2 occupancy51 to53/136 and transitions0 to1. Protocols differ; no controlled anti-saturation or encoding advantage established. Default Q/R parameter gradients still vanish.",
+      "evidence": "../hx_asset_recurrent_r16_20261101/RESULTS.md"
+    },
+    {
+      "id": "two_layer_boundary_time_communication",
+      "status": "passed_frozen_short_functional_protocol",
+      "detail": "Remote76f6e912 checkpoint precedes first evaluation. Two single-cell layers, batch8 sequences,16steps,18raw parameters; upstream margin conditions downstream theta and actual b2 at each used old-state step. Every sequence has nonzero within-rollout b2 range, first minimum0.00307267 and final0.00239923. No time-dependent financial-PDE solution claim.",
+      "evidence": "../hx_two_layer_boundary_r16_20261101/RESULTS.md"
+    },
+    {
+      "id": "two_layer_gradient_route_identification",
+      "status": "passed_first_order_four_mode_audit",
+      "detail": "Four identical-forward graphs isolate drive and conditioned-finance paths. Condition-only raw1 VJP3.8373087e-6; explicit direct-b1 condition step norm9.8696458e-7. Full equals drive+condition within3.0468e-11; both detached gives upstream zero; raw2 identical across modes.12contracts,4x7temporal comparisons,69 independent record comparisons pass; condition norm only0.8709percent of drive norm.",
+      "evidence": "../hx_two_layer_boundary_r16_20261101/RESULTS.md"
+    },
+    {
+      "id": "two_layer_continuous_boundedness",
+      "status": "proved_under_unverified_full_domain_assumptions",
+      "detail": "Reviewed invariant rectangles and one-way layer induction give continuous ODE boundedness/finite-time continuation assuming Q>=0,0<=R<=1,positive bounded boundary and joint regularity on a valid compact parameter domain. Tanh bounds do not prove domain validity; this is not an FP32 Euler, long-gradient or feedback-network theorem.",
+      "evidence": "analysis/TWO_LAYER_CONDITIONAL_BOUNDEDNESS_ZH.md"
+    },
+    {
+      "id": "recipient_boundary_shape_isolation",
+      "status": "open_not_identified_by_current_gradient_controls",
+      "detail": "The verified condition path changes nine recipient financial parameters, hence both boundary and curve shape. Explicit upstream-b1 chain is nonzero, but isolated causal benefit of recipient-boundary movement, architecture and task performance remains untested.",
+      "evidence": "../hx_two_layer_boundary_r16_20261101/RESULTS.md"
+    },
+    {
+      "id": "two_layer_remote_regression",
+      "status": "pending_actual_published_head_execution",
+      "detail": "Additive workflow retains all8 prior entries and adds frozen two-layer audit/training/record checker. Local actionlint,format,Bash/CLI/hash negative checks and independent wiring review passed. Prior8df6 green does not qualify new three-step execution.",
+      "evidence": "evidence/bp_bptt_two_layer/CI_EXTENSION_INDEPENDENT_REVIEW.json"
+    },
+    {
+      "id": "windows_clippy_incompatible_explicit_targets",
+      "status": "minimal_platform_selection_repair_local_controls_passed_remote_pending",
+      "detail": "Exact8df6 log identifies157 explicitly incompatible targets:156 GNULLVM-only and1 Unix-only. Three added workflow lines apply the same platform-compatibility handling as existing Windows test shards; target list,constraints,compatible Clippy actions and failure propagation unchanged. Actual Bazel9 synthetic exits[1,0,1,0,0],six extracted Bash controls and independent source review pass; all three failed environment probes retained. New exact-head Windows CI required.",
+      "evidence": "evidence/native_8df6/windows_clippy/INDEPENDENT_REVIEW.json"
+    },
+    {
+      "id": "macos_arm_bazel_native_thread_resource",
+      "status": "open_exact_head_resource_crash",
+      "detail": "Exact8df6 macOS ARM test124935497136 reaches27/198 tests then Bazel FATAL native-thread OutOfMemoryError in sandbox deletion,exit33. No failed test assertion identified in full raw log; no measured RSS/thread/process-limit attribution. No unvalidated resource tuning applied.",
+      "evidence": "evidence/native_8df6/NATIVE_FAILURE_DIAGNOSIS.json"
+    }
+  ],
+  "new_confirmation_opened": false,
+  "production_activation": false,
+  "schema": "hcsn.r15.blockers.v1",
+  "scientific_acceptance_changed": false,
+  "published_research_head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+  "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4550",
+  "followup_ci_scope": "Final source and prospective-merge tree identities must be checked. Published prior-head green jobs do not qualify new native source repairs.",
+  "latest_assessed_head": "8df6e272e3a31a3fae0491dd2d511825e212290c",
+  "confirmation_scope": "new_confirmation_opened concerns the original R14 efficacy task only; R16 numerical validation is separate.",
+  "independent_numerical_validation_r16_opened": true,
+  "executor_recovery": {
+    "old_local_workspace_survived": false,
+    "published_python_capsule_and_accepted_dependency_evidence_preserved": true,
+    "original_unpublished_cpp_raw_evidence_recovered": false,
+    "source_and_windows_classification_recovered": true,
+    "later_keyring_crypto_raw_archives_recovered": false
+  },
+  "compiled_recovery_checkpoint": "bfd3a5a6f9445ae681b27d3947865ad67ef5651e",
+  "recurrent_source_checkpoint": "a629f9b1a9a1539f5360f8e44d2b81a09fdcf6ae",
+  "fixed_asset_source_checkpoint": "786e535bd2a396b14e9ffab4504bc855c6f4d6b1",
+  "two_layer_source_checkpoint": "76f6e91285ff25926eda2c7bf57f70e99431c6ec"
+}

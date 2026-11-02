@@ -1,0 +1,94 @@
+{
+  "schema": "hcsn.hx-recurrent-checker-negative-tests.v1",
+  "passed": true,
+  "protocol_sha256": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+  "checker_sha256": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+  "script_sha256": "8ca1b919277c187dfc275be8b61fb3567241449f96c56032cef921c10186b278",
+  "audit_sha256": "66339845b1a461540370916913e0b5a4db0fba274d17b4c2a6a3b4e506cc717d",
+  "training_sha256": "b07378052e70e0ad97978f74398b2db0fda02bb3eae9041c51f70f9caac4a35e",
+  "financial_kernel_calls": 0,
+  "training_reruns": 0,
+  "tests": [
+    {
+      "id": "missing_signed_fixture",
+      "changed_artifact": "audit",
+      "faulty_artifact_sha256": "a87bc0c1dda8144ff8874118d196e46d7f759ef28441c91b3463533d0821bc2a",
+      "returncode": 1,
+      "expected_error_substring": "Signed fixture identity/count mismatch",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 154, in <module>\n    run(args.root, args.protocol_sha256, args.audit, args.training, args.output)\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 89, in run\n    require(len(fixtures) == g['required_signed_fixtures'] and [r['x'] for r in fixtures] == inputs['signed_fixture_x'], 'Signed fixture identity/count mismatch')\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Signed fixture identity/count mismatch\n",
+      "passed": true
+    },
+    {
+      "id": "missing_training_iteration",
+      "changed_artifact": "training",
+      "faulty_artifact_sha256": "bdd6d0043e4217106036b57f3ddc07fbd8b81b03843305cba9886f3af88cc352",
+      "returncode": 1,
+      "expected_error_substring": "Training count/input mismatch",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 154, in <module>\n    run(args.root, args.protocol_sha256, args.audit, args.training, args.output)\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 124, in run\n    require(training['data'] == data and len(history) == p['training']['updates'] and [r['iteration'] for r in history] == list(range(len(history))), 'Training count/input mismatch')\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Training count/input mismatch\n",
+      "passed": true
+    },
+    {
+      "id": "nonfinite_gradient",
+      "changed_artifact": "audit",
+      "faulty_artifact_sha256": "6d27eec6fe3a594bae0c5897720cf72c36967f605e18637d6618f8563879ffc1",
+      "returncode": 1,
+      "expected_error_substring": "Nonfinite JSON NaN",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 154, in <module>\n    run(args.root, args.protocol_sha256, args.audit, args.training, args.output)\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 79, in run\n    p, inputs, audit, training = map(read, (protocol_path, inputs_path, audit_path, training_path))\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 23, in read\n    return json.loads(text, parse_constant=lambda value: (_ for _ in ()).throw(ValueError('Nonfinite JSON '+value)))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/__init__.py\", line 359, in loads\n    return cls(**kw).decode(s)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py\", line 338, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py\", line 354, in raw_decode\n    obj, end = self.scan_once(s, idx)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 23, in <lambda>\n    return json.loads(text, parse_constant=lambda value: (_ for _ in ()).throw(ValueError('Nonfinite JSON '+value)))\n                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 23, in <genexpr>\n    return json.loads(text, parse_constant=lambda value: (_ for _ in ()).throw(ValueError('Nonfinite JSON '+value)))\nValueError: Nonfinite JSON NaN\n",
+      "passed": true
+    },
+    {
+      "id": "corrupt_euler_drift",
+      "changed_artifact": "training",
+      "faulty_artifact_sha256": "5817760ade326545ce37206100dd4cdacad46bde28c6a466c3f1fe5ee4a0caa1",
+      "returncode": 1,
+      "expected_error_substring": "Recorded Euler drift mismatch",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 154, in <module>\n    run(args.root, args.protocol_sha256, args.audit, args.training, args.output)\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 135, in run\n    xf, af, _ = check_trace(training['final_trajectory'], data, p); check_loss(training['final_loss'], xf, af, data, g)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 62, in check_trace\n    require(np.array_equal(drift[..., 0], dx.astype(np.float64)) and np.array_equal(drift[..., 1], da.astype(np.float64)), 'Recorded Euler drift mismatch')\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Recorded Euler drift mismatch\n",
+      "passed": true
+    },
+    {
+      "id": "corrupt_early_theta_gradient",
+      "changed_artifact": "audit",
+      "faulty_artifact_sha256": "c66159f0b89a90f546785c6be92dfcda0a4b805903f9a089deb1c85c305cfc25",
+      "returncode": 1,
+      "expected_error_substring": "Recomputed gradient comparison failed",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 154, in <module>\n    run(args.root, args.protocol_sha256, args.audit, args.training, args.output)\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 103, in run\n    actual = {name: check_comparison(row, g, shapes[name]) for name, row in temporal['comparisons'].items()}\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 40, in check_comparison\n    require(np.all(np.abs(observed-reference) <= allowance), 'Recomputed gradient comparison failed')\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Recomputed gradient comparison failed\n",
+      "passed": true
+    },
+    {
+      "id": "erase_parameter_update",
+      "changed_artifact": "training",
+      "faulty_artifact_sha256": "fb3f68d52cbaa164d8b2e60d2f462bbd2f5d6b63cc9a843c8243f8bb015bb298",
+      "returncode": 1,
+      "expected_error_substring": "No final parameter update",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 154, in <module>\n    run(args.root, args.protocol_sha256, args.audit, args.training, args.output)\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 132, in run\n    require(np.array_equal(previous, arr(training['trainable_parameters']['raw_theta']['final'], (9,))) and np.linalg.norm(previous) > g['nonzero_gradient_floor'], 'No final parameter update')\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: No final parameter update\n",
+      "passed": true
+    },
+    {
+      "id": "missing_crossing",
+      "changed_artifact": "audit",
+      "faulty_artifact_sha256": "103debe4f5d78273f438539e67ef72ff415e6eed96eeca7ea43b59d10fea815a",
+      "returncode": 1,
+      "expected_error_substring": "Crossing count/identity mismatch",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 154, in <module>\n    run(args.root, args.protocol_sha256, args.audit, args.training, args.output)\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 98, in run\n    x, a, crossings = check_trace(temporal['trajectory'], data, p)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 65, in check_trace\n    require(crossings == [(r['step'], r['sample'], r['from'], r['to']) for r in row['crossings']], 'Crossing count/identity mismatch')\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Crossing count/identity mismatch\n",
+      "passed": true
+    },
+    {
+      "id": "wrong_protocol_binding",
+      "changed_artifact": "audit",
+      "faulty_artifact_sha256": "fac0d616885acf53b14d13d11bb58da5457513ac9562621f762a89a9e9880cb1",
+      "returncode": 1,
+      "expected_error_substring": "Receipt/protocol mismatch",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 154, in <module>\n    run(args.root, args.protocol_sha256, args.audit, args.training, args.output)\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 85, in run\n    require(audit['protocol_sha256'] == expected == training['protocol_sha256'], 'Receipt/protocol mismatch')\n  File \"/tmp/hcsn-recurrent-next-v1/check_recurrent_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Receipt/protocol mismatch\n",
+      "passed": true
+    }
+  ],
+  "scope": "Deliberate receipt mutations, not new model evaluations or changes to frozen scientific gates."
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "hcsn.independent-defect-execution.v1",
+  "command": "PYTHONPATH=/tmp/hcsn-torch-runtime python /tmp/hcsn-autograd-independent-review/reproduce_v2_higher_order.py > /tmp/hcsn-autograd-independent-review/V2_DEFECT_RUN.log 2>&1",
+  "actual_exit_code": 130,
+  "runner_note": "The complete six-row JSON artifact and summary were emitted, but the exec session did not report process termination during repeated polling; the reviewer sent Ctrl-C. Exit 1 was expected by the script for the failed refusal contract but is not claimed as observed. The original earlier six-call interactive diagnostic completed with exit 0 and reported the same four returned readout second derivatives.",
+  "reported_contract_passed": false,
+  "financial_oracle_calls": 0,
+  "frozen_sources_modified": false
+}

@@ -1,0 +1,159 @@
+{
+  "schema": "hcsn.two-layer-independent-prevalidation-review.v1",
+  "reviewed_at_utc": "2026-11-01T18:39:51.680330+00:00",
+  "reviewer": "architecture_comparison",
+  "decision": "No blocking issue found in the final frozen source/protocol. Eligible for the prespecified first functional evaluation after the parent-confirmed remote checkpoint. This is not a passed numerical result.",
+  "scope": "Read-only mathematical, source, recorded gate and identity review; no new financial evaluations, PyTorch executions, model trajectories, optimizer updates or tests performed for this final review.",
+  "protocol": {
+    "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_PROTOCOL.json",
+    "bytes": 7927,
+    "sha256": "da07c580e258f51517f124d6d7b902a8ae3c6700fb58cb96948c18447c740ad7"
+  },
+  "inputs": {
+    "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_INPUTS.json",
+    "bytes": 17425,
+    "sha256": "a71e0504039f65fde804b31bd015475ce78f67e409073a5a6e9bd86c58e8d6db"
+  },
+  "candidate_mapping": {
+    "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/PREVALIDATION_MAPPING.json",
+    "bytes": 3463,
+    "sha256": "7045a7263cb21f9d7a1e3450e33973ecd019f782cacf79597d7cdfb90ec1629f"
+  },
+  "all_nine_sources_verified": true,
+  "source_identities": {
+    "two_layer_model.py": {
+      "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/two_layer_model.py",
+      "bytes": 9442,
+      "sha256": "7e14756e5b98023092ce44f57eeef3933816a62d1a7dd4b126e8443448dfb2f5"
+    },
+    "two_layer_common.py": {
+      "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/two_layer_common.py",
+      "bytes": 6871,
+      "sha256": "108098be5027a78d550b0a5a36be5f81c3cb4c156822e1e7d1f96a3e4e19a8d9"
+    },
+    "two_layer_reference.py": {
+      "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/two_layer_reference.py",
+      "bytes": 6907,
+      "sha256": "35e8680e3faa501dcde7913a19b2998d2d799a1feb27667fbad6d55812c8ca69"
+    },
+    "audit_two_layer.py": {
+      "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/audit_two_layer.py",
+      "bytes": 14112,
+      "sha256": "3676dcbb62f68ae5411df19db7b71560cca05eba17dfdfcedf382a3a0190202d"
+    },
+    "train_two_layer.py": {
+      "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/train_two_layer.py",
+      "bytes": 6469,
+      "sha256": "6f28e980dbdae1d2528d764477f2b1cbdfdc9c41e0f34a1d5003897c52b8ba58"
+    },
+    "check_two_layer_results.py": {
+      "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/check_two_layer_results.py",
+      "bytes": 30196,
+      "sha256": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e"
+    },
+    "freeze_two_layer.py": {
+      "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/freeze_two_layer.py",
+      "bytes": 12913,
+      "sha256": "fa0f05ffeb94338193c30b6bbeaaa1e3cf79761104b5ef1433f3e48702303aab"
+    },
+    "README.md": {
+      "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/README.md",
+      "bytes": 8861,
+      "sha256": "02571e4447cf63b27e81fb85a4777fcfd5e2efdfa4aaadf7b158ceff33349a2b"
+    },
+    "requirements.txt": {
+      "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/requirements.txt",
+      "bytes": 31,
+      "sha256": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+    }
+  },
+  "remote_checkpoint_provenance": {
+    "commit": "76f6e91285ff25926eda2c7bf57f70e99431c6ec",
+    "tree": "79f02c271c8a3f19aad167945a2da4ad5793b5f9",
+    "branch": "research/hcsn-two-layer-r16-da07c580",
+    "commit_time_utc": "2026-11-01T18:37:20Z",
+    "basis": "Parent reports independent remote tree and file-hash verification; this reviewer verified local frozen identities and did not independently query GitHub for this receipt."
+  },
+  "final_three_guard_review": [
+    {
+      "guard": "phase must be an integer array and match sign(represented_asset - raw_boundary)",
+      "assessment": "Correct. Rejecting bool/float phase records avoids equality coercion without changing any dynamical or numerical gate."
+    },
+    {
+      "guard": "For represented V <= b, archived E/F/G values must equal 0/1/1 and their complete Jacobian rows must be zero",
+      "assessment": "Correct for the exact frozen asset branch. The slice excludes boundary and debt, whose parameter derivatives need not vanish.",
+      "financial_kernel_source": {
+        "local_path": "/tmp/hcsn-compiled-recovery/kernel.cpp",
+        "bytes": 9554,
+        "sha256": "6c04009f4a782a2aaac5f0e6d8af7048d9bd9c26f1a3039f47c1c83491bb63cd"
+      }
+    },
+    {
+      "guard": "All eight frozen numeric input arrays must match their stored FP32 uint32 bit patterns",
+      "assessment": "Correct input-identity check. The eight fields are base1/base2/initial_state/drive1/drive2/target_z2/target_a2/readout_fixture_z."
+    }
+  ],
+  "mathematical_chain_review": [
+    "The 4-state ordering is z1,a1,z2,a2. The 18 raw parameters consist of two shared 9-vectors. Both layers update from old states with the same dt.",
+    "The complete asset-coordinate chain retains b_theta in x_theta = -b_theta/b and the represented exp(z) path. The lower effective parameters use the actual FP32 tanh intermediates.",
+    "Continuous cross-layer K splits into drive and financial-conditioning terms. Every discrete state-coupling and parameter block includes dt exactly once; no derivative of D2 belongs in this first-order Jacobian.",
+    "The full theta1-node VJP already includes all lower descendants. Contracting it with theta1-to-raw1 and separately contracting theta2-node VJP with theta2-to-raw2 gives the correct shared raw credit, without double-counting theta2-to-raw1.",
+    "The full manual 4x4/4x18 local chain and reverse adjoints are independently implemented in the sealed NumPy reference. Batched theta2 node VJPs remain per sample; shared theta1 node VJPs sum across samples."
+  ],
+  "identification_review": [
+    "Full, drive_only, conditioning_only and both_detached preserve the same forward values and intervene on derivatives only. They do not establish a forward task-quality ablation.",
+    "A nonzero full upstream gradient cannot by itself establish the financial-conditioning route. The independent conditioning-only VJP and time-resolved direct-boundary norm gates address this otherwise genuine false-positive mechanism.",
+    "Net direct-boundary credit can cancel across time. The frozen gate is the norm of the [T,9] contribution array, not the norm of its time sum. Both values must remain reported.",
+    "Full upstream credit must equal the sum of the two single-route credits, downstream credit must remain invariant, and both-detached upper influence must vanish.",
+    "The lower boundary must vary within the sixteen used states, not merely final diagnostic readouts."
+  ],
+  "execution_contract_review": [
+    "Fixed physical initial/rest states, inputs and terminal lower-state targets are independent of learned boundary; the only trainable quantities are eighteen raw financial parameters.",
+    "No normal recurrent state detach, hard reset or binary event is introduced. Final financial readouts are no-grad diagnostics only.",
+    "Training snapshots are taken before optimizer.step so raw parameter references cannot silently rewrite earlier records.",
+    "The immutable V3 bridge supplies first-order VJPs and rejects create_graph=True. Raw financial channels are not all C1; the three selected readouts do not imply a C2 force field.",
+    "Each time-conditioned call evaluates a static H-X feature map. It is not a solution of a time-dependent financial PDE or a closed-form neural temporal flow.",
+    "The pure NumPy result checker validates recorded source/input bindings, represented forward algebra, archived Jacobian chain, four-route identification and complete history. It does not call the financial oracle or replay Adam, and it independently recomputes the first training gradient through the full audit rather than every later training gradient."
+  ],
+  "frozen_counts": {
+    "steps": 16,
+    "batch_size": 8,
+    "updates": 12,
+    "trainable_raw_scalars": 18,
+    "gradient_modes": 4,
+    "readout_contracts": 12,
+    "temporal_comparisons_per_mode": 7
+  },
+  "frozen_gradient_gate": {
+    "atol": 2e-09,
+    "rtol": 2e-05
+  },
+  "gate_scope": "Four FP32 ULPs concern only cross-library transcendental/derived-parameter record consistency. Linear links, preactivation and Euler use exact FP32 numerical equality. Financial accuracy, earlier precision qualification and quality gates are unchanged. Loss decrease is not a gate.",
+  "independent_reference_publication_mapping": {
+    "local_path": "/tmp/hcsn-two-layer-independent-reference/REFERENCE_PUBLICATION_MAPPING.json",
+    "bytes": 1368,
+    "sha256": "1c30214cf8ef08b00c3b39ff2ef017c61234433a78ef7c1c984fc28b50775c30"
+  },
+  "preexisting_nonfinancial_test_provenance": {
+    "reference_execution": {
+      "local_path": "/tmp/hcsn-two-layer-independent-reference/SYNTHETIC_EXECUTION.json",
+      "bytes": 973,
+      "sha256": "64a18edcb0ffd3419da76c937b5072df76faf8bdd9efd2d3ed6464a5871f252b"
+    },
+    "reference_test_count": 3,
+    "checker_final_attempt02": {
+      "local_path": "/tmp/hcsn-two-layer-checker-review/NONFINANCIAL_CHECKER_ATTEMPT02.json",
+      "bytes": 3390,
+      "sha256": "91fcd7ca4875e8e53e3f4defd60eff2a6d59e4dc715602a268ab8db74d3bf266"
+    },
+    "checker_test_count": 19,
+    "scope": "Reviewed existing synthetic receipts, not rerun here. These tests use invented nonfinancial fields/records, not the candidate or new financial points."
+  },
+  "limitations": [
+    "Numerical pass/failure is not known or considered by this prevalidation receipt.",
+    "No unseen task, multimodal quality, efficiency, sparsity, GPU, event-time or generalization claim follows.",
+    "Finite trajectories do not establish autonomous spikes, a limit cycle, Euler stability or step-size convergence.",
+    "The separate continuous-system boundedness argument is conditional on an admissible compact parameter domain and operator regularity; this protocol does not prove those assumptions."
+  ],
+  "blocking_findings": []
+}

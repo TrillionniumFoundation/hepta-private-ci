@@ -1,0 +1,107 @@
+{
+  "head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "files": [
+    {
+      "path": ".github/actions/prepare-bazel-ci/action.yml",
+      "git_blob": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+      "sha256": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b",
+      "bytes": 3255
+    },
+    {
+      "path": ".github/actions/setup-bazel-ci/action.yml",
+      "git_blob": "ea3f3a6521b970484ac60d1cebf788092753555a",
+      "sha256": "cae76442a9a6d40f2c56c1fbed991fe667f3ca3eef07e5e9806370ecf91afb7d",
+      "bytes": 5365
+    },
+    {
+      "path": ".github/actions/setup-ci/action.yml",
+      "git_blob": "8abd2dbd5f09585734f8213011a9ed540a2ee88e",
+      "sha256": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba",
+      "bytes": 4141
+    },
+    {
+      "path": ".github/actions/check-clean-worktree/action.yml",
+      "git_blob": "5a7bdddcf8f560d20fcd6639761a500b7ef12cf3",
+      "sha256": "58844cf1afb11d5cdbdfe577e4227ea3361ce495960c2d0cce94ca0da3da82a5",
+      "bytes": 596
+    },
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "git_blob": "2bb6994771e1bfaa6b6e9f2824758188f8e454a9",
+      "sha256": "54a2e8fe8da8253b92986380ae502082354b824759c970c29235c86b3ba291cf",
+      "bytes": 13699
+    },
+    {
+      "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "git_blob": "95ba1322e8a791570dcb920beabffded5aea13a3",
+      "sha256": "e2805020fdebb76beec1c963aeeb4bfc9bb45ad420208428cb708f2ade78e1ae",
+      "bytes": 14464
+    },
+    {
+      "path": ".github/scripts/compute-bazel-windows-path.ps1",
+      "git_blob": "81fd668c8b53cf0611aa503285ee6a4a3143c4f4",
+      "sha256": "ce283393e6d8987391355de9586133ca35bb38f9da1b4830a3c75b93ebff2f05",
+      "bytes": 3625
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "git_blob": "78a041f4324c7bb2c7b11cf71a85f25059a771e5",
+      "sha256": "4bf5b7b9211d0943eda0df95dc966a3ab7371f0ffa5215db4e7c462eba8a5053",
+      "bytes": 20713
+    },
+    {
+      "path": "AGENTS.md",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "bytes": 22519,
+      "provenance": "Copied exact f52 source; Git blob and SHA256 matched architecture agent exact-source identity receipt."
+    },
+    {
+      "path": "justfile",
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "bytes": 7838,
+      "provenance": "Copied exact f52 source; Git blob and SHA256 matched architecture agent exact-source identity receipt."
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+      "bytes": 2030,
+      "provenance": "Copied exact f52 source; Git blob and SHA256 matched architecture agent exact-source identity receipt."
+    },
+    {
+      "path": "scripts/format.py",
+      "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+      "bytes": 16599,
+      "provenance": "Copied exact f52 source; Git blob and SHA256 matched architecture agent exact-source identity receipt."
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "git_blob": "71867ac2c28d2e3d7db071b014ff3a28b236c6f5",
+      "sha256": "fc5bed00217a44790fe5be1ee3284249b7f806293384141bae12a2d1faf1383e",
+      "bytes": 22011,
+      "provenance": "Copied exact f52 source; Git blob and SHA256 matched architecture agent exact-source identity receipt."
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "git_blob": "910c65114ec128a8317ee8257428451f3cd28230",
+      "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64",
+      "bytes": 78,
+      "provenance": "Copied exact f52 source; Git blob and SHA256 matched architecture agent exact-source identity receipt."
+    },
+    {
+      "path": "codex-rs/rustfmt.toml",
+      "git_blob": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+      "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c",
+      "bytes": 164,
+      "provenance": "Copied exact f52 source; Git blob and SHA256 matched architecture agent exact-source identity receipt."
+    }
+  ],
+  "baseline_workflow": {
+    "path": ".github/workflows/hcsn-robrix-fixture-r16.yml",
+    "sha256": "f03ad806a2789a72b33af94d29ba89f3c67745713c883150db3ce46f28357491",
+    "basis": "Reviewed V1 candidate; parent created its immutable commit before this matrix extension, without advancing the PR ref."
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "schema": "hcsn.recovery-check-independent-readonly-review.v1",
+  "created_utc": "2026-11-01T10:14:51.052086+00:00",
+  "reviewer": "/root/architecture_comparison",
+  "scope": "Pre-evaluation independent source review and synthetic preflight rejection checks only",
+  "identity": {
+    "protocol": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+    "checker": "e5428232e7d3c81428e04eabfb5a595b014c9fc56cc9fdcaa3622c60e1663b07",
+    "prevalidation_mapping": "e53627c0641d1b20e7d89a2c4ca9986b93e7710cbb9239cec98015853fc86778",
+    "source_mapping": "2aaa06dd25f7c2fc9521d47d646c8a2c21d51b0b67821cd09da392025460e3d9",
+    "source_sha256": {
+      "kernel.cpp": "6c04009f4a782a2aaac5f0e6d8af7048d9bd9c26f1a3039f47c1c83491bb63cd",
+      "arithmetic.hpp": "1f03b2cef36b5395511c98f815be741df9c3659b8f40a31dd38bfc5dc8e59bdd",
+      "constants.hpp": "d44d34cf51bcc70ef1961fdbef964ed2b703512f3d371683e743365c16d9ea4e",
+      "compiled.py": "5c60c7e7e9dada2388fb596f285e1ae4033c0b2accc1aed7ee1aa3892585b63d",
+      "generate_constants.py": "bc0109476c5c7a7bede37c1e7fcebba64f1ae3bd297af73894b49a2a6960637e",
+      "DEVELOPMENT_PROTOCOL.json": "419c52de3f3c88856d6d07c3f3dff1c6aeb62ecf63834d606e3382b02ca3588f",
+      "build.py": "aabc166766fa02e33fa8331733ece742a8dcd787f403f839070dc45f5174a6d5",
+      "recovery_eval.py": "3c9a68e6688b3ec4cbc04bc3581be202557cc9ce106722730085f3b61bb1469e",
+      "recovery_check.py": "e5428232e7d3c81428e04eabfb5a595b014c9fc56cc9fdcaa3622c60e1663b07",
+      "freeze_recovery.py": "a5eb83825bf25e73d22a10090197b90f5e8b0c689b6beec5d290d7c884c8e954",
+      "frozen_input/frozen_reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52"
+    },
+    "binary": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+    "manifest": "517ce163008c82ff1eab432a5b0e6e59e5b7aebfa28fc8b6184c449d1f5010b5",
+    "build_receipt": "459f899f2fbc11c3d386071e73f878b0c603cb4c70826aab1c05086de5cd65f4"
+  },
+  "mapping_checks": {
+    "PREVALIDATION_MAPPING.json": {
+      "members": 6,
+      "identities_verified": 6
+    },
+    "SOURCE_MAPPING.json": {
+      "members": 14,
+      "identities_verified": 14
+    }
+  },
+  "blocking_false_pass_findings": [],
+  "ready_to_start": "Yes, conditional on remote persistence of the exact protocol, manifest, checker, writer and declared source/build/binary identities before any new outcome is opened",
+  "reviewed_guards": [
+    "Trusted protocol pin and source/binary/manifest/build seals; final source/binary and every bound raw artifact hash recheck",
+    "Exactly 128 parameter cases and 768 state rows with ordered IDs, slots, FP32 inputs and native state bindings",
+    "Required float64 and compensated32 errors reject; ordinary float32 errors remain diagnostics and cannot count as passes",
+    "Finite shape-checked reference values and full Jacobians independently recalculated from frozen MP80 oracle",
+    "Halved finite differences plus both parameter/state branch-neighbor checks and continuation one-sided derivative",
+    "All 768 states of both required modes must meet the unchanged numerical gates; no dropped rejected cases"
+  ],
+  "synthetic_checks": [
+    {
+      "name": "wrong_protocol_pin",
+      "result": "rejected",
+      "message": "Wrong frozen protocol"
+    },
+    {
+      "name": "wrong_artifact_digest",
+      "result": "rejected",
+      "message": "Artifact binding mismatch"
+    },
+    {
+      "name": "missing_reference_row",
+      "result": "rejected",
+      "message": "Missing/extra state rows"
+    },
+    {
+      "name": "missing_case_metadata",
+      "result": "rejected",
+      "message": "Missing parameter metadata"
+    },
+    {
+      "name": "duplicate_reference_slot",
+      "result": "rejected",
+      "message": "Reference ID/slot mismatch"
+    },
+    {
+      "name": "invalid_parameter_case",
+      "result": "rejected",
+      "message": "Rejected/unbound parameter point"
+    },
+    {
+      "name": "oracle_row_error",
+      "result": "rejected",
+      "message": "Failed oracle row"
+    },
+    {
+      "name": "wrong_reference_jacobian_width",
+      "result": "rejected",
+      "message": "Wrong vector length"
+    },
+    {
+      "name": "nonfinite_reference",
+      "result": "rejected",
+      "message": "Nonfinite JSON token"
+    },
+    {
+      "name": "native_state_mismatch",
+      "result": "rejected",
+      "message": "Input binding mismatch"
+    },
+    {
+      "name": "boolean_status",
+      "result": "rejected",
+      "message": "Invalid execution status"
+    },
+    {
+      "name": "required_float64_rejection",
+      "result": "rejected",
+      "message": "Required mode rejected/error state"
+    },
+    {
+      "name": "required_compensated32_error",
+      "result": "rejected",
+      "message": "Required mode rejected/error state"
+    },
+    {
+      "name": "non_fp32_transported_output",
+      "result": "rejected",
+      "message": "Non-FP32 transported output"
+    },
+    {
+      "name": "ordinary_fp32_errors_do_not_block_preflight",
+      "result": "preflight_reached_oracle_guard",
+      "message": "Oracle import deliberately blocked before all numerical evaluation"
+    }
+  ],
+  "synthetic_checks_count": 15,
+  "scientific_oracle_calls": 0,
+  "native_evaluator_calls": 0,
+  "new_sample_outcomes_opened": false,
+  "frozen_source_protocol_gate_changes": false,
+  "limitations": [
+    "This receipt is checker prevalidation, not numerical admission or evidence that either required mode passes",
+    "The input manifest identities were read, but the new scientific outcomes were not evaluated",
+    "Finite sampled CPU value/Jacobian evidence cannot establish uniform parameter-box validity, global C1, GPU/energy or network quality superiority",
+    "New evidence cannot restore the lost original raw outcomes or inherit their admission",
+    "End-to-end provenance relies on executing the exact sealed writer and binary and retaining its raw artifacts; this review does not certify hostile runtime isolation"
+  ]
+}

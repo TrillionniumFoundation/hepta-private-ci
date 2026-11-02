@@ -1,0 +1,36 @@
+{
+  "schema": "hcsn.simplified-c1-value-dynamics-pre-execution-plan.v1",
+  "set_by_parent": {
+    "b": 1,
+    "alpha": 1.7,
+    "k": 0.1,
+    "beta": 0.1,
+    "d": 0.1,
+    "Vstar": 2,
+    "gamma": [
+      0.2,
+      0.8
+    ]
+  },
+  "fixed_before_trajectory_outcomes": {
+    "duration": 800,
+    "tail_start": 400,
+    "steps": [
+      0.04,
+      0.02,
+      0.01,
+      0.005
+    ],
+    "x_initial": "log(2)+0.05",
+    "a_initial": "(gamma+d)*Rstar",
+    "I": "k*Estar-d*Rstar",
+    "integrator": "fixed-step RK4 float64",
+    "primary_observations": [
+      "analytic equilibrium eigenvalues",
+      "actual recurrent R plateaus and boundary crossings",
+      "trajectory differences on nested grids"
+    ]
+  },
+  "scope": "Separate simplified perpetual example; no financial kernel, existing gate, benchmark, training or strict Hopf assertion; no hard reset or event trigger in the dynamics."
+}
+

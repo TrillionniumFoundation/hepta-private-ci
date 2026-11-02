@@ -1,0 +1,113 @@
+{
+  "schema": "hcsn.fixed-potential-workflow-extension-review.v1",
+  "workflow": ".github/workflows/hcsn-financial-autograd-r16.yml",
+  "original_published_V1_workflow_sha256": "37acf5263850f81eb2a14f3f6d0a847fa2261cfe79ec51f5b1161e0320fdd9e4",
+  "required_context_fixed_parent_workflow_sha256": "f412f538369121a101d8f183bb1136795c9de365a5c6f8a221f77f69bf53af97",
+  "candidate_workflow_sha256": "bac8820cb23ff6637c4a692027f2e3d953b00427349567ff42808fc6785e13a4",
+  "separation": "This extension follows the separately reviewed runner-context correction. It preserves the invalid original V1 workflow and its corrective receipts in Git history; it does not overwrite or relabel that evidence.",
+  "change_scope": {
+    "added_lines": 44,
+    "deleted_lines": 0,
+    "added_path": "tools/hcsn/hx_asset_recurrent_r16_20261101",
+    "new_trigger": "Only the fixed-potential candidate directory is added to existing narrow path triggers.",
+    "new_sparse_checkout": "Only the same fixed-potential directory is added.",
+    "new_job_environment": [
+      "ASSET_ROOT",
+      "ASSET_PROTOCOL_SHA256"
+    ],
+    "new_preflight_pins": [
+      "ASSET_PROTOCOL.json",
+      "check_asset_results.py"
+    ],
+    "existing_runtime_configuration_unchanged": true
+  },
+  "fixed_candidate": {
+    "protocol_sha256": "7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa",
+    "prevalidation_mapping_sha256": "b212a7db0794a6f0c4bcc4baf645747f2e41f1702ff1cd8ecf296f3b5f552c73",
+    "remote_prefreeze_checkpoint": "786e535bd2a396b14e9ffab4504bc855c6f4d6b1",
+    "input_manifest_sha256": "74e8a4cae1734762579a65608b8350ba8545bb1be79df2de657eaf2e4b65b079",
+    "audit_source_sha256": "fb99430491cbb73733cb65cc6dbcb7571d83c67bf21dda9f75be2b1e042b40bc",
+    "training_source_sha256": "339d7023456cc3a8b248fa29f07c1c39e52c52bf8a6eb45a809e59554c2c91af",
+    "checker_sha256": "6bfdadae171d833d32039d892fe26d9687aa9b888351c8a3f19111e68293c369",
+    "all_seven_protocol_source_hashes_and_inputs_verified": true
+  },
+  "new_entrypoints": [
+    {
+      "script": "audit_asset.py",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--protocol-sha256",
+        "--output"
+      ],
+      "output": "$HCSN_RESULTS/asset-audit.json.gz",
+      "condition": "Runtime installation and frozen preflight succeeded; executes even if a different earlier audit failed."
+    },
+    {
+      "script": "train_asset.py",
+      "flags": [
+        "--adapter-root",
+        "--financial-root",
+        "--protocol-sha256",
+        "--output"
+      ],
+      "output": "$HCSN_RESULTS/asset-training.json.gz",
+      "condition": "Runtime installation and frozen preflight succeeded; executes even if a different earlier audit failed."
+    },
+    {
+      "script": "check_asset_results.py",
+      "flags": [
+        "--root",
+        "--protocol-sha256",
+        "--audit",
+        "--training",
+        "--financial-root",
+        "--output"
+      ],
+      "output": "$HCSN_RESULTS/asset-check.json",
+      "condition": "Both new audit and training steps succeeded; any checker rejection remains a failing job."
+    }
+  ],
+  "checker_scope": "The fixed-potential checker reads complete traces, reconstructs represented Euler updates and recorded temporal adjoints, and loads the same sealed financial binary for one batch of raw boundaries/local reference records. It does not rerun the optimizer or PyTorch and is not an independent financial oracle. The explicit financial-root argument is required and is provided.",
+  "preserved_contracts": [
+    "All original five adapter and recurrent V1 executable steps are identical as parsed YAML, including their conditions and arguments.",
+    "Read-only contents permission, fixed action SHAs, exact-head checkout, persist-credentials:false, CPU dependency file and thread limits remain unchanged.",
+    "Runtime paths continue to be initialized from RUNNER_TEMP by the corrected separate GITHUB_ENV step; no runner context appears in job.env.",
+    "All eight outputs have unique create-only destinations in the same newly created RUNNER_TEMP results directory.",
+    "No continue-on-error, step skip that changes acceptance, recompilation, .so substitution or silent fallback was added.",
+    "Artifact preservation and tracked/staged/untracked source-cleanliness checks are identical."
+  ],
+  "local_verification": {
+    "actionlint": {
+      "version": "1.7.12",
+      "binary_sha256": "c872d6db8c6bf83a8eaa704fc93999f027d55dffbc63b8a6abdccb47df5f4cd4",
+      "command": "/tmp/hcsn-bp-ci-tools/actionlint .github/workflows/hcsn-financial-autograd-r16.yml",
+      "exit_code": 0,
+      "output": "",
+      "suppressed_checks": []
+    },
+    "prettier": {
+      "version": "3.5.3",
+      "check_exit": 0
+    },
+    "actual_just_fmt": {
+      "exit_code": 0,
+      "scope_note": "Actual unchanged repository recipe was run. Its scoped formatter does not select YAML; the separate Prettier check supplies YAML validation."
+    },
+    "bash_syntax": {
+      "blocks": 11,
+      "all_exit_zero": true
+    },
+    "actual_argparse_contracts_compared": 8,
+    "exact_preflight_bound_files": 8,
+    "actual_runner_path_initialization_and_hash_preflight_exit": 0,
+    "wrong_asset_protocol_rejected": true,
+    "repeated_output_rejected_without_overwrite": true,
+    "old_steps_preserved": true,
+    "git_diff_check_exit": 0,
+    "local_check_receipt_sha256": "e7991d74be9d07a55adbc2c76490bb52d6084ffd715e401f16dcec7df43d825f",
+    "financial_or_training_executions_during_this_review": 0
+  },
+  "remaining_gate": "Publish the corrected and extended workflow and assess the exact-head Actions run. Local lint/preflight checks do not establish remote package installation, binary loading or numerical execution success.",
+  "scientific_scope": "This adds regression execution for the frozen fixed-physical-potential model. Passing the functional boundary-chain and BPTT records does not establish quality, generalization, causal benefit of threshold motion, autonomous spiking, speed or energy superiority."
+}

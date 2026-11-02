@@ -1,0 +1,241 @@
+{
+  "schema": "hcsn-signed-abort-safety-review-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+  "status": "blocked_unactivated_fail_closed",
+  "product_source_modified": false,
+  "native_failure": {
+    "head": "1e91c5cf18272505508b9ce880fd34879bb6a546",
+    "merge": "73ffeaf2d120289b935f3aed3cc4608866c20b4a",
+    "base": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+    "run": 41294998586,
+    "job": 124814581056,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41294998586/job/124814581056",
+    "failures": [
+      {
+        "test": "exact_digest_abort_terminalizes_unresolved_intent",
+        "line": 8158,
+        "text": "2026-11-01T10:00:43.8097297Z ---- exact_digest_abort_terminalizes_unresolved_intent stdout ----\n2026-11-01T10:00:43.8098124Z \n2026-11-01T10:00:43.8098825Z thread 'exact_digest_abort_terminalizes_unresolved_intent' (15) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:\n2026-11-01T10:00:43.8100148Z assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))\n2026-11-01T10:00:43.8100951Z     if agent_id == fleet.agent_id)\n2026-11-01T10:00:43.8101590Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-01T10:00:43.8102107Z \n2026-11-01T10:00:43.8102112Z "
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "missing_directive_consumption",
+      "severity": "blocking",
+      "summary": "recover_signed_intent never calls read_recovery_directive; current recovery returns Ok and quarantines, while the integration test still expects Err then terminal Aborted. A test-only expectation change cannot establish terminal abort.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+          "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+          "sha256": "98ce7286ce2b9680bfb2838ec14e969c2333d7818c7ed14711263a08003e0b48",
+          "first_line": 684,
+          "last_line": 709,
+          "excerpt": "    fn recover_signed_intent(\n        &mut self,\n        agent_id: &AgentId,\n        slot: &mut AgentSlot<D::Process>,\n        record: &AgentRecord,\n    ) -> Result<(), SupervisorError> {\n        let intent = read_intent(record.layout.run_root())\n            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;\n        let Some(intent) = intent else {\n            return Ok(());\n        };\n        if intent.agent_id != agent_id.to_string() {\n            return Err(SupervisorError::Invalid(\n                \"signed supervisor intent agent binding mismatch\".to_string(),\n            ));\n        }\n        slot.signed_intent = Some(intent.clone());\n        if matches!(\n            intent.status,\n            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack\n        ) {\n            return Ok(());\n        }\n\n        // A terminal release transaction is the durable owner witness that the\n        // exact signed transition crossed its lifecycle boundary. This closes"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+          "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+          "sha256": "98ce7286ce2b9680bfb2838ec14e969c2333d7818c7ed14711263a08003e0b48",
+          "first_line": 775,
+          "last_line": 815,
+          "excerpt": "        // Keep the daemon reachable for the status/recovery ceremony while\n        // quarantining this Agent generation. Ordinary mutation admission is\n        // blocked until the signed intent reaches a terminal state.\n        let recovery = if intent.status == SignedIntentStatus::RecoveryRequired {\n            intent\n        } else {\n            intent\n                .with_status(SignedIntentStatus::RecoveryRequired)\n                .map_err(|error| SupervisorError::Invalid(error.to_string()))?\n        };\n        write_intent(record.layout.run_root(), &recovery)\n            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;\n        slot.signed_intent = Some(recovery);\n\n        let lifecycle = self.record(agent_id)?.lifecycle;\n        if matches!(\n            lifecycle.lifecycle,\n            AgentLifecycle::Starting | AgentLifecycle::Running | AgentLifecycle::Draining\n        ) {\n            self.transition_without_runtime(\n                agent_id,\n                slot,\n                lifecycle.generation,\n                AgentLifecycle::Failed,\n            )?;\n        }\n        if let Some(runtime) = slot.runtime.as_mut() {\n            // Process adoption may already have fenced and successfully requested\n            // termination. Hydrating the signed-intent fence is not a second kill.\n            let already_requested =\n                runtime.fenced && matches!(runtime.phase, RuntimePhase::Killing);\n            runtime.fenced = true;\n            if !already_requested {\n                runtime\n                    .process\n                    .kill()\n                    .map_err(|error| crate::runtime::driver_error(agent_id, error))?;\n                runtime.phase = RuntimePhase::Killing;\n            }\n        }\n        Ok(())"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/bin/hepta-supervisor-intent-recovery.rs",
+          "git_blob": "305f4b397bcd6125a78a5d32f093ce6cee28f41b",
+          "sha256": "c78b50498837419f2ee153850a07dd2a9feba6bf775510dae0e1a3c007a3d003",
+          "first_line": 28,
+          "last_line": 60,
+          "excerpt": "            let intent = read_signed_intent(&run_root)?\n                .context(\"no signed supervisor intent exists at this run root\")?;\n            println!(\"{}\", serde_json::to_string_pretty(&intent)?);\n        }\n        \"abort\" => {\n            let expected_digest = args\n                .next()\n                .and_then(|value| value.into_string().ok())\n                .context(\"abort requires the exact intent-sha256 shown by inspect\")?;\n            if args.next().is_some() {\n                bail!(\"abort accepts <run-root> <intent-sha256>\");\n            }\n            let intent = read_signed_intent(&run_root)?\n                .context(\"no signed supervisor intent exists at this run root\")?;\n            if !matches!(\n                intent.status,\n                SignedIntentStatus::Prepared\n                    | SignedIntentStatus::Queued\n                    | SignedIntentStatus::RecoveryRequired\n            ) {\n                bail!(\n                    \"signed supervisor intent is already terminal: {:?}\",\n                    intent.status\n                );\n            }\n            if intent.intent_sha256.as_str() != expected_digest {\n                bail!(\"intent digest changed; inspect again before issuing an abort directive\");\n            }\n            let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)?;\n            write_signed_intent_recovery_directive(&run_root, &directive)?;\n            println!(\"{}\", serde_json::to_string_pretty(&directive)?);\n        }\n        _ => bail!(\"unknown command {command:?}; expected inspect or abort\"),"
+        }
+      ]
+    },
+    {
+      "id": "owner_proof_not_shared",
+      "severity": "blocking",
+      "summary": "Only daemon startup holds SingleInstanceLock and daemon RPC/tick mutex; Supervisor public recovery and raw Fleet mutation APIs do not carry an owner capability. The single-file lifecycle CAS does not serialize the complete abort snapshot.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+          "git_blob": "eed817dcac736beded62ad83c2cbb908936370e4",
+          "sha256": "aaf780f945bf45b9a0e6442c22fdee06f2c953efcc968d61141efe61b25bce16",
+          "first_line": 193,
+          "last_line": 211,
+          "excerpt": "        )));\n    }\n    let layout = registry.layout().clone();\n    let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;\n    let driver =\n        UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;\n    let (supervisor, recovery) = Supervisor::recover(\n        registry.clone(),\n        driver,\n        SupervisorConfig::local_default(),\n        Instant::now(),\n    )?;\n    let state = Arc::new(DaemonState {\n        registry,\n        supervisor: Mutex::new(supervisor),\n        supervisor_epoch: SupervisorEpoch::new(),\n        production_grant_verifier,\n        observed_faults: AtomicU64::new(recovery.faults.len() as u64),\n    });"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+          "git_blob": "eed817dcac736beded62ad83c2cbb908936370e4",
+          "sha256": "aaf780f945bf45b9a0e6442c22fdee06f2c953efcc968d61141efe61b25bce16",
+          "first_line": 1324,
+          "last_line": 1363,
+          "excerpt": "#[cfg(unix)]\nstruct SingleInstanceLock {\n    file: File,\n}\n\n#[cfg(unix)]\nimpl SingleInstanceLock {\n    fn acquire(path: &Path) -> Result<Self, SupervisorError> {\n        let mut file = OpenOptions::new()\n            .create(true)\n            .read(true)\n            .write(true)\n            .truncate(false)\n            .open(path)?;\n        set_lock_owner_only(path)?;\n        // SAFETY: flock only operates on this live File descriptor with fixed flags.\n        if unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) } == -1 {\n            let error = std::io::Error::last_os_error();\n            return Err(SupervisorError::Io(std::io::Error::new(\n                ErrorKind::AddrInUse,\n                format!(\"another supervisord owns {}: {error}\", path.display()),\n            )));\n        }\n        file.set_len(0)?;\n        file.seek(SeekFrom::Start(0))?;\n        writeln!(file, \"{}\", std::process::id())?;\n        file.sync_all()?;\n        Ok(Self { file })\n    }\n}\n\n#[cfg(unix)]\nimpl Drop for SingleInstanceLock {\n    fn drop(&mut self) {\n        // SAFETY: unlocks the same live File descriptor acquired above.\n        let _ = unsafe { libc::flock(self.file.as_raw_fd(), libc::LOCK_UN) };\n    }\n}\n\n#[cfg(unix)]"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+          "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+          "sha256": "98ce7286ce2b9680bfb2838ec14e969c2333d7818c7ed14711263a08003e0b48",
+          "first_line": 46,
+          "last_line": 80,
+          "excerpt": "/// Lifecycle-only controller with one process handle and bounded buffers per agent.\npub struct Supervisor<D: ProcessDriver> {\n    pub(crate) registry: FleetRegistry,\n    pub(crate) driver: D,\n    pub(crate) config: SupervisorConfig,\n    slots: BTreeMap<AgentId, AgentSlot<D::Process>>,\n}\n\n#[cfg(test)]\n#[path = \"supervisor_tests.rs\"]\nmod tests;\n\nimpl<D: ProcessDriver> Supervisor<D> {\n    pub fn recover(\n        registry: FleetRegistry,\n        driver: D,\n        config: SupervisorConfig,\n        now: Instant,\n    ) -> Result<(Self, TickReport), SupervisorError> {\n        config.validate()?;\n        let snapshot = registry.load()?;\n        let slots = snapshot\n            .agents\n            .keys()\n            .cloned()\n            .map(|agent_id| (agent_id, AgentSlot::new(&config)))\n            .collect();\n        let mut supervisor = Self {\n            registry,\n            driver,\n            config,\n            slots,\n        };\n        let mut report = TickReport::default();\n        for (agent_id, record) in snapshot.agents {"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/registry.rs",
+          "git_blob": "b17115eb5cffff5f890f34a786534c588d0d3aa5",
+          "sha256": "714b160817bf07b71d11af569a6849769395df00b3769988898e7aff29880753",
+          "first_line": 48,
+          "last_line": 54,
+          "excerpt": "\n/// Durable registry for one supervisor. Agents never write this control model.\n#[derive(Clone, Debug)]\npub struct FleetRegistry {\n    layout: HeptaFleetLayout,\n}\n"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/registry.rs",
+          "git_blob": "b17115eb5cffff5f890f34a786534c588d0d3aa5",
+          "sha256": "714b160817bf07b71d11af569a6849769395df00b3769988898e7aff29880753",
+          "first_line": 183,
+          "last_line": 209,
+          "excerpt": "    pub fn compare_and_transition(\n        &self,\n        agent_id: &AgentId,\n        expected_generation: u64,\n        requested: AgentLifecycle,\n    ) -> Result<AgentLifecycleState, FleetRegistryError> {\n        let current = self.load_agent(agent_id)?.lifecycle;\n        if current.generation != expected_generation {\n            return Err(FleetRegistryError::StaleGeneration {\n                agent_id: agent_id.clone(),\n                expected: expected_generation,\n                current: current.generation,\n            });\n        }\n        let next = current.successor(requested)?;\n        let layout = self.layout.agent(agent_id);\n        match publish_lifecycle(layout.run_root(), &next)? {\n            PublishOutcome::Published => Ok(next),\n            PublishOutcome::AlreadyExists => {\n                let actual = self.load_agent(agent_id)?.lifecycle.generation;\n                Err(FleetRegistryError::StaleGeneration {\n                    agent_id: agent_id.clone(),\n                    expected: expected_generation,\n                    current: actual,\n                })\n            }\n        }"
+        }
+      ]
+    },
+    {
+      "id": "intent_publish_lacks_expected_version_guard",
+      "severity": "blocking",
+      "summary": "Intent write validates a current same-grant constraint then atomically replaces; no protected compare of exact current intent digest at commit. Directive write is separately exported and unguarded. Atomic file replacement alone does not make a multi-file state check atomic.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_intent.rs",
+          "git_blob": "a48cd70d219c54f0cf753a8966d61169341f3696",
+          "sha256": "32266fdff012ac2ab6659d5aa95c6de46097fdd80c75926cab6bec78d976135c",
+          "first_line": 244,
+          "last_line": 277,
+          "excerpt": "/// Atomically publishes one intent after synchronizing its file. Unix fsyncs\n/// the containing directory; Windows uses a same-directory write-through\n/// replacement. An unresolved non-terminal intent cannot be overwritten.\npub fn write_intent(\n    run_root: &Path,\n    intent: &SignedSupervisorIntent,\n) -> Result<(), SignedIntentError> {\n    intent.validate()?;\n    if let Some(existing) = read_intent(run_root)?\n        && matches!(\n            existing.status,\n            SignedIntentStatus::Prepared\n                | SignedIntentStatus::Queued\n                | SignedIntentStatus::RecoveryRequired\n        )\n        && existing.grant_sha256 != intent.grant_sha256\n    {\n        return Err(SignedIntentError::Invalid(\n            \"another signed supervisor intent is unresolved\".to_string(),\n        ));\n    }\n    write_atomic_json(run_root, SIGNED_INTENT_FILE, intent)\n}\n\n/// Publishes an explicit operator recovery directive bound to one exact intent\n/// digest. The directive never asserts successful completion; the only\n/// repository-controlled recovery action is fail-closed abort.\npub fn write_recovery_directive(\n    run_root: &Path,\n    directive: &SignedIntentRecoveryDirective,\n) -> Result<(), SignedIntentError> {\n    directive.validate()?;\n    write_atomic_json(run_root, SIGNED_INTENT_RECOVERY_FILE, directive)\n}"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_intent.rs",
+          "git_blob": "a48cd70d219c54f0cf753a8966d61169341f3696",
+          "sha256": "32266fdff012ac2ab6659d5aa95c6de46097fdd80c75926cab6bec78d976135c",
+          "first_line": 279,
+          "last_line": 304,
+          "excerpt": "fn write_atomic_json<T: Serialize>(\n    run_root: &Path,\n    file_name: &str,\n    value: &T,\n) -> Result<(), SignedIntentError> {\n    std::fs::create_dir_all(run_root)?;\n    let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);\n    let nanos = SystemTime::now()\n        .duration_since(SystemTime::UNIX_EPOCH)\n        .map_err(|_| SignedIntentError::Invalid(\"system clock before epoch\".to_string()))?\n        .as_nanos();\n    let temp = run_root.join(format!(\".{file_name}.{nanos}.{sequence}.tmp\"));\n    let final_path = run_root.join(file_name);\n    let bytes = serde_json::to_vec(value)?;\n    let mut file = OpenOptions::new()\n        .write(true)\n        .create_new(true)\n        .open(&temp)?;\n    file.write_all(&bytes)?;\n    file.sync_all()?;\n    drop(file);\n    publish::publish(&temp, &final_path)?;\n    Ok(())\n}\n\n#[cfg(test)]"
+        }
+      ]
+    },
+    {
+      "id": "matrix_kill_is_not_exit_evidence",
+      "severity": "blocking",
+      "summary": "The non-exact adopted Matrix recovery branch calls kill then removes lease/drops handle without observed exit. Absence of runtime/lease after this branch cannot satisfy the safe-abort no-live-process premise.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+          "git_blob": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+          "sha256": "021fd2d4cef0a765e651676a7efd06a58dc77f7932d184001d1ade8cf09b3bed",
+          "first_line": 340,
+          "last_line": 360,
+          "excerpt": "                    SupervisorEventKind::MatrixOrphanAdopted,\n                );\n            }\n            Adoption::Adopted(mut process) => {\n                process\n                    .kill()\n                    .map_err(|error| driver_error(agent_id, error))?;\n                remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;\n                self.degrade_matrix(\n                    agent_id,\n                    slot,\n                    record.lifecycle.generation,\n                    \"Matrix orphan was attached to a non-running agent generation\".to_string(),\n                    now,\n                );\n                slot.event(\n                    record.lifecycle.generation,\n                    SupervisorEventKind::MatrixOrphanRejected,\n                );\n            }\n            Adoption::Missing => {"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/driver.rs",
+          "git_blob": "290a1c2d0324868c649df6945b73ea1b74a85c1d",
+          "sha256": "aa6349e8b868ed07e0271f6c4045a2e98099dd6a81880eb06c79f4290d18a32b",
+          "first_line": 79,
+          "last_line": 89,
+          "excerpt": "}\n\n/// One independently controlled agent child.\n///\n/// Every method must return promptly and must never wait for process exit or health.\npub trait ManagedProcess: Send {\n    fn poll(&mut self, max_logs: usize) -> Result<ProcessObservation, ProcessDriverError>;\n    fn request_drain(&mut self) -> Result<(), ProcessDriverError>;\n    fn request_stop(&mut self) -> Result<(), ProcessDriverError>;\n    fn kill(&mut self) -> Result<(), ProcessDriverError>;\n}"
+        }
+      ]
+    },
+    {
+      "id": "aborted_terminal_shortcut_can_drop_independent_fence",
+      "severity": "blocking_for_proposed_shortcut",
+      "summary": "Do not unconditionally add Aborted to early terminal statuses: the ordinary daemon gate reads only production_recovery_required while explicit Start and lower start_release_slot do not independently check unresolved release transactions. Internal target startup must remain distinct from explicit Start.",
+      "sources": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+          "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+          "sha256": "98ce7286ce2b9680bfb2838ec14e969c2333d7818c7ed14711263a08003e0b48",
+          "first_line": 287,
+          "last_line": 315,
+          "excerpt": "    }\n\n    #[cfg(unix)]\n    pub(crate) fn preflight_start(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {\n        let record = self.record(agent_id)?;\n        let slot = self\n            .slots\n            .get(agent_id)\n            .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;\n        if slot.runtime.is_some() {\n            return Err(SupervisorError::AlreadyActive(agent_id.clone()));\n        }\n        if crate::lease::read_lease(record.layout.run_root())?.is_some() {\n            return Err(SupervisorError::UnresolvedLease(agent_id.clone()));\n        }\n        if !matches!(\n            record.lifecycle.lifecycle,\n            AgentLifecycle::Stopped | AgentLifecycle::Failed\n        ) {\n            return Err(SupervisorError::Invalid(format!(\n                \"agent {agent_id} cannot start from {:?}\",\n                record.lifecycle.lifecycle\n            )));\n        }\n        Ok(())\n    }\n\n    #[cfg(unix)]\n    pub(crate) fn preflight_stop_or_kill(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+          "git_blob": "529b16dfa8e8ba0d192bedd17b4d6698e0dc3e3c",
+          "sha256": "c5e93d67fbe8aa1e7d5276721247a46354fc8b6f159534e314d210ce8d888e50",
+          "first_line": 91,
+          "last_line": 132,
+          "excerpt": "    pub(crate) fn start_slot(\n        &mut self,\n        agent_id: &AgentId,\n        slot: &mut AgentSlot<D::Process>,\n        command: AgentCommand,\n        now: Instant,\n    ) -> Result<(), SupervisorError> {\n        self.start_release_slot(agent_id, slot, AgentRelease::unversioned(command)?, now)\n    }\n\n    pub(crate) fn start_release_slot(\n        &mut self,\n        agent_id: &AgentId,\n        slot: &mut AgentSlot<D::Process>,\n        release: AgentRelease,\n        now: Instant,\n    ) -> Result<(), SupervisorError> {\n        let health_deadline = deadline(now, self.config.health_timeout)?;\n        if slot.runtime.is_some() {\n            return Err(SupervisorError::AlreadyActive(agent_id.clone()));\n        }\n        let record = self.record(agent_id)?;\n        if read_lease(record.layout.run_root())?.is_some() {\n            return Err(SupervisorError::UnresolvedLease(agent_id.clone()));\n        }\n        if !matches!(\n            record.lifecycle.lifecycle,\n            AgentLifecycle::Stopped | AgentLifecycle::Failed\n        ) {\n            return Err(SupervisorError::Invalid(format!(\n                \"agent {agent_id} cannot start from {:?}\",\n                record.lifecycle.lifecycle\n            )));\n        }\n        let starting = self.registry.compare_and_transition(\n            agent_id,\n            record.lifecycle.generation,\n            AgentLifecycle::Starting,\n        )?;\n        slot.event(\n            starting.generation,\n            SupervisorEventKind::Lifecycle(AgentLifecycle::Starting),"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+          "git_blob": "eed817dcac736beded62ad83c2cbb908936370e4",
+          "sha256": "aaf780f945bf45b9a0e6442c22fdee06f2c953efcc968d61141efe61b25bce16",
+          "first_line": 775,
+          "last_line": 794,
+          "excerpt": "        return error_payload(\n            \"stale_control_fence\",\n            \"selected Agent changed; refresh before retry\",\n            Some(actual),\n        );\n    }\n    match supervisor.production_recovery_required(&agent_id) {\n        Ok(true) if operation != SupervisordMutation::Kill => {\n            return error_payload(\n                \"signed_intent_recovery_required\",\n                \"this Agent has a quarantined production mutation; only status, recovery, or emergency kill is allowed\",\n                Some(actual),\n            );\n        }\n        Ok(_) => {}\n        Err(error) => {\n            return safe_rejection(error, Some(actual), /*mutation_started*/ false);\n        }\n    }\n    if state.production_grant_verifier.is_some()"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+          "git_blob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+          "sha256": "98ce7286ce2b9680bfb2838ec14e969c2333d7818c7ed14711263a08003e0b48",
+          "first_line": 817,
+          "last_line": 839,
+          "excerpt": "\n    pub fn production_recovery_required(\n        &self,\n        agent_id: &AgentId,\n    ) -> Result<bool, SupervisorError> {\n        let slot = self\n            .slots\n            .get(agent_id)\n            .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;\n        Ok(slot\n            .signed_intent\n            .as_ref()\n            .is_some_and(|intent| intent.status == SignedIntentStatus::RecoveryRequired))\n    }\n\n    pub fn any_production_recovery_required(&self) -> bool {\n        self.slots.values().any(|slot| {\n            slot.signed_intent\n                .as_ref()\n                .is_some_and(|intent| intent.status == SignedIntentStatus::RecoveryRequired)\n        })\n    }\n"
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "source_count": 25,
+    "all_source_git_blobs_verified": true,
+    "witness_command": "python3 audit_abort_interleaving.py --source-tree original --identities SOURCE_IDENTITIES.json --output TOCTOU_WITNESSES.json",
+    "witness_exit_code": 0,
+    "witness_result": "2 deterministic counterexamples and 1 working single-generation CAS control",
+    "witness_scope": "Real temporary-filesystem hard_link, atomic replace and fsync; explicitly synthetic JSON records and schedules. No native Supervisor, JSON schema, process termination, activated-abort or deployment claim.",
+    "native_tests": "not run for this read-only review; no product patch activated"
+  },
+  "independent_review": {
+    "agent": "/root/architecture_comparison",
+    "confirmed": [
+      "25 of 25 exact source Git blobs",
+      "FleetRegistry lacks cross-record owner guard",
+      "Aborted shortcut does not preserve Start/release fence",
+      "Matrix kill-success is not process-exit evidence"
+    ],
+    "scope": "read-only exact-source audit, no native execution"
+  },
+  "required_next_stage": "OWNER_RECOVERY_DESIGN.md and WRITER_INVENTORY.json; coherent owner lifetime, protected writers, versioned abort snapshot, retained process exit evidence, independent mutation admission, then original native and crash-cut validation.",
+  "related_three_failure_repair": {
+    "mapping": "/tmp/hcsn-r15-supervisor-review/PUBLICATION_FILES.json",
+    "mapping_sha256": "cba7a15c5b29721d9d5c56aad816a88d68488dd64ebba4075dc4b5f69190523d",
+    "patch_sha256": "d0d6e5c35f7fdc52a5d0d885e1ea1ffa3a4f03ed8fb2071b54e050df7103c026",
+    "status": "source patch delivered separately; does not include signed abort"
+  },
+  "provenance_note": "An extra trailing newline in the later-added daemon/lease copies under the earlier supervisor-review scratch directory was corrected from the verified connector bytes. Those files were not included in the previously frozen three-failure patch identity set. This package verifies all 25 files from the separate abort-review source tree.",
+  "artifacts": [
+    {
+      "path": "SOURCE_IDENTITIES.json",
+      "sha256": "cf7b2a8e7125f859bf0857f474bf73d7545c1f1f67c391a298709620f4f2c6bf",
+      "bytes": 10542
+    },
+    {
+      "path": "TOCTOU_WITNESSES.json",
+      "sha256": "310bd853f791e1f6e88a640e48024da4774c796ddb2ad538af6a0e4333e8d97d",
+      "bytes": 2168
+    },
+    {
+      "path": "WRITER_INVENTORY.json",
+      "sha256": "9c8f77e8afc8fba62474c1cbc1a8eebb8fb863d29c27cd9aa4f23eb90d565ced",
+      "bytes": 30778
+    },
+    {
+      "path": "OWNER_RECOVERY_DESIGN.md",
+      "sha256": "86f33521a4da31cb1916bf99904d7a88d9d0234560a41621e8514d113498f31d",
+      "bytes": 10582
+    },
+    {
+      "path": "audit_abort_interleaving.py",
+      "sha256": "3ba2c23390f4c80729dbe533599a6b87b19e549fd1ee4d95cf741dfb83ee4243",
+      "bytes": 6280
+    }
+  ]
+}

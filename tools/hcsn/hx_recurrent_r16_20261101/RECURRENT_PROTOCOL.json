@@ -1,0 +1,91 @@
+{
+  "schema": "hcsn.hx-recurrent-protocol.v1",
+  "frozen_at_utc": "2026-11-01T17:39:46.257237+00:00",
+  "status_at_freeze": "No recurrent kernel evaluation, trajectory, gradient audit or training output has been opened.",
+  "scope": "Bounded functional proof of an actual finite-maturity H-X value readout and 16-step explicit Euler first-order BPTT. Not a new financial holdout, population benchmark or analytic temporal solution.",
+  "dependencies": {
+    "adapter_protocol_sha256": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+    "adapter_source_sha256": "8117df2cae6b17612d7537b96d72ca74a340bb5356e61bbc3f73b9fe478aa870",
+    "financial_protocol_sha256": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+    "financial_binary_sha256": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+    "financial_mode": "float64",
+    "adapter_version": "V3 explicit create_graph rejection"
+  },
+  "source_sha256": {
+    "recurrent.py": "bd8f9fcc4fc10f36088d9bd98e55a598d79e0c653aacbe5caaced2406b0c614d",
+    "recurrent_common.py": "ade8f72b9dc1160778705eaeb6dac7c2302ebabe299de182d66aba4b23796ce9",
+    "audit_recurrent.py": "b437b2233ede3a4829f931df290763eb73c084266e4fe820f31f1f566b0704fb",
+    "train_recurrent.py": "41bd77e742719e774e2fd050ec923ea721e715c793706e10f91ca5448120cb7c",
+    "freeze_recurrent.py": "5b2062397a552efa3a34ed40c6b020900c478780a56ab5e80e0abc9893a9125c",
+    "README.md": "39eed2fd43c970ea5967f5e8fea1b992c0b4d6406695911a02adb7a31ae6ab9e",
+    "requirements.txt": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+  },
+  "inputs_sha256": "3a116df6012930de71c44747838d7ab077e4e6bc41c30f493cce523846658793",
+  "cell": {
+    "steps": 16,
+    "dt": 0.05,
+    "leak": 0.5,
+    "k_equity": 0.15,
+    "k_risk": 0.04,
+    "tau": 0.4,
+    "theta_fraction": 0.03
+  },
+  "training": {
+    "updates": 12,
+    "batch_size": 8,
+    "optimizer": "torch.optim.Adam with default betas/epsilon and no weight decay",
+    "learning_rate": 0.02,
+    "trainable_parameters": "one shared 9-vector raw_theta; theta=base*(1+0.03*tanh(raw_theta)); no output head or trainable gains",
+    "loss": "mean((x_T-target_x)^2)+0.25*mean((a_T-target_a)^2)",
+    "loss_decrease_is_gate": false
+  },
+  "gates": {
+    "gradient_atol": 2e-09,
+    "gradient_rtol": 2e-05,
+    "linear_state_gradient_atol": 2e-06,
+    "nonzero_gradient_floor": 1e-12,
+    "max_abs_x": 0.2,
+    "max_adaptation": 0.08,
+    "range_tolerance": 1e-10,
+    "minimum_sampled_phase_changes": 1,
+    "required_signed_fixtures": 5,
+    "required_contract_checks": 13,
+    "required_temporal_comparisons": 8,
+    "no_nonfinite_or_rejected_rows_discarded": true
+  },
+  "precision_contract": [
+    "Only finite CPU torch.float32 theta, x, adaptation and drive inputs.",
+    "Frozen actual financial kernel evaluates five fields and all ten Jacobian columns in FP64 at represented FP32 words.",
+    "Signed Q/R outputs are FP64; explicit FP32 conversion precedes the FP32 Euler state update. VJP returns FP32.",
+    "Analytic Jacobians of the underlying continuous formulas at represented values, as ordinary floating AD; not derivatives of the quantization map.",
+    "Only first-order reverse mode; V3 rejects create_graph=True. BPTT composes first-order local Jacobians."
+  ],
+  "boundary_contract": [
+    "Original log_distance requires x>=0 and x=0 right derivatives; unchanged.",
+    "New signed neural readout uses original call at max(x,0) and explicit Q=0,R=1 for x<=0, retaining unclamped x.",
+    "Negative/zero Q,R local theta/state derivatives are zero; x has state derivative 1 and theta derivative 0.",
+    "Signed extension outputs only Q,R,x; raw F/G/debt at clamped zero are never represented as negative-x asset default outputs.",
+    "Joint C1 requires regular positive boundary and the ideal smooth-pasting model. No C2 force or F/G C1 claim."
+  ],
+  "temporal_contract": [
+    "All updates use old states; no hard reset, clipping or binary spike output.",
+    "Normal graph has no state detach. Explicit detach_state mode is only a diagnostic negative control.",
+    "Only terminal loss for temporal credit audit; separate theta_t clones expose per-step financial contribution.",
+    "Manual reverse composition uses raw kernel Jacobians, Q quotient rule and R chain, independently of the PyTorch recurrence graph.",
+    "All-negative control has exactly zero direct theta sensitivity; prior positive history can still propagate through later negative states.",
+    "Sampled phase changes are discrete forced-trajectory observations, not limit-cycle, stability or continuous-time event proofs."
+  ],
+  "excluded_claims": [
+    "Financial F/R calibration under the new feedback process",
+    "analytic recurrent flow",
+    "event sparsity or reset/refractory closure",
+    "GPU or speed advantage",
+    "biological validity",
+    "generalization or multimodal quality advantage",
+    "second-order derivatives"
+  ],
+  "exit_semantics": {
+    "audit_recurrent.py": "0 only if all frozen checks pass; any exception/gate failure is nonzero; create-only full receipt.",
+    "train_recurrent.py": "0 only for complete finite 12-update history and genuine bounded parameter update; loss decrease is not required."
+  }
+}

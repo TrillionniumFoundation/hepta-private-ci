@@ -1,0 +1,65 @@
+{
+  "schema": "hcsn.windows-clippy-platform-candidate-review.v1",
+  "recorded_at_utc": "2026-11-01T18:58:41.971815+00:00",
+  "head_sha": "8df6e272e3a31a3fae0491dd2d511825e212290c",
+  "candidate_path": ".github/workflows/bazel.yml",
+  "baseline_git_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c",
+  "candidate_sha256": "4bf5b7b9211d0943eda0df95dc966a3ab7371f0ffa5215db4e7c462eba8a5053",
+  "patch_sha256": "5206d22815fcd30430c05ce549d180cde314b9e5ed5d82e19b071e5f453f58dd",
+  "scope": {
+    "changed_files": 1,
+    "added_lines": 3,
+    "deleted_lines": 0,
+    "platform": "Windows/MSVC Clippy only",
+    "target_roster_unchanged": true,
+    "constraints_unchanged": true,
+    "test_scope_and_assertions_unchanged": true,
+    "lint_levels_unchanged": true,
+    "macos_parameters_unchanged": true,
+    "scientific_sources_unchanged": true
+  },
+  "real_bazel_proof": {
+    "version": "9.0.0",
+    "binary_official_url": "https://releases.bazel.build/9.0.0/release/bazel-9.0.0-linux-x86_64",
+    "binary_sha256": "c44a93f25398c68f904fa1d19b61d321de6c0d2f09dca375d7bc0dc9b9428403",
+    "verified_official_checksum": true,
+    "receipt_sha256": "1e01e4ff916290a8bcb7c1dcd1aeaf3e370e29ac4442be3ad636c8eff0c563bb",
+    "passed_cases": 5,
+    "actual_exit_codes": [
+      1,
+      0,
+      1,
+      0,
+      0
+    ],
+    "scope": "Real Bazel 9 compatibility/action behavior on a synthetic Linux-hosted graph; no repository, Windows or Rust build.",
+    "retained_environment_attempts": [
+      "01: sandbox Bazel profiler NetworkMetricsCollector NullPointerException, before target semantics.",
+      "02: authorized ordinary execution reached BCR metadata but bundled Java trust lacked the configured proxy CA.",
+      "03: JAVA_TOOL_OPTIONS trust-store attempt was explicitly ignored by Bazel; TLS remained rejected.",
+      "04: explicit host_jvm_args points to the existing system Java trust store, maintaining TLS verification; all five semantic controls passed."
+    ],
+    "no_tls_verification_disabled": true
+  },
+  "workflow_wiring": {
+    "receipt_sha256": "697974027f043f048cce642ced0cded5062136f52bfb08836eb334a417d3ad5d",
+    "platforms": 3,
+    "actual_workflow_bash_commands": 6,
+    "labels_preserved_per_command": 161,
+    "labels_scope": "157 exact failed labels plus four explicitly synthetic package/compatible-helper examples",
+    "compatible_wrapper_failure_exit_code_preserved": 37,
+    "scope": "Actual Bash command construction with clearly identified query/wrapper argument-capture doubles; not a native compile."
+  },
+  "format_and_static": {
+    "receipt_sha256": "ba9c2ab2ddc8771733d471f4733fb0a749dc1935ef9d3c8d6f159ae4433ac775",
+    "prettier_exit_code": 0,
+    "actual_just_fmt_exit_code": 0,
+    "git_diff_check_exit_code": 0,
+    "actionlint_baseline_exit_code": 1,
+    "actionlint_candidate_exit_code": 1,
+    "actionlint_findings": "Same two inherited matrix.runs_on undefined-property findings in both files; no new finding. This is not an actionlint-zero claim."
+  },
+  "independent_review_sha256": "6600e96697040c790c930150476429a5a5a80d8893df56c9b82673f9d70ee7fb",
+  "admission": "Ready for parent review and a separate focused commit. Full new-head Windows Clippy remains an explicit remote gate; no repository-native or remote pass is claimed.",
+  "passed_scoped_validation": true
+}

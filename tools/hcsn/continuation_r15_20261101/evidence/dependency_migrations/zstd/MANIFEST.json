@@ -1,0 +1,168 @@
+{
+  "format": "deterministic tar, gzip, raw-byte parts in listed order",
+  "stage": "zstd",
+  "file_count": 27,
+  "files": [
+    {
+      "path": "BAZEL_LOCK_UPDATE.json",
+      "bytes": 434,
+      "sha256": "eedf83fc262fe0f1f339ed779f8cb200ee09842a23793033f4b63020500d2c60"
+    },
+    {
+      "path": "MODULE.bazel.lock.after",
+      "bytes": 1664267,
+      "sha256": "262c7a38d01ba3434670dbdb04c3ebf3fd812ddf8f2561a3bf19e5a7e13fc04a"
+    },
+    {
+      "path": "MODULE.bazel.lock.before",
+      "bytes": 1665883,
+      "sha256": "51aec3b9fcbcf9d1d4b4e03dd875ff393eb1a06ce84902f68ab90b2416312f5f"
+    },
+    {
+      "path": "PROBE.json",
+      "bytes": 1033,
+      "sha256": "27ea4c2e42c1cf0da446f4e3f93b77d93cfc85e071f60b730a931a1c872712ee"
+    },
+    {
+      "path": "STAGE_RECEIPT.json",
+      "bytes": 4583,
+      "sha256": "f5cb7522a8c65b7eb4ee4fb98f787ae815f90ca6be2498ea2e1b991e3f5881c2"
+    },
+    {
+      "path": "STAGE_RECEIPT.json.gz",
+      "bytes": 1783,
+      "sha256": "96139ec473bc9ea18636591aabe4a394d720c8be2729f6afd96bb0f32d12496c"
+    },
+    {
+      "path": "VALIDATION.json",
+      "bytes": 2346,
+      "sha256": "eb2a404d1900bea253783d1eda182a016b5e87fa184f5cffe0a3390ed4504f31"
+    },
+    {
+      "path": "bazel-lock-update.stderr",
+      "bytes": 1812,
+      "sha256": "7b8858579cb3f71140a31edab1009e0bc8fa1096f425a038672a457ffe3e59a3"
+    },
+    {
+      "path": "bazel-lock-update.stdout",
+      "bytes": 18,
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+    },
+    {
+      "path": "cargo-deny.json",
+      "bytes": 395,
+      "sha256": "cf610045bfb0caefc35519605882f61e531361c004240c3acd6d78d3e7436c5c"
+    },
+    {
+      "path": "cargo-deny.stderr",
+      "bytes": 50298,
+      "sha256": "51e5beaf43f6ac6546c67a18bc12247d4d1af96921d7946cf30fa2e4d8052818"
+    },
+    {
+      "path": "cargo-deny.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "compatibility_probe/.config/nextest.toml",
+      "bytes": 28,
+      "sha256": "e0cd5e8a4d5d3efbe06962006a1ff00f9bc2a917ec95098c24d116b5d22d16ed"
+    },
+    {
+      "path": "compatibility_probe/Cargo.lock",
+      "bytes": 3711,
+      "sha256": "0edd2554ab214d54faee4b0c8dad16c4e6c2b99333b14bb694f84035435c8f5a"
+    },
+    {
+      "path": "compatibility_probe/Cargo.toml",
+      "bytes": 260,
+      "sha256": "2ea540c672e9dc7cd5229eef49087f4ed484f7a1c4bd9943a2e6537a55a80249"
+    },
+    {
+      "path": "compatibility_probe/src/lib.rs",
+      "bytes": 1811,
+      "sha256": "3655c846868aac13228d90f732d90f9c81cf09b9e6d046b9cb9f3388c7ad8e03"
+    },
+    {
+      "path": "metadata.json",
+      "bytes": 280,
+      "sha256": "6e3c4d0724a2a3a71cf6990ec00125bf39a97d3e7d2ffdcc0376634929314858"
+    },
+    {
+      "path": "metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "metadata.stdout",
+      "bytes": 8102026,
+      "sha256": "f5b6404d6c334678db19e253a8dab49a925a7f4e3405fd8a3c0d20ce9e89fab8"
+    },
+    {
+      "path": "probe-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "probe-metadata.stdout",
+      "bytes": 58805,
+      "sha256": "c10f30e4c1d3567a4b1b934497a02fa2f1565cac301a20fa24d7d3c5acd8e842"
+    },
+    {
+      "path": "probe-test.stderr",
+      "bytes": 1080,
+      "sha256": "7a486e6efa12c7ddf05e28472ee9b98b858b134e1a5a0328a901b744c5762ac2"
+    },
+    {
+      "path": "probe-test.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "update_zstd_0.13.3.json",
+      "bytes": 266,
+      "sha256": "c09a59f47f1fc8747b3b0f9888806fe5ec55001f4a991e3e9d107c5b5bdbb2ae"
+    },
+    {
+      "path": "update_zstd_0.13.3.stderr",
+      "bytes": 127,
+      "sha256": "d71778c567473fd7d9223be8545ac29418c2b0b268f84c5e9d4e7f4d481d8a73"
+    },
+    {
+      "path": "update_zstd_0.13.3.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "zstd.patch",
+      "bytes": 9291,
+      "sha256": "a865e7b1b0b077a122ede3df5c46b7a910ba8d15cf85f11cb47fd9b038c2720b"
+    }
+  ],
+  "tar_bytes": 11591680,
+  "tar_sha256": "65fed884acbf494f2e33f6946e6018597f07f5f194558dfcf1efa93294dd80d5",
+  "gzip_bytes": 1039439,
+  "gzip_sha256": "5c2c13e5d06d748f260ba449825433ccaff54de7c440587825e713f9ed347a62",
+  "parts": [
+    {
+      "path": "zstd_evidence.tar.gz.part001",
+      "bytes": 480000,
+      "sha256": "a70ca1e49f5a1bec88df4f8b2d001dd440e3ea46efebe7fb213a5ec4a1322d20"
+    },
+    {
+      "path": "zstd_evidence.tar.gz.part002",
+      "bytes": 480000,
+      "sha256": "f1f80774104c21979cc1330a880af097d6081fe1a93c84e2e613ab4bc2f91d1a"
+    },
+    {
+      "path": "zstd_evidence.tar.gz.part003",
+      "bytes": 79439,
+      "sha256": "275f5c5aa7ddb4b2aceedc9e54d73951a670f5d492524fafc54c3ba1dbd7b42c"
+    }
+  ],
+  "max_part_bytes": 480000,
+  "includes": "Raw Cargo metadata and deny outputs, all recorded failure/success receipts and logs, Bazel lock before/after, stage patch, native probe source/manifest/lock/config.",
+  "excludes": "Tool executables, build targets, Cargo/Bazel caches, credentials.",
+  "historical_source_reconstruction": null,
+  "latest_remote_log_reproduced": false
+}

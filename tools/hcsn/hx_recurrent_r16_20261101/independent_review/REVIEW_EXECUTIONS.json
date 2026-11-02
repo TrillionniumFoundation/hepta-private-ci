@@ -1,0 +1,20 @@
+{
+  "schema": "hcsn.independent-review-executions.v1",
+  "first_schema_reader_failure": {
+    "chunk_id": "7b7d42",
+    "wall_time_seconds": 0.231867152,
+    "exit_code": 1,
+    "original_token_count": 65,
+    "output": "Traceback (most recent call last):\n  File \"/tmp/hcsn-recurrent-independent-review/review_recurrent_records.py\", line 49, in <module>\n    need(execution['returncode'] == 0, 'Original execution nonzero')\n         ~~~~~~~~~^^^^^^^^^^^^^^\nKeyError: 'returncode'\n"
+  },
+  "corrected_reader_execution": {
+    "chunk_id": "e65e76",
+    "wall_time_seconds": 0.211860366,
+    "exit_code": 0,
+    "original_token_count": 176,
+    "output": "{\"passed\": true, \"receipt\": \"/tmp/hcsn-recurrent-independent-review/RECURRENT_RESULT_INDEPENDENT_REVIEW.json\", \"sha256\": \"e4fdafb22cc84339705a0be9da54495b50bff67120497eaf150e05e8b29572ea\", \"counts\": {\"signed_fixtures\": 5, \"contracts\": 13, \"temporal_comparisons\": 8, \"steps\": 16, \"batch\": 8, \"training_updates\": 12, \"changed_raw_theta_entries\": 9, \"changed_effective_theta_entries\": 9, \"full_recorded_trajectories_checked\": 16}, \"loss\": {\"initial\": 0.0004702643782366067, \"final\": 0.0004702617588918656, \"absolute_decrease\": 2.6193447411060333e-09, \"percentage_decrease\": 0.0005569940787197256, \"interpretation\": \"Nearly unchanged training loss; no optimization-effectiveness or generalization claim.\"}}\n"
+  },
+  "candidate_or_gate_modified": false,
+  "financial_kernel_calls": 0,
+  "pytorch_calls": 0
+}

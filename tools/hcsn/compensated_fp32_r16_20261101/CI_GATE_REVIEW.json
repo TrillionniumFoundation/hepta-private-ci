@@ -1,0 +1,100 @@
+{
+  "schema": "hcsn.r16.ci-result-gate-review.v2",
+  "verifier_sha256": "a5e870b00251618d0fe66d4e90b726571688aa6df0652c3c3114fbb3a2c70872",
+  "scope": "Independent enforcement around frozen diagnostic writers; no candidate or tolerance modification. Frozen V1 input order and references are bound to archived results.",
+  "valid_result": {
+    "primitive_checks": 701,
+    "development": {
+      "rows": 432,
+      "max_value_error": 5.665080594681952e-08,
+      "max_jacobian_error": 9.439639804099026e-07
+    },
+    "frozen_v1_regression": {
+      "rows": 512,
+      "max_value_error": 5.718660608053465e-08,
+      "max_jacobian_error": 7.1891889198427705e-06
+    },
+    "scope": "Compensated FP32 finite regression; no new independent confirmation or ordinary FP32 admission"
+  },
+  "checks": [
+    {
+      "name": "complete archived results accepted",
+      "passed": true
+    },
+    {
+      "name": "missing development row",
+      "rejected": true,
+      "reason": "Incomplete financial rows"
+    },
+    {
+      "name": "nonfinite output",
+      "rejected": true,
+      "reason": "Nonfinite result"
+    },
+    {
+      "name": "out of tolerance output with pass flag",
+      "rejected": true,
+      "reason": "Value tolerance failed"
+    },
+    {
+      "name": "missing derivative column",
+      "rejected": true,
+      "reason": "Incomplete numerical vector"
+    },
+    {
+      "name": "reported failed row",
+      "rejected": true,
+      "reason": "Auditor reported a failed row"
+    },
+    {
+      "name": "relaxed tolerance",
+      "rejected": true,
+      "reason": "Financial tolerance changed"
+    },
+    {
+      "name": "nonfinite primitive diagnostic",
+      "rejected": true,
+      "reason": "Primitive error failed"
+    },
+    {
+      "name": "incomplete validation cases",
+      "rejected": true,
+      "reason": "Frozen V1 domain classification changed"
+    },
+    {
+      "name": "empty matching source seals",
+      "rejected": true,
+      "reason": "Validation source or input seal changed"
+    },
+    {
+      "name": "changed validation runner",
+      "rejected": true,
+      "reason": "Validation runner changed"
+    },
+    {
+      "name": "changed validation parameter",
+      "rejected": true,
+      "reason": "Frozen V1 parameters changed"
+    },
+    {
+      "name": "reordered validation rows",
+      "rejected": true,
+      "reason": "Frozen V1 reference values changed"
+    },
+    {
+      "name": "changed validation state",
+      "rejected": true,
+      "reason": "Duplicate V1 input rows"
+    },
+    {
+      "name": "self-consistent changed reference and output",
+      "rejected": true,
+      "reason": "Frozen V1 reference values changed"
+    },
+    {
+      "name": "changed reference derivative",
+      "rejected": true,
+      "reason": "Frozen V1 reference Jacobian changed"
+    }
+  ]
+}

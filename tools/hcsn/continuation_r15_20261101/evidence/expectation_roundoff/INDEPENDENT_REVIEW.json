@@ -1,0 +1,25 @@
+{
+  "schema": "hcsn.expectation-roundoff-independent-review.v1",
+  "passed": true,
+  "archive_sha256": "5f334696f298fa3984c782205d55b13dd3ac6e1a8023abc62875301a169c16a6",
+  "archive_member_count_verified": 13,
+  "original_test_sha256": "6b7ef9cc3c5101ec985a153fe311a11b1e9256d797d1a0f99eeaa32edcd44ac6",
+  "candidate_test_sha256": "540c6958252387d1df7a8e4614c67cf90fa5146e63d6c6c493812afea302444a",
+  "original_remote_log_sha256": "6cb14be247fca06b5ebdaf9fd07bdeb97d57bbbd93629dfb33590ead0cc8ba19",
+  "raw_remote_log_bytes": 39480,
+  "regression_record_sha256": "5ff5ea6dcc6d9a020fac288407d23dae1684e66acda81e8ff582b3aab3204c6d",
+  "source_diff_review": "Only one tuple assertion replaced: first_action stays exact; reads/resets floating expectations use rtol0 and absolute16float64eps. Existing utility/reward/fee/elapsed/actor assertions unchanged.",
+  "algorithm_bytes_equal": true,
+  "preserved_initial_probe_failure": true,
+  "actual_records_reviewed": {
+    "cases": 7,
+    "tests": 17,
+    "expected_red_cases": 4,
+    "original_unperturbed_suite": 6,
+    "patched_unperturbed_suite": 6
+  },
+  "control_scope": "Observed1ULP reads discrepancy is injected at assertion entry: original rejects, patched accepts. Patched rejects +1e-12 in either count and wrong categorical action. No local reproduction of remote matrix accumulation is asserted.",
+  "decision": "Appropriate numeric-expectation test semantics repair. Does not change evaluation algorithm, result normalization, original scientific thresholds or financial/quality qualification.",
+  "reviewer_test_executions": 0,
+  "remote_fix_verified": false
+}

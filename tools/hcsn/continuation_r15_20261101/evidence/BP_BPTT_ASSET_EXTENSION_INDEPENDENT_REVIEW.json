@@ -1,0 +1,34 @@
+{
+  "schema": "hcsn.asset-ci-extension-independent-review.v1",
+  "reviewed_workflow_sha256": "bac8820cb23ff6637c4a692027f2e3d953b00427349567ff42808fc6785e13a4",
+  "blocking_findings": [],
+  "context_fix_retained": true,
+  "original_erroneous_review_correction_sha256": "140055ad4da6f4af628af6a1876a0c9e85a86b7029c459267414f4c0ad2f1ed8",
+  "actionlint": {
+    "path": "/tmp/hcsn-bp-ci-tools/actionlint",
+    "version": "1.7.12",
+    "binary_sha256": "c872d6db8c6bf83a8eaa704fc93999f027d55dffbc63b8a6abdccb47df5f4cd4",
+    "actual_returncode": 0,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_stderr": ""
+  },
+  "frozen_component_identity_checks": {
+    "/tmp/hcsn-asset-recurrent-next-v1/ASSET_PROTOCOL.json": "7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa",
+    "/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py": "6bfdadae171d833d32039d892fe26d9687aa9b888351c8a3f19111e68293c369",
+    "/tmp/hcsn-autograd-adapter-v3/ADAPTER_PROTOCOL.json": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+    "/tmp/hcsn-recurrent-next-v1/RECURRENT_PROTOCOL.json": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+    "/tmp/hcsn-compiled-recovery/RECOVERY_PROTOCOL_V1.json": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+    "/tmp/hcsn-compiled-recovery/recovered.so": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615"
+  },
+  "static_review": {
+    "additive_scope": "Retains all original V3 BP and independent-margin V1 BPTT checks. Adds fixed-z source directory to trigger/sparse checkout and new protocol/checker seals.",
+    "cli": "audit_asset/train_asset take adapter-root,financial-root,protocol-sha256,output; check_asset_results additionally uses root,audit,training. All flags match current actual parsers.",
+    "same_kernel_disclosure": "Fixed-z result checker uses one same-frozen-kernel raw-boundary/local-reference batch; it is not a pure-zero-financial-call checker or independent financial oracle.",
+    "failure_propagation": "No continue-on-error; both new producer steps require runtime success, checker requires both producers success; preceding numerical failures remain job failures.",
+    "permissions_and_paths": "contents:read and persist-credentials:false remain. RUNNER_TEMP paths are initialized only inside a runner step and passed through GITHUB_ENV. Create-only numerical outputs stay outside checkout."
+  },
+  "numerical_executions_by_reviewer": 0,
+  "remote_execution_verified": false,
+  "publication_requirement": "Publish the exact new fixed-z source/input/protocol and auxiliary checker with this workflow. A prior9-file protocol checkpoint alone does not contain the subsequently authored checker.",
+  "decision": "Static/identity/expression checks pass for this exact workflow. Actual new-head GitHub execution remains necessary; no scientific or quality gate is changed."
+}

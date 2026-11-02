@@ -1,0 +1,143 @@
+{
+  "schema": "robrix-ci-v2-independent-review-v1",
+  "blocking_findings": [],
+  "scope": "Read-only source, record and identity review; no new wrapper/Bazel/Rust/financial execution by reviewer",
+  "inputs": [
+    {
+      "path": "/tmp/hcsn-robrix-targeted-ci/candidate/.github/workflows/hcsn-robrix-fixture-r16.yml",
+      "bytes": 4022,
+      "sha256": "f03ad806a2789a72b33af94d29ba89f3c67745713c883150db3ce46f28357491"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-targeted-ci-v2/candidate/.github/workflows/hcsn-robrix-fixture-r16.yml",
+      "bytes": 4159,
+      "sha256": "08e885ff1c0f475d5b80a0c267fddcbf6d2ffb527d1c5c8c9dffc9c43ade1091"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-targeted-ci-v2/ROBRIX_TARGETED_CI_V2.patch",
+      "bytes": 629,
+      "sha256": "04c6823f115694c6425674540e092a2d7a5ac73d9ed88f6a021943407ed7ca98"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-targeted-ci/original/.github/scripts/run-bazel-ci.sh",
+      "bytes": 13699,
+      "sha256": "54a2e8fe8da8253b92986380ae502082354b824759c970c29235c86b3ba291cf"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-targeted-ci-v2/WIRING_EXECUTION_V2.json",
+      "bytes": 18130,
+      "sha256": "694c702603f27a705586e3a8f71007aba762abf0a2e4787e397d045e824bbaac"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-targeted-ci-v2/FORMAT_AND_LINT_V2.json",
+      "bytes": 2457,
+      "sha256": "16367a04fce0b92be74056f3cbfd170b1ff31255a936cd071f627de8cfb0b1df"
+    }
+  ],
+  "verified_change": "Exactly four matrix lines appended; all other raw bytes and parsed workflow fields unchanged",
+  "matrix": [
+    {
+      "os": "ubuntu-24.04",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    {
+      "os": "windows-latest",
+      "target": "x86_64-pc-windows-msvc"
+    },
+    {
+      "os": "macos-15",
+      "target": "aarch64-apple-darwin"
+    },
+    {
+      "os": "macos-15-intel",
+      "target": "x86_64-apple-darwin"
+    }
+  ],
+  "actual_author_wiring_records_reviewed": [
+    {
+      "runner": "ubuntu-24.04",
+      "target_triple": "x86_64-unknown-linux-gnu",
+      "injected_lower_exit": 0,
+      "observed_wrapper_exit": 0
+    },
+    {
+      "runner": "ubuntu-24.04",
+      "target_triple": "x86_64-unknown-linux-gnu",
+      "injected_lower_exit": 37,
+      "observed_wrapper_exit": 37
+    },
+    {
+      "runner": "windows-latest",
+      "target_triple": "x86_64-pc-windows-msvc",
+      "injected_lower_exit": 0,
+      "observed_wrapper_exit": 0
+    },
+    {
+      "runner": "windows-latest",
+      "target_triple": "x86_64-pc-windows-msvc",
+      "injected_lower_exit": 37,
+      "observed_wrapper_exit": 37
+    },
+    {
+      "runner": "macos-15",
+      "target_triple": "aarch64-apple-darwin",
+      "injected_lower_exit": 0,
+      "observed_wrapper_exit": 0
+    },
+    {
+      "runner": "macos-15",
+      "target_triple": "aarch64-apple-darwin",
+      "injected_lower_exit": 37,
+      "observed_wrapper_exit": 37
+    },
+    {
+      "runner": "macos-15-intel",
+      "target_triple": "x86_64-apple-darwin",
+      "injected_lower_exit": 0,
+      "observed_wrapper_exit": 0
+    },
+    {
+      "runner": "macos-15-intel",
+      "target_triple": "x86_64-apple-darwin",
+      "injected_lower_exit": 37,
+      "observed_wrapper_exit": 37
+    }
+  ],
+  "source_head_positive_negative_exit_codes": [
+    0,
+    1
+  ],
+  "observed_f52_mac_error_evidence": [
+    {
+      "job": 125028471674,
+      "gzip_sha256": "ecfff357144bc74146b8c7b027ade09d241f527aca7e39a435712ecf05e2e9f8",
+      "raw_sha256": "a678e61399f7759915529493c5f1bf0b87cc865bddc3b42d3d95a0969f1523c4",
+      "error_lines_1based": [
+        10569,
+        10572
+      ]
+    },
+    {
+      "job": 125028471783,
+      "gzip_sha256": "22ceff1fbb7f8882989632a809f21bb26f6c6fcf7b293aa75b3307eda22f6a59",
+      "raw_sha256": "1476aa174a6bbbeac2525a7d0f9c245b8fe6b0cfffcd9ac078dd4f6492d782b8",
+      "error_lines_1based": [
+        1781,
+        1784
+      ]
+    }
+  ],
+  "preserved": [
+    "one complete original Robrix target",
+    "read-only permissions",
+    "pinned actions and exact source checkout",
+    "shared prepare action and unchanged shell wrapper",
+    "native macOS ci-macos configuration",
+    "failure propagation through PIPESTATUS[0]",
+    "no test filter, retry or incompatible-target skip",
+    "failure remains fatal; only artifact upload is nonfatal",
+    "existing broad workflows unchanged"
+  ],
+  "validation_limit": "Eight author-run wiring controls execute actual shell code on Linux with an explicitly synthetic lower Python executor. They do not execute native macOS, Windows, or the actual Robrix target.",
+  "acceptance_remaining": "All four exact-new-head hosted platform jobs must execute and pass the original target and clean-worktree check."
+}

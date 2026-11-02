@@ -1,0 +1,30 @@
+{
+  "schema": "hcsn.hx-recurrent-independent-result-check.v1",
+  "passed": true,
+  "protocol_sha256": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+  "bound_artifact_sha256": {
+    "/tmp/hcsn-recurrent-next-v1/RECURRENT_PROTOCOL.json": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+    "/tmp/hcsn-recurrent-next-v1/RECURRENT_INPUTS.json": "3a116df6012930de71c44747838d7ab077e4e6bc41c30f493cce523846658793",
+    "/tmp/hcsn-recurrent-next-v1/RECURRENT_AUDIT_V1.json.gz": "66339845b1a461540370916913e0b5a4db0fba274d17b4c2a6a3b4e506cc717d",
+    "/tmp/hcsn-recurrent-next-v1/RECURRENT_TRAINING_V1.json.gz": "b07378052e70e0ad97978f74398b2db0fda02bb3eae9041c51f70f9caac4a35e",
+    "/tmp/hcsn-recurrent-next-v1/recurrent.py": "bd8f9fcc4fc10f36088d9bd98e55a598d79e0c653aacbe5caaced2406b0c614d",
+    "/tmp/hcsn-recurrent-next-v1/recurrent_common.py": "ade8f72b9dc1160778705eaeb6dac7c2302ebabe299de182d66aba4b23796ce9",
+    "/tmp/hcsn-recurrent-next-v1/audit_recurrent.py": "b437b2233ede3a4829f931df290763eb73c084266e4fe820f31f1f566b0704fb",
+    "/tmp/hcsn-recurrent-next-v1/train_recurrent.py": "41bd77e742719e774e2fd050ec923ea721e715c793706e10f91ca5448120cb7c",
+    "/tmp/hcsn-recurrent-next-v1/freeze_recurrent.py": "5b2062397a552efa3a34ed40c6b020900c478780a56ab5e80e0abc9893a9125c",
+    "/tmp/hcsn-recurrent-next-v1/README.md": "39eed2fd43c970ea5967f5e8fea1b992c0b4d6406695911a02adb7a31ae6ab9e",
+    "/tmp/hcsn-recurrent-next-v1/requirements.txt": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+  },
+  "checker_sha256": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+  "counts": {
+    "signed_fixtures": 5,
+    "contracts": 13,
+    "temporal_comparisons": 8,
+    "steps": 16,
+    "batch": 8,
+    "training_updates": 12
+  },
+  "financial_kernel_calls": 0,
+  "pytorch_calls": 0,
+  "scope": "Independent receipt/count/float32 Euler/adjoint/loss recomputation; not a replacement for financial reference validation or an adversarial proof of raw record authenticity."
+}

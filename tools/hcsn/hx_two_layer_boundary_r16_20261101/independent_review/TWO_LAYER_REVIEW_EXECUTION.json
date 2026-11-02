@@ -1,0 +1,11 @@
+{
+  "command": "python -B /tmp/hcsn-two-layer-independent-review/review_two_layer_records.py --root /tmp/hcsn-two-layer-boundary-next-v1 --reference /tmp/hcsn-two-layer-independent-reference/two_layer_reference.py --output /tmp/hcsn-two-layer-independent-review/TWO_LAYER_RESULT_INDEPENDENT_REVIEW.json",
+  "execution": {
+    "chunk_id": "d67c85",
+    "wall_time_seconds": 0.098265428,
+    "exit_code": 0,
+    "original_token_count": 324,
+    "output": "{\n  \"passed\": true,\n  \"comparison_count\": 69,\n  \"maximum_absolute_gradient_error\": 2.1365152667873755e-09,\n  \"route_gradient_norms\": {\n    \"full\": {\n      \"raw1_l2\": 0.00044444966042335215,\n      \"raw2_l2\": 0.000744999217610972\n    },\n    \"drive_only\": {\n      \"raw1_l2\": 0.0004406123843813935,\n      \"raw2_l2\": 0.000744999217610972\n    },\n    \"conditioning_only\": {\n      \"raw1_l2\": 3.837308693746183e-06,\n      \"raw2_l2\": 0.000744999217610972\n    },\n    \"both_detached\": {\n      \"raw1_l2\": 0.0,\n      \"raw2_l2\": 0.000744999217610972\n    }\n  },\n  \"direct_boundary_credit\": {\n    \"conditioning\": {\n      \"time_resolved_l2\": 9.869645764414118e-07,\n      \"net_time_sum_l2\": 3.83635492135651e-06,\n      \"state_history_remainder_l2\": 9.690556557251098e-10\n    },\n    \"drive\": {\n      \"time_resolved_l2\": 0.00010883576767518305,\n      \"net_time_sum_l2\": 0.0004270021569204966\n    }\n  },\n  \"conditioning_to_drive_gradient_norm_ratio\": 0.008709035037981623,\n  \"parameter_updates\": {\n    \"raw_theta1\": {\n      \"changed_coordinates\": 9,\n      \"l2\": 0.717020015230448\n    },\n    \"raw_theta2\": {\n      \"changed_coordinates\": 9,\n      \"l2\": 0.7166894218752645\n    }\n  },\n  \"loss\": {\n    \"initial\": 0.017321569845080376,\n    \"final\": 0.016821451485157013,\n    \"relative_reduction\": 0.028872577046785686\n  }\n}\n"
+  },
+  "scope": "Actual record-only NumPy reconstruction; no financial kernel, PyTorch model, training, or new trajectory executed."
+}

@@ -1,0 +1,215 @@
+{
+  "schema": "hcsn.robrix-fixture-evidence-manifest.v1",
+  "files": [
+    {
+      "path": "robrix_fixture_runfiles.patch",
+      "bytes": 1686,
+      "sha256": "6fb5bcd17a4bd03c8c8dd32833d05597bda8794518b177e8b0184f4512cbcff3"
+    },
+    {
+      "path": "ROBRIX_REPAIR_RECEIPT.json",
+      "bytes": 2793,
+      "sha256": "6b15a3b6a9cf17e1a115ea096a175fd305b15d99faa41347acac6d156e12e1af"
+    },
+    {
+      "path": "ROBRIX_ORIGINAL_FAILURES.json",
+      "bytes": 1267,
+      "sha256": "0d543606377800ce679a6afdeef2e1a461930ceb78fa2e82b1535bdfe8eb17f9"
+    },
+    {
+      "path": "validate_robrix_fixture.py",
+      "bytes": 8438,
+      "sha256": "c33f10fa87fe9e7fef9421bb647256c77f3430e441baeaa5c9e45e534a124c0d"
+    },
+    {
+      "path": "robrix-validation.log",
+      "bytes": 317,
+      "sha256": "b991186e86ca92145ab89b9e77e09ba7b349f13a2aa157824664020bbfaf11cf"
+    },
+    {
+      "path": "original/codex-rs/hepta-supervisor/BUILD.bazel",
+      "bytes": 465,
+      "sha256": "a97c5296ab5031b4eb15e205819bf9c043ea47290fdd42173f999c23ff2a41bd"
+    },
+    {
+      "path": "candidate/codex-rs/hepta-supervisor/BUILD.bazel",
+      "bytes": 528,
+      "sha256": "eb292353534a14b8adb817cdac5bf3e1b69b32b833e8fe4806320a11bd1d055d"
+    },
+    {
+      "path": "original/codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+      "bytes": 13044,
+      "sha256": "53de7ba097303fda8e5d618cef073fdf167f6e05fe87542acff65e82ae84de12"
+    },
+    {
+      "path": "candidate/codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+      "bytes": 13420,
+      "sha256": "c39ef87bef3f66a67c35c19cc03d34a4008f2655204a52f97fcc94c4d465a99d"
+    },
+    {
+      "path": "validation/compile_after_cargo.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation/nonfile_artifact_is_still_rejected.stderr.txt",
+      "bytes": 212,
+      "sha256": "b9a8e813abf686b3e760db16ddbbd52e988587e9e51d897a8e799f4eba9ed2e6"
+    },
+    {
+      "path": "validation/cargo_reader_passes_without_bazel_env.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation/compile_after_bazel.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation/compile_before_bazel.stderr.txt",
+      "bytes": 364,
+      "sha256": "1e8daffffcbcd5b3744652968755660d82be66b75339285b8d7fb744b2a1e8a1"
+    },
+    {
+      "path": "validation/VALIDATION.json",
+      "bytes": 6913,
+      "sha256": "fc08328c23780d905afce6462f933cc73f08becf34db2b9834e6a52a2b7ac360"
+    },
+    {
+      "path": "validation/extra_artifact_is_still_observed_and_rejected.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation/new_reader_actual_manifest_launcher_passes.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation/actual_launcher.sh",
+      "bytes": 4752,
+      "sha256": "2676799ddc468179c163ccebf02c9438a5d08d5008bbe2e0af671dff422dcb28"
+    },
+    {
+      "path": "validation/cargo_reader_passes_without_bazel_env.stdout.txt",
+      "bytes": 43,
+      "sha256": "2cc2da5b6df63e995bd06652445eefac1e4c81c4b5e9c32f83d3dad4b44cb1b9"
+    },
+    {
+      "path": "validation/after_cargo.rs",
+      "bytes": 2802,
+      "sha256": "f86f29263c9809a2bb0f1eca204a0fc7902ce1053356dec66c8e29ecfae10e66"
+    },
+    {
+      "path": "validation/compile_before_bazel.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation/missing_runtime_root_rejects.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation/missing_runtime_root_rejects.stderr.txt",
+      "bytes": 88,
+      "sha256": "daeaf86257fde305541af3980062a9f3452898f28fd64644134bdd69c7c3a44f"
+    },
+    {
+      "path": "validation/after_bazel.rs",
+      "bytes": 2802,
+      "sha256": "f86f29263c9809a2bb0f1eca204a0fc7902ce1053356dec66c8e29ecfae10e66"
+    },
+    {
+      "path": "validation/new_reader_actual_manifest_launcher_passes.stdout.txt",
+      "bytes": 43,
+      "sha256": "2cc2da5b6df63e995bd06652445eefac1e4c81c4b5e9c32f83d3dad4b44cb1b9"
+    },
+    {
+      "path": "validation/before_bazel.rs",
+      "bytes": 2426,
+      "sha256": "f2bb95e0a0ef7648d3f5171824ae5aa10a633ccc317bd9ae6d3f5f5102d5ce0b"
+    },
+    {
+      "path": "validation/old_reader_actual_manifest_launcher_rejects.stderr.txt",
+      "bytes": 200,
+      "sha256": "387f21b363ae948628a710f095f3c4713385b42eb83dfaced7c12a88e8b48919"
+    },
+    {
+      "path": "validation/nonfile_artifact_is_still_rejected.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation/compile_after_bazel.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation/extra_artifact_is_still_observed_and_rejected.stderr.txt",
+      "bytes": 1862,
+      "sha256": "8d9097c91aa28e109cff0b39fd4f66e36607f6cd711d3f737c7f544e2a23e802"
+    },
+    {
+      "path": "validation/compile_after_cargo.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation/old_reader_actual_manifest_launcher_rejects.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "source_context/workspace_root_test_launcher.sh.tpl",
+      "bytes": 4713,
+      "sha256": "e292867c613d853887a64ca09bca231e66cc65d48806985c1f16c1c69c1169e5"
+    },
+    {
+      "path": "source_context/workspace_root_test_launcher.bat.tpl",
+      "bytes": 7627,
+      "sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae"
+    },
+    {
+      "path": "source_context/defs.bzl",
+      "bytes": 32896,
+      "sha256": "3fc965c2f62659b7257ba316b41fd11f19365205a4a20e421f0005aaa78a6d52"
+    },
+    {
+      "path": "source_context/scripts/format.py",
+      "bytes": 16599,
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+    },
+    {
+      "path": "source_context/scripts/just-shell.py",
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    {
+      "path": "source_context/justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "source_context/bazel/rules/testing/rust_test_dependencies.bzl",
+      "bytes": 1590,
+      "sha256": "b64c9972a9e8d75f3442ed79e1095db1e45c84a62e96c05c7356c04521178074"
+    },
+    {
+      "path": "source_context/audit_cargo_aliases.py",
+      "bytes": 11193,
+      "sha256": "bffebc6fedf865eb1b455cba473ad375bb3514c64ba15f5c10eb0c240ef32d71"
+    },
+    {
+      "path": "source_context/rust_crate_aliases.bzl",
+      "bytes": 2068,
+      "sha256": "0881176bff495caa39615536ea8e05433e9d31a8d0ec2c738a73e088d3e2d57c"
+    },
+    {
+      "path": "source_context/rustfmt.toml",
+      "bytes": 164,
+      "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+    }
+  ]
+}

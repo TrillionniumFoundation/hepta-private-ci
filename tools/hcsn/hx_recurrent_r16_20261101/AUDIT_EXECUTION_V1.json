@@ -1,0 +1,28 @@
+{
+  "schema": "hcsn.recurrent-audit-execution.v1",
+  "protocol_sha256": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+  "frozen_at_utc": "2026-11-01T17:39:46.257237+00:00",
+  "first_process_launch_utc": null,
+  "timestamp_limitation": "The first command did not record a controller launch wall-clock timestamp. The actual output creation/mtime and exec completion were observed; no start timestamp is reconstructed.",
+  "actual_exit_code": 0,
+  "tool_session_id": 25550,
+  "completion_chunk_id": "cf9c41",
+  "first_result_mtime_utc": "2026-11-01T17:43:34.507635+00:00",
+  "artifact_sha256": "66339845b1a461540370916913e0b5a4db0fba274d17b4c2a6a3b4e506cc717d",
+  "local_exact_backup_before_execution": "functions.store(hx_recurrent_prefrozen_v1_exact_files)",
+  "remote_checkpoint": "a629f9b1a9a1539f5360f8e44d2b81a09fdcf6ae",
+  "publication_order": "Remote blob uploads overlapped first evaluation. The remote ref was confirmed after the first audit. Only local immutable source/protocol freeze and full store backup are asserted to precede the audit.",
+  "command": [
+    "python",
+    "-B",
+    "audit_recurrent.py",
+    "--adapter-root",
+    "ADAPTER_V3_ROOT",
+    "--financial-root",
+    "FINANCIAL_ROOT",
+    "--protocol-sha256",
+    "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+    "--output",
+    "NEW_AUDIT.json.gz"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "path": ".github/workflows/v8-canary.yml",
+  "source_git_blob": "bc0bb7a93bd97d422e6b9d9dd5d5e12294fbd6f1",
+  "candidate_git_blob": "86e23394e6a0ad243c8c79cf68ae01423aebc721",
+  "candidate_sha256": "fb5670c041e9c6b203f08570619c865e79b00ab4ff51fc0b033ce8713dafc8ca",
+  "patch_sha256": "ac6d9804a7d035cdff66caab3d4aeb090635a910eb4c11d64c5c5bb6232f4db3",
+  "semantic_changes": [
+    {
+      "job": "build",
+      "step_index": 7,
+      "step": "Smoke test staged artifact with Cargo"
+    }
+  ],
+  "all_other_yaml_values_identical": true,
+  "matrix_steps_and_targets_preserved": true,
+  "validation_note": "Initial review assertion assumed four indentation spaces inside parsed run value; corrected review regex to accept YAML-stripped indentation. Candidate itself remains the original single inserted environment assignment."
+}

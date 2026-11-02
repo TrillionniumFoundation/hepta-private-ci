@@ -1,0 +1,102 @@
+{
+  "schema": "hcsn.hx-fixed-potential-protocol.v1",
+  "frozen_at_utc": "2026-11-01T17:57:38.732611+00:00",
+  "status_at_freeze": "No evaluation or trajectory of this new fixed-potential candidate has been opened.",
+  "scope": "New fixed physical log-potential model, finite-step functional boundary-chain/BPTT experiment. Not an equivalent coordinate rewrite, independent financial holdout or quality benchmark.",
+  "previous_margin_V1_protocol_sha256": "87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241",
+  "previous_margin_V1_loss_observation": {
+    "initial": 0.0004702643782366067,
+    "final": 0.0004702617588918656,
+    "interpretation": "Nearly unchanged; retained, not replaced by this new model."
+  },
+  "dependencies": {
+    "adapter_protocol_sha256": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+    "adapter_source_sha256": "8117df2cae6b17612d7537b96d72ca74a340bb5356e61bbc3f73b9fe478aa870",
+    "financial_protocol_sha256": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+    "financial_binary_sha256": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+    "financial_mode": "float64",
+    "adapter_coordinate": "asset"
+  },
+  "source_sha256": {
+    "asset_model.py": "ae59e1ed4bb84ce9ad48fdaa0d7c0fd7140f4f3ea3bee7f9aa3ac9d665eed68d",
+    "asset_common.py": "f237b9034342845faef433f43ec452c987f8f9d0b8314d4619241311c5ac6590",
+    "audit_asset.py": "fb99430491cbb73733cb65cc6dbcb7571d83c67bf21dda9f75be2b1e042b40bc",
+    "train_asset.py": "339d7023456cc3a8b248fa29f07c1c39e52c52bf8a6eb45a809e59554c2c91af",
+    "freeze_asset.py": "4e9d7b8a3b9347202ee78351b5422acb36dca1acd781e72a4c3f26b7b5aff00f",
+    "README.md": "4b5e0da20b9e2acd3b1de045d2a0432e5d1f41b4522729747372080465df0b1c",
+    "requirements.txt": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+  },
+  "inputs_sha256": "74e8a4cae1734762579a65608b8350ba8545bb1be79df2de657eaf2e4b65b079",
+  "cell": {
+    "steps": 16,
+    "dt": 0.05,
+    "leak": 0.5,
+    "k_equity": 0.15,
+    "k_risk": 0.04,
+    "tau": 0.4,
+    "theta_fraction": 0.03,
+    "z_rest": 4.204692840576172
+  },
+  "fixed_boundary_probe_asset": 67.0,
+  "training": {
+    "updates": 12,
+    "batch_size": 8,
+    "optimizer": "torch.optim.Adam default betas/epsilon, no weight decay",
+    "learning_rate": 0.02,
+    "trainable_parameters": "only one 9-vector raw_theta, theta=base*(1+0.03*tanh(raw_theta))",
+    "loss": "mean((z_T-target_z)^2)+0.25*mean((a_T-target_a)^2)",
+    "loss_decrease_is_gate": false
+  },
+  "gates": {
+    "gradient_atol": 2e-09,
+    "gradient_rtol": 2e-05,
+    "linear_state_gradient_atol": 2e-06,
+    "nonzero_gradient_floor": 1e-12,
+    "min_z": 3.5,
+    "max_z": 4.7,
+    "max_adaptation": 0.08,
+    "range_tolerance": 1e-10,
+    "max_exp_log_roundtrip_error": 2e-07,
+    "minimum_sampled_phase_changes": 1,
+    "required_fixed_z_fixtures": 5,
+    "required_contract_checks": 15,
+    "required_temporal_comparisons": 8,
+    "no_nonfinite_or_rejected_rows_discarded": true
+  },
+  "fixed_physical_state_contract": [
+    "z0, z_rest, drive and targets are frozen numeric words independent of theta and b.",
+    "V_repr=FP32_exp(z) retains its first-order PyTorch graph; it is not b(theta)*exp(x).",
+    "Original V3 asset.readout supplies Q,R,x with full asset derivatives; no extra boundary shift is applied to the already-total asset Jacobian.",
+    "x=log(V_repr/b), retained diagnostically; it is not assumed exactly z-log(b) under floating arithmetic.",
+    "The trained terminal loss reads only z and adaptation. No direct x or b term, no trained head.",
+    "A before/after fixture holds z and represented V identical and checks margin shift=-log(b_after/b_before).",
+    "Nine theta changes also alter value-field shape; movement does not establish causal threshold benefit or optimal boundary policy."
+  ],
+  "precision_contract": [
+    "Only finite CPU FP32 neural states/inputs and represented exp(z). No silent float64 input downcast.",
+    "Actual frozen financial arithmetic and saved 5x10 Jacobian in FP64; Q/R explicitly cast to FP32 for Euler.",
+    "First-order continuous-formula Jacobians at represented points, not classical derivatives of quantization.",
+    "No create_graph or higher derivatives. Time-unrolled first-order reverse AD only."
+  ],
+  "temporal_contract": [
+    "Simultaneous old-state Euler, 16 true dynamical steps. Fixed z_rest changes the dynamics relative to margin V1.",
+    "No normal state detach/reset/clipping; explicit detached-state path is a diagnostic negative control.",
+    "One extra final readout per trajectory is no-grad logging only; it cannot enter terminal loss.",
+    "Manual local asset Jacobian composition includes V*Q_V, V*R_V and the full fixed-V theta derivatives.",
+    "All-default direct theta sensitivity can be zero; earlier positive-state history is not erased by entering default.",
+    "Phase changes are sampled input-driven observations, not analytic crossing times or limit cycles."
+  ],
+  "excluded_claims": [
+    "New financial precision qualification",
+    "quality or generalization advantage",
+    "analytic temporal flow",
+    "autonomous spike/limit-cycle/stability proof",
+    "GPU/event-sparse/power advantage",
+    "financial first-hit calibration under the new feedback process",
+    "pure-threshold causal attribution"
+  ],
+  "exit_semantics": {
+    "audit_asset.py": "0 only when all frozen functional gates pass; nonzero on errors/failures, create-only result.",
+    "train_asset.py": "0 only for complete finite 12-step optimizer history, actual theta and fixed-asset boundary motion, and unchanged physical fixtures; loss improvement is not required."
+  }
+}

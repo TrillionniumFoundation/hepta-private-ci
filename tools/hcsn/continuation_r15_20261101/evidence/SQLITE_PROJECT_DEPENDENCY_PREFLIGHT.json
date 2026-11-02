@@ -1,0 +1,101 @@
+{
+  "schema": "hcsn-r15-sqlite-native-preflight-v1",
+  "dependency_queries": {
+    "codex-hepta-automation": {
+      "command": [
+        "cargo",
+        "tree",
+        "-p",
+        "codex-hepta-automation",
+        "--edges",
+        "normal,build,dev",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--locked",
+        "--offline",
+        "--prefix",
+        "none",
+        "--format",
+        "{p}"
+      ],
+      "returncode": 0,
+      "unique_tree_lines": 550,
+      "heavy_dependencies": [
+        "aws-lc-rs v1.18.1",
+        "aws-lc-sys v0.45.0",
+        "libsqlite3-sys v0.37.0",
+        "openssl-sys v0.9.111"
+      ],
+      "stderr": ""
+    },
+    "codex-hepta-memory": {
+      "command": [
+        "cargo",
+        "tree",
+        "-p",
+        "codex-hepta-memory",
+        "--edges",
+        "normal,build,dev",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--locked",
+        "--offline",
+        "--prefix",
+        "none",
+        "--format",
+        "{p}"
+      ],
+      "returncode": 0,
+      "unique_tree_lines": 552,
+      "heavy_dependencies": [
+        "aws-lc-rs v1.18.1",
+        "aws-lc-sys v0.45.0",
+        "libsqlite3-sys v0.37.0",
+        "openssl-sys v0.9.111"
+      ],
+      "stderr": ""
+    }
+  },
+  "requested_test_commands": [
+    [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-memory",
+      "--locked",
+      "--offline"
+    ],
+    [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-automation",
+      "--locked",
+      "--offline"
+    ]
+  ],
+  "tests_started": false,
+  "test_returncodes": null,
+  "free_bytes_at_decision": 1480372224,
+  "existing_cache_checked": "/tmp/hepta-digital-build/codex-rs/target/debug",
+  "cache_missing_compiled_libraries": [
+    "codex_state",
+    "sqlx_core",
+    "sqlx_sqlite",
+    "aws_lc_rs",
+    "openssl_sys",
+    "codex_protocol",
+    "codex_hepta_memory",
+    "codex_hepta_automation"
+  ],
+  "cache_profile_check": {
+    "same_rustc_fingerprint": 7458672600737419911,
+    "existing_serde_profile": 15657897354478470176,
+    "current_default_test_serde_profile": 4612059108396444692,
+    "compatible_default_profile": false
+  },
+  "decision": "Not started locally: 550/552-package native closure is substantially uncached and shared disk had1,480,372,224bytes free at the recorded decision. Parent explicitly instructed not to risk filling disk for duplicate local suites; preserve package scope/features/coverage and use actual remote Bazel gates.",
+  "source_changes": false,
+  "test_filters_or_feature_changes": false,
+  "scope_limit": "The actual41-pass fleet suite does not establish memory/automation SQLite fixture runtime correctness."
+}

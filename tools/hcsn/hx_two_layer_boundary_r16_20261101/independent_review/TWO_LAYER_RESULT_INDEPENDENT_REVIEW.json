@@ -1,0 +1,972 @@
+{
+  "schema": "hcsn.two-layer-result-independent-review.v1",
+  "passed": true,
+  "reviewed_at_utc": "2026-11-01T18:42:34.011970+00:00",
+  "protocol_sha256": "da07c580e258f51517f124d6d7b902a8ae3c6700fb58cb96948c18447c740ad7",
+  "review_source": {
+    "local_path": "/tmp/hcsn-two-layer-independent-review/review_two_layer_records.py",
+    "bytes": 15526,
+    "sha256": "d980311b484be6f221d07596eb2a9bce1db68ec4beb4e93b6c6bf2571b9634aa"
+  },
+  "reference": {
+    "local_path": "/tmp/hcsn-two-layer-independent-reference/two_layer_reference.py",
+    "bytes": 6907,
+    "sha256": "35e8680e3faa501dcde7913a19b2998d2d799a1feb27667fbad6d55812c8ca69"
+  },
+  "original_executions": {
+    "AUDIT": {
+      "actual_returncode": 0,
+      "controller_started_at_utc": "2026-11-01T18:39:19.108027+00:00",
+      "artifact": {
+        "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_AUDIT_V1.json.gz",
+        "bytes": 639504,
+        "sha256": "8ff233b9045b96ff846d146acc94e9daa6e066f7a9137204bcbc6cb89e8be7c3"
+      }
+    },
+    "TRAINING": {
+      "actual_returncode": 0,
+      "controller_started_at_utc": "2026-11-01T18:40:13.832731+00:00",
+      "artifact": {
+        "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_TRAINING_V1.json.gz",
+        "bytes": 453637,
+        "sha256": "33049a15099c3e8634b0a5575f63040ead4031d90c5e0a6f4697600b5cf794a9"
+      }
+    },
+    "CHECK": {
+      "actual_returncode": 0,
+      "controller_started_at_utc": "2026-11-01T18:40:37.213076+00:00",
+      "artifact": {
+        "local_path": "/tmp/hcsn-two-layer-boundary-next-v1/TWO_LAYER_RESULT_CHECK_V1.json",
+        "bytes": 4654,
+        "sha256": "926f4f595b8bcd5b336c19575f903294b3cae0ce0f1bd69011f5d88db03e9dfb"
+      }
+    }
+  },
+  "comparison_count": 69,
+  "comparisons": {
+    "full/stored_A": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "full/stored_B": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "full/stored_step_raw": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "full/stored_shared_raw": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "full/stored_state_adj": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "full/actual_raw": {
+      "max_absolute_error": 6.603832910200003e-11,
+      "max_error_over_frozen_allowance": 0.004266741106253548
+    },
+    "full/actual_step_credit": {
+      "max_absolute_error": 5.95770357553942e-12,
+      "max_error_over_frozen_allowance": 0.002052701456332888
+    },
+    "full/initial_state": {
+      "max_absolute_error": 2.1365152667873755e-09,
+      "max_error_over_frozen_allowance": 0.013300639813596771
+    },
+    "full/drive1": {
+      "max_absolute_error": 3.72211139947759e-11,
+      "max_error_over_frozen_allowance": 0.0075800268706404375
+    },
+    "full/drive2": {
+      "max_absolute_error": 3.3863733041664124e-10,
+      "max_error_over_frozen_allowance": 0.011644798019042531
+    },
+    "full/raw1_credit_sum": {
+      "max_absolute_error": 1.6370904631912708e-11,
+      "max_error_over_frozen_allowance": 0.0024207189398642135
+    },
+    "full/raw2_credit_sum": {
+      "max_absolute_error": 8.003553375601768e-11,
+      "max_error_over_frozen_allowance": 0.005171101580824501
+    },
+    "drive_only/stored_A": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "drive_only/stored_B": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "drive_only/stored_step_raw": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "drive_only/stored_shared_raw": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "drive_only/stored_state_adj": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "drive_only/actual_raw": {
+      "max_absolute_error": 6.603832910200003e-11,
+      "max_error_over_frozen_allowance": 0.004266741106253548
+    },
+    "drive_only/actual_step_credit": {
+      "max_absolute_error": 5.95770357553942e-12,
+      "max_error_over_frozen_allowance": 0.002052701456332888
+    },
+    "drive_only/initial_state": {
+      "max_absolute_error": 2.1365152667873755e-09,
+      "max_error_over_frozen_allowance": 0.013300639813596771
+    },
+    "drive_only/drive1": {
+      "max_absolute_error": 5.5166970872131543e-11,
+      "max_error_over_frozen_allowance": 0.0075800268706404375
+    },
+    "drive_only/drive2": {
+      "max_absolute_error": 3.3863733041664124e-10,
+      "max_error_over_frozen_allowance": 0.011644798019042531
+    },
+    "drive_only/raw1_credit_sum": {
+      "max_absolute_error": 1.4551915228366852e-11,
+      "max_error_over_frozen_allowance": 0.0026282876846837585
+    },
+    "drive_only/raw2_credit_sum": {
+      "max_absolute_error": 8.003553375601768e-11,
+      "max_error_over_frozen_allowance": 0.005171101580824501
+    },
+    "conditioning_only/stored_A": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "conditioning_only/stored_B": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "conditioning_only/stored_step_raw": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "conditioning_only/stored_shared_raw": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "conditioning_only/stored_state_adj": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "conditioning_only/actual_raw": {
+      "max_absolute_error": 6.603832910200003e-11,
+      "max_error_over_frozen_allowance": 0.004266741106253548
+    },
+    "conditioning_only/actual_step_credit": {
+      "max_absolute_error": 5.95770357553942e-12,
+      "max_error_over_frozen_allowance": 0.002052701456332888
+    },
+    "conditioning_only/initial_state": {
+      "max_absolute_error": 2.1365152667873755e-09,
+      "max_error_over_frozen_allowance": 0.013300639813596771
+    },
+    "conditioning_only/drive1": {
+      "max_absolute_error": 2.6204577566966416e-13,
+      "max_error_over_frozen_allowance": 0.0001291970089262849
+    },
+    "conditioning_only/drive2": {
+      "max_absolute_error": 3.3863733041664124e-10,
+      "max_error_over_frozen_allowance": 0.011644798019042531
+    },
+    "conditioning_only/raw1_credit_sum": {
+      "max_absolute_error": 4.263256414560601e-14,
+      "max_error_over_frozen_allowance": 2.0613428684163394e-05
+    },
+    "conditioning_only/raw2_credit_sum": {
+      "max_absolute_error": 8.003553375601768e-11,
+      "max_error_over_frozen_allowance": 0.005171101580824501
+    },
+    "both_detached/stored_A": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "both_detached/stored_B": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "both_detached/stored_step_raw": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "both_detached/stored_shared_raw": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "both_detached/stored_state_adj": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "both_detached/actual_raw": {
+      "max_absolute_error": 6.603832910200003e-11,
+      "max_error_over_frozen_allowance": 0.004266741106253548
+    },
+    "both_detached/actual_step_credit": {
+      "max_absolute_error": 5.95770357553942e-12,
+      "max_error_over_frozen_allowance": 0.002052701456332888
+    },
+    "both_detached/initial_state": {
+      "max_absolute_error": 2.1365152667873755e-09,
+      "max_error_over_frozen_allowance": 0.013300639813596771
+    },
+    "both_detached/drive1": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "both_detached/drive2": {
+      "max_absolute_error": 3.3863733041664124e-10,
+      "max_error_over_frozen_allowance": 0.011644798019042531
+    },
+    "both_detached/raw1_credit_sum": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "both_detached/raw2_credit_sum": {
+      "max_absolute_error": 8.003553375601768e-11,
+      "max_error_over_frozen_allowance": 0.005171101580824501
+    },
+    "upstream_route_additivity": {
+      "max_absolute_error": 3.0468072509393096e-11,
+      "max_error_over_frozen_allowance": 0.0035432298181378454
+    },
+    "direct_boundary_conditioning_step": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "direct_boundary_conditioning_sum": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "conditioning_state_history_remainder": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "direct_boundary_drive_step": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "direct_boundary_drive_sum": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "initial_training_gradient_1": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "initial_training_gradient_2": {
+      "max_absolute_error": 0.0,
+      "max_error_over_frozen_allowance": 0.0
+    },
+    "terminal_loss_0": {
+      "max_absolute_error": 8.067666985855926e-10,
+      "max_error_over_frozen_allowance": 0.002315424695935947
+    },
+    "terminal_loss_1": {
+      "max_absolute_error": 9.818998114585753e-10,
+      "max_error_over_frozen_allowance": 0.0028251307912141796
+    },
+    "terminal_loss_2": {
+      "max_absolute_error": 6.199307664433995e-10,
+      "max_error_over_frozen_allowance": 0.0017881343740250414
+    },
+    "terminal_loss_3": {
+      "max_absolute_error": 1.5038354936325327e-09,
+      "max_error_over_frozen_allowance": 0.00434848146887945
+    },
+    "terminal_loss_4": {
+      "max_absolute_error": 4.738772360624033e-10,
+      "max_error_over_frozen_allowance": 0.0013736650987441663
+    },
+    "terminal_loss_5": {
+      "max_absolute_error": 2.5186314318859093e-09,
+      "max_error_over_frozen_allowance": 0.00731896464353162
+    },
+    "terminal_loss_6": {
+      "max_absolute_error": 9.354809635264694e-10,
+      "max_error_over_frozen_allowance": 0.0027251227145443395
+    },
+    "terminal_loss_7": {
+      "max_absolute_error": 2.2290576190409084e-09,
+      "max_error_over_frozen_allowance": 0.006509201414680794
+    },
+    "terminal_loss_8": {
+      "max_absolute_error": 9.424587325834732e-10,
+      "max_error_over_frozen_allowance": 0.0027587822196001263
+    },
+    "terminal_loss_9": {
+      "max_absolute_error": 1.9719608931878518e-10,
+      "max_error_over_frozen_allowance": 0.0005786170518134491
+    },
+    "terminal_loss_10": {
+      "max_absolute_error": 3.0209359319632867e-10,
+      "max_error_over_frozen_allowance": 0.0008885058539891533
+    },
+    "terminal_loss_11": {
+      "max_absolute_error": 2.8879191746322697e-10,
+      "max_error_over_frozen_allowance": 0.0008513668079671939
+    },
+    "terminal_loss_12": {
+      "max_absolute_error": 1.3900127576738086e-10,
+      "max_error_over_frozen_allowance": 0.000410725033687218
+    }
+  },
+  "maximum_absolute_gradient_error": 2.1365152667873755e-09,
+  "route_gradient_norms": {
+    "full": {
+      "raw1_l2": 0.00044444966042335215,
+      "raw2_l2": 0.000744999217610972
+    },
+    "drive_only": {
+      "raw1_l2": 0.0004406123843813935,
+      "raw2_l2": 0.000744999217610972
+    },
+    "conditioning_only": {
+      "raw1_l2": 3.837308693746183e-06,
+      "raw2_l2": 0.000744999217610972
+    },
+    "both_detached": {
+      "raw1_l2": 0.0,
+      "raw2_l2": 0.000744999217610972
+    }
+  },
+  "direct_boundary_credit": {
+    "conditioning": {
+      "time_resolved_l2": 9.869645764414118e-07,
+      "net_time_sum_l2": 3.83635492135651e-06,
+      "state_history_remainder_l2": 9.690556557251098e-10
+    },
+    "drive": {
+      "time_resolved_l2": 0.00010883576767518305,
+      "net_time_sum_l2": 0.0004270021569204966
+    }
+  },
+  "conditioning_to_drive_gradient_norm_ratio": 0.008709035037981623,
+  "initial_trajectory": {
+    "z_min": 3.9119255542755127,
+    "z_max": 4.605170249938965,
+    "layer1": {
+      "default_states": 78,
+      "recorded_states": 136,
+      "sampled_phase_changes": 6,
+      "positive_to_nonpositive": 3,
+      "nonpositive_to_positive": 3,
+      "used_boundary_min": 67.44151430180042,
+      "used_boundary_max": 67.44151430180042,
+      "used_time_boundary_range_per_sample": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "layer2": {
+      "default_states": 51,
+      "recorded_states": 136,
+      "sampled_phase_changes": 0,
+      "positive_to_nonpositive": 0,
+      "nonpositive_to_positive": 0,
+      "used_boundary_min": 67.40345484730463,
+      "used_boundary_max": 67.49066885505707,
+      "used_time_boundary_range_per_sample": [
+        0.009805891969577374,
+        0.004539272379759041,
+        0.021093992679240614,
+        0.0038596514634576806,
+        0.005825200785835705,
+        0.011198146872885673,
+        0.01967297914504229,
+        0.00307267361857555
+      ]
+    }
+  },
+  "final_trajectory": {
+    "z_min": 3.9119255542755127,
+    "z_max": 4.605170249938965,
+    "layer1": {
+      "default_states": 60,
+      "recorded_states": 136,
+      "sampled_phase_changes": 4,
+      "positive_to_nonpositive": 3,
+      "nonpositive_to_positive": 1,
+      "used_boundary_min": 66.45381846450951,
+      "used_boundary_max": 66.45381846450951,
+      "used_time_boundary_range_per_sample": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "layer2": {
+      "default_states": 53,
+      "recorded_states": 136,
+      "sampled_phase_changes": 1,
+      "positive_to_nonpositive": 1,
+      "nonpositive_to_positive": 0,
+      "used_boundary_min": 68.3583957416069,
+      "used_boundary_max": 68.4182078211214,
+      "used_time_boundary_range_per_sample": [
+        0.01665873393888262,
+        0.003617039683376788,
+        0.007053247434370746,
+        0.0036407967790950124,
+        0.004161144492897506,
+        0.01881873092578701,
+        0.006999100179953643,
+        0.002399232175406496
+      ]
+    }
+  },
+  "all_twelve_training_trajectory_summaries": [
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 78,
+        "recorded_states": 136,
+        "sampled_phase_changes": 6,
+        "positive_to_nonpositive": 3,
+        "nonpositive_to_positive": 3,
+        "used_boundary_min": 67.44151430180042,
+        "used_boundary_max": 67.44151430180042,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 51,
+        "recorded_states": 136,
+        "sampled_phase_changes": 0,
+        "positive_to_nonpositive": 0,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 67.40345484730463,
+        "used_boundary_max": 67.49066885505707,
+        "used_time_boundary_range_per_sample": [
+          0.009805891969577374,
+          0.004539272379759041,
+          0.021093992679240614,
+          0.0038596514634576806,
+          0.005825200785835705,
+          0.011198146872885673,
+          0.01967297914504229,
+          0.00307267361857555
+        ]
+      }
+    },
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 77,
+        "recorded_states": 136,
+        "sampled_phase_changes": 6,
+        "positive_to_nonpositive": 3,
+        "nonpositive_to_positive": 3,
+        "used_boundary_min": 67.35683426651306,
+        "used_boundary_max": 67.35683426651306,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 51,
+        "recorded_states": 136,
+        "sampled_phase_changes": 0,
+        "positive_to_nonpositive": 0,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 67.48411974677416,
+        "used_boundary_max": 67.56903654435406,
+        "used_time_boundary_range_per_sample": [
+          0.010500044818940069,
+          0.004498222608987135,
+          0.018783706797975697,
+          0.0038718508954360686,
+          0.0057288988592887335,
+          0.011981946590353232,
+          0.01748475519268311,
+          0.0030364924189143494
+        ]
+      }
+    },
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 76,
+        "recorded_states": 136,
+        "sampled_phase_changes": 6,
+        "positive_to_nonpositive": 3,
+        "nonpositive_to_positive": 3,
+        "used_boundary_min": 67.27232574300037,
+        "used_boundary_max": 67.27232574300037,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 51,
+        "recorded_states": 136,
+        "sampled_phase_changes": 0,
+        "positive_to_nonpositive": 0,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 67.56484078830711,
+        "used_boundary_max": 67.64732294850788,
+        "used_time_boundary_range_per_sample": [
+          0.011182869404549933,
+          0.004444453307684171,
+          0.016439949307553547,
+          0.0038804489076227355,
+          0.005625412410338981,
+          0.012740209013713866,
+          0.015267740948260666,
+          0.003008401584580156
+        ]
+      }
+    },
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 74,
+        "recorded_states": 136,
+        "sampled_phase_changes": 6,
+        "positive_to_nonpositive": 3,
+        "nonpositive_to_positive": 3,
+        "used_boundary_min": 67.18806877786633,
+        "used_boundary_max": 67.18806877786633,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 51,
+        "recorded_states": 136,
+        "sampled_phase_changes": 0,
+        "positive_to_nonpositive": 0,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 67.64553410888695,
+        "used_boundary_max": 67.72545069720198,
+        "used_time_boundary_range_per_sample": [
+          0.0118451446000023,
+          0.00438805878319215,
+          0.014072708090324682,
+          0.003891015065093484,
+          0.0055156672920020355,
+          0.013481898323320252,
+          0.013020777414951112,
+          0.002973630661045945
+        ]
+      }
+    },
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 72,
+        "recorded_states": 136,
+        "sampled_phase_changes": 6,
+        "positive_to_nonpositive": 3,
+        "nonpositive_to_positive": 3,
+        "used_boundary_min": 67.10414863303228,
+        "used_boundary_max": 67.10414863303228,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 51,
+        "recorded_states": 136,
+        "sampled_phase_changes": 0,
+        "positive_to_nonpositive": 0,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 67.72613160196504,
+        "used_boundary_max": 67.80336789549744,
+        "used_time_boundary_range_per_sample": [
+          0.012487264953321642,
+          0.004318335015099706,
+          0.011693249783419901,
+          0.0038849247152796806,
+          0.0053845864424175716,
+          0.01419007930604721,
+          0.010768725876104668,
+          0.002921266119656707
+        ]
+      }
+    },
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 71,
+        "recorded_states": 136,
+        "sampled_phase_changes": 6,
+        "positive_to_nonpositive": 3,
+        "nonpositive_to_positive": 3,
+        "used_boundary_min": 67.02062929695101,
+        "used_boundary_max": 67.02062929695101,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 51,
+        "recorded_states": 136,
+        "sampled_phase_changes": 0,
+        "positive_to_nonpositive": 0,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 67.80655374402821,
+        "used_boundary_max": 67.8810072821956,
+        "used_time_boundary_range_per_sample": [
+          0.013106567578532236,
+          0.004262114958550001,
+          0.009294704128578246,
+          0.0038824603754363807,
+          0.005259542774680881,
+          0.014879265054446478,
+          0.008496802801559511,
+          0.0028705552732617434
+        ]
+      }
+    },
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 68,
+        "recorded_states": 136,
+        "sampled_phase_changes": 6,
+        "positive_to_nonpositive": 4,
+        "nonpositive_to_positive": 2,
+        "used_boundary_min": 66.93759155753001,
+        "used_boundary_max": 66.93759155753001,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 51,
+        "recorded_states": 136,
+        "sampled_phase_changes": 0,
+        "positive_to_nonpositive": 0,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 67.88673678696128,
+        "used_boundary_max": 67.95830402968066,
+        "used_time_boundary_range_per_sample": [
+          0.013697899249820011,
+          0.004178704217352447,
+          0.00690318672670287,
+          0.003863436016047217,
+          0.00511734991809476,
+          0.01553833990570297,
+          0.00623297513045884,
+          0.0028199613225723397
+        ]
+      }
+    },
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 65,
+        "recorded_states": 136,
+        "sampled_phase_changes": 4,
+        "positive_to_nonpositive": 3,
+        "nonpositive_to_positive": 1,
+        "used_boundary_min": 66.85511742671977,
+        "used_boundary_max": 66.85511742671977,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 51,
+        "recorded_states": 136,
+        "sampled_phase_changes": 0,
+        "positive_to_nonpositive": 0,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 67.96658598299993,
+        "used_boundary_max": 68.03518308176659,
+        "used_time_boundary_range_per_sample": [
+          0.014269234828603317,
+          0.0041024183568794115,
+          0.004518889899586043,
+          0.003830912495587313,
+          0.004981595504673919,
+          0.01617252234460409,
+          0.003967197094681296,
+          0.002756599583648267
+        ]
+      }
+    },
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 64,
+        "recorded_states": 136,
+        "sampled_phase_changes": 4,
+        "positive_to_nonpositive": 3,
+        "nonpositive_to_positive": 1,
+        "used_boundary_min": 66.77328172014333,
+        "used_boundary_max": 66.77328172014333,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 52,
+        "recorded_states": 136,
+        "sampled_phase_changes": 1,
+        "positive_to_nonpositive": 1,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 68.04604444967622,
+        "used_boundary_max": 68.11189466608616,
+        "used_time_boundary_range_per_sample": [
+          0.014803951087912992,
+          0.004006646320974028,
+          0.0024452087379955856,
+          0.003807137485651424,
+          0.0048266114984016895,
+          0.016778864590065723,
+          0.0020165105229494884,
+          0.0026863741150293663
+        ]
+      }
+    },
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 63,
+        "recorded_states": 136,
+        "sampled_phase_changes": 4,
+        "positive_to_nonpositive": 3,
+        "nonpositive_to_positive": 1,
+        "used_boundary_min": 66.6921597673772,
+        "used_boundary_max": 66.6921597673772,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 52,
+        "recorded_states": 136,
+        "sampled_phase_changes": 1,
+        "positive_to_nonpositive": 1,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 68.12503442232571,
+        "used_boundary_max": 68.18882505446997,
+        "used_time_boundary_range_per_sample": [
+          0.015323129088329779,
+          0.003911992087139993,
+          0.0013646270257652304,
+          0.0037768273272718034,
+          0.004674678710955504,
+          0.017341602212056273,
+          0.001371497666738719,
+          0.002628108586478106
+        ]
+      }
+    },
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 62,
+        "recorded_states": 136,
+        "sampled_phase_changes": 4,
+        "positive_to_nonpositive": 3,
+        "nonpositive_to_positive": 1,
+        "used_boundary_min": 66.61183003901793,
+        "used_boundary_max": 66.61183003901793,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 52,
+        "recorded_states": 136,
+        "sampled_phase_changes": 1,
+        "positive_to_nonpositive": 1,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 68.20346881430486,
+        "used_boundary_max": 68.26565292378542,
+        "used_time_boundary_range_per_sample": [
+          0.015800077899783105,
+          0.0038132209800494365,
+          0.0029279406449802536,
+          0.003731915948876008,
+          0.004503237124666271,
+          0.017867086143112942,
+          0.00293442593735449,
+          0.0025473526499553145
+        ]
+      }
+    },
+    {
+      "z_min": 3.9119255542755127,
+      "z_max": 4.605170249938965,
+      "layer1": {
+        "default_states": 61,
+        "recorded_states": 136,
+        "sampled_phase_changes": 4,
+        "positive_to_nonpositive": 3,
+        "nonpositive_to_positive": 1,
+        "used_boundary_min": 66.53235564261477,
+        "used_boundary_max": 66.53235564261477,
+        "used_time_boundary_range_per_sample": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "layer2": {
+        "default_states": 53,
+        "recorded_states": 136,
+        "sampled_phase_changes": 1,
+        "positive_to_nonpositive": 1,
+        "nonpositive_to_positive": 0,
+        "used_boundary_min": 68.28127691276535,
+        "used_boundary_max": 68.34217850683468,
+        "used_time_boundary_range_per_sample": [
+          0.016239031026287876,
+          0.0037177378332273747,
+          0.004874488917423037,
+          0.003686124871052243,
+          0.0043386030757659455,
+          0.018365426249744132,
+          0.004872424327189151,
+          0.0024798420629821294
+        ]
+      }
+    }
+  ],
+  "parameter_updates": {
+    "raw_theta1": {
+      "changed_coordinates": 9,
+      "l2": 0.717020015230448
+    },
+    "raw_theta2": {
+      "changed_coordinates": 9,
+      "l2": 0.7166894218752645
+    }
+  },
+  "loss": {
+    "initial": 0.017321569845080376,
+    "final": 0.016821451485157013,
+    "relative_reduction": 0.028872577046785686
+  },
+  "financial_kernel_calls": 0,
+  "pytorch_calls": 0,
+  "new_candidate_rollouts": 0,
+  "scope": "Archived source/identity checks and NumPy reassembly of four-mode full local/temporal chains, direct boundary credit, branch counts, parameter update continuity and terminal losses. No new financial points, no Torch run, no optimizer replay, and no independent recomputation of later eleven training gradients.",
+  "interpretation_limits": [
+    "Derivative route identity is demonstrated on the fixed functional traces, not a causal task-quality advantage.",
+    "The direct boundary gate concerns the time-resolved norm; its net sum and remaining state-history term are reported separately.",
+    "The recorded relative loss reduction is a twelve-update deterministic functional observation with no matched baseline or held-out assessment.",
+    "Boundary phase changes are sampled input-driven transitions, not precise events or demonstrated autonomous spikes.",
+    "The dynamic boundary belongs to repeated static H-X operator evaluations, not a solved time-dependent financial PDE.",
+    "Default-side Q/R saturation is retained and reported. Finite traces do not prove global or step-size stability."
+  ]
+}

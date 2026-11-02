@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn.hx-autograd-results-summary.v3",
+  "protocol_sha256": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+  "gradient_gate_passed": true,
+  "gradient_summary": {
+    "cases": 6,
+    "directional_checks": 168,
+    "passed_directional_checks": 168,
+    "max_directional_error": 9.51369304901294e-05,
+    "max_chain_error": 5.270680520615516e-08,
+    "contract_checks": 32,
+    "contract_passed": 32
+  },
+  "training_smoke_passed": true,
+  "training_parameter_count": 28,
+  "initial_training_loss": 1.2916021347045898,
+  "final_training_loss": 0.10680591315031052,
+  "gradient_runtime": {
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "cuda_available": false,
+    "wall_seconds": 0.2244529089985008,
+    "process_cpu_seconds": 0.11503373699999986,
+    "financial_calls": 368,
+    "financial_states": 369
+  },
+  "training_runtime": {
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "cuda_available": false,
+    "wall_seconds": 0.8119763489994511,
+    "process_cpu_seconds": 0.2638390749999999,
+    "financial_calls": 164,
+    "financial_states": 5248
+  },
+  "previous_first_order_identity": true,
+  "claims": "First-order API and optimizer wiring only; no optimal boundary policy, temporal mechanism, generalization, ordinary-FP32 or model advantage."
+}

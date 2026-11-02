@@ -1,0 +1,348 @@
+{
+  "schema": "robrix-workflow-wiring-v2",
+  "passed": true,
+  "scope": "Actual extracted workflow Bash plus unchanged shell wrapper on Linux; Python executor is an explicit synthetic argument/exit double. No native Bazel, MSVC, Windows host, or test assertions executed.",
+  "workflow": {
+    "sha256": "08e885ff1c0f475d5b80a0c267fddcbf6d2ffb527d1c5c8c9dffc9c43ade1091",
+    "bytes": 4159
+  },
+  "shell_wrapper": {
+    "sha256": "54a2e8fe8da8253b92986380ae502082354b824759c970c29235c86b3ba291cf",
+    "bytes": 13699
+  },
+  "workflow_matrix_runs": [
+    {
+      "runner_os": "Linux",
+      "matrix_os": "ubuntu-24.04",
+      "matrix_target": "x86_64-unknown-linux-gnu",
+      "synthetic_lower_exit": 0,
+      "execution": {
+        "command": [
+          "bash",
+          "-c",
+          "set -euo pipefail\nbazel_wrapper_args=(\n  --print-failed-action-summary\n  --print-failed-test-logs\n)\nbazel_test_args=(\n  test\n  --nocache_test_results\n  --test_output=all\n  --test_verbose_timeout_warnings\n  \"--build_metadata=COMMIT_SHA=${SOURCE_COMMIT}\"\n  --build_metadata=TAG_job=robrix-fixture-r16\n)\nif [[ \"${RUNNER_OS}\" == \"Windows\" ]]; then\n  bazel_wrapper_args+=(--windows-msvc-host-platform --remote-download-toplevel)\n  bazel_test_args+=(--platforms=//:windows_x86_64_msvc)\nfi\n./.github/scripts/run-bazel-ci.sh \\\n  \"${bazel_wrapper_args[@]}\" -- \"${bazel_test_args[@]}\" -- \\\n  //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test\n"
+        ],
+        "exit_code": 0,
+        "stdout": "BuildBuddy API key is not available; using local Bazel configuration.\n",
+        "stderr": ""
+      },
+      "lower_executor_calls": [
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "test",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--test_verbose_timeout_warnings",
+          "--build_metadata=COMMIT_SHA=f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+          "--build_metadata=TAG_job=robrix-fixture-r16",
+          "--config=ci-linux",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ]
+      ]
+    },
+    {
+      "runner_os": "Linux",
+      "matrix_os": "ubuntu-24.04",
+      "matrix_target": "x86_64-unknown-linux-gnu",
+      "synthetic_lower_exit": 37,
+      "execution": {
+        "command": [
+          "bash",
+          "-c",
+          "set -euo pipefail\nbazel_wrapper_args=(\n  --print-failed-action-summary\n  --print-failed-test-logs\n)\nbazel_test_args=(\n  test\n  --nocache_test_results\n  --test_output=all\n  --test_verbose_timeout_warnings\n  \"--build_metadata=COMMIT_SHA=${SOURCE_COMMIT}\"\n  --build_metadata=TAG_job=robrix-fixture-r16\n)\nif [[ \"${RUNNER_OS}\" == \"Windows\" ]]; then\n  bazel_wrapper_args+=(--windows-msvc-host-platform --remote-download-toplevel)\n  bazel_test_args+=(--platforms=//:windows_x86_64_msvc)\nfi\n./.github/scripts/run-bazel-ci.sh \\\n  \"${bazel_wrapper_args[@]}\" -- \"${bazel_test_args[@]}\" -- \\\n  //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test\n"
+        ],
+        "exit_code": 37,
+        "stdout": "BuildBuddy API key is not available; using local Bazel configuration.\nERROR: synthetic lower-executor failure\n\nBazel failed action diagnostics:\n--------------------------------\nERROR: synthetic lower-executor failure\n--------------------------------\nNo failed Bazel test targets were found in console output.\n",
+        "stderr": ""
+      },
+      "lower_executor_calls": [
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "test",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--test_verbose_timeout_warnings",
+          "--build_metadata=COMMIT_SHA=f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+          "--build_metadata=TAG_job=robrix-fixture-r16",
+          "--config=ci-linux",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-linux",
+          "bazel-testlogs"
+        ]
+      ]
+    },
+    {
+      "runner_os": "Windows",
+      "matrix_os": "windows-latest",
+      "matrix_target": "x86_64-pc-windows-msvc",
+      "synthetic_lower_exit": 0,
+      "execution": {
+        "command": [
+          "bash",
+          "-c",
+          "set -euo pipefail\nbazel_wrapper_args=(\n  --print-failed-action-summary\n  --print-failed-test-logs\n)\nbazel_test_args=(\n  test\n  --nocache_test_results\n  --test_output=all\n  --test_verbose_timeout_warnings\n  \"--build_metadata=COMMIT_SHA=${SOURCE_COMMIT}\"\n  --build_metadata=TAG_job=robrix-fixture-r16\n)\nif [[ \"${RUNNER_OS}\" == \"Windows\" ]]; then\n  bazel_wrapper_args+=(--windows-msvc-host-platform --remote-download-toplevel)\n  bazel_test_args+=(--platforms=//:windows_x86_64_msvc)\nfi\n./.github/scripts/run-bazel-ci.sh \\\n  \"${bazel_wrapper_args[@]}\" -- \"${bazel_test_args[@]}\" -- \\\n  //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test\n"
+        ],
+        "exit_code": 0,
+        "stdout": "BuildBuddy API key is not available; using local Bazel configuration.\n",
+        "stderr": ""
+      },
+      "lower_executor_calls": [
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "test",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--test_verbose_timeout_warnings",
+          "--build_metadata=COMMIT_SHA=f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+          "--build_metadata=TAG_job=robrix-fixture-r16",
+          "--platforms=//:windows_x86_64_msvc",
+          "--config=ci-windows",
+          "--host_platform=//:local_windows_msvc",
+          "--remote_download_toplevel",
+          "--action_env=INCLUDE",
+          "--host_action_env=INCLUDE",
+          "--action_env=LIB",
+          "--host_action_env=LIB",
+          "--action_env=LIBPATH",
+          "--host_action_env=LIBPATH",
+          "--action_env=UniversalCRTSdkDir",
+          "--host_action_env=UniversalCRTSdkDir",
+          "--action_env=VCToolsInstallDir",
+          "--host_action_env=VCToolsInstallDir",
+          "--action_env=WindowsSdkDir",
+          "--host_action_env=WindowsSdkDir",
+          "--action_env=PATH=synthetic-windows-path",
+          "--host_action_env=PATH=synthetic-windows-path",
+          "--test_env=PATH=synthetic-windows-path",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ]
+      ]
+    },
+    {
+      "runner_os": "Windows",
+      "matrix_os": "windows-latest",
+      "matrix_target": "x86_64-pc-windows-msvc",
+      "synthetic_lower_exit": 37,
+      "execution": {
+        "command": [
+          "bash",
+          "-c",
+          "set -euo pipefail\nbazel_wrapper_args=(\n  --print-failed-action-summary\n  --print-failed-test-logs\n)\nbazel_test_args=(\n  test\n  --nocache_test_results\n  --test_output=all\n  --test_verbose_timeout_warnings\n  \"--build_metadata=COMMIT_SHA=${SOURCE_COMMIT}\"\n  --build_metadata=TAG_job=robrix-fixture-r16\n)\nif [[ \"${RUNNER_OS}\" == \"Windows\" ]]; then\n  bazel_wrapper_args+=(--windows-msvc-host-platform --remote-download-toplevel)\n  bazel_test_args+=(--platforms=//:windows_x86_64_msvc)\nfi\n./.github/scripts/run-bazel-ci.sh \\\n  \"${bazel_wrapper_args[@]}\" -- \"${bazel_test_args[@]}\" -- \\\n  //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test\n"
+        ],
+        "exit_code": 37,
+        "stdout": "BuildBuddy API key is not available; using local Bazel configuration.\nERROR: synthetic lower-executor failure\n\nBazel failed action diagnostics:\n--------------------------------\nERROR: synthetic lower-executor failure\n--------------------------------\nNo failed Bazel test targets were found in console output.\n",
+        "stderr": ""
+      },
+      "lower_executor_calls": [
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "test",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--test_verbose_timeout_warnings",
+          "--build_metadata=COMMIT_SHA=f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+          "--build_metadata=TAG_job=robrix-fixture-r16",
+          "--platforms=//:windows_x86_64_msvc",
+          "--config=ci-windows",
+          "--host_platform=//:local_windows_msvc",
+          "--remote_download_toplevel",
+          "--action_env=INCLUDE",
+          "--host_action_env=INCLUDE",
+          "--action_env=LIB",
+          "--host_action_env=LIB",
+          "--action_env=LIBPATH",
+          "--host_action_env=LIBPATH",
+          "--action_env=UniversalCRTSdkDir",
+          "--host_action_env=UniversalCRTSdkDir",
+          "--action_env=VCToolsInstallDir",
+          "--host_action_env=VCToolsInstallDir",
+          "--action_env=WindowsSdkDir",
+          "--host_action_env=WindowsSdkDir",
+          "--action_env=PATH=synthetic-windows-path",
+          "--host_action_env=PATH=synthetic-windows-path",
+          "--test_env=PATH=synthetic-windows-path",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-windows",
+          "--platforms=//:windows_x86_64_msvc",
+          "--host_platform=//:local_windows_msvc",
+          "bazel-testlogs"
+        ]
+      ]
+    },
+    {
+      "runner_os": "macOS",
+      "matrix_os": "macos-15",
+      "matrix_target": "aarch64-apple-darwin",
+      "synthetic_lower_exit": 0,
+      "execution": {
+        "command": [
+          "bash",
+          "-c",
+          "set -euo pipefail\nbazel_wrapper_args=(\n  --print-failed-action-summary\n  --print-failed-test-logs\n)\nbazel_test_args=(\n  test\n  --nocache_test_results\n  --test_output=all\n  --test_verbose_timeout_warnings\n  \"--build_metadata=COMMIT_SHA=${SOURCE_COMMIT}\"\n  --build_metadata=TAG_job=robrix-fixture-r16\n)\nif [[ \"${RUNNER_OS}\" == \"Windows\" ]]; then\n  bazel_wrapper_args+=(--windows-msvc-host-platform --remote-download-toplevel)\n  bazel_test_args+=(--platforms=//:windows_x86_64_msvc)\nfi\n./.github/scripts/run-bazel-ci.sh \\\n  \"${bazel_wrapper_args[@]}\" -- \"${bazel_test_args[@]}\" -- \\\n  //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test\n"
+        ],
+        "exit_code": 0,
+        "stdout": "BuildBuddy API key is not available; using local Bazel configuration.\n",
+        "stderr": ""
+      },
+      "lower_executor_calls": [
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "test",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--test_verbose_timeout_warnings",
+          "--build_metadata=COMMIT_SHA=f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+          "--build_metadata=TAG_job=robrix-fixture-r16",
+          "--config=ci-macos",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ]
+      ]
+    },
+    {
+      "runner_os": "macOS",
+      "matrix_os": "macos-15",
+      "matrix_target": "aarch64-apple-darwin",
+      "synthetic_lower_exit": 37,
+      "execution": {
+        "command": [
+          "bash",
+          "-c",
+          "set -euo pipefail\nbazel_wrapper_args=(\n  --print-failed-action-summary\n  --print-failed-test-logs\n)\nbazel_test_args=(\n  test\n  --nocache_test_results\n  --test_output=all\n  --test_verbose_timeout_warnings\n  \"--build_metadata=COMMIT_SHA=${SOURCE_COMMIT}\"\n  --build_metadata=TAG_job=robrix-fixture-r16\n)\nif [[ \"${RUNNER_OS}\" == \"Windows\" ]]; then\n  bazel_wrapper_args+=(--windows-msvc-host-platform --remote-download-toplevel)\n  bazel_test_args+=(--platforms=//:windows_x86_64_msvc)\nfi\n./.github/scripts/run-bazel-ci.sh \\\n  \"${bazel_wrapper_args[@]}\" -- \"${bazel_test_args[@]}\" -- \\\n  //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test\n"
+        ],
+        "exit_code": 37,
+        "stdout": "BuildBuddy API key is not available; using local Bazel configuration.\nERROR: synthetic lower-executor failure\n\nBazel failed action diagnostics:\n--------------------------------\nERROR: synthetic lower-executor failure\n--------------------------------\nNo failed Bazel test targets were found in console output.\n",
+        "stderr": ""
+      },
+      "lower_executor_calls": [
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "test",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--test_verbose_timeout_warnings",
+          "--build_metadata=COMMIT_SHA=f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+          "--build_metadata=TAG_job=robrix-fixture-r16",
+          "--config=ci-macos",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-macos",
+          "bazel-testlogs"
+        ]
+      ]
+    },
+    {
+      "runner_os": "macOS",
+      "matrix_os": "macos-15-intel",
+      "matrix_target": "x86_64-apple-darwin",
+      "synthetic_lower_exit": 0,
+      "execution": {
+        "command": [
+          "bash",
+          "-c",
+          "set -euo pipefail\nbazel_wrapper_args=(\n  --print-failed-action-summary\n  --print-failed-test-logs\n)\nbazel_test_args=(\n  test\n  --nocache_test_results\n  --test_output=all\n  --test_verbose_timeout_warnings\n  \"--build_metadata=COMMIT_SHA=${SOURCE_COMMIT}\"\n  --build_metadata=TAG_job=robrix-fixture-r16\n)\nif [[ \"${RUNNER_OS}\" == \"Windows\" ]]; then\n  bazel_wrapper_args+=(--windows-msvc-host-platform --remote-download-toplevel)\n  bazel_test_args+=(--platforms=//:windows_x86_64_msvc)\nfi\n./.github/scripts/run-bazel-ci.sh \\\n  \"${bazel_wrapper_args[@]}\" -- \"${bazel_test_args[@]}\" -- \\\n  //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test\n"
+        ],
+        "exit_code": 0,
+        "stdout": "BuildBuddy API key is not available; using local Bazel configuration.\n",
+        "stderr": ""
+      },
+      "lower_executor_calls": [
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "test",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--test_verbose_timeout_warnings",
+          "--build_metadata=COMMIT_SHA=f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+          "--build_metadata=TAG_job=robrix-fixture-r16",
+          "--config=ci-macos",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ]
+      ]
+    },
+    {
+      "runner_os": "macOS",
+      "matrix_os": "macos-15-intel",
+      "matrix_target": "x86_64-apple-darwin",
+      "synthetic_lower_exit": 37,
+      "execution": {
+        "command": [
+          "bash",
+          "-c",
+          "set -euo pipefail\nbazel_wrapper_args=(\n  --print-failed-action-summary\n  --print-failed-test-logs\n)\nbazel_test_args=(\n  test\n  --nocache_test_results\n  --test_output=all\n  --test_verbose_timeout_warnings\n  \"--build_metadata=COMMIT_SHA=${SOURCE_COMMIT}\"\n  --build_metadata=TAG_job=robrix-fixture-r16\n)\nif [[ \"${RUNNER_OS}\" == \"Windows\" ]]; then\n  bazel_wrapper_args+=(--windows-msvc-host-platform --remote-download-toplevel)\n  bazel_test_args+=(--platforms=//:windows_x86_64_msvc)\nfi\n./.github/scripts/run-bazel-ci.sh \\\n  \"${bazel_wrapper_args[@]}\" -- \"${bazel_test_args[@]}\" -- \\\n  //codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test\n"
+        ],
+        "exit_code": 37,
+        "stdout": "BuildBuddy API key is not available; using local Bazel configuration.\nERROR: synthetic lower-executor failure\n\nBazel failed action diagnostics:\n--------------------------------\nERROR: synthetic lower-executor failure\n--------------------------------\nNo failed Bazel test targets were found in console output.\n",
+        "stderr": ""
+      },
+      "lower_executor_calls": [
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "test",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--test_verbose_timeout_warnings",
+          "--build_metadata=COMMIT_SHA=f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+          "--build_metadata=TAG_job=robrix-fixture-r16",
+          "--config=ci-macos",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        [
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-macos",
+          "bazel-testlogs"
+        ]
+      ]
+    }
+  ],
+  "source_preflight_runs": [
+    {
+      "actual_head": "e8fc353b9a7335878c0be88b227904fb635e5d18",
+      "requested_head": "e8fc353b9a7335878c0be88b227904fb635e5d18",
+      "execution": {
+        "command": [
+          "bash",
+          "-c",
+          "set -euo pipefail\nactual_commit=\"$(git rev-parse HEAD)\"\nif [[ \"${actual_commit}\" != \"${SOURCE_COMMIT}\" ]]; then\n  echo \"::error::Checkout does not match the requested source head\"\n  exit 1\nfi\nprintf 'Robrix source commit: %s\\n' \"${actual_commit}\"\n"
+        ],
+        "exit_code": 0,
+        "stdout": "Robrix source commit: e8fc353b9a7335878c0be88b227904fb635e5d18\n",
+        "stderr": ""
+      }
+    },
+    {
+      "actual_head": "e8fc353b9a7335878c0be88b227904fb635e5d18",
+      "requested_head": "0000000000000000000000000000000000000000",
+      "execution": {
+        "command": [
+          "bash",
+          "-c",
+          "set -euo pipefail\nactual_commit=\"$(git rev-parse HEAD)\"\nif [[ \"${actual_commit}\" != \"${SOURCE_COMMIT}\" ]]; then\n  echo \"::error::Checkout does not match the requested source head\"\n  exit 1\nfi\nprintf 'Robrix source commit: %s\\n' \"${actual_commit}\"\n"
+        ],
+        "exit_code": 1,
+        "stdout": "::error::Checkout does not match the requested source head\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "native_execution_count": 0
+}

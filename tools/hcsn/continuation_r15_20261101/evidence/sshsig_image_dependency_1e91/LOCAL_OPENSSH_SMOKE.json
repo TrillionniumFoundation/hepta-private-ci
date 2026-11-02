@@ -1,0 +1,14 @@
+{
+  "scope": "Local host /usr/bin/ssh-keygen primitive test; not the pinned RBE image or native Rust suite",
+  "executable": "/usr/bin/ssh-keygen",
+  "sha256": "bae95dd024aed593da92f8a03fcb5fca6b5a153f89f603bf8118a0cceb7c58f5",
+  "namespace": "hepta-vnext-operator-acceptance-v1",
+  "inherited_descriptors": true,
+  "cleared_environment": true,
+  "outcomes": {
+    "valid": 0,
+    "tampered_statement": 255,
+    "wrong_namespace": 255
+  },
+  "ephemeral_private_key_removed": true
+}

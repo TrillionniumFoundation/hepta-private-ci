@@ -1,0 +1,115 @@
+{
+  "schema": "hcsn.exec-authorized-read-evidence-manifest.v1",
+  "files": [
+    {
+      "path": "exec_authorized_read_fail_closed.patch",
+      "bytes": 9625,
+      "sha256": "d10cae0737e5262169bb39964a8de581319fa3f315b7dffd1f10546d5640d876"
+    },
+    {
+      "path": "EXEC_AUTHORIZED_READ_REPORT_ZH.md",
+      "bytes": 4737,
+      "sha256": "bf91f5a012f0b2e616d8e77a4dd6c702bd0ebcd2aaa549aa9fac9efd7e7287a5"
+    },
+    {
+      "path": "EXEC_ORIGINAL_FAILURES.json",
+      "bytes": 2367,
+      "sha256": "4e3aa1a80d5f06c59e9e11ed97bd6408f32a959d8a6452c6a69e67b6b522b463"
+    },
+    {
+      "path": "EXEC_REPAIR_RECEIPT.json",
+      "bytes": 4401,
+      "sha256": "e0ac253c0ac8a6f1c2f4058a893648e23e86a6e5278fe4a40dcaa999d4369dc6"
+    },
+    {
+      "path": "original/codex-rs/exec-server/src/server/file_system_handler.rs",
+      "bytes": 15514,
+      "sha256": "509a8b8f3880f6418fdbf6625ee583de24572e8e1e3c0894a48d2087514db10b"
+    },
+    {
+      "path": "candidate/codex-rs/exec-server/src/server/file_system_handler.rs",
+      "bytes": 15783,
+      "sha256": "5aa844517513a0d213224784f1596627894f4e397783258f72ae41c5b808230a"
+    },
+    {
+      "path": "original/codex-rs/exec-server/tests/authorized_read_rpc.rs",
+      "bytes": 4109,
+      "sha256": "e90844ada44b4f0f7d52818284d705bdd88d15f401420ecd26ba2852505c884b"
+    },
+    {
+      "path": "candidate/codex-rs/exec-server/tests/authorized_read_rpc.rs",
+      "bytes": 6149,
+      "sha256": "2d86b77b785d89e8438f55a5e1b8c936102df0a8743661285580da4cad168b55"
+    },
+    {
+      "path": "original/codex-rs/exec-server/tests/file_system_unix.rs",
+      "bytes": 58996,
+      "sha256": "79651ba2e486920d21f7ca6c1342fb2d91df3c8e07e51cde45c341afd59223d1"
+    },
+    {
+      "path": "candidate/codex-rs/exec-server/tests/file_system_unix.rs",
+      "bytes": 59771,
+      "sha256": "627c4630ad1ade2d690598a28d424a3590b59cfec4f8a7e1478ada2075d924c0"
+    },
+    {
+      "path": "original/codex-rs/exec-server/tests/file_system/support.rs",
+      "bytes": 5973,
+      "sha256": "b5bb84d9f6af9a7b34ebd17f2a3949b93b23d50e53074f94d4cf11d7d60fa295"
+    },
+    {
+      "path": "candidate/codex-rs/exec-server/tests/file_system/support.rs",
+      "bytes": 6765,
+      "sha256": "c458db4c7fea9e9e53b31ba9d1f7a6f51aa421760470e609cb877a79f7e5367a"
+    },
+    {
+      "path": "source_context/codex-rs/exec-server/src/lib.rs",
+      "bytes": 8844,
+      "sha256": "52b29e12c0c4584d327326ae2a6dee376542142b3534ee88607a6e2de23b4b92"
+    },
+    {
+      "path": "source_context/codex-rs/exec-server/src/local_file_system.rs",
+      "bytes": 57668,
+      "sha256": "d03ebdaaeeee2ea66ee716a7e7d4651e7117a6f2b78d8a780609cbdb0dcf57d1"
+    },
+    {
+      "path": "source_context/codex-rs/exec-server/src/remote_file_system.rs",
+      "bytes": 22105,
+      "sha256": "b2a37a65c1ef55b76b2ef5f55bc573137a02eda095b8d359f157b5d46df1bbeb"
+    },
+    {
+      "path": "source_context/codex-rs/file-system/src/lib.rs",
+      "bytes": 19953,
+      "sha256": "bc4a5ce51555ff36df9053cfaa9411f62f585760ea1371e87f330a385ddb375d"
+    },
+    {
+      "path": "source_context/codex-rs/utils/path-uri/src/lib.rs",
+      "bytes": 35915,
+      "sha256": "883cd0cb547512ef0c4845a2a4254be9c24d0e7d76913d2a39955e5706abe1dc"
+    },
+    {
+      "path": "source_context/codex-rs/utils/absolute-path/src/lib.rs",
+      "bytes": 26629,
+      "sha256": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70"
+    },
+    {
+      "path": "formatter_context/justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "formatter_context/scripts/format.py",
+      "bytes": 16599,
+      "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+    },
+    {
+      "path": "formatter_context/scripts/just-shell.py",
+      "bytes": 2030,
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    {
+      "path": "formatter_context/codex-rs/rustfmt.toml",
+      "bytes": 164,
+      "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+    }
+  ]
+}

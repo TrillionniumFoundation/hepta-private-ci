@@ -1,0 +1,59 @@
+{
+  "scope": "Bound only the macOS V8 client build and artifact materialization requests; candidate mitigation, not proven runtime closure",
+  "exact_failure": {
+    "head": "6500d80838d0baf5304a9de584b93d9e0df8c914",
+    "run": 41292214032,
+    "job": 124806452168,
+    "line": 5330,
+    "message": "java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached"
+  },
+  "observations": [
+    "Only one local Bazel server startup appears in the entire log; no multi-server/startup-option churn evidence",
+    "First V8 build repeatedly reports800 actions, consistent with common:remote --jobs=800",
+    "Bazel stage-release-pair materialization fails after first build succeeded;1,499 action-cache hits, critical path0.30s, no new compile failure",
+    "Repository already uses common --jobs=30 as ordinary client execution/download budget, superseded by remote config"
+  ],
+  "change": "Add common:v8-macos-client --jobs=30 and include it after the RBE config in both macOS-only workflow invocations. Other platforms and every target/test/download validation remain.",
+  "limits": "Logs do not identify the exhausted native thread pool, heap or OS thread quota. The source-backed mitigation lowers concurrency; real new-head macOS arm64+Intel canary stages remain the acceptance gate. No retry/suppression/skip is added.",
+  "sources": [
+    {
+      "path": ".bazelrc",
+      "source_git_blob": "0ce81ff3d71d30aeedd7240ee001dd8166364ee2",
+      "candidate_sha256": "2432f69dc762d0823b104152d13087f5447ed61ac5c374e379423104ca677fdd"
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "source_git_blob": "86e23394e6a0ad243c8c79cf68ae01423aebc721",
+      "candidate_sha256": "ebf58222be101555100e8e6fe7792fe291ae070ef91db625fc49345f66ff0db8"
+    }
+  ],
+  "yaml_semantic_changes": [
+    {
+      "job": "build",
+      "step": "Build Bazel V8 release pair"
+    },
+    {
+      "job": "build",
+      "step": "Stage release pair"
+    }
+  ],
+  "all_other_yaml_values_identical": true,
+  "patch_sha256": "7ae6d6256deb3865d02e7f1ad2c733eac0baaf7f29ab39bc441ebb94f2848b35",
+  "validation": {
+    "actual_wrapper_argument_order": [
+      "build",
+      "--config=buildbuddy-generic-rbe",
+      "--remote_header=x-buildbuddy-api-key=test-only-token",
+      "--config=ci-macos",
+      "--config=v8-target-arm64",
+      "--config=v8-macos-client",
+      "//third_party/v8:rusty_v8_sandbox_release_pair_aarch64_apple_darwin"
+    ],
+    "preserves_rbe": true,
+    "preserves_exact_target": true,
+    "client_budget_config_after_rbe_config": true,
+    "prettier_3_5_3_check_exit_code": 0,
+    "main_git_apply_check_exit_code": 0,
+    "macos_runtime": "not run locally"
+  }
+}

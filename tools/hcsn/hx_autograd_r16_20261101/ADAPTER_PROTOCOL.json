@@ -1,0 +1,69 @@
+{
+  "schema": "hcsn.hx-autograd-protocol.v3",
+  "frozen_utc": "2026-11-01T17:24:07.261553+00:00",
+  "financial_protocol_sha256": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+  "financial_binary_sha256": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+  "source_sha256": {
+    "hx_autograd.py": "8117df2cae6b17612d7537b96d72ca74a340bb5356e61bbc3f73b9fe478aa870",
+    "adapter_common.py": "6921dfae93b6ecd7bf28724b10b4d2823c4b21bd7c237b022c075aa9f76fab5a",
+    "audit_gradients.py": "9d4e4ec2ee1bb6d05c4931c4692703cb018928aaacab00046b93e7764e320fc4",
+    "training_smoke.py": "f91ea1ac624681aedd90ce72644a9c7fac8ac123a5e720cf28ae28fb24569c03",
+    "readout_evidence.py": "671ecd0fc548d4ce77118a12beea107f5ad0eda079c857c0cd28c3502d664a5c",
+    "verify_first_order_identity.py": "f180c7762b7d71e66a54479f22f07d094655258a52d78e7cc570a608dab4ad4f",
+    "freeze_first_order_v3.py": "db50e30052c77f0db9214d0a729e7344c363e977d05a02a0c0e5928d1160c000"
+  },
+  "fixture_sha256": "c94ccdbc02f783c99c5de47032ebc883d7de0b6ff9efc02857ac846547c43bee",
+  "input_contract": "Only CPU torch.float32, packed[...,10]=nine financial parameters plus state. No float64 input downcast. Positive V for asset; independent x>=0 for log_distance.",
+  "output_contract": "Five original financial outputs float64; features append new R=1-(1-F)^2 and information-preserving x. Financial evaluation always uses frozen FP64 mode.",
+  "gradient_contract": "First-order VJP of continuous real formulas evaluated at represented FP32 inputs; float64 contraction, float32 leaf gradient. Not derivative of the rounding map. No double backward/JVP/torch.compile/GPU support claimed.",
+  "boundary_contract": "Asset V<=b uses original default-branch derivatives; positive V remains visible in x. Original F/G are not globally C1. Log x=0 uses a continuation-side right derivative; R is an additional C1 observable, not a C2 force.",
+  "finite_difference_steps": [
+    0.001,
+    0.0005
+  ],
+  "finite_difference_rule": "Scale each direction coordinate by max(.01,abs(input)); quantize both endpoints to FP32, use actual effective central direction and record midpoint offset. Boundary state basis uses nonuniform-node three-point right derivative; all asset endpoints must remain on base branch. No financial MP80 oracle imported.",
+  "gates": {
+    "feature_value_scaled": 1e-12,
+    "chain_jacobian_scaled": 1e-06,
+    "directional_difference_scaled": 0.0005
+  },
+  "gate_scope": "Integration finite-step checks only; these thresholds do not modify or replace the frozen R16 financial values/Jacobian gates.",
+  "training_smoke": {
+    "seed": 2026110141,
+    "batch_size": 32,
+    "steps": 80,
+    "learning_rate": 0.02,
+    "optimizer": "Adam",
+    "pass_rule": "All gradients/parameters finite; all named parameter tensors update; final loss below initial loss. Same synthetic training grid only."
+  },
+  "retention": "Keep every directional record and failure. No source or threshold edits after opening without a new version. Fixed integration checks do not establish generalization.",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "torch": "2.15.0+cpu",
+    "cuda_available": false
+  },
+  "supporting_docs": [
+    "https://docs.pytorch.org/docs/2.15/notes/extending.html"
+  ],
+  "forbidden_claims": [
+    "ordinary FP32 financial qualification",
+    "original F/G are C1",
+    "smooth observation proves C2 force",
+    "higher-order BP",
+    "GPU or model/task superiority"
+  ],
+  "revision": {
+    "previous_protocol_sha256": "d3ada27411e77ebc4be99dd96e7f6895fbd844e0fd985e7506d682088ee3f4ce",
+    "independent_defect_sha256": "2a8e827c04c7d60ffff377fd18337f75c8ffd4362fac55f068055bccfeb7a42f",
+    "reason": "once_differentiable alone allowed silently incomplete second derivatives through composite readouts. V3 rejects grad-enabled backward at entry, before any no_grad wrapper; ordinary first-order contraction remains unchanged.",
+    "retained_attempts": "V1 serialization failure, complete V2 sources/first-order results, and independently reproduced V2 higher-order defect remain archived.",
+    "evaluation_scope": "Same already opened six functional cases, 168 directions, steps, tolerances and 80-step training configuration; no new financial holdout."
+  },
+  "higher_order_contract": "At the first financial VJP with create_graph=True, reject explicitly for all five raw fields and all three composite readouts in both coordinates. Pure identity operations outside the financial graph are ordinary PyTorch operations, not a financial Hessian.",
+  "first_order_regression_identity": {
+    "gradients_sha256": "ac15ecd17abecb7cc4e18058f464689ff07cd7478bf5a33f735290af7c9cf022",
+    "training_sha256": "1a00a8aa7b4e3756811b18cf3fc9f60dbe2ef6c0e4e068184bc79a14a2d110a7",
+    "rule": "All first-order matrices/directional records, every training loss/gradient and initial/final tensors must remain exactly identical; new error checks and timing are separate."
+  }
+}

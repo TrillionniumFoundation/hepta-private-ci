@@ -1,0 +1,42 @@
+{
+  "schema": "hcsn.fixed-potential-independent-prevalidation-review.v1",
+  "review_utc": "2026-11-01T17:59:00.212214+00:00",
+  "decision": "No blocking mathematical/interface issue found in the frozen candidate. Eligible for the fixed functional experiment after parent confirms remote protocol checkpoint. No numerical result is asserted by this review.",
+  "protocol_sha256": "7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa",
+  "inputs_sha256": "74e8a4cae1734762579a65608b8350ba8545bb1be79df2de657eaf2e4b65b079",
+  "source_sha256": {
+    "asset_model.py": "ae59e1ed4bb84ce9ad48fdaa0d7c0fd7140f4f3ea3bee7f9aa3ac9d665eed68d",
+    "asset_common.py": "f237b9034342845faef433f43ec452c987f8f9d0b8314d4619241311c5ac6590",
+    "audit_asset.py": "fb99430491cbb73733cb65cc6dbcb7571d83c67bf21dda9f75be2b1e042b40bc",
+    "train_asset.py": "339d7023456cc3a8b248fa29f07c1c39e52c52bf8a6eb45a809e59554c2c91af",
+    "freeze_asset.py": "4e9d7b8a3b9347202ee78351b5422acb36dca1acd781e72a4c3f26b7b5aff00f",
+    "README.md": "4b5e0da20b9e2acd3b1de045d2a0432e5d1f41b4522729747372080465df0b1c",
+    "requirements.txt": "d28e7bff4ce75e376a445d26a80197aa1853f45916fbab62e6d00c8e4f51df23"
+  },
+  "new_financial_calls_by_reviewer": 0,
+  "new_pytorch_calls_by_reviewer": 0,
+  "candidate_or_gate_modified_by_reviewer": false,
+  "scope": "Read-only mathematical, source, protocol, input and file-identity review before this candidate is executed.",
+  "findings": {
+    "coordinate_and_inputs": "New fixed-z initial-state family and vector field. z0, z_rest, drive and targets are numeric constants independent of trainable theta. V1 remains unchanged; this is not an equivalent coordinate rewrite.",
+    "exp_chain": "torch.exp(z) is actually evaluated in FP32 and remains in the computation graph. Pre-exp finite/dtype/device validation and post-exp positive/finite checks prevent overflow/underflow from entering the financial adapter.",
+    "asset_partial_chain": [
+      "Q_theta|z = E_theta|V/b - E*b_theta/b^2",
+      "Q_z = V*E_V/b",
+      "R_theta|z = 2*(1-F)*F_theta|V",
+      "R_z = 2*(1-F)*V*F_V",
+      "x_theta|z = -b_theta/b; ideal x_z = 1",
+      "Raw asset Jacobians already include dependence on the moving financial boundary; no extra shift is added."
+    ],
+    "actual_rounding": "The diagnostic is log(V_repr/b). log(V_repr) need not equal the original represented z; discrepancy is recorded and bounded. Gradients are continuous-formula floating AD, not classical derivatives of quantization.",
+    "loss_and_dynamics": "The terminal loss reads only final z and adaptation. All Euler updates use old states. Q/R are direct values, not gradients of a potential. The extra final financial readout is no-grad logging only.",
+    "temporal_graph": "Normal state updates remain connected. Per-time theta clones permit early contribution audit. Detach is an explicitly separate negative control. Manual A/G use full asset parameter partials and represented V times state partials.",
+    "default_branch": "Fixed fixtures compare represented V directly with raw b and check actual default Q=0,R=1 and zero Q/R local gradients. Original asset domain V>0 is unchanged. Original raw F/G/debt are not declared globally C1.",
+    "default_trace_scope": "Trajectory phase is the sign of the reported floating log(V_repr/b). The trace field true_asset_default_Q_R uses that reported margin and is not by itself a proof of exact V<=b branch classification at every representational corner. Sampled margin phase changes must be described at that scope.",
+    "finite_step_scope": "Finite histories must pass frozen shape/range/finiteness gates. This does not prove nonlinear stability, time-step convergence, continuous-time event times or a limit cycle. In the ideal all-default affine regime, the declared Euler A has multipliers 0.975 and 0.875; the separate A^16 check is appropriate.",
+    "first_order_only": "Original V3 financial backward rejects create_graph=True. Three composite readout channels are included in the new rejection checks; no Hessian or C2 force is supplied.",
+    "threshold_attribution": "Before/after identical physical assets can establish boundary motion and its margin shift. All nine financial parameters may also alter value-field shape, so this does not isolate a causal quality benefit of threshold movement.",
+    "gate_scope": "5 fixed fixtures,15 contracts,8 temporal comparisons,16 steps by8 sequences,12 updates. Loss decrease is not a gate. Previous financial accuracy/quality gates remain unchanged."
+  },
+  "followup": "Read actual audit/training receipts, exact branch/margin separation where recorded, full trajectories, adjoints and all parameter histories. Independently recompute records without repeating the financial oracle."
+}

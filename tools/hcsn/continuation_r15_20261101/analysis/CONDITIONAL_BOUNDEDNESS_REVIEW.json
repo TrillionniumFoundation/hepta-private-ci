@@ -1,0 +1,17 @@
+{
+  "schema": "hcsn.two-layer-conditional-boundedness-independent-review.v1",
+  "document_sha256": "420f07039677cf265a073915af7a7be2c036baa9272f994cffead195888308e3",
+  "blocking_findings": [],
+  "mathematical_review": "The adaptation interval and both z barrier inequalities are correct. k_Q>=0 and positive finite b bounds are stated. One-way coupling bounds h1 then u2, and the second layer inherits an invariant rectangle provided its conditioned theta remains in the assumed valid compact domain.",
+  "existence_scope": "Open-neighborhood joint regularity/local Lipschitz and continuous bounded inputs, or stated Caratheodory alternatives, justify finite-time continuation within the conditional compact invariant sets. Uniform all-time input bounds yield time-independent state bounds; local input bounds yield interval-dependent bounds.",
+  "assumptions_not_proved": "The financial validity and regularity of the entire parameter domain remain assumptions. Tanh boundedness alone does not establish them.",
+  "excluded_conclusions_verified": [
+    "FP32 exp overflow/underflow or Euler stability",
+    "Gradient nonvanishing or boundedness",
+    "Periodic orbit, regenerative spikes or exact event times",
+    "Task, multimodal, quality or efficiency advantage",
+    "Arbitrary bidirectionally coupled networks"
+  ],
+  "new_numerical_executions": 0,
+  "decision": "Accept as a conditional real-ODE statement, independent of the finite-step functional experiment and its gates."
+}

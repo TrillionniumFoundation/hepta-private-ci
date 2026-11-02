@@ -1,0 +1,370 @@
+{
+  "scope": "Isolated candidate only; no main-worktree edits, remote publication, advisory suppressions, or major dependency migrations.",
+  "source_head": "f54da82dc5ddec7cb941e4ccd2f78b82eaf795c6",
+  "candidate_files": {
+    "MODULE.bazel.lock": {
+      "base_sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0",
+      "candidate_sha256": "ccea886b1eaf5362cd4dcc3fef524ccc537e4b5f6ad358ea82b0866f2587cca2",
+      "base_git_blob": "b511f2f09a21057a3d3654e441a69835cbd91ce9",
+      "matches_main_head_blob": true,
+      "present_in_main_sparse_worktree": true
+    },
+    "codex-rs/Cargo.lock": {
+      "base_sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+      "candidate_sha256": "48e2c1373d99f808b6500b1e07537dcb5ee3df3f6a08ae66331de7211082f6a8",
+      "base_git_blob": "8a9eab30d8957daab7dd027e86e88ca792e04a1c",
+      "matches_main_head_blob": true,
+      "present_in_main_sparse_worktree": true
+    },
+    "patches/zstd-sys_windows_msvc_include_dirs.patch": {
+      "base_sha256": "a4b70e82eb982ed76d9733bbe10d8a53a70910f93c316586c020c92a7128dbcb",
+      "candidate_sha256": "6ce040bf865845f91cc30e6e58962bee6ac48f890102ac55ce6774d43dd2a6f0",
+      "base_git_blob": "c45a360a46c283b78bc42a8157c6d9c49aea4e3b",
+      "matches_main_head_blob": true,
+      "present_in_main_sparse_worktree": false
+    }
+  },
+  "dependency_input_baseline": {
+    "path": "REVIEW_BASELINE.json",
+    "sha256": "6e27af188587f56ef0253c509026e1123ec483fdfda749ce6efe45dc11a2109f",
+    "entries": 203,
+    "changed_entries": [
+      "codex-rs/Cargo.lock",
+      "MODULE.bazel.lock"
+    ]
+  },
+  "package_changes": [
+    {
+      "name": "rustls",
+      "old": "0.23.45",
+      "new": "0.23.46"
+    },
+    {
+      "name": "rustls-webpki",
+      "old": "0.103.15",
+      "new": "0.103.16"
+    },
+    {
+      "name": "webpki-root-certs",
+      "old": "1.0.5",
+      "new": "1.0.10"
+    },
+    {
+      "name": "webpki-roots",
+      "old": "1.0.9",
+      "new": "1.0.10"
+    },
+    {
+      "name": "zstd-sys",
+      "old": "2.0.16+zstd.1.5.7",
+      "new": "2.1.2+zstd.1.5.7"
+    }
+  ],
+  "unchanged_package_identity_content_changes": [],
+  "bazel_semantic_changes": [
+    {
+      "path": [
+        "facts",
+        "@@rules_rs+//rs:extensions.bzl%crate",
+        "rustls-webpki_0.103.15"
+      ],
+      "change": "removed"
+    },
+    {
+      "path": [
+        "facts",
+        "@@rules_rs+//rs:extensions.bzl%crate",
+        "rustls_0.23.45"
+      ],
+      "change": "removed"
+    },
+    {
+      "path": [
+        "facts",
+        "@@rules_rs+//rs:extensions.bzl%crate",
+        "webpki-root-certs_1.0.5"
+      ],
+      "change": "removed"
+    },
+    {
+      "path": [
+        "facts",
+        "@@rules_rs+//rs:extensions.bzl%crate",
+        "webpki-roots_1.0.9"
+      ],
+      "change": "removed"
+    },
+    {
+      "path": [
+        "facts",
+        "@@rules_rs+//rs:extensions.bzl%crate",
+        "zstd-sys_2.0.16+zstd.1.5.7"
+      ],
+      "change": "removed"
+    },
+    {
+      "path": [
+        "facts",
+        "@@rules_rs+//rs:extensions.bzl%crate",
+        "rustls-webpki_0.103.16"
+      ],
+      "change": "added"
+    },
+    {
+      "path": [
+        "facts",
+        "@@rules_rs+//rs:extensions.bzl%crate",
+        "rustls_0.23.46"
+      ],
+      "change": "added"
+    },
+    {
+      "path": [
+        "facts",
+        "@@rules_rs+//rs:extensions.bzl%crate",
+        "webpki-root-certs_1.0.10"
+      ],
+      "change": "added"
+    },
+    {
+      "path": [
+        "facts",
+        "@@rules_rs+//rs:extensions.bzl%crate",
+        "webpki-roots_1.0.10"
+      ],
+      "change": "added"
+    },
+    {
+      "path": [
+        "facts",
+        "@@rules_rs+//rs:extensions.bzl%crate",
+        "zstd-sys_2.1.2+zstd.1.5.7"
+      ],
+      "change": "added"
+    }
+  ],
+  "advisory_audit": {
+    "cargo_deny_version": "0.19.0",
+    "rust_toolchain": "1.95.0",
+    "database_commit": "2295466c4e9df26647fd67d8fa1c705ac2fc7f81",
+    "database_fetch_disabled": true,
+    "original_ids": [
+      "RUSTSEC-2024-0449",
+      "RUSTSEC-2026-0318",
+      "RUSTSEC-2026-0319",
+      "RUSTSEC-2026-0346",
+      "RUSTSEC-2026-0347",
+      "RUSTSEC-2026-0348",
+      "RUSTSEC-2026-0349",
+      "RUSTSEC-2026-0367",
+      "RUSTSEC-2026-0368",
+      "RUSTSEC-2026-0369",
+      "RUSTSEC-2026-0370",
+      "RUSTSEC-2026-0371",
+      "RUSTSEC-2026-0372",
+      "RUSTSEC-2026-0374",
+      "RUSTSEC-2026-0381",
+      "RUSTSEC-2026-0382",
+      "RUSTSEC-2026-0383",
+      "RUSTSEC-2026-0387",
+      "RUSTSEC-2026-0391",
+      "RUSTSEC-2026-0398",
+      "RUSTSEC-2026-0403",
+      "RUSTSEC-2026-0410"
+    ],
+    "remaining_ids": [
+      "RUSTSEC-2024-0449",
+      "RUSTSEC-2026-0318",
+      "RUSTSEC-2026-0319",
+      "RUSTSEC-2026-0367",
+      "RUSTSEC-2026-0368",
+      "RUSTSEC-2026-0369",
+      "RUSTSEC-2026-0370",
+      "RUSTSEC-2026-0371",
+      "RUSTSEC-2026-0372",
+      "RUSTSEC-2026-0374",
+      "RUSTSEC-2026-0387",
+      "RUSTSEC-2026-0391",
+      "RUSTSEC-2026-0398",
+      "RUSTSEC-2026-0403"
+    ],
+    "removed_ids": [
+      "RUSTSEC-2026-0346",
+      "RUSTSEC-2026-0347",
+      "RUSTSEC-2026-0348",
+      "RUSTSEC-2026-0349",
+      "RUSTSEC-2026-0381",
+      "RUSTSEC-2026-0382",
+      "RUSTSEC-2026-0383",
+      "RUSTSEC-2026-0410"
+    ],
+    "new_ids": [],
+    "original_categories": {
+      "unmaintained": 6,
+      "vulnerability": 16
+    },
+    "remaining_categories": {
+      "unmaintained": 6,
+      "vulnerability": 8
+    },
+    "command_receipt": {
+      "command": [
+        "/tmp/hepta_r13_cargo_deny_diagnostic/cargo-deny",
+        "--log-level",
+        "warn",
+        "--format",
+        "json",
+        "--color",
+        "never",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--all-features",
+        "--locked",
+        "--offline",
+        "check",
+        "--disable-fetch",
+        "--hide-inclusion-graph"
+      ],
+      "returncode": 1,
+      "elapsed_seconds": 3.7554698060012015
+    },
+    "status": "FAILED: 14 remaining advisories",
+    "latest_remote_failed_job": "124796761693",
+    "latest_remote_log_reproduced": false,
+    "scope_caveat": "This is a pinned local audit of identical dependency inputs, not a quotation of the inaccessible latest remote log."
+  },
+  "metadata": {
+    "command": [
+      "/tmp/hepta-digital-rust195/bin/cargo",
+      "metadata",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--all-features",
+      "--locked",
+      "--offline",
+      "--format-version",
+      "1"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 2.2808931680010573,
+    "packages": 1517,
+    "resolved_nodes": 1517,
+    "raw_output_sha256": "d383adc3e091320df13c67230986710b93dd867b31225c16475079a68414a3bd"
+  },
+  "bazel_lock_updates": [
+    {
+      "command": [
+        "/tmp/hcsn-r15-fmt-tools/bin/just",
+        "bazel-lock-update"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 5.623528181997244,
+      "before_sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0",
+      "after_sha256": "1fa8234aa094436e6f645a73d692c1346d1ccea858676b56c5026aa5baeff75f",
+      "tls_verification_enabled": true,
+      "trust_store": "/tmp/hepta_r13_cargo_deny_diagnostic/bazel-session-cacerts"
+    },
+    {
+      "command": [
+        "/tmp/hcsn-r15-fmt-tools/bin/just",
+        "bazel-lock-update"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 2.7877996059978614,
+      "before_sha256": "1fa8234aa094436e6f645a73d692c1346d1ccea858676b56c5026aa5baeff75f",
+      "after_sha256": "ccea886b1eaf5362cd4dcc3fef524ccc537e4b5f6ad358ea82b0866f2587cca2",
+      "tls_verification_enabled": true,
+      "trust_store": "/tmp/hepta_r13_cargo_deny_diagnostic/bazel-session-cacerts"
+    }
+  ],
+  "verified_bazel_source_inputs": {
+    "receipt": "BAZEL_INPUTS.json",
+    "sha256": "e90b6ddc1c8b586939fd8c86dd33a152204af373bad3b3c94f87ec33a04df14f",
+    "count": 72,
+    "missing": []
+  },
+  "msvc_patch": {
+    "command": [
+      "patch",
+      "--dry-run",
+      "--fuzz=0",
+      "-p1",
+      "-d",
+      "/root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zstd-sys-2.1.2+zstd.1.5.7",
+      "-i",
+      "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/patches/zstd-sys_windows_msvc_include_dirs.patch"
+    ],
+    "cwd": "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review",
+    "returncode": 0,
+    "stdout": "File build.rs is read-only; trying to patch anyway\nchecking file build.rs\n",
+    "stderr": "",
+    "upstream_build_rs_sha256": "ff97fca52b72ba76c2c71f0d4ca3475d5fa746e184e7d01c6085f9efee360171",
+    "registry_source_unchanged": true,
+    "upstream_already_guards_hidden_visibility_for_msvc": true,
+    "native_compile_executed": false
+  },
+  "formatter": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/codex-rs",
+    "returncode": 0,
+    "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+    "scope": "Only Cargo/Bazel locks and a .patch changed; no formatter target was applicable."
+  },
+  "patches": {
+    "five_package": {
+      "file": "cargo_compatible_security_updates.patch",
+      "sha256": "69d5c75f074f6f2f039b02f0a7471de040f9dfed311b24f91d5741397cd7a378",
+      "files": [
+        "MODULE.bazel.lock",
+        "codex-rs/Cargo.lock",
+        "patches/zstd-sys_windows_msvc_include_dirs.patch"
+      ],
+      "apply_check": {
+        "command": [
+          "git",
+          "apply",
+          "--cached",
+          "--check",
+          "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/review_evidence/cargo_compatible_security_updates.patch"
+        ],
+        "cwd": "/workspace/scratch/d87ad18a3bba/hepta-r15-git",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    "tls_only": {
+      "file": "cargo_tls_only.patch",
+      "sha256": "8bdbe020a139b56fec0d41b3f791f2c9240b2187276a80c8de702860a9c120e3",
+      "files": [
+        "MODULE.bazel.lock",
+        "codex-rs/Cargo.lock"
+      ],
+      "remaining_advisories": 15,
+      "apply_check": {
+        "command": [
+          "git",
+          "apply",
+          "--cached",
+          "--check",
+          "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/review_evidence/cargo_tls_only.patch"
+        ],
+        "cwd": "/workspace/scratch/d87ad18a3bba/hepta-r15-git",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    }
+  },
+  "tests_and_limits": [
+    "No native Rust regression suite was executed with this candidate lock.",
+    "No Windows/MSVC build was executed; zero-fuzz dry-run verifies patch applicability only.",
+    "The main worktree Fleet 41-test result used the old lock and is not evidence qualifying this dependency graph.",
+    "No broader migration started; remaining 14 advisories keep cargo-deny failing.",
+    "Shared disk and parent coordination deferred new native builds; CI on the actual composed head is still required.",
+    "The upstream build.rs guard and maintained include-path patch were reviewed; Cargo metadata is not compilation."
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "hcsn.r15.memory-native-clippy-fix.review.v1",
+  "source_head_observed": "f54da82dc5ddec7cb941e4ccd2f78b82eaf795c6",
+  "patch": "memory_test_clippy.patch",
+  "patch_bytes": 20287,
+  "patch_sha256": "035ab936219271e31c2d81c9ec05003fafbe89ab1b8e62430b256751ca17ea1c",
+  "files": {
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": {
+      "before_sha256": "8ec9da5ef03e57e3625016b8057269acd51dc92295fe28e784f467cde49d293f",
+      "after_sha256": "930b29b3010de976f8638091222f00fc70e6ad831a6134474b8eb31a26b50463",
+      "assertion_count_preserved": 2,
+      "assertion_bodies_identical_after_result_propagation": true,
+      "targeted_expects_remaining": 0,
+      "main_file_unmodified_by_this_task": true
+    },
+    "codex-rs/hepta-memory/src/production_writer.rs": {
+      "before_sha256": "c13df2d2dd76f2bbd0c051877f886a890159b65c4033caf09d068e390d92c8a0",
+      "after_sha256": "1f21334c69b258240905e96ccc91b67dd2e5cd44f55a63baa0d003c429fd26ec",
+      "assertion_count_preserved": 19,
+      "assertion_bodies_identical_after_result_propagation": true,
+      "targeted_expects_remaining": 0,
+      "main_file_unmodified_by_this_task": true
+    }
+  },
+  "changes": [
+    "Use existing codex_state::SqliteConfig::new_for_testing(...).open_durable_evidence_pool on a TempDir file; keep explicit compiled MIGRATOR.run and all schema/tampered-trigger assertions.",
+    "Return Result from final-use test helpers and the three tests; propagate setup/operation errors with ?, preserving rejection matches and all assertions.",
+    "Keep optional inherited-row check with ok_or(...)?; None still fails the test.",
+    "Use pretty_assertions::assert_eq per repository convention; add no dependency or blanket allow."
+  ],
+  "source_checks": {
+    "production_and_earlier_test_prefix_byte_identical": true
+  },
+  "validation": {
+    "rustfmt_version": "rustfmt 1.9.0-stable (Rust 1.95.0)",
+    "rustfmt_parse_and_check": "passed on both scratch files with --edition 2024 --config imports_granularity=Item,skip_children=true",
+    "git_apply_check_whitespace_error": "passed against main worktree; patch not applied by this task",
+    "native_typecheck": "not run",
+    "native_tests": "not run",
+    "cargo_test_directly_invoked": false,
+    "followup_commands": [
+      "just test -p codex-hepta-memory",
+      "bazel build --config=clippy //codex-rs/hepta-memory:hepta-memory-unit-tests",
+      "bazel test //codex-rs/hepta-memory:hepta-memory-unit-tests"
+    ]
+  },
+  "production_semantics_changed": false,
+  "test_predicates_weakened": false,
+  "database_fixture_note": "Reference database becomes an isolated temporary file using the existing WAL/FULL shim. TempDir stays alive until pool.close().await. No owner constructor, recover/rebuild path, or schema oracle is substituted."
+}

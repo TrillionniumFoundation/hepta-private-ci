@@ -1,0 +1,175 @@
+{
+  "sqlite_version": "3.53.1",
+  "scope": "Original-source SQL integration probes, not native Rust suites",
+  "automation": {
+    "baseline": {
+      "error": "error in trigger automation_timer_lifecycle_drain: no such table: main.automation_dispatch_outcomes",
+      "statement": "ALTER TABLE automation_runs DROP COLUMN schedule_revision",
+      "transaction_rolled_back": true
+    },
+    "candidate": {
+      "rewind_statements": 32,
+      "v1_schema_objects": [
+        [
+          "index",
+          "automation_due_idx"
+        ],
+        [
+          "index",
+          "automation_recovery_idx"
+        ],
+        [
+          "table",
+          "_sqlx_migrations"
+        ],
+        [
+          "table",
+          "automation_meta"
+        ],
+        [
+          "table",
+          "automation_runs"
+        ],
+        [
+          "table",
+          "automation_tasks"
+        ],
+        [
+          "trigger",
+          "automation_meta_no_delete"
+        ],
+        [
+          "trigger",
+          "automation_meta_no_update"
+        ]
+      ],
+      "replayed_migrations": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "final_schema": 19,
+      "task_row_preserved": true,
+      "metadata_immutable": true
+    }
+  },
+  "memory": {
+    "observed_versions": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15",
+    "expected_versions": {
+      "baseline": "1,2,3,4,5,6,7,8,9,10,11,12,13,14",
+      "candidate": "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"
+    },
+    "preserved_and_revoked_counts": {
+      "memory_revisions": 1,
+      "memory_citations": 1,
+      "memory_heads": 1,
+      "kg_projection": 0,
+      "kg_nodes": 0,
+      "kg_edges": 0,
+      "kg_entity_fts": 0,
+      "shared_experience_use_events": 0
+    },
+    "legacy_header_preserved": true
+  },
+  "outbox": {
+    "limits": {
+      "rows": 4096,
+      "active_per_issuer": 512
+    },
+    "runs": {
+      "baseline": {
+        "initial_rows": 4096,
+        "max_active_per_fixture_issuer": 4096,
+        "after_terminal_pruning_rows": 4095,
+        "incoming_issuer_active_after_ack": 4095,
+        "per_issuer_guard_rejects": true,
+        "global_guard_allows_one_slot": true,
+        "active_delete_rejected": true,
+        "terminal_row_pruned": true
+      },
+      "candidate": {
+        "initial_rows": 4096,
+        "max_active_per_fixture_issuer": 1,
+        "after_terminal_pruning_rows": 4095,
+        "incoming_issuer_active_after_ack": 0,
+        "per_issuer_guard_rejects": false,
+        "global_guard_allows_one_slot": true,
+        "active_delete_rejected": true,
+        "terminal_row_pruned": true
+      }
+    },
+    "scope": "Executes exact fixture, claim, ack and maintenance SQL. Does not execute Rust authentication, replay registry, async transactions, or enqueue APIs."
+  },
+  "sources_sha256": {
+    "codex-rs/hepta-automation/BUILD.bazel": "131087d3061b815981b9cc2a8215e3eb8ea2c8d7d176ecdba54a6263a94cefd7",
+    "codex-rs/hepta-automation/Cargo.toml": "e8e39e69d52921298a29ed75a12ae46790298fae8d031625c502258f0b12c78d",
+    "codex-rs/hepta-automation/migrations/0001_automation.sql": "ba539cbafb9836f5f3b7ea54886378ad06a36bda663c6c89d8d63ab2f0e68cb9",
+    "codex-rs/hepta-automation/migrations/0002_dispatch_outcomes.sql": "d4709eebbc5544efbc455d5faf9c7692485777ec937cf916b54110f0db93139a",
+    "codex-rs/hepta-automation/migrations/0003_taskflow_kernel.sql": "ac421cd5e7761bdc43d2af5ef27199552f245bb80c73462671b0d3b46af6c846",
+    "codex-rs/hepta-automation/migrations/0004_durable_causal_chain.sql": "b645a3aae930ca63e486ab8ecbf8643715d3eaa192c1c7eb0535dd610dfbdf89",
+    "codex-rs/hepta-automation/migrations/0005_occurrence_step_attempt.sql": "4635a4285628648eb69cb9c87b90fb84514f98c45e48e06b0d14ee28b45ebfc0",
+    "codex-rs/hepta-automation/migrations/0006_schedule_policy_normalization.sql": "af8382f664162b48c5c7ac38d56399320796008eddee58f2692e49eb60dceda2",
+    "codex-rs/hepta-automation/migrations/0007_freeze_schedule_revision_inflight.sql": "636696021a4d315afb64f418d1bff8356a540a384e8bc60a1ce10f28705bb69f",
+    "codex-rs/hepta-automation/migrations/0008_legacy_schedule_policy_default.sql": "7142fa4520f2b9aa60451727c75ae0e4370eb3ade7d4c7c572b6f0bcbf0b5a4a",
+    "codex-rs/hepta-automation/migrations/0009_catch_up_state.sql": "68077329da15a0c4513914657e9d0b9bbb1246eee4e3d57b92393f82385c787a",
+    "codex-rs/hepta-automation/migrations/0010_step_attempt_rollover.sql": "60d6b42730365dab1d4a526de9f289d61a9b677314bca1690e01b5bcf15a2f96",
+    "codex-rs/hepta-automation/migrations/0011_effect_dispatch_attempts.sql": "2926523984d87dfc06fe7c4f1197ff3e480f8636e6f121cd94b17cd083d0ea44",
+    "codex-rs/hepta-automation/migrations/0012_calendar_schedule_v2.sql": "dfc7491b8f24f47e44be4a0bd9e87a9e32601ff6715b0d1877ec77a0ade86182",
+    "codex-rs/hepta-automation/migrations/0013_effect_dispatch_reconciliation.sql": "8734c5c1aa09a667300681c241ebf426a8bf49c7c885f1b948016225e31a7b40",
+    "codex-rs/hepta-automation/migrations/0014_freeze_claim_schedule_revision.sql": "cd7156da96ecfab6d6f97709b921d8e62c5ba24ea9e0d8d9201c3ddeb0a957bf",
+    "codex-rs/hepta-automation/migrations/0015_legacy_dispatch_reconciliation.sql": "9ead1684364d1c64ee07a2c7475adfd445b5ba5874f400a9656139ae5918a226",
+    "codex-rs/hepta-automation/migrations/0016_terminal_observer_cursor.sql": "07c829a32003cab9e297d3028ee8aa663450403dfd4f59186c6237c9f4633f06",
+    "codex-rs/hepta-automation/migrations/0017_kernel_operation_dedupe.sql": "7e45ec9876fa96a7aa15ae97bc14aff66e603fe8ec631db636dd6cfed8467749",
+    "codex-rs/hepta-automation/migrations/0018_timer_lifecycle.sql": "3f8855f356a401e5295020444477901db38e8e4d812c8aab663d4eb0e7dfadf1",
+    "codex-rs/hepta-automation/migrations/0019_converged_owner_schema.sql": "5425c4b604eff93df993160a7ef4dd5b194ae233d3c505949ac3d2512d014680",
+    "codex-rs/hepta-automation/tests/automation.rs": "59a80a42014242d6d9d9cb5786552356b182550359987dde6f8e0ea29cb06e66",
+    "codex-rs/hepta-evidence/BUILD.bazel": "7ae3f5f2aac6d8b6b67fdb6987b00ce850d69e54cda717b3fa5abb93944d6a6b",
+    "codex-rs/hepta-evidence/Cargo.toml": "bf06b9f286e93bb5d61122d43ff3cb27314584e04a1d08c18c90663e2b1fa3e0",
+    "codex-rs/hepta-evidence/migrations/0010_authbus_outbox.sql": "f9f6f2b620cf2b37e030dec127272d9e1724ffe90fc966a8bc75c6b9d32b6811",
+    "codex-rs/hepta-evidence/src/authbus_outbox.rs": "fafa6e3064cfc8aee391990334cda4753ab9c65f0da0c36fdd13c4c5fb77a008",
+    "codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs": "5d412deca15a9c5e17154e93d677201f7703d008a73a791345f0ceb93139ea4b",
+    "codex-rs/hepta-evidence/src/authbus_outbox_record.rs": "440560a3be2d7b5265ae1be3f4eabafbc6389979131b61205aea74b88571cbb0",
+    "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs": "9345d0c6316fec630a5a1580d315b3ea845c3938db476c212035baec999d8fe9",
+    "codex-rs/hepta-evidence/src/authbus_outbox_worker.rs": "ea0f5a068fae62eb683d57a3a0512d4ac0fd238852b005bae8ece215d4caf7e5",
+    "codex-rs/hepta-memory/BUILD.bazel": "a6ba8b3463e2c2656143260ee46283628da718aef968fd214f0b9e548974be84",
+    "codex-rs/hepta-memory/Cargo.toml": "5ec9e7bd2a5757cc6241351e65d93cb35812d960ba4516343b4cd66dbbeb016c",
+    "codex-rs/hepta-memory/migrations/0001_cognitive_plane.sql": "419bb84ead777610ce5604abe8c856683fc1cb8bdb2269923851a3bc14a7dbbf",
+    "codex-rs/hepta-memory/migrations/0002_memory_federation.sql": "f66233bd93449442a484b0a64b85755b80b9a6dfbaf6382bbca615d48ca6d325",
+    "codex-rs/hepta-memory/migrations/0003_cognitive_kg_revision_facts.sql": "89b5b52d48a213b6d3cafa7586bfd880a1928f1fb94287457d9b209ea2abc4a9",
+    "codex-rs/hepta-memory/migrations/0004_local_compact_events.sql": "7249080fce511fb1b1cbedb6a3e6eaeb297a05ee01eaaeb299aeba4b7ae050e6",
+    "codex-rs/hepta-memory/migrations/0005_local_lease_outbox.sql": "a6bdc1d4d8cbc569e134bfc944428e1a8b9323661629186cb11a980294a83527",
+    "codex-rs/hepta-memory/migrations/0006_compact_fence_epochs.sql": "2853ff1e24bd18ece95cba64c411c38c3e2c8def8be8ac0e91a934a3c0ab3ffe",
+    "codex-rs/hepta-memory/migrations/0007_local_lease_compact_binding.sql": "ae0682c0c106405023c37ab6f456a02f4f9875d8514bdcf5e032e7c7f051b208",
+    "codex-rs/hepta-memory/migrations/0008_h7_trajectory_events.sql": "adb66da205ecaab11f16c62899e283653e153abf28d601e6b86cb4681b3256ee",
+    "codex-rs/hepta-memory/migrations/0009_h7_trajectory_observation_guard.sql": "fb5c21f87ba34a5638b2c7a4060b53cf6c1c606422369ea1bade5d23e67af2ae",
+    "codex-rs/hepta-memory/migrations/0010_logical_turn_registry.sql": "ae74af600eed253e088ac54ad6a8bf4ecf5e0a3aae99a8252a3cef9df82d2046",
+    "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql": "023db27bbd6a7f2908cf58155a3f0c10b16053c2f33b07a98b32487a4233a387",
+    "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql": "0623618b23fd84a8373c0e47da18803706664abec9a2b1f01c0b2ac4ba0c0207",
+    "codex-rs/hepta-memory/migrations/0013_kg_generation_semantics.sql": "fa24b62529cb78eefb77c654b4734af571f23d3d8618c29e82cee0dac1fbc662",
+    "codex-rs/hepta-memory/migrations/0014_kg_incremental_generation_storage.sql": "302df10bc9ad7080851fbc034ff04af84534a1a1951f5d3b03579435c85163b2",
+    "codex-rs/hepta-memory/migrations/0015_shared_experience_use.sql": "315941f36c22815c3fd8874783e90cc7d0e104ff988b973462353e53e22bb59b",
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs": "a4199940540f6deca0d1765e87596a23c302f78894e6402f854753b8af40a4d9",
+    "codex-rs/rust-toolchain.toml": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64",
+    "codex-rs/rustfmt.toml": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+  },
+  "candidate_sha256": {
+    "codex-rs/hepta-automation/tests/automation.rs": "d61bde594e99686b6389dd305e8d9712b4dd6fb837ec2cb98070386f2ba14499",
+    "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs": "31f0a36ee632005a1d8680ff9312672ba01da09ff9dc51be2f5d8db06c7870af",
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs": "abb813f058c24c4b36beefc60f60c507d8896368e22553787de3eed6be48315e"
+  }
+}

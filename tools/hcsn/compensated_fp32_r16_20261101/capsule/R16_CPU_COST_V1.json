@@ -1,0 +1,621 @@
+{
+  "schema": "hcsn.r16.financial-operator-cpu-cost.v1",
+  "precision_contract": "Original FP64; original ordinary one-word FP32 (numerically unqualified); explicit two-word compensated FP32 (extended significand).",
+  "timing_scope": "CPU Python implementation; imports/constant preparation excluded, one complete warmup and one measured batch per mode and reuse condition; process CPU and wall time. No GPU, energy, throughput-distribution or production-speed claim.",
+  "evaluation_scope": "Complete differentiated boundary plus all five financial outputs and all ten Jacobian columns. Separate reuse condition includes one boundary per parameter case amortized across three states.",
+  "represented_inputs": "Identical quantized FP32 parameter/state words converted exactly to FP64 for original Float64 formulas. Original FullHX formulas and boundary checks unchanged; wrapper decimal-box check replaced by fixed registered FP32 input manifest.",
+  "script_sha256": "de48a838705602b9300bb9796c31d6a5faf16b14e04348354a864bcaf2051406",
+  "source_sha256_before": {
+    "compensated_kernel.py": "c1088ca5cfd2c8a18877078b8a14ff251986c1eaeca0911a838c2d55e400643f",
+    "float32_pair.py": "63010529b91de196698c7b096a5bac94f73460f3a811f70b61a95d53ffd87ae9",
+    "frozen_kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "frozen_reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52"
+  },
+  "source_sha256_after": {
+    "compensated_kernel.py": "c1088ca5cfd2c8a18877078b8a14ff251986c1eaeca0911a838c2d55e400643f",
+    "float32_pair.py": "63010529b91de196698c7b096a5bac94f73460f3a811f70b61a95d53ffd87ae9",
+    "frozen_kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "frozen_reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52"
+  },
+  "development_reference_sha256": "f3d4fc69a72ff3e776bc77bef4fd49ca117e4133ff91737c61f67675ef488c5d",
+  "protocol_sha256": "18f66bd44e4ea03792c678947ede965af0f83199ccbdc34067f1c5b809af2c31",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "system": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "threadpool_limit": 1
+  },
+  "inputs": [
+    {
+      "case": "baseline",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "liquidity_0.1",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.10000000149011612,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "maturity_0.01",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        0.009999999776482582,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "maturity_0.1",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        0.10000000149011612,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "maturity_5",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        5.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "maturity_20",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        20.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "sigma_0.08",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.07999999821186066,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "sigma_0.8",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.800000011920929,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "delta_0.2",
+      "theta": [
+        0.07999999821186066,
+        0.20000000298023224,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.009999999776482582,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "recovery_0",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.0,
+        0.27000001072883606,
+        0.009999999776482582,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "recovery_1",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        1.0,
+        0.27000001072883606,
+        0.009999999776482582,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "tax_0",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.0,
+        0.009999999776482582,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "tax_0.6",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.6000000238418579,
+        0.009999999776482582,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "lower_liquidity_limit",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        9.999999747378752e-05,
+        1.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "joint_m0.01_l0.0001",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        9.999999747378752e-05,
+        0.009999999776482582,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "joint_m0.01_l0.1",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.10000000149011612,
+        0.009999999776482582,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "joint_m20.0_l0.0001",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        9.999999747378752e-05,
+        20.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    },
+    {
+      "case": "joint_m20.0_l0.1",
+      "theta": [
+        0.07999999821186066,
+        0.019999999552965164,
+        0.23000000417232513,
+        0.6000000238418579,
+        0.27000001072883606,
+        0.10000000149011612,
+        20.0,
+        6.389999866485596,
+        61.68000030517578
+      ],
+      "states": [
+        [
+          "log_distance",
+          0.0010000000474974513
+        ],
+        [
+          "log_distance",
+          0.10000000149011612
+        ],
+        [
+          "asset",
+          100.0
+        ]
+      ]
+    }
+  ],
+  "records": [
+    {
+      "mode": "original_float64",
+      "boundary_reuse": false,
+      "boundary_evaluations": 54,
+      "requested_output_jacobian_evaluations": 54,
+      "finite_completed_evaluations": 54,
+      "complete_batch_comparable": true,
+      "wall_seconds": 0.1262852549989475,
+      "cpu_seconds": 0.12622317500000002,
+      "wall_seconds_per_complete_state": 0.0023386158333138425,
+      "cpu_seconds_per_complete_state": 0.002337466203703704,
+      "failed_evaluations": [],
+      "diagnostic_output_checksum": -5403608.681422279
+    },
+    {
+      "mode": "original_single_float32",
+      "boundary_reuse": false,
+      "boundary_evaluations": 54,
+      "requested_output_jacobian_evaluations": 54,
+      "finite_completed_evaluations": 54,
+      "complete_batch_comparable": true,
+      "wall_seconds": 0.1383419910016528,
+      "cpu_seconds": 0.13822392500000014,
+      "wall_seconds_per_complete_state": 0.002561888722252829,
+      "cpu_seconds_per_complete_state": 0.0025597023148148175,
+      "failed_evaluations": [],
+      "diagnostic_output_checksum": -5403622.752031438
+    },
+    {
+      "mode": "compensated_two_word_float32",
+      "boundary_reuse": false,
+      "boundary_evaluations": 54,
+      "requested_output_jacobian_evaluations": 54,
+      "finite_completed_evaluations": 54,
+      "complete_batch_comparable": true,
+      "wall_seconds": 11.826269191999017,
+      "cpu_seconds": 11.823581625000001,
+      "wall_seconds_per_complete_state": 0.21900498503701885,
+      "cpu_seconds_per_complete_state": 0.2189552152777778,
+      "failed_evaluations": [],
+      "diagnostic_output_checksum": -5403608.613911205
+    },
+    {
+      "mode": "original_float64",
+      "boundary_reuse": true,
+      "boundary_evaluations": 18,
+      "requested_output_jacobian_evaluations": 54,
+      "finite_completed_evaluations": 54,
+      "complete_batch_comparable": true,
+      "wall_seconds": 0.12733560799824772,
+      "cpu_seconds": 0.1273254399999999,
+      "wall_seconds_per_complete_state": 0.002358066814782365,
+      "cpu_seconds_per_complete_state": 0.0023578785185185166,
+      "failed_evaluations": [],
+      "diagnostic_output_checksum": -5403608.681422279
+    },
+    {
+      "mode": "original_single_float32",
+      "boundary_reuse": true,
+      "boundary_evaluations": 18,
+      "requested_output_jacobian_evaluations": 54,
+      "finite_completed_evaluations": 54,
+      "complete_batch_comparable": true,
+      "wall_seconds": 0.10608554500140599,
+      "cpu_seconds": 0.10607515999999961,
+      "wall_seconds_per_complete_state": 0.0019645471296556665,
+      "cpu_seconds_per_complete_state": 0.001964354814814808,
+      "failed_evaluations": [],
+      "diagnostic_output_checksum": -5403622.752031438
+    },
+    {
+      "mode": "compensated_two_word_float32",
+      "boundary_reuse": true,
+      "boundary_evaluations": 18,
+      "requested_output_jacobian_evaluations": 54,
+      "finite_completed_evaluations": 54,
+      "complete_batch_comparable": true,
+      "wall_seconds": 9.477555677000055,
+      "cpu_seconds": 9.476863425999994,
+      "wall_seconds_per_complete_state": 0.17551029031481583,
+      "cpu_seconds_per_complete_state": 0.17549747085185174,
+      "failed_evaluations": [],
+      "diagnostic_output_checksum": -5403608.613911205
+    }
+  ],
+  "correctness_scope": "Timing does not admit the original single-FP32 mode or replace numerical evidence."
+}

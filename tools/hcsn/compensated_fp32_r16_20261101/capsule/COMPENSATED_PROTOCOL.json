@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn.compensated-fp32-development.v1",
+  "status": "development contract written before execution",
+  "financial_storage": "two float32 words per value and per tangent component",
+  "financial_operations": "float32 TwoSum, Dekker product, corrected division and range-reduced elementary functions; no FP64 financial evaluation",
+  "effective_significand": "approximately 44 to 48 bits in normal-range arithmetic, not ordinary one-word FP32",
+  "constant_generation": "fixed mathematical/quadrature constants may be prepared at higher precision, then stored as float32 pairs; no financial inputs are evaluated during constant preparation",
+  "output": "FP32 values and all ten FP32 Jacobian columns, same represented inputs as frozen oracle",
+  "gates": {"value_scaled": 8e-7, "jacobian_scaled": 2e-5},
+  "original_cases": 18,
+  "original_rows": 432,
+  "coordinates": ["asset", "log_distance"],
+  "required_first_checks": ["primitive arithmetic and elementary functions against independent reference", "original five failure witnesses", "complete frozen development matrix"],
+  "limitations": ["Extra word storage and many extra FP32 operations", "CPU prototype, no GPU or latency advantage claim", "Passing development grid is not fresh registered validation", "Cannot relabel this as ordinary FP32"]
+}

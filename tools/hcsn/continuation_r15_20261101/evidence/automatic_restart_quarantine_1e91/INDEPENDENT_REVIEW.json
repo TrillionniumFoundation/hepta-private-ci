@@ -1,0 +1,37 @@
+{
+  "schema": "hcsn.automatic-restart-quarantine-independent-review.v1",
+  "status": "No blocking source-review issue found for this narrowly scoped fail-closed guard; original native suite remains required.",
+  "reviewer": "architecture_comparison",
+  "files": {
+    "automatic_restart_quarantine.patch": "e1c3c383fe038b488d2e657bfacd018209f54867dd75358ca330119d1ccc18ef",
+    "candidate/codex-rs/hepta-supervisor/src/tick.rs": "efe3ba56c541783397c8ec06158fa3624aed059f3a80bb50db1fabaa8a43248a",
+    "candidate/codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": "23c447c6de225320e5452de20393bcea60bf1e0c361b1ae99260cdeb73038c43"
+  },
+  "reviewed_claim": "RecoveryRequired suppresses the pending automatic main-restart dispatch branch.",
+  "confirmed_from_source": [
+    "The guard inspects the borrowed slot; it does not look up the slot removed by with_slot.",
+    "Pending/deadline and durable budget/intent are preserved; the patch does not reset a budget or claim an effect completed.",
+    "The existing continue_release_change_after_exit call remains before this branch; shared start_release_slot is unchanged.",
+    "Only RecoveryRequired is newly blocked, matching the existing daemon production_recovery_required predicate; no new Abort or terminal-resolution path is introduced.",
+    "Integration regression obtains a real durable main.pending claim, persists a valid RecoveryRequired fixture, reconstructs Supervisor, advances simulated Instant beyond eligibility, and asserts no additional spawn plus identical journal bytes/lifecycle/intent.",
+    "The test main.pending JSON path matches RestartRecord schema 2, and new imports refer to existing public exports/dev-dependencies."
+  ],
+  "execution_evidence_reviewed": {
+    "path": "/tmp/hcsn-r15-restart-quarantine/SOURCE_FRAGMENT_RED_GREEN.json",
+    "sha256": "27efa487f3c8f5bb4b4aed55a193609edda558fc5adb52d085f03db9cdddf747",
+    "original_exit": 101,
+    "original_tests_passed": 6,
+    "original_tests_failed": 2,
+    "candidate_exit": 0,
+    "candidate_tests_passed": 8,
+    "candidate_tests_failed": 0,
+    "scope": "Source agent executed a source-extracted whole tick_slot with explicit synthetic process/storage/registry/release helpers; this is not execution of the full native integration suite or a complete authorized release transaction.",
+    "reviewer_reran_tests": false
+  },
+  "remaining_gates": [
+    "Run the new integration test and existing supervisor suites on final-head native CI.",
+    "Unified owner-lock/Abort snapshot races, Matrix kill observability and broader independent release fences remain separately unresolved."
+  ],
+  "product_authority_relaxed": false,
+  "all_recovery_blockers_closed": false
+}

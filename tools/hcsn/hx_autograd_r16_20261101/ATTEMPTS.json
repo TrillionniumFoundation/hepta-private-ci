@@ -1,0 +1,28 @@
+{
+  "schema": "hcsn.hx-autograd-retained-attempts.v1",
+  "active": "V3",
+  "attempts": [
+    {
+      "version": "V1",
+      "directory": "attempt_v1",
+      "status": "Initial first-order audit could not serialize NumPy receipt flags; actual exit1; no numerical pass claimed.",
+      "protocol_sha256": "c633073b4ce6ac71468cb92c96edbd895956d10d8f3f7d3b122b778bc15e7c52",
+      "failure_sha256": "a37fad28f79d340f905642b380f91b654fae0b621761a2067180b967b6eb857c"
+    },
+    {
+      "version": "V2",
+      "directory": "attempt_v2",
+      "status": "Full first-order evidence valid, but high-order refusal contract defective; independently retained four silent partial/zero readout Hessians.",
+      "protocol_sha256": "d3ada27411e77ebc4be99dd96e7f6895fbd844e0fd985e7506d682088ee3f4ce",
+      "defect_sha256": "2a8e827c04c7d60ffff377fd18337f75c8ffd4362fac55f068055bccfeb7a42f",
+      "execution_receipt": "independent_review/V2_EXECUTION_RECEIPT.json"
+    },
+    {
+      "version": "V3",
+      "directory": ".",
+      "status": "Explicit first higher-order VJP refusal; 168 directional checks,32 contract checks,80-step smoke and exact V2 first-order identity passed; independent48-channel refusal/identity passed, actual exit0.",
+      "protocol_sha256": "9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72",
+      "independent_review_sha256": "fee1aae6248e6b8aa657fc4fdbb5b82b6da553003fc37f7ad4bdfc5d956fa082"
+    }
+  ]
+}

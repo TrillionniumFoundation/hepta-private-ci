@@ -1,0 +1,219 @@
+{
+  "stage": "i18n",
+  "base_local_commit": "66b0730f9c9099bc722cb228b7e78c16a9db988e",
+  "baseline_stage": "zstd",
+  "patch": "i18n.patch",
+  "patch_sha256": "a88ab880d27f8c38b0d89bf06758bc87a88c325224bb596974ce72a7460e37d0",
+  "files": {
+    "MODULE.bazel.lock": {
+      "base_sha256": "262c7a38d01ba3434670dbdb04c3ebf3fd812ddf8f2561a3bf19e5a7e13fc04a",
+      "candidate_sha256": "943ab60a008674817ab6d45183d101bea9b62f071797f232b450138567523448"
+    },
+    "codex-rs/Cargo.lock": {
+      "base_sha256": "086b879a89eba7644ad6dbe3a6fc70362d52be7b5b60cb609e0f3af9a8626a16",
+      "candidate_sha256": "2b58e4a6cb1c634b271ba421f473f43680659f4d80157fdca44d12e3f7e9c710"
+    },
+    "codex-rs/Cargo.toml": {
+      "base_sha256": "7b3b0854ef8fe17831dd469ad9237acac52fff24af77081fa44dd07bc26e7105",
+      "candidate_sha256": "f1d53e16a66861e020a0106ff0978601445f549feaa3bad99e63817ac911fa70"
+    },
+    "codex-rs/third_party/i18n-config-0.4.8/BUILD.bazel": {
+      "base_sha256": null,
+      "candidate_sha256": "97d7c6381e499d2c26a4f6b3f2a3e50845b882094b35e325fdd5efa4a2575167"
+    },
+    "codex-rs/third_party/i18n-config-0.4.8/Cargo.toml": {
+      "base_sha256": null,
+      "candidate_sha256": "a50ccc325cf9dda52b31389cebdf7173c923c6b1fc46de699ef4d990b68e9362"
+    },
+    "codex-rs/third_party/i18n-config-0.4.8/LICENSE.txt": {
+      "base_sha256": null,
+      "candidate_sha256": "a1d2bd09632724b23c62b05e2fd0dc26c5c9d21b409594cf7da1a1aba555f802"
+    },
+    "codex-rs/third_party/i18n-config-0.4.8/LOCAL_PATCH.md": {
+      "base_sha256": null,
+      "candidate_sha256": "9ee8bffd3708d6aaeb0ba7c97d2f80a8f87c13d0c8248bd25675891802cc4f74"
+    },
+    "codex-rs/third_party/i18n-config-0.4.8/README.md": {
+      "base_sha256": null,
+      "candidate_sha256": "bdadc28dd4a62f5b8c7c4c759c7b3cf2b33181700563c3083f8515f1638c12f2"
+    },
+    "codex-rs/third_party/i18n-config-0.4.8/src/fluent.rs": {
+      "base_sha256": null,
+      "candidate_sha256": "fdf091a54559e437dd0ee0f2a291b2e18c42a7857e9bbecfd338b038b320f9f7"
+    },
+    "codex-rs/third_party/i18n-config-0.4.8/src/gettext.rs": {
+      "base_sha256": null,
+      "candidate_sha256": "3626b50f396f0a83e7d5aab702d4d18d078dff7620108db80ffa7ed9da0b5991"
+    },
+    "codex-rs/third_party/i18n-config-0.4.8/src/lib.rs": {
+      "base_sha256": null,
+      "candidate_sha256": "b5ff83470d97f64fab3a57a63a359aefa5d970c11e5eb861ecaf97d18b8df5f5"
+    },
+    "codex-rs/third_party/i18n-config-0.4.8/src/parser_tests.rs": {
+      "base_sha256": null,
+      "candidate_sha256": "ab550e36584bac39ed2e0050a29c074b2e3e29ffe6eef54dde1b4cf1e9815c2d"
+    }
+  },
+  "advisory_db": "2295466c4e9df26647fd67d8fa1c705ac2fc7f81",
+  "before_advisories": 8,
+  "after_advisories": 7,
+  "removed_ids": [
+    "RUSTSEC-2026-0374"
+  ],
+  "added_ids": [],
+  "remaining_ids": [
+    "RUSTSEC-2024-0449",
+    "RUSTSEC-2026-0318",
+    "RUSTSEC-2026-0319",
+    "RUSTSEC-2026-0370",
+    "RUSTSEC-2026-0371",
+    "RUSTSEC-2026-0372",
+    "RUSTSEC-2026-0387"
+  ],
+  "remaining_error_categories": {
+    "unmaintained": 5,
+    "vulnerability": 2
+  },
+  "deny_policy_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+  "cargo_deny": {
+    "command": [
+      "/tmp/hepta_r13_cargo_deny_diagnostic/cargo-deny",
+      "--log-level",
+      "warn",
+      "--format",
+      "json",
+      "--color",
+      "never",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--all-features",
+      "--locked",
+      "--offline",
+      "check",
+      "--disable-fetch",
+      "--hide-inclusion-graph"
+    ],
+    "returncode": 1,
+    "elapsed_seconds": 3.6432983339982457
+  },
+  "metadata": {
+    "command": [
+      "/tmp/hepta-digital-rust195/bin/cargo",
+      "metadata",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--all-features",
+      "--locked",
+      "--offline",
+      "--format-version",
+      "1"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 1.7031594039945048,
+    "packages": 1522,
+    "nodes": 1522
+  },
+  "bazel_lock_update": {
+    "command": [
+      "/tmp/hcsn-r15-fmt-tools/bin/just",
+      "bazel-lock-update"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 2.399461680004606,
+    "before_sha256": "943ab60a008674817ab6d45183d101bea9b62f071797f232b450138567523448",
+    "after_sha256": "943ab60a008674817ab6d45183d101bea9b62f071797f232b450138567523448",
+    "tls_verification_enabled": true,
+    "trust_store": "/tmp/hepta_r13_cargo_deny_diagnostic/bazel-session-cacerts"
+  },
+  "format": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "66b0730"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 0.5253021669996087
+  },
+  "patch_apply_check": {
+    "command": [
+      "git",
+      "apply",
+      "--cached",
+      "--check",
+      "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/review_evidence/i18n/i18n.patch"
+    ],
+    "returncode": 0,
+    "scope": "isolated index at the stated base commit"
+  },
+  "diff_check_returncode": 0,
+  "integration_tests": {
+    "executed": false,
+    "reason": "Full affected project graph exceeds available local build resources; not replaced by metadata or a source probe."
+  },
+  "remote_log_reproduced": false,
+  "main_workspace_changed": false,
+  "native_tests": {
+    "command": [
+      "just",
+      "test",
+      "--manifest-path",
+      "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/codex-rs/third_party/i18n-config-0.4.8/Cargo.toml",
+      "--config-file",
+      "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/review_evidence/i18n/nextest.toml",
+      "-p",
+      "i18n-config",
+      "--locked",
+      "--offline"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 9.070992610002577,
+    "scope": "Actual patched i18n-config crate tests from its original candidate source path; no full age or first-party workspace integration tests.",
+    "packages": 72,
+    "dependency_identities_subset_of_production_graph": true,
+    "disk_free_before": 2522894336,
+    "disk_free_after": 2354118656,
+    "profile": "dev default debug full for standalone vendor crate, no RUSTFLAGS; two jobs; incremental disabled",
+    "manifest_sha256": "a50ccc325cf9dda52b31389cebdf7173c923c6b1fc46de699ef4d990b68e9362",
+    "test_lock_sha256": "933bd312449e398532fc7cec6429b84d738d8ccd354a1adaa6dbe2fba8b5955a",
+    "source_sha256": {
+      "src/parser_tests.rs": "c9434b033465e14d57ea832a4a71b0f8c0f5ba2663c6917ccbb9438138591d3f",
+      "src/gettext.rs": "3626b50f396f0a83e7d5aab702d4d18d078dff7620108db80ffa7ed9da0b5991",
+      "src/lib.rs": "bf514ec2fff259994f47694c970b910c41a41b6ca829ada31cd7ee4f5af24610",
+      "src/fluent.rs": "fdf091a54559e437dd0ee0f2a291b2e18c42a7857e9bbecfd338b038b320f9f7"
+    }
+  },
+  "scoped_clippy_fix": {
+    "command": [
+      "just",
+      "fix",
+      "--manifest-path",
+      "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/codex-rs/third_party/i18n-config-0.4.8/Cargo.toml",
+      "-p",
+      "i18n-config",
+      "--locked",
+      "--offline"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 4.706287831002555
+  },
+  "upstream_provenance": {
+    "crate": "i18n-config",
+    "version": "0.4.8",
+    "crate_archive_sha256": "3e06b90c8a0d252e203c94344b21e35a30f3a3a85dc7db5af8f8df9f3e0c63ef",
+    "vcs": {
+      "git": {
+        "sha1": "ae88dc79fda061e1bbf96b8d8e8fe8d23f1e52e7"
+      },
+      "path_in_vcs": "i18n-config"
+    },
+    "upstream_files": {
+      "Cargo.toml": "529a33a471dd8d4c8f0b83e9678822f78d06eadf8a815734cdf6e2206065d463",
+      "LICENSE.txt": "a1d2bd09632724b23c62b05e2fd0dc26c5c9d21b409594cf7da1a1aba555f802",
+      "README.md": "bdadc28dd4a62f5b8c7c4c759c7b3cf2b33181700563c3083f8515f1638c12f2",
+      "src/lib.rs": "420cdf6a53cad0724c48960216d50c864c10747587b52add6764d4fdec378ecc",
+      "src/fluent.rs": "fdf091a54559e437dd0ee0f2a291b2e18c42a7857e9bbecfd338b038b320f9f7",
+      "src/gettext.rs": "3626b50f396f0a83e7d5aab702d4d18d078dff7620108db80ffa7ed9da0b5991"
+    }
+  }
+}

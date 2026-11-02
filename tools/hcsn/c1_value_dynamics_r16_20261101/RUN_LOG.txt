@@ -1,0 +1,276 @@
+mkdir -p failed for path /root/.config/matplotlib: [Errno 30] Read-only file system: '/root/.config'
+Matplotlib created a temporary cache directory at /tmp/matplotlib-msahy3vx because there was an issue with the default path (/root/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+{
+  "results": "/tmp/hcsn_c1_value_dynamics_probe/RESULTS.json",
+  "gamma_c": 0.3716561497754841,
+  "runtime_seconds": 1.0250525749997905,
+  "runs": {
+    "0.2": {
+      "linearization": {
+        "jacobian": [
+          [
+            -0.024344793474433246,
+            1.0
+          ],
+          [
+            -0.021731489428791585,
+            -0.1
+          ]
+        ],
+        "trace": -0.12434479347443325,
+        "determinant": 0.024165968776234906,
+        "eigenvalues": [
+          {
+            "real": -0.062172396737216626,
+            "imag": 0.14248004021681437
+          },
+          {
+            "real": -0.062172396737216626,
+            "imag": -0.14248004021681437
+          }
+        ],
+        "fd_jacobian_max_abs_error": 1.636302204843787e-12
+      },
+      "finest": {
+        "h": 0.005,
+        "steps": 160000,
+        "initial_state": [
+          0.7431471805599453,
+          0.15625197637966753
+        ],
+        "end_state": [
+          0.6931471805600143,
+          0.15625197637968022
+        ],
+        "end_distance_from_equilibrium": 7.021114507718646e-14,
+        "tail_x_range": [
+          0.693147180559679,
+          0.6931471805607231
+        ],
+        "tail_a_range": [
+          0.15625197637959032,
+          0.15625197637968577
+        ],
+        "tail_risk_range": [
+          0.5208399212649948,
+          0.5208399212657511
+        ],
+        "tail_default_fraction_sampled": 0.0,
+        "tail_enter_default_count": 0,
+        "tail_complete_plateau_count": 0,
+        "periods": [],
+        "mean_period": null,
+        "period_std": null,
+        "plateau_widths": [],
+        "mean_plateau_width": null,
+        "all_boundary_crossings": [],
+        "threshold_based_readout_only": true,
+        "threshold_or_reset_in_integrator": false
+      },
+      "refinement": [
+        {
+          "coarse_h": 0.04,
+          "fine_h": 0.02,
+          "max_abs_x_difference": 5.382361223382759e-13,
+          "max_abs_a_difference": 6.786238238021269e-14,
+          "max_abs_risk_difference": 3.943512183468556e-13
+        },
+        {
+          "coarse_h": 0.02,
+          "fine_h": 0.01,
+          "max_abs_x_difference": 5.218048215738236e-14,
+          "max_abs_a_difference": 1.1268763699945339e-14,
+          "max_abs_risk_difference": 3.774758283725532e-14
+        },
+        {
+          "coarse_h": 0.01,
+          "fine_h": 0.005,
+          "max_abs_x_difference": 5.229150445984487e-14,
+          "max_abs_a_difference": 1.1934897514720433e-14,
+          "max_abs_risk_difference": 3.785860513971784e-14
+        }
+      ]
+    },
+    "0.8": {
+      "linearization": {
+        "jacobian": [
+          [
+            0.4102849951013984,
+            1.0
+          ],
+          [
+            -0.06519446828637475,
+            -0.1
+          ]
+        ],
+        "trace": 0.3102849951013984,
+        "determinant": 0.024165968776234906,
+        "eigenvalues": [
+          {
+            "real": 0.1551424975506992,
+            "imag": 0.009837389387749156
+          },
+          {
+            "real": 0.1551424975506992,
+            "imag": -0.009837389387749156
+          }
+        ],
+        "fd_jacobian_max_abs_error": 2.6755486715046572e-11
+      },
+      "finest": {
+        "h": 0.005,
+        "steps": 160000,
+        "initial_state": [
+          0.7431471805599453,
+          0.4687559291390025
+        ],
+        "end_state": [
+          -0.697253236297493,
+          0.8914743626541423
+        ],
+        "end_distance_from_equilibrium": 1.4532392071613098,
+        "tail_x_range": [
+          -2.4243424131219338,
+          1.9198259715952255
+        ],
+        "tail_a_range": [
+          0.27725917377308273,
+          0.8958357247809736
+        ],
+        "tail_risk_range": [
+          0.07503013714763727,
+          1.0
+        ],
+        "tail_default_fraction_sampled": 0.6709291133860826,
+        "tail_enter_default_count": 5,
+        "tail_complete_plateau_count": 4,
+        "periods": [
+          74.30847643253111,
+          74.30847614634115,
+          74.30847585224058,
+          74.3084762745342
+        ],
+        "mean_period": 74.30847617641176,
+        "period_std": 2.1284755804886661e-07,
+        "plateau_widths": [
+          47.98195953008474,
+          47.98195921757144,
+          47.98195917832754,
+          47.98195943341693
+        ],
+        "mean_plateau_width": 47.981959339850164,
+        "all_boundary_crossings": [
+          {
+            "time": 22.432697708854725,
+            "direction": "enter_default"
+          },
+          {
+            "time": 63.782686575307245,
+            "direction": "exit_default"
+          },
+          {
+            "time": 90.14376847826321,
+            "direction": "enter_default"
+          },
+          {
+            "time": 138.1245266554236,
+            "direction": "exit_default"
+          },
+          {
+            "time": 164.4510481702804,
+            "direction": "enter_default"
+          },
+          {
+            "time": 212.43300728794702,
+            "direction": "exit_default"
+          },
+          {
+            "time": 238.75952398828292,
+            "direction": "enter_default"
+          },
+          {
+            "time": 286.74148340111674,
+            "direction": "exit_default"
+          },
+          {
+            "time": 313.06800034150706,
+            "direction": "enter_default"
+          },
+          {
+            "time": 361.0499595237753,
+            "direction": "exit_default"
+          },
+          {
+            "time": 387.3764764054963,
+            "direction": "enter_default"
+          },
+          {
+            "time": 435.35843562483024,
+            "direction": "exit_default"
+          },
+          {
+            "time": 461.6849522046595,
+            "direction": "enter_default"
+          },
+          {
+            "time": 509.66691173474425,
+            "direction": "exit_default"
+          },
+          {
+            "time": 535.9934286371906,
+            "direction": "enter_default"
+          },
+          {
+            "time": 583.9753878547621,
+            "direction": "exit_default"
+          },
+          {
+            "time": 610.3019047835318,
+            "direction": "enter_default"
+          },
+          {
+            "time": 658.2838639618593,
+            "direction": "exit_default"
+          },
+          {
+            "time": 684.6103806357723,
+            "direction": "enter_default"
+          },
+          {
+            "time": 732.5923400691893,
+            "direction": "exit_default"
+          },
+          {
+            "time": 758.9188569103065,
+            "direction": "enter_default"
+          }
+        ],
+        "threshold_based_readout_only": true,
+        "threshold_or_reset_in_integrator": false
+      },
+      "refinement": [
+        {
+          "coarse_h": 0.04,
+          "fine_h": 0.02,
+          "max_abs_x_difference": 2.0829454837681394e-07,
+          "max_abs_a_difference": 2.5210568022071556e-08,
+          "max_abs_risk_difference": 9.740273776426278e-08
+        },
+        {
+          "coarse_h": 0.02,
+          "fine_h": 0.01,
+          "max_abs_x_difference": 1.3679671018347606e-08,
+          "max_abs_a_difference": 1.8024489678580835e-09,
+          "max_abs_risk_difference": 7.952724478954565e-09
+        },
+        {
+          "coarse_h": 0.01,
+          "fine_h": 0.005,
+          "max_abs_x_difference": 4.867449776568833e-09,
+          "max_abs_a_difference": 6.916133221679388e-10,
+          "max_abs_risk_difference": 3.106942703112736e-09
+        }
+      ]
+    }
+  }
+}

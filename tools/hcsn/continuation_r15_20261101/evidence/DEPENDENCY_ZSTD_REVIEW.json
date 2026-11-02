@@ -1,0 +1,144 @@
+{
+  "stage": "zstd",
+  "base_local_commit": "e72788cd908be32d26b153b73050188663840b45",
+  "baseline_stage": "zip",
+  "patch": "zstd.patch",
+  "patch_sha256": "a865e7b1b0b077a122ede3df5c46b7a910ba8d15cf85f11cb47fd9b038c2720b",
+  "files": {
+    "MODULE.bazel.lock": {
+      "base_sha256": "51aec3b9fcbcf9d1d4b4e03dd875ff393eb1a06ce84902f68ab90b2416312f5f",
+      "candidate_sha256": "262c7a38d01ba3434670dbdb04c3ebf3fd812ddf8f2561a3bf19e5a7e13fc04a"
+    },
+    "codex-rs/Cargo.lock": {
+      "base_sha256": "13c1d04020aaf9e1f835c55dbff89cf336fee3401a63a8c51d2325a7dccdf424",
+      "candidate_sha256": "086b879a89eba7644ad6dbe3a6fc70362d52be7b5b60cb609e0f3af9a8626a16"
+    },
+    "codex-rs/Cargo.toml": {
+      "base_sha256": "6a01a416d960513f2d9a4d786bc9a83b3445e4a3e9c2ff9e987d083681142c77",
+      "candidate_sha256": "7b3b0854ef8fe17831dd469ad9237acac52fff24af77081fa44dd07bc26e7105"
+    }
+  },
+  "advisory_db": "2295466c4e9df26647fd67d8fa1c705ac2fc7f81",
+  "before_advisories": 11,
+  "after_advisories": 8,
+  "removed_ids": [
+    "RUSTSEC-2026-0391",
+    "RUSTSEC-2026-0398",
+    "RUSTSEC-2026-0403"
+  ],
+  "added_ids": [],
+  "remaining_ids": [
+    "RUSTSEC-2024-0449",
+    "RUSTSEC-2026-0318",
+    "RUSTSEC-2026-0319",
+    "RUSTSEC-2026-0370",
+    "RUSTSEC-2026-0371",
+    "RUSTSEC-2026-0372",
+    "RUSTSEC-2026-0374",
+    "RUSTSEC-2026-0387"
+  ],
+  "remaining_error_categories": {
+    "unmaintained": 6,
+    "vulnerability": 2
+  },
+  "deny_policy_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+  "cargo_deny": {
+    "command": [
+      "/tmp/hepta_r13_cargo_deny_diagnostic/cargo-deny",
+      "--log-level",
+      "warn",
+      "--format",
+      "json",
+      "--color",
+      "never",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--all-features",
+      "--locked",
+      "--offline",
+      "check",
+      "--disable-fetch",
+      "--hide-inclusion-graph"
+    ],
+    "returncode": 1,
+    "elapsed_seconds": 3.6440328839962604
+  },
+  "metadata": {
+    "command": [
+      "/tmp/hepta-digital-rust195/bin/cargo",
+      "metadata",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--all-features",
+      "--locked",
+      "--offline",
+      "--format-version",
+      "1"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 1.7922966460027965,
+    "packages": 1523,
+    "nodes": 1523
+  },
+  "bazel_lock_update": {
+    "command": [
+      "/tmp/hcsn-r15-fmt-tools/bin/just",
+      "bazel-lock-update"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 2.336193594004726,
+    "before_sha256": "51aec3b9fcbcf9d1d4b4e03dd875ff393eb1a06ce84902f68ab90b2416312f5f",
+    "after_sha256": "262c7a38d01ba3434670dbdb04c3ebf3fd812ddf8f2561a3bf19e5a7e13fc04a",
+    "tls_verification_enabled": true,
+    "trust_store": "/tmp/hepta_r13_cargo_deny_diagnostic/bazel-session-cacerts"
+  },
+  "format": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "returncode": 0
+  },
+  "patch_apply_check": {
+    "command": [
+      "git",
+      "apply",
+      "--cached",
+      "--check",
+      "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/review_evidence/zstd/zstd.patch"
+    ],
+    "returncode": 0,
+    "scope": "isolated index at the stated base commit"
+  },
+  "diff_check_returncode": 0,
+  "integration_tests": {
+    "executed": false,
+    "reason": "Full affected project graph exceeds available local build resources; not replaced by metadata or a source probe."
+  },
+  "remote_log_reproduced": false,
+  "main_workspace_changed": false,
+  "dependency_probe": {
+    "scope": "Standalone dependency API/frame compatibility and abandoned-context regression; not full workspace integration.",
+    "command": [
+      "just",
+      "test",
+      "--manifest-path",
+      "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/review_evidence/zstd/compatibility_probe/Cargo.toml",
+      "--config-file",
+      "/workspace/scratch/d87ad18a3bba/cargo-r15-tls-review/review_evidence/zstd/compatibility_probe/.config/nextest.toml",
+      "-p",
+      "hepta-compression-regression-probe",
+      "--locked",
+      "--offline"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 6.452463346002332,
+    "packages": 17,
+    "disk_free_before": 2023165952,
+    "disk_free_after": 1949917184,
+    "source_sha256": "3655c846868aac13228d90f732d90f9c81cf09b9e6d046b9cb9f3388c7ad8e03",
+    "old_reference_codec": "zstd 0.13.3 and zstd-safe 7.2.4 occur only in the isolated test fixture; absent from the candidate production graph.",
+    "native_sys_version": "2.1.2+zstd.1.5.7",
+    "profile": "dev debug=limited, no RUSTFLAGS, 2 jobs, incremental disabled"
+  }
+}

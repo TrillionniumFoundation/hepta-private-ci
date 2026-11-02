@@ -391,6 +391,9 @@ jobs:
             # ABI while preserving the complete Bazel clippy target set.
             bazel_wrapper_args+=(--windows-msvc-host-platform)
             bazel_clippy_args+=(--platforms=//:windows_x86_64_msvc)
+            # Match Windows test shards: manual query results also contain
+            # helpers declared compatible only with GNULLVM or Unix platforms.
+            bazel_clippy_args+=(--skip_incompatible_explicit_targets)
           fi
 
           bazel_target_lines="$(./scripts/list-bazel-clippy-targets.sh "${bazel_target_list_args[@]}")"

@@ -1,0 +1,76 @@
+{
+  "schema": "robrix-targeted-ci-publication-v1",
+  "source_head_sha": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "workflow_sha256": "f03ad806a2789a72b33af94d29ba89f3c67745713c883150db3ce46f28357491",
+  "native_acceptance_pending": true,
+  "publication_preconditions": [
+    "Publish with the reviewed public-runfiles fixture source fix and consistent Cargo/Bazel dependency locks.",
+    "Do not treat local static or synthetic command-wiring controls as the real Windows or Ubuntu target execution.",
+    "Leave existing broad native and financial quality gates unchanged."
+  ],
+  "files": [
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci/candidate/.github/workflows/hcsn-robrix-fixture-r16.yml",
+      "destination": ".github/workflows/hcsn-robrix-fixture-r16.yml",
+      "bytes": 4022,
+      "sha256": "f03ad806a2789a72b33af94d29ba89f3c67745713c883150db3ce46f28357491",
+      "git_blob": "4a1af572532db76cfc24fc1582b14feb691aaaf2"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci/ROBRIX_TARGETED_CI.patch",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci/ROBRIX_TARGETED_CI.patch",
+      "bytes": 4374,
+      "sha256": "73cdcf5d7a04df2d8a19cbf8522fb38ba63a6ace43f305f1e95c4873166d59d3",
+      "git_blob": "4e759e5b2d721415cfd3650192e174490ed78434"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci/ROBRIX_TARGETED_CI_REVIEW.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci/ROBRIX_TARGETED_CI_REVIEW.json",
+      "bytes": 3636,
+      "sha256": "9fd8c82bf474adc72d3253237fd17bfbfba154a0d1d51566ae6ae7dd5a251b83",
+      "git_blob": "7244a0074389b51fa6ed3ff59eaec389a6f4ed46"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci/SOURCE_IDENTITIES.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci/SOURCE_IDENTITIES.json",
+      "bytes": 4350,
+      "sha256": "e08dc76eed8788ee8cdddf8b38cdbcdefda4beadefd8f93d895cd811fdaa295b",
+      "git_blob": "bc1ea1ac2df5a3b521443666c3611a2063ceb908"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci/SOURCE_CONTEXT.zip",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci/SOURCE_CONTEXT.zip",
+      "bytes": 45689,
+      "sha256": "27062084564d2ce134c5610a687048c7611e2da34959f33454cf2b0ee3f72dfe",
+      "git_blob": "dab404190c6561a00467297b58f6ab933f3d5a8f"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci/FORMAT_AND_LINT.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci/FORMAT_AND_LINT.json",
+      "bytes": 2953,
+      "sha256": "b925ee5163ffc60cc00853b5915d51d44f43396564335e0db4fe2dfc53e176d8",
+      "git_blob": "6b1c0ad942bfaca701d09359ea78e88af685d05c"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci/audit_workflow_wiring.py",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci/audit_workflow_wiring.py",
+      "bytes": 7861,
+      "sha256": "fc210c2024dd9ce6ed6d8b4c30f8d00d74f18a61d5dff0063983fac0196320c4",
+      "git_blob": "d944399cdbaae0a82b40ee70cb69777a7ef416c4"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-targeted-ci/WIRING_EXECUTION.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci/WIRING_EXECUTION.json",
+      "bytes": 10532,
+      "sha256": "457b4911b39df9c798b5ef7f4990d7e25fc0a2f85e69a679823c0f06aa0b27e0",
+      "git_blob": "9b3f20dab55bb1b96e5a65dea0b544e772dd22a6"
+    },
+    {
+      "source": "/tmp/hcsn-robrix-fixture-independent-review/TARGETED_CI_INDEPENDENT_REVIEW.json",
+      "destination": "tools/hcsn/continuation_r15_20261101/evidence/robrix_targeted_ci/TARGETED_CI_INDEPENDENT_REVIEW.json",
+      "bytes": 3269,
+      "sha256": "fe2080618631013747691069e9ebec1dc76e3fa946c35b34da2c95fc4e5099b9",
+      "git_blob": "3b238734817827706eaeacc75d4eaba7626e6ecd"
+    }
+  ]
+}

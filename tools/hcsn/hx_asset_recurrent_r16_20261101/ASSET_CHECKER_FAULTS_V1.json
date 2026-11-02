@@ -1,0 +1,125 @@
+{
+  "schema": "hcsn.hx-fixed-potential-checker-negative-tests.v1",
+  "passed": true,
+  "protocol_sha256": "7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa",
+  "checker_sha256": "6bfdadae171d833d32039d892fe26d9687aa9b888351c8a3f19111e68293c369",
+  "script_sha256": "097df2b132b08c608668e43d2b326d320331243b01c0dcec127123dfe1d899a2",
+  "original_audit_sha256": "4cf14304a8e38340f72b278bd14d96ae8cb69dbef280352cd3e6e6788324b450",
+  "original_training_sha256": "c128dd57936ce1f113b745223deb3ad8e1055b7002cf6373b0d8daedcafb2d1c",
+  "tests": [
+    {
+      "id": "missing_physical_fixture",
+      "changed_artifact": "audit",
+      "faulty_artifact_sha256": "bbadb8fa6b5212233d479404d89fb9df0f9a395c2281a7b731f9ec1a1cb00315",
+      "returncode": 1,
+      "expected_error_substring": "Fixed-z fixture identity/count mismatch",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 209, in <module>\n    a = parser.parse_args(); run(a.root, a.protocol_sha256, a.audit, a.training, a.financial_root, a.output)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 125, in run\n    require(len(fixtures) == g['required_fixed_z_fixtures'] and [v['z'] for v in fixtures] == inputs['fixed_z_fixtures'], 'Fixed-z fixture identity/count mismatch')\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Fixed-z fixture identity/count mismatch\n",
+      "expected_same_kernel_branch_calls_along_verified_error_path": 0,
+      "passed": true
+    },
+    {
+      "id": "missing_training_update",
+      "changed_artifact": "training",
+      "faulty_artifact_sha256": "89ea5a73e06164cde8c00dfddaaeb6dd0038a6d60b1723220a35e5bd8c8039af",
+      "returncode": 1,
+      "expected_error_substring": "Training input/count mismatch",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 209, in <module>\n    a = parser.parse_args(); run(a.root, a.protocol_sha256, a.audit, a.training, a.financial_root, a.output)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 129, in run\n    require(train['data'] == data and len(history) == p['training']['updates'] and [v['iteration'] for v in history] == list(range(len(history))), 'Training input/count mismatch')\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Training input/count mismatch\n",
+      "expected_same_kernel_branch_calls_along_verified_error_path": 0,
+      "passed": true
+    },
+    {
+      "id": "nan_early_gradient",
+      "changed_artifact": "audit",
+      "faulty_artifact_sha256": "29b7e305b718ee9392983238b72e5ecb289804ed8c9a96f8bff748690cb118f5",
+      "returncode": 1,
+      "expected_error_substring": "Nonfinite JSON NaN",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 209, in <module>\n    a = parser.parse_args(); run(a.root, a.protocol_sha256, a.audit, a.training, a.financial_root, a.output)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 116, in run\n    p, inputs, audit, train = map(read, (pp, ip, audit_path, training_path))\n    ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 23, in read\n    return json.loads(text, parse_constant=lambda x: (_ for _ in ()).throw(ValueError('Nonfinite JSON '+x)))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/__init__.py\", line 359, in loads\n    return cls(**kw).decode(s)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py\", line 338, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py\", line 354, in raw_decode\n    obj, end = self.scan_once(s, idx)\n               ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 23, in <lambda>\n    return json.loads(text, parse_constant=lambda x: (_ for _ in ()).throw(ValueError('Nonfinite JSON '+x)))\n                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 23, in <genexpr>\n    return json.loads(text, parse_constant=lambda x: (_ for _ in ()).throw(ValueError('Nonfinite JSON '+x)))\nValueError: Nonfinite JSON NaN\n",
+      "expected_same_kernel_branch_calls_along_verified_error_path": 0,
+      "passed": true
+    },
+    {
+      "id": "corrupt_euler_drift",
+      "changed_artifact": "training",
+      "faulty_artifact_sha256": "c730b7d87a85e161d40c1869a64de422c320b572ca4bd98945dd07feb0427473",
+      "returncode": 1,
+      "expected_error_substring": "Euler drift mismatch",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 209, in <module>\n    a = parser.parse_args(); run(a.root, a.protocol_sha256, a.audit, a.training, a.financial_root, a.output)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 147, in run\n    z, a, record = check_trace(row, datum, p, boundaries[theta]); branch_records[name] = record; trace_arrays[name] = (z, a)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 100, in check_trace\n    require(np.array_equal(drift[..., 0], dz.astype(np.float64)) and np.array_equal(drift[..., 1], da.astype(np.float64)), 'Euler drift mismatch')\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Euler drift mismatch\n",
+      "expected_same_kernel_branch_calls_along_verified_error_path": 1,
+      "passed": true
+    },
+    {
+      "id": "corrupt_early_theta_gradient",
+      "changed_artifact": "audit",
+      "faulty_artifact_sha256": "43b64591f73752adcb56997ef10219fed89a89cedbe0022ca6159b741069fffa",
+      "returncode": 1,
+      "expected_error_substring": "Temporal gradient comparison failed",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 209, in <module>\n    a = parser.parse_args(); run(a.root, a.protocol_sha256, a.audit, a.training, a.financial_root, a.output)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 154, in run\n    actual[name] = arr(row['observed'], shapes[name]); close(actual[name], arr(row['reference'], shapes[name]), g, 'Temporal gradient comparison failed')\n                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 39, in close\n    require(value.shape == reference.shape and np.all(np.abs(value-reference) <= gates['gradient_atol']+gates['gradient_rtol']*np.abs(reference)), message)\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Temporal gradient comparison failed\n",
+      "expected_same_kernel_branch_calls_along_verified_error_path": 1,
+      "passed": true
+    },
+    {
+      "id": "move_claimed_fixed_asset",
+      "changed_artifact": "training",
+      "faulty_artifact_sha256": "a76e6fa6c72afa139a026e65e66241b75515f301d61be1ade506a8a650141392",
+      "returncode": 1,
+      "expected_error_substring": "Physical assets changed with theta",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 209, in <module>\n    a = parser.parse_args(); run(a.root, a.protocol_sha256, a.audit, a.training, a.financial_root, a.output)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 185, in run\n    require(np.array_equal(v0, v1) and np.array_equal(v0, arr([v['represented_asset'] for v in fixtures])), 'Physical assets changed with theta')\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Physical assets changed with theta\n",
+      "expected_same_kernel_branch_calls_along_verified_error_path": 1,
+      "passed": true
+    },
+    {
+      "id": "wrong_boundary_diagnostic",
+      "changed_artifact": "training",
+      "faulty_artifact_sha256": "f3b7b3369b4be045e82603eef04091beb5424c2ed4f541cba0e03bef8e0d3b03",
+      "returncode": 1,
+      "expected_error_substring": "Actual fixed-physical boundary movement failed",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 209, in <module>\n    a = parser.parse_args(); run(a.root, a.protocol_sha256, a.audit, a.training, a.financial_root, a.output)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 187, in run\n    require(abs(b1-b0) > g['nonzero_gradient_floor'] and abs(b0-train['financial_boundary_initial']) <= g['gradient_atol'] and abs(b1-train['financial_boundary_final']) <= g['gradient_atol'], 'Actual fixed-physical boundary movement failed')\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Actual fixed-physical boundary movement failed\n",
+      "expected_same_kernel_branch_calls_along_verified_error_path": 1,
+      "passed": true
+    },
+    {
+      "id": "change_physical_target",
+      "changed_artifact": "training",
+      "faulty_artifact_sha256": "da4497a7a93440b8f844efbcd4cba7c4dc63ba20bc2b913b7b9f2c21a0359422",
+      "returncode": 1,
+      "expected_error_substring": "Training input/count mismatch",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 209, in <module>\n    a = parser.parse_args(); run(a.root, a.protocol_sha256, a.audit, a.training, a.financial_root, a.output)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 129, in run\n    require(train['data'] == data and len(history) == p['training']['updates'] and [v['iteration'] for v in history] == list(range(len(history))), 'Training input/count mismatch')\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Training input/count mismatch\n",
+      "expected_same_kernel_branch_calls_along_verified_error_path": 0,
+      "passed": true
+    },
+    {
+      "id": "wrong_protocol",
+      "changed_artifact": "audit",
+      "faulty_artifact_sha256": "eb18bd961ab1c9100f383fdb1d060b2d3ad035464bc9b0ae1c9ab147995cf8b5",
+      "returncode": 1,
+      "expected_error_substring": "Receipt/protocol mismatch",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 209, in <module>\n    a = parser.parse_args(); run(a.root, a.protocol_sha256, a.audit, a.training, a.financial_root, a.output)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 121, in run\n    require(audit['protocol_sha256'] == expected == train['protocol_sha256'], 'Receipt/protocol mismatch')\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Receipt/protocol mismatch\n",
+      "expected_same_kernel_branch_calls_along_verified_error_path": 0,
+      "passed": true
+    },
+    {
+      "id": "missing_phase_change",
+      "changed_artifact": "audit",
+      "faulty_artifact_sha256": "57762df6a7d8c91308abfe8aaffd094a8d69990842081f55a625b2e0e3597545",
+      "returncode": 1,
+      "expected_error_substring": "Phase-change count/identity mismatch",
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 209, in <module>\n    a = parser.parse_args(); run(a.root, a.protocol_sha256, a.audit, a.training, a.financial_root, a.output)\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 147, in run\n    z, a, record = check_trace(row, datum, p, boundaries[theta]); branch_records[name] = record; trace_arrays[name] = (z, a)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 103, in check_trace\n    require(changes == [(v['step'], v['sample'], v['from'], v['to']) for v in row['crossings']], 'Phase-change count/identity mismatch')\n  File \"/tmp/hcsn-asset-recurrent-next-v1/check_asset_results.py\", line 28, in require\n    raise ValueError(message)\nValueError: Phase-change count/identity mismatch\n",
+      "expected_same_kernel_branch_calls_along_verified_error_path": 1,
+      "passed": true
+    }
+  ],
+  "training_reruns": 0,
+  "pytorch_calls": 0,
+  "same_kernel_reference_scope": "Five corruptions reach the existing 18-row branch/local-reference batch before the asserted failure; five reject earlier. These are same-kernel consistency probes, not new financial qualification.",
+  "frozen_candidate_source_changed": false
+}

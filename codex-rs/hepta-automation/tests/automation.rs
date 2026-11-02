@@ -971,18 +971,14 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
-    sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop v2 index");
-    sqlx::query("DROP TABLE automation_dispatch_outcomes")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop v2 table");
     // The current opener applies the full durable causal-chain schema.
     // Remove every post-v1 object in reverse dependency order, then rewind the
     // migration ledger so reopening exercises the real v1 -> latest path.
     for statement in [
+        "DROP TABLE automation_timer_lifecycle",
+        "DROP TABLE destination_operation_dedupe",
+        "DROP INDEX automation_dispatch_outcome_state_idx",
+        "DROP TABLE automation_dispatch_outcomes",
         "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_update",
         "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_delete",
         "DROP TABLE IF EXISTS automation_legacy_dispatch_reconciliations",

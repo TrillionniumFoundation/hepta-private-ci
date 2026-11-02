@@ -1300,6 +1300,80 @@ fn read_extracted_backup_archive_git_sha_rejects_path_traversal_ref() {
     assert!(err.contains("invalid path components"));
 }
 
+#[cfg(unix)]
+#[test]
+fn zipball_extraction_preserves_executable_bits_without_privileged_permissions() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    writer
+        .start_file(
+            "root/run.sh",
+            SimpleFileOptions::default().unix_permissions(/*mode*/ 0o755),
+        )
+        .expect("start executable entry");
+    writer.write_all(b"#!/bin/sh\n").expect("write executable");
+    let mut archive = writer.finish().expect("finish archive").into_inner();
+    let central_header = archive
+        .windows(4)
+        .position(|bytes| bytes == b"PK\x01\x02")
+        .expect("central directory header");
+    // Simulate untrusted external attributes, including setuid, setgid, and sticky bits.
+    archive[central_header + 38..central_header + 42]
+        .copy_from_slice(&(0o107755u32 << 16).to_le_bytes());
+    let destination = tempdir().expect("destination");
+
+    extract_zipball_to_dir(&archive, destination.path()).expect("extract executable");
+
+    let output = destination.path().join("run.sh");
+    assert_eq!(
+        std::fs::read(&output).expect("read executable"),
+        b"#!/bin/sh\n"
+    );
+    assert_eq!(
+        std::fs::metadata(output)
+            .expect("metadata")
+            .permissions()
+            .mode()
+            & 0o7777,
+        0o755
+    );
+}
+
+#[test]
+fn zipball_extraction_rejects_symbolic_links() {
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    writer
+        .add_symlink("root/link", "../../outside", SimpleFileOptions::default())
+        .expect("add symbolic link");
+    let archive = writer.finish().expect("finish archive").into_inner();
+    let destination = tempdir().expect("destination");
+
+    let error = extract_zipball_to_dir(&archive, destination.path())
+        .expect_err("symbolic link should be rejected");
+
+    assert!(error.contains("is a symbolic link"));
+    assert!(!destination.path().join("link").exists());
+}
+
+#[test]
+fn zipball_extraction_rejects_paths_outside_destination() {
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    writer
+        .start_file("root/../../outside", SimpleFileOptions::default())
+        .expect("start traversal entry");
+    writer.write_all(b"outside").expect("write traversal entry");
+    let archive = writer.finish().expect("finish archive").into_inner();
+    let parent = tempdir().expect("parent");
+    let destination = parent.path().join("destination");
+
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("path traversal should be rejected");
+
+    assert!(error.contains("escapes extraction root"));
+    assert!(!parent.path().join("outside").exists());
+}
+
 fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);

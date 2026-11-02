@@ -1,0 +1,49 @@
+{
+  "schema": "hcsn.r16.remote_regression.v2",
+  "source_head": "889e7acebd14ecb05018c1d8c6ae4d26287cbcf8",
+  "source_tree": "dc1eb6177529930bfd27d33eae71967e3d91b462",
+  "prospective_merge_commit": "118aeded28c79a7d8e72e73ee4c593c9a82d931d",
+  "merge_tree_matches_source": true,
+  "job": {
+    "id": 124919123170,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41330412348/job/124919123170",
+    "conclusion": "success",
+    "all_steps_success": true
+  },
+  "primitive_checks": 701,
+  "development": {
+    "rows": 432,
+    "passed_rows": 432,
+    "points": 18,
+    "passed_points": 18,
+    "max_value_error": 5.665080594681952e-08,
+    "max_jacobian_error": 9.439639804099026e-07
+  },
+  "opened_v1_regression": {
+    "rows": 512,
+    "passed_rows": 512,
+    "points": 128,
+    "passed_points": 128,
+    "max_value_error": 5.718660608053465e-08,
+    "max_jacobian_error": 7.1891889198427705e-06,
+    "new_independent_samples": false
+  },
+  "frozen_gates_unchanged": true,
+  "source_cleanliness_passed": true,
+  "artifact": {
+    "id": 13093755039,
+    "name": "hcsn-r16-frozen-regression-118aeded28c79a7d8e72e73ee4c593c9a82d931d",
+    "bytes": 603423,
+    "sha256_from_upload_log": "ba85ff708021a54619a3a686a985edc259a788f0438cf94b9a914d7f8ae848d6",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41330412348/artifacts/13093755039",
+    "downloaded_and_independently_hashed": false
+  },
+  "log": {
+    "file": "R16_REMOTE_889E_LOG.txt.gz",
+    "decoded_bytes": 32082,
+    "decoded_sha256": "ec1a64fed74595463691b7650af0c79f272b4be8768c8aa86993a30354cbd7dd",
+    "gzip_bytes": 7340,
+    "gzip_sha256": "f29655eb9a7c1fa231799faafcf4790e7546c6f9efb0609c5212a6a1241d15a9"
+  },
+  "scope": "Actual remote Python compensated-kernel replay only. Does not admit the separate C++ candidate, autograd adapter, native repairs, performance, or efficacy."
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn.simplified-c1-periodic-existence-review.v1",
+  "reviewer": "/root/architecture_comparison",
+  "result": "Proof holds for the exact nominal real ODE with I defined by kE(log2)-dR(log2)",
+  "proof_bytes": 6815,
+  "proof_sha256": "5216e2e43a98a1e079a7d328c85c4b15ca9dd7a51055d848ae48895380c7f787",
+  "changes_to_frozen_toy_artifacts": false,
+  "strict_hopf_theorem": false,
+  "periodic_orbit_existence_proved": true,
+  "specified_initial_omega_limit_is_periodic_proved": true,
+  "uniqueness_stability_period_or_boundary_crossing_proved": false,
+  "source": "https://www.mat.univie.ac.at/~gerald/ftp/book-ode/ode.pdf",
+  "source_location": "Section7.3, Lemma7.13, printedp222/PDFzero-based232",
+  "important_qualification": "The compact rectangle bounds the selected trajectory; the whole rectangle is not asserted forward invariant."
+}

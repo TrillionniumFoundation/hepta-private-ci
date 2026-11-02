@@ -1,0 +1,182 @@
+{
+  "schema": "hcsn-r16-independent-source-and-numeric-review-v1",
+  "candidate_mutated": false,
+  "candidate_precision": "Two FP32 words per primal and tangent component; extended significand, not ordinary one-word FP32.",
+  "source_and_evidence_sha256": {
+    "compensated_kernel.py": "c1088ca5cfd2c8a18877078b8a14ff251986c1eaeca0911a838c2d55e400643f",
+    "float32_pair.py": "63010529b91de196698c7b096a5bac94f73460f3a811f70b61a95d53ffd87ae9",
+    "frozen_kernel.py": "69f5b28c61301bcb89d1c860212e7532fa292538214967e6871ed355e5e367b0",
+    "frozen_reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52",
+    "R16_VALIDATION_PROTOCOL_V1.json": "18f66bd44e4ea03792c678947ede965af0f83199ccbdc34067f1c5b809af2c31",
+    "R16_HOLDOUT_CASES_V1.json": "317162122a0f6d43143b42b37c12e48f8e8888276d5018784b887848b420a86c",
+    "COMP_PRIMITIVES01.json": "dc746d204f63bb40deea177caa69fc9ed50ee960d56da505bee10b2eca0b5da4",
+    "COMP_ATTEMPT01_FULL.json": "9f1d082902429d693bb44aedf7086ffb20d6fecf81f9aac074fe995ebd406fb6",
+    "FROZEN_REFERENCE.json": "f3d4fc69a72ff3e776bc77bef4fd49ca117e4133ff91737c61f67675ef488c5d",
+    "R16_HOLDOUT_V1.json.gz": "44f6340bbe2f783e10f36aeddda6f96ed67df1efe5f6d6cf2a0732241f798310",
+    "R16_CPU_COST_V1.json": "67b2829d86f4db770744f6be88e2be72db5fc33b385eb691b65778c2e5cc7bd4"
+  },
+  "arithmetic_review": {
+    "dynamic_financial_dataflow": "Inspected Pair and Dual arithmetic, plus inherited FullHX call sites; financial arrays and primitive inputs/outputs remain float32. The independent witness process instrumented253406Pair constructions,34142TwoProduct and127326TwoSum calls.",
+    "higher_precision_constants": "Decimal and FP64 are used to prepare fixed rational coefficients, factorial/integer constants, Gaussian constants and Gauss-Legendre nodes/weights. No financial parameter/state is evaluated through those constant-generation paths in reviewed code.",
+    "derivative_semantics": "Forward AD targets mathematical exp/log/sqrt/CDF derivatives and the inherited financial equations; it does not differentiate quantization, machine rounding or the rational approximation error.",
+    "claim_limit": "Dynamic instrumentation checks executed witness paths and storage/I/O dtypes; it is not a formal proof for arbitrary future code or GPU compiler transformations."
+  },
+  "primitives": {
+    "reference": "Independent mpmath80 using exact binary FP32 hi+lo inputs",
+    "counts": {
+      "add": 128,
+      "sub": 128,
+      "mul": 128,
+      "div": 128,
+      "exp": 30,
+      "expm1": 24,
+      "log": 21,
+      "sqrt": 18,
+      "cdf": 48,
+      "logcdf": 48
+    },
+    "total": 701,
+    "reported_maxima_verified_from_all_rows": true,
+    "max_scaled_error": 1.3211100833643224e-13,
+    "metric": "abs(error)/max(1,abs(reference))",
+    "limits": [
+      "No uniform relative-tail accuracy claim",
+      "No direct log1p/integer-power derivative test in the701primitive count; those functions are exercised through financial evaluations",
+      "Generic sqrt(0) and splitter-overflow product counterexamples retained in invariant receipt"
+    ]
+  },
+  "development_archive_review": {
+    "original_member": "R11 numerics/FINAL_RESULTS.json",
+    "reconstructed_bytes_sha256": "aa35be2e7e8760518ca6d0865abb363256d04f937ab831f35c408e719e92bec0",
+    "all_chunk_compressed_and_raw_hashes_verified": true,
+    "selected_rows_exactly_equal_original_float32_rows": true,
+    "rows": 432,
+    "unique_case_coordinate_state_keys": 419,
+    "duplicate_rows": 13,
+    "parameter_cases": 18,
+    "default_region_asset_rows": 2,
+    "role": "Development evidence; not fresh validation or432independent cases"
+  },
+  "holdout_review": {
+    "protocol_source_and_manifest_seals_match": true,
+    "pcg64_lhs_regenerated_exactly": true,
+    "seed": 2026110107,
+    "unique_parameter_points": 128,
+    "distinct_strata_each_axis": [
+      128,
+      128,
+      128,
+      128,
+      128,
+      128,
+      128,
+      128,
+      128
+    ],
+    "all_parameters_inside_box": true,
+    "liquidity_and_maturity_sampled_logarithmically": true,
+    "summary": {
+      "generated_points": 128,
+      "independently_valid_points": 128,
+      "independently_rejected_points": 0,
+      "evaluated_rows": 512,
+      "passed_rows": 512,
+      "passed_valid_points": 128,
+      "oracle_halving_failures": 0,
+      "max_value_error": 5.718660608053465e-08,
+      "max_jacobian_error": 7.1891889198427705e-06,
+      "max_oracle_halving_error": 4.778802063239728e-59,
+      "all_valid_rows_passed": true,
+      "diagnostic_wall_seconds": 167.27297413899942,
+      "diagnostic_cpu_seconds": 167.157670013
+    },
+    "candidate_boundary_status_counts": {
+      "accepted": 128
+    },
+    "coordinate_counts": {
+      "log_distance": 256,
+      "asset": 256
+    },
+    "default_region_asset_rows": 36,
+    "limits": [
+      "128points stratify marginal coordinates, not all9-dimensional interactions or box corners",
+      "The holdout has no forced exact parameter endpoints, x=0 or below-boundary state at every point",
+      "Independent rejection gate is a local necessary stopping condition, not proof of global optimal stopping",
+      "Oracle uses documented decimal-roundtrip encodings of binary32 words, not exact binary rational reconstruction",
+      "All valid rows must pass; no candidate-success selection or tolerance changes observed"
+    ]
+  },
+  "default_seam_review": "Equity value matching and smooth pasting pass. F,G and debt have nonzero continuation-side state slopes against constant default-region extensions, so the full operator is not globally C1.",
+  "timing_review": {
+    "complete54point_warmup_each_mode_and_condition": true,
+    "all_measured_modes_finite": true,
+    "boundary_reuse_separated": true,
+    "records": [
+      {
+        "mode": "original_float64",
+        "boundary_reuse": false,
+        "wall_seconds_per_complete_state": 0.0023386158333138425,
+        "cpu_seconds_per_complete_state": 0.002337466203703704
+      },
+      {
+        "mode": "original_single_float32",
+        "boundary_reuse": false,
+        "wall_seconds_per_complete_state": 0.002561888722252829,
+        "cpu_seconds_per_complete_state": 0.0025597023148148175
+      },
+      {
+        "mode": "compensated_two_word_float32",
+        "boundary_reuse": false,
+        "wall_seconds_per_complete_state": 0.21900498503701885,
+        "cpu_seconds_per_complete_state": 0.2189552152777778
+      },
+      {
+        "mode": "original_float64",
+        "boundary_reuse": true,
+        "wall_seconds_per_complete_state": 0.002358066814782365,
+        "cpu_seconds_per_complete_state": 0.0023578785185185166
+      },
+      {
+        "mode": "original_single_float32",
+        "boundary_reuse": true,
+        "wall_seconds_per_complete_state": 0.0019645471296556665,
+        "cpu_seconds_per_complete_state": 0.001964354814814808
+      },
+      {
+        "mode": "compensated_two_word_float32",
+        "boundary_reuse": true,
+        "wall_seconds_per_complete_state": 0.17551029031481583,
+        "cpu_seconds_per_complete_state": 0.17549747085185174
+      }
+    ],
+    "limits": [
+      "One fixed mode order and one measured batch per condition; descriptive local CPU cost, no confidence interval",
+      "Python prototype; no GPU, power, throughput distribution or model-training comparison",
+      "Original ordinary FP32 remains numerically unqualified despite finite timed outputs",
+      "Compensated prototype is much slower than original FP64 in this run; no speed advantage"
+    ]
+  },
+  "release_assessment": {
+    "finite_experimental_evidence_bundle_blockers": [],
+    "claims_not_supported": [
+      "Ordinary one-word FP32 qualification",
+      "Uniform accuracy over the full controlled parameter box or all finite states",
+      "Globally differentiable default boundary for all output channels",
+      "Generic all-normal-FP32-range primitive correctness",
+      "Production/GPU/network training readiness or speed advantage"
+    ],
+    "broader_release_requirements": [
+      "Define or enforce valid primitive/state range and handle zero/splitter-overflow before exposing generic arithmetic",
+      "Preserve explicit derivative/default seam convention in any neural layer",
+      "Measure a real GPU implementation and representative learned task before training/throughput claims"
+    ]
+  },
+  "independent_review_witness_receipt": {
+    "path": "tmp_r15_compensated_invariants_v2.json",
+    "sha256": "73888d07edd5d6cdc1bfd703b397161bd339428a1b90c7cdac50f4f28072f5aa",
+    "script": "tmp_r15_compensated_review.py",
+    "script_sha256": "8d39479c06b773b70d09e2c165dc72be3de689ac844fd8db765372212d59f46a",
+    "status": "Post-development review witnesses, separate from preregistered LHS holdout"
+  },
+  "review_iteration_note": "An initial review assertion incorrectly demanded zero debt state derivative at the boundary. The corrected check applies the recovery identity to parameter derivatives only and separately retains the nonzero continuation-state slope; candidate source was never altered."
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn.windows-clippy-platform-selection-independent-review.v1",
+  "reviewed_at_utc": "2026-11-01T18:54:43.757399+00:00",
+  "reviewer": "architecture_comparison",
+  "decision": "No blocking issue found. This is a platform-selection repair for explicit targets already declared incompatible with the selected Windows/MSVC platform, not a change to compatible lint gates. Actual Windows CI remains required.",
+  "candidate": {
+    "path": "/tmp/hcsn-8df6-native-diagnostics/candidate/.github/workflows/bazel.yml",
+    "bytes": 20713,
+    "sha256": "4bf5b7b9211d0943eda0df95dc966a3ab7371f0ffa5215db4e7c462eba8a5053"
+  },
+  "original_workflow_sha256": "7056008137ed9abbe8f29eae95ac4f1a3d771e7a6dba8fd012c11964ddb4221e",
+  "original_workflow_git_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c",
+  "exact_head": "8df6e272e3a31a3fae0491dd2d511825e212290c",
+  "observed_job_id": 124935497125,
+  "independent_readonly_verification": {
+    "original_source_git_blobs_and_sha256_verified": 23,
+    "original_log_gzip_and_decoded_sha256_verified": true,
+    "raw_log_unique_incompatible_labels": 157,
+    "raw_log_labels_exactly_equal_supplied_list": true,
+    "gnullvm_cross_binaries": 156,
+    "unix_only_qualification_binary": 1,
+    "git_diff_check_actual_exit_code": 0
+  },
+  "evidence_identities": [
+    {
+      "path": "/tmp/hcsn-8df6-native-diagnostics/SOURCE_AND_LOG_IDENTITY.json",
+      "bytes": 11297,
+      "sha256": "cab1ff2c728896dac63d0f1d12d6d94da1569551a95d4dcbd2e60e32919c7b5a"
+    },
+    {
+      "path": "/tmp/hcsn-8df6-native-diagnostics/INCOMPATIBLE_TARGETS.json",
+      "bytes": 12612,
+      "sha256": "ae90c130bf673714ba7639b8400f5f4d4365a2b20737031c8a4a16b0c1cebc52"
+    },
+    {
+      "path": "/tmp/hcsn-8df6-native-diagnostics/JOB_124935497125.log.gz",
+      "bytes": 90074,
+      "sha256": "64ed0635a857d431e2525bc184f77eacc389a54f1c51b87ffa31216f3fc09942"
+    }
+  ],
+  "source_findings": [
+    "The full diff is three added lines: two explanatory comments and one bazel_clippy_args append inside the existing RUNNER_OS == Windows branch. The existing MSVC target and host-platform flags are unchanged.",
+    "defs.bzl defines WINDOWS_GNULLVM_ONLY as compatible only for the GNULLVM ABI and applies it to generated manual windows-cross-bin rust_test targets. The log identifies all 156 as explicitly incompatible with the actual MSVC target platform.",
+    "The Agentd qualification test uses _COGNITIVE_E2E_COMPATIBILITY, with Linux/macOS allowed and all other platforms incompatible. Its UnixProcessDriver/socket rationale is present in the original source.",
+    "The target discovery script, entire returned target roster, all compatibility declarations, --config=clippy, Rust sources and target action definitions are unchanged. No allow/ignore lint flag, continue-on-error or successful-exit override is added.",
+    "Non-Windows clippy invocation is unchanged. Windows test shards already use the same explicit-incompatibility selection flag.",
+    "Existing compatible target actions retain normal failure propagation. No claim is made that the old MSVC invocation ever provided usable GNULLVM coverage; declared ABI-incompatible targets cannot be validated by that platform."
+  ],
+  "primary_semantics_source": {
+    "url": "https://bazel.build/concepts/platforms#when-are-targets-skipped",
+    "retrieved_ref": "turn60view0",
+    "summary": "Bazel distinguishes incompatible targets reached by patterns from those explicitly named. The latter normally fail selection; skip_incompatible_explicit_targets makes them skip according to the already-defined target constraints."
+  },
+  "validation_scope": [
+    "This reviewer ran no native Rust, Windows or repository Bazel build.",
+    "The separate small Bazel probe attempt01 (profiler crash) and attempt02 (registry certificate failure) were present and failed for environment reasons; they are not counted as passed semantic tests in this receipt.",
+    "Source-owned subsequent proof runs, if any, require their own actual receipts.",
+    "macOS OOM, other native failures and scientific quality/efficiency gates are outside this three-line repair and remain unchanged."
+  ],
+  "blocking_findings": []
+}

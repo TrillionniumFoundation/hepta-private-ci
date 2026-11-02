@@ -1,0 +1,52 @@
+{
+  "schema": "hcsn.ci-workflow-independent-review-correction.v1",
+  "superseded_original_review_sha256": "b3fd9abad2c56f40e1389bc32c89a81c502c065a7795d633f08e70bf37148ceb",
+  "original_review_preserved": true,
+  "review_error": "The earlier static no-blocker conclusion missed that runner context is unavailable in jobs.<job_id>.env. The original workflow was invalid. YAML/Bash/CLI/source-identity review alone did not establish GitHub expression-context validity.",
+  "primary_source": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability",
+  "official_rule_independently_read": "jobs.<job_id>.env allows github,needs,strategy,matrix,vars,secrets,inputs; runner is allowed in execution-step contexts but not job env.",
+  "remote_evidence_read": {
+    "path": "/tmp/hcsn-r16-asset-ci/REMOTE_VALIDATION_FAILURE.json",
+    "sha256": "baee6cdf810effaac99eeacbb6a7c6ab31f6b66c2e616121ccc224b4feb174a2",
+    "run_id": 41334191519,
+    "head": "e2252649e6bfc390c60e041a76e50dd94332bbdb",
+    "conclusion": "failure",
+    "provenance": "Read source agent exact remote evidence; reviewer independently executed local expression validation and read official docs."
+  },
+  "actionlint": {
+    "binary_sha256": "c872d6db8c6bf83a8eaa704fc93999f027d55dffbc63b8a6abdccb47df5f4cd4",
+    "version_exit": 0,
+    "version_stdout": "1.7.12\ninstalled by downloading from release page\nbuilt with go1.26.1 compiler for linux/amd64\n",
+    "version_stderr": "",
+    "executions": [
+      {
+        "role": "before",
+        "command": [
+          "/tmp/hcsn-bp-ci-tools/actionlint",
+          "/tmp/hcsn-r16-bp-ci/candidate/.github/workflows/hcsn-financial-autograd-r16.yml"
+        ],
+        "workflow_sha256": "37acf5263850f81eb2a14f3f6d0a847fa2261cfe79ec51f5b1161e0320fdd9e4",
+        "returncode": 1,
+        "log_path": "/tmp/hcsn-recurrent-independent-review/ci_context_correction/before.log",
+        "log_sha256": "37362bf114f6498df7efb4164615b33a2620fdaec9684c95db9de0868d7dc222",
+        "log": "hcsn-r16-bp-ci/candidate/.github/workflows/hcsn-financial-autograd-r16.yml:34:24: context \"runner\" is not allowed here. available contexts are \"github\", \"inputs\", \"matrix\", \"needs\", \"secrets\", \"strategy\", \"vars\". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]\n   |\n34 |       HCSN_PYTHON: ${{ runner.temp }}/hcsn-financial-autograd-r16-python/bin/python\n   |                        ^~~~~~~~~~~\nhcsn-r16-bp-ci/candidate/.github/workflows/hcsn-financial-autograd-r16.yml:35:25: context \"runner\" is not allowed here. available contexts are \"github\", \"inputs\", \"matrix\", \"needs\", \"secrets\", \"strategy\", \"vars\". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]\n   |\n35 |       HCSN_RESULTS: ${{ runner.temp }}/hcsn-financial-autograd-r16-results\n   |                         ^~~~~~~~~~~\n"
+      },
+      {
+        "role": "after",
+        "command": [
+          "/tmp/hcsn-bp-ci-tools/actionlint",
+          "/tmp/hcsn-r16-asset-ci/context_fixed/.github/workflows/hcsn-financial-autograd-r16.yml"
+        ],
+        "workflow_sha256": "f412f538369121a101d8f183bb1136795c9de365a5c6f8a221f77f69bf53af97",
+        "returncode": 0,
+        "log_path": "/tmp/hcsn-recurrent-independent-review/ci_context_correction/after.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "log": ""
+      }
+    ]
+  },
+  "fix_review": "The only change removes two job-env runner expressions and adds a runner-local step writing quoted RUNNER_TEMP paths into GITHUB_ENV for subsequent steps. No permissions, numerical scripts, source hashes, gates, or results are changed.",
+  "source_agent_environment_probe_review": "Source receipt records actual initializer and subsequent shell success, including RUNNER_TEMP with spaces. This is a shell handoff check, not remote-runner execution.",
+  "decision": "The specific expression-context defect is reproduced red and corrected green under actionlint 1.7.12. Corrected workflow still requires actual new-head GitHub execution; no remote BP/BPTT success is asserted.",
+  "numerical_executions_by_reviewer": 0
+}

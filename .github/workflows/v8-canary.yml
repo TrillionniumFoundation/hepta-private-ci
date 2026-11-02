@@ -232,6 +232,9 @@ jobs:
             "${pair_target}"
             --build_metadata=COMMIT_SHA=$(git rev-parse HEAD)
           )
+          if [[ "${RUNNER_OS}" == "macOS" ]]; then
+            bazel_args+=(--config=v8-macos-client)
+          fi
           if [[ "${SANDBOX}" != "true" ]]; then
             bazel_args+=(--config=v8-release-compat)
           fi
@@ -279,6 +282,9 @@ jobs:
             --bazel-config "${BAZEL_CONFIG}"
             --bazel-config "v8-target-${V8_CPU}"
           )
+          if [[ "${RUNNER_OS}" == "macOS" ]]; then
+            stage_args+=(--bazel-config v8-macos-client)
+          fi
           if [[ "${SANDBOX}" == "true" ]]; then
             stage_args+=(--sandbox)
           else
@@ -320,6 +326,7 @@ jobs:
           (
             cd codex-rs
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
+            RUSTUP_TOOLCHAIN=1.95.0 \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
             "${CARGO_1_95}" "${cargo_args[@]}"

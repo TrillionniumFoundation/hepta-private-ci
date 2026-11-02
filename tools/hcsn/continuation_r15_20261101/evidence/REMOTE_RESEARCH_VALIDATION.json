@@ -1,0 +1,120 @@
+{
+  "schema": "hcsn.r15.remote-research-validation.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4550,
+  "base": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+  "source_head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+  "tree": "d9115a465a35c04dcf10227f57bbfbd14548ec33",
+  "local_tree": "d9115a465a35c04dcf10227f57bbfbd14548ec33",
+  "all_seven_remote_stage_trees_equal_local": true,
+  "stages": [
+    {
+      "local": "57c672f96d45e5bc3d32fad2781a4583a4cc34eb",
+      "remote": "31d1e4f53dcf24397743bb4bb7966beeed277f85",
+      "tree": "9ccadd0bf18b2f910426d222ff28d355e2ec8ddf"
+    },
+    {
+      "local": "f050027379a914ba3e9247ea17cca7d90bbabafd",
+      "remote": "503c453518309ee33a82aa057f37a2ed49407ba6",
+      "tree": "eafac396519eadd77d16d334ffb31a334a9608d1"
+    },
+    {
+      "local": "d3f99813f23177f494dc8c17a051e6f17e6bf72e",
+      "remote": "012f2a1fca96605aebdb06179559855a991f9cf3",
+      "tree": "640f00a273fc3ade0105174be8e6e8cc59d87b91"
+    },
+    {
+      "local": "423557730e21c5f6ca696def3d50251aec89f15f",
+      "remote": "5cae85952bd3903b4f2c955d9381f929c80561f0",
+      "tree": "6f61d59a387875a0852e2b553d1d3755bcf5e930"
+    },
+    {
+      "local": "a3b2d2fe07bdedc2b14306c4e5269085d142c1ab",
+      "remote": "8048c92b0ca1a67a46f233b073ef6aadc26677fa",
+      "tree": "8b84f41040d9b4ac5ed520acc0ee1b24fe9e0001"
+    },
+    {
+      "local": "5f39c3dc7c5577e4221e834570d7de6c767c1b8d",
+      "remote": "01fd69f81954326cca265b9f1c319425fe78f804",
+      "tree": "aa03e783c7756530a67764daffa11952842452d8"
+    },
+    {
+      "local": "f54da82dc5ddec7cb941e4ccd2f78b82eaf795c6",
+      "remote": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+      "tree": "d9115a465a35c04dcf10227f57bbfbd14548ec33"
+    }
+  ],
+  "uploaded_blobs": 116,
+  "checks": [
+    {
+      "name": "R14 and R15 finite-model regressions",
+      "run_id": 41289063948,
+      "job_id": 124796329499,
+      "result": "success",
+      "head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+      "tests": {
+        "r14": 48,
+        "r15": 22
+      },
+      "source_cleanliness": "success"
+    },
+    {
+      "name": "R13 numerical contract",
+      "run_id": 41289063908,
+      "job_id": 124796329293,
+      "result": "success",
+      "head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+      "checkout": "GitHub merge candidate; same verified tree as source head"
+    },
+    {
+      "name": "Blob size policy",
+      "run_id": 41289063949,
+      "job_id": 124796330022,
+      "result": "success",
+      "compared_base": "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+      "compared_head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+      "changed_files": 120,
+      "max_bytes": 512000
+    },
+    {
+      "name": "Repository formatting and build checks",
+      "run_id": 41289063949,
+      "job_id": 124796761755,
+      "result": "success",
+      "head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
+      "merge_candidate": "bc17c8c6b6970908b6992bf3b9023f6eedd36bc3"
+    },
+    {
+      "name": "Codespell",
+      "run_id": 41289063949,
+      "job_id": 124796330066,
+      "result": "failure",
+      "findings": 2649,
+      "payload_findings": 2608,
+      "payload_paths": 219,
+      "text_findings": 41,
+      "text_paths": 19,
+      "r15_new_findings": 0
+    },
+    {
+      "name": "Cargo dependency policy",
+      "run_id": 41289063949,
+      "job_id": 124796761693,
+      "result": "failure",
+      "decoded_detailed_log_available": false
+    }
+  ],
+  "scope": "This receipt describes the first published research candidate. Later native and spelling repairs require their own final-head checks; this is not a repository-wide success certificate.",
+  "scientific_acceptance_changed": false,
+  "new_confirmation_opened": false,
+  "all_blockers_closed": false,
+  "merge_candidate": {
+    "commit": "bc17c8c6b6970908b6992bf3b9023f6eedd36bc3",
+    "tree": "d9115a465a35c04dcf10227f57bbfbd14548ec33",
+    "tree_equals_source_head": true,
+    "parents": [
+      "ad32ceac6972e811ce74802ab5c44dc63b40bd4b",
+      "0ee3bb576e3db6156dad9b914ef5bae83a5387db"
+    ]
+  }
+}

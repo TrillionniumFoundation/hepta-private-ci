@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn.r15.composed-format.v1",
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "cwd": "codex-rs",
+  "exit_code": 0,
+  "wall_seconds": 0.3237550339981681,
+  "child_cpu_seconds": 0.30725800000000003,
+  "before_sha256": {
+    "codex-rs/hepta-agentd/BUILD.bazel": "f193ff8bdd0f42cd804a5ee46a5cb44e7dfa467ca80c6a10a4218e4387a67a9e",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "8247d1d8bc638f1ad8784fe06490ed1c48d1659516df5fb59a242dc52fdbc668",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "c435c06766b29542580cfe876cf53bf6982099fc33af522f1efa2cac9e490f57",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "b06480154f08e0b9620e7b670074e12330d786739384e16391587e26f3ea3d18",
+    "codex-rs/hepta-fleet/src/authority_port.rs": "e26a8617580ce0e1a893aff4c593bdea99f3733d58fce567ce5e026b523a2901",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "930b29b3010de976f8638091222f00fc70e6ad831a6134474b8eb31a26b50463",
+    "codex-rs/hepta-memory/src/production_writer.rs": "1f21334c69b258240905e96ccc91b67dd2e5cd44f55a63baa0d003c429fd26ec",
+    "defs.bzl": "3fc965c2f62659b7257ba316b41fd11f19365205a4a20e421f0005aaa78a6d52"
+  },
+  "after_sha256": {
+    "codex-rs/hepta-agentd/BUILD.bazel": "f193ff8bdd0f42cd804a5ee46a5cb44e7dfa467ca80c6a10a4218e4387a67a9e",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "8247d1d8bc638f1ad8784fe06490ed1c48d1659516df5fb59a242dc52fdbc668",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "c435c06766b29542580cfe876cf53bf6982099fc33af522f1efa2cac9e490f57",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "b06480154f08e0b9620e7b670074e12330d786739384e16391587e26f3ea3d18",
+    "codex-rs/hepta-fleet/src/authority_port.rs": "e26a8617580ce0e1a893aff4c593bdea99f3733d58fce567ce5e026b523a2901",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "930b29b3010de976f8638091222f00fc70e6ad831a6134474b8eb31a26b50463",
+    "codex-rs/hepta-memory/src/production_writer.rs": "1f21334c69b258240905e96ccc91b67dd2e5cd44f55a63baa0d003c429fd26ec",
+    "defs.bzl": "3fc965c2f62659b7257ba316b41fd11f19365205a4a20e421f0005aaa78a6d52"
+  },
+  "stdout": "",
+  "stderr": "",
+  "tools": {
+    "rustfmt": "1.95.0",
+    "dotslash": "0.5.9",
+    "buildifier": "8.5.1"
+  },
+  "scope": "Actual repository changed-file formatter; not a whole Rust workspace build or test."
+}

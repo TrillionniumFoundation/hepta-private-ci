@@ -1,0 +1,28 @@
+diff --git a/.github/workflows/hcsn-financial-autograd-r16.yml b/.github/workflows/hcsn-financial-autograd-r16.yml
+index 91db165..e6e340d 100644
+--- a/.github/workflows/hcsn-financial-autograd-r16.yml
++++ b/.github/workflows/hcsn-financial-autograd-r16.yml
+@@ -31,8 +31,6 @@ jobs:
+       FINANCIAL_ROOT: tools/hcsn/compiled_fp32_r16_20261101/recovery
+       ADAPTER_PROTOCOL_SHA256: 9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72
+       RECURRENT_PROTOCOL_SHA256: 87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241
+-      HCSN_PYTHON: ${{ runner.temp }}/hcsn-financial-autograd-r16-python/bin/python
+-      HCSN_RESULTS: ${{ runner.temp }}/hcsn-financial-autograd-r16-results
+     steps:
+       - name: Check out exact source candidate
+         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+@@ -44,6 +42,14 @@ jobs:
+             tools/hcsn/hx_recurrent_r16_20261101
+             tools/hcsn/compiled_fp32_r16_20261101/recovery
+ 
++      - name: Initialize runner-local paths
++        shell: bash
++        run: |
++          set -euo pipefail
++          printf 'HCSN_PYTHON=%s\nHCSN_RESULTS=%s\n' \
++            "$RUNNER_TEMP/hcsn-financial-autograd-r16-python/bin/python" \
++            "$RUNNER_TEMP/hcsn-financial-autograd-r16-results" >> "$GITHUB_ENV"
++
+       - name: Verify frozen inputs and install the CPU runtime
+         id: runtime
+         shell: bash

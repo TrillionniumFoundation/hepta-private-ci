@@ -1,0 +1,119 @@
+{
+  "schema": "hcsn.recovered-compiled-independent-protocol.v1",
+  "frozen_utc": "2026-11-01T10:09:54.032058+00:00",
+  "source_checkpoint": "4e97fd84fa1d78e96a96b408b0698f40f362ce88",
+  "source_branch": "research/hcsn-compiled-r16-recovery-20261101",
+  "source_sha256": {
+    "kernel.cpp": "6c04009f4a782a2aaac5f0e6d8af7048d9bd9c26f1a3039f47c1c83491bb63cd",
+    "arithmetic.hpp": "1f03b2cef36b5395511c98f815be741df9c3659b8f40a31dd38bfc5dc8e59bdd",
+    "constants.hpp": "d44d34cf51bcc70ef1961fdbef964ed2b703512f3d371683e743365c16d9ea4e",
+    "compiled.py": "5c60c7e7e9dada2388fb596f285e1ae4033c0b2accc1aed7ee1aa3892585b63d",
+    "generate_constants.py": "bc0109476c5c7a7bede37c1e7fcebba64f1ae3bd297af73894b49a2a6960637e",
+    "DEVELOPMENT_PROTOCOL.json": "419c52de3f3c88856d6d07c3f3dff1c6aeb62ecf63834d606e3382b02ca3588f",
+    "build.py": "aabc166766fa02e33fa8331733ece742a8dcd787f403f839070dc45f5174a6d5",
+    "recovery_eval.py": "3c9a68e6688b3ec4cbc04bc3581be202557cc9ce106722730085f3b61bb1469e",
+    "recovery_check.py": "e5428232e7d3c81428e04eabfb5a595b014c9fc56cc9fdcaa3622c60e1663b07",
+    "freeze_recovery.py": "a5eb83825bf25e73d22a10090197b90f5e8b0c689b6beec5d290d7c884c8e954",
+    "frozen_input/frozen_reference.py": "c676403572885b5988d69c8784a738ca1a69788ab94d6da215e74e2adbbadb52"
+  },
+  "binary_sha256": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+  "build_receipt_sha256": "459f899f2fbc11c3d386071e73f878b0c603cb4c70826aab1c05086de5cd65f4",
+  "manifest_sha256": "517ce163008c82ff1eab432a5b0e6e59e5b7aebfa28fc8b6184c449d1f5010b5",
+  "compiler_flags": [
+    "-std=c++20",
+    "-O3",
+    "-fvisibility=hidden",
+    "-fno-semantic-interposition",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fno-associative-math",
+    "-fno-reciprocal-math",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-pedantic",
+    "-fPIC",
+    "-shared"
+  ],
+  "compiler_version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "generation": {
+    "seed": 2026110127,
+    "points": 128,
+    "algorithm": "Independent PCG64 jittered Latin hypercube; quantize once to binary32",
+    "lower": [
+      0.04,
+      0.01,
+      0.08,
+      0.0,
+      0.0,
+      0.0001,
+      0.01,
+      0.5,
+      20.0
+    ],
+    "upper": [
+      0.15,
+      0.2,
+      0.8,
+      1.0,
+      0.6,
+      0.1,
+      20.0,
+      10.0,
+      100.0
+    ],
+    "log_scaled_columns": [
+      5,
+      6
+    ]
+  },
+  "states": [
+    "log_distance0: continuation-side right derivative",
+    "log_distance.75*min(.002,.02*sigma*sqrt(m),.05/(1+abs(a)+zt))",
+    "log_distance1",
+    "asset b_mp*(1-1e-6)",
+    "asset b_mp*(1+1e-6)",
+    "asset100"
+  ],
+  "validity": "Independent literal MP80 boundary finite and positive; flow < -64*eps32*max(1,scale). All128 points and all768 rows must be resolvable for full admission. Any rejection/error remains explicit and prevents full pass.",
+  "gates": {
+    "float64": {
+      "value_scaled": 2e-08,
+      "jacobian_scaled": 2e-05
+    },
+    "float32": {
+      "value_scaled": 8e-07,
+      "jacobian_scaled": 2e-05
+    },
+    "compensated32": {
+      "value_scaled": 8e-07,
+      "jacobian_scaled": 2e-05
+    }
+  },
+  "reference": {
+    "digits": 80,
+    "steps": [
+      "1e-18",
+      "5e-19"
+    ],
+    "halving_scaled_gate": 1e-12,
+    "encoding": "Archived decimal-roundtrip convention for quantized FP32 inputs"
+  },
+  "checker": "Independent second MP80 evaluation of every5-output/5x10 Jacobian, exact stored-reference consistency, branch-neighbor and right-derivative checks. Strict identity/count/shape/finite/status and source/binary/input/reference seals. Never trusts writer pass/error summaries.",
+  "required_modes": [
+    "float64",
+    "compensated32"
+  ],
+  "ordinary_float32_failures": "Retain complete identities/status and numerical failures; never count a rejection as a numerical pass or silently remove it. Does not confer ordinary-FP32 admission.",
+  "precision": "Financial candidate uses two float32 words per primal/tangent; extended significand, not ordinary FP32. Native-double baseline, fixed constants, independent reference and exact output transport may use double.",
+  "loss_disclosure": "Original pre-reset768 raw rows,36 timing batches and full protocol bytes were lost before upload. Executable was reconstructed byte-exactly but original independent admission is not inherited. This is a new protocol/new sample.",
+  "recovery_binary_matches_pre_reset": true,
+  "retuning": "No retuning on opened new outcomes. Changes require another version and newly frozen independent cases; opened sets become regression only.",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "oracle_package": "mpmath==1.3.0"
+  },
+  "claim_scope": "Finite CPU numerical validation only; no global C1 for F/G/debt, no uniform box theorem, no ordinary-FP32, GPU, energy or network-task/training admission."
+}

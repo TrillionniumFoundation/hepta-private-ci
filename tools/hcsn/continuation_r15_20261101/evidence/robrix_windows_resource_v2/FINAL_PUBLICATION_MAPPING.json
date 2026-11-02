@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn-final-publication-mapping-v1",
+  "base_head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
+  "files": [
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/robrix_windows_resource_resolution.patch",
+      "bytes": 2174,
+      "sha256": "41b44b3a50d45e76d7a54916818ac1d865a3a628d5466093134f4392dcf43d49"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/CHANGE_REVIEW.json",
+      "bytes": 3921,
+      "sha256": "d848a5f6b6f36cd1a4e6854c08665adf5d5d881865468ca5d1e8322335426d4b"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/FORMAT_IDENTITY.json",
+      "bytes": 358,
+      "sha256": "bf6092a5902e10cb8661fb96ba01f728b7b61bb5a13e736f9bcb7126b2ea53d9"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/publication/PUBLISH_MAPPING.json",
+      "bytes": 2117,
+      "sha256": "0733bfe2c2a073d418ec9604ccbfbc9dde6a477e86e68ac75e40e15b25a8d32d"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/publication/EVIDENCE_MEMBERS.json",
+      "bytes": 26357,
+      "sha256": "5f1ecefa8b06c07f2451dc9dd12b0865bdd110f860111b064e2ade2fa426551c"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/publication/INDEPENDENT_REVIEW.json",
+      "bytes": 8353,
+      "sha256": "84630dee968c5284345923122eb50eadb0763cb14ac5ba07c9cec75192ab1ace"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/publication/ROBRIX_WINDOWS_FIX_EVIDENCE.zip.part01",
+      "bytes": 350000,
+      "sha256": "34a8661237dc131ee2a693252a4c86383014da363e9c7d2afb028b2efc3b2c5d"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/publication/ROBRIX_WINDOWS_FIX_EVIDENCE.zip.part02",
+      "bytes": 350000,
+      "sha256": "5b5a8cef501d651809b25cf59c6f1ee4604ce049790cac175609601a54796bd0"
+    },
+    {
+      "path": "/tmp/hcsn-robrix-windows-fix/publication/ROBRIX_WINDOWS_FIX_EVIDENCE.zip.part03",
+      "bytes": 154181,
+      "sha256": "9b75e8fd1f6d934b2e09efaa24f1e859bbe28a014a1a021286823a0ea6ca6957"
+    }
+  ],
+  "archive_reconstruction": "concatenate zip.part01, zip.part02, zip.part03 in that order; validate archive hash from PUBLISH_MAPPING.json and every member from EVIDENCE_MEMBERS.json",
+  "new_native_ci_required": true,
+  "original_target": "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test",
+  "no_main_worktree_or_remote_writes": true
+}

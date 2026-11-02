@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "scope": "source-extracted Rust fragments with synthetic storage/registry/types; no native suite or wire/process I/O claim",
+  "production_drain_guard_unchanged": true,
+  "before_after_expected": true,
+  "runs": [
+    {
+      "variant": "original",
+      "source_sha256": "e0d292ecda19aa530ec057978422dd3980ae4dc07ac6443015553ba8b18b2ce2",
+      "compile_command": [
+        "/tmp/hcsn-r15-runtime-tools/cargo/bin/rustc",
+        "--edition=2024",
+        "--test",
+        "/tmp/hcsn-supervisor-fragments-al4yeezs/original.rs",
+        "-o",
+        "/tmp/hcsn-supervisor-fragments-al4yeezs/original"
+      ],
+      "compile_exit_code": 0,
+      "compile_stderr": "warning: field `method` is never read\n  --> /tmp/hcsn-supervisor-fragments-al4yeezs/original.rs:38:41\n   |\n38 | struct AgentdRequest { request_id: u64, method: AgentdMethod }\n   |        -------------                    ^^^^^^\n   |        |\n   |        field in this struct\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: fields `process_id`, `workspace`, `home_root`, and `run_root` are never read\n  --> /tmp/hcsn-supervisor-fragments-al4yeezs/original.rs:42:102\n   |\n42 | ...ct HealthSnapshot { promotion_ready: bool, ready: bool, fenced: bool, lifecycle: AgentLifecycle, process_id: u32, workspace: PathBuf, home_root: PathBuf, run_root: P...\n   |       -------------- fields in this struct                                                          ^^^^^^^^^^       ^^^^^^^^^           ^^^^^^^^^           ^^^^^^^^\n   |\n   = note: `HealthSnapshot` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis\n\nwarning: variant `Drain` is never constructed\n  --> /tmp/hcsn-supervisor-fragments-al4yeezs/original.rs:44:22\n   |\n44 | enum AgentdPayload { Drain(DrainSnapshot), Health(HealthSnapshot) }\n   |      -------------   ^^^^^\n   |      |\n   |      variant in this enum\n   |\n   = note: `AgentdPayload` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis\n\nwarning: field `0` is never read\n  --> /tmp/hcsn-supervisor-fragments-al4yeezs/original.rs:48:27\n   |\n48 | struct ProcessDriverError(String);\n   |        ------------------ ^^^^^^\n   |        |\n   |        field in this struct\n   |\n   = help: consider removing this field\n   = note: `ProcessDriverError` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis\n\nwarning: 4 warnings emitted\n\n",
+      "run_command": [
+        "/tmp/hcsn-supervisor-fragments-al4yeezs/original",
+        "--test-threads=1"
+      ],
+      "run_exit_code": 101,
+      "stdout": "\nrunning 6 tests\ntest draining_fixture_passes_existing_production_guard ... FAILED\ntest exact_attempt_events_follow_successful_claims ... FAILED\ntest exhaustion_reports_event_and_preserves_error ... FAILED\ntest health_fixture_retains_ready_state_and_payload_kind ... ok\ntest non_draining_or_stale_generation_never_acknowledges ... ok\ntest storage_error_does_not_publish_attempt_or_exhaustion ... ok\n\nfailures:\n\n---- draining_fixture_passes_existing_production_guard stdout ----\n\nthread 'draining_fixture_passes_existing_production_guard' (31) panicked at /tmp/hcsn-supervisor-fragments-al4yeezs/original.rs:187:5:\nassertion `left == right` failed\n  left: None\n right: Some(true)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n---- exact_attempt_events_follow_successful_claims stdout ----\n\nthread 'exact_attempt_events_follow_successful_claims' (32) panicked at /tmp/hcsn-supervisor-fragments-al4yeezs/original.rs:162:9:\nassertion `left == right` failed\n  left: [(7, RestartQueued)]\n right: [(7, RestartQueued), (7, AutomaticRestartQueued { attempt: 1 })]\n\n---- exhaustion_reports_event_and_preserves_error stdout ----\n\nthread 'exhaustion_reports_event_and_preserves_error' (33) panicked at /tmp/hcsn-supervisor-fragments-al4yeezs/original.rs:172:5:\nassertion `left == right` failed\n  left: []\n right: [(7, AutomaticRestartBudgetExhausted { attempts: 3 })]\n\n\nfailures:\n    draining_fixture_passes_existing_production_guard\n    exact_attempt_events_follow_successful_claims\n    exhaustion_reports_event_and_preserves_error\n\ntest result: FAILED. 3 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n",
+      "stderr": ""
+    },
+    {
+      "variant": "candidate",
+      "source_sha256": "fd691e8727f148cbe11362e04139e4e5d41240d497ca675dc9d23da87d292cb9",
+      "compile_command": [
+        "/tmp/hcsn-r15-runtime-tools/cargo/bin/rustc",
+        "--edition=2024",
+        "--test",
+        "/tmp/hcsn-supervisor-fragments-al4yeezs/candidate.rs",
+        "-o",
+        "/tmp/hcsn-supervisor-fragments-al4yeezs/candidate"
+      ],
+      "compile_exit_code": 0,
+      "compile_stderr": "warning: fields `process_id`, `workspace`, `home_root`, and `run_root` are never read\n  --> /tmp/hcsn-supervisor-fragments-al4yeezs/candidate.rs:42:102\n   |\n42 | ...ct HealthSnapshot { promotion_ready: bool, ready: bool, fenced: bool, lifecycle: AgentLifecycle, process_id: u32, workspace: PathBuf, home_root: PathBuf, run_root: P...\n   |       -------------- fields in this struct                                                          ^^^^^^^^^^       ^^^^^^^^^           ^^^^^^^^^           ^^^^^^^^\n   |\n   = note: `HealthSnapshot` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: field `0` is never read\n  --> /tmp/hcsn-supervisor-fragments-al4yeezs/candidate.rs:48:27\n   |\n48 | struct ProcessDriverError(String);\n   |        ------------------ ^^^^^^\n   |        |\n   |        field in this struct\n   |\n   = help: consider removing this field\n   = note: `ProcessDriverError` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis\n\nwarning: 2 warnings emitted\n\n",
+      "run_command": [
+        "/tmp/hcsn-supervisor-fragments-al4yeezs/candidate",
+        "--test-threads=1"
+      ],
+      "run_exit_code": 0,
+      "stdout": "\nrunning 6 tests\ntest draining_fixture_passes_existing_production_guard ... ok\ntest exact_attempt_events_follow_successful_claims ... ok\ntest exhaustion_reports_event_and_preserves_error ... ok\ntest health_fixture_retains_ready_state_and_payload_kind ... ok\ntest non_draining_or_stale_generation_never_acknowledges ... ok\ntest storage_error_does_not_publish_attempt_or_exhaustion ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n",
+      "stderr": ""
+    }
+  ]
+}
