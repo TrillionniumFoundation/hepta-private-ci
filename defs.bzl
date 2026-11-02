@@ -529,6 +529,7 @@ def codex_rust_crate(
 
     for test in native.glob(["tests/*.rs"], allow_empty = True):
         test_file_stem = test.removeprefix("tests/").removesuffix(".rs")
+
         # A test-only crate variant is safe only when the selected fixture's
         # bytes cross a process/serialization boundary, not Rust public types.
         integration_test_deps = rust_test_dependencies(
