@@ -56,6 +56,7 @@ def audit(run):
             checks.append(len({n["pid"] for n in nodes.values()}) == 4)
             checks.append(nodes["root"]["pid"] == receipt["root_pid"])
             checks.append(receipt["task_success"] is True)
+            checks.append(all(item["exit_code"] == 0 for item in waits))
             # Payload allocations are touched after the pre-exec cgroup gate.
             # The verified hierarchical no-swap profile makes the leaf's 48 MiB
             # a resident anonymous-charge floor for this specific fixture.
@@ -76,6 +77,7 @@ def audit(run):
             checks.extend([receipt["root_exit_code"] == 3, receipt["task_success"] is False])
         else:
             checks.extend([receipt["timed_out"] is True, receipt["root_exit_code"] == -9,
+                           receipt["task_success"] is False,
                            "spawned-child" in (campaign / mode / "stdout.log").read_text()])
         findings.setdefault(mode, {}).update({"charge_peak_bytes": receipt["cgroup_memory_charge_peak_bytes"],
                                              "group_cpu_seconds": receipt["cgroup_cpu_usage_seconds"]})
