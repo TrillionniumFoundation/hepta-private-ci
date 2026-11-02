@@ -1,0 +1,71 @@
+{
+  "arms": [
+    "context_orbit",
+    "orbit_first_order",
+    "first_order",
+    "feasible_orbit_first_order",
+    "feasible_first_order"
+  ],
+  "bootstrap_batch": 64,
+  "bootstrap_seed": 2006513,
+  "formal_v2_worlds_previously_opened": 0,
+  "original_r20_holdouts_opened": false,
+  "phase": "formal_v2_preflight",
+  "planned_worlds": {
+    "confirm": 4096,
+    "lag2": 32768,
+    "lag2_skip": 32768,
+    "relabeled_lag2": 8192,
+    "reverse": 8192
+  },
+  "postcalibration_freeze": {
+    "files": {
+      "ADOPTION_COVERAGE.json": "e9404c7e93f64f4c4fc86e671c8bedc8582c6d0170967303a440d369ed351704",
+      "adoption_coverage.py": "d6bcd7ead14ff3b733f56997424d65ab76d3d61a0454afe17b1077c2f50a47a9",
+      "calibration_v2_01/CALIBRATION.json": "ea1f2ed077bd3e603aa3984ef64b939c61209d15c893a62c1140c1a392f69fb2",
+      "calibration_v2_01/WORKER_RECEIPTS.json": "eb5ac63b8a89d16541a90af00f0750ccb49fbcee374648d731c1e90fbb049c20",
+      "calibration_v2_01/calibrate/ARCHIVES.json": "8268bf777120d37a1647fa03eba59749c2a21df1c5b542bbe5760dcb34e859d2",
+      "calibration_v2_01/calibrate/COUNTS.json": "f668369667b15ab8dc1e9abbe06be8d5ae32602a6abd8946467d859601496aa8",
+      "calibration_v2_01/calibrate_lag2/ARCHIVES.json": "2c7663f139bfd0bfc4d2147194f8b9ce7a3899ef1cf1ee2f77db7332204be3d6",
+      "calibration_v2_01/calibrate_lag2/COUNTS.json": "906cdc467d6754b13241010270b7dcb512aedf395db0ea8071a978297aa1145d",
+      "calibration_v2_01/calibrate_reverse/ARCHIVES.json": "a14b37beff76dfd1eab2e52e9228de14908e110bdfc0e95eb984c50ee20ecc89",
+      "calibration_v2_01/calibrate_reverse/COUNTS.json": "eae763b567bae09c9e379a340d301dfbc16b85501461cea77eff823e57daa4c3",
+      "independent_v2_adoption_check.py": "8750056df2e81a12ae52db70c10a0b76abe2872da82e6b5d35d2b23ea6aae041",
+      "independent_v2_confirmation_check.py": "e7f73fe2126d64c83696a3b1a7ae5cc109217074fb62fb928e72d9444d006fcc",
+      "prepare_01/MODELS.json.gz": "c6f68af4cf9027464d7560c5d5c23ebc96a3892c0e410453cee23329bc007a86",
+      "prepare_01/OOD.json": "401e7c2cc77403770cd03edb1dadebd13a25ed3134437eff04235d7a75369924"
+    },
+    "publication_commit": "31f0646ebb18af9860cee7d252fd99db269f7536",
+    "sha256": "ff721c8d1c6fbf82c86acfb9352dbb7b68d61257e2e79e8ee513b76b7d28cd85"
+  },
+  "preflight_self_cpu_before_output_seconds": 0.031233,
+  "seed": 20031873,
+  "source_freeze": {
+    "files": {
+      "../hcsn_unknown_generator_r18_20261101/campaign.py": "707983a0c5aeec2e58a2d56e06a20a7227f1ca7034de0fbab1da4d97a1edfdbc",
+      "../hcsn_unknown_generator_r18_20261101/fit.py": "1f646a8b1100c42329eee1ea6bd7d0dc6fe27f1f720ad7561164afd11edc2f6d",
+      "../hcsn_unknown_generator_r18_20261101/posterior.py": "2dd83628b521f56b2753084ac87a59433251ce00843e7985706aa43de2a133bc",
+      "../hcsn_unknown_generator_r18_20261101/world.py": "14c46e7c4129c566e448918955b1c977bcde18c42604b35325b1022692f9ed92",
+      "POSTCALIBRATION_FREEZE.json": "889ea00cd7c474a446d070ad14002a969cca1a6a787f3c1bd41a4bfa4b94b455",
+      "SOURCE_FREEZE.json": "a794ff9bfbf897fdcd8f386f3356d1c502a5c08d52e7d5fd0d95205944261f28",
+      "calibrate_v2.py": "1e5fc86662f7f8051441d448d5f89916a1e243d3c8bf460b843b4bde69e2b80e",
+      "campaign.py": "942fba5f0b68615bc4a02993584bd9a97bc4e0fbc647b40ea411561ea1f9e9e9",
+      "confirm_v2.py": "1699d6974f239645961ffc83644be936168bd0dc4a336b08e490f690229f1feb",
+      "model.py": "5dc1480f832c8058efd3efe76f54662949ef9e56b41396acb19f33a0e406c5d6",
+      "prepare_01/ARCHIVES.json": "e741fa4b2c4f4a5f233b02318082527aeda0db354880a796664f43c68fbb880a",
+      "prepare_01/CALIBRATION.json": "5d1d58dedc1b49596cd6ae14fe8594f294c23ee8a689fffe31901d34c6a1abb8",
+      "prepare_01/FIT_DIAGNOSTICS.json": "72cb9d38bfb6679065377836fee110c09865b4fc466a691770549f34a3bc0169",
+      "prepare_01/MODELS.json.gz": "c6f68af4cf9027464d7560c5d5c23ebc96a3892c0e410453cee23329bc007a86",
+      "prepare_01/MODELS_ARCHIVE.json": "164775e23f5c9c477b76c9c170a2e950957b268c4fa2afd993bb4c9bc700f052",
+      "prepare_01/OOD.json": "401e7c2cc77403770cd03edb1dadebd13a25ed3134437eff04235d7a75369924",
+      "process_guard.py": "e104885a43860a07d798d3c17ee50ada8926addf719e14d2e3d865525dc10753",
+      "protocol.json": "2ecd007c9340ddeb77930d4d9c0a5c3a59b18cf2e0fc0f750d735379cc0dbf0f",
+      "protocol_v2.json": "8d8fafe549abb3d373fe5e6c6a3c215e3b3790e10037053cbb9b225c2315641b",
+      "world.py": "1743aedc0d7f46859bec6d05fb9721eb96a0188a955dda7a5058dfc61487c4b5",
+      "world_confirm_v2.py": "8a48627919eeca9c58df4fc21afe22295d932a33b6471fe9f8475da08cee5519",
+      "world_v2.py": "10fbbe0694cbcf07ecfe99b56efbabf145a5edccad506578298f941515892fcd"
+    },
+    "publication_commit": "62a621d83112212cb89f76474f5ea5f7a55fa9c6",
+    "sha256": "1361aa3e25c5215723b7ff9acfd692d31e022bc0291c3250e6c2f1b4909114cc"
+  }
+}

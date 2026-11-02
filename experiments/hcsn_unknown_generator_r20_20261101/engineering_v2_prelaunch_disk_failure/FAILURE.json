@@ -1,0 +1,28 @@
+{
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 taskset -c0-6 python -m experiments.hcsn_unknown_generator_r20_20261101.calibrate_v2",
+  "cost_note": "Exception prevented written rusage receipt; exact cost unknown, never counted aszero",
+  "cpu_seconds": null,
+  "exit_code": 1,
+  "later_filesystem_observation": {
+    "available_gib": 2.1,
+    "inodes_used_percent": 17,
+    "task_cwd_megabytes": 143,
+    "used_gib": 58,
+    "volume_gib": 63
+  },
+  "new_formal_holdouts_opened": false,
+  "original_r20_holdouts_opened": false,
+  "primary_failure": "OSError Errno28 NoSpaceLeftOnDevice at calibration_v2_01 output.mkdir before workerlaunch",
+  "schema": "hcsn.r20.v2.prelaunch.failure.v1",
+  "secondary_failure": "Outerreceipt handler FileNotFoundError reading nonexistent WORKER_RECEIPTS.json",
+  "source_commit": "cfaf44d9243e04b536ac6ad2b81c5e8dfb882f25",
+  "source_snapshot_sha256": {
+    "CALIBRATION_V2_SOURCE_FREEZE.json": "67775d31754d7d58d44cdfeaaff41e1f8c7a9ac83a2b130866c6989986b1ade1",
+    "CALIBRATION_V2_SOURCE_PUBLICATION.json": "38e81af22f11effbf585768e0d14c0cf684fa079ef66719a1b35fcdee4c00a2d",
+    "calibrate_v2.py": "dd95958e4f3f8f26fd43383d292e54254572fd36c8466850f7c8f5cb1bb98bec",
+    "protocol_v2.json": "ab162e0c902d1c0ecf0ebb10ca1f8c1bc84ef5409628b5235a4f6f23fb416068"
+  },
+  "stratum_workers_launched": 0,
+  "v2_worlds_opened": 0,
+  "wall_seconds": null
+}

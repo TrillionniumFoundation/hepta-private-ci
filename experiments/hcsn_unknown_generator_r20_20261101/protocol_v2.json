@@ -1,0 +1,58 @@
+{
+  "archive_worlds": 256,
+  "bootstrap": "4096generatorclusterresamples perpanel, RNGdefault_rng(2006513) resetperpanel, draws orderedas64successivebatchesof64rows, eachrowngenindices. Allmodels share eachbatch. Sumonecoordinatevectoratatime; never materialize4096xngenx9. Zeroaccepteddenominator=>risk1. Recordalldrawstatistics. Nominal95%perpanel empiricalbootstrap, no acrosspanel/finitesampleguarantee.",
+  "bootstrap_batch": 64,
+  "bootstrap_draws": 4096,
+  "bootstrap_seed": 2006513,
+  "calibration": "Onequery perindependent newgenerator. Newseed20021873 withidenticaldeclaredlaws; world_v2.py copiedfromfrozenworld.py withseed-only change. OriginalR20confirmationnamespace NEVERcalled. For3models*3strata*2risks use18CPbounds at delta=.05/18. RequireALL3strata overallANDfractionalbounds<=.10 and>=20fractionalaccepted perstratum permodel. No optionalstopping, earlysuccess orthreshold/sample repair.",
+  "calibration_strata": {
+    "calibrate": 4096,
+    "calibrate_lag2": 32768,
+    "calibrate_reverse": 8192
+  },
+  "claims": "Primaryknownfamilyrepairiscontextreliabilityqualification only. Fixed.95context-minus-orbitcomparisondiagnosticiforbitcalibfails. Bothfeasiblepolicyutilitydifferencespredeclared, fixedbeforeformal, nochoosingbestcontrolfromformaloutcomes. No production/modeladoptionclaim or completecostsuperiority, irrespectiveofpositivefiniteutility.",
+  "confirmation": "Only afterprimarycontextcalibrationpasses androotpublishesPOSTCALIBRATION_V2_FREEZE mayworld_confirm_v2.py newseed20031873beopened. OriginalR20seed20011873holdoutNEVERcalled. Worldcounts fixedherebeforeanyV2case: mixed4096/reverse8192/lag232768/relabel8192/skip32768,4dependentworlds perindependentfreshgenerator. Powerchoice explicitlyuses oldcalibrationfractionrates, notV2outcomes. All3modelsusefixed.95, nonpassingcalibration candidates remainunqualified.",
+  "confirmation_arms": [
+    "context_orbit",
+    "orbit_first_order",
+    "first_order",
+    "feasible_orbit_first_order",
+    "feasible_first_order"
+  ],
+  "confirmation_seed": 20031873,
+  "confirmation_worlds": {
+    "confirm": 4096,
+    "lag2": 32768,
+    "lag2_skip": 32768,
+    "relabeled_lag2": 8192,
+    "reverse": 8192
+  },
+  "cost": "Launch3strataworkers concurrently underCPU0-6,BLAS1. Outerwait4 includescompletecoordinator and allwaitedworkerdescendants. Workerswaitedandreceiptedsingly, totalreconciledagainstworkersum, neverdoublecount. Include original114.019455CPU preparation once in cumulativecost; no fullproject/GPU/energy claim.",
+  "execution_revision": 2,
+  "execution_revision_reason": "Preserved prelaunchErrno28failure: zeroV2worlds/zero workers, CPU/wallunknown. New ordinary launch/IO guard waits known startedworkers in finally, emits outerwait4receipt BEFOREattempteddiskpersist, missingworkerledger=>CPUunknownsum notzero. Statisticalmodels/N/t/seeds unchanged. No arbitrarySIGKILLcostclosure.",
+  "failure": "Allfixedsampleattempts/costs remain. Failedstratum => failedmodelcalibration, no all-abstain qualification. Fixed.95 doesnotchangeafteroutcomes. Unexpectedworkerinvalidity makes thatpopulation qualitynull.",
+  "fallback_threshold": 0.999999999999,
+  "family_error_probability": 0.05,
+  "feasible_control_rule": "RetainALL3scientific fixed.95rows unchanged. For2separate auxiliarycontrolpolicies, beforeformalfreeze use.95 ifitsownnewstratifiedcalibrationpasses, else1-1e-12. Samefittedmodel/OOD/rawinformation/paidREADfee. Sameposteriorinference sharedwithfixedrow; eachpolicy executesitsown actualREAD/STOP/abstention onpairedworld. Fallbackneverqualifiesuncertaintyviazero-fractionalcoverage, andhasnoautomaticallyassumeduniversalriskguarantee. Reportactualerrors/costs. Primarysafeutilitycomparisoncontextvsfeasible_orbit_first_order, secondaryvsfeasible_first_order; doNOTheadlinemodeladoptionsuperiorityagainstfailedfixed.95control.",
+  "feasible_controls": {
+    "feasible_first_order": "first_order",
+    "feasible_orbit_first_order": "orbit_first_order"
+  },
+  "fitted_models_sha256": "c6f68af4cf9027464d7560c5d5c23ebc96a3892c0e410453cee23329bc007a86",
+  "minimum_fractional_answers": 20,
+  "minimum_fractional_confirmation_answers": 32,
+  "models": [
+    "context_orbit",
+    "orbit_first_order",
+    "first_order"
+  ],
+  "original_failed_gate": "ALL3models failed original54-bound stratifiedcalibration; originalgate/results remainFAILED, no pooling or retroactive repair",
+  "original_r20_source_commit": "5ce3648c8f7b98188edce1ac44fde820fc598402",
+  "purpose": "Prospective independent calibration-power study after observingoriginalcalibration. Fixedthreshold.95 chosenusingoldcalibration, explicitlynot untouched selection. No retraining/newOODfit/thresholdsearch.",
+  "risk_limit": 0.1,
+  "schema": "hcsn.r20.calibration-power.v2.v1",
+  "scope": "Ordinaryfinite6WRITE reference; allsharedinformation,paidREADfeeanduncertaintydefinitions unchanged. Noanalytic-coreD-B,realAV,productionqualification or arbitraryunknownlaw guarantee. Nonidentifiabilitycounterexample retained.",
+  "seed": 20021873,
+  "threshold": 0.95,
+  "worlds_per_generator": 4
+}
