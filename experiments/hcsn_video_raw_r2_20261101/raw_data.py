@@ -28,14 +28,23 @@ def write(path,value):
 def acquire(row):
     RAW.mkdir(exist_ok=True)
     path=RAW/(row['clip']+'.flv');tick=time.perf_counter()
+    repair_empty=False
     if path.exists():
-        assert path.stat().st_size==row['bytes'] and sha(path)==row['sha256']
-        return dict(clip=row['clip'],sha256=row['sha256'],bytes=row['bytes'],reused=True,wall_seconds=time.perf_counter()-tick)
+        assert not path.is_symlink() and path.is_file()
+        repair_empty=path.stat().st_size==0
+        if not repair_empty:
+            assert path.stat().st_size==row['bytes'] and sha(path)==row['sha256']
+            return dict(clip=row['clip'],sha256=row['sha256'],bytes=row['bytes'],reused=True,wall_seconds=time.perf_counter()-tick)
     with urllib.request.urlopen(row['url'],timeout=90) as response:
         data=response.read(row['bytes']+1)
     assert len(data)==row['bytes'] and hashlib.sha256(data).hexdigest()==row['sha256']
-    with path.open('xb') as stream:stream.write(data)
-    return dict(clip=row['clip'],sha256=row['sha256'],bytes=row['bytes'],reused=False,wall_seconds=time.perf_counter()-tick)
+    if path.exists():
+        assert not path.is_symlink() and path.is_file() and path.stat().st_size==0
+        mode='wb'
+    else:mode='xb'
+    with path.open(mode) as stream:stream.write(data)
+    assert path.stat().st_size==row['bytes'] and sha(path)==row['sha256']
+    return dict(clip=row['clip'],sha256=row['sha256'],bytes=row['bytes'],reused=False,repaired_empty=repair_empty,wall_seconds=time.perf_counter()-tick)
 
 
 def decode(row):
