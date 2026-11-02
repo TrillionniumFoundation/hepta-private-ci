@@ -1,0 +1,236 @@
+{
+  "candidates": [
+    {
+      "beta": 0.5,
+      "calibration_views": 1525,
+      "conditional_fit_loss": 0.11595229864729922,
+      "conditional_public_cal_loss": 0.15857172184039608,
+      "fit_views": 1518,
+      "mixture_prior": [
+        0.8979654368384382,
+        1.2500711303869574e-08,
+        0.10203455066085049
+      ],
+      "optimizer": {
+        "attempts": [
+          {
+            "initial": [
+              0.0,
+              0.0
+            ],
+            "iterations": 7,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.11595447670310055,
+            "success": true
+          },
+          {
+            "initial": [
+              -4.0,
+              4.0
+            ],
+            "iterations": 10,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.11595229864729922,
+            "success": true
+          },
+          {
+            "initial": [
+              4.0,
+              -4.0
+            ],
+            "iterations": 3,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.11595587912444108,
+            "success": true
+          }
+        ],
+        "selected_objective": 0.11595229864729922,
+        "success": true
+      },
+      "static_public_cal_losses": [
+        0.15827677417867786,
+        0.17505949379318242,
+        0.1712386703996446
+      ]
+    },
+    {
+      "beta": 0.65,
+      "calibration_views": 1525,
+      "conditional_fit_loss": 0.10480436170139777,
+      "conditional_public_cal_loss": 0.14957971223195027,
+      "fit_views": 1518,
+      "mixture_prior": [
+        0.8967149688496941,
+        2.0183804961193544e-08,
+        0.10328501096650092
+      ],
+      "optimizer": {
+        "attempts": [
+          {
+            "initial": [
+              0.0,
+              0.0
+            ],
+            "iterations": 7,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.1048082962311277,
+            "success": true
+          },
+          {
+            "initial": [
+              -4.0,
+              4.0
+            ],
+            "iterations": 10,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.10480436170139777,
+            "success": true
+          },
+          {
+            "initial": [
+              4.0,
+              -4.0
+            ],
+            "iterations": 3,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.10480489202979722,
+            "success": true
+          }
+        ],
+        "selected_objective": 0.10480436170139777,
+        "success": true
+      },
+      "static_public_cal_losses": [
+        0.14932671233270178,
+        0.16837700617899165,
+        0.1656227394038115
+      ]
+    },
+    {
+      "beta": 0.8,
+      "calibration_views": 1525,
+      "conditional_fit_loss": 0.09679907442110319,
+      "conditional_public_cal_loss": 0.14287705885792615,
+      "fit_views": 1518,
+      "mixture_prior": [
+        0.6763250640029711,
+        0.22065582514490087,
+        0.10301911085212805
+      ],
+      "optimizer": {
+        "attempts": [
+          {
+            "initial": [
+              0.0,
+              0.0
+            ],
+            "iterations": 9,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.09679907442110319,
+            "success": true
+          },
+          {
+            "initial": [
+              -4.0,
+              4.0
+            ],
+            "iterations": 3,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.09712452811685215,
+            "success": true
+          },
+          {
+            "initial": [
+              4.0,
+              -4.0
+            ],
+            "iterations": 0,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.09713007093966104,
+            "success": true
+          }
+        ],
+        "selected_objective": 0.09679907442110319,
+        "success": true
+      },
+      "static_public_cal_losses": [
+        0.14387237141579615,
+        0.1643116745572189,
+        0.1628237710817484
+      ]
+    },
+    {
+      "beta": 1.0,
+      "calibration_views": 1525,
+      "conditional_fit_loss": 0.08980273490414482,
+      "conditional_public_cal_loss": 0.137591868915809,
+      "fit_views": 1518,
+      "mixture_prior": [
+        0.4923384771982691,
+        0.40632928524210393,
+        0.10133223755962709
+      ],
+      "optimizer": {
+        "attempts": [
+          {
+            "initial": [
+              0.0,
+              0.0
+            ],
+            "iterations": 8,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.0898071540768247,
+            "success": true
+          },
+          {
+            "initial": [
+              -4.0,
+              4.0
+            ],
+            "iterations": 3,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.09117233692416807,
+            "success": true
+          },
+          {
+            "initial": [
+              4.0,
+              -4.0
+            ],
+            "iterations": 13,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+            "objective": 0.08980273490414482,
+            "success": true
+          }
+        ],
+        "selected_objective": 0.08980273490414482,
+        "success": true
+      },
+      "static_public_cal_losses": [
+        0.14095109053348193,
+        0.16236560214455464,
+        0.16235206373391314
+      ]
+    }
+  ],
+  "selected": {
+    "best_static": {
+      "beta": 1.0,
+      "prior": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "selected_class": "transition_particles"
+    },
+    "class_mixture": {
+      "beta": 1.0,
+      "prior": [
+        0.4923384771982691,
+        0.40632928524210393,
+        0.10133223755962709
+      ]
+    }
+  },
+  "visibility": "All targets and READ tokens derived only from complete raw public streams; no owner target or family parameters"
+}
