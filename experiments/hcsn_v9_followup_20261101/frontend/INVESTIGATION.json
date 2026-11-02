@@ -1,0 +1,101 @@
+{
+  "schema": "hcsn-v9-frontend-investigation.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "v8_pr": 4567,
+  "v8_head": "059b43a0b20ad07654880c155cc49799e0bb8858",
+  "original_v6_commit": "febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+  "read_evidence": [
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/REPORT_ZH.md",
+      "ref": "059b43a0b20ad07654880c155cc49799e0bb8858",
+      "git_blob_sha1_returned": "3470935f74b34efc6f65d7795bbaae7480d94b5d"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/SOURCE_PROVENANCE.json",
+      "access": "restored local file"
+    },
+    {
+      "path": "experiments/hcsn_v8_execution_20261101/frontend/RECOVERY_SPEC.json",
+      "access": "restored local file"
+    }
+  ],
+  "current_lookup_observations": [
+    {
+      "surface": "connected GitHub repository",
+      "operation": "fetch_file",
+      "ref": "febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+      "path": "experiments/hcsn_v6_confirmation_20261101/README.md",
+      "result": "404",
+      "message": "No commit found for the ref febdbb1ebb5e7fb9f585b10b3ec743fb5d22eb24",
+      "limit": "This repository/ref lookup failed; it is not a claim that the commit cannot exist in another repository, archive or device."
+    },
+    {
+      "surface": "connected GitHub repository",
+      "operation": "search_branches",
+      "query": "hcsn-v6",
+      "page_size": 100,
+      "result_count": 0,
+      "next_cursor": null
+    },
+    {
+      "surface": "connected GitHub repository",
+      "operation": "search_prs",
+      "query": "hcsn v6",
+      "state": "all",
+      "topn": 20,
+      "returned_prs": [4559, 4567]
+    },
+    {
+      "surface": "Library",
+      "operation": "search",
+      "exact_filename_queries": [
+        "hcsn-v5-confirmation-20261101.bundle",
+        "hcsn-v6-confirmation-20261101.bundle"
+      ],
+      "search_title_only": true,
+      "result": "No exact matching bundle located; fuzzy unrelated candidates were not treated as matches."
+    },
+    {
+      "surface": "Library",
+      "operation": "search",
+      "simplified_title_queries": ["hcsn-v6", "HCSN", "4608", "AV", "confirmation-20261101", "v8"],
+      "created_after": "2026-10-30T00:00:00Z",
+      "top_k": 100,
+      "result": "Only HCSN_HeXiong_Numeric_Check_20261101.zip matched HCSN; no requested AV assets were located."
+    },
+    {
+      "surface": "Library",
+      "operation": "list",
+      "recursive": true,
+      "created_after": "2026-10-30T00:00:00Z",
+      "limit": 200,
+      "items_returned": 90,
+      "next_cursor": null,
+      "result": "No corresponding AV v5/v6/v7/v8 bundle, fitted head, historical exclusion ledger or fresh recording identified in this recent inventory.",
+      "limitation": "A time-limited owned Library inventory is not an exhaustive search of all older files, shared locations, machines or external stores."
+    }
+  ],
+  "metadata_only_nonqualifying_match": {
+    "filename": "HCSN_HeXiong_Numeric_Check_20261101.zip",
+    "library_file_id": "libfile_bbe2d7350ab08191a8c6d8c6ef8715ba",
+    "file_id": "file_00000000dd0881f69a8318c3af944ebd",
+    "bytes": 8957,
+    "content_read_in_this_investigation": false,
+    "scope": "Metadata match only; not used as AV source/head or acquisition evidence."
+  },
+  "recovery_targets_from_v8_report_not_obtained_bytes": [
+    {
+      "filename": "hcsn-v5-confirmation-20261101.bundle",
+      "bytes": 629391107,
+      "sha256": "9159be343285855a6d1dccb290213791407f8df742a2df1363c17868beb3f1ac",
+      "bytes_obtained": false
+    },
+    {
+      "filename": "hcsn-v6-confirmation-20261101.bundle",
+      "bytes": 353859429,
+      "sha256": "4d9bc1ee333a582e8cf0718f029337ed49f08f06525a7eccd169df00d99f687f",
+      "bytes_obtained": false
+    }
+  ],
+  "conclusion": "Required frontend evidence has not been recovered. Search misses are scoped observations, not proof of global absence. Actual admission remains FAIL."
+}
