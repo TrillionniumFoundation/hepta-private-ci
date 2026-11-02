@@ -1,0 +1,27 @@
+{
+  "argument": "ForfixedrecordedcommonIandmeasuredreferencecostD,the minimumof(I+A)/(I+D)overallA>=0isI/(I+D). Recordedstrictfloors>.90 rejectthegateevenatA=0. Separately,theactualanchoredcostexceedsD,so(I+A)/(I+D)>1foranycommonI>=0. Thisisafrozenaccounting/referenceconclusion,notafuturehardwareornewcontractclaim.",
+  "cost_gate": "FAIL",
+  "domains": {
+    "iid": {
+      "floor_already_exceeds_threshold": true,
+      "nonnegative_candidate_zero_cost_floor": 0.9512611706569843,
+      "online_anchor_over_D": 1.225327351103258,
+      "single_actual_run_with_history_ratio": 1.0214835260849977,
+      "strict_original_ratio": 1.0081669396691328
+    },
+    "ood": {
+      "floor_already_exceeds_threshold": true,
+      "nonnegative_candidate_zero_cost_floor": 0.9497488015903212,
+      "online_anchor_over_D": 1.2898317435247983,
+      "single_actual_run_with_history_ratio": 1.0291345831986571,
+      "strict_original_ratio": 1.0111041923079835
+    }
+  },
+  "known_preuse_cpu_lower_bound": 642.903506,
+  "original_threshold_and_N_unchanged": true,
+  "production_activation": false,
+  "qualification_plus_later_reuse_investment": 1845.354508,
+  "schema": "hcsn-r19-frozen-economic-rejection-v1",
+  "threshold": 0.9,
+  "uses_per_fit_domain": 1000
+}

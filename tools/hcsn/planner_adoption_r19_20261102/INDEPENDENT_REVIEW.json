@@ -1,0 +1,97 @@
+{
+  "actual_attempts": 96000,
+  "actual_worlds": 16000,
+  "all_checks_passed": true,
+  "array_cap": 2097152,
+  "canonical_pair_comparisons": 48000,
+  "conservative_source_array_bound": 1964064,
+  "disjoint_above_workers_cpu": 1.8672200000000885,
+  "exact_fee_checks": 576000,
+  "groups": {
+    "iid": {
+      "actual_allocated_cpu": {
+        "B": 94.66084662700045,
+        "B_ref": 92.05360354099982,
+        "D": 94.54860685699983,
+        "D_ref": 92.29109291799978,
+        "anchored": 110.39167855999995,
+        "anchored_ref": 104.02817849700018
+      },
+      "quality": {
+        "reward": {
+          "lower": -0.0026206274152826355,
+          "mean": -0.0009791666666666698,
+          "passes": true
+        },
+        "utility": {
+          "lower": -0.002016854696260362,
+          "mean": -0.0012886822916669816,
+          "passes": true
+        }
+      },
+      "ratios": {
+        "online": 1.225327351103258,
+        "strict": 1.0081669396691328,
+        "strict_zero_candidate_floor": 0.9512611706569843,
+        "with_preuse": 1.0214835260849977
+      },
+      "shared_optimizer_ratios": {
+        "B": 1.0283230963885015,
+        "D": 1.0244607997112554,
+        "anchored": 1.061170926521445
+      }
+    },
+    "ood": {
+      "actual_allocated_cpu": {
+        "B": 97.87867616633307,
+        "B_ref": 95.4943040723334,
+        "D": 97.63768626233372,
+        "D_ref": 95.36610319933335,
+        "anchored": 119.21304524033339,
+        "anchored_ref": 108.88718005933305
+      },
+      "quality": {
+        "reward": {
+          "lower": -0.002650427936971669,
+          "mean": -0.00018749999999984057,
+          "passes": true
+        },
+        "utility": {
+          "lower": -0.0026451920699596876,
+          "mean": -0.0008958916666660238,
+          "passes": true
+        }
+      },
+      "ratios": {
+        "online": 1.2898317435247983,
+        "strict": 1.0111041923079835,
+        "strict_zero_candidate_floor": 0.9497488015903212,
+        "with_preuse": 1.0291345831986571
+      },
+      "shared_optimizer_ratios": {
+        "B": 1.0249687362734596,
+        "D": 1.0238196066190555,
+        "anchored": 1.0948308623234961
+      }
+    }
+  },
+  "included_worker_cpu": 1200.583782,
+  "limits": [
+    "Known historical CPU is a lower bound; unknown costs cannot establish full-history adoption",
+    "Qualification-plus-later-reuse accounting is separate from actual one-run serving allocation",
+    "2MiB contract covers bounded cached/workspace physical ndarraybases only, not totalRSS/transients/allocator",
+    "Same-Q model/controller remains mathematically equivalent; shared implementation speed is not exclusive core quality",
+    "No GPU/energy/production claim"
+  ],
+  "maximum_sampled_array_bytes": 1355584,
+  "original_full_history_cost_gate": false,
+  "original_noninferiority_gate": true,
+  "original_numeric_cost_gate": false,
+  "raw_archives": 1008,
+  "recorded_preuse_cpu_lower_bound": 642.903506,
+  "schema": "hcsn-r19-independent-actual1000-planner-v1",
+  "scope": "All actual1000uses/fit/domain raw semantics/snapshots/hashes/actions/answers/fees, fit-unit NI and allocated full process accounting recomputed without project helper imports",
+  "source_manifest_sha256": "cbba6db4214c59c4dcab2fa4fb73b37859e80474d24135d08d108f9329c776c6",
+  "verified_content_objects": 71994,
+  "whole_current_pipeline_cpu_lower_bound": 1202.451002
+}
