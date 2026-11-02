@@ -1,0 +1,233 @@
+{
+  "schema": "hcsn-v10-renewal-observed-cost-subset.v1",
+  "phase_count": 22,
+  "outer_wait4_cpu_seconds_sum": 1782.80886,
+  "receipt_rows": [
+    {
+      "receipt": "economics/results/high_power_aggregate001/PHASE_RECEIPT.json",
+      "receipt_sha256": "6cdf2f604150a9ae35625d50cb9520901a639470c4dfd62ea51e6053caf93cd5",
+      "study": "high_power_confirmation",
+      "stage": "aggregate",
+      "attempt": 1,
+      "outer_wait4_cpu_seconds": 9.270848,
+      "wall_seconds": 12.071348109,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/high_power_audit001/PHASE_RECEIPT.json",
+      "receipt_sha256": "ebd8d822602ab13f1a83dab8730ef2f0c01e1080a8125951b4c6d7479d330061",
+      "study": "high_power_confirmation",
+      "stage": "audit",
+      "attempt": 1,
+      "outer_wait4_cpu_seconds": 36.388615,
+      "wall_seconds": 40.391515092,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/high_power_prepare001/PHASE_RECEIPT.json",
+      "receipt_sha256": "02008c5a43bfe01d394a84dc70ae890caeb5f7af4b5c0c5ac39a1e385bea190f",
+      "study": "high_power_confirmation",
+      "stage": "prepare",
+      "attempt": 1,
+      "outer_wait4_cpu_seconds": 0.8258869999999999,
+      "wall_seconds": 1.677473986,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/high_power_shard0_001/PHASE_RECEIPT.json",
+      "receipt_sha256": "4e2c5a8716b1bab6d3a12466dc14b4ab0a769412786ff725a180477b5ced6a8e",
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 1,
+      "outer_wait4_cpu_seconds": 171.592578,
+      "wall_seconds": 432.357558939,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/high_power_shard1_001/PHASE_RECEIPT.json",
+      "receipt_sha256": "68e467405efd681d51acb51847ecd7630474c4fdeb837a738c9c65f5931dd7a4",
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 2,
+      "outer_wait4_cpu_seconds": 172.47917,
+      "wall_seconds": 452.460192033,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/high_power_shard2_001/PHASE_RECEIPT.json",
+      "receipt_sha256": "e5c067c496ecaeaa604792b5c032e535752e63b10d54e3f69746fff5f8476bd9",
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 3,
+      "outer_wait4_cpu_seconds": 168.64145000000002,
+      "wall_seconds": 437.989926926,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/high_power_shard3_001/PHASE_RECEIPT.json",
+      "receipt_sha256": "aeac2d208fb01fe32ea7d04ab95921236f47416e779338caddf53e6a24e1be21",
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 4,
+      "outer_wait4_cpu_seconds": 167.730728,
+      "wall_seconds": 439.509016128,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/high_power_shard4_001/PHASE_RECEIPT.json",
+      "receipt_sha256": "25e6c7a218c593bd8414842ccc7e0645d644fb9fea30cc5be9d4303848bcbf0e",
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 5,
+      "outer_wait4_cpu_seconds": 159.46979000000002,
+      "wall_seconds": 349.365975957,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/high_power_shard5_001/PHASE_RECEIPT.json",
+      "receipt_sha256": "099d00c9408857ae6c65a6293364aedc81a4a505f09c550641203707970be959",
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 6,
+      "outer_wait4_cpu_seconds": 172.41759,
+      "wall_seconds": 397.045431749,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/high_power_shard6_001/PHASE_RECEIPT.json",
+      "receipt_sha256": "ba1332ec1844603e759a1f15710f3606451cf780d3df12dc3fd253725b0db249",
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 7,
+      "outer_wait4_cpu_seconds": 145.02593900000002,
+      "wall_seconds": 265.440320214,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/high_power_shard7_001/PHASE_RECEIPT.json",
+      "receipt_sha256": "524fdc173ede219bdf60925ff1e72904f3b4dab683cea54dc185420b24a7dc54",
+      "study": "high_power_confirmation",
+      "stage": "execute",
+      "attempt": 8,
+      "outer_wait4_cpu_seconds": 142.950366,
+      "wall_seconds": 233.333658051,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/renewal_audit002/PHASE_RECEIPT.json",
+      "receipt_sha256": "f9bda54dcca93d7f556686287553efcf27ac8a2ea21eb7eb84716e01595c089e",
+      "study": "persistent_renewal",
+      "stage": "audit",
+      "attempt": 2,
+      "outer_wait4_cpu_seconds": 5.282818,
+      "wall_seconds": 11.108216182,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/renewal_evaluate002/PHASE_RECEIPT.json",
+      "receipt_sha256": "b599f13cc348058676e41df6fb38a28bec92cf34c38930ab417a21f4458ac9c2",
+      "study": "persistent_renewal",
+      "stage": "execute",
+      "attempt": 2,
+      "outer_wait4_cpu_seconds": 120.49176899999999,
+      "wall_seconds": 137.299596495,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/renewal_extension_audit001/PHASE_RECEIPT.json",
+      "receipt_sha256": "0b6cba93d87365dfb4dd2208104e0b2beefeaa14e3d942006063dcd2015fa2c7",
+      "study": "persistent_renewal_extension",
+      "stage": "audit",
+      "attempt": 1,
+      "outer_wait4_cpu_seconds": 5.24116,
+      "wall_seconds": 9.414942532,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/renewal_extension_evaluate001/PHASE_RECEIPT.json",
+      "receipt_sha256": "cd18aa14c598f7b3f4b631f324ccd0005de7a509dd6fe2656456dc9f2fa977f2",
+      "study": "persistent_renewal_extension",
+      "stage": "execute",
+      "attempt": 1,
+      "outer_wait4_cpu_seconds": 147.85313,
+      "wall_seconds": 256.600119298,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/renewal_extension_prepare001/PHASE_RECEIPT.json",
+      "receipt_sha256": "09149a10f4230a4fb9e13a26b2bc2716010538dec134eadc06e1763668cdd4e8",
+      "study": "persistent_renewal_extension",
+      "stage": "prepare",
+      "attempt": 1,
+      "outer_wait4_cpu_seconds": 0.6215419999999999,
+      "wall_seconds": 1.230141192,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/renewal_extension_train001/PHASE_RECEIPT.json",
+      "receipt_sha256": "2842539f6ed2df8c88084432a490c5584cdc51fcd48093c374e61e0a2b17a2fd",
+      "study": "persistent_renewal_extension",
+      "stage": "train",
+      "attempt": 1,
+      "outer_wait4_cpu_seconds": 26.063792,
+      "wall_seconds": 54.500209184,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/renewal_prepare001/PHASE_RECEIPT.json",
+      "receipt_sha256": "651203777675daf8963e7ffb1afb460ec23737d1964c87f29328018ae8fcb7b8",
+      "study": "persistent_renewal",
+      "stage": "prepare",
+      "attempt": 1,
+      "outer_wait4_cpu_seconds": 0.9732689999999999,
+      "wall_seconds": 2.092558044,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/renewal_prepare002/PHASE_RECEIPT.json",
+      "receipt_sha256": "c1410eef1728942b9b4e77df01b7e6d94038964f14f49edd2d5628d64cbb8d61",
+      "study": "persistent_renewal",
+      "stage": "prepare",
+      "attempt": 2,
+      "outer_wait4_cpu_seconds": 0.5619909999999999,
+      "wall_seconds": 0.642938126,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/renewal_train002/PHASE_RECEIPT.json",
+      "receipt_sha256": "bc493502cad699d1d4da6805b9a8b0a12a13db17f95b3b46e86dde925cf74d7f",
+      "study": "persistent_renewal",
+      "stage": "train",
+      "attempt": 2,
+      "outer_wait4_cpu_seconds": 112.99942,
+      "wall_seconds": 143.358807161,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/renewal_validation001/PHASE_RECEIPT.json",
+      "receipt_sha256": "fd3f5497daab8cdb1fa5b86d223843831fc18ed9cc63c5c888af3c1bb56a03a7",
+      "study": "persistent_renewal",
+      "stage": "validation",
+      "attempt": 1,
+      "outer_wait4_cpu_seconds": 11.97922,
+      "wall_seconds": 16.734774074,
+      "success": true
+    },
+    {
+      "receipt": "economics/results/renewal_validation002/PHASE_RECEIPT.json",
+      "receipt_sha256": "677b3d5902e033c1a5f6612b66410bf5f177e8cec04728dc6dfcbeb149505f4e",
+      "study": "persistent_renewal",
+      "stage": "validation",
+      "attempt": 2,
+      "outer_wait4_cpu_seconds": 3.947788,
+      "wall_seconds": 5.490368542,
+      "success": true
+    }
+  ],
+  "accounting": "Subset of the global economics ledger, not extra work. Add outer CPU once; never add nested diagnostics or sum overlapping wall as elapsed.",
+  "historical_preparation_cpu_seconds": null,
+  "device_energy_joules": null,
+  "continuous_exact_family_memory_peak_bytes": null,
+  "complete_lifecycle_economic_acceptance": false,
+  "outside_scope": "Stage launcher imports/final receipt serialization, code authoring/tool transfers and unrecorded historical work remain outside measured intervals."
+}
