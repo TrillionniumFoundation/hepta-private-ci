@@ -1,0 +1,100 @@
+{
+  "applicable_remote_agents_git_blob_sha1": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+  "applicable_remote_agents_snapshot_path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/AGENTS.head21ed.md",
+  "base_commit": "21edbe56f861989a4616c7d22e3eecc2d7cf6399",
+  "candidate_git_blob_sha1": "68844f940db074aadd26a9f5f7496cee3618a196",
+  "candidate_sha256": "1df7a247b2eb737cbbbb63141355e324e3c99aa44c9df4a49728bcb3ddbbcaf0",
+  "candidate_snapshot_path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/codespellrc.candidate",
+  "contribution_document_git_blob_sha1": "67b10a1c9b855bc32082929129b5abbe3c1d7b35",
+  "contribution_document_path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/contributing.head21ed.md",
+  "contribution_scope": "Inherited docs describe external contributions to openai/codex. This is user-authorized work in TrillionniumFoundation/hepta-private-ci existing PR4563; no new approval flow was added.",
+  "diagnosis": {
+    "actual_action_cli_options": "--count --ignore-words .codespellignore --skip ./.git, with no explicit input path (defaults to .)",
+    "append_semantics": "v2.4.3 --skip is argparse action=append and command-line options are parsed into the config namespace; adding one config glob preserves the existing config and action default.",
+    "binary_identity_basis": "Original pack_results.py emits raw XZ stream shards; preserved partial manifests register compression and shard identity. No shard contents were read in this review.",
+    "equivalent_existing_binary_shard_exclusion": false,
+    "existing_skip_setting": ".git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new",
+    "observed_utf8_decode_warnings": 4,
+    "r15_actual_error_annotations": 14,
+    "r15_actual_error_paths": 4,
+    "these_paths_are_binary_xz_stream_shards": true,
+    "upstream_decoder_fallback": "v2.4.3 FileOpener tries UTF-8 then ISO-8859-1 after UnicodeDecodeError; the four observed shards reached text decoding despite its preceding binary heuristic."
+  },
+  "failure_preservation": "CI_HEAD_REVIEW_02 retains all 14 actual R15 annotations and original failure state. No base-only control was run, so other failures are not declared unrelated. Formatter/cargo checks remain untouched; cargo-deny cause stays null.",
+  "format_rule": "Root AGENTS requests codex-rs/just fmt after code changes. This task only prepared a proposal and applied it in a temporary fixture; recovered local checkout has no codex-rs. The existing two formatter failures remain recorded; no formatter files were modified.",
+  "full_archive_started": false,
+  "github_writes_performed": false,
+  "head_and_tested_merge_config_and_workflow_identical": true,
+  "minimal_change": "Append exactly one R15/archive/generated-six-digit-shard glob to existing skip setting. Do not change workflow, dictionaries, ignore-regex, scientific source or any test.",
+  "new_glob": "./experiments/hcsn_distribution_content_r15_20261101/publication/archives/*/results.tar.xz.part[0-9][0-9][0-9][0-9][0-9][0-9]",
+  "observed_checked_merge_commit": "91d6018e1e28d39b03d779545eec76fbb7342d31",
+  "original_git_blob_sha1": "32ad02b993236edd9c54dbaba1664b8f2d650c00",
+  "original_sha256": "26a2389b135dc72267c53fd8d94df04d5fe0f66a0dc5ab06b6e4d435eee542bc",
+  "original_snapshot_path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/codespellrc.original",
+  "original_sources": [
+    {
+      "bytes": 346,
+      "expected_git_blob_sha1": "32ad02b993236edd9c54dbaba1664b8f2d650c00",
+      "git_blob_sha1": "32ad02b993236edd9c54dbaba1664b8f2d650c00",
+      "matches_remote": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/codespellrc.original",
+      "sha256": "26a2389b135dc72267c53fd8d94df04d5fe0f66a0dc5ab06b6e4d435eee542bc"
+    },
+    {
+      "bytes": 22519,
+      "expected_git_blob_sha1": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "git_blob_sha1": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "matches_remote": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/AGENTS.head21ed.md",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "bytes": 2622,
+      "expected_git_blob_sha1": "67b10a1c9b855bc32082929129b5abbe3c1d7b35",
+      "git_blob_sha1": "67b10a1c9b855bc32082929129b5abbe3c1d7b35",
+      "matches_remote": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/contributing.head21ed.md",
+      "sha256": "205b46a2a743aaec47ea46ef7787dfae72eaa9dee4529fba4c635109c8cada9a"
+    },
+    {
+      "bytes": 862,
+      "expected_git_blob_sha1": "f6940899da3ac0e5d7cc47e9240643732abe31da",
+      "git_blob_sha1": "f6940899da3ac0e5d7cc47e9240643732abe31da",
+      "matches_remote": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/codespell_workflow.head21ed.yml",
+      "sha256": "4bc889fafcd9d8437d16be7e79a3f15b928039a775df26338c759a41a00809c2"
+    },
+    {
+      "bytes": 69,
+      "expected_git_blob_sha1": "0da447f000de188776a33e770c2d2d77b37f97ee",
+      "git_blob_sha1": "0da447f000de188776a33e770c2d2d77b37f97ee",
+      "matches_remote": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/provenance/ci_codespell_21edbe56/codespellignore.original",
+      "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275"
+    }
+  ],
+  "patch_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CODESPELL_R15_ARCHIVES.patch",
+  "patch_sha256": "93859a354efc33a6a69d529811e4b0cccca7662b994c112c70801edab067cdfe",
+  "recommended_after_application_verification": [
+    "Require current .codespellrc Git blob to equal the recorded original before applying; otherwise rebase this one-entry change and review it.",
+    "Repeat filename matching with the actual Codespell 2.4.3 GlobMatch implementation and confirm R15 text/metadata negative controls remain eligible.",
+    "When a full checkout with Codespell 2.4.3 is available, run the same ordinary spell command; preserve all remaining unrelated-path diagnostics. Removing these 14 archive-word diagnostics does not predict a globally green CI.",
+    "Use the normal next CI result as separate operational evidence; never label it scientific confirmation."
+  ],
+  "remote_agents_full_text_read": true,
+  "retained_checks": "All R15 Python/Markdown, manifest/checksum/NOTE/JSON evidence, files outside R15 archives and other experiments keep their previous spell-check eligibility.",
+  "root_config_has_no_deeper_applicable_AGENTS_path": true,
+  "schema": "hcsn.r15.publication.codespell-binary-proposal.v1",
+  "scope_check_path": "experiments/hcsn_distribution_content_r15_20261101/publication/CODESPELL_R15_ARCHIVES_SCOPE_CHECK.json",
+  "scope_check_sha256": "863612b20045388b4a12dbbdb70516b188f1656258ecbaa9464d7534a48807f3",
+  "status": "Patch proposal and local filename-scope validation only; actual repository configuration not applied by this task.",
+  "target_path": ".codespellrc",
+  "utc": "2026-11-02T00:50:24.084478+00:00",
+  "validation_result": {
+    "actual_error_paths_matched": 4,
+    "all_published_shards_matched": 122,
+    "full_codespell_or_ci_pass_claimed": false,
+    "negative_controls_kept": 15,
+    "patch_applies_to_exact_original_bytes": true
+  }
+}

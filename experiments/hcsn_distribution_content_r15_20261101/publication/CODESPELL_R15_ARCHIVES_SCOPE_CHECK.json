@@ -1,0 +1,230 @@
+{
+  "actual_error_path_checks": [
+    {
+      "annotations": 3,
+      "new_pattern_matches": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_binding_15132_15135light/results.tar.xz.part000015"
+    },
+    {
+      "annotations": 4,
+      "new_pattern_matches": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/results.tar.xz.part000007"
+    },
+    {
+      "annotations": 4,
+      "new_pattern_matches": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15132_15134/results.tar.xz.part000021"
+    },
+    {
+      "annotations": 3,
+      "new_pattern_matches": true,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_training_final7/results.tar.xz.part000004"
+    }
+  ],
+  "all_other_config_options_unchanged": true,
+  "checkpoint_npz_or_confirmation_contents_read": false,
+  "cli_default_skip_appends_to_config": true,
+  "codespell_version_observed_in_ci": "2.4.3",
+  "current_ci_walk_root": ".",
+  "existing_skip_patterns_unchanged": [
+    ".git*",
+    "vendor",
+    "third_party",
+    "*-lock.yaml",
+    "*.lock",
+    ".codespellrc",
+    "*test.ts",
+    "*.jsonl",
+    "frame*.txt",
+    "*.snap",
+    "*.snap.new"
+  ],
+  "full_codespell_cli_run": false,
+  "manifest_sources": [
+    {
+      "compression": {
+        "check": "CRC64",
+        "dictionary_bytes": 16777216,
+        "filter": "LZMA2",
+        "format": "xz",
+        "preset": 6
+      },
+      "label": "checkpoint_recall_15131",
+      "parts": 10,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15131/manifest.json",
+      "schema": null,
+      "sha256": "c66f2643f2c2df64c7a0f2efc900568ab4bb43859573d74ad8768de48a64b73e"
+    },
+    {
+      "compression": {
+        "check": "CRC64",
+        "dictionary_bytes": 16777216,
+        "filter": "LZMA2",
+        "format": "xz",
+        "preset": 6
+      },
+      "label": "checkpoint_recall_15132_15134",
+      "parts": 24,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15132_15134/manifest.json",
+      "schema": null,
+      "sha256": "24eb5795d4ddb249659e904369a3135ef75d61e110651665370114e59c3a4ea7"
+    },
+    {
+      "compression": {
+        "check": "CRC64",
+        "dictionary_bytes": 16777216,
+        "filter": "LZMA2",
+        "format": "xz",
+        "preset": 6
+      },
+      "label": "checkpoint_recall_15135_15137light",
+      "parts": 22,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_recall_15135_15137light/manifest.json",
+      "schema": null,
+      "sha256": "464a3eae6e0cbf0d7e62f5e19fee9365b99d0f170a9b04713264cbd640a29512"
+    },
+    {
+      "compression": {
+        "check": "CRC64",
+        "dictionary_bytes": 16777216,
+        "filter": "LZMA2",
+        "format": "xz",
+        "preset": 6
+      },
+      "label": "checkpoint_resumed_first5",
+      "parts": 18,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_resumed_first5/manifest.json",
+      "schema": null,
+      "sha256": "6e3c103e10374b24c40d2b2c9832fbd097418b72d422903ac1a39812c84505ab"
+    },
+    {
+      "compression": {
+        "check": "CRC64",
+        "dictionary_bytes": 16777216,
+        "filter": "LZMA2",
+        "format": "xz",
+        "preset": 6
+      },
+      "label": "checkpoint_binding_15132_15135light",
+      "parts": 24,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_binding_15132_15135light/manifest.json",
+      "schema": null,
+      "sha256": "4d2975b0a26678772db945b691a597917607d4a47ef71f7d941c91d9a98f27df"
+    },
+    {
+      "compression": {
+        "check": "CRC64",
+        "dictionary_bytes": 16777216,
+        "filter": "LZMA2",
+        "format": "xz",
+        "preset": 6
+      },
+      "label": "checkpoint_training_final7",
+      "parts": 24,
+      "path": "experiments/hcsn_distribution_content_r15_20261101/publication/prior_checkpoint_manifests/checkpoint_training_final7/manifest.json",
+      "schema": null,
+      "sha256": "46db9fe3c5815a2ae3de2cc681c4f434230791a8378b7335fd6f6ea6d46d4476"
+    }
+  ],
+  "matching_implementation_source": {
+    "class_source": "class GlobMatch:\n    def __init__(self, pattern: list[str]) -> None:\n        self.pattern_list: list[str] = pattern\n\n    def match(self, filename: str) -> bool:\n        return any(fnmatch.fnmatch(filename, p) for p in self.pattern_list)\n",
+    "git_blob_sha1": "994c5c4a662950b9eaf51ae2fb1ca2831d7dc59d",
+    "method": "Execute only the reviewed upstream v2.4.3 GlobMatch class with stdlib fnmatch; do not install or run the whole Codespell CLI.",
+    "url": "https://github.com/codespell-project/codespell/blob/v2.4.3/codespell_lib/_codespell.py"
+  },
+  "negative_controls": [
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/README.md"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/law_core.py"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/recovery_checks.py"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/publication/pack_results.py"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/manifest.json"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/manifest.sha256"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/NOTE.md"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/PACKING_DESIGN.json"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/results.tar.xz.part000001.md"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/results.tar.xz.partABC123"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/publication/archives/checkpoint_recall_15131/results.tar.xz.part00001"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/hcsn_distribution_content_r15_20261101/results/formal_03/results.tar.xz.part000001"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./experiments/other_study/publication/archives/checkpoint/results.tar.xz.part000001"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./.github/workflows/codespell.yml"
+    },
+    {
+      "existing_exemption_unchanged": true,
+      "new_pattern_matches": false,
+      "path": "./scripts/format.py"
+    }
+  ],
+  "only_existing_manifest_metadata_read": true,
+  "passed": true,
+  "path_prefix_note": "Pattern intentionally matches the ./ paths from the registered no-explicit-path CI invocation; direct CLI filenames without ./ are outside this check.",
+  "positive_shard_path_count": 122,
+  "positive_shard_paths_all_matched": true,
+  "proposed_pattern": "./experiments/hcsn_distribution_content_r15_20261101/publication/archives/*/results.tar.xz.part[0-9][0-9][0-9][0-9][0-9][0-9]",
+  "reason_full_cli_not_run": "codespell is not installed in this interpreter; scope and patch checks are complete, but no end-to-end spell-pass claim is made.",
+  "remote_actions": false,
+  "schema": "hcsn.r15.publication.codespell-shard-scope.v1",
+  "scientific_tests_changed_or_run": false,
+  "temporary_patch_apply_check": {
+    "actual_repository_config_modified": false,
+    "git_apply_check_exit": 0,
+    "git_apply_exit": 0,
+    "only_new_own_temporary_fixture_cleaned": true,
+    "result_bytes_identical_to_candidate": true
+  },
+  "utc": "2026-11-02T00:50:24.083861+00:00"
+}
