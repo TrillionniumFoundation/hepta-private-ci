@@ -1,0 +1,24 @@
+{
+  "schema": "joint-native-frozen-weight-full-process-v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "tools.hcsn.digital_joint_20261102.joint_native_frozen_weights_qualify",
+    "--formal-root",
+    "/workspace/scratch/9d953b0104b2/joint-formal_attempt2",
+    "--binary",
+    "/workspace/scratch/9d953b0104b2/joint-full-native-build/codex-rs/target/release/hepta-digital-joint-native",
+    "--published-model-commit",
+    "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+    "--out",
+    "/workspace/scratch/9d953b0104b2/joint-native-frozen-weights"
+  ],
+  "wall_seconds": 6.893600214003527,
+  "exit_code": 0,
+  "user_cpu_seconds": 4.178857,
+  "system_cpu_seconds": 1.082022,
+  "complete_process_tree_cpu_seconds": 5.260879,
+  "peak_rss_bytes": 48570368,
+  "accounting": "outer POSIX wait4 on worker; includes worker imports/verification/NumPy pairing and its waited native child processes",
+  "stdout_stderr_log_sha256": "266494c542bd42b10770417e8204548c5520103ba8cd0608145fe504629317cd"
+}

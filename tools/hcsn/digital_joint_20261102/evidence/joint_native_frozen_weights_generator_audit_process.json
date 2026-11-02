@@ -1,0 +1,20 @@
+{
+  "schema": "joint-frozen-native-independent-generator-audit-process-v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "tools.hcsn.digital_joint_20261102.joint_native_artifact_audit",
+    "--models",
+    "/workspace/scratch/9d953b0104b2/joint-native-frozen-weights/inputs",
+    "--out",
+    "/workspace/scratch/9d953b0104b2/research/tools/hcsn/digital_joint_20261102/evidence/joint_native_frozen_weights_generator_audit.json"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 0.44927948000258766,
+  "user_cpu_seconds": 0.403862,
+  "system_cpu_seconds": 0.042655,
+  "complete_process_tree_cpu_seconds": 0.446517,
+  "wait4_peak_rss_bytes": 50638848,
+  "scope": "separate independent artifact audit stage; not included in qualification timing",
+  "log_sha256": "a3a12dd29c9e5b4e73f164f681018833601fbb58ede09e10e831dbdcfad213c7"
+}
