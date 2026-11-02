@@ -1,0 +1,45 @@
+{
+  "schema": "continuous-cold-archive-index-v1",
+  "authoritative_stage": "v2",
+  "v1_source_commit": "56fb94039bea79b72b059c639b61d1f7bbb0b2be",
+  "v2_source_commit": "866ecf9872c968db55bc12ccf63826b7651c5918",
+  "archives": [
+    {
+      "archive": "continuous_cold_v1_EXECUTION.tar.gz",
+      "bytes": 1473337,
+      "sha256": "b3d2b62993e5f4bad61732149175b4b2039c13e6966254e03de7d479a3c4fed8",
+      "status": "failed_strict_match_489_of_505",
+      "parts": [
+        {
+          "path": "continuous_cold_v1_EXECUTION.tar.gz.part-000",
+          "bytes": 1440000,
+          "git_blob_sha": "bc7f7aae1b380eca3be899761491ffe4152ce1a8"
+        },
+        {
+          "path": "continuous_cold_v1_EXECUTION.tar.gz.part-001",
+          "bytes": 33337,
+          "git_blob_sha": "47631ef30725a1f1c91ef5fbbe2ed3d244c7dc7d"
+        }
+      ]
+    },
+    {
+      "archive": "continuous_cold_v2_EXECUTION.tar.gz",
+      "bytes": 1473367,
+      "sha256": "8c8b5103e596448a9fbe2926a0471709af9776bd6f054e72bf1f51da9fc9f620",
+      "status": "passed_strict_match_505_of_505",
+      "parts": [
+        {
+          "path": "continuous_cold_v2_EXECUTION.tar.gz.part-000",
+          "bytes": 1440000,
+          "git_blob_sha": "1c9d5aa85a9e7582582a867dbd49e9678bddfe29"
+        },
+        {
+          "path": "continuous_cold_v2_EXECUTION.tar.gz.part-001",
+          "bytes": 33367,
+          "git_blob_sha": "7a7c8cef5fb59bbe31c0edc0fd625160e2f76de8"
+        }
+      ]
+    }
+  ],
+  "restore": "Concatenate each archive's listed parts in order; verify byte count and SHA256 before safe extraction. Tar member names are repository-root-relative and individually bound by its EXECUTION_MANIFEST.json. Both attempts and all costs are retained."
+}

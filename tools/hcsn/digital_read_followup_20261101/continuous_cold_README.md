@@ -30,14 +30,28 @@ startup and serialization. Those are different cost boundaries and are both
 retained. Neither measures energy or establishes a speed advantage.
 
 The new source, protocol and `SOURCE_FREEZE.json` must be published before any
-workers execute. From the repository root:
+workers execute. The first version retained 16 strict mismatches caused by
+absolute versus archived relative missing-file error paths. Version 2 preserves
+the original relative Owner folder spelling and repeats all 505 boundaries
+without relaxing the comparator.
+
+For a new checkout, extract the archived adapter qualification into its expected
+namespace before preparing a fresh cold-run destination:
 
 ```bash
-python3 -m tools.hcsn.digital_read_followup_20261101.continuous_cold_replay prepare \
-  --out tools/hcsn/digital_read_followup_20261101/evidence/continuous_cold_prepared_final
+mkdir -p tools/hcsn/digital_read_followup_20261101/evidence/continuous_task_prepared_final2/qualification
+tar -xzf tools/hcsn/digital_read_followup_20261101/evidence/continuous_task_qualification.tar.gz \
+  -C tools/hcsn/digital_read_followup_20261101/evidence/continuous_task_prepared_final2/qualification
+```
+
+From the repository root:
+
+```bash
+python3 -m tools.hcsn.digital_read_followup_20261101.continuous_cold_replay_v2 prepare \
+  --out tools/hcsn/digital_read_followup_20261101/evidence/continuous_cold_v2_prepared
 # Publish that source/freeze, then run with its full commit SHA.
-python3 -m tools.hcsn.digital_read_followup_20261101.continuous_cold_replay run \
-  --out tools/hcsn/digital_read_followup_20261101/evidence/continuous_cold_prepared_final \
+python3 -m tools.hcsn.digital_read_followup_20261101.continuous_cold_replay_v2 run \
+  --out tools/hcsn/digital_read_followup_20261101/evidence/continuous_cold_v2_prepared \
   --published-source-commit FULL_40_HEX_COMMIT
 ```
 
@@ -45,7 +59,9 @@ Every invocation writes exclusively. Reproduction must use a fresh prepared
 output directory; existing evidence is never overwritten.
 
 This qualifies fresh-process restoration at completed action boundaries on the
-same Linux host, with intact declared snapshot and packet files. It does not
+same Linux host, with intact declared snapshot and packet files. Operating-system
+file caches remain available; they are not flushed by spawning a fresh Python
+process. It does not
 simulate an interrupted in-flight action, power loss, torn checkpoint write,
 exactly-once external effects, malicious checkpoint tampering or Rust ACK
 recovery. It does not establish task benefit, gradient validity or production

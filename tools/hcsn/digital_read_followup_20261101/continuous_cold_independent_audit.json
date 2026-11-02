@@ -1,0 +1,24 @@
+{
+  "all_existing_sources_worlds_models_hashes_match": true,
+  "complete_non_timing_suffix_matches": 505,
+  "due_read_attempts": 324,
+  "events": 92,
+  "failed_due_reads": 16,
+  "independent_absence_checks": {
+    "all_still_absent": true,
+    "end_observation": "after v2 all 505 workers finished",
+    "missing_packets": 17,
+    "runner_automatic_absence_guard": false,
+    "start_evidence_sha256": "7d818500e1357b5af8259c3841bf2ce1bf89855ed29d968e6d97d68bac7eba0b",
+    "start_observation": "during v1 worker execution"
+  },
+  "passed": true,
+  "qualification_summary_sha256": "deca4902b0a155e7b448e60e05d7fb6c33c4725ad138d03525e60c9ab687e9fa",
+  "schema": "continuous-cold-independent-audit-v1",
+  "scope": "Independent check of all recorded fresh-Python worker suffixes; read-only archived worlds, exact action-boundary restoration; no interrupted in-flight action, Rust or task-benefit qualification",
+  "successful_fullhx_decodes": 308,
+  "unique_worker_pids": 505,
+  "v2_source_commit": "866ecf9872c968db55bc12ccf63826b7651c5918",
+  "worker_cpu_seconds": 215.33316994499995,
+  "workers_checked": 505
+}
