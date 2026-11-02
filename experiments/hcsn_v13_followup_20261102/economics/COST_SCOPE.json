@@ -1,0 +1,1841 @@
+{
+  "schema": "hcsn-v13-disjoint-cpu-scope.v1",
+  "snapshot_begin_utc": "2026-11-02T03:03:07.786284+00:00",
+  "snapshot_end_utc": "2026-11-02T03:03:07.840080+00:00",
+  "aggregator_source_sha256": "0aa111227e6673c24bf972db3ce5a4cf2e2cac26b556d9a3977943a4a84158d3",
+  "local_receipts": 115,
+  "proven_nested_receipts_excluded": 72,
+  "local_disjoint_top_level_envelopes": 43,
+  "local_receipt_triplet_inventory_sha256": "e97f53efbfd17f7a07bc26997c5903d1aad1c346b8b703347eb990c8d334d8c3",
+  "local_recorded_disjoint_full_worker_cpu_seconds": "575.495668",
+  "local_plus_remote_recorded_disjoint_complete_worker_cpu_seconds": "655.671064",
+  "local_component_cpu_seconds": {
+    "control": "263.359724",
+    "emotion_encoder": "52.116700",
+    "frontend": "11.846144",
+    "joint_core": "200.268452",
+    "review": "47.904648"
+  },
+  "failed_top_level_workers": 5,
+  "failed_cpu_seconds_included": "13.204501",
+  "top_level_workers": [
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/control/cost_check001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "3.789439",
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.control.check_runtime",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/control/check001"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 330399744,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60193763980977,
+      "monotonic_end_ns": 60197574591585,
+      "wall_seconds": 3.810610608,
+      "receipt_sha256": "2d48bf028d97dbf494339e5cd8f6b114e0970b880b3e1d0caa867d6b784d0278",
+      "supervision_sha256": "2813928b2d371c62105a284cba7a3717b3334322cf56f1a4d4db0f93bda3cda3",
+      "config_sha256": "b40c004a04ddae7f90721bcb25e5ac3b518d70296beec6b4359745f1d68f9a49",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/control/cost_check002/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "4.179930",
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.control.check_runtime",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/control/check002"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 330907648,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60352990529620,
+      "monotonic_end_ns": 60357143649523,
+      "wall_seconds": 4.153119903,
+      "receipt_sha256": "613fc6d19ea536aa749e1ba5734eb8797554e6122ad2888767874a4079983a84",
+      "supervision_sha256": "8db911f44973813fc1cfa97d5572b600f463500feb068bf061a8e035cf8d9540",
+      "config_sha256": "b837dafea14b466f12e25b5ec28ce53e86df5a8faf1df5212088fd56e1055065",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/control/cost_targets001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "4.202415",
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.control.check_targets",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/control/targets001"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 335290368,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60462212560703,
+      "monotonic_end_ns": 60466388142593,
+      "wall_seconds": 4.17558189,
+      "receipt_sha256": "deb15023f31bf0187f3673174bd833127fee2772c4869783909ce8862f8b7842",
+      "supervision_sha256": "406f41bc080d573dfbed9da3be279bec99e241219f3946dc576406407e7b3465",
+      "config_sha256": "d136e0a1a6e7bc153cd7ef7d32e4c3878e4aba0bcefd24a4214f1f97a7cc6e6c",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/control/cost_targets002/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "3.837808",
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.control.check_targets",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/control/targets002"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 335228928,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60694055320897,
+      "monotonic_end_ns": 60697858380892,
+      "wall_seconds": 3.803059995,
+      "receipt_sha256": "4954e9275d9bd687dcc355328b5311dcadecfe5e8121eb63668ee36726dd0ec5",
+      "supervision_sha256": "8c57c56acc7aaebdef58f1fc462d79a13f03225d591248054c963689880c13b3",
+      "config_sha256": "7ad503af901b5b5068449a625418f2804511a88ba769ada84e8566c95d2b9b0a",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/control/receipts/audit_candidates001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "6.610541",
+      "command": [
+        "python3",
+        "experiments/hcsn_v13_followup_20261102/control/orchestration/audit_candidates.py",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001/CANDIDATE_AUDIT.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 334446592,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 61684571763374,
+      "monotonic_end_ns": 61691136820678,
+      "wall_seconds": 6.565057304,
+      "receipt_sha256": "632e1e9717eb1507b3c66c09d8742df46367fbd2e67993226e8677607d3fad24",
+      "supervision_sha256": "c81777fb528e02d2ea61a828c261b8b03a7175a3ee46858c69253a59605bbb55",
+      "config_sha256": "af4a082a90da8931dec68171bc9b3f4507b6e3158226cd8cdff3427ae8a3fd70",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "188.711332",
+      "command": [
+        "python3",
+        "experiments/hcsn_v13_followup_20261102/control/orchestration/fit_batch.py",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001",
+        "--receipts",
+        "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001/BATCH.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 380719104,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 61484674229782,
+      "monotonic_end_ns": 61578450489179,
+      "wall_seconds": 93.776259397,
+      "receipt_sha256": "1ca1e1fbd709a4d13e1c5a82aca9e53c58db6d7013b0c7be4e50dcd046c2c273",
+      "supervision_sha256": "e27d04183c34812de10cfbb43e1448aeddd05e95fb1ecca9eba453773857bb69",
+      "config_sha256": "8876fab12a2364add5aa2689c9a30777eecc7756c9c1f30a6ae744f0877da407",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/control/receipts/evaluation001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "36.659351",
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.control.campaign",
+        "evaluate",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001",
+        "--publication",
+        "/workspace/scratch/3511158fb83b/v13_value_publication_result.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 337215488,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62401631257194,
+      "monotonic_end_ns": 62437962888631,
+      "wall_seconds": 36.331631437,
+      "receipt_sha256": "75331077399c3c4a1c419aa645a5864ac1712a762d288228f55c10c494ca6341",
+      "supervision_sha256": "d14628be78c0c9424b00a08e79ccd33f863cd24ed1bf7332a771fe9e446f7cd0",
+      "config_sha256": "8692c7433c421d5d2df16e130139f467baff60e81314c6e483eafafa69941843",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/control/receipts/freeze001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "3.421173",
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.control.campaign",
+        "freeze",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 317476864,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 61617397296129,
+      "monotonic_end_ns": 61620803435226,
+      "wall_seconds": 3.406139097,
+      "receipt_sha256": "c141c36276cf38f88e4a26f6c21e1e51f5c492ea5ed827ec356414914327c45b",
+      "supervision_sha256": "82cda5931f7283305c08b51e24d1385f0bde59da1cf62b8a512207cb26bb1e13",
+      "config_sha256": "40a76f73d10e9a6db1de0138410634a101b81fb29674fb191ec4f538d8fc89d2",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/control/receipts/prepare001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "3.820153",
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.control.value_fit",
+        "prepare",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001",
+        "--models",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+        "--publication",
+        "/workspace/scratch/3511158fb83b/v13_candidate_publication_result.json"
+      ],
+      "task_success": false,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 321974272,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 61244139194185,
+      "monotonic_end_ns": 61247911969794,
+      "wall_seconds": 3.772775609,
+      "receipt_sha256": "0662cc9c3d3f4de32bbc853aca33007fbda25052236544d7ee8c685605b4f6ac",
+      "supervision_sha256": "6f0ae687b8c7a48a0d2d06f723bbda6fd6aaaafbc6b811f7640a4e0d66757f1f",
+      "config_sha256": "93cdf472ec9578c1034179edd0cd8607e16d18a18b6f80ea2716c4a504ec673e",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/control/receipts/prepare002/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "3.796191",
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.control.value_fit",
+        "prepare",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001",
+        "--models",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+        "--publication",
+        "/workspace/scratch/3511158fb83b/v13_dependency_publication_result.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 322129920,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 61441607768472,
+      "monotonic_end_ns": 61445371049296,
+      "wall_seconds": 3.763280824,
+      "receipt_sha256": "a9d4b75e294e00f26b4696818a7bb561b7e33151d86db6b7be22eb42d67f1128",
+      "supervision_sha256": "eb7d9f66132ee92d7cc33699f48170be36b93894103ce82e30de18ebef81d528",
+      "config_sha256": "36c7e4ef1a9e5f7485f1fa6cce4f7271f9c96c6a9f3dfe5f52bde1ce6a456883",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/control/receipts/replay_evaluation001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "4.331391",
+      "command": [
+        "python3",
+        "experiments/hcsn_v13_followup_20261102/control/orchestration/replay_execution.py",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001/evaluation/NEURAL_REPLAY.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 341397504,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62547395867059,
+      "monotonic_end_ns": 62551707707984,
+      "wall_seconds": 4.311840925,
+      "receipt_sha256": "b34001bf3210cea5e84525fea905dc336bff3b2cd67059eb290a0a1709e90905",
+      "supervision_sha256": "c33d52b34b6d113deeb38b262635c616b0c703241f6f322d313f68130c9c3c65",
+      "config_sha256": "47329b72956130de3bdf4c059504441bf684e7d4eac4cd620ec0c86526ca07ca",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/emotion_encoder/cost_local_contracts001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.436948",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.emotion_encoder.local_contracts",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/emotion_encoder/LOCAL_CONTRACTS.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 64507904,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60965568325961,
+      "monotonic_end_ns": 60966000107456,
+      "wall_seconds": 0.431781495,
+      "receipt_sha256": "9530f6177b8a45fe473fcae7f7cefc3a9eae5a6733ed0ae9e22817c14e7b16b9",
+      "supervision_sha256": "727ebeadf212a6b3ef10dd1aba247ff686bd50e4323496682a2c3818c58cd580",
+      "config_sha256": "c729602f8f5ef797af0d80da6e33541af36627232034932c56d691460db676a8",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/emotion_encoder/cost_local_contracts002/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.481461",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.emotion_encoder.local_contracts",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/emotion_encoder/LOCAL_CONTRACTS_REUSABLE.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 64651264,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 61016688669371,
+      "monotonic_end_ns": 61017166107227,
+      "wall_seconds": 0.477437856,
+      "receipt_sha256": "cfab8c7145ce6f96a1e99948b569268b3548d714d43bf2a0922e6f8dfc2b0741",
+      "supervision_sha256": "bb0e11dfed05edf4eda91dd5b21818a642da7789ffefd282c1222a0cd7188326",
+      "config_sha256": "f1c37362dca88d89b4da5617f4b127230a8862b46393e1491e5bb7112b87f735",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/emotion_encoder/cost_local_contracts003/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.441233",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.emotion_encoder.local_contracts",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/emotion_encoder/LOCAL_CONTRACTS_FINAL.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 64647168,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 61308594365055,
+      "monotonic_end_ns": 61309038157100,
+      "wall_seconds": 0.443792045,
+      "receipt_sha256": "11ab6c4d05cb298f82cdadf2c2bf6a3f208ff2fc8d045b528a0b9eb1a6969032",
+      "supervision_sha256": "2d1bec6c6d2581789e85073a9b707e7400514a2b5b7953538ddda9819b088484",
+      "config_sha256": "197bc8c4cc7c13811da658405987c1abf92ca5b56ad688c649cc402db99f2210",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/emotion_encoder/cost_prepare_waveforms001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "50.540465",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.emotion_encoder.prepare_waveforms",
+        "run",
+        "--plan",
+        "experiments/hcsn_v13_followup_20261102/emotion_encoder/PREPARE_PLAN.json",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/emotion_encoder/inputs"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 376696832,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60789942558528,
+      "monotonic_end_ns": 60840562963292,
+      "wall_seconds": 50.620404764,
+      "receipt_sha256": "ed6df5af217ec4ad08d81299559422afe856cb8226649ca95a8d35835a740e7e",
+      "supervision_sha256": "ec453e39c098addbc96f56b16739b9efcbe18ed93d40622ed6f25f44d6e80eb2",
+      "config_sha256": "929c5743ba2c34249358a6a6d73ab791c0f0b6122619936f5ba3eebdf696a0bf",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/emotion_encoder/results/ci_run41379044650_attempt1/archive_pack_cost001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.216593",
+      "command": [
+        "python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.emotion_encoder.archive_transport",
+        "pack",
+        "--archive",
+        "experiments/hcsn_v13_followup_20261102/emotion_encoder/results/ci_run41379044650_attempt1/hcsn-v13-emotion-run41379044650-attempt1.zip",
+        "--directory",
+        "experiments/hcsn_v13_followup_20261102/emotion_encoder/results/ci_run41379044650_attempt1/raw_zip_transport"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 20168704,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62956389601561,
+      "monotonic_end_ns": 62956604847816,
+      "wall_seconds": 0.215246255,
+      "receipt_sha256": "574cf4035f552aaa1f70aef3e43eefaffacfa28eb80c6d8bdd480d85be8128fc",
+      "supervision_sha256": "bb66b7367177662c35954103a3add53110a083c2ae6ad712a7d7cd6ca9c1b7b9",
+      "config_sha256": "0863548ecf20f5ed2eafbd708886fd117df36bb2b2952264a217ea36fa0602d4",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/frontend/cost_cache001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "7.875889",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.frontend.cache_contract",
+        "run",
+        "--plan",
+        "experiments/hcsn_v13_followup_20261102/frontend/CACHE_PLAN.json",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/frontend/cache_contract001"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 1054359552,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 59874091930142,
+      "monotonic_end_ns": 59881873642669,
+      "wall_seconds": 7.781712527,
+      "receipt_sha256": "de19b0ab167426610f92fcff2f882cd61f94910380acf7d162c343e93c5ce6f5",
+      "supervision_sha256": "47bba460a4f42eed24baedc1b4db98b0d3a60e69d23365ef41060319b259554e",
+      "config_sha256": "2960130a6f34975ac24213c2db25c6e87c9daad881caeaec82ce6345f288e979",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/frontend/cost_forward001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "3.314803",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.frontend.strong_audio",
+        "run",
+        "--plan",
+        "experiments/hcsn_v13_followup_20261102/frontend/FORWARD_PLAN.json",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/frontend/forward001"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 997023744,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 59756588602022,
+      "monotonic_end_ns": 59759886249569,
+      "wall_seconds": 3.297647547,
+      "receipt_sha256": "e75db3ac22c796dc7feae285ebff85639251b0362e45fc65a0762cb121f26c77",
+      "supervision_sha256": "074b5cc2092a98485e47f0300a3f456287a686e7d9020600e5920342df2ffae3",
+      "config_sha256": "9e22d29fbc4346628f2c00fbbbb2541fa4512cc127e5ac2d6ca373922559caa7",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/frontend/cost_readout001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.655452",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.frontend.emotion_readout",
+        "run",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/frontend/readout001"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 47943680,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60358603193551,
+      "monotonic_end_ns": 60359252072019,
+      "wall_seconds": 0.648878468,
+      "receipt_sha256": "79366b8fe30889fa4d5bc03816ce52eaabfe2e30ffe6aa547c52830cbb65dc08",
+      "supervision_sha256": "ee2d468e8e803e01db014141aee7d9607c3970a491a3c588b25e823e765b2484",
+      "config_sha256": "510a42a4f6052faebd16800a03cdce0e15ef82b81eba8fcd1811c91ad6623766",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/content_evaluation001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "3.462382",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.joint_core.operations.evaluate_content",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/content_evaluation001",
+        "--source-remote-head",
+        "4c2fa0d86b9b09d5b26849b4738458fabc7b2945",
+        "--candidate-remote-head",
+        "af2aa1fa806c8e3ee28945ab72bf263a714e387f",
+        "--publication",
+        "/workspace/scratch/3511158fb83b/v13_candidate_publication_result.json"
+      ],
+      "task_success": false,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 311017472,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 61236924851479,
+      "monotonic_end_ns": 61240372284522,
+      "wall_seconds": 3.447433043,
+      "receipt_sha256": "8d442ee09a82893b411c9444333b6a854f2f0fd905c0f22581a912d6b0e68c8a",
+      "supervision_sha256": "7121140fd6df0864c6eda5bd0b00e4dc523d1ceaa5775e1ea6ae212fc9bf8d1c",
+      "config_sha256": "e062a9472c75050e4bc7c190eb27977ed0f6b46cece4973852ed860becf32f48",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/content_evaluation002/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "5.837599",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.joint_core.operations.evaluate_content",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/content_evaluation002",
+        "--source-remote-head",
+        "4c2fa0d86b9b09d5b26849b4738458fabc7b2945",
+        "--candidate-remote-head",
+        "f810ee199755d139f5b8c08187efc41cbd7839c9",
+        "--publication",
+        "/workspace/scratch/3511158fb83b/v13_dependency_publication_result.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 334188544,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 61433331202167,
+      "monotonic_end_ns": 61439127823051,
+      "wall_seconds": 5.796620884,
+      "receipt_sha256": "033ecfdad7d2e2e65c3887128afb7c10b113544589c77d30385cff7e4d426f4f",
+      "supervision_sha256": "aa3e5cf108e02dcda261196d09d4628a323a9f0e348ae598ace28e1a4df28573",
+      "config_sha256": "ee8580e1a1a03e24bb7ba97842dfb364091aaec3879d740801d3805a1095c4ff",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/prepare001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "4.160755",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.joint_core.campaign",
+        "prepare",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/run001"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 318574592,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60075029230801,
+      "monotonic_end_ns": 60079320146879,
+      "wall_seconds": 4.290916078,
+      "receipt_sha256": "88ce2108c2e271789f8841abb3684f6d61a454dccde8f7b8bc4eecfb52e04264",
+      "supervision_sha256": "3ada968269961b8f0c9c3deddd18b163bfcc6331d3cfd7639454257e5038562a",
+      "config_sha256": "4c116f7800bb1b515058b5ecdfbe6b7d740b2d6f3195c0efa46b6b7be4c19929",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "186.807716",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.joint_core.operations.run_roster",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+        "--receipts",
+        "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001",
+        "--source-remote-head",
+        "4c2fa0d86b9b09d5b26849b4738458fabc7b2945"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 343400448,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60351035660881,
+      "monotonic_end_ns": 60445639971665,
+      "wall_seconds": 94.604310784,
+      "receipt_sha256": "4a5c3062e0ba0bbc59f5b8b255f6805f22429e79ea7cb856dcf12aeb001b6611",
+      "supervision_sha256": "3578516a54c2dbe3e360ac93434bf525a1c380330aad7af0665c57641e20d921",
+      "config_sha256": "d3d9730be9f2dc3251317ee5adc850aa3acd18f1847c992260ef18aafdab56ed",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/content96/cost_audit001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.751046",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "experiments/hcsn_v13_followup_20261102/review/content96/audit_content96.py",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/content96/audit001"
+      ],
+      "task_success": false,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 25382912,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62104255343555,
+      "monotonic_end_ns": 62104992135363,
+      "wall_seconds": 0.736791808,
+      "receipt_sha256": "954b62d0400c8959154e37abd71b302c3434c856c7703baa071e98913609298e",
+      "supervision_sha256": "7145be9e9885e944efa1d878e222f80dfcb84019463448148b4b8eff714b2bf9",
+      "config_sha256": "731a2147c82d42fcaf95b271f128b75dc68506da751af843dc2fcec290f5fae4",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/content96/cost_audit002/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "1.088548",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "experiments/hcsn_v13_followup_20261102/review/content96/audit_content96.py",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/content96/audit002"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 31969280,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62125443330981,
+      "monotonic_end_ns": 62126491408172,
+      "wall_seconds": 1.048077191,
+      "receipt_sha256": "9ec79bb78fe9f237c3536d0e50e2a1f0de2482ac16f161e77a6913f79e5eeaae",
+      "supervision_sha256": "178f6c586dd3122e118f5827d5953f01071bd505e236f501fadd12301fdf4bb5",
+      "config_sha256": "318ab25111d444f2720b628a2c4d7e04b8a92cbce90a80b18228e10d2180cb5b",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/content96/cost_inspect001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.151233",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "experiments/hcsn_v13_followup_20261102/review/content96/inspect_inputs.py"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 22126592,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62031261723707,
+      "monotonic_end_ns": 62031410034607,
+      "wall_seconds": 0.1483109,
+      "receipt_sha256": "0e18e38c9937220bb34d8f3f9137128b03840afacb5c47959b4a13ae6684d8bb",
+      "supervision_sha256": "16fb3301e319cbe678375f306261447fbe3740485c69ecd31a8037e6274861a9",
+      "config_sha256": "1a7a1ca6271deba47bb298688656a4ed76642ca65d204737fb55890693caa993",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/content96/cost_summary001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.928119",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "experiments/hcsn_v13_followup_20261102/review/content96/summarize_review.py"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 13107200,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62177966809288,
+      "monotonic_end_ns": 62178867098888,
+      "wall_seconds": 0.9002896,
+      "receipt_sha256": "fedcdf120edb572bf43bd937980f95db2d9bb4d3d3c7e2d4f387a9a542d8d807",
+      "supervision_sha256": "f3def9f9348e1671a530a4b1e3be4a1efe58d1fd9c7ae6bb0a953f3674a4ecdd",
+      "config_sha256": "994cb350807fa72c29398c715cd195c3d7eecc9a3cdb5b0fb4b67a975345462d",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/data_interface001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "4.872427",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_train_interface",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/data_interface001"
+      ],
+      "task_success": false,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 345763840,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60051913247109,
+      "monotonic_end_ns": 60056763220375,
+      "wall_seconds": 4.849973266,
+      "receipt_sha256": "bb8928d90bbf97123fb0947addf1fc361554644d36f79acf349d675e1fe4e0d6",
+      "supervision_sha256": "0dd078118f6cc7e99990418011a911ae3358f90a4c95715ca76baac4633570a4",
+      "config_sha256": "b43b3e3f783e4dc2f233ec405876b19552c24a823d749394a6dd6f563ce7cbd2",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/data_interface002/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "4.671375",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_train_interface",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/data_interface002"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 346554368,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60076155412395,
+      "monotonic_end_ns": 60080971997597,
+      "wall_seconds": 4.816585202,
+      "receipt_sha256": "2a3d740f3fd6ff811c5881846ba39ccbcae4b2b653bbe2310a645511f514cc23",
+      "supervision_sha256": "a35e57724202f982ad1924bf791b6316ae7d8027e87fbcbda8c7d66bd4031f30",
+      "config_sha256": "50d717399ca582e1f4449702b79de6ee11727b759f493cb4a79a7c3102dfd2a6",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/dynamic_publication001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.298493",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "experiments/hcsn_v13_followup_20261102/review/audit_dynamic_publication.py",
+        "--root",
+        "/workspace/scratch/3511158fb83b/hepta",
+        "--base",
+        "experiments/hcsn_v13_followup_20261102",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/DYNAMIC_PUBLICATION_AUDIT001.json"
+      ],
+      "task_success": false,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 95531008,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62601580740193,
+      "monotonic_end_ns": 62601866719055,
+      "wall_seconds": 0.285978862,
+      "receipt_sha256": "0edb7c5cae7b9c79f94a5e0585e71676f041538c7a1a80cb449dafaf0d900e3e",
+      "supervision_sha256": "1995a3c5716cd6eb3d54d0f325b0ee9381032251f11287e1f0281211cf080cd0",
+      "config_sha256": "60f06cd8e7f7dd7e3e19c9b55b41216bdb6d36b90b53de31c395795823861ff6",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/dynamic_publication002/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.284660",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "experiments/hcsn_v13_followup_20261102/review/audit_dynamic_publication.py",
+        "--root",
+        "/workspace/scratch/3511158fb83b/hepta",
+        "--base",
+        "experiments/hcsn_v13_followup_20261102",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/DYNAMIC_PUBLICATION_AUDIT002.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 96690176,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62617134830315,
+      "monotonic_end_ns": 62617414621049,
+      "wall_seconds": 0.279790734,
+      "receipt_sha256": "1e1e9f013cb2c937831c46f3f53160e1125d83fa4cf426ae78a3ac2ce0e6aee7",
+      "supervision_sha256": "6f0e37ef101bcef16381a4c4aaf5f985553045630d34336802073b2f59d16b30",
+      "config_sha256": "63fab18e3aee1bd700bfec9c9665fe15766f9487d1733f462c9e4169b79db79f",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/dynamic_records001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "2.374828",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "experiments/hcsn_v13_followup_20261102/review/audit_dynamic_records.py",
+        "--root",
+        "/workspace/scratch/3511158fb83b/hepta",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/DYNAMIC_RECORDS_AUDIT001.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 21487616,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62539127410936,
+      "monotonic_end_ns": 62541428136190,
+      "wall_seconds": 2.300725254,
+      "receipt_sha256": "9d30de69070565085fdc63893f358d33f2cec508bf12c90956310cdacce284be",
+      "supervision_sha256": "8e656e150ccf4d151e65091076495ca45fe0a479ea7b5244ffceeb8dd5e2cf3e",
+      "config_sha256": "72ae404b6f793c482b1dc3fbe23d8547a367961ea4ee52e343607c453d54f940",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/emotion_ci001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.899686",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_emotion_ci",
+        "--artifact",
+        "experiments/hcsn_v13_followup_20261102/emotion_encoder/results/ci_run41379044650_attempt1/artifact",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/emotion_ci001",
+        "--expected-head",
+        "2a374bd68342a10e62db2280b27b2802dca08832"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 98062336,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62816911698370,
+      "monotonic_end_ns": 62817788443162,
+      "wall_seconds": 0.876744792,
+      "receipt_sha256": "8fbdcfbe3a7621765d0a4b303aa7f995cd6864f53e9fcb70f290a0da8b89d058",
+      "supervision_sha256": "a73a8863f131f805e6fe0fb43bcbb02d059658db3c93850bd9061a5059eddcf1",
+      "config_sha256": "acbcece6c910698daefa76f3e04c50189180b4488d2b612b4de26955b626a54e",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/emotion_oof001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.990825",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_emotion_oof",
+        "--frontend",
+        "experiments/hcsn_v13_followup_20261102/frontend",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/frontend/readout001",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/EMOTION_OOF_AUDIT.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 65228800,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60378825797234,
+      "monotonic_end_ns": 60379803660003,
+      "wall_seconds": 0.977862769,
+      "receipt_sha256": "c21cdb72a40ce209217d38834ebdf0b46329508a88d9015b974b302a31733b9d",
+      "supervision_sha256": "0d04822efc5697c6fecdf596edf43814eae462ee4574a98d119d403cad890068",
+      "config_sha256": "e8bc4af31e80b3e5dbb683b38751d84c906c71e85153e76ffe06f038ca4618e9",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/eval_entry001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "1.964923",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_eval_entry",
+        "--models",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/eval_entry001"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 250286080,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60821969593778,
+      "monotonic_end_ns": 60823913761088,
+      "wall_seconds": 1.94416731,
+      "receipt_sha256": "32f63f9c9e83cca6538fb50cdb3de1179c07d80bc1a658abd51de045c1eca5bb",
+      "supervision_sha256": "03adb2d9e79d03e3588eda37577580fe3c580908c322195473891ed1b50d489c",
+      "config_sha256": "1d5dbc6ec7de07df061d3dedb693e7b36d52a49989aaca68cea63528dcd1004d",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/fit_receipts001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.140167",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_fit_receipts",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+        "--receipts",
+        "experiments/hcsn_v13_followup_20261102/joint_core/receipts",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/FIT_RECEIPTS_AUDIT.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 13238272,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60567449676984,
+      "monotonic_end_ns": 60567588140180,
+      "wall_seconds": 0.138463196,
+      "receipt_sha256": "1641d42dab050722340b834b61e2c556ff16f6e82113552ee10b61dd8c80c938",
+      "supervision_sha256": "57db361c797ca6f2388c01c9ab6ae9b0678675e07bea587c4df4a8689979d95c",
+      "config_sha256": "30d882cd06ac3e4188ce52bba046ad7bd7dff4635de1b44a8dd97eba091f9da2",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/joint_events001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.170997",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_joint_events",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/JOINT_EVENT_RECORD_AUDIT.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 13107200,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60655573713387,
+      "monotonic_end_ns": 60655745417387,
+      "wall_seconds": 0.171704,
+      "receipt_sha256": "e8d3e6ae56d11ee6a933f500304b97306be56f0c78e00531a08630d19c2dedc0",
+      "supervision_sha256": "031fd570587b23279ed4a4c3ecc04bd66dce978088ec7eae4bbf5c0a30b238ee",
+      "config_sha256": "478f062b95065fd368d9bff5a1f6d09930a5643b0bafd9350b0c2fd880a12b6b",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/joint_training001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "1.981259",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_joint_training",
+        "--root",
+        ".",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/joint_core/results/run001",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/JOINT_TRAINING_AUDIT.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 254726144,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60494944086040,
+      "monotonic_end_ns": 60496911562071,
+      "wall_seconds": 1.967476031,
+      "receipt_sha256": "cc9cae8891b10e336118625fc02487ae09837c0fe49bf5f1baadbd3c6bc9122c",
+      "supervision_sha256": "7178ca34ac9c3178124d5e167f28db7514580583952a690204c9151451166d0f",
+      "config_sha256": "bd1e4f4c9d45b1bff8dee1237f5a58358f75df35dadde3599df61079a7d0d082",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/model001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "3.450512",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_model_contract",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/model001"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 334467072,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 60016438540129,
+      "monotonic_end_ns": 60019924055262,
+      "wall_seconds": 3.485515133,
+      "receipt_sha256": "acfbbd0578ffe35fd288a79fedb0a7c5e2232287eb70aee86b4c973a9b4c12b3",
+      "supervision_sha256": "3fa379ea9accb63895f8d8ed419df7d5c3399b99e991ebabd357567be0dc383c",
+      "config_sha256": "4ce6b8e710b7639a10c260766c0571b59024d564169337f4adbf3e852130e7a3",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/port001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "2.255448",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_torch_port",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/port001"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 255901696,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 59853419177697,
+      "monotonic_end_ns": 59855621569598,
+      "wall_seconds": 2.202391901,
+      "receipt_sha256": "69d87d42631183677657835394d171a64e11611601ee2d392fffb627cd871535",
+      "supervision_sha256": "c4bd5c2e287c83ee151ddf93b1dc4fceb11bf84b42736f7311505e37a8fc5ba6",
+      "config_sha256": "440dbbff67ea9d111ad569c161991c4cd5cd508bfd56c30c23f935d82174b07f",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/reference001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.583942",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_hx_reference",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/reference001"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 62709760,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 59719806461549,
+      "monotonic_end_ns": 59720379375403,
+      "wall_seconds": 0.572913854,
+      "receipt_sha256": "33689212e45752124611023709fc9dd8ed50fefe735e09d670ba350dcccf0c80",
+      "supervision_sha256": "6c4af00ae9f9f45829189b4cc425ba65db947b5ab1a4c5d01affadae5319e87d",
+      "config_sha256": "168a89532d65387e011b5d834cbfca73a70744f0a1ce357b2ec3b2b5f0e937a2",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/value_candidates001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "19.931917",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_value_candidates",
+        "--root",
+        ".",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/VALUE_CANDIDATES_AUDIT.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 338919424,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62109714909125,
+      "monotonic_end_ns": 62129428125544,
+      "wall_seconds": 19.713216419,
+      "receipt_sha256": "c8de1b8c0fd143afaad7fb5007435662c98a2a1ae6267fa8efe9eb23a59e2439",
+      "supervision_sha256": "4777c0c05ba0fce460d2f639c17e0e8b6d53baafd06d2ef62dd027f41bbf8fdb",
+      "config_sha256": "ebc41d70194cde17cdcd224ddfcdce1de6e2871be8252a1e440c9a8964b76c5b",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/review/receipts/value_receipts001/RECEIPT.json",
+      "host_scope": "local-v13-executor",
+      "cpu_seconds": "0.114243",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.hcsn_v13_followup_20261102.review.audit_value_receipts",
+        "--root",
+        ".",
+        "--run",
+        "experiments/hcsn_v13_followup_20261102/control/results/run001",
+        "--receipts",
+        "experiments/hcsn_v13_followup_20261102/control/receipts",
+        "--out",
+        "experiments/hcsn_v13_followup_20261102/review/VALUE_RECEIPTS_AUDIT.json"
+      ],
+      "task_success": true,
+      "complete_task_cpu_coverage": true,
+      "diagnostic_largest_single_process_highwater_bytes": 13238272,
+      "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+      "monotonic_begin_ns": 62259215488729,
+      "monotonic_end_ns": 62259328804529,
+      "wall_seconds": 0.1133158,
+      "receipt_sha256": "6946cf4460d2754ea5f363a1f7ec8cc567633113e18787bc6e73101b8e0b586e",
+      "supervision_sha256": "8f1d0ad3feb0f776f6275c76d631b28429d206f8a73957fb44eec8d7e8d75d4c",
+      "config_sha256": "384730c488e8534efa1650c389074a09560cd17050b5e58a9c6db16214bff8e9",
+      "meter_source_sha256_at_start": {
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+        "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+      },
+      "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+      "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+    }
+  ],
+  "batches": [
+    {
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "launcher": "experiments/hcsn_v13_followup_20261102/control/orchestration/fit_batch.py",
+      "child_destination": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001",
+      "children": 36,
+      "child_cpu_seconds_already_in_parent": "185.700554",
+      "parent_cpu_seconds": "188.711332",
+      "parent_minus_children_cpu_seconds": "3.010778",
+      "all_command_roster_and_time_containment_checks_passed": true
+    },
+    {
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "launcher": "experiments.hcsn_v13_followup_20261102.joint_core.operations.run_roster",
+      "child_destination": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001",
+      "children": 36,
+      "child_cpu_seconds_already_in_parent": "180.414056",
+      "parent_cpu_seconds": "186.807716",
+      "parent_minus_children_cpu_seconds": "6.393660",
+      "all_command_roster_and_time_containment_checks_passed": true
+    }
+  ],
+  "nested_receipts": [
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-gru-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.037707"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-gru-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "3.790978"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-gru-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.213083"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-history-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.166359"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-history-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.096016"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-history-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.245341"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-hx_full-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.938125"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-hx_full-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.857639"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-hx_full-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.479646"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-hx_margin-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.390112"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-hx_margin-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.577070"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-hx_margin-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.075912"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-ordinary_gate-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.308323"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-ordinary_gate-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.462979"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-ordinary_gate-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.131312"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-ssm-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.598399"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-ssm-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.585936"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/async_av-ssm-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.519391"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-gru-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.462125"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-gru-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.343186"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-gru-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.364944"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-history-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.082328"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-history-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.223227"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-history-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.450923"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-hx_full-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "7.773532"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-hx_full-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "7.319268"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-hx_full-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "7.071995"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-hx_margin-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.411345"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-hx_margin-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.415310"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-hx_margin-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.577012"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-ordinary_gate-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.582358"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-ordinary_gate-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.261038"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-ordinary_gate-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "6.074359"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-ssm-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.923413"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-ssm-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.888715"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/control/receipts/model-fits001/av_binding-ssm-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/control/receipts/batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.001148"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-gru-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.245346"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-gru-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.459071"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-gru-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.833936"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-history-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "3.817159"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-history-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "3.676204"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-history-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.058829"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-hx_full-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "7.428892"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-hx_full-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "7.032026"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-hx_full-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "7.070873"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-hx_margin-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.930854"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-hx_margin-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.352581"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-hx_margin-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.297706"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-ordinary_gate-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.630347"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-ordinary_gate-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.986417"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-ordinary_gate-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.787831"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-ssm-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.416504"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-ssm-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.180967"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/async_av-ssm-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.904860"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-gru-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.992222"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-gru-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.363428"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-gru-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.325726"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-history-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.263737"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-history-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.109150"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-history-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "3.707313"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-hx_full-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "7.960541"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-hx_full-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "7.302017"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-hx_full-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "7.520916"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-hx_margin-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.565966"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-hx_margin-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.636178"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-hx_margin-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.949260"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-ordinary_gate-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "5.358580"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-ordinary_gate-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.922167"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-ordinary_gate-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.876909"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-ssm-13301/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.569715"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-ssm-13303/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.594564"
+    },
+    {
+      "child": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/per_fit001/av_binding-ssm-13307/RECEIPT.json",
+      "parent": "experiments/hcsn_v13_followup_20261102/joint_core/receipts/training_batch001/RECEIPT.json",
+      "cpu_seconds_already_in_parent": "4.285264"
+    }
+  ],
+  "remote_ci": {
+    "run_id": 41379044650,
+    "observed_state": "success",
+    "materialized_receipts": [
+      {
+        "receipt": "experiments/hcsn_v13_followup_20261102/emotion_encoder/results/ci_run41379044650_attempt1/artifact/acquire_cost001/RECEIPT.json",
+        "host_scope": "github-run-41379044650",
+        "cpu_seconds": "1.696364",
+        "command": [
+          "/home/runner/work/_temp/hcsn-emotion-python/bin/python",
+          "-m",
+          "experiments.hcsn_v13_followup_20261102.emotion_encoder.acquire",
+          "--model-dir",
+          "/home/runner/work/_temp/hcsn-emotion-model",
+          "--evidence",
+          "evidence/acquisition"
+        ],
+        "task_success": true,
+        "complete_task_cpu_coverage": true,
+        "diagnostic_largest_single_process_highwater_bytes": 28999680,
+        "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+        "monotonic_begin_ns": 112715297116,
+        "monotonic_end_ns": 122686020124,
+        "wall_seconds": 9.970723008,
+        "receipt_sha256": "84dbdddd96843dea5be3780be3925b0336633c09c9a3d459a1dba61dbdc47b7b",
+        "supervision_sha256": "2ca26e9c1d7476defffe44ac282ec238bb401031e4eeec2f4d9cd4028a487219",
+        "config_sha256": "4b77976a3b0e2799cd4ffb40d55daa3ed0db82421391bd3548efb3443f7998d9",
+        "meter_source_sha256_at_start": {
+          "/home/runner/work/hepta-private-ci/hepta-private-ci/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+          "/home/runner/work/hepta-private-ci/hepta-private-ci/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+          "/home/runner/work/hepta-private-ci/hepta-private-ci/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+        },
+        "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+        "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+      },
+      {
+        "receipt": "experiments/hcsn_v13_followup_20261102/emotion_encoder/results/ci_run41379044650_attempt1/artifact/model_cost001/RECEIPT.json",
+        "host_scope": "github-run-41379044650",
+        "cpu_seconds": "78.479032",
+        "command": [
+          "/home/runner/work/_temp/hcsn-emotion-python/bin/python",
+          "-m",
+          "experiments.hcsn_v13_followup_20261102.emotion_encoder.campaign",
+          "run",
+          "--out",
+          "evidence/model",
+          "--model-dir",
+          "/home/runner/work/_temp/hcsn-emotion-model",
+          "--waveforms",
+          "/home/runner/work/_temp/hcsn-emotion-WAVEFORMS.npz",
+          "--source-identity",
+          "evidence/identity/IDENTITY.json"
+        ],
+        "task_success": true,
+        "complete_task_cpu_coverage": true,
+        "diagnostic_largest_single_process_highwater_bytes": 1785688064,
+        "diagnostic_memory_scope": "Largest individual process highwater, not simultaneous complete process-family RSS.",
+        "monotonic_begin_ns": 122747879244,
+        "monotonic_end_ns": 200460285380,
+        "wall_seconds": 77.712406136,
+        "receipt_sha256": "f9b8fef74f0a321be838fa62464562666bbeb8194007aa95a4b9cdd3a0322b7b",
+        "supervision_sha256": "7a2a818dc17e51ce76e36f4c14099c6fd1246c22feed9ee386e11ff398803eba",
+        "config_sha256": "a9fe3050ab0f87958cb3ef1bebeadf0347e3892728e3761b2ce1f8e542177060",
+        "meter_source_sha256_at_start": {
+          "/home/runner/work/hepta-private-ci/hepta-private-ci/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+          "/home/runner/work/hepta-private-ci/hepta-private-ci/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+          "/home/runner/work/hepta-private-ci/hepta-private-ci/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+        },
+        "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+        "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time."
+      }
+    ],
+    "recorded_disjoint_complete_worker_cpu_seconds": "80.175396",
+    "incomplete_worker_cpu_lower_bound_seconds": "0",
+    "complete_workflow_cpu_seconds": null,
+    "setup_and_unwrapped_identity_cpu_seconds": null,
+    "scope": "Remote monotonic clocks are not compared with local clocks. No runner/receipt implies unknown CPU, never zero."
+  },
+  "separate_existing_preparation": {
+    "receipt": "experiments/hcsn_v13_followup_20261102/frontend/reused_train001/extract_train001.receipt.json",
+    "sha256": "79ff7fcb0a528159097a9d2004555338aa5f0fe5d5dd555b79d818047c8a11fe",
+    "known_direct_child_cpu_seconds": 107.396369,
+    "included_in_new_local_total": false,
+    "reason": "Existing adjacent ASR feature preparation, retained for attribution; not a new execution and no allocation across projects inferred.",
+    "reported_peak_rss_bytes": 1051693056,
+    "rss_scope": "wait4 peak RSS, not aggregate simultaneous process-tree memory"
+  },
+  "separate_partial_exploration_cpu_seconds_lower_bound": 0.379491,
+  "economics_review_and_ledger_generation_complete_cpu_seconds": null,
+  "complete_project_cpu_seconds": null,
+  "complete_historical_preparation_cpu_seconds": null,
+  "complete_process_family_rss_peak_bytes": null,
+  "attributable_device_energy_joules": null,
+  "complete_H20_economics": null,
+  "complete_H10000_economics": null,
+  "limits": [
+    "Complete refers to the declared waited-worker boundary, not every project operation. Outer launcher bootstrap/CONFIG/final receipt serialization are outside it.",
+    "Only command-derived descendants are removed. Independent workers overlapping or even temporally contained in a batch remain additive CPU scopes.",
+    "Do not sum worker wall durations into elapsed time. Concurrent fits intentionally overlap.",
+    "The receipt source-unchanged map seals the three meter files; scientific entry-source/candidate identity is separately checked by its own manifests.",
+    "RUSAGE largest-single-process highwater is not simultaneous family RSS. The V12 singleton qualification applies to its old 16 NumPy models, not V13 Torch/HX or the speech encoders.",
+    "Development, orchestration, filesystem/network/API work, pretraining and incomplete historical preparation are not assigned zero cost. Physical energy is unmeasured."
+  ]
+}

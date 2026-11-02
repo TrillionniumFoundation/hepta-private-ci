@@ -1,0 +1,14 @@
+fatal: path 'recovered/v3/experiments/hcsn_free_boundary_v1/datasets.py' exists on disk, but not in 'f77ee92980f50328d48802f2ef67a11e88a195a8'
+Traceback (most recent call last):
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/review/content96/audit_content96.py", line 271, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/review/content96/audit_content96.py", line 93, in main
+    original = subprocess.check_output(["git", "show", source_mapping["local_commit"] + ":" + path])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'show', 'f77ee92980f50328d48802f2ef67a11e88a195a8:recovered/v3/experiments/hcsn_free_boundary_v1/datasets.py']' returned non-zero exit status 128.

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.review.audit_emotion_ci",
+    "--artifact",
+    "experiments/hcsn_v13_followup_20261102/emotion_encoder/results/ci_run41379044650_attempt1/artifact",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/review/emotion_ci001",
+    "--expected-head",
+    "2a374bd68342a10e62db2280b27b2802dca08832"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/review/receipts/emotion_ci001",
+  "timeout": 180.0,
+  "sample_interval": 0.05
+}

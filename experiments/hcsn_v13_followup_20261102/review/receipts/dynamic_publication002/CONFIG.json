@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "experiments/hcsn_v13_followup_20261102/review/audit_dynamic_publication.py",
+    "--root",
+    "/workspace/scratch/3511158fb83b/hepta",
+    "--base",
+    "experiments/hcsn_v13_followup_20261102",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/review/DYNAMIC_PUBLICATION_AUDIT002.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/review/receipts/dynamic_publication002",
+  "timeout": 60.0,
+  "sample_interval": 0.05
+}

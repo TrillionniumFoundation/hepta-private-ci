@@ -1,0 +1,144 @@
+{
+  "schema": "hcsn-v13-emotion-official-acquisition.v1",
+  "model": "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim",
+  "revision": "6eba34a2485ea31cb03600241787c3a5edab8626",
+  "status": "PASS",
+  "attempts": [
+    {
+      "file": "README.md",
+      "official_url": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/resolve/6eba34a2485ea31cb03600241787c3a5edab8626/README.md",
+      "redirects": [
+        {
+          "status": 307,
+          "from": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/resolve/6eba34a2485ea31cb03600241787c3a5edab8626/README.md",
+          "to": "https://huggingface.co/api/resolve-cache/models/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/6eba34a2485ea31cb03600241787c3a5edab8626/README.md"
+        }
+      ],
+      "attempts": 1,
+      "bytes": 3913,
+      "http_status": 200,
+      "sha256": "5fe5eb9afb24ab938fb3facf0eebe64a0f8a8628eb93fd772ba5c7120a45365d",
+      "status": "PASS",
+      "final_url": "https://huggingface.co/api/resolve-cache/models/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/6eba34a2485ea31cb03600241787c3a5edab8626/README.md",
+      "wall_seconds": 0.14955510100000424
+    },
+    {
+      "file": "config.json",
+      "official_url": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/resolve/6eba34a2485ea31cb03600241787c3a5edab8626/config.json",
+      "redirects": [
+        {
+          "status": 307,
+          "from": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/resolve/6eba34a2485ea31cb03600241787c3a5edab8626/config.json",
+          "to": "https://huggingface.co/api/resolve-cache/models/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/6eba34a2485ea31cb03600241787c3a5edab8626/config.json"
+        }
+      ],
+      "attempts": 1,
+      "bytes": 2344,
+      "http_status": 200,
+      "sha256": "c0962c3d1f065972bbebbba0bbffb8016ef4e9aae4a9b07e5fec22f770d2cddb",
+      "status": "PASS",
+      "final_url": "https://huggingface.co/api/resolve-cache/models/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/6eba34a2485ea31cb03600241787c3a5edab8626/config.json",
+      "wall_seconds": 0.13926650300000176
+    },
+    {
+      "file": "preprocessor_config.json",
+      "official_url": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/resolve/6eba34a2485ea31cb03600241787c3a5edab8626/preprocessor_config.json",
+      "redirects": [
+        {
+          "status": 307,
+          "from": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/resolve/6eba34a2485ea31cb03600241787c3a5edab8626/preprocessor_config.json",
+          "to": "https://huggingface.co/api/resolve-cache/models/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/6eba34a2485ea31cb03600241787c3a5edab8626/preprocessor_config.json"
+        }
+      ],
+      "attempts": 1,
+      "bytes": 214,
+      "http_status": 200,
+      "sha256": "60ca5a31e13f69ee2fbf147504c8676db5f6398fd7a6b12294341dff838edfcf",
+      "status": "PASS",
+      "final_url": "https://huggingface.co/api/resolve-cache/models/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/6eba34a2485ea31cb03600241787c3a5edab8626/preprocessor_config.json",
+      "wall_seconds": 0.13221963200000175
+    },
+    {
+      "file": "model.safetensors",
+      "official_url": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/resolve/6eba34a2485ea31cb03600241787c3a5edab8626/model.safetensors",
+      "redirects": [
+        {
+          "status": 302,
+          "from": "https://huggingface.co/audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim/resolve/6eba34a2485ea31cb03600241787c3a5edab8626/model.safetensors",
+          "to": "https://us.aws.cdn.hf.co/xet-bridge-us/624d8a22b229f3d071c40b94/1ce0d235ddc7862eb95078903664dd92aedc4871f8d7d46237018ade1614ee6e"
+        }
+      ],
+      "attempts": 1,
+      "bytes": 661375508,
+      "http_status": 200,
+      "sha256": "efa5ac1a13b2d2f42182738e44794b1eb4c0cdd221a8b4ae11304c3a5f5fae95",
+      "status": "PASS",
+      "final_url": "https://us.aws.cdn.hf.co/xet-bridge-us/624d8a22b229f3d071c40b94/1ce0d235ddc7862eb95078903664dd92aedc4871f8d7d46237018ade1614ee6e",
+      "wall_seconds": 9.416401265999994
+    }
+  ],
+  "retry_count": 0,
+  "authentication_used": false,
+  "signed_urls_persisted": false,
+  "contracts": {
+    "config_contract": {
+      "model_type": "wav2vec2",
+      "hidden_size": 1024,
+      "num_hidden_layers": 12,
+      "num_attention_heads": 16,
+      "intermediate_size": 4096,
+      "conv_bias": true,
+      "feat_extract_norm": "layer",
+      "do_stable_layer_norm": true,
+      "pooling_mode": "mean",
+      "problem_type": "regression",
+      "conv_kernel": [
+        10,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2
+      ],
+      "conv_stride": [
+        5,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "conv_dim": [
+        512,
+        512,
+        512,
+        512,
+        512,
+        512,
+        512
+      ],
+      "id2label": {
+        "0": "arousal",
+        "1": "dominance",
+        "2": "valence"
+      }
+    },
+    "preprocessor_contract": {
+      "feature_extractor_type": "Wav2Vec2FeatureExtractor",
+      "sampling_rate": 16000,
+      "feature_size": 1,
+      "do_normalize": true,
+      "return_attention_mask": true,
+      "padding_side": "right",
+      "padding_value": 0.0
+    },
+    "license": "CC-BY-NC-SA-4.0",
+    "license_declaration_file": "README.md",
+    "license_declaration_sha256": "5fe5eb9afb24ab938fb3facf0eebe64a0f8a8628eb93fd772ba5c7120a45365d",
+    "legal_terms": "https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode",
+    "research_only": true,
+    "commercial_or_production_license_claimed": false
+  }
+}

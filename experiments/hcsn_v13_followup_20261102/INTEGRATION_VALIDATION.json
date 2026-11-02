@@ -1,0 +1,29 @@
+{
+  "schema": "hcsn-v13-final-integration-validation.v1",
+  "all_scientific_checks_finished_before_final_formatter": true,
+  "final_formatter": {
+    "argv": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "codex-rs",
+    "exit_code": 0,
+    "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+    "scope": "Changed-file formatter; Python research and raw evidence are not formatter-owned."
+  },
+  "tests_repeated_after_final_formatter": false,
+  "raw_whitespace_preserved": [
+    "Upstream CREMA-D license",
+    "Original GitHub Actions job log",
+    "Exact downloaded source snapshots and failed-source snapshots"
+  ],
+  "new_model_source_unchanged_during_formal_runs": true,
+  "original_ci_zip_published_by_exact_parts": true,
+  "original_waveform_npz_published_by_exact_parts": true,
+  "actual_emotion_ci_success_run": 41379044650,
+  "old_queued_observations_may_be_cached_not_extra_attempts": true,
+  "actual_ci_runs": 1,
+  "cancelled_ci_runs": 0,
+  "all_blockers_closed": false,
+  "production_activation": false
+}

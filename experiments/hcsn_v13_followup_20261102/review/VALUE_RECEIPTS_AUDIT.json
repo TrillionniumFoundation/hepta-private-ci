@@ -1,0 +1,30 @@
+{
+  "checks": 198,
+  "all_checks_passed": true,
+  "failed_examples": [],
+  "stages": {
+    "prepare001": {
+      "task_success": false,
+      "cpu_seconds": 3.820153
+    },
+    "prepare002": {
+      "task_success": true,
+      "cpu_seconds": 3.7961910000000003
+    },
+    "batch001": {
+      "task_success": true,
+      "cpu_seconds": 188.711332
+    },
+    "freeze001": {
+      "task_success": true,
+      "cpu_seconds": 3.421173
+    },
+    "audit_candidates001": {
+      "task_success": true,
+      "cpu_seconds": 6.6105410000000004
+    }
+  },
+  "disjoint_stage_cpu_seconds": 206.35939000000002,
+  "nested_fit_cpu_seconds_already_included": 185.70055399999998,
+  "scope": "Actual command/exit/CPU and retained pre-VAL source-publication failure; excludes separate independent reviews and TEST execution"
+}

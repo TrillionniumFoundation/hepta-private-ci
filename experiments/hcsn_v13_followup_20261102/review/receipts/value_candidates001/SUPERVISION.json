@@ -1,0 +1,570 @@
+{
+  "schema": "hcsn-v8-task-supervision.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.review.audit_value_candidates",
+    "--root",
+    ".",
+    "--run",
+    "experiments/hcsn_v13_followup_20261102/control/results/run001",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/review/VALUE_CANDIDATES_AUDIT.json"
+  ],
+  "boundary_begin_monotonic_ns": 62109754439435,
+  "boundary_end_monotonic_ns": 62129417917053,
+  "command_to_collection_seconds": 19.663477618,
+  "first_stdout_receive_monotonic_ns": 62109787540617,
+  "root_exit_code": 0,
+  "timed_out": false,
+  "all_waitable_children_collected": true,
+  "subreaper": {
+    "enabled": true,
+    "scope": "Dedicated supervisor and its ordinary spawned descendants"
+  },
+  "disjoint_wait4_subtrees": [
+    {
+      "pid_in_supervisor_namespace": 6,
+      "is_direct_worker": true,
+      "exit_code": 0,
+      "wait4": {
+        "cpu_seconds": 19.629393,
+        "user_cpu_seconds": 19.361808,
+        "system_cpu_seconds": 0.26758499999999996,
+        "largest_single_process_highwater_bytes": 338919424
+      }
+    }
+  ],
+  "observed_task_subtree_cpu_seconds": 19.629393,
+  "complete_task_cpu_coverage": true,
+  "task_success": true,
+  "episode_outputs": [],
+  "protocol_errors": [],
+  "owned_identity_error": null,
+  "memory": {
+    "family_sampled_peak_rss_sum_bytes": null,
+    "all_family_samples_available": false,
+    "successful_family_samples": 0,
+    "family_errors": [
+      "Direct live child has not completed identity handshake",
+      "Cannot read required owned-process metadata: /proc/884670/task/884670/children: [Errno 2] No such file or directory: '/proc/884670/task/884670/children'",
+      "Cannot read required owned-process metadata: /proc/884670/task/884670/children: [Errno 2] No such file or directory: '/proc/884670/task/884670/children'"
+    ],
+    "registered_subset_peak_rss_sum_bytes": 352710656,
+    "successful_registered_samples": 98,
+    "retained_raw_sample_limit_per_kind": 2048,
+    "raw_samples_truncated": false,
+    "registered_subset_samples": [
+      {
+        "at_ns": 62109760941061,
+        "rss_bytes": 13258752,
+        "known_processes": 1
+      },
+      {
+        "at_ns": 62109965299587,
+        "rss_bytes": 52326400,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62110168988863,
+        "rss_bytes": 140750848,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62110374087694,
+        "rss_bytes": 196255744,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62110578767029,
+        "rss_bytes": 219303936,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62110780381471,
+        "rss_bytes": 227966976,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62110985085188,
+        "rss_bytes": 244088832,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62111185042084,
+        "rss_bytes": 261595136,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62111385665241,
+        "rss_bytes": 276631552,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62111586137589,
+        "rss_bytes": 296783872,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62111786744246,
+        "rss_bytes": 296792064,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62111987182068,
+        "rss_bytes": 300052480,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62112192115158,
+        "rss_bytes": 300056576,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62112398039545,
+        "rss_bytes": 307470336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62112597703903,
+        "rss_bytes": 307531776,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62112798061151,
+        "rss_bytes": 307535872,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62113003304274,
+        "rss_bytes": 307814400,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62113203933394,
+        "rss_bytes": 312328192,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62113404433162,
+        "rss_bytes": 312328192,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62113608363094,
+        "rss_bytes": 306085888,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62113812984151,
+        "rss_bytes": 308285440,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62114014045305,
+        "rss_bytes": 308285440,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62114215220382,
+        "rss_bytes": 308318208,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62114417959136,
+        "rss_bytes": 308903936,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62114623033139,
+        "rss_bytes": 308908032,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62114819885894,
+        "rss_bytes": 308908032,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62115024067232,
+        "rss_bytes": 308916224,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62115224630824,
+        "rss_bytes": 308916224,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62115429439926,
+        "rss_bytes": 308920320,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62115634187471,
+        "rss_bytes": 308932608,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62115839201375,
+        "rss_bytes": 308936704,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62116044097460,
+        "rss_bytes": 308936704,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62116248900728,
+        "rss_bytes": 304594944,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62116453491762,
+        "rss_bytes": 304599040,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62116654109464,
+        "rss_bytes": 306774016,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62116856801174,
+        "rss_bytes": 306782208,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62117057685636,
+        "rss_bytes": 311132160,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62117258489895,
+        "rss_bytes": 311136256,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62117458545696,
+        "rss_bytes": 311136256,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62117658493828,
+        "rss_bytes": 309280768,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62117858753806,
+        "rss_bytes": 309514240,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62118060156871,
+        "rss_bytes": 309678080,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62118260135551,
+        "rss_bytes": 334688256,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62118465071321,
+        "rss_bytes": 334999552,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62118670077389,
+        "rss_bytes": 342720512,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62118874761616,
+        "rss_bytes": 341692416,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62119074416244,
+        "rss_bytes": 341692416,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62119274693483,
+        "rss_bytes": 341692416,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62119475227602,
+        "rss_bytes": 341946368,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62119676624828,
+        "rss_bytes": 341954560,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62119877482526,
+        "rss_bytes": 341958656,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62120077779624,
+        "rss_bytes": 342323200,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62120282853708,
+        "rss_bytes": 342781952,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62120488427375,
+        "rss_bytes": 342781952,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62120688602138,
+        "rss_bytes": 344006656,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62120893538017,
+        "rss_bytes": 346345472,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62121098387836,
+        "rss_bytes": 346345472,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62121299087252,
+        "rss_bytes": 347136000,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62121499646702,
+        "rss_bytes": 347136000,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62121700157018,
+        "rss_bytes": 347140096,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62121900360761,
+        "rss_bytes": 346107904,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62122105572692,
+        "rss_bytes": 346370048,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62122305596945,
+        "rss_bytes": 346370048,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62122510387863,
+        "rss_bytes": 347770880,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62122710534172,
+        "rss_bytes": 347770880,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62122911739712,
+        "rss_bytes": 347770880,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62123111523414,
+        "rss_bytes": 352509952,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62123311636413,
+        "rss_bytes": 352514048,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62123512112149,
+        "rss_bytes": 352522240,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62123713599471,
+        "rss_bytes": 352526336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62123913727322,
+        "rss_bytes": 352526336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62124114852483,
+        "rss_bytes": 352526336,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62124315200905,
+        "rss_bytes": 352534528,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62124515496821,
+        "rss_bytes": 352534528,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62124717715313,
+        "rss_bytes": 352534528,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62124922926122,
+        "rss_bytes": 352534528,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62125123434076,
+        "rss_bytes": 352534528,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62125323872847,
+        "rss_bytes": 352538624,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62125525199901,
+        "rss_bytes": 352538624,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62125726869733,
+        "rss_bytes": 352538624,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62125927840736,
+        "rss_bytes": 352538624,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62126131976152,
+        "rss_bytes": 352538624,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62126332233791,
+        "rss_bytes": 352546816,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62126537368953,
+        "rss_bytes": 352546816,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62126742140913,
+        "rss_bytes": 352546816,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62126946856811,
+        "rss_bytes": 352546816,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62127152225674,
+        "rss_bytes": 352673792,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62127352419148,
+        "rss_bytes": 352677888,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62127552228292,
+        "rss_bytes": 352681984,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62127752358878,
+        "rss_bytes": 352681984,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62127953433610,
+        "rss_bytes": 352681984,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62128153141211,
+        "rss_bytes": 352681984,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62128356730522,
+        "rss_bytes": 352681984,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62128557350457,
+        "rss_bytes": 352686080,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62128757696836,
+        "rss_bytes": 352686080,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62128961676930,
+        "rss_bytes": 352686080,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62129162246906,
+        "rss_bytes": 352710656,
+        "known_processes": 2
+      },
+      {
+        "at_ns": 62129366932815,
+        "rss_bytes": 329629696,
+        "known_processes": 2
+      }
+    ],
+    "family_samples": [],
+    "continuous_peak_proved": false,
+    "physical_unique_memory": false,
+    "scope": "Includes supervisor. Registered subset can omit descendants; RSS sums double-count shared pages."
+  },
+  "energy": {
+    "joules": null,
+    "attributable_to_task": false,
+    "visible_counter_directories": {
+      "/sys/class/powercap": false,
+      "/sys/class/hwmon": false,
+      "/sys/class/drm": false
+    },
+    "reason": "No configured directly observed, attributable device-energy counter"
+  },
+  "accounting": "Inner waited subtrees are disjoint diagnostics. Outer supervisor wait4 includes these once; never add inner waits again.",
+  "limits": [
+    "Dedicated Linux supervisor, ordinary fork/exec children; arbitrary malicious clone/reparent behavior is not qualified.",
+    "Timeout cleanup kills only an unreaped direct task. Uncollected descendants make coverage fail; no whole-tree fault recovery claim.",
+    "Sampled family RSS is not an atomic or continuous peak even where enumeration is available."
+  ]
+}

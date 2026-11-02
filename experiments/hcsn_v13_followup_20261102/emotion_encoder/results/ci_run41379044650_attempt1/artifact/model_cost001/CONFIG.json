@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/home/runner/work/_temp/hcsn-emotion-python/bin/python",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.emotion_encoder.campaign",
+    "run",
+    "--out",
+    "evidence/model",
+    "--model-dir",
+    "/home/runner/work/_temp/hcsn-emotion-model",
+    "--waveforms",
+    "/home/runner/work/_temp/hcsn-emotion-WAVEFORMS.npz",
+    "--source-identity",
+    "evidence/identity/IDENTITY.json"
+  ],
+  "out": "/home/runner/work/hepta-private-ci/hepta-private-ci/evidence/model_cost001",
+  "timeout": 1200.0,
+  "sample_interval": 0.5
+}

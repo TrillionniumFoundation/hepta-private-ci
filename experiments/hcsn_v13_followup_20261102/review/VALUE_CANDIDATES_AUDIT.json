@@ -1,0 +1,270 @@
+{
+  "schema": "hcsn-v13-independent-value-feature-calibration-audit.v1",
+  "checks": 807408,
+  "all_checks_passed": true,
+  "failed_examples": [],
+  "largest_absolute_errors": {
+    "train_class_prior": 0.0,
+    "TRAIN_only_value_mean": 0.0,
+    "TRAIN_only_value_scale": 0.0,
+    "future_Laplace_rates": 0.0,
+    "STOP_Laplace_rates": 0.0
+  },
+  "candidates": 36,
+  "rows": [
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13301,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13303,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13307,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13301,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13303,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13307,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13301,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13303,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13307,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13301,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13303,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13307,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13301,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13303,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13307,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13301,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13303,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13307,
+      "train_rows": 1536,
+      "calibration_rows": 768
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13301,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13303,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13307,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13301,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13303,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13307,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13301,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13303,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13307,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13301,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13303,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13307,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13301,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13303,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13307,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13301,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13303,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13307,
+      "train_rows": 3072,
+      "calibration_rows": 1536
+    }
+  ],
+  "TEST_loaded": false,
+  "scope": "Independent feature/statistics/reader-affine/calibration reconstruction; A1 class probabilities use approved joint-core actual forward, not an independent HX numerical implementation"
+}

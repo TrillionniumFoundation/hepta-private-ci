@@ -1,0 +1,26 @@
+{
+  "strict_missing_keys": [],
+  "strict_unexpected_keys": [],
+  "loaded_tensor_count": 234,
+  "key_mapping": [
+    {
+      "from": "wav2vec2.encoder.pos_conv_embed.conv.weight_g",
+      "to": "wav2vec2.encoder.pos_conv_embed.conv.parametrizations.weight.original0"
+    },
+    {
+      "from": "wav2vec2.encoder.pos_conv_embed.conv.weight_v",
+      "to": "wav2vec2.encoder.pos_conv_embed.conv.parametrizations.weight.original1"
+    }
+  ],
+  "runtime_source_sha256": {
+    "/home/runner/work/_temp/hcsn-emotion-python/lib/python3.12/site-packages/torch/__init__.py": "5a190666c3853aa236c4d48ed64e2d4bbcd23bd32c21e64c0867646a6852e43f",
+    "/home/runner/work/_temp/hcsn-emotion-python/lib/python3.12/site-packages/numpy/__init__.py": "93924ac4b793328947dfd9eb9355e54eccdfd26a92c8dd52188aed2e52c7eb38",
+    "/home/runner/work/_temp/hcsn-emotion-python/lib/python3.12/site-packages/safetensors/torch.py": "a95be924990d99bd45696f468f50e594682a7c0d70943a90467e43c84216a3dd",
+    "/home/runner/work/_temp/hcsn-emotion-python/lib/python3.12/site-packages/transformers/models/wav2vec2/modeling_wav2vec2.py": "0090e89615c6ce66d147493c656d7781ae5ec0a6fb60f09c041ec70845adeba0",
+    "/home/runner/work/_temp/hcsn-emotion-python/lib/python3.12/site-packages/transformers/models/wav2vec2/feature_extraction_wav2vec2.py": "3e480e695b07182dc98e8ca5d6721e901a10c6447dfa1abd37eabb07c2434f2d"
+  },
+  "asset_seal_sha256": "aa3d452aca609d60875a7690663e452cb5ccaad523ed089be56582efb0048d74",
+  "no_random_weight_fallback": true,
+  "remote_code_execution": false,
+  "attention_implementation": "eager"
+}
