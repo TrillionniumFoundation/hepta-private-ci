@@ -1,7 +1,9 @@
 """Frozen original-author lipreading model on the accepted1s native prefix.
 
 The fixed native crop is an explicit CREMA adaptation, not the upstream
-68-landmark affine alignment. It never sees another clip or future-frame pixels.
+68-landmark affine alignment. It never sees another clip or after-cutoff presentation pixels.
+B-frame compressed references may require later presentation material during
+offline decoding; this adapter does not qualify live causal one-second input.
 """
 import hashlib
 import json
@@ -47,7 +49,6 @@ def decode(row):
         'stream=codec_type,codec_name,has_b_frames,start_time,width,height:frame=media_type,best_effort_timestamp_time','-of','json',str(path)]))
     timestamps=np.asarray([float(f['best_effort_timestamp_time']) for f in probe['frames'] if f.get('media_type')=='video'])
     audio=next(s for s in probe['streams'] if s['codec_type']=='audio');video=next(s for s in probe['streams'] if s['codec_type']=='video')
-    assert video.get('has_b_frames',0)==0, 'Future-reordered frames are outside this registered prefix profile'
     origin=max(float(audio.get('start_time',0)),float(timestamps[0]));cutoffs=origin+np.arange(1,26)/25
     assert np.all(np.diff(timestamps)>0) and timestamps[-1]>=origin+1
     selected=np.searchsorted(timestamps,cutoffs,side='right')-1
@@ -61,7 +62,7 @@ def decode(row):
     assert len(frames)==count
     gray=np.stack([np.asarray(Image.fromarray(frame).convert('L'))[4:92,4:92] for frame in frames[selected]])
     assert gray.shape==(25,88,88)
-    return gray,dict(clip=row['clip'],raw_sha256=row['sha256'],origin=origin,accepted_end=origin+1,cutoffs=cutoffs.tolist(),selected_indices=selected.tolist(),selected_timestamps=timestamps[selected].tolist(),decoded_frames=count,codec_name=video.get('codec_name'),has_b_frames=video.get('has_b_frames',0),crop_native_xywh=[x,y,96,96],source_geometry=[video['width'],video['height']])
+    return gray,dict(clip=row['clip'],raw_sha256=row['sha256'],origin=origin,accepted_end=origin+1,cutoffs=cutoffs.tolist(),selected_indices=selected.tolist(),selected_timestamps=timestamps[selected].tolist(),decoded_frames=count,codec_name=video.get('codec_name'),has_b_frames=video.get('has_b_frames',0),crop_native_xywh=[x,y,96,96],source_geometry=[video['width'],video['height']],input_scope='offline presentation-prefix pixels',live_causal_qualification=False,compressed_reference_lookahead='not bounded or instrumented')
 
 
 def encode(model,pixels):

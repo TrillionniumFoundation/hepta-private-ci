@@ -1,0 +1,223 @@
+{
+  "descriptor_features": 3060,
+  "fits": [
+    {
+      "cpu_seconds": 0.05468797900000011,
+      "features": 3060,
+      "gradient_inf": 3.286496415073198e-05,
+      "iterations": 104,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "rows": 216,
+      "status": 0,
+      "success": true,
+      "tag": "video/fold0",
+      "wall_seconds": 0.055055814002116676
+    },
+    {
+      "cpu_seconds": 0.04900803499999995,
+      "features": 3060,
+      "gradient_inf": 8.464177802435663e-06,
+      "iterations": 105,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "rows": 216,
+      "status": 0,
+      "success": true,
+      "tag": "video/fold1",
+      "wall_seconds": 0.0490118009984144
+    },
+    {
+      "cpu_seconds": 0.04645165600000012,
+      "features": 3060,
+      "gradient_inf": 1.4707829827391786e-05,
+      "iterations": 105,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "rows": 216,
+      "status": 0,
+      "success": true,
+      "tag": "video/fold2",
+      "wall_seconds": 0.04645565999817336
+    },
+    {
+      "cpu_seconds": 0.049837184000000034,
+      "features": 3060,
+      "gradient_inf": 1.5950959395473474e-05,
+      "iterations": 106,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "rows": 216,
+      "status": 0,
+      "success": true,
+      "tag": "video/fold3",
+      "wall_seconds": 0.04984094700193964
+    },
+    {
+      "cpu_seconds": 0.06765476599999998,
+      "features": 3060,
+      "gradient_inf": 1.3051594631031949e-05,
+      "iterations": 130,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "rows": 288,
+      "status": 0,
+      "success": true,
+      "tag": "video/full",
+      "wall_seconds": 0.06765916100266622
+    },
+    {
+      "cpu_seconds": 0.0011430340000000427,
+      "features": 3,
+      "gradient_inf": 0.00030384930175797464,
+      "iterations": 8,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "rows": 1152,
+      "status": 0,
+      "success": true,
+      "tag": "relation/AT_unique",
+      "wall_seconds": 0.001146795999375172
+    },
+    {
+      "cpu_seconds": 0.002419026000000102,
+      "features": 7,
+      "gradient_inf": 0.002025653281163109,
+      "iterations": 22,
+      "message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "rows": 1152,
+      "status": 0,
+      "success": true,
+      "tag": "relation/AVT",
+      "wall_seconds": 0.0024209210023400374
+    }
+  ],
+  "folds": [
+    {
+      "accuracy": 0.6805555555555556,
+      "fit_actors": [
+        "1007",
+        "1009",
+        "1010",
+        "1014",
+        "1021",
+        "1022",
+        "1029",
+        "1033",
+        "1035",
+        "1044",
+        "1048",
+        "1052",
+        "1070",
+        "1071",
+        "1074",
+        "1079",
+        "1081",
+        "1090"
+      ],
+      "fold": 0,
+      "held_actors": [
+        "1002",
+        "1013",
+        "1028",
+        "1037",
+        "1068",
+        "1075"
+      ]
+    },
+    {
+      "accuracy": 0.6805555555555556,
+      "fit_actors": [
+        "1002",
+        "1009",
+        "1010",
+        "1013",
+        "1021",
+        "1022",
+        "1028",
+        "1033",
+        "1035",
+        "1037",
+        "1048",
+        "1052",
+        "1068",
+        "1071",
+        "1074",
+        "1075",
+        "1081",
+        "1090"
+      ],
+      "fold": 1,
+      "held_actors": [
+        "1007",
+        "1014",
+        "1029",
+        "1044",
+        "1070",
+        "1079"
+      ]
+    },
+    {
+      "accuracy": 0.6944444444444444,
+      "fit_actors": [
+        "1002",
+        "1007",
+        "1010",
+        "1013",
+        "1014",
+        "1022",
+        "1028",
+        "1029",
+        "1035",
+        "1037",
+        "1044",
+        "1052",
+        "1068",
+        "1070",
+        "1074",
+        "1075",
+        "1079",
+        "1090"
+      ],
+      "fold": 2,
+      "held_actors": [
+        "1009",
+        "1021",
+        "1033",
+        "1048",
+        "1071",
+        "1081"
+      ]
+    },
+    {
+      "accuracy": 0.6666666666666666,
+      "fit_actors": [
+        "1002",
+        "1007",
+        "1009",
+        "1013",
+        "1014",
+        "1021",
+        "1028",
+        "1029",
+        "1033",
+        "1037",
+        "1044",
+        "1048",
+        "1068",
+        "1070",
+        "1071",
+        "1075",
+        "1079",
+        "1081"
+      ],
+      "fold": 3,
+      "held_actors": [
+        "1010",
+        "1022",
+        "1035",
+        "1052",
+        "1074",
+        "1090"
+      ]
+    }
+  ],
+  "new_neural_training": false,
+  "pretrained_frozen": true,
+  "validation_loaded": false,
+  "video_oof_accuracy": 0.6805555555555556
+}

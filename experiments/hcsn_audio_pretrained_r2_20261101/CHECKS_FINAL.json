@@ -1,0 +1,98 @@
+{
+  "schema": "hcsn.audio.pretrained.preflight.v1",
+  "passed": true,
+  "checks": [
+    {
+      "name": "train_binary_sentence_guard",
+      "passed": true
+    },
+    {
+      "name": "refuse_emotion_as_sentence",
+      "passed": true
+    },
+    {
+      "name": "refuse_reversed_sentence_labels",
+      "passed": true
+    },
+    {
+      "name": "refuse_actor_alias",
+      "passed": true
+    },
+    {
+      "name": "crop_before_resampling_future_and_past_isolation",
+      "passed": true,
+      "detail": {
+        "origin": 0.04,
+        "accepted_end": 1.04,
+        "audio_start": 0.013,
+        "native_sample_rate": 44100,
+        "native_lo": 1191,
+        "native_hi": 45290,
+        "native_samples": 44099,
+        "resampled_before_padding": 16000,
+        "padded_samples": 0,
+        "accepted_samples": 16000,
+        "waveform_sha256": "07a46afdba163570c80734d5a75c4ede3cf56fb502028952bd45ada877e2ec85",
+        "full_recording_normalization": false,
+        "future_pcm_used": false
+      }
+    },
+    {
+      "name": "incomplete_native_prefix_refused",
+      "passed": true
+    },
+    {
+      "name": "torchaudio.pipelines._wav2vec2.impl/official_git_blob",
+      "passed": true,
+      "expected": "d60fa8adb94e92e1a479fe94e09f521d0fe50056",
+      "actual": "d60fa8adb94e92e1a479fe94e09f521d0fe50056"
+    },
+    {
+      "name": "torchaudio.pipelines._wav2vec2.utils/official_git_blob",
+      "passed": true,
+      "expected": "e690e8103c7a47a01d719e746e6c98a9c7f6c8db",
+      "actual": "e690e8103c7a47a01d719e746e6c98a9c7f6c8db"
+    },
+    {
+      "name": "official_forward_equals_extracted_final_aux",
+      "passed": true,
+      "max_error": 0.0
+    },
+    {
+      "name": "frozen_descriptor_dimensions",
+      "passed": true,
+      "feature_shape": [
+        1652
+      ],
+      "ctc_shape": [
+        49,
+        29
+      ]
+    },
+    {
+      "name": "repeated_accepted_prefix_identical",
+      "passed": true
+    },
+    {
+      "name": "encoder_frozen_eval",
+      "passed": true,
+      "parameters": 94393245
+    },
+    {
+      "name": "long_input_refused",
+      "passed": true
+    },
+    {
+      "name": "nonfinite_input_refused",
+      "passed": true
+    }
+  ],
+  "source_sha256": {
+    "experiments/hcsn_audio_pretrained_r2_20261101/checks.py": "04d40054d427ef9ab0907fa83bd7686c0d3ea4748b85985cf759f2b99d145add",
+    "experiments/hcsn_audio_pretrained_r2_20261101/encoder.py": "77df75fb588936b5bf4bc70e89d93eb752cef113dd4cf513f5a5ab94be33085a"
+  },
+  "checkpoint_sha256": "488fd4f16de84438ffc945334278c1b9fb9b7159a806c1080b16111a958c945d",
+  "crema_waveform_loaded": false,
+  "development_loaded": false,
+  "target_head_fitted": false
+}
