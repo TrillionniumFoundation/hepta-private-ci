@@ -1,0 +1,17 @@
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/9d953b0104b2/joint-native-build/codex-rs/hepta-types)
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/9d953b0104b2/joint-native-build/codex-rs/hepta-infer-core)
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/9d953b0104b2/joint-native-build/codex-rs/hepta-neuron)
+   Compiling hepta-digital-read-before-native v0.1.0 (/workspace/scratch/9d953b0104b2/joint-native-build/codex-rs/digital-read-before-native)
+warning: method `read` is never used
+   --> digital-read-before-native/src/content.rs:222:12
+    |
+136 | impl Model {
+    | ---------- method in this implementation
+...
+222 |     pub fn read(&self, request: &Request) -> Result<Output, String> {
+    |            ^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `hepta-digital-read-before-native` (bin "hepta-digital-read-before-native") generated 1 warning
+    Finished `release` profile [optimized] target(s) in 16.83s
