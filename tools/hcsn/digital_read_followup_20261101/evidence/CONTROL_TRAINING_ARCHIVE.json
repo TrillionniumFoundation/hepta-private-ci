@@ -1,0 +1,124 @@
+{
+  "schema": "digital-control-published-archive-v1",
+  "archive": "control_training.tar.gz",
+  "archive_bytes": 11600170,
+  "prefit_source_commit": "9cedb204b30eb62ec8d26ba5668fbe905e176b9a",
+  "parts": [
+    {
+      "path": "control_training.tar.gz.part-000",
+      "bytes": 1440000,
+      "git_blob_sha": "8a280bb78e1a0fd6b9fdc7d9d75ff6c17c0083b0"
+    },
+    {
+      "path": "control_training.tar.gz.part-001",
+      "bytes": 1440000,
+      "git_blob_sha": "7da96fecc5d87d46976bfc98d9d2f0aaa468aaf7"
+    },
+    {
+      "path": "control_training.tar.gz.part-002",
+      "bytes": 1440000,
+      "git_blob_sha": "f5d0f884baa9e62b833ca442ae928f203c600154"
+    },
+    {
+      "path": "control_training.tar.gz.part-003",
+      "bytes": 1440000,
+      "git_blob_sha": "bad0f7b74761551db2df029afc5748fe986f8141"
+    },
+    {
+      "path": "control_training.tar.gz.part-004",
+      "bytes": 1440000,
+      "git_blob_sha": "87e76aa981927b2b16a47711fc8b4b3e2126312f"
+    },
+    {
+      "path": "control_training.tar.gz.part-005",
+      "bytes": 1440000,
+      "git_blob_sha": "40d7a56121b39a67c686c6e5d6e3d88e36014688"
+    },
+    {
+      "path": "control_training.tar.gz.part-006",
+      "bytes": 1440000,
+      "git_blob_sha": "67588265b01e89d8fa25fda469a7431a2a3ca73a"
+    },
+    {
+      "path": "control_training.tar.gz.part-007",
+      "bytes": 1440000,
+      "git_blob_sha": "45feda8087965907710b3d49b4a2a6a99ba936c4"
+    },
+    {
+      "path": "control_training.tar.gz.part-008",
+      "bytes": 80170,
+      "git_blob_sha": "d41cf08d4df142a8c113352874429a09503dbd96"
+    }
+  ],
+  "restore": "Concatenate parts in listed order, verify archive SHA256, safely extract to a new directory. MODEL_FREEZE.json and all 25 final artifacts are inside, together with every raw training/calibration/validation input and receipt.",
+  "archive_sha256": "741cef6d0b7668568a3f8a8c2fd5b923bf180a6cb096e218923c848b1ac28679",
+  "full_model_freeze_sha256": "2a949af44e289918ce825272bf6146321579b98ea42e834e4f8f5dc036a734a2",
+  "sources": {
+    "tools/hcsn/benchmarks/data.py": "7f086e58eb04429de723fb0383b8731cc1fc50eff643fd5e78993cf32fd0f63d",
+    "tools/hcsn/digital_read_before_20261031/data.py": "5cb133bab4848b5bb5f698ef7c3301d2f42508ec352f20ac71b8c80d9a1df95b",
+    "tools/hcsn/digital_read_before_20261031/deploy.py": "73c379488827982e5bfa2da4e0b44f81d501a2217bad1395604160be2ba47477",
+    "tools/hcsn/digital_read_before_20261031/protocol.json": "436fc22baae079cf6bae5242d5b87f1569ae3c15a8e20555d5ef4101504c4bb8",
+    "tools/hcsn/digital_read_before_20261031/task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+    "tools/hcsn/digital_read_followup_20261101/control_campaign.py": "6f230923abeb8eb4e436623cf71305288e3b4a07b6b22adc64338007c4338720",
+    "tools/hcsn/digital_read_followup_20261101/control_protocol.json": "bf654d8d8ccfc6f5b8e7def33bc19fa490d052159cdbd3ca546868dbbf2d0cc1",
+    "tools/hcsn/next/full_kernel/baseline_table.npz": "c77e407162061c06a9a34c5822b8751ebb2a71b1a5ff2a584c60e6b6ec63e764",
+    "tools/hcsn/task_value_factorial_20261030/UPSTREAM_FILES.json": "be6aa0751da3e9a63b4c70d0c8bc4c42d8f2595548009013eb4b92b5e44fc98e",
+    "tools/hcsn/task_value_factorial_20261030/task.py": "24534f0460c4e02faa21e47fc31d2c8afbe97c9725e3e2f335b7976444404cfc",
+    "tools/hcsn/third/memory/checkpoints/memory_full_mass_seed29.npz": "4962cd6126dc5e393cf7dbe72bea5519125bfb7971a7e3665a36af908aff5fcb",
+    "tools/hcsn/third/memory/reference.py": "eb9ae19aa3fb6c17d4a69e585f1b7789ae6c95b5f84283db498094cf3db6b47e"
+  },
+  "models": {
+    "fit_11/clocked_bank.json": "d8381bdde12d6dfe764cdc0c81285a8a30489606cf64b5db1cdd05270c6ebb8f",
+    "fit_11/first_passage_bank.json": "983c2c4da10165eddfaf1c8b362ef921f0a02cf5e609dedd8f7f2f748eb5fb9f",
+    "fit_11/ordinary_bank.json": "2dd86d7a56d9165d906430c1106237b6ead252acc889610d77ced12f4e1b7bc3",
+    "fit_11/ordinary_base.json": "faa673a6070b033ac1ce499ee474c2d1b9de68d5981e1c96fae6b28953b2743e",
+    "fit_11/raw_history.json": "feacae332937c21a9c47e3a62b60016bae451249559d904a318a68d34040d84f",
+    "fit_23/clocked_bank.json": "c77ab52fd9db0f787b0c0732035c4df0b242de64df7b74a32796531e9ecb0f03",
+    "fit_23/first_passage_bank.json": "ba5941717d23b1fb27588db00a8c7067b24609b44a1393e718f14f8673afbd3f",
+    "fit_23/ordinary_bank.json": "69b46f7fba1b21434c9620780e687e529b17ca560f77875e3fa08ad644a12ebd",
+    "fit_23/ordinary_base.json": "478b86eb31bf576eba048a12dbea1d8f42fdfba938cfc3bf93b8d21b8dbeae4a",
+    "fit_23/raw_history.json": "52d513db50bb1770b41334e4b668cbc607eb3723f40021800d614e27caa25712",
+    "fit_37/clocked_bank.json": "e009554692db6f34404a5c83814a70f666250e407e7b79bea935e6cc76fe7464",
+    "fit_37/first_passage_bank.json": "f63b12a9b51598c592a4976599b0133fd662cf5fdfdcae6f7533d8c8776900ca",
+    "fit_37/ordinary_bank.json": "8f3f0b35608dfb70e4eabed04aca1a4628b88c9a501def2fac4c4f9078ee0fdf",
+    "fit_37/ordinary_base.json": "5addeea27d3636ef8293e442348ec285b9195a6f8c1aa58aba0d9e4a514cd4bb",
+    "fit_37/raw_history.json": "4185aab428270ec5fac5f84b685a156fd191f1c1135cd505639bea351f7976a3",
+    "fit_53/clocked_bank.json": "b7c3fb4a834c823bcb0307343a5f1852690155ee2dc71bb0aba7a18273796a47",
+    "fit_53/first_passage_bank.json": "4c3e8a254a6746abcdac5927ca380163e247e6bc2c4e726e960ce23f3be04269",
+    "fit_53/ordinary_bank.json": "2a02c78deb3d892113f8bd5619ea36207549633d80f4167cfae5ba3056735648",
+    "fit_53/ordinary_base.json": "e5a408d66078adad90e7b589f418f9331c80d553d5d42871a16ee0b097ec0b0c",
+    "fit_53/raw_history.json": "e0bb4e21864a1287c21baaa7dc1800099ae0be20da5f05bf9ccec116daa55106",
+    "fit_71/clocked_bank.json": "974fa5f947a795518d46bef0733b553a62bf7b80417c43a4ef3b228a66a80ad6",
+    "fit_71/first_passage_bank.json": "87fc8b08bd8d4a189daac73819f06c27fbaae35cc13f161f16beae08beaed426",
+    "fit_71/ordinary_bank.json": "871bbb0ad69a188225923c03a75a93b6a176ba563940dad6043b3adf2cbda756",
+    "fit_71/ordinary_base.json": "f786181972178d2603e2b2aacece93cb08396cc4f15dfb0b8e4281594d14caaf",
+    "fit_71/raw_history.json": "23bf042093e36db0a22039c1004a0958aa13848795730cacdd5cb9414d017798"
+  },
+  "old_models": {
+    "checkpoints/fit_11/clocked_bank.json.gz": "8c4cab20e38a317d50d85d26d9a2f224c01f0c87a2b3c3a93592b3c779ff26b4",
+    "checkpoints/fit_11/first_passage_bank.json.gz": "624dbca6cbbb17f122e95fde3244979f42b8ba4f4c9886e632f7824c39e2b0b7",
+    "checkpoints/fit_11/ordinary_bank.json.gz": "651748d6f9f48eedf20411b39c8076ab12c1489110c50f1038cd9ad48a4cc58d",
+    "checkpoints/fit_11/ordinary_base.json.gz": "cec9de3a72aeaf603552ae4a34a640b47d6dd28ee725682db483ed1ec323764f",
+    "checkpoints/fit_11/raw_history.json.gz": "e195559f81195e84a46a3b02bd7d50048737ad935cb68eff38b2d123737ac0ea",
+    "checkpoints/fit_23/clocked_bank.json.gz": "6f95c0b28beb6162abe016e508219c6314fc2919a166bc7ae482349dcd933229",
+    "checkpoints/fit_23/first_passage_bank.json.gz": "e3c28158b8f9b478261d74af4b3475866f96df988d86cfc9d2965c6c989acfbd",
+    "checkpoints/fit_23/ordinary_bank.json.gz": "4ed917d8b4f032db3c6906c738a1ad28086f5749f0f95576c5539cd78ea63f7f",
+    "checkpoints/fit_23/ordinary_base.json.gz": "90aa97903200d2d268a896cccb015340f188a8278c538262db9bed232a37473c",
+    "checkpoints/fit_23/raw_history.json.gz": "8f214594307a0404eb5792a446f2d86021d0492342d21802ed8edac0fe1acf14",
+    "checkpoints/fit_37/clocked_bank.json.gz": "cffd444a0bbf651bafc799f49fbbc293eaef9ab4b38ae72f1830f71f556ac44c",
+    "checkpoints/fit_37/first_passage_bank.json.gz": "85b157d56bc571a55992498f1a1344076cf8c54448492b18645cda6b62f8a7e0",
+    "checkpoints/fit_37/ordinary_bank.json.gz": "ae42bb46a97a7088906b81ddb3eb06eec513e16c9b7995babb6f83b5768565d7",
+    "checkpoints/fit_37/ordinary_base.json.gz": "9893e1958e92147a42aef731a97ee9baa91353005e5796610b06fb0f749f2aad",
+    "checkpoints/fit_37/raw_history.json.gz": "c4735eeeff6f976247d8c1822cd2cdc46af50c29127eb2debcfa922b82fed892",
+    "checkpoints/fit_53/clocked_bank.json.gz": "c111bc8eb60f14d1b844d91701f845c003c828091ec463a07ea2282c6063ad33",
+    "checkpoints/fit_53/first_passage_bank.json.gz": "15c4aa136a136ee0d7830fcc2c969015c82ef8436998038282f792c2046b0f24",
+    "checkpoints/fit_53/ordinary_bank.json.gz": "fac9c8aae32916efcb30258bc747b7ee86ca972cb40fe6ec8c0ec7d94a3f6c16",
+    "checkpoints/fit_53/ordinary_base.json.gz": "1b26a75e3bf12918b2b71bccb269c5a43a1b10c62f73ea0f90253589ea44ec04",
+    "checkpoints/fit_53/raw_history.json.gz": "2c2188082a4ef553dfa1dbb45200f990f1e4e6fe1bc1624ac67f98afe3edfcd0",
+    "checkpoints/fit_71/clocked_bank.json.gz": "d201d79000692951d88b2e1700f8983c4d08e5dcb971fdd2304dc785bc188cbb",
+    "checkpoints/fit_71/first_passage_bank.json.gz": "75bc5952b2dcaad5b968077022029aab4c1ca851a087cb05543fef37f42caf69",
+    "checkpoints/fit_71/ordinary_bank.json.gz": "57fb5375068815aece5fb43bb39248f88193658cad2bf90f593beb69a37ef6bd",
+    "checkpoints/fit_71/ordinary_base.json.gz": "7f7ac1a730dc711372939a28ad75ac6e7f3ce9dc5b2c5d5936e1f5573349c986",
+    "checkpoints/fit_71/raw_history.json.gz": "697e1bbe3098ccea827bf61cda8a3201abd98168bebf028ff05b048016c03782"
+  }
+}
