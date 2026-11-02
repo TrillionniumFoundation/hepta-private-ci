@@ -1,0 +1,42 @@
+{
+  "schema": "hcsn-r19-independent-small-step-record-check-v1",
+  "integrity_passed": true,
+  "followup_gate_passed": false,
+  "original_gate_passed": false,
+  "freeze_files_verified": 11,
+  "cases": 6,
+  "records": 156,
+  "scalar_checks": 1919112,
+  "worst_cell_operands_recomputed": 156,
+  "maximum_witness_scaled_error": 0.0009083483445292244,
+  "stable_records": 155,
+  "passed_records": 155,
+  "failed_records": 1,
+  "coverage": {
+    "sigma": true,
+    "wait_cost": true,
+    "recovery_cost": true,
+    "reset_x": true,
+    "reset_fee_0": true,
+    "reset_fee_1": true,
+    "retention_0": true,
+    "retention_1": true,
+    "reward_base_0": true,
+    "reward_base_1": true,
+    "reward_amplitude_0": true,
+    "reward_amplitude_1": true,
+    "reward_slope": true
+  },
+  "gates": {
+    "all_whole_array_bounds": false,
+    "primal_parity": true,
+    "stable_coordinate_coverage": true
+  },
+  "original_result_sha256": "9ff7d3c4ac6d7a1ac4b3764e5d194b03e0122de17fb7ed515fa2c430de011003",
+  "followup_result_sha256": "3c06afd74dfe44f1bb125d1bc47f45df39a1be350a8192680847b68092d31d3e",
+  "limitations": [
+    "Worst-cell arithmetic, record coverage and frozen byte identities verified",
+    "Whole-array maxima and SHA256 values cannot be independently rederived from unarchived arrays",
+    "No numerical re-execution; no action-switch, continuum or full-neural derivative qualification"
+  ]
+}
