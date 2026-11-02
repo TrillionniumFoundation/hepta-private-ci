@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn.two-layer-ci-independent-review.v1",
+  "reviewed_at_utc": "2026-11-01T18:40:50.867Z",
+  "workflow": {
+    "local_path": "/tmp/hcsn-r16-cascade-ci/candidate/.github/workflows/hcsn-financial-autograd-r16.yml",
+    "bytes": 11942,
+    "sha256": "7b6c90ee67b5484d79e105b75fb60d3e6a41f97620dc22ddf05d1f869d3070e9",
+    "baseline_sha256": "bac8820cb23ff6637c4a692027f2e3d953b00427349567ff42808fc6785e13a4"
+  },
+  "decision": "No blocking wiring or permission issue found in the additive three-step workflow extension. Remote Actions execution is still required; local validation is not a CI pass.",
+  "bound_candidate": {
+    "protocol_sha256": "da07c580e258f51517f124d6d7b902a8ae3c6700fb58cb96948c18447c740ad7",
+    "checker_sha256": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e"
+  },
+  "independent_actions": [
+    "Read the complete exact workflow and unified diff against the previously reviewed fixed-z extension.",
+    "Ran actionlint 1.7.12 on the actual final file; actual exit code 0 and no diagnostics.",
+    "Parsed the real audit/train/checker sources with Python AST and matched all required CLI arguments to the new workflow invocations.",
+    "Parsed both YAML files and compared existing steps: 13 become 16; the only modified existing steps are checkout sparse paths and frozen runtime preflight. All eight existing numerical/checker entry-point steps remain exactly unchanged."
+  ],
+  "wiring_findings": [
+    "Pull-request path trigger, sparse checkout and TWO_LAYER_ROOT include the exact new directory. workflow_dispatch remains available; no push event has been added.",
+    "Global permission remains contents:read, checkout actions stay pinned and persist-credentials:false, and no secret is passed to the model. No pull_request_target or workflow write operation is introduced.",
+    "Job env contains only supported static values. The earlier runner.temp context defect remains repaired by a run step that uses RUNNER_TEMP and GITHUB_ENV.",
+    "Runtime preflight binds the final protocol and checker hashes before installing the unchanged CPU requirements. Model scripts then check all protocol-bound input and source identities.",
+    "Audit and training run with set -euo pipefail and no continue-on-error. Their always()/runtime-success conditions preserve independent diagnostic failures rather than overriding them.",
+    "The new independent checker requires both new producer outcomes to equal success. A failure in any earlier step still fails the job; successful later checks do not reset failed status.",
+    "The three result paths are distinct from all previous outputs and the scripts use create-only output paths. The existing artifact upload preserves results even after ordinary failures; checkout cleanliness is still enforced.",
+    "The two-layer checker accepts --financial-root to verify financial source/binary identity, but performs zero financial kernel and zero PyTorch calls. This differs from the retained fixed-z auxiliary checker, which uses its documented same-kernel branch check.",
+    "The checker validates four-mode archived Jacobians and the complete history record, but only the first training gradient is independently tied to the audit; it does not replay Adam or recompute all later training gradients."
+  ],
+  "preserved_historical_correction": "The original job.env runner.temp workflow was invalid and had no jobs in the observed remote run. This review applies only to the explicitly repaired and extended final SHA; it does not retroactively validate that original workflow.",
+  "limitations": [
+    "No numerical scripts or financial evaluation were executed by this workflow review.",
+    "No remote Actions run or pass is asserted here.",
+    "The immutable functional replay is not a new scientific confirmation set, task-quality benchmark or GPU/speed/energy result."
+  ],
+  "blocking_findings": []
+}

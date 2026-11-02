@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn.two-layer-independent-reference-seal.v1",
+  "sealed_at_utc": "2026-11-01T18:21:37.561224+00:00",
+  "reference_sha256": "35e8680e3faa501dcde7913a19b2998d2d799a1feb27667fbad6d55812c8ca69",
+  "synthetic_test_sha256": "c22409abe3b224f3e4688a4cd90db04afcae9caf8e55d443e68ce3500aafa52e",
+  "execution_sha256": "64a18edcb0ffd3419da76c937b5072df76faf8bdd9efd2d3ed6464a5871f252b",
+  "actual_synthetic_tests_passed": 3,
+  "actual_synthetic_execution_exit": 0,
+  "financial_calls": 0,
+  "pytorch_calls": 0,
+  "candidate_trajectory_runs": 0,
+  "mathematical_convention": {
+    "G1_G2": "Continuous drift derivatives with respect to effective financial theta; no dt included.",
+    "K_drive_K_condition": "Continuous lower drift derivatives with respect to the two copies of the same numerical margin link.",
+    "A_B": "Discrete Euler local Jacobians. All cross/parameter blocks include dt exactly once.",
+    "D1_D2": "Diagonal elements of d(theta_i)/d(raw_i), returned as [batch,9], using actual recorded tanh values.",
+    "boundary_raw1_drive_boundary_raw1_condition": "UNMASKED direct lower-state vs raw1 blocks, shape [batch,2,9], including dt. They expose the explicit -b1_theta/b1 path separately from upper-state history.",
+    "mode": "Only cross-state/lower-raw1 blocks are masked; same-value feature inputs and own-layer/raw2 derivatives remain unchanged.",
+    "precision": "FP64 composition at represented input/intermediate values; scalar configuration coefficients are converted once to FP32. No differentiation of rounding or higher derivatives.",
+    "state_order": [
+      "z1",
+      "a1",
+      "z2",
+      "a2"
+    ],
+    "parameter_order": "raw_theta1[9], raw_theta2[9]"
+  },
+  "synthetic_checks": [
+    "All four gradient modes compared against central finite differences of arbitrary smooth NONFINANCIAL field compositions, with detached edges represented by frozen local anchor links.",
+    "Same numerical forward values; explicit boundary component sums, both-detached layer1 zero VJP, full=drive+conditioning layer1 decomposition and invariant layer2 VJP.",
+    "Reverse accumulation independently compared with forward state/parameter sensitivity propagation."
+  ],
+  "limits": [
+    "Financial raw values/Jacobians are supplied by the caller; this module is not a financial oracle.",
+    "Synthetic checks establish chain construction, dimensions, transpose direction and dt placement, not an actual two-layer financial outcome.",
+    "Nonzero boundary or conditioning VJPs establish graph routes, not useful pulse dynamics, time-varying financial PDE solutions, quality or efficiency."
+  ]
+}
