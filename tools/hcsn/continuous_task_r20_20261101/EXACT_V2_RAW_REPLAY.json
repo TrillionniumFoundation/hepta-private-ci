@@ -1,0 +1,26 @@
+{
+  "schema": "hcsn-r20-independent-raw-replay-v1",
+  "integrity_passed": true,
+  "campaign_passed": true,
+  "cases": 96,
+  "whole_array_comparisons": 192,
+  "scalar_difference_positions": 137088,
+  "maxima": {
+    "affine_derivative_error": 2.226558520890265e-11,
+    "joint_remainder": 0.098953062881799,
+    "homogeneity": 0.0
+  },
+  "verified_inputs": [
+    "tools/hcsn/continuous_task_r18_20261101/task.py",
+    "tools/hcsn/continuous_task_r18_20261101/jump_solver.py",
+    "tools/hcsn/continuous_task_r19_20261101/tangent_solver.py",
+    "tools/hcsn/continuous_task_r19_20261101/CONFIRMATION.json",
+    "tools/hcsn/continuous_task_r19_20261101/FOLLOWUP_RESULTS.json"
+  ],
+  "cpu_seconds": 0.227555589,
+  "limitations": [
+    "Raw arithmetic replay, not independent numerical re-solving of every LCP",
+    "Directional residual summaries and old selected-branch differences are not independently re-solved",
+    "Original R19 gates and full gradient gate remain false"
+  ]
+}

@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/continuous_task_r20_20261101/record_check.py", line 129, in <module>
+    json.dump(check(args.run), stream, indent=2, allow_nan=False)
+              ^^^^^^^^^^^^^^^
+  File "/workspace/scratch/671a3fc18e7e/repo/tools/hcsn/continuous_task_r20_20261101/record_check.py", line 40, in check
+    result = json.loads((run / "RESULTS.json").read_text())
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'tools/hcsn/continuous_task_r20_20261101/exact_run/RESULTS.json'
