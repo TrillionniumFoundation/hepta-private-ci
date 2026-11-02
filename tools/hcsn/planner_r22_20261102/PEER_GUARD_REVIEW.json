@@ -1,0 +1,25 @@
+{
+  "covered": [
+    "FP64castoffloat32",
+    "C/F/reversestrides",
+    "emptyleadingaxes/wrongshape",
+    "NaN/Inf/negative",
+    "actualnextafter(1+/-tol)",
+    "old/newacceptedrows/outputbytes",
+    "normalizedAST3guardmethods",
+    "Packed/AnchoredclassASTunchanged",
+    "COLLECT/SPREAD/GROUPsameobjects"
+  ],
+  "fullraw_peer_records_available": false,
+  "kind": "read-onlypeerreviewreportedby/root/continuous",
+  "numerical_checks": 2348,
+  "outer_cpu_seconds": null,
+  "random_boundary_batches": 1000,
+  "reported_passed": true,
+  "scope": "CurrentfiniteFP64guards/identicalsumorderonly; not arbitrarydtypegeneralallcloseequivalence, typedrestoreorperformancequalification.",
+  "shape_dtype_boundary_examples": 88,
+  "source_hashes": {
+    "execution.py": "40fa7f1b05ce49df15e4fe45b9c11dc4fda285771958cc300260971daa311442",
+    "memory.py": "fb57c57fb4a6cd87c71990a7da2dc3df1715061f0f9bd917feefd323cefb761d"
+  }
+}
