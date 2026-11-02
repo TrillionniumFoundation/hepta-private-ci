@@ -1,0 +1,28 @@
+{
+  "allocation_r19_over_r18_maximum": 0.9,
+  "baseline_commit": "b25601c9bae257ffb651c8f9354fc380d8333f38",
+  "diagnostic_uses": 8,
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "fit": 151101,
+  "memory_uses": 8,
+  "models": [
+    "free",
+    "hmm_same_matrix",
+    "hx"
+  ],
+  "namespace": 19001101,
+  "original_cpu_ratio_maximum": 0.9,
+  "production_activation": false,
+  "representations": [
+    "full",
+    "anchored"
+  ],
+  "schema": "hcsn-r19-cost-protocol-v1",
+  "scope": "one frozen fit engineering replay; six groups each receive 1000 actual executions per variant, all query boundaries fsynced; no efficacy generality, GPU, energy or full training lifecycle claim",
+  "training_archive": "tools/hcsn/addressed_decision_r15_20261101/run_01/training/151101.json.gz",
+  "unchanged_scientific_gates": true,
+  "uses_per_group": 1000
+}
