@@ -1,0 +1,893 @@
+{
+  "schema": "joint-training-review-index-v1",
+  "base_branch": "research/digital-joint-integration-20261102",
+  "base_commit": "3475586908611c1394d31ee5047b8babe405822c",
+  "base_tree": "daa1874e88b7a4497e8c7e8b46ec1823a4be67c9",
+  "stages": [
+    {
+      "id": "T00",
+      "branch": "research/digital-joint-source-00-20261102",
+      "parent_commit": "3475586908611c1394d31ee5047b8babe405822c",
+      "tree": "7d14145351cf41c7d407cc469e919595a09b4bf7",
+      "head": "b1c6c4ced7cd0e574c087fabeb6703bc9b88f276",
+      "base_branch": "research/digital-joint-integration-20261102",
+      "source_lines": 0,
+      "nonmechanical_lines": 176,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_protocol.json",
+          "sha256": "1c6ffc51d8d9df8f57bb350dd9d80a264b889a14882da553c63e60c547a18606",
+          "git_blob_sha1": "e6bc91af1eb5cafe007c687931f2370bb57fddcb",
+          "lines": 176
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/PILOT_SOURCE_FREEZE.json",
+          "sha256": "352c25f79c1ac4e63e0c2067597cb8bbc2f9fa3086600f3d5f073421af4feb5d",
+          "git_blob_sha1": "b2d675de65bb6c1357699b83f4849c345e09635e",
+          "lines": 17
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE.json",
+          "sha256": "88132ad36d09d5050044375a02bb7d46a65cee1d1c2e21ace401bf9f823e85b5",
+          "git_blob_sha1": "cb7c4a0e39e02391738d5a3f0c53a7c474fbb360",
+          "lines": 30
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE_ATTEMPT2.json",
+          "sha256": "a1e9b295ea8c3d433c5478480ccc4eec869edda1452018f0a6c15c55b0e9841d",
+          "git_blob_sha1": "2f6c5bd19744468f2b1668a89bf3f39b97732bff",
+          "lines": 36
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4636,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4636",
+        "draft": true,
+        "title": "[Joint source 00/12] Preserve the registered study protocol",
+        "base": "research/digital-joint-integration-20261102",
+        "base_sha": "3475586908611c1394d31ee5047b8babe405822c",
+        "head": "research/digital-joint-source-00-20261102",
+        "head_sha": "b1c6c4ced7cd0e574c087fabeb6703bc9b88f276"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE.json",
+          "git_blob_sha1": "cb7c4a0e39e02391738d5a3f0c53a7c474fbb360",
+          "status": "added",
+          "additions": 30,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/FORMAL_SOURCE_FREEZE_ATTEMPT2.json",
+          "git_blob_sha1": "2f6c5bd19744468f2b1668a89bf3f39b97732bff",
+          "status": "added",
+          "additions": 36,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/PILOT_SOURCE_FREEZE.json",
+          "git_blob_sha1": "b2d675de65bb6c1357699b83f4849c345e09635e",
+          "status": "added",
+          "additions": 17,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_protocol.json",
+          "git_blob_sha1": "e6bc91af1eb5cafe007c687931f2370bb57fddcb",
+          "status": "added",
+          "additions": 176,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 259,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T01",
+      "branch": "research/digital-joint-source-01-20261102",
+      "parent_commit": "b1c6c4ced7cd0e574c087fabeb6703bc9b88f276",
+      "tree": "9ffada5e78b63b923cddc3aab8b33acb553634ed",
+      "head": "751a517d81a535c3ef13109918512c17e6d6b874",
+      "base_branch": "research/digital-joint-source-00-20261102",
+      "source_lines": 283,
+      "nonmechanical_lines": 283,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_kernel.py",
+          "sha256": "0439cf12f4519c29b1b079adb2ebc66eb86a252c59a2754770acc58ed5cff0e9",
+          "git_blob_sha1": "c387cb9bbe524b5391bd9eec7ea9d3b68bfcc820",
+          "lines": 188
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_law.py",
+          "sha256": "2e7f19a2534567e31370eea24dec096a309e4db4aa42770efbf544bed84bcf65",
+          "git_blob_sha1": "df4670f7027f6ab8fc7c08ab3794571c5920cfe0",
+          "lines": 95
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4637,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4637",
+        "draft": true,
+        "title": "[Joint source 01/12] Compute complete renewal mass with an independent law",
+        "base": "research/digital-joint-source-00-20261102",
+        "base_sha": "b1c6c4ced7cd0e574c087fabeb6703bc9b88f276",
+        "head": "research/digital-joint-source-01-20261102",
+        "head_sha": "751a517d81a535c3ef13109918512c17e6d6b874"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_kernel.py",
+          "git_blob_sha1": "c387cb9bbe524b5391bd9eec7ea9d3b68bfcc820",
+          "status": "added",
+          "additions": 188,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_law.py",
+          "git_blob_sha1": "df4670f7027f6ab8fc7c08ab3794571c5920cfe0",
+          "status": "added",
+          "additions": 95,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 283,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T02",
+      "branch": "research/digital-joint-source-02-20261102",
+      "parent_commit": "751a517d81a535c3ef13109918512c17e6d6b874",
+      "tree": "bd2bbfe8a7f245360c3bc67aeb038d464d05e821",
+      "head": "2e20e1b1a473c90481a400b6d8ab9b6d6bf139cf",
+      "base_branch": "research/digital-joint-source-01-20261102",
+      "source_lines": 395,
+      "nonmechanical_lines": 465,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_task.py",
+          "sha256": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5",
+          "git_blob_sha1": "0a9797e183420035d18cc027e4bb32f43a9c2db4",
+          "lines": 255
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_task_audit.py",
+          "sha256": "986d4733b74627718fea3fbfe855f9d5097762f3403c6d563c0e7fe2cc51cf56",
+          "git_blob_sha1": "06c6d0645aebc58babe090f3f5b5109dfd867c75",
+          "lines": 140
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_task_README.md",
+          "sha256": "62b61602638608ab87d7e7f690a7f89ddf2c5cac6cf400b8dd51670d23326255",
+          "git_blob_sha1": "b88bf827e41a47f37a823a3a5259bf4fc9c93873",
+          "lines": 70
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4638,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4638",
+        "draft": true,
+        "title": "[Joint source 02/12] Read current-at-due packets toward a fixed deadline",
+        "base": "research/digital-joint-source-01-20261102",
+        "base_sha": "751a517d81a535c3ef13109918512c17e6d6b874",
+        "head": "research/digital-joint-source-02-20261102",
+        "head_sha": "2e20e1b1a473c90481a400b6d8ab9b6d6bf139cf"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_task.py",
+          "git_blob_sha1": "0a9797e183420035d18cc027e4bb32f43a9c2db4",
+          "status": "added",
+          "additions": 255,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_task_README.md",
+          "git_blob_sha1": "b88bf827e41a47f37a823a3a5259bf4fc9c93873",
+          "status": "added",
+          "additions": 70,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_task_audit.py",
+          "git_blob_sha1": "06c6d0645aebc58babe090f3f5b5109dfd867c75",
+          "status": "added",
+          "additions": 140,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 465,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T03",
+      "branch": "research/digital-joint-source-03-20261102",
+      "parent_commit": "2e20e1b1a473c90481a400b6d8ab9b6d6bf139cf",
+      "tree": "5d2f42725a26c24e9cf44cff678e01df4c9fa6f0",
+      "head": "012329fc1fc026e8923a1e060192692a4bdf9312",
+      "base_branch": "research/digital-joint-source-02-20261102",
+      "source_lines": 282,
+      "nonmechanical_lines": 282,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_model.py",
+          "sha256": "250ec083ce30e11ea55c0347ed2fbc549be02a514e97c6da472699820afd3284",
+          "git_blob_sha1": "a510c0655da759107607e16b79ff9c47aaa6ae8e",
+          "lines": 199
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_deploy.py",
+          "sha256": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26",
+          "git_blob_sha1": "2932f1207d7a4a70e5eaddc976f23d088daa0de6",
+          "lines": 83
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4639,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4639",
+        "draft": true,
+        "title": "[Joint source 03/12] Share model and NumPy deployment predictions",
+        "base": "research/digital-joint-source-02-20261102",
+        "base_sha": "2e20e1b1a473c90481a400b6d8ab9b6d6bf139cf",
+        "head": "research/digital-joint-source-03-20261102",
+        "head_sha": "012329fc1fc026e8923a1e060192692a4bdf9312"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_deploy.py",
+          "git_blob_sha1": "2932f1207d7a4a70e5eaddc976f23d088daa0de6",
+          "status": "added",
+          "additions": 83,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_model.py",
+          "git_blob_sha1": "a510c0655da759107607e16b79ff9c47aaa6ae8e",
+          "status": "added",
+          "additions": 199,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 282,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T04",
+      "branch": "research/digital-joint-source-04-20261102",
+      "parent_commit": "012329fc1fc026e8923a1e060192692a4bdf9312",
+      "tree": "3d48d4fd9d9dad7cc73c5f3745c9a0e0c6b1b5db",
+      "head": "1485c098ae08355d93364eb5d3176bfbb34e1b6d",
+      "base_branch": "research/digital-joint-source-03-20261102",
+      "source_lines": 406,
+      "nonmechanical_lines": 474,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_data.py",
+          "sha256": "53292842debef33b6c54992b7b0dba80262ba2ee836bfc6fba14ca5c9b5e6e68",
+          "git_blob_sha1": "0d3fd09c30665ff43765bbd7e4fc7d9609766dc2",
+          "lines": 115
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_compiled_dp.py",
+          "sha256": "a371d745f6340350d393ea055ac5c9b045c9bf3a052f26655eabd6e7dffbceb6",
+          "git_blob_sha1": "fb72ee7bd0c299a45ca2b6e76436a0ad8230f07e",
+          "lines": 140
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_deadline_reference.py",
+          "sha256": "7f01e5fa345b6a8c9b120dbd03ea89faa331ed84bac496e365f69283e64b9d11",
+          "git_blob_sha1": "a81d0f648b6a5ba340d66d724177cf3b05fce7e2",
+          "lines": 51
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_compiled_dp_validate.py",
+          "sha256": "10d2757f074c2777f3fc0ecf3c62469cfad96cddae6d1674e94b9f22c7023f7a",
+          "git_blob_sha1": "cd5bf23e2598e018758f3b8d0b5f8e39307474e2",
+          "lines": 100
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_compiled_dp_README.md",
+          "sha256": "8e4d3d631f912347c18adf091a5db373fcad90e5df751aa08ac1d572b44fbbe8",
+          "git_blob_sha1": "ec85407d356bc997a2c0bf902719d6f0703bc641",
+          "lines": 68
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4640,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4640",
+        "draft": true,
+        "title": "[Joint source 04/12] Prepare task data and stronger reference policies",
+        "base": "research/digital-joint-source-03-20261102",
+        "base_sha": "012329fc1fc026e8923a1e060192692a4bdf9312",
+        "head": "research/digital-joint-source-04-20261102",
+        "head_sha": "1485c098ae08355d93364eb5d3176bfbb34e1b6d"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_compiled_dp.py",
+          "git_blob_sha1": "fb72ee7bd0c299a45ca2b6e76436a0ad8230f07e",
+          "status": "added",
+          "additions": 140,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_compiled_dp_README.md",
+          "git_blob_sha1": "ec85407d356bc997a2c0bf902719d6f0703bc641",
+          "status": "added",
+          "additions": 68,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_compiled_dp_validate.py",
+          "git_blob_sha1": "cd5bf23e2598e018758f3b8d0b5f8e39307474e2",
+          "status": "added",
+          "additions": 100,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_data.py",
+          "git_blob_sha1": "0d3fd09c30665ff43765bbd7e4fc7d9609766dc2",
+          "status": "added",
+          "additions": 115,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_deadline_reference.py",
+          "git_blob_sha1": "a81d0f648b6a5ba340d66d724177cf3b05fce7e2",
+          "status": "added",
+          "additions": 51,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 474,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T05",
+      "branch": "research/digital-joint-source-05-20261102",
+      "parent_commit": "1485c098ae08355d93364eb5d3176bfbb34e1b6d",
+      "tree": "4a63108f827f9cfef7fa7691276b052c3655c5b5",
+      "head": "aabded1d6352855f879c5494cb8b2f4279f1a6f5",
+      "base_branch": "research/digital-joint-source-04-20261102",
+      "source_lines": 432,
+      "nonmechanical_lines": 536,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_budget.py",
+          "sha256": "4c901817936db0c0afa5336fbf10185a4faf98cf4a905dc7796b9d089d85cab6",
+          "git_blob_sha1": "6ce65d5d2b7fdd9148a0ce2fcd43c523a1b40778",
+          "lines": 308
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_budget_profile.py",
+          "sha256": "0fa573e9f23ecb6ba495f3fcdb3f30e91f63218585279d15f1f9924a3cd602ac",
+          "git_blob_sha1": "d80aadd786e6f0cb7f5f32e0434151ea0b488334",
+          "lines": 124
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_budget_README.md",
+          "sha256": "481eb9569930a93c88d6f532bd79a723655d0df5b5235136b53ce64a9f7837e6",
+          "git_blob_sha1": "2b8a4fc247227b7dce8971445aaec4aee32d22a6",
+          "lines": 104
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4641,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4641",
+        "draft": true,
+        "title": "[Joint source 05/12] Account for whole-process CPU admission",
+        "base": "research/digital-joint-source-04-20261102",
+        "base_sha": "1485c098ae08355d93364eb5d3176bfbb34e1b6d",
+        "head": "research/digital-joint-source-05-20261102",
+        "head_sha": "aabded1d6352855f879c5494cb8b2f4279f1a6f5"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_budget.py",
+          "git_blob_sha1": "6ce65d5d2b7fdd9148a0ce2fcd43c523a1b40778",
+          "status": "added",
+          "additions": 308,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_budget_README.md",
+          "git_blob_sha1": "2b8a4fc247227b7dce8971445aaec4aee32d22a6",
+          "status": "added",
+          "additions": 104,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_budget_profile.py",
+          "git_blob_sha1": "d80aadd786e6f0cb7f5f32e0434151ea0b488334",
+          "status": "added",
+          "additions": 124,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 536,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T06",
+      "branch": "research/digital-joint-source-06-20261102",
+      "parent_commit": "aabded1d6352855f879c5494cb8b2f4279f1a6f5",
+      "tree": "178fd05a56fb59dbc3e20c45ff6b7193e270625a",
+      "head": "b23da9cb53250f101f687d3103cafe5ad6b85ad9",
+      "base_branch": "research/digital-joint-source-05-20261102",
+      "source_lines": 185,
+      "nonmechanical_lines": 185,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_train.py",
+          "sha256": "d39ee3de7b459c72aa7263ed804b391b2487f1a7685a373ca478f2404a59f3f4",
+          "git_blob_sha1": "8d6b7ff4bed6616d6e1ddb779aa470fc2be1ef60",
+          "lines": 185
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4642,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4642",
+        "draft": true,
+        "title": "[Joint source 06/12] Train complete-distribution policy models",
+        "base": "research/digital-joint-source-05-20261102",
+        "base_sha": "aabded1d6352855f879c5494cb8b2f4279f1a6f5",
+        "head": "research/digital-joint-source-06-20261102",
+        "head_sha": "b23da9cb53250f101f687d3103cafe5ad6b85ad9"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_train.py",
+          "git_blob_sha1": "8d6b7ff4bed6616d6e1ddb779aa470fc2be1ef60",
+          "status": "added",
+          "additions": 185,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 185,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T07",
+      "branch": "research/digital-joint-source-07-20261102",
+      "parent_commit": "b23da9cb53250f101f687d3103cafe5ad6b85ad9",
+      "tree": "25b69ba2d27cefa074eaae61faa8e50096088978",
+      "head": "9415a74049dbe5acf7ca90264192dac5486dc816",
+      "base_branch": "research/digital-joint-source-06-20261102",
+      "source_lines": 379,
+      "nonmechanical_lines": 379,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_campaign.py",
+          "sha256": "5a2b07e299aeed7a5dba8ac670012c1bae6bbae19ef227e144924e43fc742e48",
+          "git_blob_sha1": "dffdde4a41f048eb8df18369957c06c82240397f",
+          "lines": 304
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_launch.py",
+          "sha256": "01ab57424fde023b981b38613e4cb00b1b46207056b33389d5ddf596c072aee5",
+          "git_blob_sha1": "3307ab2ce69b34d0f9874c5ed41d227d812f9953",
+          "lines": 75
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4643,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4643",
+        "draft": true,
+        "title": "[Joint source 07/12] Launch matched campaigns with outer wait4 accounting",
+        "base": "research/digital-joint-source-06-20261102",
+        "base_sha": "b23da9cb53250f101f687d3103cafe5ad6b85ad9",
+        "head": "research/digital-joint-source-07-20261102",
+        "head_sha": "9415a74049dbe5acf7ca90264192dac5486dc816"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_campaign.py",
+          "git_blob_sha1": "dffdde4a41f048eb8df18369957c06c82240397f",
+          "status": "added",
+          "additions": 304,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_launch.py",
+          "git_blob_sha1": "3307ab2ce69b34d0f9874c5ed41d227d812f9953",
+          "status": "added",
+          "additions": 75,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 379,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T08",
+      "branch": "research/digital-joint-source-08-20261102",
+      "parent_commit": "9415a74049dbe5acf7ca90264192dac5486dc816",
+      "tree": "b34588f8745391009729392578591553e8e122d6",
+      "head": "e445c67206b6a02db74bfc640288f69bed316653",
+      "base_branch": "research/digital-joint-source-07-20261102",
+      "source_lines": 73,
+      "nonmechanical_lines": 178,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_pilot.py",
+          "sha256": "1fe1a16aef40c4718c442a7e98ca33a43b12225f34378bb5f35f15179184b0ab",
+          "git_blob_sha1": "06aa01a8c592790a4c244ad56698e1bec224eb08",
+          "lines": 73
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_pilot_protocol.json",
+          "sha256": "e0b8213356146d44d0f85d11a2a69a372ab1b9ebe406a7742b863cac2a3debc1",
+          "git_blob_sha1": "48ade0686b720dcc1a0ba8ca937c0f794407704f",
+          "lines": 105
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4644,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4644",
+        "draft": true,
+        "title": "[Joint source 08/12] Keep pilot profiling isolated from formal efficacy",
+        "base": "research/digital-joint-source-07-20261102",
+        "base_sha": "9415a74049dbe5acf7ca90264192dac5486dc816",
+        "head": "research/digital-joint-source-08-20261102",
+        "head_sha": "e445c67206b6a02db74bfc640288f69bed316653"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_pilot.py",
+          "git_blob_sha1": "06aa01a8c592790a4c244ad56698e1bec224eb08",
+          "status": "added",
+          "additions": 73,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_pilot_protocol.json",
+          "git_blob_sha1": "48ade0686b720dcc1a0ba8ca937c0f794407704f",
+          "status": "added",
+          "additions": 105,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 178,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T09",
+      "branch": "research/digital-joint-source-09-20261102",
+      "parent_commit": "e445c67206b6a02db74bfc640288f69bed316653",
+      "tree": "ae0d85d76d657051a0c17fe7a8997c92b5517014",
+      "head": "28d7b05f1c20f9969a04beb74b8252ee7fa2fa2e",
+      "base_branch": "research/digital-joint-source-08-20261102",
+      "source_lines": 170,
+      "nonmechanical_lines": 400,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit.py",
+          "sha256": "444a49db71c1b14ca15b9e2e4d30726a4cca9e00ec210fb47f3e107921bc7daa",
+          "git_blob_sha1": "8b6dc29fecf6eb101b52688d5a683eb8e7579a38",
+          "lines": 170
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit_THEORY.md",
+          "sha256": "4a254cbebf08dfdc3f4c81c91db85f526a2e43b4d2b5b0c58876bf7e38ee9d8a",
+          "git_blob_sha1": "3404859c733b8cdc5b6cf62f4444b09c8df32914",
+          "lines": 230
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4645,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4645",
+        "draft": true,
+        "title": "[Joint source 09/12] Audit prefit theory and finite-process boundaries",
+        "base": "research/digital-joint-source-08-20261102",
+        "base_sha": "e445c67206b6a02db74bfc640288f69bed316653",
+        "head": "research/digital-joint-source-09-20261102",
+        "head_sha": "28d7b05f1c20f9969a04beb74b8252ee7fa2fa2e"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit.py",
+          "git_blob_sha1": "8b6dc29fecf6eb101b52688d5a683eb8e7579a38",
+          "status": "added",
+          "additions": 170,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit_THEORY.md",
+          "git_blob_sha1": "3404859c733b8cdc5b6cf62f4444b09c8df32914",
+          "status": "added",
+          "additions": 230,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 400,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T10",
+      "branch": "research/digital-joint-source-10-20261102",
+      "parent_commit": "28d7b05f1c20f9969a04beb74b8252ee7fa2fa2e",
+      "tree": "6a40f9311495dcd81aadec30389f5abb8afa4ea4",
+      "head": "cc48458b60df256f65addc3de0ed7fcd35812726",
+      "base_branch": "research/digital-joint-source-09-20261102",
+      "source_lines": 246,
+      "nonmechanical_lines": 246,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit_training.py",
+          "sha256": "96c0dcc153cbffc2eafccc47ea226040b755c84c520c0bd87813e11fb3d4bd7a",
+          "git_blob_sha1": "b23f453ea716fcd5d2a0483d064297263285ef9b",
+          "lines": 199
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit_serialization.py",
+          "sha256": "7b4f4004e5dc8bff1c27063af6bfb959ec184588e7b5944aa7c5ec862fe1e297",
+          "git_blob_sha1": "ca86cb7ff4ccfd98bf66dcd9d0789f4d201ad85d",
+          "lines": 47
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4646,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4646",
+        "draft": true,
+        "title": "[Joint source 10/12] Audit training and serialization independently",
+        "base": "research/digital-joint-source-09-20261102",
+        "base_sha": "28d7b05f1c20f9969a04beb74b8252ee7fa2fa2e",
+        "head": "research/digital-joint-source-10-20261102",
+        "head_sha": "cc48458b60df256f65addc3de0ed7fcd35812726"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit_serialization.py",
+          "git_blob_sha1": "ca86cb7ff4ccfd98bf66dcd9d0789f4d201ad85d",
+          "status": "added",
+          "additions": 47,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit_training.py",
+          "git_blob_sha1": "b23f453ea716fcd5d2a0483d064297263285ef9b",
+          "status": "added",
+          "additions": 199,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 246,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T11",
+      "branch": "research/digital-joint-source-11-20261102",
+      "parent_commit": "cc48458b60df256f65addc3de0ed7fcd35812726",
+      "tree": "acb6db3b007e8fd6652e3070a3845eaef2e2c784",
+      "head": "89c7aa60d34f50c200bb9d858b5380ba9ee4cae3",
+      "base_branch": "research/digital-joint-source-10-20261102",
+      "source_lines": 220,
+      "nonmechanical_lines": 220,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit_admission.py",
+          "sha256": "118049c6d5f236a1b7d1734632e085f1628fe7e9f7068efe4fa84320c443225f",
+          "git_blob_sha1": "902694f82b817e753bf19f979a516e0ee59fe648",
+          "lines": 201
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit_cpuclock_worker.py",
+          "sha256": "b704d249da502bf1e63b2357d7fafb10cbf3cdf43bd060aa7cb3eae88955cfef",
+          "git_blob_sha1": "93359faef0dd6991f54ae55cdc8492ccc4fe41f3",
+          "lines": 19
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4647,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4647",
+        "draft": true,
+        "title": "[Joint source 11/12] Audit admission and CPU clock disagreement",
+        "base": "research/digital-joint-source-10-20261102",
+        "base_sha": "cc48458b60df256f65addc3de0ed7fcd35812726",
+        "head": "research/digital-joint-source-11-20261102",
+        "head_sha": "89c7aa60d34f50c200bb9d858b5380ba9ee4cae3"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit_admission.py",
+          "git_blob_sha1": "902694f82b817e753bf19f979a516e0ee59fe648",
+          "status": "added",
+          "additions": 201,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_independent_audit_cpuclock_worker.py",
+          "git_blob_sha1": "93359faef0dd6991f54ae55cdc8492ccc4fe41f3",
+          "status": "added",
+          "additions": 19,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 220,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    },
+    {
+      "id": "T12",
+      "branch": "research/digital-joint-source-12-20261102",
+      "parent_commit": "89c7aa60d34f50c200bb9d858b5380ba9ee4cae3",
+      "tree": "e289865c0c691457b323653f9e67c090400f860a",
+      "head": "28202770d523ba0ed14a3994983eaa5129a48a10",
+      "base_branch": "research/digital-joint-source-11-20261102",
+      "source_lines": 81,
+      "nonmechanical_lines": 90,
+      "files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_confirmation_runner.py",
+          "sha256": "4ab0684cb2ce1bb2a398e705dd8e6a35614c16cb1b9a5191f0ad53ed0388d208",
+          "git_blob_sha1": "09e10f75945acf0f4d8ceba3513822faf8802a59",
+          "lines": 81
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_confirmation_runner_protocol.json",
+          "sha256": "8968644b1fa0b9b9319c713dfb9de08c4dead89b05bd9520e3aad16638a1a650",
+          "git_blob_sha1": "af9f5ed60f54035e894ed09af117fef9090f9d2f",
+          "lines": 9
+        }
+      ],
+      "status": "draft_pr_created",
+      "pr": {
+        "number": 4648,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4648",
+        "draft": true,
+        "title": "[Joint source 12/12] Run confirmation through the frozen campaign",
+        "base": "research/digital-joint-source-11-20261102",
+        "base_sha": "89c7aa60d34f50c200bb9d858b5380ba9ee4cae3",
+        "head": "research/digital-joint-source-12-20261102",
+        "head_sha": "28202770d523ba0ed14a3994983eaa5129a48a10"
+      },
+      "remote_pr_files": [
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_confirmation_runner.py",
+          "git_blob_sha1": "09e10f75945acf0f4d8ceba3513822faf8802a59",
+          "status": "added",
+          "additions": 81,
+          "deletions": 0
+        },
+        {
+          "path": "tools/hcsn/digital_joint_20261102/joint_confirmation_runner_protocol.json",
+          "git_blob_sha1": "af9f5ed60f54035e894ed09af117fef9090f9d2f",
+          "status": "added",
+          "additions": 9,
+          "deletions": 0
+        }
+      ],
+      "remote_pr_file_scope_verified": true,
+      "remote_additions": 90,
+      "remote_commit_tree_parent_signoff_verified": true,
+      "remote_branch_head_verified": true
+    }
+  ],
+  "only_new_review_refs": true,
+  "execution_refs_mutated": false,
+  "manifest_sha256": "1ad20b0199cae809a71637513d0438c316fdaf8c0674bd014ec6de4a23c0a3c7",
+  "independent_static_inventory_audit": "PASS: all32 file bytes/hash/lines; 13namespace+7inherited frozen sources; allstage size limits",
+  "remote_scope_verification": {
+    "outer_levels": [
+      {
+        "level": "root",
+        "only_allowed_entry": "tools",
+        "diffs": [
+          {
+            "path": "tools",
+            "base_sha": "c3c44299faa6574318bc8034e1618eb3617ab73d",
+            "final_sha": "a950724d6f5047738200abf398dba89d9ca2b6dd",
+            "base_type": "tree",
+            "final_type": "tree"
+          }
+        ],
+        "pass": true
+      },
+      {
+        "level": "tools",
+        "only_allowed_entry": "hcsn",
+        "diffs": [
+          {
+            "path": "hcsn",
+            "base_sha": "7025ec1e5b90871424e328267d321c5fafcbfdcb",
+            "final_sha": "8b3d13f16048358db066616a3efdae8685471148",
+            "base_type": "tree",
+            "final_type": "tree"
+          }
+        ],
+        "pass": true
+      },
+      {
+        "level": "tools/hcsn",
+        "only_allowed_entry": "digital_joint_20261102",
+        "diffs": [
+          {
+            "path": "digital_joint_20261102",
+            "base_sha": null,
+            "final_sha": "108066937fdc07e478e3b5664c44d4ae6f9f9c4d",
+            "base_type": null,
+            "final_type": "tree"
+          }
+        ],
+        "pass": true
+      }
+    ],
+    "final_namespace_files": 32,
+    "final_namespace_all_exact_blob_sha1": true,
+    "frozen_namespace_files": 13,
+    "frozen_namespace_all_exact_blob_sha1": true,
+    "pass": true
+  },
+  "final_head": "28202770d523ba0ed14a3994983eaa5129a48a10",
+  "final_tree": "e289865c0c691457b323653f9e67c090400f860a",
+  "final_branch": "research/digital-joint-source-12-20261102",
+  "pr_numbers": [
+    4636,
+    4637,
+    4638,
+    4639,
+    4640,
+    4641,
+    4642,
+    4643,
+    4644,
+    4645,
+    4646,
+    4647,
+    4648
+  ],
+  "all_draft_prs": true,
+  "all_readbacks_pass": true,
+  "source_stage_limits": {
+    "stage_count": 13,
+    "python_file_count": 22,
+    "python_lines": 3152,
+    "all_nonmechanical_lines": 3914,
+    "max_stage_python_lines": 432,
+    "max_stage_nonmechanical_lines": 536,
+    "all_stages_within_limits": true
+  },
+  "notes": [
+    "Review-only mirrors; source execution commits/cohort/freeze/timing were not modified or rerun.",
+    "Each PR targets the preceding new review branch; T00 targets the integration baseline.",
+    "13 frozen namespace members are exact; seven inherited source dependencies remain unchanged in the integration baseline.",
+    "Final namespace contains exactly32 planned files, no native/math helpers/results4audit additions.",
+    "Pilot remains engineering profiling and is not a matched-budget efficacy result.",
+    "Mechanical evidence stays on separate publication lines; generated freeze identities here retain historical bytes."
+  ]
+}

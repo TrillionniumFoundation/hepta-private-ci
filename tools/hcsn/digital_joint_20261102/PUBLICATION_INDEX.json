@@ -1,0 +1,417 @@
+{
+  "schema": "digital-joint-final-publication-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "namespace": "tools/hcsn/digital_joint_20261102",
+  "date": "2026-11-02",
+  "decision": {
+    "adopt_candidate": false,
+    "all_blockers_closed": false,
+    "primary_passes": 3,
+    "primary_intervals": 14,
+    "renewal_vs_ordinary_passes": 0,
+    "renewal_vs_ordinary_comparisons": 6,
+    "secondary_adoption_passes": 0,
+    "secondary_adoption_comparisons": 6,
+    "auxiliary_endpoint_passes": 0,
+    "auxiliary_endpoints": 48,
+    "dual_format_robustness_passes": 0,
+    "dual_format_robustness_comparisons": 6
+  },
+  "reports": {
+    "status": "STATUS.md",
+    "scientific_text_review": "STATUS_REVIEW.json",
+    "kernel": "KERNEL_STATUS.md",
+    "native": "NATIVE_STATUS.md",
+    "package": "joint_package_STATUS.json",
+    "training_source_staging": "TRAINING_REVIEW_STAGES.json",
+    "training_source_review": "TRAINING_REVIEW_INDEX.json",
+    "native_review": "evidence/joint_native_REVIEW_STAGES.json"
+  },
+  "lineage": {
+    "baseline": "012bcf3505cb9306d9cef094a1acc3ca34c978be",
+    "old_namespace": "tools/hcsn/digital_read_before_20261031",
+    "old_namespace_tree_sha": "3ab06b42547e925e781164bee2424a51f4e929d1",
+    "prior_integration": "3475586908611c1394d31ee5047b8babe405822c",
+    "pilot": "73fa3394d34674af7178b5bf0271917a992fee05",
+    "failed_attempt_source": "b4e89fa045febfd2b23552328a2bcc35732ce00e",
+    "formal_attempt2_source": "36e9ddd099e09688593bccf2c32d1dfabc39ac99",
+    "all20_models_and_scalar_adapter": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+    "registered_package_adapter": "52dcec27117a286a2c83d406837af9dee2eba410",
+    "model_freeze_sha256": "982ccd42b472072aa860e6c0d203fab72a740bd8bef120bc6e01197b1befa29c",
+    "integrated_evidence_commit": "b9e4126afe3a7deb07685be75e46a74e01efaef4",
+    "training_source_review_mirror_head": "28202770d523ba0ed14a3994983eaa5129a48a10",
+    "native_final": "88255fbe6ebed26e280bbe3ea6864c9a963ff185",
+    "confirmation_final": "1a2dc98ac916139005f58c5e4936c583ad0fbf04",
+    "package_final": "306df6f9ff7a388e6487c4c5ca06446028820fd5",
+    "kernel_final": "e0d2bec473025a2504bbc0f10cc4d9d7dfe56790",
+    "ci_evidence": "6a06268b0395c5cc68faa2f308c5a96fafa5b8e7"
+  },
+  "review": {
+    "all_draft": true,
+    "production_merge_or_activation": false,
+    "training": [
+      {
+        "stage": "T00",
+        "branch": "research/digital-joint-source-00-20261102",
+        "base_branch": "research/digital-joint-integration-20261102",
+        "head": "b1c6c4ced7cd0e574c087fabeb6703bc9b88f276",
+        "tree": "7d14145351cf41c7d407cc469e919595a09b4bf7",
+        "pr": 4636,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4636",
+        "source_lines": 0,
+        "nonmechanical_lines": 176
+      },
+      {
+        "stage": "T01",
+        "branch": "research/digital-joint-source-01-20261102",
+        "base_branch": "research/digital-joint-source-00-20261102",
+        "head": "751a517d81a535c3ef13109918512c17e6d6b874",
+        "tree": "9ffada5e78b63b923cddc3aab8b33acb553634ed",
+        "pr": 4637,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4637",
+        "source_lines": 283,
+        "nonmechanical_lines": 283
+      },
+      {
+        "stage": "T02",
+        "branch": "research/digital-joint-source-02-20261102",
+        "base_branch": "research/digital-joint-source-01-20261102",
+        "head": "2e20e1b1a473c90481a400b6d8ab9b6d6bf139cf",
+        "tree": "bd2bbfe8a7f245360c3bc67aeb038d464d05e821",
+        "pr": 4638,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4638",
+        "source_lines": 395,
+        "nonmechanical_lines": 465
+      },
+      {
+        "stage": "T03",
+        "branch": "research/digital-joint-source-03-20261102",
+        "base_branch": "research/digital-joint-source-02-20261102",
+        "head": "012329fc1fc026e8923a1e060192692a4bdf9312",
+        "tree": "5d2f42725a26c24e9cf44cff678e01df4c9fa6f0",
+        "pr": 4639,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4639",
+        "source_lines": 282,
+        "nonmechanical_lines": 282
+      },
+      {
+        "stage": "T04",
+        "branch": "research/digital-joint-source-04-20261102",
+        "base_branch": "research/digital-joint-source-03-20261102",
+        "head": "1485c098ae08355d93364eb5d3176bfbb34e1b6d",
+        "tree": "3d48d4fd9d9dad7cc73c5f3745c9a0e0c6b1b5db",
+        "pr": 4640,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4640",
+        "source_lines": 406,
+        "nonmechanical_lines": 474
+      },
+      {
+        "stage": "T05",
+        "branch": "research/digital-joint-source-05-20261102",
+        "base_branch": "research/digital-joint-source-04-20261102",
+        "head": "aabded1d6352855f879c5494cb8b2f4279f1a6f5",
+        "tree": "4a63108f827f9cfef7fa7691276b052c3655c5b5",
+        "pr": 4641,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4641",
+        "source_lines": 432,
+        "nonmechanical_lines": 536
+      },
+      {
+        "stage": "T06",
+        "branch": "research/digital-joint-source-06-20261102",
+        "base_branch": "research/digital-joint-source-05-20261102",
+        "head": "b23da9cb53250f101f687d3103cafe5ad6b85ad9",
+        "tree": "178fd05a56fb59dbc3e20c45ff6b7193e270625a",
+        "pr": 4642,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4642",
+        "source_lines": 185,
+        "nonmechanical_lines": 185
+      },
+      {
+        "stage": "T07",
+        "branch": "research/digital-joint-source-07-20261102",
+        "base_branch": "research/digital-joint-source-06-20261102",
+        "head": "9415a74049dbe5acf7ca90264192dac5486dc816",
+        "tree": "25b69ba2d27cefa074eaae61faa8e50096088978",
+        "pr": 4643,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4643",
+        "source_lines": 379,
+        "nonmechanical_lines": 379
+      },
+      {
+        "stage": "T08",
+        "branch": "research/digital-joint-source-08-20261102",
+        "base_branch": "research/digital-joint-source-07-20261102",
+        "head": "e445c67206b6a02db74bfc640288f69bed316653",
+        "tree": "b34588f8745391009729392578591553e8e122d6",
+        "pr": 4644,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4644",
+        "source_lines": 73,
+        "nonmechanical_lines": 178
+      },
+      {
+        "stage": "T09",
+        "branch": "research/digital-joint-source-09-20261102",
+        "base_branch": "research/digital-joint-source-08-20261102",
+        "head": "28d7b05f1c20f9969a04beb74b8252ee7fa2fa2e",
+        "tree": "ae0d85d76d657051a0c17fe7a8997c92b5517014",
+        "pr": 4645,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4645",
+        "source_lines": 170,
+        "nonmechanical_lines": 400
+      },
+      {
+        "stage": "T10",
+        "branch": "research/digital-joint-source-10-20261102",
+        "base_branch": "research/digital-joint-source-09-20261102",
+        "head": "cc48458b60df256f65addc3de0ed7fcd35812726",
+        "tree": "6a40f9311495dcd81aadec30389f5abb8afa4ea4",
+        "pr": 4646,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4646",
+        "source_lines": 246,
+        "nonmechanical_lines": 246
+      },
+      {
+        "stage": "T11",
+        "branch": "research/digital-joint-source-11-20261102",
+        "base_branch": "research/digital-joint-source-10-20261102",
+        "head": "89c7aa60d34f50c200bb9d858b5380ba9ee4cae3",
+        "tree": "acb6db3b007e8fd6652e3070a3845eaef2e2c784",
+        "pr": 4647,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4647",
+        "source_lines": 220,
+        "nonmechanical_lines": 220
+      },
+      {
+        "stage": "T12",
+        "branch": "research/digital-joint-source-12-20261102",
+        "base_branch": "research/digital-joint-source-11-20261102",
+        "head": "28202770d523ba0ed14a3994983eaa5129a48a10",
+        "tree": "e289865c0c691457b323653f9e67c090400f860a",
+        "pr": 4648,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4648",
+        "source_lines": 81,
+        "nonmechanical_lines": 90
+      }
+    ],
+    "training_pr_numbers": [
+      4636,
+      4637,
+      4638,
+      4639,
+      4640,
+      4641,
+      4642,
+      4643,
+      4644,
+      4645,
+      4646,
+      4647,
+      4648
+    ],
+    "native": [
+      {
+        "stage": "01_real_nextest_gate",
+        "head": "c348bf1b9a515131556ed8c01ca10f798e929da7",
+        "tree": "3a3c73db7a3b36fe281829ba03a03693d5526465",
+        "branch": "research/digital-joint-native-01-20261102",
+        "base": "research/digital-joint-training-20261102",
+        "pr": 4621,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4621"
+      },
+      {
+        "stage": "02_generation_transaction_recovery",
+        "head": "dbafb11ec9b057560c71f139b3a141d82be23ad0",
+        "tree": "77bcd03cd968a47c95872f7b910b5c7fbbbffb25",
+        "branch": "research/digital-joint-native-02-20261102",
+        "base": "research/digital-joint-native-01-20261102",
+        "pr": 4622,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4622"
+      },
+      {
+        "stage": "03_joint_task_core",
+        "head": "082d7adef2ff9fb3dfbb067bcc9e80a0c65b66be",
+        "tree": "49181955093bed4f31c00be672b2e608050ca22e",
+        "branch": "research/digital-joint-native-03-20261102",
+        "base": "research/digital-joint-native-02-20261102",
+        "pr": 4623,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4623"
+      },
+      {
+        "stage": "04_joint_task_pairing",
+        "head": "e80463ace4bca1f6fee5621e0719fcfc707b376c",
+        "tree": "11c0b0ad64798eca0a761259db098a5d306b92ef",
+        "branch": "research/digital-joint-native-04-20261102",
+        "base": "research/digital-joint-native-03-20261102",
+        "pr": 4624,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4624"
+      },
+      {
+        "stage": "05_joint_policy_core",
+        "head": "0639d72bcd29f51db5f748b58bcf56590484dbf6",
+        "tree": "89ccba2633a7ac81d71723ffbffc7fed227c35ca",
+        "branch": "research/digital-joint-native-05-20261102",
+        "base": "research/digital-joint-native-04-20261102",
+        "pr": 4625,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4625"
+      },
+      {
+        "stage": "06_real_joint_owner_port",
+        "head": "f1b5ae0f04df6357b345b80e7413e2ef483bbcdf",
+        "tree": "1f5e994e13f7e00777e1fbf1a73f6a29beb410b4",
+        "branch": "research/digital-joint-native-06-20261102",
+        "base": "research/digital-joint-native-05-20261102",
+        "pr": 4626,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4626"
+      },
+      {
+        "stage": "07_joint_owner_qualification",
+        "head": "e8df3c2bf95d3b091e426d2cc2d1730a2a2ba16c",
+        "tree": "f39840d6cb8797e87ce7abd0fc2a76e6196c0d75",
+        "branch": "research/digital-joint-native-07-20261102",
+        "base": "research/digital-joint-native-06-20261102",
+        "pr": 4627,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4627"
+      },
+      {
+        "stage": "08_independent_owner_audits",
+        "head": "d1e31c72ff558869c8b817e04d5ac79666b49bc8",
+        "tree": "0fe1981ecd5acf7a205e1dd6dc225333c84eb4ba",
+        "branch": "research/digital-joint-native-08-20261102",
+        "base": "research/digital-joint-native-07-20261102",
+        "pr": 4628,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4628"
+      },
+      {
+        "stage": "09_actual_twenty_weight_qualification",
+        "head": "82b08a0cf6eee24605812abeae7f72ae0ae57c8d",
+        "tree": "8c10d83d7b75c6b5f61e6896968e16017b4ffe9d",
+        "branch": "research/digital-joint-native-09-20261102",
+        "base": "research/digital-joint-native-08-20261102",
+        "pr": 4629,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4629"
+      }
+    ],
+    "native_pr_numbers": [
+      4621,
+      4622,
+      4623,
+      4624,
+      4625,
+      4626,
+      4627,
+      4628,
+      4629
+    ],
+    "kernel": {
+      "pr": 4630,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4630"
+    },
+    "confirmation": {
+      "pr": 4635,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4635"
+    },
+    "package": {
+      "pr": 4634,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4634"
+    },
+    "cpu_ci": {
+      "pr": 4604,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4604"
+    }
+  },
+  "archives": {
+    "training": {
+      "bytes": 14316376,
+      "sha256": "87173e7699117f9870393832f428b9f3e0046efe7f92035be7b37f5348ad9124",
+      "parts": "evidence/JOINT_TRAINING_PARTS.json",
+      "members": "evidence/JOINT_TRAINING_ARCHIVE.json"
+    },
+    "support": {
+      "index": "evidence/JOINT_SUPPORT_ARCHIVES.json",
+      "includes": "finite-kernel/PDE/path evidence; all three budget versions; compiled DP; failed first formal attempt"
+    },
+    "confirmation": {
+      "bytes": 25993644,
+      "sha256": "fde0f11dfd4a06a0b7ea4ea05190a40af97d51c9fc10c6c7d7e2a01c904677b1",
+      "parts": "evidence/JOINT_CONFIRMATION_RAW_BLOBS_MANIFEST.json",
+      "members": "evidence/joint_confirmation_RAW_INDEX.json"
+    },
+    "independent_audits": {
+      "bytes": 1155312,
+      "sha256": "c2c3072e89c53aeee90817e19fbdbb3664926e7bb79a1d8ba3a02a9352501c88",
+      "archive": "evidence/joint_independent_audit_EVIDENCE.tar.gz",
+      "members": "evidence/joint_independent_audit_EVIDENCE_INDEX.json"
+    },
+    "packages": {
+      "bytes": 24095392,
+      "sha256": "ba94cf476f1c627ba6f4e408c77e203544ababaa58b578abfcc8da54eb4e77ca",
+      "parts": "evidence/joint_package_EVIDENCE_PARTS.json",
+      "members": "evidence/joint_package_EVIDENCE_INDEX.json",
+      "separate_first_derive_failure": "evidence/joint_package_first_derive_failure.tar.gz"
+    },
+    "native": {
+      "parts": "evidence/joint_native_PUBLISHED_PARTS.json",
+      "members_and_sources": "joint_native_PUBLICATION_MANIFEST.json",
+      "archive_count": 8
+    },
+    "cpu_ci": {
+      "parts": "evidence/joint_ci_PUBLISHED_PARTS.json",
+      "local": "evidence/joint_ci_ARCHIVE.json",
+      "hosted": "evidence/joint_ci_HOSTED_MANIFEST.json"
+    }
+  },
+  "reassembly": {
+    "rule": "Concatenate binary parts in increasing numeric part/offset order, never decode each part as text. Verify resulting archive bytes and SHA256 before extraction; check the complete member index after extraction.",
+    "training_layout": "Extract training archive into a fresh formal-root: MODEL_FREEZE.json and fit_11..fit_71 reside at its root.",
+    "confirmation_layout": "Extract confirmation archive into a fresh directory: confirmation/ holds all worlds, episode groups and tables, confirmation.process.json holds outer receipt. Archived provenance keeps original launch paths; replay arguments may point to relocated roots.",
+    "all_original_bytes_retained": true,
+    "failed_worker_ram_step_logs_recovered": false
+  },
+  "ci": {
+    "successful_fixture_run": {
+      "id": 41374974573,
+      "head_sha": "dd290b2ba7c42cbbf0e633577e6816586f6de660",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41374974573",
+      "cases": 6,
+      "local_torch": "2.15.0+cpu",
+      "hosted_torch": "2.9.1+cpu"
+    },
+    "integrated_followup": {
+      "id": 41378071269,
+      "head_sha": "b9e4126afe3a7deb07685be75e46a74e01efaef4",
+      "last_observed_status": "queued",
+      "last_observed_conclusion": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41378071269"
+    },
+    "scope": "CPU fixture replay only; no frozen-weight bit regeneration, formal fit/confirmation, full native CI, GPU or energy claim",
+    "admission_auditor_selection": "The integrated tree retains the newer admitted-training auditor from52d; it does not overwrite it with the earlier hosted fixture snapshot."
+  },
+  "open_claims": [
+    "Renewal advantage under prespecified useful-effect threshold",
+    "Quality-noninferior CPU savings plus p95/throughput adoption",
+    "Continuous free boundary, general recovery laws and formal within-interval event stream",
+    "GPU, actual energy, full lifecycle and production/general external exactly-once effects"
+  ],
+  "immutable_policy": "No candidate, world, fitted model or threshold changed after confirmation. New mirror branches expose small source diffs for review and create no new fit or confirmation cohort.",
+  "benchmark_environment": {
+    "exclusive_cpu": false,
+    "concurrent_metadata_and_file_uploads": true,
+    "complete_concurrent_activity_log": false,
+    "scope": "Shared8CPU CPU request observations; all named child complete process costs are retained, without an exclusive-hardware or end-to-end lifecycle claim."
+  },
+  "final_remote_verification": {
+    "file": "evidence/FINAL_REMOTE_VERIFY.json",
+    "sha256": "38f5d35b1ac26f1effa8e41a4cd1963e052098242d608dce013ee5b34729cce4",
+    "verified_evidence_commit": "b9e4126afe3a7deb07685be75e46a74e01efaef4",
+    "core_passed": true,
+    "direct_blobs": 214,
+    "logical_archives": 21,
+    "physical_archive_blobs": 72,
+    "missing_core_refs": 0,
+    "duplicate_core_refs": 0,
+    "metadata_only_addition_note": "The final child commit adds this index, review indexes and read-only verification records; executable sources, raw data and all original model bytes are identical to the verified evidence commit.",
+    "unchecked_optional_scope": "13 kernel archive-only members and independent sensitivity member were not redundantly rehashed in this final pass; earlier exact archive/member qualifications remain separate. Refer to final verifier for per-item coverage."
+  }
+}
