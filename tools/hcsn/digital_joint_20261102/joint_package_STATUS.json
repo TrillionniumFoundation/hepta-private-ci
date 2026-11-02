@@ -1,0 +1,97 @@
+{
+  "archive_integrity": {
+    "all_members_readback_verified": true,
+    "archive": {
+      "bytes": 24095392,
+      "path": "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE.tar.gz",
+      "sha256": "ba94cf476f1c627ba6f4e408c77e203544ababaa58b578abfcc8da54eb4e77ca"
+    },
+    "index": {
+      "bytes": 507118,
+      "path": "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE_INDEX.json",
+      "sha256": "e07de6c571c4cec16dfd5ed733d955cb230f11fa956e658ce95ee4c8d64c1d94"
+    },
+    "members": 3130,
+    "readback_provenance": "Completed archival readback reported in the auxiliary archive receipt; this status independently rehashes the archive bytes and index metadata."
+  },
+  "complete_child_process_costs": {
+    "accounting_limit": "Named child receipts only. Supervisor CPU, independent arithmetic-check process CPU, publication/network costs and other study stages are not included in this sum; do not treat as end-to-end lifecycle accounting.",
+    "benchmark": {
+      "complete_cpu_seconds": 76.432984,
+      "returncode": 0,
+      "wall_seconds": 81.03862342600041
+    },
+    "first_failed_derive": {
+      "complete_cpu_seconds": 0.157527,
+      "returncode": 1,
+      "wall_seconds": 0.15785169499577023
+    },
+    "successful_derive": {
+      "complete_cpu_seconds": 1.38821,
+      "returncode": 0,
+      "wall_seconds": 1.566061429999536
+    }
+  },
+  "environment_postscript": {
+    "bytes": 1982,
+    "path": "tools/hcsn/digital_joint_20261102/evidence/joint_package_environment_POSTSCRIPT.json",
+    "sha256": "8827be3b54d042f04d368621b4db346132e9f428e25ef9d8a383735cd163502a"
+  },
+  "first_failure_and_amendment": {
+    "failure": "Original engineering fixture used dt1.0 absent from frozen formal export support; first derive exited 1 with complete CPU 0.157527 seconds and retained partial output.",
+    "original_20_candidate_sources_unchanged": true,
+    "original_three_auxiliary_source_files_unchanged": true,
+    "registration_limit": "The revised v2 source was published after the main confirmation started; do not state that every revised source was published before confirmation.",
+    "repair": "Versioned registered v2 changes only the engineering fixture duration from dt1.0 to registered dt.75.",
+    "repair_timing": "After main confirmation started, without reading main confirmation results, and before any package benchmark.",
+    "retained_failure_archive": {
+      "bytes": 171447,
+      "path": "tools/hcsn/digital_joint_20261102/evidence/joint_package_first_derive_failure.tar.gz",
+      "sha256": "a4d06406c2de9ae7b7d2a1520bfab0697ca754d3f55718cfb352f6853fb527e9"
+    }
+  },
+  "inference_limits": {
+    "excluded_claims": [
+      "GPU",
+      "energy",
+      "native deployment",
+      "end-to-end lifecycle advantage"
+    ],
+    "original_primary_14_and_secondary_24_unchanged": true,
+    "statement": "All 48 auxiliary endpoints failed their gates; robust comparisons passed 0/6. No task benefit or task-lossless CPU saving is established.",
+    "task_benefit_established": false,
+    "task_lossless_cpu_saving_established": false
+  },
+  "publication_state": {
+    "archive_part_count_expected": 17,
+    "archive_parts_manifest_path": "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE_PARTS.json",
+    "parts_manifest_read_or_modified_by_this_status_task": false,
+    "status": "Final tree publication is to be completed by the root operator. Uploaded blobs or in-progress metadata are not asserted here to be formally published parts.",
+    "whole_archive_not_selected_for_direct_tree_publication": true
+  },
+  "reading_boundary": "Prepared from auxiliary joint_package_EVIDENCE_ARCHIVE.json and auxiliary package evidence metadata only; no main joint-confirmation/SUMMARY or main episode results were read for this status.",
+  "schema": "joint-package-status-v1",
+  "scope": "Auxiliary inference-package derivation and raw/slim CPU request-frame benchmark; not a replacement for the primary confirmation.",
+  "source_commits": {
+    "original_three_auxiliary_sources_published_commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+    "versioned_registered_adapter_published_commit": "52dcec27117a286a2c83d406837af9dee2eba410"
+  },
+  "source_of_result_numbers": {
+    "bytes": 17356,
+    "path": "tools/hcsn/digital_joint_20261102/evidence/joint_package_EVIDENCE_ARCHIVE.json",
+    "sha256": "33cd44968e2a21756a5ea693fd7570714a721dadbce0fab9af88aaf6a1d9919c"
+  },
+  "validation": {
+    "all_endpoint_count": 48,
+    "all_endpoint_gate_passes": 0,
+    "independent_arithmetic_check_passed": true,
+    "initial_public_prediction_exact_rows": 280,
+    "new_fits": 0,
+    "new_worlds": 0,
+    "packages": 20,
+    "raw_slim_semantic_exact_pairs": 1600,
+    "requests": 3200,
+    "robust_comparisons_passed": 0,
+    "robust_comparisons_total": 6
+  }
+}
