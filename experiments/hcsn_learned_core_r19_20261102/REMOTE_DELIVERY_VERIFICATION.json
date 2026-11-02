@@ -1,0 +1,629 @@
+{
+  "schema": "hcsn-r19-complete-evidence-delivery-v1",
+  "commit_sha": "8d853efc53d039a5697c9df7b4db91dac26674d4",
+  "readback_verified": true,
+  "remote_transport_files": 154,
+  "logical_original_files": 416,
+  "checkpoints": 80,
+  "raw_confirmation_traces": 240,
+  "exact_restore_original_files": 248,
+  "scope": "Every selected transport part and index has matching local/remote Git blob identity; logical hashes verified by both restore workflows.",
+  "files": [
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/MANIFEST.json",
+      "sha": "a88144045cfeb2853893b18eb0b3473803a02643"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/RESTORE.py",
+      "sha": "48e121899f885c05c7a138ae85f197615248a502"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0000.b64",
+      "sha": "846a2fb36ee0f2b47de8cfede9a8a43053540373"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0001.b64",
+      "sha": "36943a899202a3899e4b6e448545fe249a42db67"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0002.b64",
+      "sha": "98310c895d42738facf1a5214a04ed643af21ec2"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0003.b64",
+      "sha": "55b3281c7eebfa9440f94495499216712cd53320"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0004.b64",
+      "sha": "c9fb10053dc10e7ffb697c6d10b38c800390312d"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0005.b64",
+      "sha": "8fb5ba8d99d9b9de631abf76861cb4866b2a4403"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0006.b64",
+      "sha": "39ab9f9333657afb2c904bc218cf38c57bcba4ef"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0007.b64",
+      "sha": "154d2f767bb817f5ff8bc20a2e8114b7953b51a4"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0008.b64",
+      "sha": "69ee029f05d0b3c60fc326b40582b6f2f39e2069"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0009.b64",
+      "sha": "43c24d9d7712ed5831230124899544282d874ca7"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0010.b64",
+      "sha": "b5a6df28da81395c0f0ea56a69667a3a6832e13b"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0011.b64",
+      "sha": "6aa48ac3a3c0f1d6eb4626b83f616db196bb790d"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0012.b64",
+      "sha": "b4c3d79b09605bd07d1b069bae567ea986c39086"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0013.b64",
+      "sha": "77253f2165ef6ff53e29eaddba9b365892163592"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0014.b64",
+      "sha": "c1e846859f73f2c00b643f78a64649321ef6f573"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0015.b64",
+      "sha": "5ec77e4a7e055fa92d29fb42b5ec21565f3e5b77"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0016.b64",
+      "sha": "a13cc06a2ff3d2e04c3f933f9853710a6e1041df"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_preconfirm/part_0017.b64",
+      "sha": "e854c653066d061057afbd0a86ca4791abdf67da"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/INDEX.json",
+      "sha": "a80f075b06a829d66775b75f08e59bd69d5b27af"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/MANIFEST.json.gz",
+      "sha": "f64720bc49312a58fc5c4f743567a3010341d4ca"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0000.b64",
+      "sha": "1655069954bdd8bc4eb53eb57bc75859a7f59b10"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0001.b64",
+      "sha": "9f46168af97994ce5236956b94a549f191b7dab7"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0002.b64",
+      "sha": "f4f4a23962dbf95029c45e38f8dd86d579bf28d2"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0003.b64",
+      "sha": "726af63113480370e14395ae9734e11ddc193b84"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0004.b64",
+      "sha": "74d227cc51dfe2f43980ec0121fe4fb9b02b2e9e"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0005.b64",
+      "sha": "dcd5587ca8861676f023949e3665b7df4ce1f649"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0006.b64",
+      "sha": "8c94c7fe28258534724bb82cfa55f680b1ae9b03"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0007.b64",
+      "sha": "e1d3c77c8b174c5b5c30311a5f533f174cd07823"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0008.b64",
+      "sha": "280e42dee3eb9695adabc625cde1187182de59a2"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0009.b64",
+      "sha": "4128d5cd0b14f16e6fc4005358dbc8558eefba94"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0010.b64",
+      "sha": "38ccd54abdc9a16e0665186bebcf14cf5f0642d0"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0011.b64",
+      "sha": "61c79c5a1289b3b0c54363ec1e113d26dce9f35d"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0012.b64",
+      "sha": "37b2ec5b83cb72c5068c96e38aabad23165124af"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0013.b64",
+      "sha": "9edaecd307d917c81a1af3164b18713cbb8c351e"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0014.b64",
+      "sha": "9c9f7cb95405d40986ee2b4bd00541d218680c2d"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0015.b64",
+      "sha": "4a8d871e636630644950e7fec52ece18d6dbdb0c"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0016.b64",
+      "sha": "7575467b5bedf712585f5e75e0ec402e4348d5ff"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0017.b64",
+      "sha": "7a3e45c8a8f3008a519c381d0b071e619a283ba3"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0018.b64",
+      "sha": "649cecb69df439dee4f62e7f5d26ef872d7178df"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0019.b64",
+      "sha": "b818a5615030fc19254e929a5562d741bbdfab86"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0020.b64",
+      "sha": "bac527424742f6ef30cbe7361349cf187ac285fc"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0021.b64",
+      "sha": "4fabafcd37ee1d27f4026e2f7348129b0a6a8fa5"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0022.b64",
+      "sha": "0b829ddacfd8bdf4c6e29824c6035326cb59aae4"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0023.b64",
+      "sha": "2691055cedd06562f8dda22816d983f580361c6a"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0024.b64",
+      "sha": "492618fc706b4e102c94b4d20271c06755ac11f6"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0025.b64",
+      "sha": "02f75008ef0ce722de1c6140cb8e8c20ade3109b"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0026.b64",
+      "sha": "2537ebeb015c68d5ac3d4fde2c14cf642e5905ab"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0027.b64",
+      "sha": "128044b95bc640becc617676d62bd012ba1639ba"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0028.b64",
+      "sha": "a1f06b6ce15d1ccbec71d0216f070db3b74487cd"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0029.b64",
+      "sha": "8e4cbabaf02da40c9cc1ac421b19385037cf5a77"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0030.b64",
+      "sha": "9366cf3abb767731112102aa3439d96734e54e81"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0031.b64",
+      "sha": "157854e3784186a2ecedb281f1269a476efff1e5"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0032.b64",
+      "sha": "f98eb01d5e907762a65884959a2fa22379d46ae1"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0033.b64",
+      "sha": "2238d7b96308fb0a8348fff0a09d12a764160004"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0034.b64",
+      "sha": "d5810aa4639fff5a8c55bbddaccf3b23305182f9"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0035.b64",
+      "sha": "c994f14e7a0c81076730a578ed1b97ff1cb602d6"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0036.b64",
+      "sha": "1d4ee9ae93f2579294d63bf42fea4dc6dc2a04f6"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0037.b64",
+      "sha": "a3bc01072db5d6f7fbc5bba90dac0a2a319f5a1f"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0038.b64",
+      "sha": "585646661f86974db415e91f2c53f39db700b021"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0039.b64",
+      "sha": "92cf33108125d4c63c28113034b50e28906870cf"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0040.b64",
+      "sha": "defa751b934aac105355fc18dd3539d5e9344ebc"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0041.b64",
+      "sha": "6f2a127e0dfb553bb9af448333757143248e771d"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0042.b64",
+      "sha": "b9f7cdca20e023b6d9f3dfa538b5bbf039b0f426"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0043.b64",
+      "sha": "ed85622707cf3ba5bcdd2959ecad885a1c724162"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0044.b64",
+      "sha": "91e4c69c19c4eb061af7fc1fef09710337c06df2"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0045.b64",
+      "sha": "4733254c91fb7f342630470e9716ae13ce8dd2f7"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0046.b64",
+      "sha": "9bc0d350bf347da73209f6acf1484966041e899d"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0047.b64",
+      "sha": "4ca498674565d5bfdae1dea498d1dc68a9cbd466"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0048.b64",
+      "sha": "5f75bf5682a801a52b35621dd41e9af64b3fd3cc"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0049.b64",
+      "sha": "4e9885512629dec664b14fa99c7964e0263d080f"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0050.b64",
+      "sha": "5994ce9693f1e66d0938c6ecd756c98b459cdced"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0051.b64",
+      "sha": "d8ff9457224e4aaf0aec43d027ee2c5a584d1bc0"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0052.b64",
+      "sha": "2463883ccb2ff2d1ec186ad8d2787d53dfb53d95"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0053.b64",
+      "sha": "c723bb443fb9a5a01c3b2ba273ba1c957228eeaa"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0054.b64",
+      "sha": "1bc0ff2b6aaacf5c9678f5da049ca643fd5d5959"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0055.b64",
+      "sha": "49ee9a506c20dad042e350b4f961ece851e025c1"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0056.b64",
+      "sha": "98b71e811aac8cc003829a09c642aeb8dd6f2dc7"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0057.b64",
+      "sha": "99fbc2e9362036c34ef593b9e539bfa77d18a51e"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0058.b64",
+      "sha": "014a637e567f44fb3cef34229e5361fd544298f1"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0059.b64",
+      "sha": "ceb2ae7cd7efc48fab17cdaba2e9d7ddbb1dd269"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0060.b64",
+      "sha": "4ea12bbb5b10a4ec50e160d40834c38c239bcd7c"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0061.b64",
+      "sha": "438552a6f2d8afb0c9e96c590c76e9e2beed8117"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0062.b64",
+      "sha": "b2fa735c272c21316be2f193f672679957151b30"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0063.b64",
+      "sha": "cea52109ff4c9d8ec8b884136cf9ab610a22863b"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0064.b64",
+      "sha": "57f7615baf87fbc3d3020582ef7f099cf94ceb60"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0065.b64",
+      "sha": "7e54b6f03d9c3de400a20004190c61fcd3aedd8d"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0066.b64",
+      "sha": "c99612f8067dd9f4eb04987f30f1d3bbff673da8"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0067.b64",
+      "sha": "14d3283dda1ce38de7ab726c03f68b1f97da8999"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0068.b64",
+      "sha": "dce505d42751aba561672c6b7261136c78bb6c8f"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0069.b64",
+      "sha": "3dc23373a7186db814c250656f47faaf4dfa811f"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0070.b64",
+      "sha": "68403fa9d9d3c899145b8c033eb56b643f7b9e9f"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0071.b64",
+      "sha": "3595519ef55a46e69a40dac7e2f9705adf6929b8"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0072.b64",
+      "sha": "68fd8b57dc8d0f6418d6d64e5795739909e8bd21"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0073.b64",
+      "sha": "0297ecd0b99aa2a38b396a31c59b6b39821ec14c"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0074.b64",
+      "sha": "de60d703527dd13da6adc41df12a8df2e96c85f0"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0075.b64",
+      "sha": "0516e0933256e554cf6a846dd778e8f27d13305b"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0076.b64",
+      "sha": "7956b10a14fa6387a28f93e75cfbc25e2e16cbb3"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0077.b64",
+      "sha": "7382884f2ea3b4e023ef3fe2aebc4f91c57c934b"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0078.b64",
+      "sha": "4970106dfdd3d90a91ce56ab5cc925c4663aa34c"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0079.b64",
+      "sha": "c8393badb184688f7162acc66d0e90c7c6347f31"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0080.b64",
+      "sha": "90541808442b92cc12d145a4bbd626a03c4cfcea"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0081.b64",
+      "sha": "6733fa8711a57fae7aa482a4e4042258f1be898b"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0082.b64",
+      "sha": "84f48f2f989c7f98dec93425098d047d91214b27"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0083.b64",
+      "sha": "cbc351e1579664556380d75855edce08d51c2507"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0084.b64",
+      "sha": "7cc7ee134b8efd330e4a94e03e3c7c1712d1fec2"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0085.b64",
+      "sha": "b0be4d30cbc2ef71d033124faea63eb80691c629"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0086.b64",
+      "sha": "3e03f3451ca2633cc35e7957e9e40628332d0b53"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0087.b64",
+      "sha": "a303ed7c01c1763f94d43e06567b7a225a5335c5"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0088.b64",
+      "sha": "9eb28d0f03253fafde3d9374b558a4f8f52bac84"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0089.b64",
+      "sha": "1007a45fa8c5ee7397ddd359875d5b00d4e51be6"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0090.b64",
+      "sha": "8c8a29639c347169d9e49fe09fbf5fb03be16ff1"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0091.b64",
+      "sha": "4cda4fcebadafd7d9c481ccb4b48281631cc9dc1"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0092.b64",
+      "sha": "b5ec98d8787d9217f4ea7ef74c70680cc1324d4d"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0093.b64",
+      "sha": "0b00c2f910959760c217aae2986135bf83d4a25a"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0094.b64",
+      "sha": "da578ee564296ff64a8942de86c0314d6a68c55e"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0095.b64",
+      "sha": "f394dd9b5da8e2f6850984b433d2ba4ada178a5e"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0096.b64",
+      "sha": "46cd2978e1453e31642bfb581807061a3c484cce"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0097.b64",
+      "sha": "e5406c28c64a8449bc085c53427a3e33b8f489de"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0098.b64",
+      "sha": "ad5718a8ec4856e5f6461949ee5ce89058585557"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0099.b64",
+      "sha": "a6a7a825d9388de003e4f8f31d033275bb4a247b"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0100.b64",
+      "sha": "222fbaf70bae9f4b2f41c5be3256b6d6b1dd593f"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0101.b64",
+      "sha": "007e1b44a79924c992b5b6c9c6f618d122dce787"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0102.b64",
+      "sha": "e5d4a5b3fa329739fa859faa45e6efbc678b8be5"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0103.b64",
+      "sha": "e24f766045ffd6e21a89c8cd7e7369bd98d06833"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0104.b64",
+      "sha": "8eff799d42bcbb843ccd9360ef0519d345d893e9"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0105.b64",
+      "sha": "0d9c755dcb1dba101baf59395c7b4bde66f36203"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0106.b64",
+      "sha": "ee76db5e3d7e89fbbefe24a96e0df4925d3a7abd"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0107.b64",
+      "sha": "e86a22ff16337087da385fc5b0204cdbbd67569f"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0108.b64",
+      "sha": "b5853c3dd3e55a1e8261ccd95e2e96fafdc4ba51"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0109.b64",
+      "sha": "6dd89c0a6b0ba80ad4fae7c2acff92abd78f6362"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0110.b64",
+      "sha": "ca4889dadffc32838986ca242ed0f90b3e0093c9"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0111.b64",
+      "sha": "abdc239db2498ae71aead00655c0e4c028e5dce7"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0112.b64",
+      "sha": "4bc7ec66c134cff75e3df2dea0039b46a3cb7e10"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0113.b64",
+      "sha": "d1b8b8ce14f089e3bf63c530c04d2cc54470142d"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0114.b64",
+      "sha": "65af233ee424968e26d729b4ef5923dbe1dc151f"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0115.b64",
+      "sha": "fa5d69d276cedfb166def43cdc50c55d05e9bc9f"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0116.b64",
+      "sha": "6a42c711f3c5c157f3ae21281324c488b1aad7dc"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0117.b64",
+      "sha": "1e29e5d9a3bee6b94b25bd69e77e43b9fa9d2640"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0118.b64",
+      "sha": "51924f4a4af40a7b0564eb09e1618da2df1634c6"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0119.b64",
+      "sha": "cbe7dbe6772322ea35ff75a9aaf812f839a5a3bc"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0120.b64",
+      "sha": "c08ab6656f40b959f4042e8b861a311b310f2154"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0121.b64",
+      "sha": "9f1a5467208e6e93270046c0a7e628144c94f2f7"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0122.b64",
+      "sha": "7bfe48e69877eca397e8cfdfaeb38b313793c4e3"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0123.b64",
+      "sha": "53927002974d49abbbeaf6c2cfc2ed91fd67d505"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0124.b64",
+      "sha": "87291e44cd75a4be2a289473c3a564c742d5d7cb"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0125.b64",
+      "sha": "94beeeb50bea3e30e3d79eb693128424cae7ba33"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0126.b64",
+      "sha": "d42c8bf7e95b642cd8ef66fb852cc58ec812b395"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0127.b64",
+      "sha": "0e6f5976016e3b766a70a2b4622e8130d097f111"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0128.b64",
+      "sha": "46e8f58741e2f63b206bc87f45f1f650a30ed921"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0129.b64",
+      "sha": "e317da7eaa3765c46181752671bdf2142c1ef926"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0130.b64",
+      "sha": "fcae728b2a28c7bdca6493ec2085903d3251121a"
+    },
+    {
+      "path": "experiments/hcsn_learned_core_r19_20261102/transport_confirm_compact/part_0131.b64",
+      "sha": "9f4b544656e0127c0040a8e88a38f931644a1549"
+    }
+  ]
+}

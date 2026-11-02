@@ -1,0 +1,33 @@
+{
+  "GPU_measured": false,
+  "confirm": {
+    "cpu_seconds": 45.005832,
+    "exit_code": 0,
+    "max_rss_linux_kib": 499976,
+    "scope": "Whole interpreter, imports, data collection, all candidates, validation, checkpoints, test, ablations and output; parent/audit/developer costs separate",
+    "wall_seconds": 110.25669868499972
+  },
+  "energy_measured": false,
+  "factorized_diagnostic_evaluations": 48,
+  "formal_model_domain_evaluations": 240,
+  "model_parameter_counts": {
+    "analytic": 1461,
+    "cache": 1460,
+    "gru": 7580,
+    "hmm": 1461,
+    "ssm": 1900
+  },
+  "nonoverlapping_worker_cpu_seconds": 158.574751,
+  "offline_training_logical_fees": 419.66625000000005,
+  "offline_training_reads": 3072,
+  "posthoc_auditor_cpu_seconds": 4.6607190670000005,
+  "prepare": {
+    "cpu_seconds": 113.568919,
+    "exit_code": 0,
+    "max_rss_linux_kib": 376248,
+    "scope": "Whole interpreter, imports, data collection, all candidates, validation, checkpoints, test, ablations and output; parent/audit/developer costs separate",
+    "wall_seconds": 179.83762659400236
+  },
+  "training_query_presentations": 983040,
+  "validation_policies": 240
+}

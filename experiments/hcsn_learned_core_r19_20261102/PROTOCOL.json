@@ -1,0 +1,60 @@
+{
+  "schema": "hcsn-r19-learned-full-posterior-factorial-v1",
+  "base_commit": "b25601c9bae257ffb651c8f9354fc380d8333f38",
+  "question": "Does a learned full first-passage/reset state improve actual addressed content/control utility over the strongest fitted ordinary candidate under common information?",
+  "scope": "Finite supplied-address symbolic owner task. No real AV, learned semantic routing, full financial parameter training, production, energy or GPU qualification.",
+  "fits": [
+    191101,
+    191103,
+    191107,
+    191109,
+    191113,
+    191117,
+    191119,
+    191123
+  ],
+  "cores": [
+    "analytic",
+    "hmm",
+    "gru",
+    "ssm",
+    "cache"
+  ],
+  "controls": [
+    "light",
+    "value"
+  ],
+  "updates": 64,
+  "batch_size": 32,
+  "learning_rate": 0.003,
+  "warmup_updates": 16,
+  "checkpoints": "Terminal update64 only; no test-based checkpoint or hyperparameter selection.",
+  "namespaces": {
+    "train": 191201,
+    "validation": 191202,
+    "iid": 191203,
+    "ood": 191204,
+    "long": 191205
+  },
+  "development_namespace": 191111,
+  "train_worlds": 512,
+  "validation_worlds": 128,
+  "test_worlds": 256,
+  "long_worlds": 128,
+  "owner": "Unchanged R15 forty-state law, theta=(.30,.018); full natural hits, recovery and repeated events. Owner receives no trained model state. Actor sees initial public codes, public WRITE, typed routing, query alias map and times; no hidden paths, scores, targets, fit or owner IDs.",
+  "query_semantics": "Six queries in train/validation/IID/OOD;24 in long pressure. From query start, STOP forecasts common deadline; READ buys one high-quality four-token observation at deadline and updates memory. All worlds advance to same deadline even after STOP. No global multi-query optimality claim.",
+  "price": "READ pays original .07*public price scale + .003*query duration. STOP pays0. All neural candidates have same opportunities and raw data; selected purchases affect later histories.",
+  "ordinary_information": "Every core is constructed with the same public Q and metadata. Strong ordinary pool includes same-Q HMM computational realization, fitted GRU, stable dense SSM and typed cache. No HMM exclusion after outcomes.",
+  "full_posterior": "Forty-dimensional normalized conditional state of an explicit LEARNED latent intervention/emission model, not the exact physical owner posterior. PublicWRITE code y supplies column-softmaxW(:,y) over latentcode while keepingphase; READ uses row-normalized .01+.96*softmaxW(j,:) emission; time exp(exp(log_scale)*Q*dt). All40 phase/code coordinates enter shared40->32->4 discriminative neuralhead. Same-Q HMM exactlyrealizes the same learnedmodel.",
+  "head_parameter_fairness": "Head initialization and symbol encoder are shared across all kinds. Hidden width40. Actual family parameter counts, persistent state, compute, all fitting/validation/test and failures reported; matched updates are not matched CPU or parameter count.",
+  "learning": "Separate optimizer and state trajectory per core/control/fit. Common complete offline training collection purchases every possible query READ; logical collection fees counted once as common dataset investment. Class loss uses chosen-history prediction plus .25 supervised potential-READ loss. Unchosen observed tokens affect auxiliary training loss only, never actor history. Value actions are discrete, detached; no policy-gradient/global optimality claim.",
+  "light": "Training explores independent READ Bernoulli.5 across queries. Validation selects one of fixed price thresholds [-1,.05,.10,.20,1000] on net utility, then CE, then fixed priority. This is supplied finite light-controller family, not a learned optimal controller.",
+  "value": "Warmup16 updates uses same exploration; thereafter myopic current-query controller enumerates4 possible READ tokens. Uses classifier predictive probabilities and public .97/.01 channel, computes expected post-observation correctness minus actual price. Exact ties STOP. It does not receive the actual token before choice.",
+  "selection": "All80 independent fits complete before tests open. Per fit and control select ordinary family by validation utility, then CE, then fixed order HMM/GRU/SSM/cache. Train/val identities and all checkpoints frozen in SELECTION_FREEZE before test generation. The prepare process exits before tests. Root must remotely publish SELECTION_FREEZE and bind its SHA256 in POSTTRAIN_PUBLICATION before confirmation starts.",
+  "primary_gate": "IID and OOD D-B utility each mean>=.01, paired-fit two-sided Student t95 lower>0, exact paired signflip Holm across2domains<.05. Unit8fits. All A/B/C/D andinteraction reported. Same-Q HMM reference mandatory. Original gate is unchanged; a result against validation-selected ordinary is not exclusive representability proof.",
+  "long_pressure": "Predeclared exploratory24-query transfer, no separate acceptance claim; symbolic alias mapping is supplied and static.",
+  "factorized_intervention": "Post-training sameweights evaluation projects phase/content joint to product of its two marginals after each query advance/READ, retaining typed memory. Not independently retrained closure or necessity proof.",
+  "failure_rule": "Any nonfinite/failed job stops campaign and retains outputs; no successful-subset core result. All candidate/validation thresholds and factorization test compute counted. No adding test training after failure.",
+  "cost": "Linux wait4 full single worker includes interpreter/Torch imports, data preparation, every candidate/threshold/checkpoint, tests, ablation and output. Logical observation fees separate. Parent/developer/auditor costs explicit, no joule inference.",
+  "production_activation": false
+}
