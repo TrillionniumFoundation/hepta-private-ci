@@ -51,10 +51,17 @@ def main():
 
     with ThreadPoolExecutor(max_workers=2) as pool:
         results = list(pool.map(execute, roster))
+    freeze_exit = None
+    if all(r["wrapper_exit_code"] == 0 for r in results):
+        frozen = subprocess.run([sys.executable, "-m", "experiments.hcsn_v13_followup_20261102.joint_core.campaign",
+                                 "freeze", "--run", str(args.run)], capture_output=True, text=True)
+        (args.receipts/"FREEZE.log").write_text(frozen.stdout+frozen.stderr)
+        freeze_exit = frozen.returncode
     (args.receipts/"RESULTS.json").write_text(json.dumps({"models": results,
         "all_fit_wrappers_exited_zero": all(r["wrapper_exit_code"] == 0 for r in results),
+        "candidate_freeze_exit_code": freeze_exit,
         "nested_cost_rule": "Per-fit envelope CPU is already inside this launcher's enclosing worker; add the outer global receipt once."}, indent=2)+"\n")
-    return 0 if all(r["wrapper_exit_code"] == 0 for r in results) else 1
+    return 0 if all(r["wrapper_exit_code"] == 0 for r in results) and freeze_exit == 0 else 1
 
 
 if __name__ == "__main__":
