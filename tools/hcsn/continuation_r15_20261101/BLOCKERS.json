@@ -93,10 +93,10 @@
       "status": "unmeasured"
     },
     {
-      "detail": "At exact source889e7ace, GNU release, GNU Clippy and SDK actual builds/lint/tests pass, closing the observed YAML alias compilation failures. R16 numerical regression, R13, finite-model regressions, Codespell, blob policy and repository checks pass. Native platform tests were still running in recorded snapshot; cargo-deny fails. Later exec/supervisor/SSHSIG candidates need their own head verification. Later completed Windows shards1 and3 fail; raw logs and partial target/name classification retained without claiming all-shard counts.",
-      "evidence": "evidence/native_ci_889e/PARTIAL_WINDOWS_FAILURES.json",
+      "detail": "At exact8df6 source,18:42:38Z complete56 checks have38success,5failure,4skipped,9pending. Failures: Windows shards1/3,Windows Clippy,macOS ARM test,cargo-deny. BP/BPTT,fixed finite regressions,and compensated numerical replay succeed. Aggregate green does not qualify the platform matrix; newer source must be assessed separately.",
+      "evidence": "evidence/CI_8DF6_EXACT_HEAD_20261101T184238Z.json",
       "id": "repository_wide_ci",
-      "status": "open_native_builds_passed_remaining_runtime_and_policy"
+      "status": "open_exact_head_native_and_policy_failures"
     },
     {
       "detail": "PR4550 published; seven remote stage trees match local and research regressions/blob policy pass. Followup native/spelling checks remain separate.",
@@ -226,15 +226,45 @@
     },
     {
       "id": "actual_bp_bptt_remote_regression",
-      "status": "closed_for_v3_and_signed_v1_remote_replay_asset_extension_pending",
-      "detail": "At cf74634b actual runner job124931932431 passes all V3 and signed-V1 audit/training/checker steps, artifacts and source cleanliness. Original invalid job.env context run41334191519 retained; real actionlint red/green and explicit review corrections published. Fixed-z extension has own exact workflow/hash/CLI checks and needs new-head execution.",
-      "evidence": "evidence/ci_cf746/REMOTE_REGRESSION.json"
+      "status": "closed_for_v3_signed_v1_and_fixed_z_remote_replay",
+      "detail": "Actual job124931932431 at cf746 passes V3/signed-V1;257659-byte artifact downloaded and SHA checked, frozen record checker independently rerun. Actual job124934898501 at8df6 adds all fixed-z audit/training/raw-branch checks and source cleanliness successfully, including2057 states. Original workflow context failure and corrected reviews retained. No global native or efficacy admission.",
+      "evidence": "evidence/ci_8df6/REMOTE_REGRESSION.json"
     },
     {
       "id": "recurrent_default_saturation",
       "status": "open_negative_training_evidence",
-      "detail": "Fixed-z12-update functional run shifts default occupancy107/136 to127/136 and sampled transitions8 to4; loss improves only0.0234864percent. Q/R parameter gradients vanish in default; changing nine parameters confounds boundary movement with shape change. No efficacy gain or reduction in saturation established.",
+      "detail": "Fixed-z12-update run increases default occupancy107/136 to127/136 and reduces sampled transitions8 to4. Separately frozen two-layer run changes layer1 occupancy78 to60/136 and transitions6 to4, layer2 occupancy51 to53/136 and transitions0 to1. Protocols differ; no controlled anti-saturation or encoding advantage established. Default Q/R parameter gradients still vanish.",
       "evidence": "../hx_asset_recurrent_r16_20261101/RESULTS.md"
+    },
+    {
+      "id": "two_layer_boundary_time_communication",
+      "status": "passed_frozen_short_functional_protocol",
+      "detail": "Remote76f6e912 checkpoint precedes first evaluation. Two single-cell layers, batch8 sequences,16steps,18raw parameters; upstream margin conditions downstream theta and actual b2 at each used old-state step. Every sequence has nonzero within-rollout b2 range, first minimum0.00307267 and final0.00239923. No time-dependent financial-PDE solution claim.",
+      "evidence": "../hx_two_layer_boundary_r16_20261101/RESULTS.md"
+    },
+    {
+      "id": "two_layer_gradient_route_identification",
+      "status": "passed_first_order_four_mode_audit",
+      "detail": "Four identical-forward graphs isolate drive and conditioned-finance paths. Condition-only raw1 VJP3.8373087e-6; explicit direct-b1 condition step norm9.8696458e-7. Full equals drive+condition within3.0468e-11; both detached gives upstream zero; raw2 identical across modes.12contracts,4x7temporal comparisons,69 independent record comparisons pass; condition norm only0.8709percent of drive norm.",
+      "evidence": "../hx_two_layer_boundary_r16_20261101/RESULTS.md"
+    },
+    {
+      "id": "two_layer_continuous_boundedness",
+      "status": "proved_under_unverified_full_domain_assumptions",
+      "detail": "Reviewed invariant rectangles and one-way layer induction give continuous ODE boundedness/finite-time continuation assuming Q>=0,0<=R<=1,positive bounded boundary and joint regularity on a valid compact parameter domain. Tanh bounds do not prove domain validity; this is not an FP32 Euler, long-gradient or feedback-network theorem.",
+      "evidence": "analysis/TWO_LAYER_CONDITIONAL_BOUNDEDNESS_ZH.md"
+    },
+    {
+      "id": "recipient_boundary_shape_isolation",
+      "status": "open_not_identified_by_current_gradient_controls",
+      "detail": "The verified condition path changes nine recipient financial parameters, hence both boundary and curve shape. Explicit upstream-b1 chain is nonzero, but isolated causal benefit of recipient-boundary movement, architecture and task performance remains untested.",
+      "evidence": "../hx_two_layer_boundary_r16_20261101/RESULTS.md"
+    },
+    {
+      "id": "two_layer_remote_regression",
+      "status": "pending_actual_published_head_execution",
+      "detail": "Additive workflow retains all8 prior entries and adds frozen two-layer audit/training/record checker. Local actionlint,format,Bash/CLI/hash negative checks and independent wiring review passed. Prior8df6 green does not qualify new three-step execution.",
+      "evidence": "evidence/bp_bptt_two_layer/CI_EXTENSION_INDEPENDENT_REVIEW.json"
     }
   ],
   "new_confirmation_opened": false,
@@ -244,7 +274,7 @@
   "published_research_head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
   "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4550",
   "followup_ci_scope": "Final source and prospective-merge tree identities must be checked. Published prior-head green jobs do not qualify new native source repairs.",
-  "latest_assessed_head": "cf74634be5c1d7de8d2b0f24a1c4a8a4ab361b20",
+  "latest_assessed_head": "8df6e272e3a31a3fae0491dd2d511825e212290c",
   "confirmation_scope": "new_confirmation_opened concerns the original R14 efficacy task only; R16 numerical validation is separate.",
   "independent_numerical_validation_r16_opened": true,
   "executor_recovery": {
@@ -256,5 +286,6 @@
   },
   "compiled_recovery_checkpoint": "bfd3a5a6f9445ae681b27d3947865ad67ef5651e",
   "recurrent_source_checkpoint": "a629f9b1a9a1539f5360f8e44d2b81a09fdcf6ae",
-  "fixed_asset_source_checkpoint": "786e535bd2a396b14e9ffab4504bc855c6f4d6b1"
+  "fixed_asset_source_checkpoint": "786e535bd2a396b14e9ffab4504bc855c6f4d6b1",
+  "two_layer_source_checkpoint": "76f6e91285ff25926eda2c7bf57f70e99431c6ec"
 }
