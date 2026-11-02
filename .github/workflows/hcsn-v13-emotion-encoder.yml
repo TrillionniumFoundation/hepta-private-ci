@@ -1,0 +1,107 @@
+name: HCSN V13 fixed emotion encoder development
+
+on:
+  push:
+    branches: [research/hcsn-v13-emotion-encoder-20261102]
+    paths:
+      - .github/workflows/hcsn-v13-emotion-encoder.yml
+      - experiments/hcsn_v13_followup_20261102/emotion_encoder/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-v13-emotion-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  actual-fixed-emotion-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONNOUSERSITE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      NUMEXPR_NUM_THREADS: "1"
+      BLIS_NUM_THREADS: "1"
+      VECLIB_MAXIMUM_THREADS: "1"
+      GOTO_NUM_THREADS: "1"
+    steps:
+      - name: Exact frozen source and waveform transport
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/hcsn-v13-emotion-encoder.yml
+            /experiments/hcsn_v13_followup_20261102/emotion_encoder/
+            /experiments/hcsn_v13_followup_20261102/frontend/emotion_readout.py
+            /experiments/hcsn_v13_followup_20261102/frontend/strong_audio.py
+            /experiments/hcsn_v13_followup_20261102/frontend/reused_train001/encoder.py
+            /experiments/hcsn_v13_followup_20261102/frontend/reused_train001/inputs/train001/IDENTITY.json
+            /experiments/hcsn_v8_execution_20261101/economics/worker_cost.py
+            /experiments/hcsn_v8_execution_20261101/economics/worker_entry.py
+            /experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py
+      - name: Fixed Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Bind actual event head and preserve complete source snapshots
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          python -m experiments.hcsn_v13_followup_20261102.emotion_encoder.campaign identity \
+            --expected-head "$EXPECTED_HEAD" --out evidence/identity
+      - name: Fresh fixed scientific runtime and wheel identities
+        run: |
+          python -m venv "$RUNNER_TEMP/hcsn-emotion-python"
+          "$RUNNER_TEMP/hcsn-emotion-python/bin/python" -m pip install \
+            --disable-pip-version-check --only-binary=:all: \
+            --report evidence/DEPENDENCIES.json \
+            numpy==2.3.5 transformers==4.49.0 safetensors==0.5.3 \
+            > evidence/SETUP.log 2>&1
+          "$RUNNER_TEMP/hcsn-emotion-python/bin/python" -m pip install \
+            --disable-pip-version-check --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu \
+            --report evidence/TORCH_DEPENDENCIES.json torch==2.6.0+cpu \
+            >> evidence/SETUP.log 2>&1
+      - name: Restore exact accepted physical waveforms
+        run: |
+          "$RUNNER_TEMP/hcsn-emotion-python/bin/python" \
+            -m experiments.hcsn_v13_followup_20261102.emotion_encoder.transport restore \
+            --inputs experiments/hcsn_v13_followup_20261102/emotion_encoder/inputs \
+            --destination "$RUNNER_TEMP/hcsn-emotion-WAVEFORMS.npz"
+      - name: One bounded official acquisition with retained failure receipts
+        run: |
+          "$RUNNER_TEMP/hcsn-emotion-python/bin/python" \
+            -m experiments.hcsn_v8_execution_20261101.economics.worker_cost \
+            --out evidence/acquire_cost001 --timeout 360 --sample-interval .5 -- \
+            "$RUNNER_TEMP/hcsn-emotion-python/bin/python" \
+            -m experiments.hcsn_v13_followup_20261102.emotion_encoder.acquire \
+            --model-dir "$RUNNER_TEMP/hcsn-emotion-model" --evidence evidence/acquisition
+      - name: Actual sealed encoder then predeclared actor-OOF development
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          "$RUNNER_TEMP/hcsn-emotion-python/bin/python" \
+            -m experiments.hcsn_v8_execution_20261101.economics.worker_cost \
+            --out evidence/model_cost001 --timeout 1200 --sample-interval .5 -- \
+            "$RUNNER_TEMP/hcsn-emotion-python/bin/python" \
+            -m experiments.hcsn_v13_followup_20261102.emotion_encoder.campaign run \
+            --out evidence/model --model-dir "$RUNNER_TEMP/hcsn-emotion-model" \
+            --waveforms "$RUNNER_TEMP/hcsn-emotion-WAVEFORMS.npz" \
+            --source-identity evidence/identity/IDENTITY.json
+      - name: Retain complete success or failure evidence, excluding large upstream weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-v13-emotion-${{ github.sha }}-${{ github.run_attempt }}
+          path: evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

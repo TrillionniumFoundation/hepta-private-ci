@@ -1,0 +1,84 @@
+{
+  "schema": "hcsn-v13-emotion-independent-source-review.v1",
+  "status": "REVIEWED_FOR_REAL_CI_EXECUTION",
+  "blocking_findings_remaining": [],
+  "resolved_findings": [
+    {
+      "issue": "Official pretrained classifier tensors were exported in HEAD_REFERENCE_WEIGHTS.npz and could enter Git through the raw artifact ZIP.",
+      "resolution": "No raw pretrained tensors persisted. CI computes independent NumPyFP64 mean/tanh/dense/head equations in memory and retains parameter shapes/SHA and numerical error only."
+    }
+  ],
+  "reviewed_files": [
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/emotion_encoder/acquire.py",
+      "bytes": 4735,
+      "sha256": "83dbe7b6e8d50b4f804dcaf1f356c26cbe2c054625dc7f1fd68f8c0100f1a555"
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/emotion_encoder/campaign.py",
+      "bytes": 13333,
+      "sha256": "03c1b2b076c06dbbec4840023fd7a5f317c010ec708926c323c74e56929e94bd"
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/emotion_encoder/contracts.py",
+      "bytes": 3154,
+      "sha256": "967ecc587ec13819cbd1089966a4e537f772ae73902b916bb39e882da46f7886"
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/emotion_encoder/local_contracts.py",
+      "bytes": 8106,
+      "sha256": "360fc97e2792381e248bda1223240d2d4a8081675fcbb01f21c0aa92d49fb81e"
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/emotion_encoder/model.py",
+      "bytes": 6300,
+      "sha256": "97d07ecef3d8c526c884d5d3ecc988f2411e984023d1a5cced4dfc3e0a27f9e2"
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/emotion_encoder/prepare_waveforms.py",
+      "bytes": 6249,
+      "sha256": "b1382999e2bc912fdc3bf17ce50c0ed59e26e8e51e912b6252d8ccab76c9bc2f"
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/emotion_encoder/transport.py",
+      "bytes": 2588,
+      "sha256": "fc34339bc0d28832e7ab0b4ba04c208d069a0a7a73f276827bce8ede5d2948c4"
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/emotion_encoder/PROTOCOL.json",
+      "bytes": 4379,
+      "sha256": "1cc375c22457fe9415f792aba407a0802afbaf772d7c0ff779daba4ce47164de"
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/emotion_encoder/inputs/TRANSPORT.json",
+      "bytes": 878,
+      "sha256": "6ae2a1e341a8e4fa1658649b22d6ef473269614765a30235b5acfd048a2b72e3"
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/emotion_encoder/inputs/PCM_IDENTITY.json",
+      "bytes": 231688,
+      "sha256": "90496fa594509a8b44ea1b31ceb27f468ff40e4a5f6dff145237cb48779cb6dd"
+    },
+    {
+      "path": "experiments/hcsn_v13_followup_20261102/emotion_encoder/inputs/COHORT.json",
+      "bytes": 136792,
+      "sha256": "9272d2e7939a240557b0bada9f2c0fd161f64521702da63c03ed276bb2dd9e51"
+    },
+    {
+      "path": ".github/workflows/hcsn-v13-emotion-encoder.yml",
+      "bytes": 5050,
+      "sha256": "72c25174959369b2b2a24d2804c4b92f19884122edf09189f30b31bbd851aec8"
+    }
+  ],
+  "author_code_modified_by_reviewer": false,
+  "actual_emotion_model_forward_executed_by_reviewer": false,
+  "actual_emotion_weights_loaded_by_reviewer": false,
+  "pretrained_inference_and_quality_status": "PENDING_REAL_CI",
+  "frontend_admission_passed": false,
+  "limits": [
+    "Static source review and primary metadata only; actual dependency install, official weight acquisition and strict load remain real CI gates.",
+    "Historical288TRAIN actor-OOF is development, not a new independent cohort.",
+    "Only1second joint-origin audio prefixes; does not by itself integrate all AV windows or establish originalv6 equivalence.",
+    "Model/worker cost envelope excludes pip/setup, source authoring and unavailable historical/pretraining costs; physical energy and full family RSS remain unknown."
+  ]
+}
