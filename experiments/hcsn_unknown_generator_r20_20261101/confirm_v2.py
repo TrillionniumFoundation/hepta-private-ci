@@ -3,14 +3,11 @@
 import argparse
 import gzip
 import json
-import os
-import subprocess
-import sys
-import time
 
 import numpy as np
 
 from .campaign import ROOT, archive, frozen, predictions, public, write
+from .process_guard import outer, persist, workers
 from .world_confirm_v2 import sample
 
 
@@ -119,20 +116,9 @@ def worker(panel, spec, calibration):
 
 def run(spec, calibration):
     output = ROOT / "confirm_v2_01"
-    output.mkdir(exist_ok=False)
-    processes, receipts = [], {}
-    for panel in spec["confirmation_worlds"]:
-        log = (output / (panel + "_STDOUT.txt")).open("x")
-        process = subprocess.Popen([sys.executable, "-m", __spec__.name, "--worker", panel], stdout=log, stderr=subprocess.STDOUT)
-        log.close()
-        processes.append((panel, process))
-    for panel, process in processes:
-        _, status, usage = os.wait4(process.pid, 0)
-        process.returncode = os.waitstatus_to_exitcode(status)
-        receipts[panel] = dict(exit_code=process.returncode, child_cpu_seconds=usage.ru_utime + usage.ru_stime, max_rss_kib=usage.ru_maxrss)
-    write(output / "WORKER_RECEIPTS.json", receipts)
-    if any(value["exit_code"] for value in receipts.values()):
-        write(output / "FAILED.json", dict(complete_confirmation=False, original_r20_holdouts_opened=False))
+    receipts, launch_errors = workers(__spec__.name, spec["confirmation_worlds"], output)
+    if launch_errors or any(value["exit_code"] for value in receipts.values()):
+        persist(output / "FAILED.json", dict(complete_confirmation=False, original_r20_holdouts_opened=False))
         return 1
     panels = {panel:json.loads((output / panel / "SUMMARY.json").read_text()) for panel in receipts}
     def passed(panel):
@@ -160,20 +146,7 @@ def main():
         return
     if args.child:
         raise SystemExit(run(spec, calibration))
-    start = time.perf_counter()
-    process = subprocess.Popen([sys.executable, "-m", __spec__.name, "--child"])
-    _, status, usage = os.wait4(process.pid, 0)
-    process.returncode = os.waitstatus_to_exitcode(status)
-    worker_cpu = sum(x["child_cpu_seconds"] for x in json.loads((ROOT / "confirm_v2_01/WORKER_RECEIPTS.json").read_text()).values())
-    total_cpu = usage.ru_utime + usage.ru_stime
-    write(ROOT / "CONFIRM_V2_PROCESS_RECEIPT.json", dict(exit_code=process.returncode, child_cpu_seconds=total_cpu,
-        parallel_worker_cpu_sum=worker_cpu, wall_seconds=time.perf_counter() - start, max_process_rss_kib=usage.ru_maxrss,
-        concurrent_family_peak_rss_kib=None,
-        accounting_sanity_total_at_least_workers=total_cpu + 1e-6 >= worker_cpu,
-        scope="Outerwait4 fullcoordinator and5waitedpanel descendants; allattempts/raw/bootstrap/IOincluded. Workercosts includedonce; development/audits separate."))
-    if total_cpu + 1e-6 < worker_cpu:
-        raise RuntimeError("Process-family CPU accounting lost panel costs")
-    raise SystemExit(process.returncode)
+    raise SystemExit(outer(__spec__.name, ROOT / "CONFIRM_V2_PROCESS_RECEIPT.json", ROOT / "confirm_v2_01/WORKER_RECEIPTS.json"))
 
 
 if __name__ == "__main__":

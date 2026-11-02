@@ -3,12 +3,9 @@
 import argparse
 import gzip
 import json
-import os
-import subprocess
-import sys
-import time
 
 from .campaign import ROOT, archive, digest, frozen, predictions, public, upper, write
+from .process_guard import outer, persist, workers
 from .world_v2 import sample
 
 
@@ -48,22 +45,9 @@ def worker(stratum, spec):
 
 def run(spec):
     output = ROOT / "calibration_v2_01"
-    output.mkdir(exist_ok=False)
-    processes, receipts = [], {}
-    for stratum in spec["calibration_strata"]:
-        log = (output / (stratum + "_STDOUT.txt")).open("x")
-        process = subprocess.Popen([sys.executable, "-m", __spec__.name, "--worker", stratum],
-                                   stdout=log, stderr=subprocess.STDOUT)
-        log.close()
-        processes.append((stratum, process))
-    for stratum, process in processes:
-        _, status, usage = os.wait4(process.pid, 0)
-        process.returncode = os.waitstatus_to_exitcode(status)
-        receipts[stratum] = dict(exit_code=process.returncode, child_cpu_seconds=usage.ru_utime + usage.ru_stime,
-            max_rss_kib=usage.ru_maxrss, worlds_planned=spec["calibration_strata"][stratum])
-    write(output / "WORKER_RECEIPTS.json", receipts)
-    if any(receipt["exit_code"] for receipt in receipts.values()):
-        write(output / "FAILED.json", dict(calibration_qualified=False, reason="Worker failure; no complete-population estimate"))
+    receipts, launch_errors = workers(__spec__.name, spec["calibration_strata"], output)
+    if launch_errors or any(receipt["exit_code"] for receipt in receipts.values()):
+        persist(output / "FAILED.json", dict(calibration_qualified=False, reason="Worker failure; no complete-population estimate"))
         return 1
     grid = {stratum:json.loads((output / stratum / "COUNTS.json").read_text()) for stratum in spec["calibration_strata"]}
     delta = spec["family_error_probability"] / (len(spec["models"]) * len(grid) * 2)
@@ -103,21 +87,7 @@ def main():
         return
     if args.child:
         raise SystemExit(run(spec))
-    start = time.perf_counter()
-    process = subprocess.Popen([sys.executable, "-m", __spec__.name, "--child"])
-    _, status, usage = os.wait4(process.pid, 0)
-    process.returncode = os.waitstatus_to_exitcode(status)
-    receipts = json.loads((ROOT / "calibration_v2_01/WORKER_RECEIPTS.json").read_text())
-    worker_cpu = sum(value["child_cpu_seconds"] for value in receipts.values())
-    total_cpu = usage.ru_utime + usage.ru_stime
-    write(ROOT / "CALIBRATION_V2_PROCESS_RECEIPT.json", dict(exit_code=process.returncode,
-        child_cpu_seconds=total_cpu, parallel_worker_cpu_sum=worker_cpu, wall_seconds=time.perf_counter() - start,
-        max_process_rss_kib=usage.ru_maxrss, concurrent_family_peak_rss_kib=None,
-        accounting_sanity_total_at_least_workers=total_cpu + 1e-6 >= worker_cpu,
-        scope="Outerwait4 completecoordinator plus all3waitedworker descendants, imports/modelread/allcandidates/allattempts/raw+summaryoutput. Workercosts included, notaddedagain. Development/audits separate."))
-    if total_cpu + 1e-6 < worker_cpu:
-        raise RuntimeError("Process-family CPU accounting lost worker costs")
-    raise SystemExit(process.returncode)
+    raise SystemExit(outer(__spec__.name, ROOT / "CALIBRATION_V2_PROCESS_RECEIPT.json", ROOT / "calibration_v2_01/WORKER_RECEIPTS.json"))
 
 
 if __name__ == "__main__":
