@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v10_followup_20261101/review/audit_path_records.py", line 234, in <module>
+    result = audit(args.directory)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v10_followup_20261101/review/audit_path_records.py", line 180, in audit
+    check(left["selected"] == right["selected"] and left["stop_score"] == right["stop_score"], "same-law selected threshold decision")
+                                                    ~~~~^^^^^^^^^^^^^^
+KeyError: 'stop_score'

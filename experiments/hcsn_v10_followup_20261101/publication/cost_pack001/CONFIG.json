@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "experiments/hcsn_v10_followup_20261101/publication/transport.py",
+    "pack",
+    "--root",
+    ".",
+    "--scope",
+    "experiments/hcsn_v10_followup_20261101/frontend",
+    "--output",
+    "experiments/hcsn_v10_followup_20261101/publication"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v10_followup_20261101/publication/cost_pack001",
+  "timeout": 600.0,
+  "sample_interval": 0.5
+}

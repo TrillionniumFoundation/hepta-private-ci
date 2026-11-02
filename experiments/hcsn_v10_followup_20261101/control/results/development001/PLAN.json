@@ -1,0 +1,93 @@
+{
+  "created_unix": 1793580471.2350488,
+  "source_sha256": {
+    "experiments/hcsn_v9_followup_20261101/mechanisms/campaign.py": "d4e26c7732c2c986974810d3b0ce73f526534f592d24902fce99884c15003eab",
+    "experiments/hcsn_mechanism_content_v2/mechanism.py": "65754d240a34c5acf5eaac68a4aa3be1acbcfb96e07d735c5fcf6d4ca24e7fc0",
+    "experiments/hcsn_mechanism_content_v2/renewal.py": "aa6bedde8d15d473d0b8beef36805955447fa88cc906846ee48be927ecab0cb6",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/count_interventions.py": "572b11dfbb67cd3b92a4fc3d14f1b57f662f97323c4dd16d703d8fecbaefa58e",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/recurrent_counts.py": "eef2fd26eb764d70e58ce7b2334b751e9916e9cf2aaa3f7598ba47b24f44ceb7",
+    "experiments/hcsn_v10_followup_20261101/control/campaign.py": "cb106a0139af8c873020c406633b041f10f1e30f975890b03f3e9dcfb3afce50",
+    "experiments/hcsn_v10_followup_20261101/control/mpc.py": "5a292e6ff50ccca38607303bd7b136a06020816a2682b71801459f0329ab8419"
+  },
+  "assets_sha256": {
+    "experiments/hcsn_v9_followup_20261101/mechanisms/results/development001/SERVICE_FIT.json": "2bc33cdc61b5e02df4c42daacefb57c5348d1ed670f4f3e70f1dfa9a878ca6a0",
+    "experiments/hcsn_v9_followup_20261101/mechanisms/results/development001/ANALYTIC_FITS.json": "36de856095c362bf86c68e80e4d7d9a1b3afa19842f54f9b4356d62c7e078d8f",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81101/FIT.json": "5548d663dcf903bdbd062a4ba706cb1809a3467d69069ad9277c5b8cb6c957ac",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81101/models.pt": "95b89e04a4c2dc2b7dba78f754d7422bc6a1a3720ac3db131452b937278163f3",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81103/FIT.json": "f11bf7d477666bef4976cef8e99bf6917214cdfced278e865850d8ecb0f0a74e",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81103/models.pt": "1445db4ff68e612237bde72e93d3dd37a8db3de76db0c2ff3209232b35ca4df0",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81107/FIT.json": "8247ec5f9f0813090013ae9df19366798595e66f53dd405b4a01db81766243de",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81107/models.pt": "c5a43747b858f2927d29c69316c063cdb1777a0f341feead78777782232c6aca",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81109/FIT.json": "1082b9c41c10fa9aaf886cf073e1cc2fd3e6cbf771d9e2caca8b289ed3adf725",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81109/models.pt": "3fd4da24bf5faa029a1b2cddaf41fb158250e488842058b251b4e915e1c1fc21",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81113/FIT.json": "24605c5e539a9fb491c2f1fad8fbbe622034ac66db7b922aaa352d06d5dc3195",
+    "experiments/hcsn_v8_execution_20261101/mechanisms/results/development001/fit_81113/models.pt": "0332b3f548e170d8879aecc66b61a5fe619850b6cb99905765c15f68b6c3221d"
+  },
+  "world_namespace": [
+    20261101,
+    100839
+  ],
+  "policy_namespace": [
+    20261101,
+    101990
+  ],
+  "conditions": [
+    "matched",
+    "hidden_refractory_mismatch"
+  ],
+  "worlds_per_condition": 6,
+  "MPC_samples": 64,
+  "controllers": [
+    "lightweight",
+    "old_one_read",
+    "multi_read_mpc"
+  ],
+  "ordinary_families": [
+    "gru",
+    "ssm"
+  ],
+  "ordinary_fits": [
+    81101,
+    81103,
+    81107,
+    81109,
+    81113
+  ],
+  "ordinary_primary": "old count-validation NLL winner per fit; all SSM retained",
+  "analytic": {
+    "v9_fit_seed": "91103",
+    "mode": "original"
+  },
+  "config": {
+    "dt": 0.15,
+    "ticks": 20,
+    "deadlines": [
+      5,
+      10,
+      15,
+      20
+    ],
+    "budget": 3,
+    "classes": 5,
+    "read_cost": 0.04,
+    "light_threshold": 0.28,
+    "particles": 4,
+    "condition": "matched"
+  },
+  "primary": "MPC-light actual accuracy minus all READ fees; then same-controller D-B",
+  "MPC_scope": "all <=budget open-loop READ schedules, exact independent service mixture, 64 sampled conditional paths; replan every real tick",
+  "not_exact_DP": true,
+  "future_information": "model sampled paths only; never actual unread world",
+  "service_failure_posterior": "independent of latent path; failure retains prior observation and pays fee",
+  "pending_requests": "READ charged at request, arrives before next decision/output; one in flight; no decision with unresolved pending",
+  "training_scope": "frozen historical fits; unequal model priors/training; no strict architecture admission",
+  "claim": "finite known-model planning development; no real AV, network-service, optimality or economics adoption",
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.15.0+cpu",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "threads": 1
+  }
+}

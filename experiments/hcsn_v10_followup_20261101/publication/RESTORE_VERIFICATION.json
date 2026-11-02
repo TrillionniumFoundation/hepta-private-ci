@@ -1,0 +1,62 @@
+{
+  "schema": "hcsn-v10-transport-verification.v1",
+  "originals_compared": 1626,
+  "all_bytes_equal": true,
+  "byte_and_reuse_checks": 1628,
+  "reuse": {
+    "schema": "hcsn-v10-original-npz-transport.v1",
+    "installed_files": 0,
+    "identical_existing_files": 1626,
+    "verified_original_bytes": 46161565,
+    "all_original_bytes_verified": true
+  },
+  "negative_controls": [
+    {
+      "name": "unsafe_relative:../outside",
+      "rejected": true
+    },
+    {
+      "name": "unsafe_relative:/absolute",
+      "rejected": true
+    },
+    {
+      "name": "unsafe_relative:folder//empty",
+      "rejected": true
+    },
+    {
+      "name": "unsafe_relative:folder/../escape",
+      "rejected": true
+    },
+    {
+      "name": "conflicting_existing_original",
+      "rejected": true
+    },
+    {
+      "name": "symlink_destination_root",
+      "rejected": true
+    },
+    {
+      "name": "source_symlink",
+      "rejected": true
+    }
+  ],
+  "negative_controls_rejected": 10,
+  "all_original_npz_bytes_preserved": true,
+  "source_sha256": "edf4ed6999492cc8c3f97fc568726cef66314d28c49ffc2d77bafbaab4211263",
+  "manifest_sha256": "fad9b915ef9cf95ac0fee644792effadb035fd256085c3fe6d45bc41de91e970",
+  "scope": "Transport integrity only; not scientific admission. Full fresh reconstruction and unchanged existing-byte reuse were actually executed; original local NPZ files retained.",
+  "archive_corruption_controls": [
+    {
+      "name": "manifest_path_escape",
+      "rejected_before_any_original_install": true
+    },
+    {
+      "name": "valid_hash_tar_inventory_mismatch",
+      "rejected_before_any_original_install": true
+    },
+    {
+      "name": "corrupted_compressed_part",
+      "rejected_before_any_original_install": true
+    }
+  ]
+}

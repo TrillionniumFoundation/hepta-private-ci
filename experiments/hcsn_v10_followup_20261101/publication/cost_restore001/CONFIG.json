@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "experiments/hcsn_v10_followup_20261101/publication/transport.py",
+    "restore",
+    "--manifest",
+    "experiments/hcsn_v10_followup_20261101/publication/MANIFEST.json",
+    "--destination",
+    "/workspace/scratch/3511158fb83b/v10_transport_reconstruction001"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v10_followup_20261101/publication/cost_restore001",
+  "timeout": 600.0,
+  "sample_interval": 0.5
+}

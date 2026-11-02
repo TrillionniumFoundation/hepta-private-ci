@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v10_followup_20261101.review.replay_neural",
+    "--directory",
+    "experiments/hcsn_v10_followup_20261101/persistent_av/results001",
+    "--out",
+    "experiments/hcsn_v10_followup_20261101/review/neural_replay001"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v10_followup_20261101/review/cost_neural_replay001",
+  "timeout": 1800.0,
+  "sample_interval": 0.2
+}

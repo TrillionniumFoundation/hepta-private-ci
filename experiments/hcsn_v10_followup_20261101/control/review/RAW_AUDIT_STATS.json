@@ -1,0 +1,580 @@
+{
+  "status": "passed",
+  "checks": 665587,
+  "counters": {
+    "main_runs": 396,
+    "fixed_replays": 132,
+    "outputs": 1584,
+    "read_requests": 1018,
+    "failed_reads": 443,
+    "MPC_decisions": 1641,
+    "candidate_scores": 597950
+  },
+  "maximum_candidate_mixture_error": 0.0,
+  "statistics": {
+    "matched": {
+      "MPC-light_primary_ordinary": {
+        "mean": -0.046,
+        "mean_fraction": "-23/500",
+        "interval95": [
+          -0.26,
+          0.11366666666666667
+        ],
+        "interval95_fractions": [
+          "-13/50",
+          "341/3000"
+        ],
+        "per_world_fractions": [
+          "23/250",
+          "1/20",
+          "-27/50",
+          "-1/25",
+          "21/100",
+          "-6/125"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "MPC-light_analytic": {
+        "mean": -0.06166666666666667,
+        "mean_fraction": "-37/600",
+        "interval95": [
+          -0.27666666666666667,
+          0.09833333333333333
+        ],
+        "interval95_fractions": [
+          "-83/300",
+          "59/600"
+        ],
+        "per_world_fractions": [
+          "0",
+          "0",
+          "-27/50",
+          "0",
+          "21/100",
+          "-1/25"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "old-light_primary_ordinary": {
+        "mean": -0.05,
+        "mean_fraction": "-1/20",
+        "interval95": [
+          -0.2613333333333333,
+          0.111
+        ],
+        "interval95_fractions": [
+          "-98/375",
+          "111/1000"
+        ],
+        "per_world_fractions": [
+          "23/250",
+          "1/20",
+          "-27/50",
+          "-8/125",
+          "21/100",
+          "-6/125"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "old-light_analytic": {
+        "mean": -0.075,
+        "mean_fraction": "-3/40",
+        "interval95": [
+          -0.2833333333333333,
+          0.085
+        ],
+        "interval95_fractions": [
+          "-17/60",
+          "17/200"
+        ],
+        "per_world_fractions": [
+          "0",
+          "0",
+          "-27/50",
+          "-2/25",
+          "21/100",
+          "-1/25"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "A": {
+        "mean": 0.6243333333333333,
+        "mean_fraction": "1873/3000",
+        "interval95": [
+          0.497,
+          0.7746666666666666
+        ],
+        "interval95_fractions": [
+          "497/1000",
+          "581/750"
+        ],
+        "per_world_fractions": [
+          "219/500",
+          "29/50",
+          "67/100",
+          "24/25",
+          "67/100",
+          "107/250"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": true,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "B": {
+        "mean": 0.5783333333333334,
+        "mean_fraction": "347/600",
+        "interval95": [
+          0.3466666666666667,
+          0.7933333333333333
+        ],
+        "interval95_fractions": [
+          "26/75",
+          "119/150"
+        ],
+        "per_world_fractions": [
+          "53/100",
+          "63/100",
+          "13/100",
+          "23/25",
+          "22/25",
+          "19/50"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": true,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "C": {
+        "mean": 0.6633333333333333,
+        "mean_fraction": "199/300",
+        "interval95": [
+          0.5383333333333333,
+          0.8016666666666666
+        ],
+        "interval95_fractions": [
+          "323/600",
+          "481/600"
+        ],
+        "per_world_fractions": [
+          "63/100",
+          "63/100",
+          "67/100",
+          "24/25",
+          "67/100",
+          "21/50"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": true,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "D": {
+        "mean": 0.6016666666666667,
+        "mean_fraction": "361/600",
+        "interval95": [
+          0.38,
+          0.8233333333333334
+        ],
+        "interval95_fractions": [
+          "19/50",
+          "247/300"
+        ],
+        "per_world_fractions": [
+          "63/100",
+          "63/100",
+          "13/100",
+          "24/25",
+          "22/25",
+          "19/50"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": true,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "D-B": {
+        "mean": 0.023333333333333334,
+        "mean_fraction": "7/300",
+        "interval95": [
+          0.0,
+          0.056666666666666664
+        ],
+        "interval95_fractions": [
+          "0",
+          "17/300"
+        ],
+        "per_world_fractions": [
+          "1/10",
+          "0",
+          "0",
+          "1/25",
+          "0",
+          "0"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "interaction": {
+        "mean": -0.015666666666666666,
+        "mean_fraction": "-47/3000",
+        "interval95": [
+          -0.053,
+          0.016
+        ],
+        "interval95_fractions": [
+          "-53/1000",
+          "2/125"
+        ],
+        "per_world_fractions": [
+          "-23/250",
+          "-1/20",
+          "0",
+          "1/25",
+          "0",
+          "1/125"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "MPC-light_gru": {
+        "mean": -0.046,
+        "mean_fraction": "-23/500",
+        "interval95": [
+          -0.26,
+          0.11366666666666667
+        ],
+        "interval95_fractions": [
+          "-13/50",
+          "341/3000"
+        ],
+        "per_world_fractions": [
+          "23/250",
+          "1/20",
+          "-27/50",
+          "-1/25",
+          "21/100",
+          "-6/125"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "MPC-light_ssm": {
+        "mean": -0.028,
+        "mean_fraction": "-7/250",
+        "interval95": [
+          -0.24866666666666667,
+          0.14533333333333334
+        ],
+        "interval95_fractions": [
+          "-373/1500",
+          "109/750"
+        ],
+        "per_world_fractions": [
+          "21/250",
+          "1/10",
+          "-27/50",
+          "-3/125",
+          "63/250",
+          "-1/25"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      }
+    },
+    "hidden_refractory_mismatch": {
+      "MPC-light_primary_ordinary": {
+        "mean": -0.07266666666666667,
+        "mean_fraction": "-109/1500",
+        "interval95": [
+          -0.207,
+          0.019333333333333334
+        ],
+        "interval95_fractions": [
+          "-207/1000",
+          "29/1500"
+        ],
+        "per_world_fractions": [
+          "-3/125",
+          "-39/100",
+          "-1/25",
+          "-9/125",
+          "1/25",
+          "1/20"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "MPC-light_analytic": {
+        "mean": -0.06833333333333333,
+        "mean_fraction": "-41/600",
+        "interval95": [
+          -0.2833333333333333,
+          0.09833333333333333
+        ],
+        "interval95_fractions": [
+          "-17/60",
+          "59/600"
+        ],
+        "per_world_fractions": [
+          "-1/25",
+          "-27/50",
+          "-1/25",
+          "-2/25",
+          "1/25",
+          "1/4"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "old-light_primary_ordinary": {
+        "mean": 0.0006666666666666666,
+        "mean_fraction": "1/1500",
+        "interval95": [
+          -0.17733333333333334,
+          0.14266666666666666
+        ],
+        "interval95_fractions": [
+          "-133/750",
+          "107/750"
+        ],
+        "per_world_fractions": [
+          "63/500",
+          "-39/100",
+          "3/50",
+          "-4/125",
+          "-1/100",
+          "1/4"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "old-light_analytic": {
+        "mean": -0.02,
+        "mean_fraction": "-1/50",
+        "interval95": [
+          -0.24833333333333332,
+          0.15333333333333332
+        ],
+        "interval95_fractions": [
+          "-149/600",
+          "23/150"
+        ],
+        "per_world_fractions": [
+          "21/100",
+          "-27/50",
+          "-1/25",
+          "-1/25",
+          "1/25",
+          "1/4"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "A": {
+        "mean": 0.46066666666666667,
+        "mean_fraction": "691/1500",
+        "interval95": [
+          0.2906666666666667,
+          0.6256666666666667
+        ],
+        "interval95_fractions": [
+          "109/375",
+          "1877/3000"
+        ],
+        "per_world_fractions": [
+          "101/250",
+          "27/100",
+          "57/100",
+          "71/100",
+          "17/25",
+          "13/100"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": true,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "B": {
+        "mean": 0.388,
+        "mean_fraction": "97/250",
+        "interval95": [
+          0.13966666666666666,
+          0.6
+        ],
+        "interval95_fractions": [
+          "419/3000",
+          "3/5"
+        ],
+        "per_world_fractions": [
+          "19/50",
+          "-3/25",
+          "53/100",
+          "319/500",
+          "18/25",
+          "9/50"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": true,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "C": {
+        "mean": 0.49666666666666665,
+        "mean_fraction": "149/300",
+        "interval95": [
+          0.3233333333333333,
+          0.6416666666666667
+        ],
+        "interval95_fractions": [
+          "97/300",
+          "77/120"
+        ],
+        "per_world_fractions": [
+          "21/50",
+          "21/50",
+          "67/100",
+          "71/100",
+          "63/100",
+          "13/100"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": true,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "D": {
+        "mean": 0.42833333333333334,
+        "mean_fraction": "257/600",
+        "interval95": [
+          0.17833333333333334,
+          0.6083333333333333
+        ],
+        "interval95_fractions": [
+          "107/600",
+          "73/120"
+        ],
+        "per_world_fractions": [
+          "19/50",
+          "-3/25",
+          "63/100",
+          "63/100",
+          "67/100",
+          "19/50"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": true,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "D-B": {
+        "mean": 0.04033333333333333,
+        "mean_fraction": "121/3000",
+        "interval95": [
+          -0.019333333333333334,
+          0.11533333333333333
+        ],
+        "interval95_fractions": [
+          "-29/1500",
+          "173/1500"
+        ],
+        "per_world_fractions": [
+          "0",
+          "0",
+          "1/10",
+          "-1/125",
+          "-1/20",
+          "1/5"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "interaction": {
+        "mean": 0.004333333333333333,
+        "mean_fraction": "13/3000",
+        "interval95": [
+          -0.07766666666666666,
+          0.096
+        ],
+        "interval95_fractions": [
+          "-233/3000",
+          "12/125"
+        ],
+        "per_world_fractions": [
+          "-2/125",
+          "-3/20",
+          "0",
+          "-1/125",
+          "0",
+          "1/5"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "MPC-light_gru": {
+        "mean": -0.07266666666666667,
+        "mean_fraction": "-109/1500",
+        "interval95": [
+          -0.207,
+          0.019333333333333334
+        ],
+        "interval95_fractions": [
+          "-207/1000",
+          "29/1500"
+        ],
+        "per_world_fractions": [
+          "-3/125",
+          "-39/100",
+          "-1/25",
+          "-9/125",
+          "1/25",
+          "1/20"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "MPC-light_ssm": {
+        "mean": -0.06166666666666667,
+        "mean_fraction": "-37/600",
+        "interval95": [
+          -0.25433333333333336,
+          0.08266666666666667
+        ],
+        "interval95_fractions": [
+          "-763/3000",
+          "31/375"
+        ],
+        "per_world_fractions": [
+          "-3/125",
+          "-49/100",
+          "-1/25",
+          "-6/125",
+          "4/125",
+          "1/5"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      }
+    }
+  },
+  "raw_sha256": "690af90d0fcd1fef477e6047688f3daa6fb038d51c3f9f918dbf2f893be19970",
+  "scope": "record/fee/successor/all schedule mixtures and choices; MC simulated frequencies not independently neural-forward replayed",
+  "limits": [
+    "6 independent worlds per condition; historical fits not independent worlds",
+    "shared known-law conditional sampler is a model prior, not ordinary learned dynamics",
+    "MPC enumerates open-loop schedules and replans; not optimal feedback DP",
+    "quality and measured full CPU must both be assessed; no energy or memory adoption claim"
+  ]
+}

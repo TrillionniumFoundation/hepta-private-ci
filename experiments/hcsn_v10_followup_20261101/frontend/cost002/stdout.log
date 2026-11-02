@@ -1,0 +1,75 @@
+{"kind": "owned_exec_identity", "identity": {"proc_pid": 532112, "namespace_pids": [532112, 6], "start_ticks": 5478507, "parent_proc_pid": 532111}}
+{
+  "audio": {
+    "selection": "moments-linear-a1",
+    "validation": {
+      "n": 12,
+      "correct": 4,
+      "accuracy": 0.3333333333333333,
+      "nll": 1.6714612499134673,
+      "brier": 0.7912566237062357
+    },
+    "old_test": {
+      "n": 12,
+      "correct": 3,
+      "accuracy": 0.25,
+      "nll": 1.7352316101077214,
+      "brier": 0.8139288014895049,
+      "original_v3_head": {
+        "n": 12,
+        "correct": 3,
+        "accuracy": 0.25,
+        "nll": 1.8657533918376303,
+        "brier": 0.8088079667198139
+      }
+    }
+  },
+  "video": {
+    "selection": "temporal-rbf1-a0.001",
+    "validation": {
+      "n": 12,
+      "correct": 2,
+      "accuracy": 0.16666666666666666,
+      "nll": 1.778902648491908,
+      "brier": 0.8284794187598202
+    },
+    "old_test": {
+      "n": 12,
+      "correct": 1,
+      "accuracy": 0.08333333333333333,
+      "nll": 1.809043699865293,
+      "brier": 0.8397351525804039,
+      "original_v3_head": {
+        "n": 12,
+        "correct": 2,
+        "accuracy": 0.16666666666666666,
+        "nll": 2.526231269354331,
+        "brier": 1.1446568397080357
+      }
+    }
+  },
+  "av": {
+    "selection": "temporal-linear-a0.1",
+    "validation": {
+      "n": 12,
+      "correct": 3,
+      "accuracy": 0.25,
+      "nll": 1.659437401251597,
+      "brier": 0.7915539914963722
+    },
+    "old_test": {
+      "n": 12,
+      "correct": 2,
+      "accuracy": 0.16666666666666666,
+      "nll": 1.6932469601857063,
+      "brier": 0.8081208952106499,
+      "original_v3_head": {
+        "n": 12,
+        "correct": 5,
+        "accuracy": 0.4166666666666667,
+        "nll": 1.8775912111615396,
+        "brier": 0.9140992014435368
+      }
+    }
+  }
+}

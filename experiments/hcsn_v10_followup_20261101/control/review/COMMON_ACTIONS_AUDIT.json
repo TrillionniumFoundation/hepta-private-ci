@@ -1,0 +1,109 @@
+{
+  "status": "passed",
+  "checks": 3366,
+  "ordinary_runs": 120,
+  "output_comparisons": 480,
+  "all_actions_accesses_observations_and_fees_equal": true,
+  "output_probability_changes": 270,
+  "output_class_changes": 17,
+  "ordinary_minus_analytic_on_analytic_MPC_schedule": {
+    "matched": {
+      "gru": {
+        "mean": -0.016666666666666666,
+        "mean_fraction": "-1/60",
+        "interval95": [
+          -0.05,
+          0.0
+        ],
+        "interval95_fractions": [
+          "-1/20",
+          "0"
+        ],
+        "per_world_fractions": [
+          "-1/10",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "ssm": {
+        "mean": 0.0,
+        "mean_fraction": "0",
+        "interval95": [
+          0.0,
+          0.0
+        ],
+        "interval95_fractions": [
+          "0",
+          "0"
+        ],
+        "per_world_fractions": [
+          "0",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      }
+    },
+    "hidden_refractory_mismatch": {
+      "gru": {
+        "mean": 0.008333333333333333,
+        "mean_fraction": "1/120",
+        "interval95": [
+          0.0,
+          0.025
+        ],
+        "interval95_fractions": [
+          "0",
+          "1/40"
+        ],
+        "per_world_fractions": [
+          "0",
+          "0",
+          "0",
+          "0",
+          "1/20",
+          "0"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      },
+      "ssm": {
+        "mean": 0.008333333333333333,
+        "mean_fraction": "1/120",
+        "interval95": [
+          0.0,
+          0.025
+        ],
+        "interval95_fractions": [
+          "0",
+          "1/40"
+        ],
+        "per_world_fractions": [
+          "0",
+          "0",
+          "0",
+          "0",
+          "1/20",
+          "0"
+        ],
+        "independent_worlds": 6,
+        "strict_positive_lower_bound": false,
+        "method": "exact world rewards; fits averaged within world; 10000 world-block bootstrap draws seed101603"
+      }
+    }
+  },
+  "scope": "same actual actions and observation successors; independent output arithmetic; no full neural-forward replay",
+  "raw_sha256": "c8f14eb555aecb9df54ff5ffef7d338d750139e4adb7e2e657b1c24a68b5bc1f"
+}
