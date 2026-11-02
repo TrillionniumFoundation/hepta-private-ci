@@ -1,0 +1,94 @@
+diff --git a/.github/workflows/hcsn-financial-autograd-r16.yml b/.github/workflows/hcsn-financial-autograd-r16.yml
+index 4661ccf..dcdf0fe 100644
+--- a/.github/workflows/hcsn-financial-autograd-r16.yml
++++ b/.github/workflows/hcsn-financial-autograd-r16.yml
+@@ -9,6 +9,7 @@ name: HCSN financial BP and recurrent BPTT R16
+       - tools/hcsn/hx_autograd_r16_20261101/**
+       - tools/hcsn/hx_recurrent_r16_20261101/**
+       - tools/hcsn/hx_asset_recurrent_r16_20261101/**
++      - tools/hcsn/hx_two_layer_boundary_r16_20261101/**
+       - tools/hcsn/compiled_fp32_r16_20261101/recovery/**
+ 
+ permissions:
+@@ -30,10 +31,12 @@ jobs:
+       ADAPTER_ROOT: tools/hcsn/hx_autograd_r16_20261101
+       RECURRENT_ROOT: tools/hcsn/hx_recurrent_r16_20261101
+       ASSET_ROOT: tools/hcsn/hx_asset_recurrent_r16_20261101
++      TWO_LAYER_ROOT: tools/hcsn/hx_two_layer_boundary_r16_20261101
+       FINANCIAL_ROOT: tools/hcsn/compiled_fp32_r16_20261101/recovery
+       ADAPTER_PROTOCOL_SHA256: 9343b6c6727995809a4ec19b4059e3e0806dca5a822807aff55db26b667abf72
+       RECURRENT_PROTOCOL_SHA256: 87f30e6c00ea88532cc1e2e7be89174a18d2caef2799a4b0712421b0e9c8f241
+       ASSET_PROTOCOL_SHA256: 7e4791bee5b934f0aa55f603529d7ada5362b6908e70955f1441f5378691ddaa
++      TWO_LAYER_PROTOCOL_SHA256: da07c580e258f51517f124d6d7b902a8ae3c6700fb58cb96948c18447c740ad7
+     steps:
+       - name: Check out exact source candidate
+         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+@@ -44,6 +47,7 @@ jobs:
+             tools/hcsn/hx_autograd_r16_20261101
+             tools/hcsn/hx_recurrent_r16_20261101
+             tools/hcsn/hx_asset_recurrent_r16_20261101
++            tools/hcsn/hx_two_layer_boundary_r16_20261101
+             tools/hcsn/compiled_fp32_r16_20261101/recovery
+ 
+       - name: Initialize runner-local paths
+@@ -71,6 +75,7 @@ jobs:
+           adapter = Path(os.environ["ADAPTER_ROOT"])
+           recurrent = Path(os.environ["RECURRENT_ROOT"])
+           asset = Path(os.environ["ASSET_ROOT"])
++          two_layer = Path(os.environ["TWO_LAYER_ROOT"])
+           financial = Path(os.environ["FINANCIAL_ROOT"])
+           expected = {
+               adapter / "ADAPTER_PROTOCOL.json": os.environ["ADAPTER_PROTOCOL_SHA256"],
+@@ -79,6 +84,8 @@ jobs:
+               recurrent / "check_recurrent_results.py": "5b9d063089a4295f865b971da5d5ae13b260ad7c8ba74a331211c44c33fb4fbb",
+               asset / "ASSET_PROTOCOL.json": os.environ["ASSET_PROTOCOL_SHA256"],
+               asset / "check_asset_results.py": "6bfdadae171d833d32039d892fe26d9687aa9b888351c8a3f19111e68293c369",
++              two_layer / "TWO_LAYER_PROTOCOL.json": os.environ["TWO_LAYER_PROTOCOL_SHA256"],
++              two_layer / "check_two_layer_results.py": "8674bb2e322b2c1229928efdbbcd022224936896d8c7cf047a25dc055c3d3f8e",
+               financial / "RECOVERY_PROTOCOL_V1.json": "76480c80df71700c7a39906936521e5542ddc9c788282ea3a165dffafa7dc1f0",
+               financial / "recovered.so": "a96fbe8ee36be2fdaa2a5894462f415f9724acf199ae31745c471092c26f6615",
+           }
+@@ -197,6 +204,43 @@ jobs:
+             --financial-root "$FINANCIAL_ROOT" \
+             --output "$HCSN_RESULTS/asset-check.json"
+ 
++      - name: Audit the two-layer boundary-gradient routes
++        id: two_layer_audit
++        if: always() && !cancelled() && steps.runtime.outcome == 'success'
++        shell: bash
++        run: |
++          set -euo pipefail
++          "$HCSN_PYTHON" -B "$TWO_LAYER_ROOT/audit_two_layer.py" \
++            --adapter-root "$ADAPTER_ROOT" \
++            --financial-root "$FINANCIAL_ROOT" \
++            --protocol-sha256 "$TWO_LAYER_PROTOCOL_SHA256" \
++            --output "$HCSN_RESULTS/two-layer-audit.json.gz"
++
++      - name: Train both layers through their continuous boundary links
++        id: two_layer_training
++        if: always() && !cancelled() && steps.runtime.outcome == 'success'
++        shell: bash
++        run: |
++          set -euo pipefail
++          "$HCSN_PYTHON" -B "$TWO_LAYER_ROOT/train_two_layer.py" \
++            --adapter-root "$ADAPTER_ROOT" \
++            --financial-root "$FINANCIAL_ROOT" \
++            --protocol-sha256 "$TWO_LAYER_PROTOCOL_SHA256" \
++            --output "$HCSN_RESULTS/two-layer-training.json.gz"
++
++      - name: Independently check both routes and the full update history
++        if: always() && !cancelled() && steps.two_layer_audit.outcome == 'success' && steps.two_layer_training.outcome == 'success'
++        shell: bash
++        run: |
++          set -euo pipefail
++          "$HCSN_PYTHON" -B "$TWO_LAYER_ROOT/check_two_layer_results.py" \
++            --root "$TWO_LAYER_ROOT" \
++            --protocol-sha256 "$TWO_LAYER_PROTOCOL_SHA256" \
++            --audit "$HCSN_RESULTS/two-layer-audit.json.gz" \
++            --training "$HCSN_RESULTS/two-layer-training.json.gz" \
++            --financial-root "$FINANCIAL_ROOT" \
++            --output "$HCSN_RESULTS/two-layer-check.json"
++
+       - name: Preserve complete BP and BPTT outputs
+         if: always() && !cancelled()
+         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
