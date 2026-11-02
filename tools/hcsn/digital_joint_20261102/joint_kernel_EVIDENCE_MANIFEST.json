@@ -1,0 +1,96 @@
+{
+  "archive": "joint_kernel_EVIDENCE.tar.gz",
+  "bytes": 492844,
+  "expected_incomplete_snapshots": [
+    "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001_sources.json.gz"
+  ],
+  "layout": "repository-root relative paths",
+  "member_count": 18,
+  "members": {
+    "tools/hcsn/digital_joint_20261102/joint_kernel_README.md": {
+      "bytes": 7177,
+      "sha256": "e37a80b595fd4fd623db4f48c4c060aa7daf3c31b27ff6cf8285b5400da1c48b"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_REFERENCE_MANIFEST.json": {
+      "bytes": 1162,
+      "sha256": "b703480b8de575f7515a9c95745302c7f676417d7c88745273d65ae03e2f475a"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_RESULT.md": {
+      "bytes": 3914,
+      "sha256": "3253ca781e7cbd043a38d09962180225de0e7b06cb3fdf3eb095f52f98cbbaab"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_RESULT.md": {
+      "bytes": 5042,
+      "sha256": "e3acd78b212c14425c81cadaf30018df1823027a7cc92bf1cc13045d2ed1962b"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001.json": {
+      "bytes": 785,
+      "sha256": "4d992e92c0c491a815b9be38b07994548b4fd19e0f759426dcd9d60db64290f3"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001_recovered_sources.json.gz": {
+      "bytes": 7098,
+      "sha256": "2a102205ca539cf93b2eaa111ef5925fd3e145b0c75afa789a585e3a852d3e52"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001_sources.json.gz": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_002.json": {
+      "bytes": 368523,
+      "sha256": "39072af489f7c4a5fe10f9aadb9d9deeaf6cb15d8222f5557b713b49a865c7df"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_002_sources.json.gz": {
+      "bytes": 13721,
+      "sha256": "189d2784801a9ac18c4b168682b8bdfe7164c44a7f6288c83971bea857ff6e32"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_attempt_001.json": {
+      "bytes": 222617,
+      "sha256": "7d6bbc00fbfd628cb718830f507fe0291eb2d878eb193703fd6591a38e3dad6b"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_attempt_001_sources.json.gz": {
+      "bytes": 14748,
+      "sha256": "52e2522ddb896b73208e001c80bbdcce04270c16234616340254a40d207f3b60"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001.json": {
+      "bytes": 1165,
+      "sha256": "0cd8937163fcd0b1463e07e6b393c4691573d29f094cd50a5ea50e87757ebc87"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001_RAW.json.gz": {
+      "bytes": 227724,
+      "sha256": "d2d2b4c1cb1cbfbba84b7b885eee09f46b714bede0393c51181f4e1982cc84c3"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001_sources.json.gz": {
+      "bytes": 5911,
+      "sha256": "05b71f67ba8fcc8118183b2f9bbea093a28eae0e2549d04fc5ffcf14ced36803"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_001.json": {
+      "bytes": 659,
+      "sha256": "d3600366ec7efd5fca7757b6e974f0d8008b97bfef723dc7f61c31c2c2ddf9f3"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_001_sources.json.gz": {
+      "bytes": 8690,
+      "sha256": "8584771263a2b33799f319695e32af1f0ff79fe4a5abfc91ea4cdf48497b3ac4"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_002.json": {
+      "bytes": 44673,
+      "sha256": "09b741996e565897e56953ce6e2d1f11e5e7983fdb2917dfe0e3b4396c9ffe2f"
+    },
+    "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_002_sources.json.gz": {
+      "bytes": 8736,
+      "sha256": "c71b174f7ec7cd82af6d648c2ebe1ad2c44db33aeea6307fb8e2a95d2c05d1e4"
+    }
+  },
+  "no_new_independent_samples": "The 2000 trajectories are exact same-seed recording replay of archived CSV rows",
+  "raw_retained": {
+    "halfstep_PDE_calls": 14,
+    "same_seed_events": 2854,
+    "same_seed_paths": 2000,
+    "sensitivity_PDE_calls": 30
+  },
+  "retained_failed_attempts": [
+    "47check attempt001 legacy import",
+    "sensitivity attempt001 ENOSPC before numerical run"
+  ],
+  "schema": "joint-kernel-evidence-archive-v1",
+  "sha256": "ffa4c2c1c7d05c2c1e2d457bcb39252c9807c0dd60b9bc15fd6afa61a5edc5d5"
+}

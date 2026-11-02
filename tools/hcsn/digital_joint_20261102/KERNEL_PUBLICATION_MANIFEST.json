@@ -1,0 +1,449 @@
+{
+  "archive": {
+    "archive": "joint_kernel_EVIDENCE.tar.gz",
+    "bytes": 492844,
+    "expected_incomplete_snapshots": [
+      "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001_sources.json.gz"
+    ],
+    "git_blob_sha": "c2252e4ab5b15fb6715753b98380e089409d1c21",
+    "layout": "repository-root relative paths",
+    "member_count": 18,
+    "raw_retained": {
+      "halfstep_PDE_calls": 14,
+      "same_seed_events": 2854,
+      "same_seed_paths": 2000,
+      "sensitivity_PDE_calls": 30
+    },
+    "sha256": "ffa4c2c1c7d05c2c1e2d457bcb39252c9807c0dd60b9bc15fd6afa61a5edc5d5"
+  },
+  "canonical_publication_commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+  "file_level_inventory": [
+    {
+      "bytes": 10539,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "c387cb9bbe524b5391bd9eec7ea9d3b68bfcc820",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel.py",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "0439cf12f4519c29b1b079adb2ebc66eb86a252c59a2754770acc58ed5cff0e9",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel.py"
+    },
+    {
+      "bytes": 492844,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "c2252e4ab5b15fb6715753b98380e089409d1c21",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_EVIDENCE.tar.gz",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "ffa4c2c1c7d05c2c1e2d457bcb39252c9807c0dd60b9bc15fd6afa61a5edc5d5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_EVIDENCE.tar.gz"
+    },
+    {
+      "already_remote_verified": false,
+      "bytes": 4420,
+      "git_blob_sha": "8982cd99a22eb140dd9ff963c8ba21ed74145d2a",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_EVIDENCE_MANIFEST.json",
+      "publication": "metadata_for_root_to_publish",
+      "sha256": "efc68efe45b32afc83d2effb238270a69ae06bfc16dff68a4a9f067656a6f7eb"
+    },
+    {
+      "bytes": 7177,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "37be25cf10acb3c35dfcbcae2ad3b376c93c975a",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_README.md",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "e37a80b595fd4fd623db4f48c4c060aa7daf3c31b27ff6cf8285b5400da1c48b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_README.md"
+    },
+    {
+      "bytes": 1162,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "8325b32b8af05d5cb536c8fad33676b929826c00",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_REFERENCE_MANIFEST.json",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "b703480b8de575f7515a9c95745302c7f676417d7c88745273d65ae03e2f475a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_REFERENCE_MANIFEST.json"
+    },
+    {
+      "bytes": 3914,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "6b81193bdedc024a9984374b6073b2b34f71d998",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_RESULT.md",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "3253ca781e7cbd043a38d09962180225de0e7b06cb3fdf3eb095f52f98cbbaab",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_RESULT.md"
+    },
+    {
+      "bytes": 2990,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "17c9bab0c0d6aee3c0c4d5c0ffc7c4acf97b9c4e",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_protocol.json",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "26362c3af941753ba830e7e2777b67b5df1accfa2d6fd72653e4c2e2ec2d0595",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_protocol.json"
+    },
+    {
+      "bytes": 7811,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "ece507fbc5955829bbcb60484da924ab7e75ece0",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity.py",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "7958a01460f20f7c274ae16ef40bf13bfb1f42461ae1e9d938a19ab831e89255",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity.py"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_RESULT.md",
+      "bytes": 5042,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "304bd99c5e8080fd9c0ad0ca5561f2603a810efa",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_RESULT.md",
+      "publication": "member_of_published_archive",
+      "sha256": "e3acd78b212c14425c81cadaf30018df1823027a7cc92bf1cc13045d2ed1962b"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001.json",
+      "bytes": 785,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "57a00172d9a00fce81f85d0f0155a76393eb57d4",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001.json",
+      "publication": "member_of_published_archive",
+      "sha256": "4d992e92c0c491a815b9be38b07994548b4fd19e0f759426dcd9d60db64290f3"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001_recovered_sources.json.gz",
+      "bytes": 7098,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "4f372eb866eae2bb4ffe04063076d36d426146df",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001_recovered_sources.json.gz",
+      "publication": "member_of_published_archive",
+      "sha256": "2a102205ca539cf93b2eaa111ef5925fd3e145b0c75afa789a585e3a852d3e52"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001_sources.json.gz",
+      "bytes": 0,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_001_sources.json.gz",
+      "publication": "member_of_published_archive",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_002.json",
+      "bytes": 368523,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "8892b9c55747df8f50bd2af8ea2db775ca492e64",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_002.json",
+      "publication": "member_of_published_archive",
+      "sha256": "39072af489f7c4a5fe10f9aadb9d9deeaf6cb15d8222f5557b713b49a865c7df"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_002_sources.json.gz",
+      "bytes": 13721,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "b69b5d78243e8be76e979ac0b17abf097eb1e7bf",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_attempt_002_sources.json.gz",
+      "publication": "member_of_published_archive",
+      "sha256": "189d2784801a9ac18c4b168682b8bdfe7164c44a7f6288c83971bea857ff6e32"
+    },
+    {
+      "bytes": 3883,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "1711dde5cd6ae2a4a03959373114e3039d7fcb8b",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep.py",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "e511aed704b73fc0c40abc5688acedd215fa46819bf2a57a5567d349790fc946",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep.py"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_attempt_001.json",
+      "bytes": 222617,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "26a0d8df02bd1f11010bca74e64d783679a96204",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_attempt_001.json",
+      "publication": "member_of_published_archive",
+      "sha256": "7d6bbc00fbfd628cb718830f507fe0291eb2d878eb193703fd6591a38e3dad6b"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_attempt_001_sources.json.gz",
+      "bytes": 14748,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "60fe40f3d784d7f5533b42d0372a915cab4368a8",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_attempt_001_sources.json.gz",
+      "publication": "member_of_published_archive",
+      "sha256": "52e2522ddb896b73208e001c80bbdcce04270c16234616340254a40d207f3b60"
+    },
+    {
+      "bytes": 1151,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "e2bd31283bc1a99b034dbfaec12832111b287f65",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_protocol.json",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "fde4a33c6c77b5afe5988127c0e385c5de2283b73b3d0f1599d4170935aed194",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_protocol.json"
+    },
+    {
+      "bytes": 2551,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "dd44e212221edf7974ebd4b9805de3cd2946f5e4",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_protocol.json",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "68316bec8f57118642ab79edfc186f9323ddac9b7679dbfc2fd7a68aa89f82eb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_protocol.json"
+    },
+    {
+      "bytes": 4255,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "3baac02de8fc085074fa98da074a241dbad5a45e",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record.py",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "5385469e132494672c585c2997647917cd2b07ea6b30ed7236f158464c667922",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record.py"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001.json",
+      "bytes": 1165,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "cf6aa4279bffb9ebd9fc96413b7c233cbf27c491",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001.json",
+      "publication": "member_of_published_archive",
+      "sha256": "0cd8937163fcd0b1463e07e6b393c4691573d29f094cd50a5ea50e87757ebc87"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001_RAW.json.gz",
+      "bytes": 227724,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "bc5f5e05dd0e069f4e5245576b621b7b292261ce",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001_RAW.json.gz",
+      "publication": "member_of_published_archive",
+      "sha256": "d2d2b4c1cb1cbfbba84b7b885eee09f46b714bede0393c51181f4e1982cc84c3"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001_sources.json.gz",
+      "bytes": 5911,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "79a98d77becd97597f9074bd1437b0f071394fd3",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_attempt_001_sources.json.gz",
+      "publication": "member_of_published_archive",
+      "sha256": "05b71f67ba8fcc8118183b2f9bbea093a28eae0e2549d04fc5ffcf14ced36803"
+    },
+    {
+      "bytes": 1341,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "635c1d7eb252c146eabac73f1d5e9ebf23e84116",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_protocol.json",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "9e16e7ef62ade64072709a071b3cf2a51d559dd510a16e316f915f7da1f53443",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_protocol.json"
+    },
+    {
+      "bytes": 12678,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "4322d8162a0d1da347e7f46cc051abbede50b988",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_validate.py",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "c4ff9dc344264a74f43339a36ab149d55f43af78be11ec971aca396aea97c951",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_validate.py"
+    },
+    {
+      "bytes": 659,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "8a5d913ce69d2d7b81f801a2e18b54cf2b4a7c86",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_001.json",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "d3600366ec7efd5fca7757b6e974f0d8008b97bfef723dc7f61c31c2c2ddf9f3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_001.json"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_001_sources.json.gz",
+      "bytes": 8690,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "e0e444d830080e5868c51ee60db53d5bf2c208f5",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_001_sources.json.gz",
+      "publication": "member_of_published_archive",
+      "sha256": "8584771263a2b33799f319695e32af1f0ff79fe4a5abfc91ea4cdf48497b3ac4"
+    },
+    {
+      "bytes": 44673,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "7820a70ebd3752b17c6570342586b332efab7d26",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_002.json",
+      "publication": "direct_file_at_fixed_commit",
+      "sha256": "09b741996e565897e56953ce6e2d1f11e5e7983fdb2917dfe0e3b4396c9ffe2f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_002.json"
+    },
+    {
+      "archive": "joint_kernel_EVIDENCE.tar.gz",
+      "archive_member": "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_002_sources.json.gz",
+      "bytes": 8736,
+      "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+      "git_blob_sha": "11b529d768234dab58c3054d64fb1e52d62107b4",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_002_sources.json.gz",
+      "publication": "member_of_published_archive",
+      "sha256": "c71b174f7ec7cd82af6d648c2ebe1ad2c44db33aeea6307fb8e2a95d2c05d1e4"
+    }
+  ],
+  "github_mutations_performed": false,
+  "independent_audit_support": {
+    "joint_independent_audit_kernel.json": {
+      "bytes": 4029,
+      "owner": "independent_audit_line; referenced not modified",
+      "sha256": "29d88638016298ac815324b78cf8937bc11d95a5e03097c1898a6108ed0daac6"
+    },
+    "joint_independent_audit_sensitivity.json": {
+      "bytes": 688,
+      "owner": "independent_audit_line; referenced not modified",
+      "sha256": "c6dcf8bf24123051a44b6f819c10246241a56d47213fc4e80730cb7da45a7299"
+    }
+  },
+  "namespace": "tools/hcsn/digital_joint_20261102",
+  "new_metadata_for_root_publication": [
+    "KERNEL_STATUS.md",
+    "KERNEL_PUBLICATION_MANIFEST.json",
+    "joint_kernel_EVIDENCE_MANIFEST.json"
+  ],
+  "no_expensive_computation_rerun": true,
+  "publication_notice": "新STATUS、此manifest及standalone EVIDENCE_MANIFEST尚待root发表。既有archive及直接文件使用8977固定commit，不臆造后续kernel分支commit。",
+  "published_direct_files": [
+    {
+      "bytes": 10539,
+      "git_blob_sha": "c387cb9bbe524b5391bd9eec7ea9d3b68bfcc820",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel.py",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel.py"
+    },
+    {
+      "bytes": 492844,
+      "git_blob_sha": "c2252e4ab5b15fb6715753b98380e089409d1c21",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_EVIDENCE.tar.gz",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_EVIDENCE.tar.gz"
+    },
+    {
+      "bytes": 7177,
+      "git_blob_sha": "37be25cf10acb3c35dfcbcae2ad3b376c93c975a",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_README.md",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_README.md"
+    },
+    {
+      "bytes": 1162,
+      "git_blob_sha": "8325b32b8af05d5cb536c8fad33676b929826c00",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_REFERENCE_MANIFEST.json",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_REFERENCE_MANIFEST.json"
+    },
+    {
+      "bytes": 3914,
+      "git_blob_sha": "6b81193bdedc024a9984374b6073b2b34f71d998",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_RESULT.md",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_RESULT.md"
+    },
+    {
+      "bytes": 2990,
+      "git_blob_sha": "17c9bab0c0d6aee3c0c4d5c0ffc7c4acf97b9c4e",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_protocol.json",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_protocol.json"
+    },
+    {
+      "bytes": 7811,
+      "git_blob_sha": "ece507fbc5955829bbcb60484da924ab7e75ece0",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity.py",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity.py"
+    },
+    {
+      "bytes": 3883,
+      "git_blob_sha": "1711dde5cd6ae2a4a03959373114e3039d7fcb8b",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep.py",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep.py"
+    },
+    {
+      "bytes": 1151,
+      "git_blob_sha": "e2bd31283bc1a99b034dbfaec12832111b287f65",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_protocol.json",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_halfstep_protocol.json"
+    },
+    {
+      "bytes": 2551,
+      "git_blob_sha": "dd44e212221edf7974ebd4b9805de3cd2946f5e4",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_protocol.json",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_sensitivity_protocol.json"
+    },
+    {
+      "bytes": 4255,
+      "git_blob_sha": "3baac02de8fc085074fa98da074a241dbad5a45e",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record.py",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record.py"
+    },
+    {
+      "bytes": 1341,
+      "git_blob_sha": "635c1d7eb252c146eabac73f1d5e9ebf23e84116",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_protocol.json",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_trajectory_record_protocol.json"
+    },
+    {
+      "bytes": 12678,
+      "git_blob_sha": "4322d8162a0d1da347e7f46cc051abbede50b988",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_validate.py",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_validate.py"
+    },
+    {
+      "bytes": 659,
+      "git_blob_sha": "8a5d913ce69d2d7b81f801a2e18b54cf2b4a7c86",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_001.json",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_001.json"
+    },
+    {
+      "bytes": 44673,
+      "git_blob_sha": "7820a70ebd3752b17c6570342586b332efab7d26",
+      "path": "tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_002.json",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/joint_kernel_validation_attempt_002.json"
+    }
+  ],
+  "readback_method": "GitHub只读目录/固定commit源码与支持索引；源码全文与本地一致；archive远端Git blob/size与本地blob identity及支持索引SHA256一致。",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "joint-kernel-publication-manifest-v1",
+  "scope": "仅核数学线的源码、协议、数值证据和文档；不改变或评估20个正式候选源码/模型。",
+  "status_document": {
+    "bytes": 12335,
+    "path": "tools/hcsn/digital_joint_20261102/KERNEL_STATUS.md",
+    "publication": "new_document_for_root_to_publish",
+    "sha256": "bd75256896d6bd00cb48e3f245cb7bbf3a3c0a12c71e3c5952a0058dcab06ff4"
+  },
+  "support_index": {
+    "commit": "8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc",
+    "path": "tools/hcsn/digital_joint_20261102/evidence/JOINT_SUPPORT_ARCHIVES.json",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8977e83d89fc0b2e7e74c2ed6f025adb096f5dfc/tools/hcsn/digital_joint_20261102/evidence/JOINT_SUPPORT_ARCHIVES.json"
+  },
+  "verified_source_lineage": [
+    {
+      "commit": "73fa3394d34674af7178b5bf0271917a992fee05",
+      "git_blob_sha": "c387cb9bbe524b5391bd9eec7ea9d3b68bfcc820",
+      "name": "joint_kernel.py",
+      "verified": true
+    },
+    {
+      "commit": "29b2246c4bfb53d2bb5c3ca3ce83dcf142af0f2a",
+      "git_blob_sha": "ece507fbc5955829bbcb60484da924ab7e75ece0",
+      "name": "joint_kernel_sensitivity.py",
+      "verified": true
+    },
+    {
+      "commit": "97edbc1b5f20eae2a3e064d4ab93557c9eacba9b",
+      "git_blob_sha": "1711dde5cd6ae2a4a03959373114e3039d7fcb8b",
+      "name": "joint_kernel_sensitivity_halfstep.py",
+      "verified": true
+    },
+    {
+      "commit": "97edbc1b5f20eae2a3e064d4ab93557c9eacba9b",
+      "git_blob_sha": "3baac02de8fc085074fa98da074a241dbad5a45e",
+      "name": "joint_kernel_trajectory_record.py",
+      "verified": true
+    }
+  ]
+}
