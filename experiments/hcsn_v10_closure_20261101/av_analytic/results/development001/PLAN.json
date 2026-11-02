@@ -1,0 +1,80 @@
+{
+  "schema": "hcsn-v10-historical-AV-latent-renewal.v1",
+  "source_sha256": {
+    "audit.py": "7b9cd32557788373117d773c8431b66cc92547a7d7e48b0f36763c5bbe6e72b5",
+    "campaign.py": "3fb6ca75e3224272792322256db223aa75ee3671ce3549ec32d14c79dfdff817",
+    "history.py": "d8abf79e4305824e1fb7b686d17641b3f77b98a4207a9b31866d5c0ad9c2aa97",
+    "interfaces.py": "5dc48b0d2dd1399bda5704b6536b0ff520dea5daa229b0ac5b29502504a0b28a",
+    "models.py": "44aeb87dfd564041b80b6b43c9952624a4ecec5c37b51a0b547048aa2b745594",
+    "test_models.py": "4256414e2f322c72ee6aaaa7eca9bd9ccd3c58eb0afac12b958a0683a3ab86b2"
+  },
+  "input_sha256": {
+    "async_av/training.npz": "e7722df0e2498e7e347e6e069b15e8a95b0a28ae2af33b683576b24d1bc02228",
+    "async_av/validation.npz": "0145a0ae71c92b6ed47f83ab38e0a3fd45c660ddb93b23520a6776877940e67b",
+    "async_av/INPUTS.json": "8d8ee709a88b412f26ae3f8049c1dae7c67fa5cb1e309786095cf43657a9745e",
+    "av_binding/training.npz": "762ef06eead5e9f19bf7d069308af0df59de652d9dfa9b2c9caa91683ee44b92",
+    "av_binding/validation.npz": "392a197b9fdccfc48fe086d536fe40b304023500f56a626315c55dda14cbbc06",
+    "av_binding/INPUTS.json": "80d99e8fcbda0c7a2924918c7700ee46387b28fd2ad94cfd4ac00bc6aa667f80",
+    "assets/data/validation.npz": "e3c74e378df33592b0d40014deeb213e3639395ff0e0ecf3956dff57e7f39b2f",
+    "assets/data/train.npz": "cc53d3185720157590fa47fd7b93103fe92b0186b587ec4ea763c61ee7de6da1",
+    "assets/data/test.npz": "5400fc44408c4ecfd54483af4d0b0778af88b7cf74314e6475af8280b6141705",
+    "assets/experiments/hcsn_causal_execution_v3/results/av_probe/async_av/selected_encoder.npz": "2f390a2dda86eef5eb808bad1092e86dbe9cc3fd904bf378890d87deccb7768b",
+    "assets/experiments/hcsn_causal_execution_v3/results/av_probe/av_binding/selected_encoder.npz": "8caeeeb6ebc663c348bd02da7ed77dde26363b42978c42f711e90d0584894fc4"
+  },
+  "fit_seeds": [
+    101001,
+    101003,
+    101009,
+    101021,
+    101033
+  ],
+  "families": [
+    "direct",
+    "gru",
+    "ssm",
+    "history",
+    "renewal",
+    "mean",
+    "single"
+  ],
+  "tasks": [
+    "async_av",
+    "av_binding"
+  ],
+  "max_epochs": 200,
+  "minimum_epochs": 50,
+  "patience": 35,
+  "learning_rate": 0.003,
+  "weight_decay": 0.001,
+  "selection": "Minimum historical-validation masked BCE; ordinary family selected before evaluation",
+  "ordinary_pool": [
+    "direct",
+    "gru",
+    "ssm",
+    "history"
+  ],
+  "primary": "Descriptive D-B utility on previously exposed historical recordings, common head/control",
+  "controls": [
+    "common_full fixed acquisition",
+    "common task-value control"
+  ],
+  "latent_law": "Input-local Brownian first-passage/reset count mixture rotating signed content pairs, coefficients from previous state; accepted packet then assimilated",
+  "joint_training": "Physics encoder, content drive/gain, phase angles and continuation-correctness readout trained together",
+  "target": "Actual correctness of the same frozen historical content head at each legal future cache endpoint, not a teacher posterior or latent-media truth",
+  "test_role": "All historical splits/actors were exposed before; no fresh confirmation",
+  "count_ablations": "Mean-preserving two-point and one-transition, each independently retrained; also full-weight execution ablation",
+  "raw_history_capacity": "Six accepted 41-scalar records plus six masks; 32-byte identity digest is not neural state",
+  "limitations": [
+    "weak old v3 head",
+    "not v6",
+    "not an identified physical AV law",
+    "no new recordings",
+    "fixed content encoder/head",
+    "logical source/service clock",
+    "no strongest-family qualification",
+    "no production adoption"
+  ],
+  "scientific_confirmation": false,
+  "all_blockers_closed": false,
+  "torch": "2.15.0+cpu"
+}
