@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.review.audit_value_receipts",
+    "--root",
+    ".",
+    "--run",
+    "experiments/hcsn_v13_followup_20261102/control/results/run001",
+    "--receipts",
+    "experiments/hcsn_v13_followup_20261102/control/receipts",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/review/VALUE_RECEIPTS_AUDIT.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/review/receipts/value_receipts001",
+  "timeout": 180.0,
+  "sample_interval": 0.2
+}

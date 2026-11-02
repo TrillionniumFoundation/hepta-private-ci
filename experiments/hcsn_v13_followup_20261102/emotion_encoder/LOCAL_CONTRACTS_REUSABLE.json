@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn-v13-emotion-local-contracts.v1",
+  "checks": 1178,
+  "status": "PASS",
+  "source_sha256": {
+    "local_contracts.py": "360fc97e2792381e248bda1223240d2d4a8081675fcbb01f21c0aa92d49fb81e",
+    "contracts.py": "967ecc587ec13819cbd1089966a4e537f772ae73902b916bb39e882da46f7886",
+    "model.py": "e1d83607dcb5924ace8d67e2c8778f194ea35b09346ce9ed2d22149e9f1a9480"
+  },
+  "forbidden_model_import_attempts": [],
+  "synthetic_fixture": "Toy NumPy key/shape arrays and explicitly synthetic local metadata, no pretrained state",
+  "actual_transport_rows": 288,
+  "actual_emotion_model_forwards": 0,
+  "real_emotion_weights_loaded": false
+}

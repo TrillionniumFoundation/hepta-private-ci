@@ -1,0 +1,33 @@
+{
+  "schema": "hcsn-v8-enclosing-worker-cost.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "experiments/hcsn_v13_followup_20261102/review/content96/audit_content96.py",
+    "--out",
+    "experiments/hcsn_v13_followup_20261102/review/content96/audit001"
+  ],
+  "enclosing_supervisor_exit_code": 1,
+  "complete_supervisor_wait4": {
+    "cpu_seconds": 0.751046,
+    "user_cpu_seconds": 0.550377,
+    "system_cpu_seconds": 0.200669,
+    "largest_single_process_highwater_bytes": 25382912
+  },
+  "cold_supervisor_to_exit_seconds": 0.736791808,
+  "monotonic_begin_ns": 62104255343555,
+  "monotonic_end_ns": 62104992135363,
+  "complete_task_cpu_coverage": true,
+  "task_success": false,
+  "supervision_sha256": "7145be9e9885e944efa1d878e222f80dfcb84019463448148b4b8eff714b2bf9",
+  "measurement_boundary": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write.",
+  "outside_boundary": "Outer launcher bootstrap/argument parsing, CONFIG write and final RECEIPT serialization; none is candidate inference time.",
+  "nested_cost_rule": "Use enclosing wait4 CPU once. Inner worker/child/grandchild and component timers are explanatory, not additive.",
+  "source_sha256_at_start": {
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_cost.py": "7edc4041de69e3767c8d67f6d50fc17aa37f55c3f64f3bc1f3f0d211b3ce780c",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v8_execution_20261101/economics/worker_entry.py": "00f5df274dceb33e561f315bd6fbba4340ef60e39755f59190810d480837d1e9",
+    "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v7_support_20261101/memory_observer/process_memory.py": "a5fa02c065717b3482ec04e581e986168612a795c13381a0e280e4de6a97feba"
+  },
+  "source_unchanged_through_collection": true,
+  "scientific_confirmation": false,
+  "candidate_economic_advantage": null
+}

@@ -1,0 +1,266 @@
+[
+  {
+    "task": "async_av",
+    "split": "val",
+    "fixed_seed_mean_contrasts": {
+      "A-B": {
+        "all_prefix_accuracy": -0.0032407407407407476,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": 0.028931031998084517,
+        "final_prefix_nll": -0.02021983629536006
+      },
+      "C-D": {
+        "all_prefix_accuracy": 0.0,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": -0.001269523050934455,
+        "final_prefix_nll": -0.0008337216459836464
+      },
+      "A-C": {
+        "all_prefix_accuracy": 0.0064814814814814865,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": -0.17622429219822866,
+        "final_prefix_nll": -0.1795651533903436
+      },
+      "B-D": {
+        "all_prefix_accuracy": 0.009722222222222235,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": -0.20642484724724763,
+        "final_prefix_nll": -0.16017903874096717
+      },
+      "(A-B)-(C-D)": {
+        "all_prefix_accuracy": -0.0032407407407407476,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": 0.030200555049018973,
+        "final_prefix_nll": -0.019386114649376413
+      },
+      "A-versus-hx_margin": {
+        "all_prefix_accuracy": 0.0064814814814814865,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": -0.1774938152491631,
+        "final_prefix_nll": -0.18039887503632723
+      },
+      "A-versus-ordinary_gate": {
+        "all_prefix_accuracy": 0.006481481481481477,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": -0.15715129087114507,
+        "final_prefix_nll": -0.13455414752671016
+      },
+      "A-versus-gru": {
+        "all_prefix_accuracy": 0.0074074074074074086,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": 0.13015169965658716,
+        "final_prefix_nll": 0.041808111915039824
+      },
+      "A-versus-ssm": {
+        "all_prefix_accuracy": -0.00787037037037037,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": 0.14761494063888728,
+        "final_prefix_nll": -0.052669416124291324
+      },
+      "A-versus-history": {
+        "all_prefix_accuracy": -0.014814814814814817,
+        "final_prefix_accuracy": -0.00833333333333334,
+        "all_prefix_nll": 0.8491638716300848,
+        "final_prefix_nll": 0.5096906320530055
+      }
+    }
+  },
+  {
+    "task": "async_av",
+    "split": "test",
+    "fixed_seed_mean_contrasts": {
+      "A-B": {
+        "all_prefix_accuracy": 0.020833333333333343,
+        "final_prefix_accuracy": 0.008333333333333333,
+        "all_prefix_nll": 0.02708866985054466,
+        "final_prefix_nll": -0.04958108684606769
+      },
+      "C-D": {
+        "all_prefix_accuracy": 0.0,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": -0.0013802707540073733,
+        "final_prefix_nll": -0.0031520339121053156
+      },
+      "A-C": {
+        "all_prefix_accuracy": 0.003703703703703709,
+        "final_prefix_accuracy": -0.016666666666666673,
+        "all_prefix_nll": -0.06603724919448502,
+        "final_prefix_nll": 0.02201182465273203
+      },
+      "B-D": {
+        "all_prefix_accuracy": -0.017129629629629634,
+        "final_prefix_accuracy": -0.025000000000000005,
+        "all_prefix_nll": -0.09450618979903706,
+        "final_prefix_nll": 0.06844087758669441
+      },
+      "(A-B)-(C-D)": {
+        "all_prefix_accuracy": 0.020833333333333343,
+        "final_prefix_accuracy": 0.008333333333333333,
+        "all_prefix_nll": 0.028468940604552035,
+        "final_prefix_nll": -0.04642905293396238
+      },
+      "A-versus-hx_margin": {
+        "all_prefix_accuracy": 0.003703703703703709,
+        "final_prefix_accuracy": -0.016666666666666673,
+        "all_prefix_nll": -0.06741751994849239,
+        "final_prefix_nll": 0.018859790740626714
+      },
+      "A-versus-ordinary_gate": {
+        "all_prefix_accuracy": 0.01620370370370371,
+        "final_prefix_accuracy": 0.002777777777777777,
+        "all_prefix_nll": -0.040959106261974,
+        "final_prefix_nll": 0.11790931684898576
+      },
+      "A-versus-gru": {
+        "all_prefix_accuracy": -0.0018518518518518545,
+        "final_prefix_accuracy": -0.041666666666666685,
+        "all_prefix_nll": 0.04738149225250524,
+        "final_prefix_nll": 0.0717285600865516
+      },
+      "A-versus-ssm": {
+        "all_prefix_accuracy": 0.04120370370370371,
+        "final_prefix_accuracy": 0.04444444444444445,
+        "all_prefix_nll": 0.15525950167164945,
+        "final_prefix_nll": 0.12104871420323852
+      },
+      "A-versus-history": {
+        "all_prefix_accuracy": 0.022685185185185187,
+        "final_prefix_accuracy": 0.013888888888888881,
+        "all_prefix_nll": 0.5417989210272894,
+        "final_prefix_nll": 0.261653622452471
+      }
+    }
+  },
+  {
+    "task": "av_binding",
+    "split": "val",
+    "fixed_seed_mean_contrasts": {
+      "A-B": {
+        "all_prefix_accuracy": 0.0,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": 9.620560677355468e-05,
+        "final_prefix_nll": -6.411645378231097e-05
+      },
+      "C-D": {
+        "all_prefix_accuracy": 0.0016203703703703647,
+        "final_prefix_accuracy": -0.001388888888888884,
+        "all_prefix_nll": 3.439620002195406e-05,
+        "final_prefix_nll": -2.719395725862365e-05
+      },
+      "A-C": {
+        "all_prefix_accuracy": -0.002777777777777768,
+        "final_prefix_accuracy": -0.00833333333333336,
+        "all_prefix_nll": 0.0035430518995731206,
+        "final_prefix_nll": 0.0029012754589202716
+      },
+      "B-D": {
+        "all_prefix_accuracy": -0.0011574074074074032,
+        "final_prefix_accuracy": -0.009722222222222243,
+        "all_prefix_nll": 0.00348124249282152,
+        "final_prefix_nll": 0.002938197955443959
+      },
+      "(A-B)-(C-D)": {
+        "all_prefix_accuracy": -0.0016203703703703647,
+        "final_prefix_accuracy": 0.001388888888888884,
+        "all_prefix_nll": 6.180940675160063e-05,
+        "final_prefix_nll": -3.692249652368732e-05
+      },
+      "A-versus-hx_margin": {
+        "all_prefix_accuracy": -0.0011574074074074032,
+        "final_prefix_accuracy": -0.009722222222222243,
+        "all_prefix_nll": 0.0035774480995950744,
+        "final_prefix_nll": 0.002874081501661648
+      },
+      "A-versus-ordinary_gate": {
+        "all_prefix_accuracy": 0.002083333333333326,
+        "final_prefix_accuracy": 0.005555555555555554,
+        "all_prefix_nll": 0.0010597658561983063,
+        "final_prefix_nll": 0.0007238479440763538
+      },
+      "A-versus-gru": {
+        "all_prefix_accuracy": -0.011574074074074145,
+        "final_prefix_accuracy": -0.027777777777777807,
+        "all_prefix_nll": 0.02006413546977844,
+        "final_prefix_nll": 0.03186616448387817
+      },
+      "A-versus-ssm": {
+        "all_prefix_accuracy": -0.00023148148148151768,
+        "final_prefix_accuracy": 0.008333333333333323,
+        "all_prefix_nll": 0.010202392241098979,
+        "final_prefix_nll": 0.013382465263140353
+      },
+      "A-versus-history": {
+        "all_prefix_accuracy": -0.0046296296296296875,
+        "final_prefix_accuracy": -0.012499999999999992,
+        "all_prefix_nll": 0.02335357482173091,
+        "final_prefix_nll": 0.03038171804623065
+      }
+    }
+  },
+  {
+    "task": "av_binding",
+    "split": "test",
+    "fixed_seed_mean_contrasts": {
+      "A-B": {
+        "all_prefix_accuracy": -0.0009259259259259226,
+        "final_prefix_accuracy": -0.001388888888888884,
+        "all_prefix_nll": -3.793837270101482e-05,
+        "final_prefix_nll": 0.0004744770046088975
+      },
+      "C-D": {
+        "all_prefix_accuracy": 0.0016203703703703647,
+        "final_prefix_accuracy": 0.0,
+        "all_prefix_nll": 1.4856609726739597e-05,
+        "final_prefix_nll": 3.960569101072823e-05
+      },
+      "A-C": {
+        "all_prefix_accuracy": 0.015740740740740777,
+        "final_prefix_accuracy": 0.030555555555555558,
+        "all_prefix_nll": 0.0031504398959347015,
+        "final_prefix_nll": 0.005181184979798655
+      },
+      "B-D": {
+        "all_prefix_accuracy": 0.018287037037037063,
+        "final_prefix_accuracy": 0.03194444444444444,
+        "all_prefix_nll": 0.0032032348783624562,
+        "final_prefix_nll": 0.004746313666200486
+      },
+      "(A-B)-(C-D)": {
+        "all_prefix_accuracy": -0.0025462962962962874,
+        "final_prefix_accuracy": -0.001388888888888884,
+        "all_prefix_nll": -5.279498242775441e-05,
+        "final_prefix_nll": 0.0004348713135981693
+      },
+      "A-versus-hx_margin": {
+        "all_prefix_accuracy": 0.017361111111111143,
+        "final_prefix_accuracy": 0.030555555555555558,
+        "all_prefix_nll": 0.0031652965056614413,
+        "final_prefix_nll": 0.005220790670809383
+      },
+      "A-versus-ordinary_gate": {
+        "all_prefix_accuracy": 0.0027777777777778048,
+        "final_prefix_accuracy": 0.006944444444444457,
+        "all_prefix_nll": 0.001702824092358853,
+        "final_prefix_nll": 0.00268402340470301
+      },
+      "A-versus-gru": {
+        "all_prefix_accuracy": 0.013425925925925952,
+        "final_prefix_accuracy": 0.03750000000000001,
+        "all_prefix_nll": 0.018360771899181578,
+        "final_prefix_nll": 0.028298720775325952
+      },
+      "A-versus-ssm": {
+        "all_prefix_accuracy": 0.006944444444444457,
+        "final_prefix_accuracy": 0.008333333333333323,
+        "all_prefix_nll": 0.021680212559132106,
+        "final_prefix_nll": 0.02371316307970624
+      },
+      "A-versus-history": {
+        "all_prefix_accuracy": 0.02337962962962964,
+        "final_prefix_accuracy": 0.05277777777777778,
+        "all_prefix_nll": 0.017798268271585593,
+        "final_prefix_nll": 0.016121548254623235
+      }
+    }
+  }
+]

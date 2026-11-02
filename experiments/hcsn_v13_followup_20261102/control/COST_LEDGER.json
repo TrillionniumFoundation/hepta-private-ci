@@ -1,8 +1,8 @@
 {
   "schema": "hcsn-v13-control-known-cost-ledger.v1",
-  "formal_disjoint_outer_cpu_seconds": "206.359390",
+  "formal_disjoint_outer_cpu_seconds": "247.350132",
   "preflight_disjoint_outer_cpu_seconds": "16.009592",
-  "known_disjoint_control_cpu_seconds": "222.368982",
+  "known_disjoint_control_cpu_seconds": "263.359724",
   "formal_outer_workers": [
     {
       "path": "receipts/prepare001/RECEIPT.json",
@@ -36,6 +36,20 @@
       "path": "receipts/audit_candidates001/RECEIPT.json",
       "cpu_seconds": "6.610541",
       "sha256": "632e1e9717eb1507b3c66c09d8742df46367fbd2e67993226e8677607d3fad24",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "receipts/evaluation001/RECEIPT.json",
+      "cpu_seconds": "36.659351",
+      "sha256": "75331077399c3c4a1c419aa645a5864ac1712a762d288228f55c10c494ca6341",
+      "task_success": true,
+      "complete_task_cpu_coverage": true
+    },
+    {
+      "path": "receipts/replay_evaluation001/RECEIPT.json",
+      "cpu_seconds": "4.331391",
+      "sha256": "b34001bf3210cea5e84525fea905dc336bff3b2cd67059eb290a0a1709e90905",
       "task_success": true,
       "complete_task_cpu_coverage": true
     }
@@ -270,7 +284,7 @@
     "largest_probability_difference": 0.0,
     "scope": "Self-produced record arithmetic and same-implementation actual neural replay; not independent quality confirmation"
   },
-  "historical_test_opened_by_control_pipeline": false,
+  "historical_test_opened_by_control_pipeline": true,
   "all_blockers_closed": false,
   "production_activation": false,
   "complete_project_cost": null,
@@ -282,5 +296,13 @@
     "network/publication/API execution",
     "historical raw media preparation and pretraining",
     "other project stages outside this control task"
-  ]
+  ],
+  "formal_dynamic_executions": 1944,
+  "actual_predeclared_model_policy_replay": {
+    "cases": 108,
+    "joint_state_updates": 507,
+    "checks": 6626,
+    "largest_absolute_error": 0.0,
+    "scope": "Same-implementation actual inference, not a second independent neural kernel"
+  }
 }

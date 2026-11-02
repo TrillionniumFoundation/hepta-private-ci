@@ -1,0 +1,11 @@
+{
+  "schema": "hcsn-v13-independent-emotion-ci-audit.v1",
+  "expected_head": "2a374bd68342a10e62db2280b27b2802dca08832",
+  "auditor_sha256": "32c8140f9d89722919b19d5502239c096efc10d109a37d1e7c358ad95a0fc1a4",
+  "encoder_reference_atol": 1e-06,
+  "encoder_reference_rtol": 1e-05,
+  "ridge_atol": 1e-09,
+  "ridge_rtol": 1e-08,
+  "solver": "Independent symmetric eigendecomposition of centered dual ridge; producer used a linear solve",
+  "scope": "All retained identities/features/folds/heads/predictions and first-prefix preprocessing/pooling. No vendor checkpoint download or second encoder implementation."
+}

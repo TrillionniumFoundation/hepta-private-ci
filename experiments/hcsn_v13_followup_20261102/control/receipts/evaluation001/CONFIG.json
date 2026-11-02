@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.control.campaign",
+    "evaluate",
+    "--run",
+    "experiments/hcsn_v13_followup_20261102/control/results/run001",
+    "--publication",
+    "/workspace/scratch/3511158fb83b/v13_value_publication_result.json"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/control/receipts/evaluation001",
+  "timeout": 1800.0,
+  "sample_interval": 0.5
+}

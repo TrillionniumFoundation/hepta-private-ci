@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "experiments.hcsn_v13_followup_20261102.emotion_encoder.archive_transport",
+    "pack",
+    "--archive",
+    "experiments/hcsn_v13_followup_20261102/emotion_encoder/results/ci_run41379044650_attempt1/hcsn-v13-emotion-run41379044650-attempt1.zip",
+    "--directory",
+    "experiments/hcsn_v13_followup_20261102/emotion_encoder/results/ci_run41379044650_attempt1/raw_zip_transport"
+  ],
+  "out": "/workspace/scratch/3511158fb83b/hepta/experiments/hcsn_v13_followup_20261102/emotion_encoder/results/ci_run41379044650_attempt1/archive_pack_cost001",
+  "timeout": 60.0,
+  "sample_interval": 0.2
+}

@@ -1,0 +1,776 @@
+{
+  "schema": "hcsn-v13-actual-joint-execution-replay.v1",
+  "checks": 6626,
+  "all_checks_passed": true,
+  "cases": [
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 4
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_full",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 5
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "hx_margin",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 2
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ordinary_gate",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "gru",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 5
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "ssm",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 4
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "async_av",
+      "family": "history",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_full",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 4
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 5
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "hx_margin",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ordinary_gate",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "gru",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 5
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "ssm",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 3
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13301,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13301,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13301,
+      "policy": "value",
+      "actual_updates": 1
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13303,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13303,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13303,
+      "policy": "value",
+      "actual_updates": 2
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13307,
+      "policy": "fixed",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13307,
+      "policy": "light",
+      "actual_updates": 6
+    },
+    {
+      "task": "av_binding",
+      "family": "history",
+      "seed": 13307,
+      "policy": "value",
+      "actual_updates": 1
+    }
+  ],
+  "actual_joint_updates": 507,
+  "largest_absolute_errors": {
+    "normalized_actual_row": 0.0,
+    "state_0": 0.0,
+    "state_1": 0.0,
+    "state_2": 0.0,
+    "actual_prefix_probabilities": 0.0,
+    "actual_final_probabilities": 0.0
+  },
+  "source_sha256_at_start": "9496df41a60b3080a2e7e4d10095c44c62d65072785f43d973932809b47f4e68",
+  "trace_sha256": "e22126c0aeae35214bea47ad5b9739044a0fd20ea42a5292500c227d34495064",
+  "candidate_remote_head": "1a8f0b22e318bf919050f76b52a9c5feb5521ce9",
+  "scope": "Predeclared index0, all36newcontentcheckpoints x3policy. Same-implementation actual state/classifier forward; no independent-kernel or new-cohort quality claim."
+}

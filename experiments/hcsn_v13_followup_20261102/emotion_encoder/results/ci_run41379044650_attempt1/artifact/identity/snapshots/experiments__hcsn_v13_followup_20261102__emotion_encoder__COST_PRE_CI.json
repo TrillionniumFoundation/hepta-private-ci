@@ -1,0 +1,45 @@
+{
+  "schema": "hcsn-v13-emotion-local-preparation-cost.v1",
+  "complete_disjoint_envelopes": [
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/emotion_encoder/cost_prepare_waveforms001/RECEIPT.json",
+      "sha256": "ed6df5af217ec4ad08d81299559422afe856cb8226649ca95a8d35835a740e7e",
+      "cpu_seconds": "50.540465",
+      "task_success": true,
+      "scope": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/emotion_encoder/cost_local_contracts001/RECEIPT.json",
+      "sha256": "9530f6177b8a45fe473fcae7f7cefc3a9eae5a6733ed0ae9e22817c14e7b16b9",
+      "cpu_seconds": "0.436948",
+      "task_success": true,
+      "scope": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/emotion_encoder/cost_local_contracts002/RECEIPT.json",
+      "sha256": "cfab8c7145ce6f96a1e99948b569268b3548d714d43bf2a0922e6f8dfc2b0741",
+      "cpu_seconds": "0.481461",
+      "task_success": true,
+      "scope": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write."
+    },
+    {
+      "receipt": "experiments/hcsn_v13_followup_20261102/emotion_encoder/cost_local_contracts003/RECEIPT.json",
+      "sha256": "11ab6c4d05cb298f82cdadf2c2bf6a3f208ff2fc8d045b528a0b9eb1a6969032",
+      "cpu_seconds": "0.441233",
+      "task_success": true,
+      "scope": "Before fresh supervisor creation through wait4 exit. Includes supervisor interpreter/import/startup, task exec, waited descendants, output drains, memory coordination and inner evidence write."
+    }
+  ],
+  "cpu_seconds_lower_bound": "51.900107",
+  "local_emotion_model_weights_loaded": false,
+  "actual_local_emotion_forwards": 0,
+  "actual_local_emotion_head_fits": 0,
+  "local_contract_coverage": 1178,
+  "repeat_coverage_counted_as_new": false,
+  "remote_acquisition_and_execution": "PENDING_ACTUAL_CI",
+  "unmetered_development_lookup_roundtrip_lints_and_setup_cpu_seconds": null,
+  "upstream_pretraining_cpu_seconds": null,
+  "complete_project_cost": null,
+  "device_energy_joules": null,
+  "complete_process_family_rss_bytes": null
+}

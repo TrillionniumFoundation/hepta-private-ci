@@ -1,0 +1,85 @@
+{
+  "schema": "hcsn-v13-emotion-asset-seal.v1",
+  "model": "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim",
+  "revision": "6eba34a2485ea31cb03600241787c3a5edab8626",
+  "files": {
+    "README.md": {
+      "sha256": "5fe5eb9afb24ab938fb3facf0eebe64a0f8a8628eb93fd772ba5c7120a45365d",
+      "bytes": 3913
+    },
+    "config.json": {
+      "sha256": "c0962c3d1f065972bbebbba0bbffb8016ef4e9aae4a9b07e5fec22f770d2cddb",
+      "bytes": 2344
+    },
+    "preprocessor_config.json": {
+      "sha256": "60ca5a31e13f69ee2fbf147504c8676db5f6398fd7a6b12294341dff838edfcf",
+      "bytes": 214
+    },
+    "model.safetensors": {
+      "sha256": "efa5ac1a13b2d2f42182738e44794b1eb4c0cdd221a8b4ae11304c3a5f5fae95",
+      "bytes": 661375508
+    }
+  },
+  "contracts": {
+    "config_contract": {
+      "model_type": "wav2vec2",
+      "hidden_size": 1024,
+      "num_hidden_layers": 12,
+      "num_attention_heads": 16,
+      "intermediate_size": 4096,
+      "conv_bias": true,
+      "feat_extract_norm": "layer",
+      "do_stable_layer_norm": true,
+      "pooling_mode": "mean",
+      "problem_type": "regression",
+      "conv_kernel": [
+        10,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2
+      ],
+      "conv_stride": [
+        5,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "conv_dim": [
+        512,
+        512,
+        512,
+        512,
+        512,
+        512,
+        512
+      ],
+      "id2label": {
+        "0": "arousal",
+        "1": "dominance",
+        "2": "valence"
+      }
+    },
+    "preprocessor_contract": {
+      "feature_extractor_type": "Wav2Vec2FeatureExtractor",
+      "sampling_rate": 16000,
+      "feature_size": 1,
+      "do_normalize": true,
+      "return_attention_mask": true,
+      "padding_side": "right",
+      "padding_value": 0.0
+    },
+    "license": "CC-BY-NC-SA-4.0",
+    "license_declaration_file": "README.md",
+    "license_declaration_sha256": "5fe5eb9afb24ab938fb3facf0eebe64a0f8a8628eb93fd772ba5c7120a45365d",
+    "legal_terms": "https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode",
+    "research_only": true,
+    "commercial_or_production_license_claimed": false
+  },
+  "sealed_before_inference_or_readout": true
+}

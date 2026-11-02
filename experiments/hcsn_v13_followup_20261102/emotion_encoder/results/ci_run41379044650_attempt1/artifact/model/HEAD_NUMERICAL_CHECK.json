@@ -1,0 +1,36 @@
+{
+  "independent_numpy_fp64_reference_passed": true,
+  "pooled_max_absolute_difference": 6.363404037035281e-08,
+  "regression_max_absolute_difference": 3.497729250678816e-08,
+  "parameter_identities": {
+    "dense.weight": {
+      "shape": [
+        1024,
+        1024
+      ],
+      "sha256": "2ab5d68a43f526327a5de3bf447dd25a338088fa221cef7a69fca8d6535380cc"
+    },
+    "dense.bias": {
+      "shape": [
+        1024
+      ],
+      "sha256": "28e78468e92ffcd2ea7d7efba7170cbfdda95f566cd1327e1edffc32eeeb2d29"
+    },
+    "out_proj.weight": {
+      "shape": [
+        3,
+        1024
+      ],
+      "sha256": "68e30bb784bb108b61b409f6a50065394eba37bcb6f752a90105b0f1ab427a01"
+    },
+    "out_proj.bias": {
+      "shape": [
+        3
+      ],
+      "sha256": "b3c575d55222663ebb017cd5341a929a6f9021384c323a17967c0d2398688109"
+    }
+  },
+  "pretrained_parameter_bytes_exported": false,
+  "rtol": 1e-05,
+  "atol": 1e-06
+}
