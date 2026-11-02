@@ -44,6 +44,7 @@ class BudgetSpec:
     wall_seconds: float = 60.0
     poll_seconds: float = 0.005
     termination_grace_seconds: float = 0.10
+    cpu_backstop_multiplier: float = 2.0
 
     def validate(self):
         if not all(math.isfinite(x) for x in asdict(self).values()):
@@ -58,6 +59,8 @@ class BudgetSpec:
             raise ValueError("export reserve must be positive and below nominal budget")
         if not .001 <= self.poll_seconds <= .1 or not .01 <= self.termination_grace_seconds <= 1:
             raise ValueError("bounded monitoring and termination intervals required")
+        if not 2 <= self.cpu_backstop_multiplier <= 10:
+            raise ValueError("predeclared coarse CPU backstop multiplier must be in [2,10]")
         return self
 
     @property
@@ -114,13 +117,23 @@ def exec_child(handshake, command):
     """Same-process exec; bridge a PID namespace with an outer /proc mount."""
     value = json.loads(os.environ[ENV_SPEC])
     spec = BudgetSpec(**value["spec"]).validate()
-    seconds = max(1, math.ceil(spec.cpu_limit-value["shared_cpu_seconds"]))
+    remaining = spec.cpu_limit-value["shared_cpu_seconds"]
+    seconds = max(1, math.ceil(spec.cpu_backstop_multiplier*remaining))
     resource.setrlimit(resource.RLIMIT_CPU, (seconds, seconds+1))
     raw = Path("/proc/self/stat").read_text()
     fields = raw.rsplit(")", 1)[1].split()
+    diagnostics = dict(getrusage_cpu_seconds=cpu_seconds(), process_time_seconds=time.process_time())
+    for name, clock in (("raw_prof_clock_seconds", -8), ("sched_clock_seconds", -6)):
+        try:
+            diagnostics[name] = time.clock_gettime(clock)
+        except (OSError, ValueError):
+            diagnostics[name] = None
     write_new(handshake, dict(proc_host_pid=int(raw.split(" ", 1)[0]),
                               proc_host_parent_pid=int(fields[1]), proc_host_group=int(fields[2]),
-                              namespace_pid=os.getpid()))
+                              namespace_pid=os.getpid(), scientific_worker_cpu_limit_seconds=remaining,
+                              configured_rlimit_cpu_seconds=[seconds, seconds+1],
+                              actual_rlimit_cpu_seconds=list(resource.getrlimit(resource.RLIMIT_CPU)),
+                              cpu_backstop_multiplier=spec.cpu_backstop_multiplier, clocks_before_exec=diagnostics))
     os.execvpe(command[0], command, os.environ)
 
 
@@ -234,6 +247,8 @@ def run_limited(command, spec, output_dir, shared_receipt=None, consumers=1):
                   nominal_worker_work_allowance_before_startup_seconds=spec.nominal_cpu_seconds-shared-spec.export_reserve_seconds,
                   source_sha256=source_sha,
                   pid_identity=identity, exec_wrapper_cpu_in_worker=True,
+                  cpu_backstop=None if identity is None else {k: identity[k] for k in
+                      ("configured_rlimit_cpu_seconds", "actual_rlimit_cpu_seconds", "scientific_worker_cpu_limit_seconds", "cpu_backstop_multiplier")},
                   limitations="audited single process; no GPU/energy accounting; observed subprocesses rejected, not a security sandbox")
     write_new(out/"RECEIPT.json", record)
     return record

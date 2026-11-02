@@ -194,6 +194,7 @@ def confirm(root, out, published_model_commit):
     from . import joint_data, joint_task as task
     from .joint_law import IndependentLaw
     from .joint_compiled_dp import compile_policy, serialize_load
+    from .joint_deadline_reference import DeadlineOnlyPolicy
     frozen, protocol = read(root/"MODEL_FREEZE.json"), read(HERE/"joint_protocol.json")
     if len(published_model_commit) != 40 or set(published_model_commit)-set("0123456789abcdef"):
         raise ValueError("all final models must be published before confirmation")
@@ -206,17 +207,17 @@ def confirm(root, out, published_model_commit):
     aggregate, counts, reference_aggregate, reference_counts, decoder_setup = {}, {}, {}, {}, {}
     wall, cpu = time.perf_counter(), time.process_time()
     law = IndependentLaw(protocol["truth_raw"])
+    reference_names = ("reference_nominal", "reference_known_environment", "reference_no_read", "reference_deadline_read")
     for fit in protocol["fits"]:
         adapter = task.ContentAdapter(); confusion = frozen["data"][str(fit)]["confusion"]
         decoder_setup[str(fit)] = adapter.setup
-        per_fit_requests = 2*protocol["confirmation_worlds_per_fit_split"]*(len(protocol["families"])*2+3)
+        per_fit_requests = 2*protocol["confirmation_worlds_per_fit_split"]*(len(protocol["families"])*2+len(reference_names))
         nominal = IndependentLaw(read(root/f"fit_{fit}/model_renewal/model.json")["nominal_raw"])
         for split in ("iid", "ood"):
             cohort = joint_data.cohort(out, split, fit, protocol["confirmation_worlds_per_fit_split"], protocol, law, published_model_commit)
             write(out/f"cohort_{fit}_{split}.json", cohort)
             oracles = {r["id"]: task.Oracle(read(Path(r["folder"])/"public.json"), law, confusion) for r in cohort["records"]}
             groups = {(family,controller):[] for family in protocol["families"] for controller in protocol["controllers"]}
-            reference_names = ("reference_nominal", "reference_known_environment", "reference_no_read")
             groups.update({(name,"value"):[] for name in reference_names})
             order = []; rng = np.random.default_rng(protocol["execution_order_seed"]+fit*1000000+(0 if split == "iid" else 100000))
             arms = list(groups)
@@ -230,6 +231,10 @@ def confirm(root, out, published_model_commit):
                         reference_record = {}
                         def factory():
                             public = read(Path(record["folder"])/"public.json")
+                            if family == "reference_deadline_read":
+                                reference_record.update(scope="calibrated deadline-only READ, uniform prior, no kernel or teacher",
+                                                        policy_source_sha256=sha(HERE/"joint_deadline_reference.py"))
+                                return DeadlineOnlyPolicy(public, confusion)
                             if family == "reference_no_read":
                                 fresh = IndependentLaw(protocol["truth_raw"])
                                 mass = fresh.initial_mass(public["prior_distance"])

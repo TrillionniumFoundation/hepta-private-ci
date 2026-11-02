@@ -121,7 +121,8 @@
     "export_reserve_seconds": 2.0,
     "wall_seconds": 600.0,
     "poll_seconds": 0.005,
-    "termination_grace_seconds": 0.1
+    "termination_grace_seconds": 0.1,
+    "cpu_backstop_multiplier": 2.0
   },
   "task": "New completion-current observation task: every nonterminal action advances exogenous hidden CTMC first; a due READ then observes the current boundary sign through noisy marked-symbol FullHX packet. Request time is not observation time. SUBMIT always predicts fixed deadline6 sign; STOP abstains. All future drives, durations, fees and public balanced-prior spread are common information. Failed reads charge costs and need REPAIR; pending can be cancelled on termination.",
   "information": "Policy features contain public43 and representations computed from completed history only. Teacher current mass, target posterior, bank and six Q values enter TRAIN targets or post-execution audit only. A model's conditional mass is not supplied true posterior. Dynamic exact-law belief+DP remains an upper bound under its declared model; TRAIN-fitted decoder confusion does not establish exact unknown true FullHX law.",
@@ -133,7 +134,8 @@
   "references": [
     "Frozen nominal-generator cached/compiled DP with TRAIN-fitted decoder confusion; nominal model knowledge explicit, preparation+compile+dispatch charged",
     "Known environment-generator + TRAIN-fitted decoder-law DP; a reference under that declared model, not asserted true unknown-law optimum",
-    "No-READ prior-to-deadline classifier; WAIT adds no information under fixed target and nonnegative time charges"
+    "No-READ prior-to-deadline classifier; WAIT adds no information under fixed target and nonnegative time charges",
+    "Calibrated kernel-free deadline-only READ: choose cheapest request tick4/5 completing at6, use only TRAIN confusion and r6; execute only if(1-f)*TV-readfee-total_latency>0, wait then read once; success classify under same confusion/uniform prior.5, failureSTOP. No teacher/latent/physics information. Added before any confirmation; not selected from results."
   ],
   "primary_contrasts": [
     "renewal/value-minus-renewal/fixed",
@@ -149,8 +151,8 @@
   "production": "Finite33state synthetic task only; continuous Brownian/free-boundary, arbitrary refractory ages, open-domain content, multimodal production ownership and energy adoption remain separate gates. New JSON native integration must be qualified on its own source/model identity.",
   "preparation_cpu_cap_seconds": 20.0,
   "execution_order_seed": 202611170000,
-  "execution_measurement": "Resident interpreter with a real per-request model file read, JSON parse and NumPy policy initialization, public JSON/Owner initialization, all forecasts/control and actual FullHX/Owner calls, and actual wire JSON serialization. Fixed FullHX decoder loads once per fit, with full measured setup separately recorded and equally amortized over all actual880 requests of that fit. One-time interpreter/module bootstrap and all auditing/serialization/exit remain in full-stage SELF CPU since exec; scientific teacher/evaluator diagnostics happen strictly after the timed execution and are separately timed. Serial-service throughput is request count divided by summed complete execution wall, not a concurrent-server benchmark.",
-  "execution_order": "For each paired world, an independent preregistered RNG seed permutes all8 learned family/controller arms and3 separately labelled cold compiled/prior references. Exact order is archived. No familywise timing batch order or confirmation-driven ordering.",
+  "execution_measurement": "Resident interpreter with a real per-request model file read, JSON parse and NumPy policy initialization, public JSON/Owner initialization, all forecasts/control and actual FullHX/Owner calls, and actual wire JSON serialization. Fixed FullHX decoder loads once per fit, with full measured setup separately recorded and equally amortized over all actual960 requests of that fit. One-time interpreter/module bootstrap and all auditing/serialization/exit remain in full-stage SELF CPU since exec; scientific teacher/evaluator diagnostics happen strictly after the timed execution and are separately timed. Serial-service throughput is request count divided by summed complete execution wall, not a concurrent-server benchmark.",
+  "execution_order": "For each paired world, an independent preregistered RNG seed permutes all8 learned family/controller arms and4 separately labelled compiled/prior/deadline-read references. Exact order is archived. No familywise timing batch order or confirmation-driven ordering.",
   "secondary_cpu_adoption": {
     "familywise_alpha": 0.05,
     "interval_count": 24,
@@ -165,5 +167,10 @@
     "limits": "No energy/GPU/production adoption inference; model table preparation, all training costs and stage-level import/audit/DP compilation are reported separately and never hidden in a microtimer."
   },
   "pilot_qualification": "v1 three-family6update profiles and v2 affine6update profile all admitted under declared caps; all complete gradients finite, pureNumPy exports agree <=3.33e-16, export+validation<.1CPU seconds. Fixed short profiles underspent their matching band and never claim actual matched CPU. Formal deadline worker60s and2s reserve are chosen before formal data/fits and admission must be checked on each actual fit.",
-  "capacity": "Common head has4324 allocated coordinates. Renewal adds8raw with all eight partial derivatives validated, but common physical scaling leaves Q unchanged so locally identifiable generator directions are at most7; this is not8 independent physical mechanisms. FullMarkov adds3168 free nonnegative offdiagonal rates, affineMarkov2112, GRU has a larger recurrent/decoder parameter set. Equal information/common head and fullCPU matching do not establish equal effective capacity. All counts and learned shifts remain reported."
+  "capacity": "Common head has4324 allocated coordinates. Renewal adds8raw with all eight partial derivatives validated, but common physical scaling leaves Q unchanged so locally identifiable generator directions are at most7; this is not8 independent physical mechanisms. FullMarkov adds3168 free nonnegative offdiagonal rates, affineMarkov2112, GRU has a larger recurrent/decoder parameter set. Equal information/common head and fullCPU matching do not establish equal effective capacity. All counts and learned shifts remain reported.",
+  "retry_source_parent": "b4e89fa045febfd2b23552328a2bcc35732ce00e",
+  "retry_reason": "Attempt1 fit23 renewal was rejected on real SIGXCPU before final artifacts at registered rusage standalone57.674985CPU. Independent torch expm/backward probe reproduced Linux PROF6.003868 versus sched/process5.270492 and getrusage5.270343, so kernel RLIMIT is now a wider catastrophe backstop only. Scientific nominal60/tolerance.02, cooperative deadline, actual matching, all learning/data/seeds and every quality/cost threshold are unchanged. Whole20-model rerun, not extra independent fits; all old failure/raw/costs retained.",
+  "backstop_settings": "RLIMIT_CPU soft=max(1,ceil(2*(nominal*(1+tolerance)-actual_shared_CPU))), hard=soft+1. This limit does not grant extra admissible work: live proc and final complete wait4 reject above the original nominal*(1+tolerance); cooperative export deadline remains nominal minus original2second reserve.",
+  "retry_raw_evidence": "evidence/JOINT_FORMAL_ATTEMPT1_FAILED.json + joint_formal_attempt1_failed.tar.gz",
+  "launcher_accounting": "joint_launch.py runs at most3 fit masters, wait4 records each complete master+waited descendants on success/rejection; launcher SELF and crosschecked CHILDREN are separately retained. These totals overlap detailed worker/shared/monitor ledgers and are never summed again. Failed master prevents launching remaining fits; current active masters still finish and receive full receipts. All20 accepted models are required."
 }
