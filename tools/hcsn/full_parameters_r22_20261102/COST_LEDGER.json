@@ -1,0 +1,68 @@
+{
+  "family_simultaneous_peak_rss_kib": null,
+  "formal_and_two_audits_full_child_cpu_seconds": 234.54754699999998,
+  "inner_formal_timings_not_added_to_outer": true,
+  "known_component_cpu_seconds_lower_bound": 293.335703096,
+  "nonoverlapping_measured_phases": [
+    {
+      "known_cpu_seconds_lower_bound": 2.209805456,
+      "phase": "development_01",
+      "receipt": "development_01/SUMMARY.json",
+      "scope": "Inner verifier interval including native build/calls; imports/final serialization excluded."
+    },
+    {
+      "known_cpu_seconds_lower_bound": 2.009230085,
+      "phase": "development_02",
+      "receipt": "development_02/SUMMARY.json",
+      "scope": "Inner verifier interval including native build/calls; imports/final serialization excluded."
+    },
+    {
+      "known_cpu_seconds_lower_bound": 1.878423105,
+      "phase": "development_04",
+      "receipt": "development_04/SUMMARY.json",
+      "scope": "Inner verifier interval including native build/calls; imports/final serialization excluded."
+    },
+    {
+      "known_cpu_seconds_lower_bound": 0.202985476,
+      "phase": "development_record_replay",
+      "receipt": "DEVELOPMENT_RECORD_CHECK.json",
+      "scope": "Checker body after imports; complete process cost requires outer receipt."
+    },
+    {
+      "known_cpu_seconds_lower_bound": 52.487711974,
+      "phase": "old_selected_math_audit",
+      "receipt": "INDEPENDENT_MATH_REVIEW.json",
+      "scope": "Body after imports; full external process receipt must be retained separately."
+    },
+    {
+      "known_cpu_seconds_lower_bound": 69.407541,
+      "phase": "CONFIRMATION_PROCESS.json",
+      "receipt": "CONFIRMATION_PROCESS.json",
+      "scope": "Full invoked child process and waited descendants, including interpreter imports/build/native calls/final serialization. Excludes this small wrapper and transport; nested inner timing must not be added."
+    },
+    {
+      "known_cpu_seconds_lower_bound": 9.13264,
+      "phase": "INDEPENDENT_CHECK_PROCESS.json",
+      "receipt": "INDEPENDENT_CHECK_PROCESS.json",
+      "scope": "Full invoked child process and waited descendants, including interpreter imports/build/native calls/final serialization. Excludes this small wrapper and transport; nested inner timing must not be added."
+    },
+    {
+      "known_cpu_seconds_lower_bound": 156.007366,
+      "phase": "INDEPENDENT_MATH_CONFIRMATION_PROCESS.json",
+      "receipt": "INDEPENDENT_MATH_CONFIRMATION_PROCESS.json",
+      "scope": "Full invoked child process and waited descendants, including interpreter imports/build/native calls/final serialization. Excludes this small wrapper and transport; nested inner timing must not be added."
+    }
+  ],
+  "performance_advantage_or_amortization_claim": false,
+  "schema": "hcsn.r22.nine-coordinate-cost-ledger.v1",
+  "unknown_cpu_phases": {
+    "dependency_identity_failed_launch": null,
+    "development_03_failed_build_full_process": null,
+    "initial_old_corner_smoke": null,
+    "initial_smoke_compile": null,
+    "small_measure_wrappers": null,
+    "syntax_and_misc_preparation": null,
+    "transport_and_remote_transfer": null
+  },
+  "unknown_is_not_zero": true
+}
