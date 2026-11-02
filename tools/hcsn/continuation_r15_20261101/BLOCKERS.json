@@ -93,10 +93,10 @@
       "status": "unmeasured"
     },
     {
-      "detail": "At exact8df6 source,18:42:38Z complete56 checks have38success,5failure,4skipped,9pending. Failures: Windows shards1/3,Windows Clippy,macOS ARM test,cargo-deny. BP/BPTT,fixed finite regressions,and compensated numerical replay succeed. Aggregate green does not qualify the platform matrix; newer source must be assessed separately.",
-      "evidence": "evidence/CI_8DF6_EXACT_HEAD_20261101T184238Z.json",
+      "detail": "Exact f52dc359 snapshot2026-11-02T00:56:05.719Z:57 checks,42success4failure2cancelled4skipped5pending. Failures are cargo-deny and Windows shards1/2/3. Windows Clippy and architecture source-head/required actually pass. Two Windows V8 source builds cancelled;GNU/MUSL,two macOS and Windows shard4 still pending. Pending/cancelled/skipped are not accepted.",
+      "evidence": "evidence/native_f52/CURRENT_CI_SNAPSHOT_0056UTC.json",
       "id": "repository_wide_ci",
-      "status": "open_exact_head_native_and_policy_failures"
+      "status": "open_current_failures_cancelled_and_pending_native"
     },
     {
       "detail": "PR4550 published; seven remote stage trees match local and research regressions/blob policy pass. Followup native/spelling checks remain separate.",
@@ -113,8 +113,8 @@
     {
       "id": "windows_native_toolchain_and_runtime",
       "status": "open_repair_candidates_and_missing_backends",
-      "detail": "ABI, V8 and test-directory/canonical-path fixes are separate from missing Windows secure-storage/SSHSIG semantics. The exact source6500 four-shard classification contains36 unique named failed tests; no skips or weaker security checks qualify these.",
-      "evidence": "evidence/WINDOWS_FAILURE_CLASSIFICATION.json"
+      "detail": "ABI, V8 and test-directory/canonical-path fixes are separate from missing Windows secure-storage/SSHSIG semantics. The exact source6500 four-shard classification contains36 unique named failed tests; no skips or weaker security checks qualify these. Currentf52 full raw shards1/2/3 preserve4/15/6failed top-level targets,25total(not assert counts),with separate symptoms. A specifically confirmed new Robrix runfiles regression is tracked separately; other baseline/new attribution is not assumed.",
+      "evidence": "evidence/native_f52/NATIVE_CURRENT_HEAD_CLOSEOUT.json"
     },
     {
       "id": "codespell_frozen_false_positives",
@@ -172,9 +172,9 @@
     },
     {
       "id": "robrix_fixture_runfiles",
-      "status": "repaired_launcher_probe_passed_native_ci_pending",
-      "detail": "Declare unchanged tracked fixtures as Bazel test data and use the launcher runfiles workspace at runtime. Original launcher plus unchanged extracted Rust reader exercised six meaningful cases; actual macro data emission and just fmt pass. Synthetic fixture harness is not full Bazel/native test execution.",
-      "evidence": "evidence/native_repairs/robrix_fixture/ROBRIX_REPAIR_RECEIPT.json"
+      "status": "open_new_windows_regression_identified",
+      "detail": "Actual f52 Windows shard2 job125028471631 fails both Robrix artifact cases because INSTA_WORKSPACE_ROOT is absent. The prior synthetic six-case launcher probe did not qualify the native Windows launch path. This is a specifically identified regression from this round; minimal public-runfiles repair is under separate review. All original assertions and failure logs are retained.",
+      "evidence": "evidence/native_f52/ROBRIX_CURRENT_FAILURE.json"
     },
     {
       "id": "simplified_periodic_orbit_existence",
@@ -226,9 +226,9 @@
     },
     {
       "id": "actual_bp_bptt_remote_regression",
-      "status": "closed_for_v3_signed_v1_and_fixed_z_remote_replay",
-      "detail": "Actual job124931932431 at cf746 passes V3/signed-V1;257659-byte artifact downloaded and SHA checked, frozen record checker independently rerun. Actual job124934898501 at8df6 adds all fixed-z audit/training/raw-branch checks and source cleanliness successfully, including2057 states. Original workflow context failure and corrected reviews retained. No global native or efficacy admission.",
-      "evidence": "evidence/ci_8df6/REMOTE_REGRESSION.json"
+      "status": "closed_for_v3_signed_fixed_and_two_layer_remote_replay",
+      "detail": "Actual exact-head sourcef52dc359 job125027835819 passes V3,signed V1,fixed-z and two-layer audit/training/checkers,archive and source cleanliness; unchanged source/merge tree verified. Previouscf746 and8df6 results retained with their own identities. Global native and scientific efficacy gates remain separate.",
+      "evidence": "evidence/ci_f52/REMOTE_REGRESSION.json"
     },
     {
       "id": "recurrent_default_saturation",
@@ -257,26 +257,32 @@
     {
       "id": "recipient_boundary_shape_isolation",
       "status": "open_not_identified_by_current_gradient_controls",
-      "detail": "The verified condition path changes nine recipient financial parameters, hence both boundary and curve shape. Explicit upstream-b1 chain is nonzero, but isolated causal benefit of recipient-boundary movement, architecture and task performance remains untested.",
+      "detail": "Current verified condition path changes nine recipient financial parameters and mixes boundary with normalized curve shape. A separately reviewed ideal-real homogeneity lemma gives eight shape coordinates plus log-boundary, with determinant P^2 and Q_rho=-Q_z, R_rho=-R_z. The frozen eighteen-parameter candidate does not implement it. New numerical interface validity and isolated causal task benefit remain untested.",
       "evidence": "../hx_two_layer_boundary_r16_20261101/RESULTS.md"
     },
     {
       "id": "two_layer_remote_regression",
-      "status": "pending_actual_published_head_execution",
-      "detail": "Additive workflow retains all8 prior entries and adds frozen two-layer audit/training/record checker. Local actionlint,format,Bash/CLI/hash negative checks and independent wiring review passed. Prior8df6 green does not qualify new three-step execution.",
-      "evidence": "evidence/bp_bptt_two_layer/CI_EXTENSION_INDEPENDENT_REVIEW.json"
+      "status": "closed_for_exact_head_frozen_functional_replay",
+      "detail": "Actual sourcef52dc359 run41366558836/job125027835819 passes all11 prior/new functional entries,archive and source cleanliness. Source and merge0758e6c2 share verified tree1437e365. Downloaded1551454-byte artifact with14members matches GitHub SHA7e45f10d; original ZIP retained in exact byte parts. Same frozen protocol is a regression,not independent scientific holdout. Independent record-only review of the actual downloaded artifact verifies14members/28checker bindings and69 comparisons. Excluding only top-level runtime,the complete canonical numeric audit/training payload matches the published local original; gzip identities remain distinct.",
+      "evidence": "evidence/ci_f52/REMOTE_REGRESSION.json"
     },
     {
       "id": "windows_clippy_incompatible_explicit_targets",
-      "status": "minimal_platform_selection_repair_local_controls_passed_remote_pending",
-      "detail": "Exact8df6 log identifies157 explicitly incompatible targets:156 GNULLVM-only and1 Unix-only. Three added workflow lines apply the same platform-compatibility handling as existing Windows test shards; target list,constraints,compatible Clippy actions and failure propagation unchanged. Actual Bazel9 synthetic exits[1,0,1,0,0],six extracted Bash controls and independent source review pass; all three failed environment probes retained. New exact-head Windows CI required.",
-      "evidence": "evidence/native_8df6/windows_clippy/INDEPENDENT_REVIEW.json"
+      "status": "closed_at_exact_head_native_clippy",
+      "detail": "At sourcef52dc359 actual Windows/MSVC Clippy job125028471616 succeeds:10steps,Clippy,archive and source cleanliness. Merge0758e6c2 has the same verified tree. Full log557799UTF8bytes confirms MSVC/platform compatibility option,1424 analyzed top-level targets,6572 actions and0 prior explicit-incompatibility failure lines. Original roster/constraints and supported-target failure propagation preserved. Other Windows tests and backend semantics remain independent.",
+      "evidence": "evidence/native_f52/WINDOWS_CLIPPY_SUCCESS.json"
     },
     {
       "id": "macos_arm_bazel_native_thread_resource",
       "status": "open_exact_head_resource_crash",
       "detail": "Exact8df6 macOS ARM test124935497136 reaches27/198 tests then Bazel FATAL native-thread OutOfMemoryError in sandbox deletion,exit33. No failed test assertion identified in full raw log; no measured RSS/thread/process-limit attribution. No unvalidated resource tuning applied.",
       "evidence": "evidence/native_8df6/NATIVE_FAILURE_DIAGNOSIS.json"
+    },
+    {
+      "id": "nominal_homogeneity_boundary_shape_coordinates",
+      "status": "proved_for_valid_ideal_real_formula_only",
+      "detail": "Simultaneous positive C/P scaling makes b,E,debt degree one and F/G degree zero. Eight shape coordinates phi plus rho=log(b) retain nine dimensions; fixed-psi determinant P^2>0. Q/R depend on z-rho at fixed shape under stated regularity. Valid in-domain anchor and target C/P bounds are required; finite-epsilon rejection and FP32 do not inherit arbitrary exact scaling. No new kernel/FD/rollout/training calls and no frozen model changes; implementation and efficacy remain open.",
+      "evidence": "../analysis_r16_20261102/nominal_homogeneity/HX_NOMINAL_HOMOGENEITY_LEMMA_ZH.md"
     }
   ],
   "new_confirmation_opened": false,
@@ -286,7 +292,7 @@
   "published_research_head": "0ee3bb576e3db6156dad9b914ef5bae83a5387db",
   "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4550",
   "followup_ci_scope": "Final source and prospective-merge tree identities must be checked. Published prior-head green jobs do not qualify new native source repairs.",
-  "latest_assessed_head": "8df6e272e3a31a3fae0491dd2d511825e212290c",
+  "latest_assessed_head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629",
   "confirmation_scope": "new_confirmation_opened concerns the original R14 efficacy task only; R16 numerical validation is separate.",
   "independent_numerical_validation_r16_opened": true,
   "executor_recovery": {
@@ -299,5 +305,6 @@
   "compiled_recovery_checkpoint": "bfd3a5a6f9445ae681b27d3947865ad67ef5651e",
   "recurrent_source_checkpoint": "a629f9b1a9a1539f5360f8e44d2b81a09fdcf6ae",
   "fixed_asset_source_checkpoint": "786e535bd2a396b14e9ffab4504bc855c6f4d6b1",
-  "two_layer_source_checkpoint": "76f6e91285ff25926eda2c7bf57f70e99431c6ec"
+  "two_layer_source_checkpoint": "76f6e91285ff25926eda2c7bf57f70e99431c6ec",
+  "tested_financial_source_head": "f52dc359344cd0eb9b5dba84d4af3d5815aeb629"
 }

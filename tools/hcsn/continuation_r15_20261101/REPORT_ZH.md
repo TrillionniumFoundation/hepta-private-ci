@@ -14,11 +14,13 @@
 变化方向不一致，不能把本轮成果表述为“全部 blocker 已闭合”。
 
 [PR #4550](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4550)
-保存代码和证据。本节最新已通过的金融 BP/BPTT 与有限任务回归对应源码头
-`cf74634be5c1d7de8d2b0f24a1c4a8a4ab361b20`；其 merge 树与 source 树相同。
-新增 fixed-z 三步骤已在源码头 `8df6e272e3a31a3fae0491dd2d511825e212290c`
-的 job `124934898501` 全部通过；该次 merge 树亦与 source 树相同。
-原生平台矩阵须按其各自实际执行记录评估。编译核完整证据已先保存至
+保存代码和证据。最新金融 BP/BPTT 工作流对应源码头
+`f52dc359344cd0eb9b5dba84d4af3d5815aeb629`，job `125027835819` 的
+全部十一项功能入口、完整归档与源码清洁性实际通过，包括新两层三项。
+其 merge `0758e6c2efd3009bcceb13536f60075581467d39` 与 source 的树
+均为 `1437e365efb2e45e887d4a7835706bdd01b4b3a9`，已独立核验。
+较早 cf74634b / 8df6e272 的回归证据保留各自身份；原生平台矩阵按
+其各自实际执行记录评估，不能由科研成功推为全绿。编译核完整证据已先保存至
 `bfd3a5a6f9445ae681b27d3947865ad67ef5651e`，其远端 Git 树与本地独立计算一致。
 
 ## 1. 编译核的独立数值验收
@@ -38,6 +40,12 @@
 独立 checker 重新计算全部参考值和导数，执行 15,360 个差分邻点分支
 检查及 128 个边界续行侧右导数检查；原始数据、协议、源码、构建和
 二进制身份在检查前后均绑定。资产 default 行完整保留。
+
+“解析核”指依据原解析模型构造的固定数值实现，不表示机器算术中的
+精确符号值。实际源对接近可去奇点的差商使用固定八点稳定化表示，对
+近边界 equity 使用十阶 Taylor 展开并以五次权重衔接原表达式。它们的
+值和完整一阶导数受本节有限误差门约束；通过有限测试不能升级为所有
+数值分支切换处、所有参数上的严格联合 C1 或原闭式公式逐位相等保证。
 
 双字 FP32 使用两个 FP32 字及扩展有效尾数，不能改称普通 FP32。
 边界右导数不等于原 F/G 在 default 两侧的经典导数。有限矩阵通过也
@@ -115,6 +123,11 @@ x 有界于 [-9,3]。平衡点唯一且为双曲源，局部排斥椭圆使它�
 C++ FP64 金融核，接受 CPU FP32 输入，返回 FP64 值及 FP32 一阶 VJP。
 它保留原 asset/default 与 log-distance/续行侧右导数约定，明确区分原五
 字段、七字段诊断向量和只含 E/b、R、x 的条件 C1 读出。
+
+这里对解析边界表达式 b(theta) 求参数导数。不能仅把 E(b(theta),theta)=0
+交给普通隐函数公式去计算 b_theta：smooth pasting 使 E_V(b)=0，因而
+这条方程的一阶微分退化为 E_theta=0，无法单独识别 b_theta。实际核和
+独立链检查使用原解析边界及其完整参数导数，不依赖这个退化的除法。
 
 六个既有功能例的 **168/168 方向差分、32/32 合同检查**通过；完整七字段
 链式导数最大缩放误差为 `5.270680520615516e-8`。独立审阅另查原六例
@@ -257,6 +270,11 @@ b_2(t)=b\bigl(\theta_2(t)\bigr).
 调用原静态金融解析函数，并没有求解一份具有任意时变参数的新金融 PDE。
 原金融闭式值函数也没有变成整个神经 ODE 的闭式时间流。
 
+以 z=log(V) 作为状态也避免了移动坐标项被遗漏：若直接把
+x=log(V/b(t)) 当成连续状态，则必须满足
+`dot x = dot V/V - dot b/b`。当前 x 是从物理状态和当前边界重新计算
+的读出，未把固定边界下的 x 方程直接移用于动态 b2。
+
 四种图保留完全相同的前向值，只分别切断两条反向边：full、drive_only、
 conditioning_only、both_detached。独立 NumPy 参考从原局部 Jacobian
 组装完整 4×4 状态矩阵和 4×18 raw 参数矩阵，再做离散伴随重算。
@@ -300,6 +318,14 @@ atol 判断相对容差合同。独立 checker 不调用金融核或 PyTorch，�
 controller 分别为 2.28395 / 4.13232 秒。没有用这些内部计时冒充模型
 端到端吞吐，也没有与 SNN、Transformer 或 GPU 做成本比较。
 
+![真实远端记录的边界轨迹、训练观察和梯度路径](../analysis_r16_20261102/functional_figure/FUNCTIONAL_EVIDENCE.png)
+
+上图只读取已下载且通过摘要校验的 f52 远端记录；没有新模型调用。
+上排各线减去该序列自身初始 b2，保留全部八条序列，仅画实际参与动力学
+的十六步；两图使用相同纵轴。下排训练 loss 的纵轴从零起，梯度范数
+使用对数轴并单独注明精确零控制。[图表来源与数据](../analysis_r16_20261102/functional_figure/FIGURE_RECEIPT.json)
+和重绘脚本一并保留。
+
 ### 两层连续系统的条件有界性
 
 另有[独立审阅的解析证明](analysis/TWO_LAYER_CONDITIONAL_BOUNDEDNESS_ZH.md)。
@@ -313,8 +339,77 @@ tanh 只约束参数落在盒内，尚未证明整个盒都满足金融有效性
 这个结论不包含当前 FP32 Euler 的全域数值稳定性、长程梯度、任意反馈
 网络、自主振荡或任务效果；条件证明与有限轨迹通过不可互相替代。
 
+### 名义尺度齐次性：边界位置与曲线形状可以在理想公式中分开
+
+新增[静态代数引理](../analysis_r16_20261102/nominal_homogeneity/HX_NOMINAL_HOMOGENEITY_LEMMA_ZH.md)
+及[独立数学审阅](../analysis_r16_20261102/nominal_homogeneity/INDEPENDENT_STATIC_REVIEW.json)。
+固定七个非规模参数 psi，同时把 C、P 乘以 u>0，则 b 同比缩放，
+E_u(V)=u E(V/u)、d_u(V)=u d(V/u)，而 F/G 是零次齐次。默认分支也
+保持该关系；G 与债券价值 d 的齐次次数不能混同。
+
+令 kappa=C/P，八维形状参数 phi=(psi,kappa)，并定义理想归一化边界
+beta(phi)=b(psi,kappa,1)>0。取 B=exp(rho)，设置 P=B/beta、C=kappa P，
+就有 b=B。固定物理坐标 z=log(V) 后，归一化读出为
+
+\[
+Q=\mathcal Q(z-\rho;\phi),\qquad
+R=\mathcal R(z-\rho;\phi),\qquad x=z-\rho.
+\]
+
+因此固定形状时 Q_rho=-Q_z、R_rho=-R_z、x_rho=-1。固定 psi 的
+(kappa,rho) 到 (C,P) Jacobian 行列式为 P^2>0；八维形状加一维位置
+仍保留九个金融自由度。跨默认边界的一阶关系仍要求原联合 C1 条件，
+不是对未变换 F/G 的全局光滑声明。
+
+该结论限于同一有效金融分支的理想实数公式。当前 API 的 P 硬域为
+[20,100]，不能直接求 P=1；可以用有效参考点 C_*=kappa P_*、
+beta=b_*/P_* 构造等价表达，但目标 B 仍受 C/P 硬域与其余金融条件
+限制。有限精度停止门的绝对尺度项、FP32 量化、稳定化计算及硬盒边缘
+也使它不能升级为实现逐位恒等或全域可训练性保证。
+
+本次只读冻结源并作代数推导，新金融核、差分、rollout、训练和采样均为
+零。当前十八参数两层候选未采用这个新坐标接口；因果边界贡献、泛化和
+新接口工程验收仍未关闭。它提供了可独立控制边界与形状的数学设计，
+没有把既有损失下降重新归因于边界机制。
+
 ## 5. 已执行的远端回归与新的构建修复
 
+### 当前两层候选的实际远端回归
+
+2026-11-02 的 [run 41366558836](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41366558836)
+在 source `f52dc359` 上实际成功。精确 checkout、冻结身份校验、V3 两入口、
+signed V1 三入口、fixed-z 三入口、two-layer 三入口、完整输出上传及
+checkout 清洁性均成功。新两层实际打印的 condition-only VJP 为
+3.8373086937e-6，loss 为 0.017321569845080376 → 0.016821451485157013，
+与本地已报告值相同。相同冻结场景的重复执行是回归，不是新独立样本。
+
+[完整步骤和日志收据](evidence/ci_f52/REMOTE_REGRESSION.json)绑定该源码头
+及同树 merge。已实际下载 14 成员、1,551,454 字节的远端 ZIP，其 SHA256
+`7e45f10d267648e88db09a8b5d2b40dcfd606b2f065c894691695c18993897c3`
+与 GitHub 摘要相同。原 ZIP 以四个精确字节片保留，恢复后的完整摘要
+再次相同；没有用本地原运行的 gzip 代替这份远端输出。
+
+这份真实远端记录又通过[独立重组](../hx_two_layer_boundary_r16_20261101/remote_f52_independent_review/REVIEW.json)：
+14 个归档成员、28 项 checker 身份绑定及 69 项原比较均核验通过，实际
+退出 0，最大误差/原允许误差仍为 0.01330064，没有金融核、Torch 或
+新训练调用。审阅仅适配路径和远端来源，科学比较核心逐字不变。仅去掉
+顶层 runtime 后，两份 audit/training 的完整规范 JSON 与已发布本地
+原件完全相同，涵盖全部轨迹、Jacobian、梯度和参数历史。两份 gzip 的
+原始字节与时钟信息不同，分别保留其身份。
+
+同头[原生矩阵完整快照](evidence/native_f52/CURRENT_CI_SNAPSHOT_0056UTC.json)
+截至 2026-11-02 00:56:05 UTC 共 57 项 checks：42 success、4 failure、
+2 cancelled、4 skipped、5 pending。新增 architecture source-head 与
+required 两项实际成功；两个 Windows V8 源码构建被取消，不能当作通过。
+GNU、MUSL、两种 macOS 以及 Windows shard 4 原生测试尚在执行。
+
+[完整失败归档](evidence/native_f52/NATIVE_CURRENT_HEAD_CLOSEOUT.json)
+保留 Windows shard 1/2/3 的 4/15/6 个顶层失败 target，合计 25 个，
+不是独立断言数量。它们覆盖迁移、计时/进程状态、目录权限、安全后端、
+恢复语义及其他不同错误；没有把它们统称为某一种继承问题。Robrix 两项
+测试的环境变量错误明确属于本轮新回归，修补状态在下文单独列出。
+shard 2 的完整原 gzip 以两个精确字节片封装保留，重构和损坏/覆盖拒绝
+控制均有真实执行记录；没有裁掉失败正文来缩小归档。
 
 ### 新工作流实际红绿回归
 
@@ -358,10 +453,22 @@ GNULLVM-only cross-bin，加一个明确 Unix-only 的 qualification。三行
 标签与 wrapper exit 37；参数捕获替身不冒称全仓构建。三次环境失败尝试、
 完整原日志、23 个精确源文件和独立审阅全部保留。Prettier 与实际
 `just fmt` 通过；原/新 Bazel workflow 的 actionlint 都仍报告相同两条
-继承的 `matrix.runs_on` 诊断，不能写成该 workflow 静态全绿。新头实际
-Windows Clippy 仍为最终回归门。
+继承的 `matrix.runs_on` 诊断，不能写成该 workflow 静态全绿。
 
-macOS ARM job 则在 27/198 tests 时由 Bazel 自身抛出
+该 Windows 平台选择修复随后通过了[新头实际原生验收](evidence/native_f52/WINDOWS_CLIPPY_SUCCESS.json)：
+source `f52dc359` 的 job `125028471616` 于 00:30:44 UTC 成功结束。
+十个步骤全部 success，包括实际 Clippy、执行日志上传和源码清洁性。
+完整原日志确认目标平台与兼容性选项，记录分析 1,424 个顶层目标以及
+成功完成 6,572 个 actions；这些计数不是独立测试数量。原有显式请求
+不兼容目标导致的失败不再出现。这一项已闭合，但独立 Windows tests、
+安全后端与依赖审计仍按各自 gate 评估。
+
+同一新头的 [cargo-deny 实际记录](evidence/native_f52/CARGO_DENY_CURRENT_READ.json)
+确认失败发生在 Run cargo-deny，安装、checkout 和源码清洁性均成功。
+本次完整日志读取返回 Transport closed，详细根错误尚不可读；旧头六项
+依赖发现保持旧证据身份，没有冒充本次具体诊断。
+
+较早 8df6e272 的 macOS ARM job 则在 27/198 tests 时由 Bazel 自身抛出
 `OutOfMemoryError: unable to create native thread`，退出 33，调用栈在
 sandbox 清理。日志没有足够的线程数/RSS/系统上限测量，也没有识别到
 单个测试断言失败，因此保留为未关闭的原生线程资源问题，未猜测具体
@@ -405,6 +512,12 @@ Robrix 两项 artifact 测试还缺少 Bazel 数据声明，且用了构建时�
 实际原 launcher 与提取的 Rust 读取函数通过六种情形；数据规则发射和
 `just fmt` 通过。合成 fixture 探针不冒充完整原生测试。
 [完整收据](evidence/native_repairs/robrix_fixture/ROBRIX_REPAIR_RECEIPT.json)。
+
+这项旧候选在 f52dc359 的真实 Windows shard 2 暴露了本轮引入的回归：
+两项 Robrix 测试报告 `Bazel launcher did not set INSTA_WORKSPACE_ROOT`。
+先前局部 launcher 探针没有覆盖该实际 Windows 启动路径，不能继续把
+它视为完整跨平台修复。原始失败保留；最小公共 runfiles 解析修补正在
+独立审查，尚不计为原生验收通过。
 
 十项 Linux SSHSIG 失败已定位为固定 RBE 镜像缺少 `/usr/bin/ssh-keygen`。
 Dockerfile 现在明确安装 `openssh-client`，本机真实 OpenSSH 的合法签名、
@@ -452,7 +565,7 @@ RecoveryRequired 下拒绝 dispatch，保留 pending/deadline/journal。
 冻结 binary/protocol/source hashes 和临时输出目录。已通过的 V3、signed
 V1 和 fixed-z 共八个入口保持不变；新增两层 audit、training、checker
 三个入口。本地 actual actionlint、格式化、14 个 Bash 块、11 个 CLI
-及 hash 负例检查通过；新增三项的真正远端执行仍以包含扩展的提交为准。
+及 hash 负例检查通过；新增三项已在上述 f52 精确源码头的真实远端执行中通过。
 
 ## 6. 继续保留的实质障碍与历史证据
 
