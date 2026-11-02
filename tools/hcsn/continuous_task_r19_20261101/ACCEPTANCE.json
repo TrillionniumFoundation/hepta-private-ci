@@ -1,0 +1,39 @@
+{
+  "schema": "hcsn-r19-task-gradient-acceptance-v1",
+  "source_checkpoint": "d9bfd93d86a985dc603cce8b0c4ade6102cb7696",
+  "original_registered_whole_array_gate": false,
+  "attempted_records": 156,
+  "scalar_positions_checked": 1919112,
+  "stable_passing_records": 144,
+  "unstable_failing_records": 12,
+  "maximum_scaled_fd_error": 0.010100183806748136,
+  "maximum_stable_scaled_fd_error": 1.554257653135771e-9,
+  "primal_parity_passed": true,
+  "all_thirteen_coordinates_stable_coverage_passed": true,
+  "both_meshes_nonzero_value_and_derivative_jumps_passed": true,
+  "rejections_passed": 10,
+  "prospective_followup": {
+    "source_checkpoint": "b1e5d3f95b6bb756363fe43f0d8ede86a20ffc41",
+    "whole_array_gate": false,
+    "attempted_records": 156,
+    "stable_passing_records": 155,
+    "unstable_failing_records": 1,
+    "maximum_scaled_fd_error": 0.0009083483445292244,
+    "maximum_stable_scaled_fd_error": 1.42480601129924e-7,
+    "all_thirteen_coordinates_stable_coverage_passed": true,
+    "original_failed_gate_unchanged": true
+  },
+  "scope": "Selected fixed-grid active-branch tangent on thirteen smooth task coefficients. Failed whole-array perturbation gate remains failed.",
+  "raw_evidence_limit": "Record-only independent review checks aggregates and source identities. Complete perturbed arrays are not retained; full scalar recomputation requires deterministic numerical rerun.",
+  "retained_open": [
+    "action-switch directional/semismooth derivative contract",
+    "moving recovery/horizon/domain and mesh gradients",
+    "continuum gradient convergence",
+    "full financial/neural gradients",
+    "exclusive core gain",
+    "real multimodal binding",
+    "GPU/energy and production qualification"
+  ],
+  "all_blockers_closed": false,
+  "production_activation": false
+}

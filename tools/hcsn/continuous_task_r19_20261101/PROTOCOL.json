@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-r19-jump-tangent-protocol-v1",
+  "classification": "Deterministic verification of a fixed-grid active-branch derivative, not a utility/adoption confirmation",
+  "base_commit": "b25601c9bae257ffb651c8f9354fc380d8333f38",
+  "profiles": [
+    {"name": "low_diffusion", "sigma": 0.65, "reset_x": 0.63},
+    {"name": "default_diffusion", "sigma": 1.0, "reset_x": 0.63},
+    {"name": "high_diffusion", "sigma": 1.4, "reset_x": 0.67}
+  ],
+  "meshes": [[0.2, 0.02], [0.1, 0.01]],
+  "fd_steps": [0.00001, 0.000003],
+  "primal_absolute_tolerance": 0.000000000002,
+  "whole_array_scaled_fd_tolerance": 0.000001,
+  "requirements": [
+    "All thirteen declared coordinates are attempted in every profile and mesh",
+    "All whole-array discrepancies and branch switches remain recorded",
+    "Whole-array error bound applies to every attempted coordinate at both steps, including all changed branches",
+    "No switched coordinate is silently counted as passing or removed from raw results",
+    "A fixed-branch derivative gate needs every coordinate stable and passing in at least one declared profile/mesh",
+    "Every mesh must produce a nonzero admission jump and nonzero tangent jump",
+    "Reset interpolation knots and unsupported moving-duration/domain coordinates must reject",
+    "Original R18 source Git blob identities must match INPUT_IDENTITIES.json"
+  ],
+  "retained_open": ["continuous full financial/neural gradient", "moving recovery/horizon/domain gradient", "global differentiability", "continuum gradient convergence", "exclusive analytic-core gain", "real multimodal binding", "GPU/energy", "production qualification"],
+  "production_activation": false,
+  "all_blockers_closed": false
+}
