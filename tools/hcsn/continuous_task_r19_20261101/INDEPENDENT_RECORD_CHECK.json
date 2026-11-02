@@ -1,0 +1,44 @@
+{
+  "schema": "hcsn-r19-independent-record-check-v1",
+  "integrity_passed": true,
+  "original_gradient_gate_passed": false,
+  "records": 156,
+  "scalar_checks": 1919112,
+  "stable_records": 144,
+  "passed_records": 144,
+  "failed_records": 12,
+  "unstable_records": 12,
+  "all_failed_are_unstable": true,
+  "maximum_scaled_error": 0.010100183806748136,
+  "stable_maximum_scaled_error": 1.554257653135771e-09,
+  "admission_maximum_scaled_error": 0.0005161934065091023,
+  "coordinate_coverage": {
+    "sigma": true,
+    "wait_cost": true,
+    "recovery_cost": true,
+    "reset_x": true,
+    "reset_fee_0": true,
+    "reset_fee_1": true,
+    "retention_0": true,
+    "retention_1": true,
+    "reward_base_0": true,
+    "reward_base_1": true,
+    "reward_amplitude_0": true,
+    "reward_amplitude_1": true,
+    "reward_slope": true
+  },
+  "jump_coverage": {
+    "[0.2, 0.02]": true,
+    "[0.1, 0.01]": true
+  },
+  "rejection_count": 10,
+  "primal_maximum_absolute_error": 5.551115123125783e-16,
+  "inputs": {
+    "CONFIRMATION.json": "9ff7d3c4ac6d7a1ac4b3764e5d194b03e0122de17fb7ed515fa2c430de011003",
+    "SOURCE_FREEZE.json": "2deff0a5c1c4e2e34bce298816c56778e55493eaead2980ece47bc2946d8d417"
+  },
+  "limitations": [
+    "record-only integrity and aggregate recomputation; per-scalar FD arrays are not stored",
+    "does not independently re-execute numerical solvers or establish global differentiability"
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "classification": "Engineering diagnostic of old smooth-step tangent applied to the newer jump solver; not a registered outcome and no change to original gates",
+  "config": {
+    "lower": -4.0,
+    "upper": 4.0,
+    "sigma": 1.0,
+    "horizon": 1.2,
+    "recovery": 0.2,
+    "reset_x": 0.63,
+    "wait_cost": 0.03,
+    "recovery_cost": 0.02,
+    "reset_fee": [
+      0.035,
+      0.025
+    ],
+    "content_transition": [
+      [
+        0.9,
+        0.1
+      ],
+      [
+        0.25,
+        0.75
+      ]
+    ],
+    "reward_base": [
+      0.2,
+      0.1
+    ],
+    "reward_amplitude": [
+      0.75,
+      0.4
+    ],
+    "reward_slope": 1.3
+  },
+  "dx": 0.2,
+  "dt": 0.02,
+  "records": [
+    {
+      "parameter": "sigma",
+      "maximum_absolute_error": 0.0028210061405356743,
+      "maximum_error_location": [
+        40,
+        0,
+        20
+      ],
+      "time_of_maximum_error": 0.8
+    },
+    {
+      "parameter": "wait_cost",
+      "maximum_absolute_error": 0.020565488740187043,
+      "maximum_error_location": [
+        30,
+        0,
+        20
+      ],
+      "time_of_maximum_error": 0.6
+    },
+    {
+      "parameter": "reset_fee_0",
+      "maximum_absolute_error": 0.04252302797925944,
+      "maximum_error_location": [
+        40,
+        0,
+        20
+      ],
+      "time_of_maximum_error": 0.8
+    },
+    {
+      "parameter": "retention_0",
+      "maximum_absolute_error": 0.003911305054407899,
+      "maximum_error_location": [
+        20,
+        0,
+        20
+      ],
+      "time_of_maximum_error": 0.4
+    }
+  ],
+  "inside_cpu_seconds": 0.2360308299999998
+}
